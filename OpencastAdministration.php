@@ -21,19 +21,20 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
         parent::__construct();
 
         global $SessSemName, $perm;
-
-        //.. now the subnavi
-        $main = new Navigation(_("Opencast Administration"));
-        $main->setURL(PluginEngine::getURL('opencast/admin/config'));
-
-        $config = new Navigation('Globale Einstellungen');
-        $config->setURL(PluginEngine::getURL('opencast/admin/config'));
-
-        $main->addSubNavigation('config', $config);
         
-        Navigation::addItem('/start/opencast', $main);
-        
-
+        if($perm->have_perm('admin')) {
+            //.. now the subnavi
+            $main = new Navigation(_("Opencast Administration"));
+            $main->setURL(PluginEngine::getURL('opencast/admin/config'));
+    
+            $config = new Navigation('Globale Einstellungen');
+            $config->setURL(PluginEngine::getURL('opencast/admin/config'));
+    
+            $main->addSubNavigation('config', $config);
+            
+            Navigation::addItem('/start/opencast', $main);
+            Navigation::addItem('/admin/tools/opencast', $main);
+        }
     }    
 
     /**

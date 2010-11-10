@@ -5,7 +5,7 @@ array(
         'kategorie'=>_("Information"),
         'eintrag'=>array(
 array(
-      'text' => _("Hier können Sie die Videoaufzeichnung zu gewählten Veranstaltung einsehen."),
+      'text' => _("Hier finden Sie die Vorlesungsaufzeichnungen dieser Veranstaltung. Klicken Sie auf einen Titel in der Liste um die Wiedergabe zu starten."),
                 'icon' => 'icons/16/black/info.png'
                 )
                 )
@@ -13,15 +13,13 @@ array(
                 );
 ?>
 
-<? if (isset($message)): ?>
-  <?= MessageBox::success($message) ?>
-<? endif ?>
 
 
-<h1>
-  <?= _('Opencast Aufzeichnungen') ?>
-</h1>
-<pre>
+
+<h3>
+  <?= _('Vorlesungsaufzeichnungen') ?>
+</h3>
+
 <?
 $items = $episode_ids;
 ?>

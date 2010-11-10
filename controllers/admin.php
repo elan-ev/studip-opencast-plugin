@@ -1,7 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2009  André Klaßen
+ * Copyright (c) 2010  André Klaßen
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,7 +32,7 @@ class AdminController extends StudipController
         $this->set_layout($layout);
         
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
-        //Navigation::activateItem('course/opencast/config');
+        Navigation::activateItem('/admin/tools/opencast/');
     }
 
     /**
@@ -85,8 +85,20 @@ class AdminController extends StudipController
         $this->password = Request::get('password');
         
         OCRestClient::setConfig($this->config_id, $this->series_url, $this->search_url, $this->user, $this->password);
-        $this->flash['success'] = _("Änderungen wurden erflolgreich übernommen");
+        $success = _("Änderungen wurden erflolgreich übernommen.");
+        $update = 0;
+        $this->series = $this->occlient->getAllSeries();
+        foreach ($this->series as $key => $serie) {
+            
+            if(OCRestClient::storeAllSeries($serie->seriesId[0])) {
+               $update+=1;
+            }
+
+        }
+        $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
+        
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
+        
         
     }
 }

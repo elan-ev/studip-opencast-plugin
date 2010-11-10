@@ -13,17 +13,20 @@ $infobox_content = array(array(
 
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
-<h1><?=_('Verwalten Sie hier die eingebundenen Vorlesungsaufzeichnungen:')?></h1>
+<h3><?=_('Verwaltung der eingebundenen Vorlesungsaufzeichnungen')?></h3>
+<? if (sizeof($series) == 0) : ?>
+    <?= MessageBox::info(_("Es sind bislang noch keine Series verfügbar. Bitte überprüfen Sie die globalen Opencast Matterhorn Einstellungen.")) ?>
+<? else : ?>
 <form action="<?= PluginEngine::getLink('opencast/course/edit/'.$course_id) ?>"
     method=post>
-    <p><?=_('Wählen Sie hier eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten')?>:</p>
+    <p class="steelgraudunkel" style="padding-left:1em;color:white;font-weight:bold;font-size:10pt;"><?=_('Wählen Sie rechts eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten')?>:</p>
     <div style="dislay:inline;vertical-align:middle">
         <div style="float:left;">
-            <p><?=_("Zugeordnete Series")?></p>
+            <p><?//=_("Zugeordnete Series")?></p>
             <ul style="list-style-type: none;margin:0;padding-left:50px">
-                <? if(is_array($cseries)) :?>
+                <? if(!empty($cseries)) :?>
                 <? foreach($cseries as $serie) :?>
-                    <li style="padding-top:5px">
+                   
                         <? $s = $occlient->getSeries($serie['series_id']); ?>
                         <?=mb_convert_encoding($s->metadataList->metadata[6]->value, 'ISO-8859-1', 'UTF-8')?>
                         <a href="<?=PluginEngine::getLink('opencast/course/remove_series/'.$course_id.'/'.$serie['series_id'])?>">
@@ -32,12 +35,14 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                     </li>
                 <? endforeach ?>
                 <? else : ?>
-                    <p><?=_("Bislang wurde noch keine Series zugeordnet.")?></p>
-                <? endif?>
+                    <li style="padding-top:5px">
+                        <p><?=_("Bislang wurde noch keine Series zugeordnet.")?></p>
+                    </li>
+                <? endif ?>
             </ul>
         </div>
-        <div style="text-align:center">
-            <p> <?=_("Series ohne Zuordnung")?></p>
+        <div style="float:center;text-align:center">
+            <p> <?//=_("Series ohne Zuordnung")?></p>
             <select multiple="multiple" name="series[]" size="10">
                               <? foreach($series as $serie) :?>
                                   <? $s = $occlient->getSeries($serie['series_id']); ?>
@@ -53,3 +58,4 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <a href="<?=PluginEngine::getLink('opencast/course/index')?>"><?= makebutton("abbrechen")?></a>
     </div>
 </form>
+<? endif;?>

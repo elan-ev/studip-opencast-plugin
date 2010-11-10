@@ -68,10 +68,17 @@
       
       
       static function storeAllSeries($series_id) {
-        $stmt = DBManager::get()->prepare("REPLACE INTO 
-                oc_series (series_id)
-                VALUES (?)");
-        
-        return $stmt->execute(array($series_id));
+
+        // 
+        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_series` WHERE series_id = ?");
+        $stmt->execute(array($series_id));
+        if(!$stmt->fetch()) {
+            $stmt = DBManager::get()->prepare("REPLACE INTO 
+                    oc_series (series_id)
+                    VALUES (?)");
+            return $stmt->execute(array($series_id));
+        }
+        else return false;
+
       } 
   }

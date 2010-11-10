@@ -32,12 +32,8 @@ class CourseController extends StudipController
             $this->occlient = new OCRestClient($this->gconf['series_url'], $this->gconf['user'], $this->gconf['password']);
             $this->searchclient = new OCRestClient($this->gconf['search_url'], $this->gconf['user'], $this->gconf['password']);
             $series = $this->occlient->getAllSeries();
-            // We got all series so preserve their ids
-            foreach ($series as $key => $serie) {
-                //OCRestClient::storeAllSeries($serie->seriesId[0]);
-            }
         } else {
-            throw new Exception(_("Bitte überprüfen Sie die Verknüpfung  zum Opencast Server."));
+            throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
     }
 
@@ -59,8 +55,6 @@ class CourseController extends StudipController
                  $series[] = $this->searchclient->getEpisode($serie['series_id']);
                  foreach($series as $episodes) {
                      foreach($episodes->result as $episode) {
-                         //echo '<pre>';
-                         //print_r($episode->mediapackage->title);
                            if(!in_array((string)$episode[id],$ids, true)) {
                            $ids[] = (string)$episode[id];
                            $this->episode_ids[] = array('id' => $episode[id], 
@@ -85,13 +79,15 @@ class CourseController extends StudipController
     
     function config_action()
     {
+        if (isset($this->flash['message'])) {
+            $this->message = $this->flash['message'];
+        }
         Navigation::activateItem('course/opencast/config');
         
         $this->course_id = $_SESSION['SessionSeminar'];
         
         $this->series = OCModel::getUnconnectedSeries();
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        
     }
     
     function edit_action($course_id)
@@ -100,12 +96,14 @@ class CourseController extends StudipController
         foreach( $series as $serie) {
             OCModel::setSeriesforCourse($course_id, $serie);
         }
+        $this->flash['message'] = _("Änderungen wurden erflolgreich übernommen");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
     function remove_series_action($course_id, $series_id)
     {
         OCModel::removeSeriesforCourse($course_id, $series_id);
+        $this->flash['message'] = _("Zuordnung wurde entfernt");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
 
