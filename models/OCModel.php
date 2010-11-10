@@ -27,7 +27,6 @@ class OCModel
         $stmt = DBManager::get()->prepare("REPLACE INTO 
                 oc_series (series_id, seminar_id)
                 VALUES (?, ?)");
-        //var_dump($stmt, $course_id, $series_id);die();
         return $stmt->execute(array($series_id, $course_id));
     }
     
