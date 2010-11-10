@@ -35,6 +35,12 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/tools/opencast', $main);
         }
+        
+         $style_attributes = array(
+            'rel'   => 'stylesheet',
+            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
+
+        PageLayout::addHeadElement('link',  array_merge($style_attributes, array())); 
     }    
 
     /**

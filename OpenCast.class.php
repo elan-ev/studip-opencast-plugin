@@ -41,7 +41,6 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         if ($this->isActivated($_SESSION['SessionSeminar'])) {
             Navigation::addItem('/course/opencast', $main);
         }
-
     }    
 
     /**

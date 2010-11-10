@@ -1,0 +1,21 @@
+.form_list {
+    margin:             1em;
+    list-style-type:    none;
+}
+
+.form_item {
+    margin-bottom:      4px;
+    padding:            3px;
+}
+
+.form_label {
+    float:              left;
+    margin-right:       5px;
+    text-align:         right;
+    width:              40%;
+}
+
+.form_submit {
+    text-align:         center;
+}
+
