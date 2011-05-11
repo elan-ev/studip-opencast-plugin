@@ -87,4 +87,16 @@ class OpenCast extends StudipPlugin implements StandardPlugin
     
     }
 
+
+    /**
+     * Return a warning message to be printed before deactivation of
+     * this plugin in the given context.
+     *
+     * @param $context   context range id
+     */
+    public function deactivationWarning($context = null) {
+        return _("Das Opencastplugin wurde deaktiviert.");
+    }
+
+
 }

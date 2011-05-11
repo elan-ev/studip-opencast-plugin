@@ -32,7 +32,7 @@ class AdminController extends StudipController
         $this->set_layout($layout);
         
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
-        Navigation::activateItem('/admin/tools/opencast/');
+        Navigation::activateItem('/admin/config/');
     }
 
     /**
