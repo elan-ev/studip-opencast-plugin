@@ -27,13 +27,13 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
             $main = new Navigation(_("Opencast Administration"));
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
     
-            $config = new Navigation('Globale Einstellungen');
-            $config->setURL(PluginEngine::getURL('opencast/admin/config'));
+           // $config = new Navigation('Globale Einstellungen');
+           // $config->setURL(PluginEngine::getURL('opencast/admin/config'));
     
-            $main->addSubNavigation('config', $config);
+            //$main->addSubNavigation('config', $config);
             
             Navigation::addItem('/start/opencast', $main);
-            //Navigation::addItem('/admin/tools/opencast', $main);
+            Navigation::addItem('/admin/config/opencast', $main);
         }
         
          $style_attributes = array(

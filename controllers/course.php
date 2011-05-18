@@ -28,10 +28,10 @@ class CourseController extends StudipController
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
-        if($this->gconf = OCRestClient::getConfig(1)) {
-            $this->occlient = new OCRestClient($this->gconf['series_url'], $this->gconf['user'], $this->gconf['password']);
-            $this->searchclient = new OCRestClient($this->gconf['search_url'], $this->gconf['user'], $this->gconf['password']);
-            $series = $this->occlient->getAllSeries();
+        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))) {
+            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['user'], $this->series_conf['password']);
+            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['user'], $this->search_conf['password']);
+            $series = $this->series_client->getAllSeries();
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
@@ -48,24 +48,25 @@ class CourseController extends StudipController
             $this->message = $this->flash['message'];
         }
         $course_id = $_SESSION['SessionSeminar'];
+
+        // lets get all episodes for the connected series
         if ($cseries = OCModel::getConnectedSeries($course_id)) {
             $this->episode_ids = array();
             $ids = array();
             foreach($cseries as $serie) {
-                 $series[] = $this->searchclient->getEpisode($serie['series_id']);
-                 foreach($series as $episodes) {
-                     foreach($episodes->result as $episode) {
-                           if(!in_array((string)$episode[id],$ids, true)) {
-                           $ids[] = (string)$episode[id];
-                           $this->episode_ids[] = array('id' => $episode[id], 
-                                                        'title' => $episode->mediapackage->title,
-                                                        'start' => $episode->mediapackage[start],
-                                                        'duration' => $episode->mediapackage[duration],
+                 $series[] = $this->search_client->getEpisode($serie['series_id']);
+                 $x = 'search-results';
+                 foreach($series[0]->$x->result as $episode) {
+                    if(is_object($episode->mediapackage)) {
+                        $ids[] = $episode->id;
+                        $this->episode_ids[] = array('id' => $episode->id,
+                                                        'title' => $episode->dcTitle,
+                                                        'start' => $episode->mediapackage->start,
+                                                        'duration' => $episode->mediapackage->duration,
                                                         'description' => ''
                                                    );
                            }
-                     }
-                 }
+                    }
             }
             
             if($active_id) {
@@ -73,7 +74,7 @@ class CourseController extends StudipController
             } else {
                 $this->active_id = $this->episode_ids[0][id];
             }
-            $this->embed = $this->gconf['search_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+            $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
         }
     }
     
@@ -85,9 +86,14 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/config');
         
         $this->course_id = $_SESSION['SessionSeminar'];
-        
+        //$this->series = $this->occlient->getAllSeries();
+        //var_dump($this->series);
         $this->series = OCModel::getUnconnectedSeries();
+       
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
+       
+        $this->rseries = array_diff($this->series, $this->cseries);
+
     }
     
     function edit_action($course_id)

@@ -27,8 +27,8 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                 <? if(!empty($cseries)) :?>
                 <? foreach($cseries as $serie) :?>
                    
-                        <? $s = $occlient->getSeries($serie['series_id']); ?>
-                        <?=mb_convert_encoding($s->metadataList->metadata[6]->value, 'ISO-8859-1', 'UTF-8')?>
+                        <? $s = $series_client->getSeries($serie['series_id']); ?>
+                        <?=$s->series->description?>
                         <a href="<?=PluginEngine::getLink('opencast/course/remove_series/'.$course_id.'/'.$serie['series_id'])?>">
                             <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen')))?>
                         </a>
@@ -43,14 +43,18 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         </div>
         <div style="float:center;text-align:center">
             <p> <?//=_("Series ohne Zuordnung")?></p>
+            <? if(!empty ($rseries)) :?>
             <select multiple="multiple" name="series[]" size="10">
-                              <? foreach($series as $serie) :?>
-                                  <? $s = $occlient->getSeries($serie['series_id']); ?>
-                                  <? if($s->metadataList->metadata[6]->value !=null) : ?>
-                                  <option value="<?=$serie['series_id']?>"><?=mb_convert_encoding($s->metadataList->metadata[6]->value, 'ISO-8859-1', 'UTF-8')?></option>
+        
+                              <? foreach($rseries as $serie) :?>
+                                 <?// var_dump($serie->series) ?>
+                                  <? $s = $series_client->getSeries($serie['series_id']); ?>
+                                  <? if($s->series->description !=null) : ?>
+                                  <option value="<?=$serie['series_id']?>"><?=$s->series->description?></option>
                                   <? endif ?>
                               <? endforeach ?>
             </select>
+            <? endif ?>
         </div>
     </div>
     <div style="padding-top:2em;clear:both" class="form_submit">

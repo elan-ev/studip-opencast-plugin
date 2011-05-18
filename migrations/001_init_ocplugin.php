@@ -4,21 +4,29 @@ class InitOcplugin extends Migration {
     function up() {
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_series` (
                   `series_id` VARCHAR( 64 ) NOT NULL ,
-                   `seminar_id` VARCHAR( 32 ) NULL ,
+                   `seminars` INT( 11 ) NULL ,
                    PRIMARY KEY ( `series_id` )
                    ) ENGINE = MYISAM;");
          DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_config` (
-                  `config_id` INT NOT NULL PRIMARY KEY ,
-                  `series_url` VARCHAR( 255 ) NOT NULL,
-                  `search_url` VARCHAR( 255 ) NOT NULL,
-                  `user` VARCHAR( 255 ) NOT NULL,
-                  `password` VARCHAR( 255 ) NOT NULL
+                  `service_type` ENUM( 'search', 'series', 'schedule' ) NOT NULL PRIMARY KEY,
+                  `service_url` VARCHAR( 255 ) NOT NULL,
+                  `service_user` VARCHAR( 255 ) NOT NULL,
+                  `service_password` VARCHAR( 255 ) NOT NULL
                   ) ENGINE = MYISAM;");
+
+        DBManager::get()->query("CREATE TABLE  `oc_seminar_series` (
+                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `series_id` VARCHAR( 32 ) NOT NULL ,
+                `visibility` ENUM(  'visible',  'invisible' )NOT NULL ,
+                `position` INT( 11 ) NULL,
+                PRIMARY KEY (  `seminar_id` ,  `series_id` )
+                ) ENGINE = MYISAM");
     }
     
     function down() {
         DBManager::get()->query("DROP TABLE oc_series");
         DBManager::get()->query("DROP TABLE oc_config");
+        DBManager::get()->query("DROP TABLE oc_seminar_series");
     }
     
 }

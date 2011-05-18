@@ -12,12 +12,10 @@
           
           // setting up a curl-handler
           $this->ochandler = curl_init();
-          
-          curl_setopt($this->ochandler, CURLOPT_USERPWD, $this->username.':'.$this->password);
-          curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST); 
-          curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array('X-Requested-Auth: Digest'));
-          curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, true);
-          
+          curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
+          curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+          curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
+          curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
           
       }
 
@@ -27,43 +25,45 @@
        */
       
       function getAllSeries() {
-          $rest_end_point = "/series/rest/all";
+       
+          $rest_end_point = "/series/all.json";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
           $response = curl_exec($this->ochandler);
-          
-          return simplexml_load_string($response);
+          return json_decode($response);
           
       }
       
       function getSeries($series_id) {
-          $rest_end_point = "/series/rest/series/";
-          curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id);
+          $rest_end_point = "/series/";
+          curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'.json');
           $response = curl_exec($this->ochandler);
           
-          return simplexml_load_string($response);
+          return json_decode($response);
       }
       
       function getEpisode($series_id) {
-          $rest_end_point = "/search/rest/episode?id=";
-          curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id);
+          $rest_end_point = "/search/series.json?id=";
+          curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'&episodes=true&series=true');
           $response = curl_exec($this->ochandler);
-          return simplexml_load_string($response);
+
+          return json_decode($response);
       }
       
       /*************************************************************************
        *  static functions
        */
-      function getConfig($id = '1') {
-          $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` WHERE config_id = ?");
+      function getConfig($service_type = 'search') {
+          $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` WHERE service_type = ?");
           
-          $stmt->execute(array($id));
+          $stmt->execute(array($service_type));
           return $stmt->fetch(); 
       }
       
-        function setConfig($config_id, $series_url, $search_url, $user, $password) {
-          $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (config_id, series_url, search_url, user, password) VALUES (?,?,?,?,?)");
+        function setConfig($service_type, $service_url, $service_user, $service_password) {
+
+          $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (service_type, service_url, service_user, service_password) VALUES (?,?,?,?)");
           
-          return $stmt->execute(array($config_id, $series_url, $search_url, $user, $password));
+          return $stmt->execute(array($service_type, $service_url, $service_user, $service_password));
       }
       
       

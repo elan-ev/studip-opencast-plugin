@@ -21,27 +21,40 @@
 ?>
 
 <h3>Globale Opencast Matterhorn Einstellungen</h3>
+<span>
+  <?=_("Tragen Sie hier die jeweilgen Pfade zu den Matterhorn REST-Endpoints ein.")?>
+</span>
+<form style="padding-top:25px;" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
+    <?= CSRFProtection::tokenTag() ?>
+    <fieldset>
+        <legend><?=_("Series Service")?></legend>
+        <label class="form_label" for="series_url"><?=_("Service-URL")?>:</label>
+        <input id="group_name" type="text" name="series_url" value="<?=$series_url?>" size="50">
+        <label class="form_label" for="series_user"><?=_("Nutzerkennung")?>:</label>
+        <input id="group_name" type="text" name="series_user" value="<?=$series_user?>" size="50">
+        <label class="form_label" for="series_password"><?=_("Passwort")?>:</label>
+        <input id="group_name" type="password" name="series_password" value="<?=$series_password?>" size="50">
+    </fieldset>
+    <fieldset>
+        <legend><?=_("Search Service")?></legend>
+        <label class="form_label" for="search_url"><?=_("Service-URL")?>:</label>
+        <input id="group_name" type="text" name="search_url" value="<?=$search_url?>" size="50">
+        <label class="form_label" for="search_user"><?=_("Nutzerkennung")?>:</label>
+        <input id="group_name" type="text" name="search_user" value="<?=$search_user?>" size="50">
+        <label class="form_label" for="search_password"><?=_("Passwort")?>:</label>
+        <input id="group_name" type="password" name="search_password" value="<?=$search_password?>" size="50">
+    </fieldset>
+    <fieldset>
+        <legend><?=_("Scheduling Service")?></legend>
+        <label class="form_label" for="scheduling_url"><?=_("Service-URL")?>:</label>
+        <input id="group_name" type="text" name="scheduling_url" value="<?=$scheduling_url?>" size="50">
+        <label class="form_label" for="scheduling_user"><?=_("Nutzerkennung")?>:</label>
+        <input id="group_name" type="text" name="scheduling_user" value="<?=$scheduling_user?>" size="50">
+        <label class="form_label" for="scheduling_password"><?=_("Passwort")?>:</label>
+        <input id="group_name" type="password" name="scheduling_password" value="<?=$scheduling_password?>" size="50">
+    </fieldset>
 
-<form action="<?= PluginEngine::getLink('opencast/admin/update_config/') ?>" method=post>
-    <ul class="form_list">
-        <li class="form_item">
-            <label class="form_label" for="series_url"><?=_("Series-Service URL")?>:</label>
-            <input id="group_name" type="text" name="series_url" value="<?=$series_url?>" size="50">
-        </li>
-        <li class="form_item">
-            <label class="form_label" for="search_url"><?=_("Search-Service URL")?>:</label>
-            <input id="group_name" type="text" name="search_url" value="<?=$search_url?>" size="50">
-        </li>
-        <li class="form_item">
-            <label class="form_label" for="group_name"><?=_("Nutzer")?>:</label>
-            <input id="group_name" type="text" name="user" value="<?=$user?>" size="50">
-        </li>
-        <li class="form_item">
-            <label class="form_label" for="group_name"><?=_("Passwort")?>:</label>
-            <input id="group_name" type="text" name="password" value="<?=$password?>" size="50">
-        </li>
-     </ul>
-     <input id="group_name" type="hidden" name="config_id" value="<?=$config_id?>">
+
      <div class="form_submit">
     <?= makebutton("uebernehmen","input") ?>
     <a href="<?=PluginEngine::getLink('opencast/admin/config/')?>"><?= makebutton("abbrechen")?></a>
