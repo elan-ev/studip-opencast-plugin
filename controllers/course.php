@@ -89,11 +89,12 @@ class CourseController extends StudipController
         //$this->series = $this->occlient->getAllSeries();
         //var_dump($this->series);
         $this->series = OCModel::getUnconnectedSeries();
-       
+
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-       
+
         $this->rseries = array_diff($this->series, $this->cseries);
 
+        //var_dump($this->series,$this->cseries,$this->rseries); die;
     }
     
     function edit_action($course_id)

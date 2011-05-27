@@ -12,7 +12,7 @@
 require_once 'app/controllers/authenticated_controller.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCRestClient.php';
-
+    
 class AdminController extends AuthenticatedController
 {
     /**
@@ -22,11 +22,24 @@ class AdminController extends AuthenticatedController
     {
         $this->flash = Trails_Flash::instance();
         
-        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))) {
+        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))
+                && ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin'))) {
             $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['user'], $this->series_conf['password']);
             $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['user'], $this->search_conf['password']);
+            $this->captureadmin_client = new OCRestClient($this->captureadmin_conf['service_url'], $this->captureadmin_conf['user'], $this->captureadmin_conf['password']);
+        
+            $update = 0;
+            $allseries = $this->search_client->getAllSeries();
+            foreach ($allseries->seriesList->series as $key => $serie) {
+                if(OCRestClient::storeAllSeries($serie->id)) {
+                   $update+=1;
+                }
+            }
+        
+            $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
+            
         } else {
-            throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
+            //throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
 
 
@@ -54,7 +67,7 @@ class AdminController extends AuthenticatedController
         foreach ($this->series as $key => $serie) {
             OCRestClient::storeAllSeries($serie->seriesId[0]);
         }
- 
+
     }
     
     function config_action()
@@ -62,7 +75,6 @@ class AdminController extends AuthenticatedController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
-        
 
 
         if( ($this->search_conf = OCRestClient::getConfig('search')) &&
@@ -84,6 +96,10 @@ class AdminController extends AuthenticatedController
             $this->scheduling_user = $this->schedule_conf['service_user'];
             $this->scheduling_password = $this->schedule_conf['service_password'];
 
+            $this->captureadmin_url = $this->captureadmin_conf['service_url'];
+            $this->captureadmin_user = $this->captureadmin_conf['service_user'];
+            $this->captureadmin_password = $this->captureadmin_conf['service_password'];
+
 
 
         } else {
@@ -102,6 +118,10 @@ class AdminController extends AuthenticatedController
             $this->scheduling_user = 'SCHEDULE_ENDPOINT_USER';
             $this->scheduling_password = '';
 
+            $this->captureadmin_url = 'CAPTUREADMIN_ENDPOINT_URL';
+            $this->captureadmin_user = 'CAPTUREADMIN_ENDPOINT_USER';
+            $this->scheduling_password = '';
+
 
 
 
@@ -110,64 +130,12 @@ class AdminController extends AuthenticatedController
             $this->user = 'matterhorn_system_account';
             $this->password = 'CHANGE_ME'; */
         }
-       
+
+        // After we've dsiplayed the server settings, we need to display the available resources and the corresponding capture agents
+        $this->resources = OCModel::getOCRessources();
+
     }
-    function update_config_action() {
-        
-    
-        
-        
-        
-        /*
-         * 
-         * get all the fancy config stuff
-         * 
-         * 
-         */
-        $this->series_url = Request::get('series_url');
-        $this->series_user = Request::get('series_user');
-        $this->series_password = Request::get('series_password');
-        OCRestClient::setConfig($this->config_id, $this->series_url, $this->search_url, $this->user, $this->password);
-
-
-        $this->search_url = Request::get('search_url');
-        $this->search_user = Request::get('search_user');
-        $this->search_password = Request::get('search_password');
-
-
-
-        $this->scheduling_url = Request::get('scheduling_url');
-        $this->scheduling_user = Request::get('scheduling_user');
-        $this->scheduling_password = Request::get('scheduling_password');
-
-        OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
-        OCRestClient::setConfig('series', $this->series_url, $this->serie_user, $this->series_password);
-        OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
-
-        $this->series_url = Request::get('series_url');
-        $this->search_url = Request::get('search_url');
-        $this->user = Request::get('user');
-        $this->password = Request::get('password');
-        
-        OCRestClient::setConfig($this->config_id, $this->series_url, $this->search_url, $this->user, $this->password);
-        $success = _("Änderungen wurden erflolgreich übernommen.");
-        
-        $update = 0;
-        $this->series = $this->occlient->getAllSeries();
-        foreach ($this->series as $key => $serie) {
-            
-            if(OCRestClient::storeAllSeries($serie->seriesId[0])) {
-               $update+=1;
-            }
-
-        }
-        
-        $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
-        
-        $this->redirect(PluginEngine::getLink('opencast/admin/config'));
-        
-        
-    }
+   
 
     function update_action()
     {
@@ -187,26 +155,17 @@ class AdminController extends AuthenticatedController
         $this->scheduling_user = Request::get('scheduling_user');
         $this->scheduling_password = Request::get('scheduling_password');
 
+        $this->captureadmin_url = Request::get('captureadmin_url');
+        $this->captureadmin_user = Request::get('captureadmin_user');
+        $this->captureadmin_password = Request::get('captureadmin_password');
+
+
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
+        OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
 
         $success = _("Änderungen wurden erflolgreich übernommen.");
-
-
-
-
-        $update = 0;
-        $this->series = $this->search_client->getAllSeries();
-        foreach ($this->series as $key => $serie) {
-           
-            if(OCRestClient::storeAllSeries($serie->series->id)) {
-               $update+=1;
-            }
-
-        }
-        
-        $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));

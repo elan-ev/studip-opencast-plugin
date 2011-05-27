@@ -28,6 +28,9 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                 <? foreach($cseries as $serie) :?>
                    
                         <? $s = $series_client->getSeries($serie['series_id']); ?>
+                        <?
+                            var_dump($cseries,$serie['series_id'], $s);
+                        ?>
                         <?=$s->series->description?>
                         <a href="<?=PluginEngine::getLink('opencast/course/remove_series/'.$course_id.'/'.$serie['series_id'])?>">
                             <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen')))?>
@@ -44,13 +47,18 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <div style="float:center;text-align:center">
             <p> <?//=_("Series ohne Zuordnung")?></p>
             <? if(!empty ($rseries)) :?>
+
+
             <select multiple="multiple" name="series[]" size="10">
         
                               <? foreach($rseries as $serie) :?>
-                                 <?// var_dump($serie->series) ?>
+                       
                                   <? $s = $series_client->getSeries($serie['series_id']); ?>
-                                  <? if($s->series->description !=null) : ?>
-                                  <option value="<?=$serie['series_id']?>"><?=$s->series->description?></option>
+
+                                  <? if($s->series->additionalMetadata !=null) : ?>
+                                    <option value="<?=$serie['series_id']?>">
+                                        <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
+                                    </option>
                                   <? endif ?>
                               <? endforeach ?>
             </select>

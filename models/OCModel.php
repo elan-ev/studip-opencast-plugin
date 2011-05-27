@@ -44,6 +44,27 @@ class OCModel
                 WHERE series_id =? AND seminar_id = ?");
         return $stmt->execute(array($series_id, $course_id));
     }
+
+    static function getOCRessources() {
+       $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects
+                WHERE resource_id = (SELECT resource_id FROM resources_objects_properties
+                WHERE property_id = (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
+                AND state = 'on')");
+
+       $stmt->execute();
+       $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+       return $resources;
+    }
+
+    static function getMetadata($metadata, $type = 'title') {
+        foreach($metadata->metadata as $data) {
+            if($data->key == $type) {
+                $return = $data->value;
+            }
+        }
+       
+        return $return;
+    }
     
 }
 ?>

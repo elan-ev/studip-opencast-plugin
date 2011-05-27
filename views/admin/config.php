@@ -53,7 +53,37 @@
         <label class="form_label" for="scheduling_password"><?=_("Passwort")?>:</label>
         <input id="group_name" type="password" name="scheduling_password" value="<?=$scheduling_password?>" size="50">
     </fieldset>
+    <fieldset>
+        <legend><?=_("Capture Admin Service")?></legend>
+        <label class="form_label" for="captureadmin_url"><?=_("Service-URL")?>:</label>
+        <input id="group_name" type="text" name="captureadmin_url" value="<?=$captureadmin_url?>" size="50">
+        <label class="form_label" for="captureadmin_user"><?=_("Nutzerkennung")?>:</label>
+        <input id="group_name" type="text" name="captureadmin_user" value="<?=$captureadmin_user?>" size="50">
+        <label class="form_label" for="captureadmin_password"><?=_("Passwort")?>:</label>
+        <input id="group_name" type="password" name="captureadmin_password" value="<?=$captureadmin_password?>" size="50">
+    </fieldset>
+    <fieldset>
+        <legend><?=_('Raumzuordnung')?></legend>
+        <div style="dislay:inline;vertical-align:middle">
+            <div style="float:left;width:50%;">
+                <p><?=_("Resourcen")?></p>
+                <?=var_dump($resources)?>
+                <ul>
+                <? foreach($resources as $resource) : ?>
+                    <li><?=$resource['name'] ?></li>
+                <? endforeach; ?>
+                </ul>
 
+
+
+            </div>
+            <div style="float:right;width:50%;">
+                <p> <?=_("Capture Agents")?></p>
+                test
+
+            </div>
+        </div>
+    </fieldset>
 
      <div class="form_submit">
     <?= makebutton("uebernehmen","input") ?>

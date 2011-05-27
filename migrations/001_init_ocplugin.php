@@ -8,7 +8,7 @@ class InitOcplugin extends Migration {
                    PRIMARY KEY ( `series_id` )
                    ) ENGINE = MYISAM;");
          DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_config` (
-                  `service_type` ENUM( 'search', 'series', 'schedule' ) NOT NULL PRIMARY KEY,
+                  `service_type` ENUM( 'search', 'series', 'schedule', `captureadmin` ) NOT NULL PRIMARY KEY,
                   `service_url` VARCHAR( 255 ) NOT NULL,
                   `service_user` VARCHAR( 255 ) NOT NULL,
                   `service_password` VARCHAR( 255 ) NOT NULL
@@ -21,6 +21,11 @@ class InitOcplugin extends Migration {
                 `position` INT( 11 ) NULL,
                 PRIMARY KEY (  `seminar_id` ,  `series_id` )
                 ) ENGINE = MYISAM");
+
+         DBManager::get()->query("INSERT INTO `resources_properties`
+                (`property_id`, `name`, `description`, `type`, `options`, `system`)
+                VALUES (md5(".uniqid()."), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+
     }
     
     function down() {
