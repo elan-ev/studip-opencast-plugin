@@ -16,7 +16,7 @@ class InitOcplugin extends Migration {
 
         DBManager::get()->query("CREATE TABLE  `oc_seminar_series` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,
-                `series_id` VARCHAR( 32 ) NOT NULL ,
+                `series_id` VARCHAR( 64 ) NOT NULL ,
                 `visibility` ENUM(  'visible',  'invisible' )NOT NULL ,
                 `position` INT( 11 ) NULL,
                 PRIMARY KEY (  `seminar_id` ,  `series_id` )

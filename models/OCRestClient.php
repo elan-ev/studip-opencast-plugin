@@ -37,7 +37,6 @@
           $rest_end_point = "/series/";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'.json');
           $response = curl_exec($this->ochandler);
-          
           return json_decode($response);
       }
       

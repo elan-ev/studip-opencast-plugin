@@ -21,15 +21,17 @@ class AdminController extends AuthenticatedController
     function before_filter(&$action, &$args)
     {
         $this->flash = Trails_Flash::instance();
+
         
         if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))
                 && ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin'))) {
-            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['user'], $this->series_conf['password']);
-            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['user'], $this->search_conf['password']);
-            $this->captureadmin_client = new OCRestClient($this->captureadmin_conf['service_url'], $this->captureadmin_conf['user'], $this->captureadmin_conf['password']);
+            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
+            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
+            $this->captureadmin_client = new OCRestClient($this->captureadmin_conf['service_url'], $this->captureadmin_conf['service_user'], $this->captureadmin_conf['service_password']);
         
             $update = 0;
             $allseries = $this->search_client->getAllSeries();
+            var_dump($this->search_client, $allseries);
             foreach ($allseries->seriesList->series as $key => $serie) {
                 if(OCRestClient::storeAllSeries($serie->id)) {
                    $update+=1;
@@ -41,7 +43,7 @@ class AdminController extends AuthenticatedController
         } else {
             //throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
-
+        
 
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
@@ -79,7 +81,8 @@ class AdminController extends AuthenticatedController
 
         if( ($this->search_conf = OCRestClient::getConfig('search')) &&
             ($this->series_conf = OCRestClient::getConfig('series')) &&
-            ($this->schedule_conf = OCRestClient::getConfig('schedule')) ) {
+            ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
+            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin'))) {
 
             $this->series_url = $this->series_conf['service_url'];
             $this->series_user = $this->series_conf['service_user'];
@@ -158,8 +161,7 @@ class AdminController extends AuthenticatedController
         $this->captureadmin_url = Request::get('captureadmin_url');
         $this->captureadmin_user = Request::get('captureadmin_user');
         $this->captureadmin_password = Request::get('captureadmin_password');
-
-
+        
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);

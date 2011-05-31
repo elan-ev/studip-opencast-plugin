@@ -67,7 +67,7 @@
         <div style="dislay:inline;vertical-align:middle">
             <div style="float:left;width:50%;">
                 <p><?=_("Resourcen")?></p>
-                <?=var_dump($resources)?>
+                <?//=var_dump($resources)?>
                 <ul>
                 <? foreach($resources as $resource) : ?>
                     <li><?=$resource['name'] ?></li>

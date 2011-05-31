@@ -26,12 +26,9 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
             <ul style="list-style-type: none;margin:0;padding-left:50px">
                 <? if(!empty($cseries)) :?>
                 <? foreach($cseries as $serie) :?>
-                   
+                        
                         <? $s = $series_client->getSeries($serie['series_id']); ?>
-                        <?
-                            var_dump($cseries,$serie['series_id'], $s);
-                        ?>
-                        <?=$s->series->description?>
+                        <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
                         <a href="<?=PluginEngine::getLink('opencast/course/remove_series/'.$course_id.'/'.$serie['series_id'])?>">
                             <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen')))?>
                         </a>
@@ -46,21 +43,18 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         </div>
         <div style="float:center;text-align:center">
             <p> <?//=_("Series ohne Zuordnung")?></p>
-            <? if(!empty ($rseries)) :?>
+            <? if(!empty ($rseries) || true) :?>
 
 
             <select multiple="multiple" name="series[]" size="10">
-        
-                              <? foreach($rseries as $serie) :?>
-                       
-                                  <? $s = $series_client->getSeries($serie['series_id']); ?>
-
-                                  <? if($s->series->additionalMetadata !=null) : ?>
-                                    <option value="<?=$serie['series_id']?>">
-                                        <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
-                                    </option>
-                                  <? endif ?>
-                              <? endforeach ?>
+                <? foreach($rseries as $serie) :?>
+                    <? $s = $series_client->getSeries($serie['series_id']); ?>
+                    <? if($s->series->additionalMetadata !=null) : ?>
+                        <option value="<?=$serie['series_id']?>">
+                            <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
+                        </option>
+                    <? endif ?>
+                <? endforeach ?>
             </select>
             <? endif ?>
         </div>

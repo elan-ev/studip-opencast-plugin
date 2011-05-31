@@ -29,9 +29,8 @@ class CourseController extends StudipController
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
         if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))) {
-            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['user'], $this->series_conf['password']);
-            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['user'], $this->search_conf['password']);
-            $series = $this->series_client->getAllSeries();
+            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
+            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
@@ -87,7 +86,7 @@ class CourseController extends StudipController
         
         $this->course_id = $_SESSION['SessionSeminar'];
         //$this->series = $this->occlient->getAllSeries();
-        //var_dump($this->series);
+        
         $this->series = OCModel::getUnconnectedSeries();
 
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
