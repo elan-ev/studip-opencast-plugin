@@ -22,27 +22,50 @@ class AdminController extends AuthenticatedController
     {
         $this->flash = Trails_Flash::instance();
 
-        
-        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))
-                && ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin'))) {
-            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
-            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
-            $this->captureadmin_client = new OCRestClient($this->captureadmin_conf['service_url'], $this->captureadmin_conf['service_user'], $this->captureadmin_conf['service_password']);
-        
-            $update = 0;
-            $allseries = $this->search_client->getAllSeries();
-            var_dump($this->search_client, $allseries);
-            foreach ($allseries->seriesList->series as $key => $serie) {
-                if(OCRestClient::storeAllSeries($serie->id)) {
-                   $update+=1;
+
+
+        // let's init the services...
+        $this->search_conf = OCRestClient::getConfig('search');
+        if(isset ($this->search_conf)) {
+            if(!fsockopen($this->search_conf['service_url'])) {
+                //throw new Exception(_(""))
+            } else {
+                $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
+                $update = 0;
+                if($allseries = $this->search_client->getAllSeries()) {
+                    foreach ($allseries->seriesList->series as $key => $serie) {
+                        if(OCRestClient::storeAllSeries($serie->id)) {
+                            $update+=1;
+                        }
+                    }
+                     $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
+                }
+                else {
+                    $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
                 }
             }
-        
-            $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
-            
-        } else {
-            //throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
+
+        $this->series_conf = OCRestClient::getConfig('series');
+
+        if(isset ($this->series_conf)) {
+            if(!fsockopen($this->series_conf['service_url'].'/series')) {
+                $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Series Service");
+            } else {
+                 $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
+            }
+        }
+
+        $this->captureadmin_conf = OCRestClient::getConfig('captureadmin');
+        if(isset ($this->series_conf)) {
+            if(!fsockopen($this->series_conf['service_url'].'/capture-admin')) {
+                $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Capture-Admin Service");
+            } else {
+                $this->captureadmin_client = new OCRestClient($this->captureadmin_conf['service_url'], $this->captureadmin_conf['service_user'], $this->captureadmin_conf['service_password']);
+            }
+        }
+
+
         
 
         // set default layout

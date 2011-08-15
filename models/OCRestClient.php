@@ -16,7 +16,10 @@
           curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
           curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
           curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
-          
+
+
+
+
       }
 
       /**
@@ -29,23 +32,37 @@
           $rest_end_point = "/series/all.json";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
           $response = curl_exec($this->ochandler);
-          return json_decode($response);
-          
+
+          $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+          if ($httpCode == 404){
+              return false;
+          } else {
+               return json_decode($response);
+          }
       }
       
       function getSeries($series_id) {
           $rest_end_point = "/series/";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'.json');
           $response = curl_exec($this->ochandler);
-          return json_decode($response);
+          $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+          if ($httpCode == 404){
+              return false;
+          } else {
+               return json_decode($response);
+          }
       }
       
       function getEpisode($series_id) {
           $rest_end_point = "/search/series.json?id=";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'&episodes=true&series=true');
           $response = curl_exec($this->ochandler);
-
-          return json_decode($response);
+          $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+          if ($httpCode == 404){
+              return false;
+          } else {
+               return json_decode($response);
+          }
       }
       
       /*************************************************************************
