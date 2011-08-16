@@ -72,8 +72,7 @@ class AdminController extends AuthenticatedController
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
         
-        $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
-        Navigation::activateItem('/admin/config/opencast');
+       
     }
 
     /**
@@ -87,16 +86,21 @@ class AdminController extends AuthenticatedController
         }
         
         
-        $this->series = $this->occlient->getAllSeries();
+       /* $this->series = $this->occlient->getAllSeries();
         // We got all series so preserve their ids
         foreach ($this->series as $key => $serie) {
             OCRestClient::storeAllSeries($serie->seriesId[0]);
-        }
+        } */
 
     }
     
     function config_action()
     {
+
+        $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
+        Navigation::activateItem('/admin/config/oc-config');
+
+
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
@@ -194,6 +198,13 @@ class AdminController extends AuthenticatedController
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
+    }
+
+    function resources_action()
+    {
+        $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
+        Navigation::activateItem('/admin/config/oc-resources');
+        
     }
 }
 ?>

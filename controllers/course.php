@@ -53,19 +53,23 @@ class CourseController extends StudipController
             $this->episode_ids = array();
             $ids = array();
             foreach($cseries as $serie) {
-                 $series[] = $this->search_client->getEpisode($serie['series_id']);
-                 $x = 'search-results';
-                 foreach($series[0]->$x->result as $episode) {
-                    if(is_object($episode->mediapackage)) {
-                        $ids[] = $episode->id;
-                        $this->episode_ids[] = array('id' => $episode->id,
-                                                        'title' => $episode->dcTitle,
-                                                        'start' => $episode->mediapackage->start,
-                                                        'duration' => $episode->mediapackage->duration,
-                                                        'description' => ''
-                                                   );
-                           }
-                    }
+                 if ($series[] = $this->search_client->getEpisode($serie['series_id'])){
+                     $x = 'search-results';
+                     foreach($series[0]->$x->result as $episode) {
+                        if(is_object($episode->mediapackage)) {
+                            $ids[] = $episode->id;
+                            $this->episode_ids[] = array('id' => $episode->id,
+                                                            'title' => $episode->dcTitle,
+                                                            'start' => $episode->mediapackage->start,
+                                                            'duration' => $episode->mediapackage->duration,
+                                                            'description' => ''
+                                                       );
+                            }
+                     }
+
+                 }  else {
+                    $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Series Service");
+                 }
             }
             
             if($active_id) {

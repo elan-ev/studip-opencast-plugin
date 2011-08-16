@@ -25,15 +25,20 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
         if($perm->have_perm('admin')) {
             //.. now the subnavi
             $main = new Navigation(_("Opencast Administration"));
+            // TODO think about an index page.. for the moment the config page is in charge..
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
     
-           // $config = new Navigation('Globale Einstellungen');
-           // $config->setURL(PluginEngine::getURL('opencast/admin/config'));
-    
-            //$main->addSubNavigation('config', $config);
+            $config = new Navigation('OC Einstellungen');
+            $config->setURL(PluginEngine::getURL('opencast/admin/config'));
+            $main->addSubNavigation('oc-config', $config);
+
+            $resources = new Navigation('OC Ressourcen');
+            $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
+            $main->addSubNavigation('oc-resources', $resources);
             
             Navigation::addItem('/start/opencast', $main);
-            Navigation::addItem('/admin/config/opencast', $main);
+            Navigation::addItem('/admin/config/oc-config', $config);
+            Navigation::addItem('/admin/config/oc-resources', $resources);
         }
         
          $style_attributes = array(
