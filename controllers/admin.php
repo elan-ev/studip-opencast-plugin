@@ -207,6 +207,14 @@ class AdminController extends AuthenticatedController
         Navigation::activateItem('/admin/config/oc-resources');
         $this->resources = OCModel::getOCRessources();
         $this->agents = $this->captureadmin_client->getAllCaptureAgents();
+        /**
+         * TODO (guide for an update_resources_action...):
+         *  1st query for new capture agents
+         *  2nd compare list with existing agents add new ones...
+         *  3rd identify unconnected ca
+         *  4th display agents and resources...
+         *
+         */
 
     }
 }
