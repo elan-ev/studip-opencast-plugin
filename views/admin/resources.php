@@ -27,11 +27,13 @@ OC.initAdmin();
 
 
 <? foreach ($resources as $resource) :?>
-    <div>
-        <span class="topic"> <?= $resource['name'] ?> </span>
-        <div>
+    <div class="resources">
+        <div class="topic resource"> <?= $resource['name'] ?> </div>
+        <div class="resource rcontent">
             <select>
-                <option>Capture Agent 1</option>
+                <? foreach ($agents as $agent) : ?>
+                <option> <?= $agent->agent->name ?> </option>
+                <? endforeach; ?>
             </select>
         </div>
     </div>
@@ -40,6 +42,3 @@ OC.initAdmin();
 
 
 
-
-
-<?// var_dump($resources) ?>

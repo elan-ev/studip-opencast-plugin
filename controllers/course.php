@@ -31,6 +31,8 @@ class CourseController extends StudipController
         if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))) {
             $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
             $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
+        } elseif (!$this->search_client->getAllSeries()) {
+             $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
@@ -49,7 +51,7 @@ class CourseController extends StudipController
         $course_id = $_SESSION['SessionSeminar'];
 
         // lets get all episodes for the connected series
-        if ($cseries = OCModel::getConnectedSeries($course_id)) {
+        if ($cseries = OCModel::getConnectedSeries($course_id) && !isset($this->flash['error'])) {
             $this->episode_ids = array();
             $ids = array();
             foreach($cseries as $serie) {
@@ -83,6 +85,7 @@ class CourseController extends StudipController
     
     function config_action()
     {
+        require_once 'lib/raumzeit/raumzeit_functions.inc.php';
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
@@ -90,12 +93,22 @@ class CourseController extends StudipController
         
         $this->course_id = $_SESSION['SessionSeminar'];
         //$this->series = $this->occlient->getAllSeries();
-        
         $this->series = OCModel::getUnconnectedSeries();
 
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
 
         $this->rseries = array_diff($this->series, $this->cseries);
+
+
+        // let's fiddle around with the seminar and hava look
+
+        $sem = new Seminar($this->course_id);
+        $this->dates =  $sem->getUndecoratedData();
+
+        $this->termine = getAllSortedSingleDates($sem);
+
+        $this->issues =  $sem->getIssues();
+
 
         //var_dump($this->series,$this->cseries,$this->rseries); die;
     }

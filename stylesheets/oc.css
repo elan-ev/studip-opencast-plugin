@@ -20,3 +20,19 @@
     text-align:         center;
 }
 
+/* resources */
+
+.resources {
+    padding-left: 35%;
+    text-align: center;
+}
+
+.resource {
+    width: 50%;
+    
+}
+
+.rcontent{
+    padding-bottom: 5px;
+}
+

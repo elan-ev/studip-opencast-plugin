@@ -64,6 +64,18 @@
                return json_decode($response);
           }
       }
+
+      function getAllCaptureAgents() {
+          $rest_end_point = "/capture-admin/agents.json";
+          curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
+          $response = curl_exec($this->ochandler);
+          $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+          if ($httpCode == 404){
+              return false;
+          } else {
+               return json_decode($response);
+          }
+      }
       
       /*************************************************************************
        *  static functions

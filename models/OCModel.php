@@ -46,10 +46,10 @@ class OCModel
     }
 
     static function getOCRessources() {
-       $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects
-                WHERE resource_id = (SELECT resource_id FROM resources_objects_properties
-                WHERE property_id = (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
-                AND state = 'on')");
+       $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
+                LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
+                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
+                AND rop.state = 'on'");
 
        $stmt->execute();
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);

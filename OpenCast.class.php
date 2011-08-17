@@ -25,6 +25,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
 
         //.. now the subnavi
         $main = new Navigation("OpenCast");
+        $main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
 
 
@@ -41,6 +42,16 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         if ($this->isActivated($_SESSION['SessionSeminar'])) {
             Navigation::addItem('/course/opencast', $main);
         }
+
+
+        $style_attributes = array(
+            'rel'   => 'stylesheet',
+            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
+         PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
+
+         $script_attributes = array(
+            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');
+         PageLayout::addHeadElement('script', $script_attributes, '');
     }    
 
     /**
