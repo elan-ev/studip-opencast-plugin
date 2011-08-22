@@ -22,7 +22,7 @@ OC.initAdmin();
     <div class="oc_schedule">
         <h4>Ablaufplan</h4>
         <p>Erst feststellen ob ein Raum mit CA da ist und dann den Ablaufplan posten mit Checkboxes zum Schedulen...</p>
-        <table>
+        <table class="default">
             <tr>
                 <th>Termin</th>
                 <th>Titel</th>
@@ -64,7 +64,7 @@ OC.initAdmin();
                          */
                     ?>
                     <? else : ?>
-                        <?= _("Es wurde bislang kein Raum gebucht") ?>
+                        <?= Assets::img('icons/16/red/exclaim-circle.png', array('title' =>  _("Es wurde bislang kein Raum gebucht"))) ?>
                     <? endif; ?>
 
 
