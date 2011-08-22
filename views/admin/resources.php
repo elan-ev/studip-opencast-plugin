@@ -30,11 +30,19 @@ OC.initAdmin();
     <div class="resources">
         <div class="topic resource"> <?= $resource['name'] ?> </div>
         <div class="resource rcontent">
-            <select>
-                <? foreach ($agents as $agent) : ?>
-                <option> <?= $agent->agent->name ?> </option>
-                <? endforeach; ?>
-            </select>
+            <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>" method=post>
+                <?= CSRFProtection::tokenTag() ?>
+                <input type="hidden" name="action" value="add"/>
+                <select name="<?=$resource['resource_id']?>">
+                    <? foreach ($agents as $agent) : ?>
+                    <option value="<?= $agent->agent->name ?>"> <?= $agent->agent->name ?> </option>
+                    <? endforeach; ?>
+                </select>
+                <div class="form_submit">
+                    <?= makebutton("uebernehmen","input") ?>
+                    <a href="<?=PluginEngine::getLink('opencast/admin/resources/')?>"><?= makebutton("abbrechen")?></a>
+                </div>
+            </form>
         </div>
     </div>
 

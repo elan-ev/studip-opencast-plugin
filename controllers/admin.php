@@ -100,6 +100,7 @@ class AdminController extends AuthenticatedController
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-config');
 
+      
 
 
         if (isset($this->flash['message'])) {
@@ -110,8 +111,9 @@ class AdminController extends AuthenticatedController
         if( ($this->search_conf = OCRestClient::getConfig('search')) &&
             ($this->series_conf = OCRestClient::getConfig('series')) &&
             ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
-            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin'))) {
+            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) || true) {
 
+            
             $this->series_url = $this->series_conf['service_url'];
             $this->series_user = $this->series_conf['service_user'];
             $this->series_password = $this->series_conf['service_password'];
@@ -174,14 +176,11 @@ class AdminController extends AuthenticatedController
         $this->series_user = Request::get('series_user');
         $this->series_password = Request::get('series_password');
 
-
-
         $this->search_url = Request::get('search_url');
         $this->search_user = Request::get('search_user');
         $this->search_password = Request::get('search_password');
 
-
-
+        
         $this->scheduling_url = Request::get('scheduling_url');
         $this->scheduling_user = Request::get('scheduling_user');
         $this->scheduling_password = Request::get('scheduling_password');
@@ -205,8 +204,11 @@ class AdminController extends AuthenticatedController
     {
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-resources');
+
         $this->resources = OCModel::getOCRessources();
         $this->agents = $this->captureadmin_client->getAllCaptureAgents();
+
+
         /**
          * TODO (guide for an update_resources_action...):
          *  1st query for new capture agents
@@ -216,6 +218,23 @@ class AdminController extends AuthenticatedController
          *
          */
 
+    }
+
+
+    function update_resource_action()
+    {
+               
+        $this->resources = OCModel::getOCRessources();
+
+        foreach($this->resources as $resource) {
+            if(($candidate_ca = Request::get($resource['resource_id'])) &&  Request::get('action') == 'add'){
+                OCModel::setCAforResource($resource['resource_id'], $candidate_ca);
+            }
+        }
+  
+
+        $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
+        
     }
 }
 ?>
