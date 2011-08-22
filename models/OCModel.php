@@ -65,6 +65,15 @@ class OCModel
        
         return $return;
     }
+
+    static function getDates($seminar_id) {
+        $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ?");
+
+       $stmt->execute(array($seminar_id));
+       $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+       return $dates;
+    }
+
     
 }
 ?>

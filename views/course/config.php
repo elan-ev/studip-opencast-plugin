@@ -22,14 +22,59 @@ OC.initAdmin();
     <div class="oc_schedule">
         <h4>Ablaufplan</h4>
         <p>Erst feststellen ob ein Raum mit CA da ist und dann den Ablaufplan posten mit Checkboxes zum Schedulen...</p>
-        <?
-        /*
-            foreach($dates['regular'] as $reg_date) {
-                var_dump($reg_date);
-            }
-        */
-       //var_dump($termine);
-         ?>
+        <table>
+            <tr>
+                <th>Termin</th>
+                <th>Titel</th>
+                <th>Aktionen</th>
+            </tr>
+            
+            <? foreach($dates as $d) : ?>
+                <tr>
+                <? $date = new SingleDate($d['termin_id']); ?>
+                <td> <?=$date->getDatesHTML()?> </td>
+                <? $issues = $date->getIssueIDs(); ?>
+                <? if(is_array($issues)) : ?>
+                    <? foreach($issues as $is) : ?>
+                        <? $issue = new Issue(array('issue_id' => $is));?>
+                        <td> <?= my_substr($issue->getTitle(), 0 ,80 ); ?></td>
+                    <? endforeach; ?>
+                <? else: ?>
+                        <td> <?=_("Kein Titel eingetragen")?></td>
+                <? endif; ?>
+                <td>
+                    <? $resource = $date->getResourceID(); ?>
+                    <? if(isset($resource)) :?>
+                        <?= Assets::img('icons/16/blue/date.png', array('title' => _("Aufzeichnung planen"))) ?>
+                    <?
+                        /*
+                         * Hier dann die Aufzeichnung Planen...
+                         * -> Wenn Resoucre OC Ready ist, dann planen
+                         * -> sonst hinweisen...
+                         */
+                    ?>
+                        <?// $date->getRoom() ?>
+                    <? elseif(false) : ?>
+                        <?= Assets::img('icons/16/blue/video.png') ?>
+                    <?
+                        /*  Wenn es eine Aufzeichnung gibt, optionen zum Unsichtbar machen anbieten
+                         *  Wenn keine Aufzeichnung aus OC gibt dann ersma nix machen
+                         *
+                         *
+                         */
+                    ?>
+                    <? else : ?>
+                        <?= _("Es wurde bislang kein Raum gebucht") ?>
+                    <? endif; ?>
+
+
+                </td>
+                </tr>
+            <? endforeach; ?>
+            
+
+
+        </table>
     </div>
 
 

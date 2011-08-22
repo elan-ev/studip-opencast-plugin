@@ -103,6 +103,22 @@ class CourseController extends StudipController
         // let's fiddle around with the seminar and hava look
 
         $sem = new Seminar($this->course_id);
+
+        /*
+         *  termin id aus termin tabelle ziehen
+         *  SingleDate($termin_id);
+         *
+         *
+         */
+
+         $this->dates  = OCModel::getDates($this->course_id);
+
+         
+
+
+
+
+        /*
         $this->dates =  $sem->getUndecoratedData();
 
         $this->termine = getAllSortedSingleDates($sem);
@@ -111,6 +127,8 @@ class CourseController extends StudipController
 
 
         //var_dump($this->series,$this->cseries,$this->rseries); die;
+         
+         */
     }
     
     function edit_action($course_id)
