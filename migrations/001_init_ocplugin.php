@@ -28,9 +28,20 @@ class InitOcplugin extends Migration {
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
                 ) ENGINE = MYISAM");
 
-         DBManager::get()->query("INSERT INTO `resources_properties`
+        DBManager::get()->query("INSERT INTO `resources_properties`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
                 VALUES (md5(".uniqid()."), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+
+
+        DBManager::get()->query("CREATE TABLE  `oc_scheduled_recordings` (
+                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `series_id` VARCHAR( 64 ) NOT NULL ,
+                `date_id` VARCHAR( 32 ) NOT NULL ,
+                `resource_id` VARCHAR( 32 ) NOT NULL ,
+                `capture_agent` VARCHAR( 64 ) NOT NULL ,
+                `status` ENUM( 'scheduled', 'recorded' ) NOT NULL ,
+                PRIMARY KEY ( `seminar_id` , `series_id` , `date_id` , `resource_id` , `capture_agent` )
+                ) ENGINE = MYISAM ");
 
 
 

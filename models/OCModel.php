@@ -95,6 +95,74 @@ class OCModel
        return $dates;
     }
 
+    /**
+     * checkResource - checks whether a resource has a CaptureAgent
+     *
+     * @param string $resource_id
+     * @return boolean hasCA
+     * 
+     */
+
+    static function checkResource($resource_id) {
+       
+       $stmt = DBManager::get()->prepare("SELECT * FROM `oc_resources` WHERE `resource_id` = ?");
+
+       $stmt->execute(array($resource_id));
+       if($ca = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            return $ca;
+       } else {
+            return false;
+       }
+       
+    }
+
+    /**
+     * scheduleRecording - schedules a recording for a given date and resource within a course
+     * 
+     * @param string $course_id
+     * @param string $resource_id
+     * @param string $date_id
+     * @return boolean success
+     */
+
+    static function scheduleRecording($course_id, $resource_id, $date_id) {
+
+        /* TODO
+         *  - call Webservice and schedule that recording...
+         */
+
+        // 1st: retrieve series_id
+        $series = self::getConnectedSeries($course_id);
+        $serie = $series[0];
+
+        $cas = self::checkResource($resource_id);
+        $ca = $cas[0];
+
+        $stmt = DBManager::get()->prepare("REPLACE INTO
+                oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, status)
+                VALUES (?, ?, ?, ?, ?,? )");
+        $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], 'scheduled'));
+
+            
+       
+
+        return $success;
+    }
+
+
+    static function checkScheduled($course_id, $resource_id, $date_id) {
+
+        $stmt = DBManager::get()->prepare("SELECT * FROM
+                oc_scheduled_recordings 
+                WHERE seminar_id = ?
+                    AND date_id = ?
+                    AND resource_id = ?
+                    AND status = ?");
+        $stmt->execute(array($course_id, $date_id ,  $resource_id,'scheduled'));
+        $success = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $success;
+    }
+
     
 }
 ?>

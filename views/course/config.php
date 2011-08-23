@@ -44,14 +44,18 @@ OC.initAdmin();
                 <? endif; ?>
                 <td>
                     <? $resource = $date->getResourceID(); ?>
-                    <? if(isset($resource)) :?>
-                        <?= Assets::img('icons/16/blue/date.png', array('title' => _("Aufzeichnung planen"))) ?>
+                    <? if(isset($resource) && OCModel::checkResource($resource)) :?>
+                        <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
+                            <a href="<?=PluginEngine::getLink('opencast/course/config/' ) ?>">
+                                <?= Assets::img('icons/16/blue/video.png', array('title' => _("Aufzeichnung ist bereits geplant."))) ?>
+                            </a>
+                        <?  else : ?>
+                            <a href="<?=PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id ) ?>">
+                                <?= Assets::img('icons/16/blue/date.png', array('title' => _("Aufzeichnung planen"))) ?>
+                            </a>
+                        <? endif; ?>
                     <?
-                        /*
-                         * Hier dann die Aufzeichnung Planen...
-                         * -> Wenn Resoucre OC Ready ist, dann planen
-                         * -> sonst hinweisen...
-                         */
+                        
                     ?>
                         <?// $date->getRoom() ?>
                     <? elseif(false) : ?>

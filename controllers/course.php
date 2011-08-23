@@ -48,10 +48,10 @@ class CourseController extends StudipController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
-        $course_id = $_SESSION['SessionSeminar'];
+        $this->course_id = $_SESSION['SessionSeminar'];
 
         // lets get all episodes for the connected series
-        if ($cseries = OCModel::getConnectedSeries($course_id) && !isset($this->flash['error'])) {
+        if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
             $this->episode_ids = array();
             $ids = array();
             foreach($cseries as $serie) {
@@ -112,23 +112,6 @@ class CourseController extends StudipController
          */
 
          $this->dates  = OCModel::getDates($this->course_id);
-
-         
-
-
-
-
-        /*
-        $this->dates =  $sem->getUndecoratedData();
-
-        $this->termine = getAllSortedSingleDates($sem);
-
-        $this->issues =  $sem->getIssues();
-
-
-        //var_dump($this->series,$this->cseries,$this->rseries); die;
-         
-         */
     }
     
     function edit_action($course_id)
@@ -145,6 +128,20 @@ class CourseController extends StudipController
     {
         OCModel::removeSeriesforCourse($course_id, $series_id);
         $this->flash['message'] = _("Zuordnung wurde entfernt");
+        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+    }
+
+    function schedule_action($resource_id, $termin_id)
+    {
+        $this->course_id = Request::get('cid');
+
+        if( OCModel::scheduleRecording($this->course_id, $resource_id, $termin_id)) {
+            $this->flash['message'] = _("Aufzeichnung wurde geplant.");
+        } else {
+            $this->flash['error'] = _("Aufzeichnung konnte nicht geplant werden.");
+        }
+
+        
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
 
