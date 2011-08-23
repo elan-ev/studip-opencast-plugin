@@ -24,7 +24,7 @@ class InitOcplugin extends Migration {
         
         DBManager::get()->query("CREATE TABLE  `oc_resources` (
                 `resource_id` VARCHAR( 32 ) NOT NULL ,
-                `captue_agent` VARCHAR( 64 ) NOT NULL ,
+                `capture_agent` VARCHAR( 64 ) NOT NULL ,
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
                 ) ENGINE = MYISAM");
 
