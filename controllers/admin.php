@@ -33,9 +33,12 @@ class AdminController extends AuthenticatedController
                 $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
                 $update = 0;
                 if($allseries = $this->search_client->getAllSeries()) {
-                    foreach ($allseries->seriesList->series as $key => $serie) {
-                        if(OCRestClient::storeAllSeries($serie->id)) {
-                            $update+=1;
+                    $tmp_series = $allseries->seriesList->series;
+                    if(is_array($tmp_series)){
+                        foreach ($tmp_series as $key => $serie) {
+                            if(OCRestClient::storeAllSeries($serie->id)) {
+                                $update+=1;
+                            }
                         }
                     }
                      $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;

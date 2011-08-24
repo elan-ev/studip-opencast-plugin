@@ -66,14 +66,22 @@
       }
 
       function getAllCaptureAgents() {
-          $rest_end_point = "/capture-admin/agents.json";
+          // URL for Matterhorn 1.1
+          $rest_end_point = "/capture-admin/agents";
+          // URL for Matterhorn 1.2
+          //$rest_end_point = "/capture-admin/agents.json";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
           $response = curl_exec($this->ochandler);
           $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
           if ($httpCode == 404){
               return false;
           } else {
-               return json_decode($response);
+
+              $xml = simplexml_load_string($response);
+              $json = json_encode($xml);
+              //var_dump($xml); die;
+
+              return json_decode($response,TRUE);
           }
       }
       
