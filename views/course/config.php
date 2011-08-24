@@ -17,7 +17,21 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 OC.initAdmin();
 </script>
 <h3><?=_('Verwaltung der eingebundenen Vorlesungsaufzeichnungen')?></h3>
-<div id="admin-accordion">
+
+<? if (empty($this->cseries)) : ?>
+    <?= MessageBox::info(_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. 
+                            Bitte erstellen Sie zuerst eine Series oder verknüpfen eine bereits vorhandene Series.")) ?>
+    <div id="admin-accordion">
+        <h3><?= _("Neue Series Anlegen") ?></h3>
+        <?= $this->render_partial("course/_createSeries") ?>
+        <h3><?=_('Wählen Sie rechts eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten')?>:</h3>
+        <?= $this->render_partial("course/_connectedSeries", array('course_id' => $course_id, 'cseries' => $cseries, 'rseries' => $rseries, 'series_client' => $series_client)) ?>
+    </div>
+
+
+<? else : ?>
+
+
     <h3><?=_('Veranstaltungsaufzeichnungen Planen')?>:</h3>
     <div class="oc_schedule">
         <h4>Ablaufplan</h4>
@@ -75,64 +89,8 @@ OC.initAdmin();
                 </td>
                 </tr>
             <? endforeach; ?>
-            
-
 
         </table>
     </div>
 
-
-    <h3><?=_('Wählen Sie rechts eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten')?>:</h3>
-    <div>
-        <? if (sizeof($series) == 0) : ?>
-            <?= MessageBox::info(_("Es sind bislang noch keine Series verfügbar. Bitte überprüfen Sie die globalen Opencast Matterhorn Einstellungen.")) ?>
-        <? else : ?>
-        <form action="<?= PluginEngine::getLink('opencast/course/edit/'.$course_id) ?>"
-            method=post>
-            <div style="dislay:inline;vertical-align:middle">
-                <div style="float:left;">
-                    <p><?//=_("Zugeordnete Series")?></p>
-                    <ul style="list-style-type: none;margin:0;padding-left:50px">
-                        <? if(!empty($cseries)) :?>
-                        <? foreach($cseries as $serie) :?>
-                            <li>
-                                <? $s = $series_client->getSeries($serie['series_id']); ?>
-                                <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
-                                <a href="<?=PluginEngine::getLink('opencast/course/remove_series/'.$course_id.'/'.$serie['series_id'])?>">
-                                    <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen')))?>
-                                </a>
-                            </li>
-                        <? endforeach ?>
-                        <? else : ?>
-                            <li style="padding-top:5px">
-                                <p><?=_("Bislang wurde noch keine Series zugeordnet.")?></p>
-                            </li>
-                        <? endif ?>
-                    </ul>
-                </div>
-                <div style="float:center;text-align:center">
-                    <p> <?//=_("Series ohne Zuordnung")?></p>
-                    <? if(!empty ($rseries) || true) :?>
-
-
-                    <select multiple="multiple" name="series[]" size="10">
-                        <? foreach($rseries as $serie) :?>
-                            <? $s = $series_client->getSeries($serie['series_id']); ?>
-                            <? if($s->series->additionalMetadata !=null) : ?>
-                                <option value="<?=$serie['series_id']?>">
-                                    <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
-                                </option>
-                            <? endif ?>
-                        <? endforeach ?>
-                    </select>
-                    <? endif ?>
-                </div>
-            </div>
-            <div style="padding-top:2em;clear:both" class="form_submit">
-                <?= makebutton("uebernehmen","input") ?>
-                <a href="<?=PluginEngine::getLink('opencast/course/index')?>"><?= makebutton("abbrechen")?></a>
-            </div>
-        </form>
-        <? endif;?>
-    </div>
-</div>
+<? endif; ?>

@@ -96,8 +96,10 @@ class CourseController extends StudipController
         $this->series = OCModel::getUnconnectedSeries();
 
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-
         $this->rseries = array_diff($this->series, $this->cseries);
+
+
+        
 
 
         // let's fiddle around with the seminar and hava look
@@ -142,6 +144,15 @@ class CourseController extends StudipController
         }
 
         
+        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+    }
+
+
+    function create_series_action()
+    {
+        $this->course_id = Request::get('cid');
+
+        $this->flash['message'] = _("Series wurde angelegt");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
 
