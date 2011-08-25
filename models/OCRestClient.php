@@ -77,11 +77,20 @@
               return false;
           } else {
 
-              $xml = simplexml_load_string($response);
-              $json = json_encode($xml);
-              //var_dump($xml); die;
+              // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
+              $needle = array('<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
+                              '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
+                              '</ns1:agent-state-update>',
+                              '</ns1:agent-state-updates>');
 
-              return json_decode($response,TRUE);
+              $replacements = array('<agent-state-updates>','<agent-state-update>','</agent-state-update>','</agent-state-updates>');
+              $xml = simplexml_load_string(str_replace($needle, $replacements, $response));
+
+
+              $json = json_encode($xml);
+
+
+              return json_decode($json,TRUE);
           }
       }
       

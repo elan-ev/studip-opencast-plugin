@@ -210,16 +210,7 @@ class AdminController extends AuthenticatedController
 
         $this->resources = OCModel::getOCRessources();
         $this->agents = $this->captureadmin_client->getAllCaptureAgents();
-
-
-        /**
-         * TODO (guide for an update_resources_action...):
-         *  1st query for new capture agents
-         *  2nd compare list with existing agents add new ones...
-         *  3rd identify unconnected ca
-         *  4th display agents and resources...
-         *
-         */
+        $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
 
@@ -238,6 +229,12 @@ class AdminController extends AuthenticatedController
 
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
         
+    }
+
+    function remove_ca_action($resource_id, $capture_agent)
+    {
+        OCModel::removeCAforResource($resource_id, $capture_agent);
+        $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
     }
 }
 ?>

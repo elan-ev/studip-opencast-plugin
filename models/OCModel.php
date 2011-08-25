@@ -59,7 +59,7 @@ class OCModel
     static function getAssignedOCRessources() {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                LEFT JOIN oc_resources or rop ON (ro.resource_id = or.resource_id)
+                LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
                 WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
                 AND rop.state = 'on'");
 
@@ -73,6 +73,31 @@ class OCModel
                 oc_resources (resource_id, capture_agent)
                 VALUES (?, ?)");
         return $stmt->execute(array($resource_id, $capture_agent));
+    }
+
+    static function getCAforResource($resource_id) {
+        $stmt = DBManager::get()->prepare("SELECT capture_agent FROM
+                oc_resources WHERE resource_id = ?");
+        $stmt->execute(array($resource_id));
+        $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $agents;
+    }
+
+    static function removeCAforResource($resource_id, $capture_agent) {
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_resources
+                WHERE resource_id =? AND capture_agent = ?");
+        return $stmt->execute(array($resource_id, $capture_agent));
+    }
+
+
+
+
+    static function getAssignedCAS() {
+        $stmt = DBManager::get()->prepare("SELECT * FROM
+                oc_resources WHERE 1");
+        $stmt->execute();
+        $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $agents;
     }
 
 

@@ -43,7 +43,6 @@ class OpenCast extends StudipPlugin implements StandardPlugin
             Navigation::addItem('/course/opencast', $main);
         }
 
-
         $style_attributes = array(
             'rel'   => 'stylesheet',
             'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');

@@ -22,6 +22,10 @@ class CourseController extends StudipController
     {
         $this->flash = Trails_Flash::instance();
 
+  
+
+
+
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -44,6 +48,11 @@ class CourseController extends StudipController
     function index_action($active_id = '')
     {
         Navigation::activateItem('course/opencast/overview');
+        $navigation = Navigation::getItem('/course/opencast');
+        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+
+
+
 
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
@@ -89,7 +98,12 @@ class CourseController extends StudipController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
+        
         Navigation::activateItem('course/opencast/config');
+        $navigation = Navigation::getItem('/course/opencast');
+        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+
+
         
         $this->course_id = $_SESSION['SessionSeminar'];
         //$this->series = $this->occlient->getAllSeries();
