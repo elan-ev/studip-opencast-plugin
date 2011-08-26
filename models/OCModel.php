@@ -188,6 +188,123 @@ class OCModel
         return $success;
     }
 
+    /**
+     * createSeriesXML - creates an xml representation for a new OC-Series
+     * @param string $course_id
+     * @return string xml - the xml representation of the string  
+     */
+    static function creatSeriesXML($course_id) {
+
+        require_once 'lib/classes/Institute.class.php';
+        $course = new Seminar($course_id);
+        $name = $course->getName();
+        $license = "Creative Commons"; // TODO
+        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
+
+
+        $inst = Institute::find($course->institut_id);
+        $inst_data = $inst->getData();
+        $publisher = $inst_data['name'];
+
+        $start = $course->getStartSemester();
+        $end = $course->getEndSemesterVorlesEnde();
+        $audience = "General Public";
+
+        $instructors = $course->getMembers('dozent');
+        $instructor = array_pop($instructors);
+        $contributor = $instructor['fullname'];
+
+        $language = 'German';
+
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                    <series>
+                        <description>' .$course->description . '</description>
+                        <additionalMetadata>
+                            <metadata>
+                                <key>title</key>
+                                <value>'. $name .'</value>
+                            </metadata>
+                            <metadata>
+                                <key>license</key>
+                                <value>'. $license . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>valid</key>
+                                <value>' . $end . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>publisher</key>
+                                <value>' . $publisher . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>creator</key>
+                                <value>' . $creator . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>subject</key>
+                                <value>'.  $course->description .'</value>
+                            </metadata>
+                            <metadata>
+                                <key>temporal</key>
+                                <value>demo</value>
+                            </metadata>
+                            <metadata>
+                                <key>audience</key>
+                                <value>' . $audience . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>spatial</key>
+                                <value>demo</value>
+                            </metadata>
+                            <metadata>
+                                <key>rightsHolder</key>
+                                <value>' . $rightsHolder . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>extent</key>
+                                <value>3600000</value>
+                            </metadata>
+                            <metadata>
+                                <key>created</key>
+                                <value>1314196388195</value>
+                            </metadata>
+                            <metadata>
+                                <key>language</key>
+                                <value>'. $language .'</value>
+                            </metadata>
+                            <metadata>
+                                <key>isReplacedBy</key>
+                                <value>demo</value>
+                            </metadata>
+                            <metadata>
+                                <key>type</key>
+                                <value>demo</value>
+                            </metadata>
+                            <metadata>
+                                <key>available</key>
+                                <value>1314196388195</value>
+                            </metadata>
+                            <metadata>
+                                <key>modified</key>
+                                <value>1314196388195</value>
+                            </metadata>
+                            <metadata>
+                                <key>replaces</key>
+                                <value>demo</value>
+                            </metadata>
+                            <metadata>
+                                <key>contributor</key>
+                                <value>' .$contributor . '</value>
+                            </metadata>
+                            <metadata>
+                                <key>issued</key>
+                                <value>1314196388195</value>
+                            </metadata>
+                        </additionalMetadata>
+                    </series>';
+
+        return $xml;
+    }
     
 }
 ?>
