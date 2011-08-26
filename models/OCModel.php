@@ -305,6 +305,45 @@ class OCModel
 
         return $xml;
     }
-    
+
+    /**
+     * createScheduleEventXML - creates an xml representation for a new OC-Series
+     * @param string $termin_id
+     * @return string xml - the xml representation of the string
+     */
+
+     function createScheduleEventXML($termin_id) {
+
+         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                    <event>
+                        <contributor>demo contributor</contributor>
+                        <creator>demo creator</creator>
+                        <description>demo description</description>
+                        <device>demo</device>
+                        <duration>0</duration>
+                        <endDate>1314203595426</endDate>
+                        <language>en</language>
+                        <license>creative commons</license>
+                        <resources>vga, audio</resources>
+                        <seriesId>demo series</seriesId>
+                        <startDate>1314199995426</startDate>
+                        <title>demo title</title>
+                        <additionalMetadata>
+                            <metadata>
+                                <key>location</key>
+                                <value>demo location</value>
+                            </metadata>
+                            <metadata>
+                                <key>abstract</key>
+                                <value>demo abstract</value>
+                            </metadata>
+                        </additionalMetadata>
+                    </event>';
+
+
+         return $xml;
+
+     }
+
 }
 ?>
