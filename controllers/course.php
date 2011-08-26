@@ -166,8 +166,140 @@ class CourseController extends StudipController
     {
         $this->course_id = Request::get('cid');
 
-        $this->flash['message'] = _("Series wurde angelegt");
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+
+
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <series>
+        <description> A-rather-long-description</description>
+        <additionalMetadata>
+            <metadata>
+                <key>title</key>
+                <value>OCPlugin Demo title</value>
+            </metadata>
+            <metadata>
+                <key>license</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>valid</key>
+                <value>1314196388195</value>
+            </metadata>
+            <metadata>
+                <key>publisher</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>creator</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>subject</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>temporal</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>audience</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>spatial</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>rightsHolder</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>extent</key>
+                <value>3600000</value>
+            </metadata>
+            <metadata>
+                <key>created</key>
+                <value>1314196388195</value>
+            </metadata>
+            <metadata>
+                <key>language</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>isReplacedBy</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>type</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>available</key>
+                <value>1314196388195</value>
+            </metadata>
+            <metadata>
+                <key>modified</key>
+                <value>1314196388195</value>
+            </metadata>
+            <metadata>
+                <key>replaces</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>contributor</key>
+                <value>demo</value>
+            </metadata>
+            <metadata>
+                <key>issued</key>
+                <value>1314196388195</value>
+            </metadata>
+        </additionalMetadata>
+    </series>';
+
+
+        $post = array('series' => $xml);
+
+
+        $this->matterhorn_base_url = $this->series_conf['service_url'];
+        $this->username = $this->series_conf['service_user'];
+        $this->password = $this->series_conf['service_password'];
+        $rest_end_point = "/series/?_method=put&";
+        $uri = $rest_end_point;
+        // setting up a curl-handler
+
+        $this->ochandler = curl_init();
+        curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+        curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
+        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
+
+        curl_setopt($this->ochandler, CURLOPT_POST, true);
+        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+
+        
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+        if ($httpCode == 201){
+
+            var_dump($response); die();
+
+            $this->flash['message'] = _("Series wurde angelegt");
+            $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        } else {
+            var_dump($httpCode);die();
+        }
+
+   
+
+
+
+
+
+
+
+
+
     }
 
 }

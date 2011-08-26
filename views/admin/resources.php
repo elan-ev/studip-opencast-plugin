@@ -52,14 +52,13 @@ OC.initAdmin();
                         <? foreach ($agents as $agent) : ?>
                             <? $agent_name = $agent['name']; ?>
                             <? if(!empty($assigned_cas)) :?>
-                            <? foreach($assigned_cas as $aca) : ?>
-
-                                <? if($aca['capture_agent'] == $agent_name ) :?>
-                                    <option disabled selected> <?=_("Kein CA mehr verfügbar")?> </option>
-                                <? else : ?>
-                                    <option value="<?= $agent_name ?>" > <?=$agent_name?> </option>
-                                <? endif; ?>
-                            <? endforeach ; ?>
+                                <? foreach($assigned_cas as $aca) : ?>
+                                    <? if($aca['capture_agent'] == $agent_name ) :?>
+                                        <option disabled selected> <?=_("Kein CA mehr verfügbar")?> </option>
+                                    <? else : ?>
+                                        <option value="<?= $agent_name ?>" > <?=$agent_name?> </option>
+                                    <? endif; ?>
+                                <? endforeach ; ?>
                             <? else : ?>
                                     <option value="<?= $agent_name ?>" > <?=$agent_name?> </option>
                             <? endif; ?>
