@@ -314,6 +314,44 @@ class OCModel
 
      function createScheduleEventXML($termin_id) {
 
+         
+         $contributor;
+         $creator;
+         $description;
+         $device = 'capture_agent';
+         $duration;
+         $endDate;
+         $language;
+         $licence;
+         $resources  = 'vga, audio';
+         $series_id = '';
+         $startDate;
+         $title;
+         // Additional Metadata
+         $location;
+         $abstract;
+
+         /*
+          * working on time issues here... 
+          *
+         var_dump(microtime(true));
+
+         $mil = '1314199995426';
+         $mil = "1314199995426";
+         $seconds = $mil / 1000;
+
+         date_default_timezone_set("Europe/Berlin");
+         
+         
+         $now = microtime(true);
+
+         var_dump($now);
+         echo date("d-m-Y H:i:s", $seconds)."<br><br><br><br><br><br><br><br>";
+         echo date("d-m-Y H:i:s", $now );
+
+
+         var_dump(strftime($format, '1314199995426'));
+         */
          $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <event>
                         <contributor>demo contributor</contributor>
@@ -325,7 +363,7 @@ class OCModel
                         <language>en</language>
                         <license>creative commons</license>
                         <resources>vga, audio</resources>
-                        <seriesId>demo series</seriesId>
+                        <seriesId>' . $seriesId .'</seriesId>
                         <startDate>1314199995426</startDate>
                         <title>demo title</title>
                         <additionalMetadata>
