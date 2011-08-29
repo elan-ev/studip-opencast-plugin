@@ -60,8 +60,8 @@ OC.initAdmin();
                     <? $resource = $date->getResourceID(); ?>
                     <? if(isset($resource) && OCModel::checkResource($resource)) :?>
                         <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
-                            <a href="<?=PluginEngine::getLink('opencast/course/config/' ) ?>">
-                                <?= Assets::img('icons/16/blue/video.png', array('title' => _("Aufzeichnung ist bereits geplant."))) ?>
+                            <a href="<?=PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ) ?>">
+                                <?= Assets::img('icons/16/blue/video.png', array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))) ?>
                             </a>
                         <?  else : ?>
                             <a href="<?=PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id ) ?>">

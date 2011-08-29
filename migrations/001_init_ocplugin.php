@@ -39,6 +39,7 @@ class InitOcplugin extends Migration {
                 `date_id` VARCHAR( 32 ) NOT NULL ,
                 `resource_id` VARCHAR( 32 ) NOT NULL ,
                 `capture_agent` VARCHAR( 64 ) NOT NULL ,
+                `event_id` VARCHAR( 64 ) NOT NULL,
                 `status` ENUM( 'scheduled', 'recorded' ) NOT NULL ,
                 PRIMARY KEY ( `seminar_id` , `series_id` , `date_id` , `resource_id` , `capture_agent` )
                 ) ENGINE = MYISAM ");

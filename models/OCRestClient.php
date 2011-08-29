@@ -130,15 +130,78 @@
         } else {
             return false;
         }
-
-
-
-
-
-          
       }
 
 
+      function scheduleEventForSeminar($course_id, $resource_id, $termin_id) {
+
+
+        $xml = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+        $post = array('event' => $xml);
+
+
+        $rest_end_point = "/scheduler/?_method=put&";
+        $uri = $rest_end_point;
+        // setting up a curl-handler
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        curl_setopt($this->ochandler, CURLOPT_POST, true);
+        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+
+
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+        if ($httpCode == 201){
+            /* TODOs
+             *  store series id in DB and connect seminar with that series
+             */
+
+            $event = simplexml_load_string($response);
+           
+            $event_id = $new_series->series->id;
+            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $event['id']);
+
+            return true;
+        } else {
+            return false;
+        }
+      }
+
+      function deleteEventForSeminar($course_id, $resource_id, $date_id) {
+
+
+        //$xml = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+        //$post = array('eventId' => $xml);
+
+        $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
+        $event = $event_data[0];
+
+        //$post =  array('eventId' => $event['event_id']);
+
+        ///$rest_end_point = "/scheduler/?_method=delete&";
+        $rest_end_point = "/scheduler/".$event['event_id']. "/?_method=delete" ;
+        $uri = $rest_end_point;
+        // setting up a curl-handler
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        //curl_setopt($this->ochandler, CURLOPT_POST, true);
+        //curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+
+
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+
+
+
+        if ($httpCode == 204){
+            $event_id = $event['event_id'];
+            OCModel::unscheduleRecording($event_id);
+
+            return true;
+        } else {
+            return false;
+        }
+      }
 
 
       

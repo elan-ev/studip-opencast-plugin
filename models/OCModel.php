@@ -23,7 +23,7 @@ class OCModel
     }
     
     static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible') {
-        $stmt = DBManager::get()->prepare("UPDATE oc_series 
+        $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
                 WHERE series_id = ?");
         $stmt->execute(array($series_id));
@@ -150,7 +150,7 @@ class OCModel
      * @return boolean success
      */
 
-    static function scheduleRecording($course_id, $resource_id, $date_id) {
+    static function scheduleRecording($course_id, $resource_id, $date_id, $event_id) {
 
         /* TODO
          *  - call Webservice and schedule that recording...
@@ -162,14 +162,35 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
+        
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, status)
-                VALUES (?, ?, ?, ?, ?,? )");
-        $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], 'scheduled'));
+                oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, event_id, status)
+                VALUES (?, ?, ?, ?, ?, ? ,? )");
+        $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], $event_id, 'scheduled'));
 
             
        
+
+        return $success;
+    }
+
+
+    /**
+     * unscheduleRecording -  removes a scheduled recording for a given date and resource within a course
+     *
+     * @param string $course_id
+     * @param string $resource_id
+     * @param string $date_id
+     * @return boolean success
+     */
+
+    static function unscheduleRecording($event_id) {
+
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_scheduled_recordings
+                WHERE event_id = ?");
+        $success = $stmt->execute(array($event_id));
+
 
         return $success;
     }
@@ -308,76 +329,96 @@ class OCModel
 
     /**
      * createScheduleEventXML - creates an xml representation for a new OC-Series
+     * @param string course_id
+     * @param string resource_id
      * @param string $termin_id
      * @return string xml - the xml representation of the string
      */
 
-     function createScheduleEventXML($termin_id) {
+     function createScheduleEventXML($course_id, $resource_id, $termin_id) {
+        require_once 'lib/classes/Institute.class.php';
 
-         
-         $contributor;
-         $creator;
-         $description;
-         $device = 'capture_agent';
-         $duration;
-         $endDate;
-         $language;
-         $licence;
-         $resources  = 'vga, audio';
-         $series_id = '';
-         $startDate;
-         $title;
-         // Additional Metadata
-         $location;
-         $abstract;
+        date_default_timezone_set("Europe/Berlin");
+        
+        $course = new Seminar($course_id);
+        $date = new SingleDate($termin_id);
+        $issues = $date->getIssueIDs();
+        
+        if(is_array($issues)) {
+            foreach($issues as $is) {
+                $issue = new Issue(array('issue_id' => $is));
+            }
+        }
+  
 
-         /*
-          * working on time issues here... 
-          *
-         var_dump(microtime(true));
+        $series = self::getConnectedSeries($course_id);
+        $serie = $series[0];
+        
+        $cas = self::checkResource($resource_id);
+        $ca = $cas[0];
+        $instructors = $course->getMembers('dozent');
+        $instructor = array_pop($instructors);
 
-         $mil = '1314199995426';
-         $mil = "1314199995426";
-         $seconds = $mil / 1000;
+        $inst = Institute::find($course->institut_id);
+        $inst_data = $inst->getData();
 
-         date_default_timezone_set("Europe/Berlin");
-         
-         
-         $now = microtime(true);
+       
 
-         var_dump($now);
-         echo date("d-m-Y H:i:s", $seconds)."<br><br><br><br><br><br><br><br>";
-         echo date("d-m-Y H:i:s", $now );
+        $room = ResourceObject::Factory($resource_id);
 
+        $start_time = $date->getStartTime();
+        $end_time = $date->getEndTime();
+        $start = $start_time.'000';
+        $end = $end_time.'000';
 
-         var_dump(strftime($format, '1314199995426'));
-         */
+        $duration = $end - $start;
+        $duration = $duration;
+        
+        $duration_in_hours = $duration;
+
+        $contributor = $inst_data['name'];
+        $creator = $instructor['fullname'];
+        $description = $issue->description;
+        $device = $ca['capture_agent'];
+        $duration = $duration_in_hours;
+        $endDate = $end;
+        $language = "German";
+        $licence = "General PublicS";
+        $resources  = 'vga, audio';
+        $seriesId = $serie['series_id'];
+
+        $startDate = $start;
+        $title = $issue->title;
+        // Additional Metadata
+        $location = $room->name;
+        $abstract = $course->description;
+
          $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <event>
-                        <contributor>demo contributor</contributor>
-                        <creator>demo creator</creator>
-                        <description>demo description</description>
-                        <device>demo</device>
-                        <duration>0</duration>
-                        <endDate>1314203595426</endDate>
+                        <contributor>'.$contributor.'</contributor>
+                        <creator>' . $creator . '</creator>
+                        <description>' . $description .'</description>
+                        <device>'. $device .'</device>
+                        <duration>'. $duration .'</duration>
+                        <endDate>' .$endDate . '</endDate>
                         <language>en</language>
                         <license>creative commons</license>
                         <resources>vga, audio</resources>
-                        <seriesId>' . $seriesId .'</seriesId>
-                        <startDate>1314199995426</startDate>
-                        <title>demo title</title>
+                        <seriesId>' . $seriesId.'</seriesId>
+                        <series>' . $course->getName().'</series>
+                        <startDate>'.$startDate . '</startDate>
+                        <title>'. $title .'</title>
                         <additionalMetadata>
                             <metadata>
                                 <key>location</key>
-                                <value>demo location</value>
+                                <value>' . $location . '</value>
                             </metadata>
                             <metadata>
                                 <key>abstract</key>
-                                <value>demo abstract</value>
+                                <value>'. $abstract .'</value>
                             </metadata>
                         </additionalMetadata>
                     </event>';
-
 
          return $xml;
 

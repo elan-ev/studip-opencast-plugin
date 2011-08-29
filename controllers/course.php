@@ -32,9 +32,11 @@ class CourseController extends StudipController
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
-        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('series'))) {
+        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('schedule'))
+                && ($this->scheduler_conf = OCRestClient::getConfig('series'))) {
             $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
             $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
+            $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
         } elseif (!$this->search_client->getAllSeries()) {
              $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
         } else {
@@ -149,15 +151,31 @@ class CourseController extends StudipController
 
     function schedule_action($resource_id, $termin_id)
     {
+
         $this->course_id = Request::get('cid');
 
-        if( OCModel::scheduleRecording($this->course_id, $resource_id, $termin_id)) {
+        if($this->scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Aufzeichnung wurde geplant.");
         } else {
             $this->flash['error'] = _("Aufzeichnung konnte nicht geplant werden.");
         }
 
         
+        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+    }
+
+    function unschedule_action($resource_id, $termin_id)
+    {
+
+        $this->course_id = Request::get('cid');
+
+        if( $this->scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            $this->flash['message'] = _("Die geplante Aufzeichnung wurde entfernt");
+        } else {
+            $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht entfernt werden.");
+        }
+
+
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
 
