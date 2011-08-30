@@ -32,6 +32,14 @@ class InitOcplugin extends Migration {
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
                 VALUES (md5(".uniqid()."), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
 
+        
+        DBManager::get()->query("CREATE TABLE `oc_seminar_episodes` (
+                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `episode_id` VARCHAR( 64 ) NOT NULL ,
+                `visible` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true',
+                PRIMARY KEY ( `seminar_id` , `episode_id` )
+                ) ENGINE = MYISAM ;");
+
 
         DBManager::get()->query("CREATE TABLE  `oc_scheduled_recordings` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,

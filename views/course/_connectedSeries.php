@@ -6,11 +6,10 @@
             method=post>
                     <div style="text-align: center;">
                     <p> <?//=_("Series ohne Zuordnung")?></p>
-                    <? if(!empty ($rseries) || true) :?>
-
-
+                    <? if(!empty ($rseries)) :?>
+                    
                     <select class="series_select" multiple="multiple" name="series[]">
-                        <? foreach($rseries->seriesList as $serie) :?>
+                        <? foreach($rseries->seriesList->series as $serie) :?>
                             <? $s = $series_client->getSeries($serie->id); ?>
                             <? if($s->series->additionalMetadata !=null) : ?>
                                 <option value="<?=$serie->id?>">

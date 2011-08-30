@@ -24,8 +24,6 @@ array(
 $items = $episode_ids;
 ?>
 
-
-</pre>
 <div name='content_list' style='padding:15px;'>
     <table width="100%">
         <tr>

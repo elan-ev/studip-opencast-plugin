@@ -13,7 +13,7 @@ class OCModel
     }
     
     static function getConnectedSeries($course_id) {
-        $stmt = DBManager::get()->prepare("SELECT series_id 
+        $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
             WHERE seminar_id = ?");
         $stmt->execute(array($course_id));
@@ -421,5 +421,19 @@ class OCModel
 
      }
 
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+        $stmt = DBManager::get()->prepare("REPLACE INTO
+                oc_seminar_episodes (seminar_id, episode_id, visible)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $visibility));
+    }
+
+    static function getVisibilityForEpisode($course_id, $episode_id) {
+        $stmt = DBManager::get()->prepare("SELECT visible FROM
+                oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
+        $stmt->execute(array($course_id, $episode_id));
+        $episode = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $episode;
+    }
 }
 ?>
