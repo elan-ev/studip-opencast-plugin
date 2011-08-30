@@ -18,20 +18,20 @@ class OCModel
             WHERE seminar_id = ?");
         $stmt->execute(array($course_id));
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         return $series;
     }
     
-    static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible') {
+    static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible', $schedule=0) {
         $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
                 WHERE series_id = ?");
         $stmt->execute(array($series_id));
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_series (series_id, seminar_id, visibility)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($series_id, $course_id, $visibility));
+                oc_seminar_series (series_id, seminar_id, visibility, schedule)
+                VALUES (?, ?, ?, ? )");
+        return $stmt->execute(array($series_id, $course_id, $visibility, $schedule));
     }
     
     static function removeSeriesforCourse($course_id, $series_id) {
@@ -227,13 +227,14 @@ class OCModel
         $inst_data = $inst->getData();
         $publisher = $inst_data['name'];
 
-        $start = $course->getStartSemester();
-        $end = $course->getEndSemesterVorlesEnde();
+        //$start = $course->getStartSemester();
+        //$end = $course->getEndSemesterVorlesEnde();
         $audience = "General Public";
 
         $instructors = $course->getMembers('dozent');
         $instructor = array_pop($instructors);
         $contributor = $instructor['fullname'];
+        $creator = $inst_data['name'];
 
         $language = 'German';
 
@@ -248,10 +249,6 @@ class OCModel
                             <metadata>
                                 <key>license</key>
                                 <value>'. $license . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>valid</key>
-                                <value>' . $end . '</value>
                             </metadata>
                             <metadata>
                                 <key>publisher</key>
@@ -283,7 +280,7 @@ class OCModel
                             </metadata>
                             <metadata>
                                 <key>extent</key>
-                                <value>3600000</value>
+                                <value>1314196388195</value>
                             </metadata>
                             <metadata>
                                 <key>created</key>

@@ -63,21 +63,32 @@ class CourseController extends StudipController
 
         // lets get all episodes for the connected series
         if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
+            $cseries = OCModel::getConnectedSeries($this->course_id);
+           
             $this->episode_ids = array();
             $ids = array();
-            foreach($cseries as $serie) {
+            foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
+                
                  if ($series[] = $this->search_client->getEpisode($serie['series_id'])){
                      $x = 'search-results';
-                     foreach($series[0]->$x->result as $episode) {
-                        if(is_object($episode->mediapackage)) {
-                            $ids[] = $episode->id;
-                            $this->episode_ids[] = array('id' => $episode->id,
-                                                            'title' => $episode->dcTitle,
-                                                            'start' => $episode->mediapackage->start,
-                                                            'duration' => $episode->mediapackage->duration,
-                                                            'description' => ''
-                                                       );
-                            }
+           
+                     if($series[0]->$x->total > 0) {
+                         $has_episodes = true;
+
+                         foreach($series[0]->$x->result as $episode) {
+  
+                            if(is_object($episode->mediapackage)) {
+                                $ids[] = $episode->id;
+                                $this->episode_ids[] = array('id' => $episode->id,
+                                                                'title' => $episode->dcTitle,
+                                                                'start' => $episode->mediapackage->start,
+                                                                'duration' => $episode->mediapackage->duration,
+                                                                'description' => ''
+                                                           );
+                                }
+                         }
+                     } else {
+                         $has_episodes = false;
                      }
 
                  }  else {
@@ -90,7 +101,9 @@ class CourseController extends StudipController
             } else {
                 $this->active_id = $this->episode_ids[0][id];
             }
-            $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+            if($has_episodes) {
+                $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+            }
         }
     }
     
@@ -108,12 +121,16 @@ class CourseController extends StudipController
 
         
         $this->course_id = $_SESSION['SessionSeminar'];
-        //$this->series = $this->occlient->getAllSeries();
-        $this->series = OCModel::getUnconnectedSeries();
+        $this->series = $this->series_client->getAllSeries();
+        
+        //$this->series = OCModel::getUnconnectedSeries();
 
+
+        //var_dump($this->series);
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        $this->rseries = array_diff($this->series, $this->cseries);
-
+        //var_dump()
+        //$this->rseries = array_diff($this->series, $this->cseries);
+        $this->rseries = $this->series;
 
         
 

@@ -124,7 +124,7 @@
 
             $new_series = json_decode($response);
             $series_id = $new_series->series->id;
-            OCModel::setSeriesforCourse($course_id, $series_id);
+            OCModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
 
             return true;
         } else {

@@ -1,9 +1,30 @@
 <div>
-        <? if (sizeof($cseries) == 0) : ?>
+        <? if (false && sizeof($cseries) == 0) : ?>
             <?= MessageBox::info(_("Es sind bislang noch keine Series verfügbar. Bitte überprüfen Sie die globalen Opencast Matterhorn Einstellungen.")) ?>
         <? else : ?>
         <form action="<?= PluginEngine::getLink('opencast/course/edit/'.$course_id) ?>"
             method=post>
+                    <div style="text-align: center;">
+                    <p> <?//=_("Series ohne Zuordnung")?></p>
+                    <? if(!empty ($rseries) || true) :?>
+
+
+                    <select class="series_select" multiple="multiple" name="series[]">
+                        <? foreach($rseries->seriesList as $serie) :?>
+                            <? $s = $series_client->getSeries($serie->id); ?>
+                            <? if($s->series->additionalMetadata !=null) : ?>
+                                <option value="<?=$serie->id?>">
+                                    <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
+                                </option>
+                            <? endif ?>
+                        <? endforeach ?>
+                    </select>
+                    <? endif ?>
+                </div>
+
+
+            <!--
+
             <div style="dislay:inline;vertical-align:middle">
                 <div style="float:left;">
                     <p><?//=_("Zugeordnete Series")?></p>
@@ -29,12 +50,12 @@
                     <p> <?//=_("Series ohne Zuordnung")?></p>
                     <? if(!empty ($rseries) || true) :?>
 
-
-                    <select multiple="multiple" name="series[]" size="10">
-                        <? foreach($rseries as $serie) :?>
-                            <? $s = $series_client->getSeries($serie['series_id']); ?>
+            
+                    <select multiple="multiple" name="series[]">
+                        <? foreach($rseries->seriesList as $serie) :?>
+                            <? $s = $series_client->getSeries($serie->id); ?>
                             <? if($s->series->additionalMetadata !=null) : ?>
-                                <option value="<?=$serie['series_id']?>">
+                                <option value="<?=$serie->id?>">
                                     <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
                                 </option>
                             <? endif ?>
@@ -42,7 +63,7 @@
                     </select>
                     <? endif ?>
                 </div>
-            </div>
+            </div> -->
             <div style="padding-top:2em;clear:both" class="form_submit">
                 <?= makebutton("uebernehmen","input") ?>
                 <a href="<?=PluginEngine::getLink('opencast/course/index')?>"><?= makebutton("abbrechen")?></a>

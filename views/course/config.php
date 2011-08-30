@@ -32,10 +32,11 @@ OC.initAdmin();
 <? else : ?>
 
 
-    <h3><?=_('Veranstaltungsaufzeichnungen Planen')?>:</h3>
+   
     <div class="oc_schedule">
+<!--    <h3><?=_('Veranstaltungsaufzeichnungen Planen')?>:</h3>
         <h4>Ablaufplan</h4>
-        <p>Erst feststellen ob ein Raum mit CA da ist und dann den Ablaufplan posten mit Checkboxes zum Schedulen...</p>
+        <p>Erst feststellen ob ein Raum mit CA da ist und dann den Ablaufplan posten mit Checkboxes zum Schedulen...</p> -->
         <table class="default">
             <tr>
                 <th>Termin</th>
@@ -51,9 +52,11 @@ OC.initAdmin();
                 <? if(is_array($issues)) : ?>
                     <? foreach($issues as $is) : ?>
                         <? $issue = new Issue(array('issue_id' => $is));?>
+                        <? $topic = true; ?>
                         <td> <?= my_substr($issue->getTitle(), 0 ,80 ); ?></td>
                     <? endforeach; ?>
                 <? else: ?>
+                        <? $topic = false; ?>
                         <td> <?=_("Kein Titel eingetragen")?></td>
                 <? endif; ?>
                 <td>
@@ -64,9 +67,13 @@ OC.initAdmin();
                                 <?= Assets::img('icons/16/blue/video.png', array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))) ?>
                             </a>
                         <?  else : ?>
+                            <? if($topic) :?>
                             <a href="<?=PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id ) ?>">
                                 <?= Assets::img('icons/16/blue/date.png', array('title' => _("Aufzeichnung planen"))) ?>
                             </a>
+                            <? else :?>
+                                <?= Assets::img('icons/16/blue/exclaim-circle.png', array('title' =>  _("Bitte geben Sie ein Thema für diese Veranstaltung an."))) ?>
+                            <? endif ;?>
                         <? endif; ?>
                     <?
                         

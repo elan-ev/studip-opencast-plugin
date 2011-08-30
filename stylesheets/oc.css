@@ -36,3 +36,7 @@
     padding-bottom: 5px;
 }
 
+.series_select {
+    width: 50%;
+    display: inline;
+}

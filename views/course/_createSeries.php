@@ -2,7 +2,6 @@
     <form action="<?= PluginEngine::getLink('opencast/course/create_series/') ?>"
             method=post>
         <div style="dislay:inline;vertical-align:middle">
-            <p>Hier dann die Metadaten der Series erfassen.</p>
         </div>
         <div style="padding-top:2em;clear:both" class="form_submit">
             <?= makebutton("uebernehmen","input") ?>
