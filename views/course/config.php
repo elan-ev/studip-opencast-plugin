@@ -7,7 +7,7 @@ $infobox_content = array(array(
     'kategorie' => _('Hinweise:'),
     'eintrag'   => array(array(
         'icon' => 'icons/16/black/info.png',
-        'text' => _("Hier können die eingebundenen Vorlesungsaufzeichnungen aus dem angebundenen Opencast Matterhorn System verwaltet werden. Sie können Series, die noch keiner Veranstaltung zugeordnet sind der aktuellen Verantstaltung zuordnen. Wenn Sie bestehende Zuordnungen löschen möchten, klichen Sie auf den jeweiligen Mülleimer.")
+        'text' => _("Hier können Sie die Veranstaltung mit einer Series in Opencast Matterhorn verknüpfen. Sie können entweder aus vorhandenen Series wählen oder eine Series für diese Veranstaltung anlegen.")
     ))
 ));
 
