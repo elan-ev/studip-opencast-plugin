@@ -115,8 +115,14 @@ OC.initAdmin();
                         <?=$episode->mediapackage->title ?>
                     </td>
                     <td>
+                        <?$visible = OCModel::getVisibilityForEpisode($course_id, $episode->mediapackage->id); ?>
+                        <? if($visible['visible'] == 'true') : ?>
+                            <?=_("Sichtbar")?>
+                        <? else : ?>
+                            <?=_("Unsichtbar")?>
+                        <? endif; ?>
                     </td>
-                    <?//=  var_dump($episode->mediapackage) ?>
+                    
                     <td>
                         <a href="<?=PluginEngine::getLink('opencast/course/toggle_visibility/'.$episode->mediapackage->id ) ?>">
                             <?= Assets::img('icons/16/blue/visibility-visible.png', array('title' => _("Aufzeichnung unsichtbar schalten"))) ?>

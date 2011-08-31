@@ -51,11 +51,11 @@ $items = $episode_ids;
                 <td class="printhead" style="padding:1px; vertical-align: absmiddle" height="25" width="70%">
                     <img src="<?=Assets::image_path("icons/16/grey/arr_1down.png")?>" align="absmiddle">
                     <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8') . ' ('. $item['start'] . ')'?>
+                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8') ?>
                     </a>
                 </td>
                 <td class="printhead" width="10%">
-                    &nbsp; 
+                    &nbsp;
                     <?=    '<b>'. $item['date'] .'</b>'; ?>
                 </td>
             </tr>
@@ -64,6 +64,12 @@ $items = $episode_ids;
                     <? if ($item['author']) : ?>
                     <p>
                         <?= _("Autor") ?>: <i><?=$item['author'] ?></i><br>
+                    </p>
+                    <? endif; ?>
+                    <? if ($item['start']) : ?>
+                    <p>
+                        <? //date_default_timezone_set('Europe/Lisbon');?>
+                        <?= _("Aufzeichnungsdatum") ?>: <i><?=date($item['start']);?></i><br>
                     </p>
                     <? endif; ?>
                     <p>
@@ -82,7 +88,7 @@ $items = $episode_ids;
                 <td class="printhead" style="padding:1px; vertical-align: absmiddle" height="25" width="70%">
                     &nbsp;<img src="<?=Assets::image_path("icons/16/grey/arr_1right.png")?>" align="abstop">
                     <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8') . ' ('. $item['start'] . ')'?>
+                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?>
                     </a>
                 </td>
                 <td class="printhead" width="10%">

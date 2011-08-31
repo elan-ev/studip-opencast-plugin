@@ -37,6 +37,15 @@ OC.initAdmin();
                         <? foreach($assigned_agents as $aa) : ?>
                             <li>
                                 <?= $aa['capture_agent'] ?>
+                                <? foreach ($agents as $agent) : ?>
+                                    <? if($agent['name'] ==  $aa['capture_agent']):?>
+                                        <? if($agent['state'] == 'idle') :?>
+                                            <?= Assets::img('icons/16/blue/pause.png', array('title' => _("Idle"))) ?>
+                                        <? else: ?>
+                                            <?= Assets::img('icons/16/blue/video.png', array('title' => _("Idle"))) ?>
+                                        <? endif; ?>
+                                    <? endif; ?>
+                                <? endforeach; ?>
                                 <a href="<?=PluginEngine::getLink('opencast/admin/remove_ca/'. $resource['resource_id']
                                             .'/'.$aa['capture_agent'])?>">
                                     <?= Assets::img('icons/16/blue/trash.png', array('title' => _("Verknüpfung entfernen."))) ?>

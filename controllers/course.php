@@ -67,6 +67,7 @@ class CourseController extends StudipController
            
             $this->episode_ids = array();
             $ids = array();
+            $count = 0;
             foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
                 
                  if ($series[] = $this->search_client->getEpisode($serie['series_id'])){
@@ -76,8 +77,9 @@ class CourseController extends StudipController
                          $has_episodes = true;
 
                          foreach($series[0]->$x->result as $episode) {
-  
-                            if(is_object($episode->mediapackage)) {
+                            $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+                            if(is_object($episode->mediapackage) && $visible['visible'] == 'true') {
+                                $count++;
                                 $ids[] = $episode->id;
                                 $this->episode_ids[] = array('id' => $episode->id,
                                                                 'title' => $episode->dcTitle,
@@ -101,7 +103,7 @@ class CourseController extends StudipController
             } else {
                 $this->active_id = $this->episode_ids[0][id];
             }
-            if($has_episodes) {
+            if($has_episodes && $count > 0) {
                 $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
             }
         }
