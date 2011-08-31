@@ -68,8 +68,8 @@ $items = $episode_ids;
                     <? endif; ?>
                     <? if ($item['start']) : ?>
                     <p>
-                        <? //date_default_timezone_set('Europe/Lisbon');?>
-                        <?= _("Aufzeichnungsdatum") ?>: <i><?=date($item['start']);?></i><br>
+                        <? date_default_timezone_set('Europe/Lisbon');?>
+                        <?= _("Aufzeichnungsdatum") ?>: <i><?=date("d.m.Y H:m",strtotime($item['start']));?> </i><br>
                     </p>
                     <? endif; ?>
                     <p>
