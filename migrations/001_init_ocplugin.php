@@ -8,13 +8,13 @@ class InitOcplugin extends Migration {
                    PRIMARY KEY ( `series_id` )
                    ) ENGINE = MYISAM;");
          DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_config` (
-                  `service_type` ENUM( 'search', 'series', 'schedule', `captureadmin` ) NOT NULL PRIMARY KEY,
+                  `service_type` ENUM( 'search', 'series', 'schedule', 'captureadmin' ) NOT NULL PRIMARY KEY,
                   `service_url` VARCHAR( 255 ) NOT NULL,
                   `service_user` VARCHAR( 255 ) NOT NULL,
                   `service_password` VARCHAR( 255 ) NOT NULL
                   ) ENGINE = MYISAM;");
 
-        DBManager::get()->query("CREATE TABLE  `oc_seminar_series` (
+        DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_series` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,
                 `series_id` VARCHAR( 64 ) NOT NULL ,
                 `visibility` ENUM(  'visible',  'invisible' )NOT NULL ,
@@ -22,7 +22,7 @@ class InitOcplugin extends Migration {
                 PRIMARY KEY (  `seminar_id` ,  `series_id` )
                 ) ENGINE = MYISAM");
         
-        DBManager::get()->query("CREATE TABLE  `oc_resources` (
+        DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_resources` (
                 `resource_id` VARCHAR( 32 ) NOT NULL ,
                 `capture_agent` VARCHAR( 64 ) NOT NULL ,
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
@@ -30,10 +30,10 @@ class InitOcplugin extends Migration {
 
         DBManager::get()->query("INSERT INTO `resources_properties`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
-                VALUES (md5(".uniqid()."), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+                VALUES (MD5('".uniqid()."'), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
 
         
-        DBManager::get()->query("CREATE TABLE `oc_seminar_episodes` (
+        DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_episodes` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,
                 `episode_id` VARCHAR( 64 ) NOT NULL ,
                 `visible` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true',
@@ -41,7 +41,7 @@ class InitOcplugin extends Migration {
                 ) ENGINE = MYISAM ;");
 
 
-        DBManager::get()->query("CREATE TABLE  `oc_scheduled_recordings` (
+        DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_scheduled_recordings` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,
                 `series_id` VARCHAR( 64 ) NOT NULL ,
                 `date_id` VARCHAR( 32 ) NOT NULL ,
