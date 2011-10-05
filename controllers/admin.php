@@ -210,6 +210,7 @@ class AdminController extends AuthenticatedController
 
         $this->resources = OCModel::getOCRessources();
         $this->agents = $this->captureadmin_client->getAllCaptureAgents();
+        $this->agents = $this->agents['agent-state-update'];
         $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
