@@ -13,7 +13,7 @@
                             <? $s = $series_client->getSeries($serie->id); ?>
                             <? if($s->series->additionalMetadata !=null) : ?>
                                 <option value="<?=$serie->id?>">
-                                    <?=  OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
+                                    <?= OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
                                 </option>
                             <? endif ?>
                         <? endforeach ?>

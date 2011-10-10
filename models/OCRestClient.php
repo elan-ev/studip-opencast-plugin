@@ -15,6 +15,7 @@
           curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
           curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
           curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
+          curl_setopt($this->ochandler, CURLOPT_ENCODING, "ISO-8859-1");
           curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
 
 
@@ -118,9 +119,6 @@
         $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
         if ($httpCode == 201){
-            /* TODOs
-             *  store series id in DB and connect seminar with that series
-             */
 
             $new_series = json_decode($response);
             $series_id = $new_series->series->id;
@@ -152,9 +150,6 @@
         $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
         if ($httpCode == 201){
-            /* TODOs
-             *  store series id in DB and connect seminar with that series
-             */
 
             $event = simplexml_load_string($response);
            
@@ -183,15 +178,9 @@
         $uri = $rest_end_point;
         // setting up a curl-handler
         curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
-        //curl_setopt($this->ochandler, CURLOPT_POST, true);
-        //curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
-
 
         $response = curl_exec($this->ochandler);
         $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-
-
 
         if ($httpCode == 204){
             $event_id = $event['event_id'];
