@@ -133,7 +133,6 @@
 
       function scheduleEventForSeminar($course_id, $resource_id, $termin_id) {
 
-
         $xml = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
         $post = array('event' => $xml);
 
@@ -185,6 +184,44 @@
         if ($httpCode == 204){
             $event_id = $event['event_id'];
             OCModel::unscheduleRecording($event_id);
+
+            return true;
+        } else {
+            return false;
+        }
+      }
+
+
+      function updateEventForSeminar($course_id, $resource_id, $date_id) {
+        $xml = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+        $post = array('event' => $xml);
+        echo "<pre>";
+        echo $xml;
+        echo "</pre>";
+        die;
+
+        $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
+        $event = $event_data[0];
+
+
+
+        $rest_end_point = "/scheduler/".$event['event_id']. "?_method=post&";
+        $uri = $rest_end_point;
+        // setting up a curl-handler
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        curl_setopt($this->ochandler, CURLOPT_POST, true);
+        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+
+
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+        if ($httpCode == 204){
+
+            $event = simplexml_load_string($response);
+
+            $event_id = $new_series->series->id;
+            OCModel::updateRecording($course_id, $resource_id, $termin_id, $event['id']);
 
             return true;
         } else {

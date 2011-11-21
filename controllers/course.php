@@ -22,10 +22,6 @@ class CourseController extends StudipController
     {
         $this->flash = Trails_Flash::instance();
 
-  
-
-
-
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -171,8 +167,9 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
-    function remove_series_action($course_id, $series_id)
+    function remove_series_action($series_id)
     {
+        $course_id = Request::get('cid');
         OCModel::removeSeriesforCourse($course_id, $series_id);
         $this->flash['message'] = _("Zuordnung wurde entfernt");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
@@ -209,15 +206,31 @@ class CourseController extends StudipController
     }
 
 
+    function update_action($resource_id, $termin_id)
+    {
+
+        $this->course_id = Request::get('cid');
+
+        if( $this->scheduler_client->updateEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            $this->flash['message'] = _("Die geplante Aufzeichnung aktualisiert");
+        } else {
+            $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht aktualisiert werden.");
+        }
+
+
+        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+    }
+
+
     function create_series_action()
     {
         $this->course_id = Request::get('cid');
 
-        if($this->search_client->createSeriesForSeminar($this->course_id)) {
+        if($this->series_client->createSeriesForSeminar($this->course_id)) {
             $this->flash['message'] = _("Series wurde angelegt");
             $this->redirect(PluginEngine::getLink('opencast/course/config'));
         } else {
-            throw new Exception("Da ist jetzt mal gewaltig was in die Hose gegangen");
+            throw new Exception("Verbindung zum Series-Service konnte nicht hergestellt werden.");
         }
     }
 
@@ -236,6 +249,7 @@ class CourseController extends StudipController
            $this->redirect(PluginEngine::getLink('opencast/course/config'));
         }
     }
+
 
 }
 ?>
