@@ -30,10 +30,9 @@
       
       function getAllSeries() {
        
-          $rest_end_point = "/series/all.json";
+          $rest_end_point = "/search/series.json";
           curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
           $response = curl_exec($this->ochandler);
-
           $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
           if ($httpCode == 404){
               return false;

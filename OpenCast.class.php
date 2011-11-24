@@ -108,5 +108,4 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         return _("Das Opencastplugin wurde deaktiviert.");
     }
 
-
 }
