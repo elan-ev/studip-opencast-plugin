@@ -35,10 +35,17 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
             $resources = new Navigation('OC Ressourcen');
             $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
             $main->addSubNavigation('oc-resources', $resources);
+
+			// Clienttest
+			$client = new Navigation('OC Client Status');
+            $client->setURL(PluginEngine::getURL('opencast/admin/client'));
+            $main->addSubNavigation('oc-client', $client);
+			
             
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
             Navigation::addItem('/admin/config/oc-resources', $resources);
+            Navigation::addItem('/admin/config/oc-client', $client);
 
         }
         

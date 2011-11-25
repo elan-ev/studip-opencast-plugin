@@ -11,8 +11,9 @@
 
 require_once 'app/controllers/authenticated_controller.php';
 require_once $this->trails_root.'/models/OCModel.php';
-require_once $this->trails_root.'/models/OCRestClient.php';
-    
+//require_once $this->trails_root.'/models/OCRestClient.php';
+require_once $this->trails_root.'/models/OCRestClient/SearchClient.php';    
+require_once $this->trails_root.'/models/OCRestClient/SeriesClient.php';    
 class AdminController extends AuthenticatedController
 {
     /**
@@ -23,7 +24,7 @@ class AdminController extends AuthenticatedController
         $this->flash = Trails_Flash::instance();
 
 
-
+		/*
         // let's init the services...
         $this->search_conf = OCRestClient::getConfig('search');
         if(isset ($this->search_conf)) {
@@ -68,7 +69,7 @@ class AdminController extends AuthenticatedController
             }
         }
 
-
+		*/
         
 
         // set default layout
@@ -237,5 +238,20 @@ class AdminController extends AuthenticatedController
         OCModel::removeCAforResource($resource_id, $capture_agent);
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
     }
+	
+	// client status
+	function client_action()
+	{
+		$search_config = OCRestClient::getConfig('search');
+		$series_config = OCRestClient::getConfig('series');
+		$search_client = new SearchClient($search_config);
+		$series_client = new SeriesClient($series_config);
+		
+		$series = $series_client->getAllSeries();
+		
+		$testserie = $series_client->getSeriesDublinCore('258712');
+		
+		var_dump($testserie);die;
+	}
 }
 ?>
