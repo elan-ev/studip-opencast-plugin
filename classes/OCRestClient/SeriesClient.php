@@ -11,6 +11,7 @@
 				throw new Exception (_("Die Seriesservice Konfiguration wurde nicht im gültigen Format angegeben."));
 			}
 		}
+		
 		/**
 		 *  getAllSeries() - retrieves all series from conntected Opencast-Matterhorn Core
 		 *	
@@ -22,6 +23,7 @@
 				return $series->seriesList;
 			} else return false;
 		}
+		
 		/**
 		 *  getSeries() - retrieves seriesmetadata for a given series identifier from conntected Opencast-Matterhorn Core
 		 *  
@@ -35,6 +37,7 @@
 				return $series->series;
 			} else return false;
 		}
+		
 		/**
 		 *  getSeriesDublinCore() - retrieves DC Representation for a given series identifier from conntected Opencast-Matterhorn Core
 		 *  

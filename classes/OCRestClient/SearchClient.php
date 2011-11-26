@@ -12,16 +12,20 @@
 			}
 		}
 
-		function getEpisode($series_id) {
-			$rest_end_point = "/search/series.json?id=";
-			curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'&episodes=true&series=true');
-			$response = curl_exec($this->ochandler);
-			$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-			if ($httpCode == 404){
-			    return false;
-			} else {
-			     return json_decode($response);
-			}
+		/**
+		 *  getEpisodes() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn Core
+		 *  
+		 *  @param string series_id Identifier for a Series	
+		 *	
+		 *	@return array response of episodes
+		 */
+		function getEpisodes($series_id) {
+			$service_url = "/search/series.json?id=".$series_id."&episodes=true&series=true";
+			if($search = self::getJSON($service_url)){
+				$x = "search-results";
+				$episodes = $search->$x->result;
+				return $episodes;
+			} else return false;
 		}
 	}
 ?>

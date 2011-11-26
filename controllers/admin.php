@@ -14,6 +14,9 @@ require_once $this->trails_root.'/models/OCModel.php';
 //require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
+
+
 class AdminController extends AuthenticatedController
 {
     /**
@@ -244,14 +247,17 @@ class AdminController extends AuthenticatedController
 	{
 		$search_config = OCRestClient::getConfig('search');
 		$series_config = OCRestClient::getConfig('series');
+		$caa_config    = OCRestClient::getConfig('captureadmin');
 		$search_client = new SearchClient($search_config);
 		$series_client = new SeriesClient($series_config);
+		$caa_client    = new CaptureAgentAdminClient($caa_config); 
+		//$series = $series_client->getAllSeries();
+		//$testserie = $series_client->getSeriesDublinCore('258712');
+		//$episodes = $search_client->getEpisodes('258712');
 		
-		$series = $series_client->getAllSeries();
+		$agents = $caa_client->getCaptureAgents();
 		
-		$testserie = $series_client->getSeriesDublinCore('258712');
-		
-		var_dump($testserie);die;
+		var_dump($agents);die;
 	}
 }
 ?>
