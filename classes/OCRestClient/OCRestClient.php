@@ -36,6 +36,37 @@
 			return $stmt->execute(array($service_type, $service_url, $service_user, $service_password));
 			
 		}
+		
+		function getJSON($service_url) {
+			if(isset($service_url)) {
+				curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+				$response = curl_exec($this->ochandler);
+				$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+				if ($httpCode == 404){
+			    	return false;
+				} else {
+					return json_decode($response);
+				}
+			} else {
+				throw new Exception(_("Es wurde keine Service URL angegben"));
+			}
+			
+		}
+		
+		function getXML($service_url) {
+			if(isset($service_url)) {
+				curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+				$response = curl_exec($this->ochandler);
+				$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+				if ($httpCode == 404){
+			    	return false;
+				} else {
+					return $response;
+				}
+			} else {
+				throw new Exception(_("Es wurde keine Service URL angegben"));
+			}
+		}
     
     }
 ?>

@@ -17,50 +17,40 @@
 		 *	@return array response all series
 		 */
 		function getAllSeries() {
-			$rest_end_point = "/series/all.json";
-			curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point);
-			$response = curl_exec($this->ochandler);
-			$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-			if ($httpCode == 404){
-		    	return false;
-			} else {
-				$series = json_decode($response);
+			$service_url = "/series/all.json";
+			if($series = self::getJSON($service_url)){
 				return $series->seriesList;
-			}
+			} else return false;
 		}
 		/**
-		 *  getSeries() - retrieves all series from conntected Opencast-Matterhorn Core
+		 *  getSeries() - retrieves seriesmetadata for a given series identifier from conntected Opencast-Matterhorn Core
 		 *  
 		 *  @param string series_id Identifier for a Series	
 		 *	
 		 *	@return array response of a series
 		 */
 		function getSeries($series_id) {
-			$rest_end_point = "/series/";
-			curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'.json');
-			$response = curl_exec($this->ochandler);
-			$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-			if ($httpCode == 404){
-		    	return false;
-			} else {
-				$serie = json_decode($response); 
-		     	return $serie->series;
-			}
+			$service_url = "/series/".$series_id.".json";
+			if($series = self::getJSON($service_url)){
+				return $series->series;
+			} else return false;
 		}
-		
+		/**
+		 *  getSeriesDublinCore() - retrieves DC Representation for a given series identifier from conntected Opencast-Matterhorn Core
+		 *  
+		 *  @param string series_id Identifier for a Series	
+		 *	
+		 *	@return string DC representation of a series
+		 */
 		function getSeriesDublinCore($series_id) {
-			$rest_end_point = "/series/";
-			curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$rest_end_point.$series_id.'/dublincore');
-			$response = curl_exec($this->ochandler);
-			$httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-			if ($httpCode == 404){
-		    	return false;
-			} else {
-				
+			
+			$service_url = "/series/".$series_id."/dublincore";
+			if($seriesDC = self::getXML($service_url)){
 				// dublincore representation is returned in XML
-		     	$xml = simplexml_load_string($response);
-				return $xml;
-			}
+		     	//$seriesDC = simplexml_load_string($seriesDC);
+				return $seriesDC;
+				
+			} else return false;
 		}
 		
 		// static functions...
