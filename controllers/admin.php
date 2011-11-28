@@ -143,7 +143,7 @@ class AdminController extends AuthenticatedController
 
 
         } else {
-
+            /* 
             $this->search_url = 'SEARCH_ENDPOINT_URL';
             $this->search_user = 'SEARCH_ENDPOINT_USER';
             $this->search_password = '';
@@ -165,7 +165,7 @@ class AdminController extends AuthenticatedController
 
 
 
-          /*  $this->series_url = 'URL_TO_MATTERHORN';
+            $this->series_url = 'URL_TO_MATTERHORN';
             $this->search_url = 'URL_TO_MATTERHORN';
             $this->user = 'matterhorn_system_account';
             $this->password = 'CHANGE_ME'; */
@@ -201,7 +201,7 @@ class AdminController extends AuthenticatedController
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
         OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
 
-        $success = _("Änderungen wurden erflolgreich übernommen.");
+        $success = _("Änderungen wurden erfolgreich übernommen.");
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
@@ -245,19 +245,17 @@ class AdminController extends AuthenticatedController
 	// client status
 	function client_action()
 	{
-		$search_config = OCRestClient::getConfig('search');
-		$series_config = OCRestClient::getConfig('series');
-		$caa_config    = OCRestClient::getConfig('captureadmin');
-		$search_client = new SearchClient($search_config);
-		$series_client = new SeriesClient($series_config);
-		$caa_client    = new CaptureAgentAdminClient($caa_config); 
-		//$series = $series_client->getAllSeries();
-		//$testserie = $series_client->getSeriesDublinCore('258712');
-		//$episodes = $search_client->getEpisodes('258712');
+
+		$search_client = new SearchClient();
+		$series_client = new SeriesClient();
+		$caa_client    = new CaptureAgentAdminClient(); 
+		$series = $series_client->getAllSeries();
+		$testserie = $series_client->getSeriesDublinCore('258712');
+		$episodes = $search_client->getEpisodes('258712');
+		//$caa_client->getConfig();
+		//$agents = $caa_client->getCaptureAgents();
 		
-		$agents = $caa_client->getCaptureAgents();
-		
-		var_dump($agents);die;
+		//var_dump($agents);die;
 	}
 }
 ?>

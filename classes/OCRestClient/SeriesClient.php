@@ -2,8 +2,8 @@
 	require_once "OCRestClient.php";
 	class SeriesClient extends OCRestClient
 	{
-		function __construct($config) {
-			if (is_array($config)) {
+		function __construct() {
+			if ($config = parent::getConfig('series')) {
 				parent::__construct($config['service_url'],
 									$config['service_user'],
 									$config['service_password']);

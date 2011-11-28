@@ -2,4 +2,4 @@ pluginname=OpenCast
 pluginclassname=OpenCast
 pluginclassname=OpencastAdministration
 origin=elan-ev
-version=0.1
+version=0.2
