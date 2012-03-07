@@ -1,7 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  André Klaßen
+ * Copyright (c) 2010  Andrï¿½ Klaï¿½en
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ class AdminController extends AuthenticatedController
                             }
                         }
                     }
-                     $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefügt."), $update) : $success;
+                     $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefï¿½gt."), $update) : $success;
                 }
                 else {
                     $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
@@ -201,7 +201,7 @@ class AdminController extends AuthenticatedController
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
         OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
 
-        $success = _("Änderungen wurden erfolgreich übernommen.");
+        $success = _("ï¿½nderungen wurden erfolgreich ï¿½bernommen.");
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
@@ -211,10 +211,12 @@ class AdminController extends AuthenticatedController
     {
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-resources');
+        $caa_client = new CaptureAgentAdminClient();
 
         $this->resources = OCModel::getOCRessources();
-        $this->agents = $this->captureadmin_client->getAllCaptureAgents();
-        $this->agents = $this->agents['agent-state-update'];
+        $this->agents = $caa_client->getCaptureAgents();
+        var_dump($this->resources);
+        //$this->agents = $this->agents['agent-state-update'];
         $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
@@ -241,21 +243,16 @@ class AdminController extends AuthenticatedController
         OCModel::removeCAforResource($resource_id, $capture_agent);
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
     }
-	
-	// client status
-	function client_action()
-	{
 
-		$search_client = new SearchClient();
-		$series_client = new SeriesClient();
-		$caa_client    = new CaptureAgentAdminClient(); 
-		$series = $series_client->getAllSeries();
-		$testserie = $series_client->getSeriesDublinCore('258712');
-		$episodes = $search_client->getEpisodes('258712');
-		//$caa_client->getConfig();
-		//$agents = $caa_client->getCaptureAgents();
-		
-		//var_dump($agents);die;
-	}
+    // client status
+    function client_action()
+    {
+
+
+        //$search_client = new SearchClient();
+        //$series_client = new SeriesClient();
+        $caa_client    = new CaptureAgentAdminClient();
+        $this->agents  = $caa_client->getCaptureAgents();
+    }
 }
 ?>

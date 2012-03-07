@@ -53,7 +53,8 @@ class OCModel
 
        $stmt->execute();
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-       return $resources;
+       //return $resources;
+       return "hallo";
     }
 
     static function getAssignedOCRessources() {

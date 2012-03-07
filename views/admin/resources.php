@@ -25,6 +25,7 @@ OC.initAdmin();
 
 <h3> <?= _("Zuweisung der Capture Agents") ?> </h3>
 
+<? var_dump($resources) ?>
 <? foreach ($resources as $resource) :?>
     <div class="resources">
         <div class="topic resource"> <?= $resource['name'] ?> </div>
