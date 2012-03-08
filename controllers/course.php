@@ -38,6 +38,9 @@ class CourseController extends StudipController
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
+        // take care of the navigation icon
+        $navigation = Navigation::getItem('/course/opencast');
+        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
     }
 
     /**
@@ -46,8 +49,7 @@ class CourseController extends StudipController
     function index_action($active_id = '')
     {
         Navigation::activateItem('course/opencast/overview');
-        $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+
 
 
 
@@ -248,6 +250,13 @@ class CourseController extends StudipController
            $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
            $this->redirect(PluginEngine::getLink('opencast/course/config'));
         }
+    }
+
+    function upload_action()
+    {
+        Navigation::activateItem('course/opencast/upload');
+
+
     }
 
 

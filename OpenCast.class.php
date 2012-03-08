@@ -33,9 +33,12 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         $admin->setURL(PluginEngine::getURL('opencast/course/config'));
         $overview = new Navigation('Aufzeichnungen');
         $overview->setURL(PluginEngine::getURL('opencast/course/index'));
+        $upload = new Navigation('Upload');
+        $upload->setURL(PluginEngine::getURL('opencast/course/upload'));
         $main->addSubNavigation('overview', $overview);
         if ($perm->have_studip_perm('dozent', $SessSemName[1])) {
             $main->addSubNavigation('config', $admin);
+            $main->addSubNavigation('upload', $upload);
            
         }
         // Add everything to the global Navigation

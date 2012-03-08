@@ -1,4 +1,6 @@
 <?
+    use Studip\Button, Studip\LinkButton;
+
     if ($success = $flash['success']) {
         echo MessageBox::success($success);
     }
@@ -68,8 +70,8 @@ OC.initAdmin();
     </div>
 
      <div class="form_submit">
-    <?= makebutton("uebernehmen","input") ?>
-    <a href="<?=PluginEngine::getLink('opencast/admin/config/')?>"><?= makebutton("abbrechen")?></a>
+    <?= Button::createAccept(_('Übernehmen')) ?>
+    <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
     </div>
 </form>   
 

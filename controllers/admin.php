@@ -1,7 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  Andrï¿½ Klaï¿½en
+ * Copyright (c) 2010  Andr? Kla?en
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@ class AdminController extends AuthenticatedController
         $this->flash = Trails_Flash::instance();
 
 
-		/*
+        /*
         // let's init the services...
         $this->search_conf = OCRestClient::getConfig('search');
         if(isset ($this->search_conf)) {
@@ -45,7 +45,7 @@ class AdminController extends AuthenticatedController
                             }
                         }
                     }
-                     $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugefï¿½gt."), $update) : $success;
+                     $this->flash['success'] = $update > 0 ? $success . sprintf(_(" Es wurden %s neue Series gefunden und hinzugef?gt."), $update) : $success;
                 }
                 else {
                     $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
@@ -72,13 +72,13 @@ class AdminController extends AuthenticatedController
             }
         }
 
-		*/
-        
+        */
+
 
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
-        
+
 
     }
 
@@ -91,8 +91,8 @@ class AdminController extends AuthenticatedController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
-        
-        
+
+
        /* $this->series = $this->occlient->getAllSeries();
         // We got all series so preserve their ids
         foreach ($this->series as $key => $serie) {
@@ -100,14 +100,14 @@ class AdminController extends AuthenticatedController
         } */
 
     }
-    
+
     function config_action()
     {
 
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-config');
 
-      
+
 
 
         if (isset($this->flash['message'])) {
@@ -120,7 +120,7 @@ class AdminController extends AuthenticatedController
             ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
             ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) || true) {
 
-            
+
             $this->series_url = $this->series_conf['service_url'];
             $this->series_user = $this->series_conf['service_user'];
             $this->series_password = $this->series_conf['service_password'];
@@ -175,7 +175,7 @@ class AdminController extends AuthenticatedController
         $this->resources = OCModel::getOCRessources();
 
     }
-   
+
 
     function update_action()
     {
@@ -187,7 +187,7 @@ class AdminController extends AuthenticatedController
         $this->search_user = Request::get('search_user');
         $this->search_password = Request::get('search_password');
 
-        
+
         $this->scheduling_url = Request::get('scheduling_url');
         $this->scheduling_user = Request::get('scheduling_user');
         $this->scheduling_password = Request::get('scheduling_password');
@@ -195,13 +195,13 @@ class AdminController extends AuthenticatedController
         $this->captureadmin_url = Request::get('captureadmin_url');
         $this->captureadmin_user = Request::get('captureadmin_user');
         $this->captureadmin_password = Request::get('captureadmin_password');
-        
+
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
         OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
 
-        $success = _("ï¿½nderungen wurden erfolgreich ï¿½bernommen.");
+        $success = _("Änderungen wurden erfolgreich übernommen.");
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
@@ -215,7 +215,11 @@ class AdminController extends AuthenticatedController
 
         $this->resources = OCModel::getOCRessources();
         $this->agents = $caa_client->getCaptureAgents();
-        var_dump($this->resources);
+
+        if(empty($this->agents)) {
+            $this->flash['info'] = _('Es wurden keine passenden Ressourcen gefunden.');
+
+        }
         //$this->agents = $this->agents['agent-state-update'];
         $this->assigned_cas = OCModel::getAssignedCAS();
 
@@ -224,7 +228,7 @@ class AdminController extends AuthenticatedController
 
     function update_resource_action()
     {
-               
+
         $this->resources = OCModel::getOCRessources();
 
         foreach($this->resources as $resource) {
@@ -232,10 +236,10 @@ class AdminController extends AuthenticatedController
                 OCModel::setCAforResource($resource['resource_id'], $candidate_ca);
             }
         }
-  
+
 
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
-        
+
     }
 
     function remove_ca_action($resource_id, $capture_agent)
