@@ -18,8 +18,8 @@ class OCModel
             WHERE seminar_id = ?");
         $stmt->execute(array($course_id));
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $series;
+        if (empty($series)) return false;
+        else return $series;
     }
     
     static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible', $schedule=0) {
@@ -108,7 +108,6 @@ class OCModel
                 $return = $data->value;
             }
         }
-       
         return $return;
     }
 

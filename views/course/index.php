@@ -30,7 +30,7 @@ $items = $episode_ids;
             <td width="400" class="blank" style="vertical-align:top;">
                 <? if ($embed) : ?>
                     <iframe src="http://<?=$embed?>"
-                    	 style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="1" marginheight="0px" marginwidth="0px" width="460" height="468"></iframe>
+                         style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="1" marginheight="0px" marginwidth="0px" width="460" height="468"></iframe>
                     <? foreach ($items as $item) :?>
                         <? if ($item['id'] == $active_id) : ?>
                                         <?= $item['title'] ? '<b>'. $item['title'] .'</b><br/>' : ''?>

@@ -10,7 +10,9 @@
  */
 
 require_once 'app/controllers/studip_controller.php';
-require_once $this->trails_root.'/models/OCRestClient.php';
+//require_once $this->trails_root.'/models/OCRestClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
 class CourseController extends StudipController
@@ -50,10 +52,6 @@ class CourseController extends StudipController
     {
         Navigation::activateItem('course/opencast/overview');
 
-
-
-
-
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
@@ -61,50 +59,48 @@ class CourseController extends StudipController
 
         // lets get all episodes for the connected series
         if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
-            $cseries = OCModel::getConnectedSeries($this->course_id);
-           
+
             $this->episode_ids = array();
             $ids = array();
             $count = 0;
+            $this->search_client = new SearchClient();
+
             foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
-                
-                 if ($series[] = $this->search_client->getEpisode($serie['series_id'])){
-                     $x = 'search-results';
-           
-                     if($series[0]->$x->total > 0) {
-                         $has_episodes = true;
 
-                         foreach($series[0]->$x->result as $episode) {
-                            $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                            if(is_object($episode->mediapackage) && $visible['visible'] == 'true') {
-                                $count++;
-                                $ids[] = $episode->id;
-                                $this->episode_ids[] = array('id' => $episode->id,
-                                                                'title' => $episode->dcTitle,
-                                                                'start' => $episode->mediapackage->start,
-                                                                'duration' => $episode->mediapackage->duration,
-                                                                'description' => ''
-                                                           );
-                                }
-                         }
-                     } else {
-                         $has_episodes = false;
-                     }
+                if ($series = $this->search_client->getEpisodes($serie['series_id'])){
 
-                 }  else {
+                    foreach($series as $episode) {
+                        $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+
+                        if(is_object($episode->mediapackage) && !$visibility){
+                            $count+=1;
+                            $ids[] = $episode->id;
+                            $this->episode_ids[] = array('id' => $episode->id,
+                                'title' => $episode->dcTitle,
+                                'start' => $episode->mediapackage->start,
+                                'duration' => $episode->mediapackage->duration,
+                                'description' => ''
+                            );
+                        }
+                    }
+
+
+                } else {
                     $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Series Service");
-                 }
-            }
-            
-            if($active_id) {
-                $this->active_id = $active_id;
-            } else {
-                $this->active_id = $this->episode_ids[0][id];
-            }
-            if($has_episodes && $count > 0) {
-                $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+                }
             }
         }
+
+        if($active_id) {
+            $this->active_id = $active_id;
+        } else {
+            $this->active_id = $this->episode_ids[0][id];
+        }
+
+        if($count > 0) {
+            $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+        }
+
     }
     
     function config_action()
@@ -113,6 +109,7 @@ class CourseController extends StudipController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
+        $this->search_client = new SearchClient();
         
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
@@ -121,41 +118,55 @@ class CourseController extends StudipController
 
         
         $this->course_id = $_SESSION['SessionSeminar'];
-        $this->series = $this->series_client->getAllSeries();
-        
+
+        $series_client = new SeriesClient();
+        $this->series = $series_client->getAllSeries();
+
         //$this->series = OCModel::getUnconnectedSeries();
+        //$sem = new Seminar($this->course_id);
 
 
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        //$this->rseries = array_diff($this->series, $this->cseries);
-        $this->rseries = $this->series;
+        if(!$this->cseries) {
+            $this->rseries = $this->series;
+        } elseif(count($this->cseries) > 0) {
+            $this->connected = false;
+            $serie= $this->cseries;
+            $serie = array_pop($serie);
 
-        
-        
-
-
-        
-        $sem = new Seminar($this->course_id);
-
-        
-         if(count($this->cseries) > 0){
-             $this->connected = false;
-             $serie= $this->cseries;
-             $serie = array_pop($serie);
-             //var_dump($serie); die;
-             
-             if($serie['schedule'] == 1){
+            if($serie['schedule'] == 1){
                 $this->dates  = OCModel::getDates($this->course_id);
-             } else {
-                 $this->connected = true;
-                 if ($series[] = $this->search_client->getEpisode($serie['series_id'])){
-                     $x = 'search-results';
+            } else {
+                $this->connected = true;
+                if ($series[] = $this->search_client->getEpisodes($serie['series_id'])){
+                    $x = 'search-results';
 
-                     if($series[0]->$x->total > 0) {
-                         $this->episodes = $series[0]->$x->result;
-                     }                    
-                 }
-             }
+                    if($series[0]->$x->total > 0) {
+                        $this->episodes = $series[0]->$x->result;
+                    }
+                }
+            }
+
+        }
+
+
+
+
+
+
+
+        //$this->rseries = array_diff($this->series, $this->cseries);
+
+
+        
+        
+
+
+        
+
+        
+         {
+
          }
     }
     

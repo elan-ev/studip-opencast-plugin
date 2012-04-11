@@ -72,7 +72,6 @@
             if(isset($service_url) && self::checkService($service_url)) {
                 curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
                 $response = curl_exec($this->ochandler);
-                var_dump($response);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
                 if ($httpCode == 404){
                     return false;

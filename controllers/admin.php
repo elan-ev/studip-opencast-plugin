@@ -172,7 +172,7 @@ class AdminController extends AuthenticatedController
         }
 
         // After we've dsiplayed the server settings, we need to display the available resources and the corresponding capture agents
-        $this->resources = OCModel::getOCRessources();
+        //$this->resources = OCModel::getOCRessources();
 
     }
 
@@ -211,6 +211,7 @@ class AdminController extends AuthenticatedController
     {
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-resources');
+
         $caa_client = new CaptureAgentAdminClient();
 
         $this->resources = OCModel::getOCRessources();

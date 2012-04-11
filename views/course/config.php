@@ -22,7 +22,7 @@ OC.initAdmin();
     <?= MessageBox::info(sprintf(_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft.
                             Bitte verknüpfen eine bereits vorhandene Series oder %s erstellen Sie eine neue.%s"), 
                          '<a href="'.PluginEngine::getLink('opencast/course/create_series/') . '">', '</a>')) ?>
-    <div id="admin-accordion...">
+    <div id="admin-accordion">
         <h3><?=_('Wählen Sie unten eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten')?>:</h3>
         <?= $this->render_partial("course/_connectedSeries", array('course_id' => $course_id, 'cseries' => $cseries, 'rseries' => $rseries, 'series_client' => $series_client)) ?>
     </div>

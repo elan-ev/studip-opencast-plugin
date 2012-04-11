@@ -1,3 +1,7 @@
+<?
+    //var_dump($rseries, $course_id);
+?>
+
 <div>
         <? if (false && sizeof($cseries) == 0) : ?>
             <?= MessageBox::info(_("Es sind bislang noch keine Series verfügbar. Bitte überprüfen Sie die globalen Opencast Matterhorn Einstellungen.")) ?>
@@ -7,19 +11,21 @@
                     <div style="text-align: center;">
                     <p> <?//=_("Series ohne Zuordnung")?></p>
                     <? if(!empty ($rseries)) :?>
-                    
                     <select class="series_select" multiple="multiple" name="series[]">
-                        <? foreach($rseries->seriesList->series as $serie) :?>
-                            <? $s = $series_client->getSeries($serie->id); ?>
-                            <? if($s->series->additionalMetadata !=null) : ?>
+
+                        <? foreach($rseries->series as $serie) :?>
+                        <? //var_dump((isset($serie->additionalMetadata) || isset($serie->title)))//$s = $series_client->getSeries($serie->id); ?>
+                            <? if(isset($serie->id)) : ?>
+
                                 <option value="<?=$serie->id?>">
-                                    <?= OCModel::getMetadata($s->series->additionalMetadata, 'title')?>
+                                    <?= OCModel::getMetadata($serie->additionalMetadata, 'title')?>
+                                    <?//= $series->additionalMetadata?>
                                 </option>
                             <? endif ?>
                         <? endforeach ?>
                     </select>
-                    <? endif ?>
-                </div>
+         <? endif ?>
+</div>
 
 
             <!--
