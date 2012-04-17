@@ -22,6 +22,8 @@ $infobox_content = array(array(
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
 
-<section>
-    Gedöns
-</section>
+<h2><?=_("Medienupoad")?></h2>
+<iframe name="fileChooserAjax" id="fileChooserAjax" frameborder="0" scrolling="no" src="http://<?=$uploadurl ?>/ingest/filechooser-local.html">
+</iframe>
+
+

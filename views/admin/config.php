@@ -67,6 +67,15 @@ OC.initAdmin();
               <label class="form_label" for="captureadmin_password"><?=_("Passwort")?>:</label>
               <input id="group_name" type="password" name="captureadmin_password" value="<?=$captureadmin_password?>" size="50">
        </div>
+       <h3><?=_("Ingest Service")?></h3>
+       <div class="admin-accordion-content">
+              <label class="form_label" for="ingest_url"><?=_("Service-URL")?>:</label>
+              <input id="group_name" type="text" name="ingest_url" value="<?=$ingest_url?>" size="50" placeholder="INGEST_ENDPOINT_URL">
+              <label class="form_label" for="ingest_user"><?=_("Nutzerkennung")?>:</label>
+              <input id="group_name" type="text" name="ingest_user" value="<?=$ingest_user?>" size="50" placeholder="INGEST_ENDPOINT_USER">
+              <label class="form_label" for="ingest_password"><?=_("Passwort")?>:</label>
+              <input id="group_name" type="password" name="ingest_password" value="<?=$ingest_password?>" size="50">
+       </div>
     </div>
 
      <div class="form_submit">

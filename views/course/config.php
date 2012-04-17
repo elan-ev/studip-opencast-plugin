@@ -106,7 +106,7 @@ OC.initAdmin();
                 <th>Status</th>
                 <th>Aktionen</th>
             </tr>
-            <?foreach($episodes as $episode) :?>
+            <? foreach($episodes as $episode) :?>
 
                 <? if(isset($episode->mediapackage)) :?>
                 <tr>

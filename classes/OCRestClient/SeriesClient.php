@@ -15,7 +15,7 @@
         /**
          *  getAllSeries() - retrieves all series from conntected Opencast-Matterhorn Core
          *
-         *	@return array response all series
+         *  @return array response all series
          */
         function getAllSeries() {
             $service_url = "/series/all.json";

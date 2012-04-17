@@ -13,6 +13,7 @@ require_once 'app/controllers/studip_controller.php';
 //require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
 class CourseController extends StudipController
@@ -71,8 +72,7 @@ class CourseController extends StudipController
 
                     foreach($series as $episode) {
                         $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-
-                        if(is_object($episode->mediapackage) && !$visibility){
+                        if(is_object($episode->mediapackage) && $visibility['visible']){
                             $count+=1;
                             $ids[] = $episode->id;
                             $this->episode_ids[] = array('id' => $episode->id,
@@ -122,6 +122,7 @@ class CourseController extends StudipController
         $series_client = new SeriesClient();
         $this->series = $series_client->getAllSeries();
 
+
         //$this->series = OCModel::getUnconnectedSeries();
         //$sem = new Seminar($this->course_id);
 
@@ -138,11 +139,10 @@ class CourseController extends StudipController
                 $this->dates  = OCModel::getDates($this->course_id);
             } else {
                 $this->connected = true;
-                if ($series[] = $this->search_client->getEpisodes($serie['series_id'])){
+                if ($series = $this->search_client->getSeries($serie['series_id'])){
                     $x = 'search-results';
-
-                    if($series[0]->$x->total > 0) {
-                        $this->episodes = $series[0]->$x->result;
+                    if($series->$x->total > 0) {
+                        $this->episodes = $series->$x->result;
                     }
                 }
             }
@@ -266,7 +266,9 @@ class CourseController extends StudipController
     function upload_action()
     {
         Navigation::activateItem('course/opencast/upload');
-
+        $this->ingest_client = new IngestClient();
+        $conf = $this->ingest_client->getConfig('ingest');
+        $this->uploadurl = $conf['service_url'];
 
     }
 

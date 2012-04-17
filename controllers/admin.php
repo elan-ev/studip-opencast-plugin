@@ -118,6 +118,7 @@ class AdminController extends AuthenticatedController
         if( ($this->search_conf = OCRestClient::getConfig('search')) &&
             ($this->series_conf = OCRestClient::getConfig('series')) &&
             ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
+            ($this->ingest_conf = OCRestClient::getConfig('ingest')) &&
             ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) || true) {
 
 
@@ -135,6 +136,10 @@ class AdminController extends AuthenticatedController
             $this->scheduling_url = $this->schedule_conf['service_url'];
             $this->scheduling_user = $this->schedule_conf['service_user'];
             $this->scheduling_password = $this->schedule_conf['service_password'];
+
+            $this->ingest_url = $this->ingest_conf['service_url'];
+            $this->ingest_user = $this->ingest_conf['service_user'];
+            $this->ingest_password = $this->ingest_conf['service_password'];
 
             $this->captureadmin_url = $this->captureadmin_conf['service_url'];
             $this->captureadmin_user = $this->captureadmin_conf['service_user'];
@@ -192,6 +197,10 @@ class AdminController extends AuthenticatedController
         $this->scheduling_user = Request::get('scheduling_user');
         $this->scheduling_password = Request::get('scheduling_password');
 
+        $this->ingest_url = Request::get('ingest_url');
+        $this->ingest_user = Request::get('ingest_user');
+        $this->ingest_password = Request::get('ingest_password');
+
         $this->captureadmin_url = Request::get('captureadmin_url');
         $this->captureadmin_user = Request::get('captureadmin_user');
         $this->captureadmin_password = Request::get('captureadmin_password');
@@ -199,6 +208,7 @@ class AdminController extends AuthenticatedController
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
+        OCRestClient::setConfig('ingest',  $this->ingest_url, $this->ingest_user, $this->ingest_password);
         OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
 
         $success = _("Änderungen wurden erfolgreich übernommen.");

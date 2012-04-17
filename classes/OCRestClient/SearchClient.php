@@ -48,6 +48,26 @@
             } else return false;
         }
 
+        /**
+         *  getAllSeries() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn Core
+         *
+         *  @param void
+         *
+         *  @return array response of series
+         */
+        function getAllSeries() {
+
+            $service_url = "/search/series.json";
+            if($series = self::getJSON($service_url)){
+                //$x = "search-results";
+                //$episodes = $search->$x->result;
+                return $series;
+            } else return false;
+        }
+
+
+
+
         // other functions
 
         /**
