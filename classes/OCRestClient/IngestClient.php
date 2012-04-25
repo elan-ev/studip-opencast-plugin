@@ -26,6 +26,19 @@
         }
 
 
+        // other functions
+
+        function getUploadFrame() {
+
+
+            $frame = '<iframe name="fileChooserAjax" id="fileChooserAjax" frameborder="0" scrolling="no" '
+                   .    'src="http://' . $this->matterhorn_base_url .'/ingest/filechooser-local.html">'
+                   . '</iframe>';
+
+            return $frame;
+
+        }
+
 
     }
 

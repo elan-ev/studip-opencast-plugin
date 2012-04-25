@@ -23,7 +23,14 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 ?>
 
 <h2><?=_("Medienupoad")?></h2>
-<iframe name="fileChooserAjax" id="fileChooserAjax" frameborder="0" scrolling="no" src="http://<?=$uploadurl ?>/ingest/filechooser-local.html">
-</iframe>
+
+<form action="<?= PluginEngine::getLink('opencast/course/ingest/') ?>" enctype="multipart/form-data" method="post">
+        <input name="video" type="file">
+    <div class="form_submit">
+        <?= Button::createAccept(_('Übernehmen')) ?>
+        <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
+    </div>
+</form>
+
 
 

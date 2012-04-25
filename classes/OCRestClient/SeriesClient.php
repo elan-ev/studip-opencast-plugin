@@ -1,5 +1,9 @@
 <?php
+
+
     require_once "OCRestClient.php";
+    require_once $this->trails_root.'/models/OCModel.php';
+
     class SeriesClient extends OCRestClient
     {
         function __construct() {
@@ -43,7 +47,7 @@
          *
          *  @param string series_id Identifier for a Series
          *
-         *	@return string DC representation of a series
+         *  @return string DC representation of a series
          */
         function getSeriesDublinCore($series_id) {
 
@@ -55,6 +59,46 @@
 
             } else return false;
         }
+
+
+        /**
+         * createSeriesForSeminar - creates an new Series for a given course in OC Matterhorn
+         * @param string $course_id  - course identifier
+         * @return bool sucess or not
+         */
+        function createSeriesForSeminar($course_id) {
+
+
+            $xml = utf8_encode(OCModel::creatSeriesXML($course_id));
+
+            $post = array('series' => $xml);
+
+
+            $rest_end_point = "/series/?_method=put&";
+            $uri = $rest_end_point;
+            // setting up a curl-handler
+            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+            curl_setopt($this->ochandler, CURLOPT_POST, true);
+            curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+
+
+            $response = curl_exec($this->ochandler);
+            $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+            if ($httpCode == 201){
+
+                $new_series = json_decode($response);
+                $series_id = $new_series->series->id;
+                OCModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+
 
         // static functions...
         static function storeAllSeries($series_id) {
