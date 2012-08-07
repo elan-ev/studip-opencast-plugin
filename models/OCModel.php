@@ -217,6 +217,7 @@ class OCModel
 
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
+
         $name = $course->getName();
         $license = "Creative Commons"; // TODO
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
@@ -237,88 +238,39 @@ class OCModel
 
         $language = 'German';
 
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <series>
-                        <description>' .$course->description . '</description>
-                        <additionalMetadata>
-                            <metadata>
-                                <key>title</key>
-                                <value>'. $name .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>license</key>
-                                <value>'. $license . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>publisher</key>
-                                <value>' . $publisher . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>creator</key>
-                                <value>' . $creator . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>subject</key>
-                                <value>'.  $course->description .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>temporal</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>audience</key>
-                                <value>' . $audience . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>spatial</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>rightsHolder</key>
-                                <value>' . $rightsHolder . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>extent</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>created</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>language</key>
-                                <value>'. $language .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>isReplacedBy</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>type</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>available</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>modified</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>replaces</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>contributor</key>
-                                <value>' .$contributor . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>issued</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                        </additionalMetadata>
-                    </series>';
+
+        $xml = '<?xml version="1.0"?>
+                <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance/"
+                    xsi:schemaLocation="http://www.opencastproject.org http://www.opencastproject.org/schema.xsd" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                    xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn">
+
+                    <dcterms:title xml:lang="en">
+                        '. $name .'
+                    </dcterms:title>
+                    <dcterms:subject>
+                        '.  $course->description .'
+                    </dcterms:subject>
+                    <dcterms:description xml:lang="en">
+                        ' .$course->description . '
+                    </dcterms:description>
+                    <dcterms:creator>' . $publisher . '</dcterms:creator>
+                    <dcterms:contributor>' . $contributor . '</dcterms:contributor>
+                    <dcterms:publisher>
+                        ' . $publisher . '
+                    </dcterms:publisher>
+                    <dcterms:identifier>
+                        ' . $course_id . '
+                    </dcterms:identifier>
+                    <dcterms:modified xsi:type="dcterms:W3CDTF">
+                        ' . date('Y-m-d',$course->metadate->seminarStartTime) . '
+                    </dcterms:modified>
+                    <dcterms:format xsi:type="dcterms:IMT">
+                        video/x-dv
+                    </dcterms:format>
+                    <oc:promoted>
+                        true
+                    </oc:promoted>
+                </dublincore>';
 
         return $xml;
     }
@@ -364,6 +316,7 @@ class OCModel
 
         $start_time = $date->getStartTime();
         $end_time = $date->getEndTime();
+        /*
         $start = $start_time.'000';
         $end = $end_time.'000';
 
@@ -371,13 +324,14 @@ class OCModel
         $duration = $duration;
         
         $duration_in_hours = $duration;
+        */
 
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
-        $duration = $duration_in_hours;
-        $endDate = $end;
+        //$duration = $duration_in_hours;
+        //$endDate = $end;
         $language = "German";
         $licence = "General PublicS";
         $resources  = 'vga, audio';
@@ -389,7 +343,7 @@ class OCModel
         $location = $room->name;
         $abstract = $course->description;
 
-         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+         /*$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <event>
                         <contributor>'.$contributor.'</contributor>
                         <creator>' . $creator . '</creator>
@@ -416,9 +370,39 @@ class OCModel
                         </additionalMetadata>
                     </event>';
 
-         return $xml;
+         */
+         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                            <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <dcterms:creator>' . $creator . '</dcterms:creator>
+                                <dcterms:contributor>' . $contributor . '</dcterms:contributor>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">2011-04-06T08:03Z</dcterms:created>
+                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .' end='. self::getDCTime($end_time) .' scheme=W3C-DTF;</dcterms:temporal>
+                                <dcterms:description>' . $description . '</dcterms:description>
+                                <dcterms:subject>' . $abstract . '</dcterms:subject>
+                                <dcterms:language>' . $language . '</dcterms:language>
+                                <dcterms:spatial>' . $device . '</dcterms:spatial>
+                                <dcterms:title>' . $title . '</dcterms:title>
+                                <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
+                            </dublincore>';
+
+         return $dublincore;
 
      }
+
+    static function createACLXML() {
+
+    $acl = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <ns2:acl xmlns:ns2="org.opencastproject.security">
+                    <ace>
+                        <role>admin</role>
+                        <action>delete</action>
+                        <allow>true</allow>
+                     </ace>
+                </ns2:acl>';
+
+    return $acl;
+
+    }
 
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
@@ -433,6 +417,10 @@ class OCModel
         $stmt->execute(array($course_id, $episode_id));
         $episode = $stmt->fetch(PDO::FETCH_ASSOC);
         return $episode;
+    }
+
+    static function getDCTime($timestamp) {
+        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z;';
     }
 }
 ?>

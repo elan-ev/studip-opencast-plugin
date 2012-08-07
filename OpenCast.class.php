@@ -10,6 +10,7 @@
  */
 
 require_once 'vendor/trails/trails.php';
+require_once 'models/OCModel.php';
 
 
 class OpenCast extends StudipPlugin implements StandardPlugin
@@ -21,45 +22,27 @@ class OpenCast extends StudipPlugin implements StandardPlugin
     {
         parent::__construct();
 
-        global $SessSemName, $perm;
-
-        //.. now the subnavi
-        $main = new Navigation("OpenCast");
-        //$main = new Navigation("Veranstaltungsaufzeichnungen");
-        $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage('../../'.$this->getPluginPath().'/images/oc-logo.png');
-
-        $admin = new Navigation('Einstellungen');
-        $admin->setURL(PluginEngine::getURL('opencast/course/config'));
-        $overview = new Navigation('Aufzeichnungen');
-        $overview->setURL(PluginEngine::getURL('opencast/course/index'));
-        $upload = new Navigation('Upload');
-        $upload->setURL(PluginEngine::getURL('opencast/course/upload'));
-        $main->addSubNavigation('overview', $overview);
-        if ($perm->have_studip_perm('dozent', $SessSemName[1])) {
-            $main->addSubNavigation('config', $admin);
-            $main->addSubNavigation('upload', $upload);
-           
-        }
-        // Add everything to the global Navigation
-        if ($this->isActivated($_SESSION['SessionSeminar'])) {
-            Navigation::addItem('/course/opencast', $main);
+        // do nothing if plugin is deactivated in this seminar/institute
+        if (!$this->isActivated()) {
+            return;
         }
 
-        $style_attributes = array(
-            'rel'   => 'stylesheet',
-            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
-         PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
+        PageLayout::addScript($this->getPluginURL() . '/javascript/application.js');
+        PageLayout::addScript($this->getPluginURL() . '/javascript/jquery.tipTip.minified.js');
+        PageLayout::addScript($this->getPluginURL() . '/javascript/slimScroll.js');
+        PageLayout::addStylesheet($this->getPluginURL() . '/stylesheets/oc.css');
+        PageLayout::addStylesheet($this->getPluginURL() . '/stylesheets/tipTip.css');
 
-         $script_attributes = array(
-            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');
-         PageLayout::addHeadElement('script', $script_attributes, '');
-    }    
+        if (!version_compare($GLOBALS['SOFTWARE_VERSION'], '2.3', '>')) {
+            $navigation = $this->getTabNavigation(Request::get('cid', $GLOBALS['SessSemName'][1]));
+            Navigation::addItem('/course/opencast', $navigation['opencast']);
+        }
+    }
 
     /**
      * This method dispatches all actions.
      *
-     * @param string   part of the dispatch path that was not consumed
+     * @param string part of the dispatch path that was not consumed
      */
     function perform($unconsumed_path)
     {
@@ -74,6 +57,29 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      * @param string   course_id
      * @param string   last_visit
      */
+
+
+
+    function getTabNavigation($course_id) {
+        //global $SessSemName, $perm;
+
+
+        $navigation = new Navigation(_('OpenCast'), PluginEngine::getLink('opencast/course'));
+        $navigation->setImage('../../'.$this->getPluginPath().'/images/oc-logo.png');
+
+        // add main third-level navigation-item
+        $navigation->addSubNavigation('overview',     new Navigation(_('Aufzeichnungen'), PluginEngine::getLink('opencast/course/index')));
+        $navigation->addSubNavigation('config', new Navigation(_('Einstellungen'), PluginEngine::getLink('opencast/course/config')));
+
+        $cseries = OCModel::getConnectedSeries($course_id);
+        $serie = array_pop($cseries);
+        if($serie['schedule'] == 1) {
+            $navigation->addSubNavigation('scheduler',    new Navigation(_('Aufzeichnungen Planen'), PluginEngine::getLink('opencast/course/scheduler')));
+        }
+        return array('opencast' => $navigation);
+    }
+
+
 
 
     function getIconNavigation($course_id, $last_visit){

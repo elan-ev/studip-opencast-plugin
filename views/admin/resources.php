@@ -43,11 +43,14 @@ OC.initAdmin();
                             <li>
                                 <?= $aa['capture_agent'] ?>
                                 <? foreach ($agents as $agent) : ?>
-                                    <? if($agent['name'] ==  $aa['capture_agent']):?>
-                                        <? if($agent['state'] == 'idle') :?>
+                                    <? $agent = $agent->agent; ?>
+                                    <? if($agent->name ==  $aa['capture_agent']):?>
+                                        <? if($agent->state == 'idle') :?>
                                             <?= Assets::img('icons/16/blue/pause.png', array('title' => _("Idle"))) ?>
+                                        <? elseif($agent->state = 'unbknown') : ?>
+                                            <?= Assets::img('icons/16/blue/question.png', array('title' => _("Status unbekannt"))) ?>
                                         <? else: ?>
-                                            <?= Assets::img('icons/16/blue/video.png', array('title' => _("Idle"))) ?>
+                                            <?= Assets::img('icons/16/blue/video.png', array('title' => _("Beschäftigt"))) ?>
                                         <? endif; ?>
                                     <? endif; ?>
                                 <? endforeach; ?>
@@ -62,9 +65,10 @@ OC.initAdmin();
 
                 <? else :?>
                     <input type="hidden" name="action" value="add"/>
-                    <select name="<?=$resource['resource_id']?>">
+                <select name="<?=$resource['resource_id']?>">
                         <? foreach ($agents as $agent) : ?>
-                            <? $agent_name = $agent['name']; ?>
+                            <? $agent = $agent->agent; ?>
+                            <? $agent_name = $agent->name; ?>
                             <? if(!empty($assigned_cas)) :?>
                                 <? foreach($assigned_cas as $aca) : ?>
                                     <? if($aca['capture_agent'] == $agent_name ) :?>

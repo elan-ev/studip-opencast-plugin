@@ -13,6 +13,7 @@ require_once 'app/controllers/studip_controller.php';
 //require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
@@ -43,6 +44,7 @@ class CourseController extends StudipController
         }
         // take care of the navigation icon
         $navigation = Navigation::getItem('/course/opencast');
+        $this->imgagepath = '../../'.$this->dispatcher->trails_root.'/images/online-prev.png';
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
     }
 
@@ -51,6 +53,12 @@ class CourseController extends StudipController
      */
     function index_action($active_id = '')
     {
+
+        // set layout for index page
+        $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
+        $this->set_layout($layout);
+
+
         Navigation::activateItem('course/opencast/overview');
 
         if (isset($this->flash['message'])) {
@@ -79,7 +87,8 @@ class CourseController extends StudipController
                                 'title' => $episode->dcTitle,
                                 'start' => $episode->mediapackage->start,
                                 'duration' => $episode->mediapackage->duration,
-                                'description' => ''
+                                'description' => $episode->dcDescription,
+                                'author' => $episode->dcCreator
                             );
                         }
                     }
@@ -97,15 +106,17 @@ class CourseController extends StudipController
             $this->active_id = $this->episode_ids[0][id];
         }
 
+
         if($count > 0) {
             $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+            $this->engage_player_url = 'http://'. $this->search_conf['service_url']."/engage/ui/watch.html?id=".$this->active_id;
         }
 
     }
     
     function config_action()
     {
-        require_once 'lib/raumzeit/raumzeit_functions.inc.php';
+
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
@@ -119,8 +130,8 @@ class CourseController extends StudipController
         
         $this->course_id = $_SESSION['SessionSeminar'];
 
-        $series_client = new SeriesClient();
-        $this->series = $series_client->getAllSeries();
+        $this->series_client = new SeriesClient();
+        $this->series = $this->series_client->getAllSeries();
 
 
         //$this->series = OCModel::getUnconnectedSeries();
@@ -128,17 +139,26 @@ class CourseController extends StudipController
 
 
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
+
+
         if(!$this->cseries) {
             $this->rseries = $this->series;
+
         } elseif(count($this->cseries) > 0) {
             $this->connected = false;
             $serie= $this->cseries;
             $serie = array_pop($serie);
 
+            $this->serie_name = $this->series_client->getSeries($serie['series_id']);
+
+
+
+            $this->serie_id = $serie['series_id'];
             if($serie['schedule'] == 1){
                 $this->dates  = OCModel::getDates($this->course_id);
             } else {
                 $this->connected = true;
+
                 if ($series = $this->search_client->getSeries($serie['series_id'])){
                     $x = 'search-results';
                     if($series->$x->total > 0) {
@@ -149,25 +169,6 @@ class CourseController extends StudipController
 
         }
 
-
-
-
-
-
-
-        //$this->rseries = array_diff($this->series, $this->cseries);
-
-
-        
-        
-
-
-        
-
-        
-         {
-
-         }
     }
     
     function edit_action($course_id)
@@ -180,27 +181,70 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
-    function remove_series_action($series_id)
+    function remove_series_action($series_id,$approveRemoval= false, $studipticket = false)
     {
         $course_id = Request::get('cid');
-        OCModel::removeSeriesforCourse($course_id, $series_id);
-        $this->flash['message'] = _("Zuordnung wurde entfernt");
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $series_client = new SeriesClient();
+
+        if($approveRemoval  && check_ticket($studipticket)) {
+            OCModel::removeSeriesforCourse($course_id, $series_id);
+            $series_client->removeSeries($series_id);
+
+            $this->flash['message'] = _("Zuordnung wurde entfernt");
+            $this->redirect(PluginEngine::getLink('opencast/course/config'));
+            return;
+        } else {
+            $template = $GLOBALS['template_factory']->open('shared/question');
+            $template->set_attribute('approvalLink',PluginEngine::getLink('opencast/course/remove_series/' . $series_id . '/true/' . get_ticket()));
+            $template->set_attribute('disapprovalLink',PluginEngine::getLink('opencast/course/config'));
+            $template->set_attribute('question', _("Sind Sie sicher, dass Sie diese Series löschen möchten?"));
+
+            $this->flash['question'] = $template->render();
+            $this->redirect(PluginEngine::getLink('opencast/course/config'));
+            return;
+        }
     }
+
+
+    function scheduler_action()
+    {
+        require_once 'lib/raumzeit/raumzeit_functions.inc.php';
+        Navigation::activateItem('course/opencast/scheduler');
+        $navigation = Navigation::getItem('/course/opencast');
+        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+
+        $this->course_id = $_SESSION['SessionSeminar'];
+
+        $series_client = new SeriesClient();
+        //$this->series = $series_client->getAllSeries();
+        $this->cseries = OCModel::getConnectedSeries($this->course_id);
+
+
+
+
+        $this->dates  =  OCModel::getDates($this->course_id);
+
+
+
+    }
+
 
     function schedule_action($resource_id, $termin_id)
     {
 
-        $this->course_id = Request::get('cid');
 
-        if($this->scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+        $this->course_id = Request::get('cid');
+        $scheduler_client = new SchedulerClient();
+
+
+        if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Aufzeichnung wurde geplant.");
         } else {
             $this->flash['error'] = _("Aufzeichnung konnte nicht geplant werden.");
         }
 
         
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
 
     function unschedule_action($resource_id, $termin_id)
@@ -208,14 +252,16 @@ class CourseController extends StudipController
 
         $this->course_id = Request::get('cid');
 
-        if( $this->scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+        $scheduler_client = new SchedulerClient();
+
+        if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Die geplante Aufzeichnung wurde entfernt");
         } else {
             $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht entfernt werden.");
         }
 
 
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
 
 

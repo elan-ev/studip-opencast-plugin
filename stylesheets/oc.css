@@ -40,3 +40,35 @@
     width: 50%;
     display: inline;
 }
+
+.serieslist {
+    border-left: 1px dashed #bbbbbb;
+    padding-left: 20px;
+}
+
+.ocphead {
+    background-color: #F3F5F8;
+    border-bottom: 1px solid #EAEAEA;
+
+}
+
+.ocphead a {
+    color: #222;
+    text-decoration: none;
+}
+
+.occontet {
+    border-bottom: 1px solid #EAEAEA;
+    text-align: left;
+}
+
+.occontetlist {
+    list-style-type: none;
+    white-space: nowrap;
+    padding-left: 10px;
+}
+
+.ocplayerlink {
+    border-bottom: 1px solid #CCC;
+    text-align: left;
+}

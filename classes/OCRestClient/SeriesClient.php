@@ -22,9 +22,9 @@
          *  @return array response all series
          */
         function getAllSeries() {
-            $service_url = "/series/all.json";
+            $service_url = "/series/series.json";
             if($series = self::getJSON($service_url)){
-                return $series->seriesList;
+                return $series->catalogs;
             } else return false;
         }
 
@@ -36,9 +36,10 @@
          *	@return array response of a series
          */
         function getSeries($series_id) {
+
             $service_url = "/series/".$series_id.".json";
             if($series = self::getJSON($service_url)){
-                return $series->series;
+                return $series;
             } else return false;
         }
 
@@ -64,17 +65,20 @@
         /**
          * createSeriesForSeminar - creates an new Series for a given course in OC Matterhorn
          * @param string $course_id  - course identifier
-         * @return bool sucess or not
+         * @return bool success or not
          */
         function createSeriesForSeminar($course_id) {
 
 
             $xml = utf8_encode(OCModel::creatSeriesXML($course_id));
 
-            $post = array('series' => $xml);
+            $acl = utf8_encode(OCModel::createACLXML());
 
 
-            $rest_end_point = "/series/?_method=put&";
+            $post = array('series' => $xml, 'acl' => $acl);
+
+
+            $rest_end_point = "/series/";
             $uri = $rest_end_point;
             // setting up a curl-handler
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
@@ -87,8 +91,11 @@
 
             if ($httpCode == 201){
 
-                $new_series = json_decode($response);
-                $series_id = $new_series->series->id;
+                utf8_decode($response);
+                $s  = new SimpleXMLElement($response);
+                $series_id = $s->xpath('//dcterms:identifier');
+                $series_id = $series_id[0][0];
+
                 OCModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
 
                 return true;
@@ -97,7 +104,25 @@
             }
         }
 
+        /**
+         *  getSeriesDublinCore() - retrieves DC Representation for a given series identifier from conntected Opencast-Matterhorn Core
+         *
+         *  @param string series_id Identifier for a Series
+         *
+         *  @return success either true or false
+         */
+        function removeSeries($series_id) {
 
+            $service_url = "/series/".$series_id;
+            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+            curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+            $response = curl_exec($this->ochandler);
+            $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+            if($httpCode == 204){
+                return true;
+            } else return false;
+        }
 
 
         // static functions...

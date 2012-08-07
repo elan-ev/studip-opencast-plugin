@@ -17,7 +17,7 @@
          *
          *	@return array string response of connected Capture Agents
          */
-        function getCaptureAgents() {
+        function getCaptureAgentsXML() {
             // URL for Matterhorn 1.1
             // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
             $service_url = "/capture-admin/agents";
@@ -33,6 +33,13 @@
                 $json = json_encode($xml);
                 $agent_repsonse = json_decode($json,TRUE);
                 return $agent_repsonse['agent-state-update'];
+            } else return false;
+        }
+
+        function getCaptureAgents() {
+            $service_url = "/capture-admin/agents.json";
+            if($agents = self::getJSON($service_url)){
+                return $agents;
             } else return false;
         }
     }
