@@ -181,21 +181,25 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
-    function remove_series_action($series_id,$approveRemoval= false, $studipticket = false)
+    function remove_series_action($series_id, $delete_series = false,$approveRemoval = false, $studipticket = false)
     {
         $course_id = Request::get('cid');
         $series_client = new SeriesClient();
 
         if($approveRemoval  && check_ticket($studipticket)) {
+
             OCModel::removeSeriesforCourse($course_id, $series_id);
-            $series_client->removeSeries($series_id);
+
+            if($delete_series == 'true') {
+                $series_client->removeSeries($series_id);
+            }
 
             $this->flash['message'] = _("Zuordnung wurde entfernt");
             $this->redirect(PluginEngine::getLink('opencast/course/config'));
             return;
         } else {
             $template = $GLOBALS['template_factory']->open('shared/question');
-            $template->set_attribute('approvalLink',PluginEngine::getLink('opencast/course/remove_series/' . $series_id . '/true/' . get_ticket()));
+            $template->set_attribute('approvalLink',PluginEngine::getLink('opencast/course/remove_series/' . $series_id . '/'. $delete_series . '/true/' . get_ticket()));
             $template->set_attribute('disapprovalLink',PluginEngine::getLink('opencast/course/config'));
             $template->set_attribute('question', _("Sind Sie sicher, dass Sie diese Series löschen möchten?"));
 

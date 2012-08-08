@@ -72,9 +72,11 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         $navigation->addSubNavigation('config', new Navigation(_('Einstellungen'), PluginEngine::getLink('opencast/course/config')));
 
         $cseries = OCModel::getConnectedSeries($course_id);
-        $serie = array_pop($cseries);
-        if($serie['schedule'] == 1) {
-            $navigation->addSubNavigation('scheduler',    new Navigation(_('Aufzeichnungen Planen'), PluginEngine::getLink('opencast/course/scheduler')));
+        if(is_array($cseries)) {
+            $serie = array_pop($cseries);
+            if($serie['schedule'] == 1) {
+                $navigation->addSubNavigation('scheduler',    new Navigation(_('Aufzeichnungen Planen'), PluginEngine::getLink('opencast/course/scheduler')));
+            }
         }
         return array('opencast' => $navigation);
     }
