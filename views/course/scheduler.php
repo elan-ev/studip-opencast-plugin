@@ -49,7 +49,6 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                         <?= Assets::img('icons/16/blue/video.png', array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))) ?>
                     </a>
                     <?  else : ?>
-                    <? if($topic) :?>
                         <? if(date($d['date']) > time()) :?>
                             <a href="<?=PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id ) ?>">
                                 <?= Assets::img('icons/16/blue/date.png', array('title' => _("Aufzeichnung planen"))) ?>
@@ -57,9 +56,6 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                         <? else :?>
                             <?= Assets::img('icons/16/blue/exclaim-circle.png', array('title' =>  _("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."))) ?>
                         <? endif;?>
-                    <? else :?>
-                        <?= Assets::img('icons/16/blue/exclaim-circle.png', array('title' =>  _("Bitte geben Sie ein Thema für diese Veranstaltung an."))) ?>
-                        <? endif ;?>
                     <? endif; ?>
                 <?
 

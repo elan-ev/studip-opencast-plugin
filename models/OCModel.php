@@ -337,8 +337,11 @@ class OCModel
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
-        $startDate = $start;
-        $title = $issue->title;
+       if(!$issue->title) {
+           $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+       } else $title = $issue->title;
+
+
         // Additional Metadata
         $location = $room->name;
         $abstract = $course->description;

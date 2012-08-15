@@ -218,12 +218,7 @@ class CourseController extends StudipController
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
 
         $this->course_id = $_SESSION['SessionSeminar'];
-
-        $series_client = new SeriesClient();
-        //$this->series = $series_client->getAllSeries();
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-
-
 
 
         $this->dates  =  OCModel::getDates($this->course_id);
@@ -239,7 +234,6 @@ class CourseController extends StudipController
 
         $this->course_id = Request::get('cid');
         $scheduler_client = new SchedulerClient();
-
 
         if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Aufzeichnung wurde geplant.");
