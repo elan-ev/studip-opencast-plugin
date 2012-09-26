@@ -74,13 +74,12 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      * @param string   course_id
      * @param string   last_visit
      */
-
-
-    function getIconNavigation($course_id, $last_visit){
-
+    function getIconNavigation($course_id, $last_visit, $user_id)
+    {
+        return false;
     }
     
-        /**
+    /**
      * Return a template (an instance of the Flexi_Template class)
      * to be rendered on the course summary page. Return NULL to
      * render nothing for this plugin.
@@ -95,11 +94,10 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      *
      * @return object   template object to render or NULL
      */
-    
-    function getInfoTemplate($course_id) {
-    
+    public function getInfoTemplate($course_id) 
+    {
+        return false;
     }
-
 
     /**
      * Return a warning message to be printed before deactivation of
@@ -107,8 +105,50 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      *
      * @param $context   context range id
      */
-    public function deactivationWarning($context = null) {
+    public function deactivationWarning($context = null) 
+    {
         return _("Das Opencastplugin wurde deaktiviert.");
     }
+    
+     /**
+     * Callback function called after enabling a plugin.
+     * The plugin's ID is transmitted for convenience.
+     *
+     * @param $pluginId string The ID of the plugin just enabled.
+     */
+    public static function onEnable($pluginId)
+    {
+        return false;
+    }
 
+    /**
+     * Callback function called after disabling a plugin.
+     * The plugin's ID is transmitted for convenience.
+     *
+     * @param $pluginId string The ID of the plugin just disabled.
+     */
+    public static function onDisable($pluginId)
+    {
+        return false;
+    }
+    
+    function getTabNavigation($course_id)
+    {
+        return false;
+    }
+
+    /**
+     * return a list of ContentElement-objects, conatinging 
+     * everything new in this module
+     *
+     * @param  string   $course_id   the course-id to get the new stuff for
+     * @param  int      $last_visit  when was the last time the user visited this module
+     * @param  string   $user_id     the user to get the notifcation-objects for
+     *
+     * @return array an array of ContentElement-objects
+     */
+    function getNotificationObjects($course_id, $since, $user_id)
+    {
+        return false;
+    }
 }
