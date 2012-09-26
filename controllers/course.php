@@ -15,6 +15,7 @@ require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/classes/OCUpload.php';
 
 class CourseController extends StudipController
 {
@@ -266,6 +267,10 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $test = new OCUpload();
+            $test->post();
+        }
         Navigation::activateItem('course/opencast/upload');
         $this->ingest_client = new IngestClient();
 

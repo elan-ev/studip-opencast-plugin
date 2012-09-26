@@ -86,9 +86,15 @@
         /**
          * function getJSON - performs a REST-Call and retrieves response in JSON
          */
-        function getXML($service_url) {
+        function getXML($service_url, $data = array(), $is_get = true) {
             if(isset($service_url) && self::checkService($service_url)) {
                 curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+                if(!$is_get) {
+                    curl_setopt($this->ochandler, CURLOPT_POST, 1);
+                    if(!empty($data)) {
+                        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
+                    }
+                }
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
                 if ($httpCode == 404){
