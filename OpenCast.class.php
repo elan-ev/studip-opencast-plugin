@@ -84,7 +84,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
 
 
 
-    function getIconNavigation($course_id, $last_visit){
+    function getIconNavigation($course_id, $last_visit, $user_id){
 
     }
     
@@ -118,5 +118,11 @@ class OpenCast extends StudipPlugin implements StandardPlugin
     public function deactivationWarning($context = null) {
         return _("Das Opencastplugin wurde deaktiviert.");
     }
+    
+    /* interface method */
+      function getNotificationObjects($course_id, $since, $user_id)
+      {
+          return array();
+      }
 
 }
