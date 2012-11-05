@@ -10,12 +10,15 @@
  */
 
 require_once 'app/controllers/studip_controller.php';
-//require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
-require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
+require_once $this->trails_root.'/classes/OCUploadFile.php';
 require_once $this->trails_root.'/classes/OCUpload.php';
+require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/models/OCSeriesModel.php';
 
 class CourseController extends StudipController
 {
@@ -45,6 +48,7 @@ class CourseController extends StudipController
         // take care of the navigation icon
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+        
     }
 
     /**
@@ -60,14 +64,14 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
 
         // lets get all episodes for the connected series
-        if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
+        if ($connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
 
             $this->episode_ids = array();
             $ids = array();
             $count = 0;
             $this->search_client = new SearchClient();
 
-            foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
+            foreach(OCSeriesModel::getConnectedSeries($this->course_id) as $serie) {
 
                 if ($series = $this->search_client->getEpisodes($serie['series_id'])){
 
@@ -120,20 +124,18 @@ class CourseController extends StudipController
         
         $this->course_id = $_SESSION['SessionSeminar'];
 
-        $series_client = new SeriesClient();
-        $this->series = $series_client->getAllSeries();
-
+        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
+        
 
         //$this->series = OCModel::getUnconnectedSeries();
         //$sem = new Seminar($this->course_id);
-
-
-        $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        if(!$this->cseries) {
+/*
+        if(!$this->connectedSeries) {
             $this->rseries = $this->series;
-        } elseif(count($this->cseries) > 0) {
+        } elseif(count($this->connectedSeries) > 0) {
             $this->connected = false;
-            $serie= $this->cseries;
+            $serie= $this->connectedSeries;
             $serie = array_pop($serie);
 
             if($serie['schedule'] == 1){
@@ -151,40 +153,27 @@ class CourseController extends StudipController
         }
 
 
+*/
 
 
 
 
-
-        //$this->rseries = array_diff($this->series, $this->cseries);
-
-
-        
-        
-
-
-        
-
-        
-         {
-
-         }
+        //$this->rseries = array_diff($this->series, $this->connectedSeries);
     }
     
     function edit_action($course_id)
     {   
         $series = Request::getArray('series');
         foreach( $series as $serie) {
-            OCModel::setSeriesforCourse($course_id, $serie);
+            OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
         $this->flash['message'] = _("Änderungen wurden erflolgreich übernommen");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
-    function remove_series_action($series_id)
+    function remove_series_action($course_id, $series_id)
     {
-        $course_id = Request::get('cid');
-        OCModel::removeSeriesforCourse($course_id, $series_id);
+        OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
         $this->flash['message'] = _("Zuordnung wurde entfernt");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
@@ -267,13 +256,13 @@ class CourseController extends StudipController
 
     function upload_action()
     {
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $test = new OCUpload();
-            $test->post();
-        }
         Navigation::activateItem('course/opencast/upload');
-        $this->ingest_client = new IngestClient();
-
+    }
+    
+    
+    function get_seriesID()
+    {
+        return '';
     }
 
 

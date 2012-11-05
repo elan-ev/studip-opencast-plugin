@@ -3,6 +3,7 @@
 
     require_once "OCRestClient.php";
     require_once $this->trails_root.'/models/OCModel.php';
+    require_once $this->trails_root.'/models/OCSeriesModel.php';
 
     class SeriesClient extends OCRestClient
     {
@@ -22,9 +23,10 @@
          *  @return array response all series
          */
         function getAllSeries() {
-            $service_url = "/series/all.json";
+            $service_url = "/series/series.json";
+            
             if($series = self::getJSON($service_url)){
-                return $series->seriesList;
+                return $series->catalogs;
             } else return false;
         }
 
@@ -69,27 +71,31 @@
         function createSeriesForSeminar($course_id) {
 
 
-            $xml = utf8_encode(OCModel::creatSeriesXML($course_id));
+            $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
+            
+            $ACLData = array( 'ROLE_ADMIN' => array(
+                                                'read' => 'true',
+                                                'write' => 'true',
+                                                'analyze' => 'true'),
+                               'ROLE_ANONYMOUS' => array(
+                                                'read' => 'true'
+                               )
+                        );
+            $ACL = OCSeriesModel::createSeriesACL($ACLData); 
 
-            $post = array('series' => $xml);
+            $post = array('series' => $dublinCore,
+                        'acl' => $ACL);
 
+            $res = self::getXML('/series', $post, false, true);
+            $string = str_replace('dcterms:', '', $res[0]);
+            $xml = simplexml_load_string($string);
+            $json = json_decode(json_encode($xml), true);
 
-            $rest_end_point = "/series/?_method=put&";
-            $uri = $rest_end_point;
-            // setting up a curl-handler
-            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
-            curl_setopt($this->ochandler, CURLOPT_POST, true);
-            curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
+            if ($res[1] == 201){
 
-
-            $response = curl_exec($this->ochandler);
-            $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-            if ($httpCode == 201){
-
-                $new_series = json_decode($response);
-                $series_id = $new_series->series->id;
-                OCModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
+                $new_series = json_decode($res[0]);
+                $series_id = $json['identifier'];
+                OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
 
                 return true;
             } else {

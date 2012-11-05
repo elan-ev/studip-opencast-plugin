@@ -2,7 +2,7 @@
     
 class OCModel
 {
-
+/** moved to series Model
     static function getUnconnectedSeries() {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_series
@@ -11,7 +11,8 @@ class OCModel
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $series;
     }
-    
+ */
+    /** moved series model
     static function getConnectedSeries($course_id) {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
@@ -21,7 +22,8 @@ class OCModel
         if (empty($series)) return false;
         else return $series;
     }
-    
+    */
+    /* moved to series model
     static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible', $schedule=0) {
         $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
@@ -33,17 +35,19 @@ class OCModel
                 VALUES (?, ?, ?, ? )");
         return $stmt->execute(array($series_id, $course_id, $visibility, $schedule));
     }
-    
+     */
+    /* moved to series model
     static function removeSeriesforCourse($course_id, $series_id) {
-        $stmt = DBManager::get()->prepare("UPDATE 
+       $stmt = DBManager::get()->prepare("UPDATE 
                 oc_series SET seminars = seminars-1
                 WHERE series_id =?");
        $stmt->execute(array($course_id));
        $stmt = DBManager::get()->prepare("DELETE FROM
                 oc_seminar_series
-                WHERE series_id =? AND seminar_id = ?");
+                WHERE series_id = ? AND seminar_id = ?");
         return $stmt->execute(array($series_id, $course_id));
     }
+     */
 
     static function getOCRessources() {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
@@ -208,120 +212,8 @@ class OCModel
         return $success;
     }
 
-    /**
-     * createSeriesXML - creates an xml representation for a new OC-Series
-     * @param string $course_id
-     * @return string xml - the xml representation of the string  
-     */
-    static function creatSeriesXML($course_id) {
-
-        require_once 'lib/classes/Institute.class.php';
-        $course = new Seminar($course_id);
-        $name = $course->getName();
-        $license = "Creative Commons"; // TODO
-        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
-
-
-        $inst = Institute::find($course->institut_id);
-        $inst_data = $inst->getData();
-        $publisher = $inst_data['name'];
-
-        //$start = $course->getStartSemester();
-        //$end = $course->getEndSemesterVorlesEnde();
-        $audience = "General Public";
-
-        $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
-        $contributor = $instructor['fullname'];
-        $creator = $inst_data['name'];
-
-        $language = 'German';
-
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <series>
-                        <description>' .$course->description . '</description>
-                        <additionalMetadata>
-                            <metadata>
-                                <key>title</key>
-                                <value>'. $name .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>license</key>
-                                <value>'. $license . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>publisher</key>
-                                <value>' . $publisher . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>creator</key>
-                                <value>' . $creator . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>subject</key>
-                                <value>'.  $course->description .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>temporal</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>audience</key>
-                                <value>' . $audience . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>spatial</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>rightsHolder</key>
-                                <value>' . $rightsHolder . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>extent</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>created</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>language</key>
-                                <value>'. $language .'</value>
-                            </metadata>
-                            <metadata>
-                                <key>isReplacedBy</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>type</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>available</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>modified</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                            <metadata>
-                                <key>replaces</key>
-                                <value>demo</value>
-                            </metadata>
-                            <metadata>
-                                <key>contributor</key>
-                                <value>' .$contributor . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>issued</key>
-                                <value>1314196388195</value>
-                            </metadata>
-                        </additionalMetadata>
-                    </series>';
-
-        return $xml;
-    }
+   
+   
 
     /**
      * createScheduleEventXML - creates an xml representation for a new OC-Series
@@ -419,7 +311,7 @@ class OCModel
          return $xml;
 
      }
-
+/** moved to Series Model
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_episodes (seminar_id, episode_id, visible)
@@ -434,5 +326,7 @@ class OCModel
         $episode = $stmt->fetch(PDO::FETCH_ASSOC);
         return $episode;
     }
+ * 
+ */
 }
 ?>

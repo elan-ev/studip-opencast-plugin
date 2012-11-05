@@ -373,8 +373,6 @@
                         });
                     }
                 }
-                formData.append('chunks', options.chunksNumber);
-                formData.append('chunkIndex', options.chunkIndex);
                 options.data = formData;
             }
             // Blob reference is not needed anymore, free memory:
