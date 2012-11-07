@@ -38,7 +38,6 @@ class UploadController extends StudipController
             if($this->file->isNew()) {
                 $this->initNewUpload();
             }
-            
             if($this->file->getMediaPackage() && $this->file->getJobID()) {
                 //Step 2.2 Upload all chunks
                 $this->uploadChunk();
@@ -79,7 +78,7 @@ class UploadController extends StudipController
         }
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
-            echo htmlentities($content);
+            echo 'Ingest Started: '.htmlentities($content);
         } else echo 'mist';
         
     }
@@ -153,15 +152,11 @@ class UploadController extends StudipController
         } else {
             $this->error[] = _('Fehler beim anlegen des Media Packages');
         }
-        $episodeData = array('title' => 'Test Episode StudIP',
-            'creator' => 'Test Presenter StudIP',
-            'ispartof' => '',
-            'recordDate' => '2012-10-28',
-            'contributor' => 'Ich',
-            'subject' => 'Test Subject StudIP',
-            'language' => 'Deutsch',
-            'description' => 'Test description StudIP',
-            'created' => '2012-10-28T14:09:00Z');
+        //TODO: sicherheit Request
+        foreach($_POST as $key => $val) {
+            $episodeData[$key] = $val;
+        }
+        
         $this->file->setEpisodeData($episodeData);
     }
     private function uploadChunk()

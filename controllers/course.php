@@ -42,6 +42,8 @@ class CourseController extends StudipController
             $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
         } elseif (!$this->search_client->getAllSeries()) {
              $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
+        //TODO: Zeile 43 gibt fatal error wenn keine config angelegt ist!
+             
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
@@ -76,7 +78,7 @@ class CourseController extends StudipController
                 if ($series = $this->search_client->getEpisodes($serie['series_id'])){
 
                     foreach($series as $episode) {
-                        $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+                        $visibility = OCSeriesModel::getVisibilityForEpisode($this->course_id, $episode->id);
                         if(is_object($episode->mediapackage) && $visibility['visible']){
                             $count+=1;
                             $ids[] = $episode->id;
@@ -256,6 +258,8 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        //TODO: gibt es keine generische Funktion dafür?
+        $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         Navigation::activateItem('course/opencast/upload');
     }
     

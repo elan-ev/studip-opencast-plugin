@@ -24,20 +24,33 @@ $infobox_content = array(array(
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
 <!-- TODO: adresse per funktion erhalten -->
-<script src="/trunk/plugins_packages/elan-ev/OpenCast/vendor/upload/js/jquery.fileupload.js"></script>
-<script src="/trunk/plugins_packages/elan-ev/OpenCast/vendor/upload/js/vendor/jquery.ui.widget.js"></script>
-<script src="/trunk/plugins_packages/elan-ev/OpenCast/vendor/upload/js/jquery.iframe-transport.js"></script>
+<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/jquery.fileupload.js"></script>
+<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/vendor/jquery.ui.widget.js"></script>
+<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/jquery.iframe-transport.js"></script>
 <script language="javascript">
     $(function (){
         $('#video_upload').fileupload({
             maxChunkSize: <?= OC_UPLOAD_CHUNK_SIZE ?>,
-            multipart: false
+            add: function (e, data) {
+                 $('#total_file_size').attr('value', data.files[0].size);
+                 $( "#progressbar" ).progressbar({
+                    value: 0
+                 });
+                 data.submit();
+           },
+           progressall: function(e, data) {
+               var progress = parseInt(data.loaded / data.total * 100, 10);
+               $( "#progressbar" ).progressbar( "value", progress);
+           },
+           done: function(e, data) {
+               $( "#progressbar" ).progressbar('destroy');
+           }
         });
     });
 </script>
 <h2><?= _("Medienupoad") ?></h2>
 
-<form action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
+<form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
     
 
     <div>                      
@@ -61,7 +74,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                     <span>* </span>
                     <span id="i18n_date_label">Recording Date</span>:
                 </label>                
-                <input type="text" name="recordDate" id="recordDate" size="10">
+                <input type="text" name="recordDate" value="2012-10-28" id="recordDate" size="10">
             </li>               
             <li>                
                 <label id="startTimeLabel">
@@ -70,7 +83,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                 </label>                
                 <select id="startTimeHour" name="startTimeHour">                  
                     <option value="0">00</option>                  
-                    <option value="1">01</option>                  
+                    <option value="1" default>01</option>                  
                     <option value="2">02</option>                  
                     <option value="3">03</option>                  
                     <option value="4">04</option>                  
@@ -125,7 +138,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                     <option value="27">27</option>                  
                     <option value="28">28</option>                  
                     <option value="29">29</option>                  
-                    <option value="30">30</option>                  
+                    <option value="30" default>30</option>                  
                     <option value="31">31</option>                  
                     <option value="32">32</option>                  
                     <option value="33">33</option>                  
@@ -191,10 +204,14 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 
     <label for="video_upload">Datei:</label>
     <input name="video" type="file" id="video_upload">
+    <div id="progressbarholder" style="overflow: hidden; padding-top: 5px; height: 30px; width:50%; margin: 0 auto;">
+        <div id="progressbar"></div>
+    </div>
     <div class="form_submit">
 <?= Button::createAccept(_('Übernehmen')) ?>
 <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
     </div>
+    <input type="hidden" value="" name="total_file_size" id="total_file_size" />
 </form>
 
 

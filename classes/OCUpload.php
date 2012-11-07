@@ -11,21 +11,15 @@ class OCUpload extends UploadHandler
     }
     
     public function post() {
-        $upload = isset($_FILES[$this->options['param_name']]) ?
-            $_FILES[$this->options['param_name']] : null;
-        
-        $file = $this->handle_file_upload(
-            isset($upload['tmp_name']) ? $upload['tmp_name'] : null,
-            isset($_SERVER['HTTP_X_FILE_NAME']) ?
-                $_SERVER['HTTP_X_FILE_NAME'] : (isset($upload['name']) ?
-                    $upload['name'] : null),
-            isset($_SERVER['HTTP_X_FILE_SIZE']) ?
-                $_SERVER['HTTP_X_FILE_SIZE'] : (isset($upload['size']) ?
-                    $upload['size'] : null),
-            isset($_SERVER['HTTP_X_FILE_TYPE']) ?
-                $_SERVER['HTTP_X_FILE_TYPE'] : (isset($upload['type']) ?
-                    $upload['type'] : null),
-            isset($upload['error']) ? $upload['error'] : null
+        //TODO: Falls nicht möglich Fehler ausgeben wegen zu altem browser
+        $upload = isset($_FILES['video']) ?
+            $_FILES['video'] : null;
+        $totalFileSize = Request::int('total_file_size');
+        $file = $this->handle_file_upload($upload['tmp_name'],
+                $upload['name'],
+                $totalFileSize,
+                $upload['type'],
+                $upload['error']
         );
         return $file; 
     }
@@ -36,7 +30,8 @@ class OCUpload extends UploadHandler
         if ($uploaded_file && is_uploaded_file($uploaded_file)) {
             // multipart/formdata uploads (POST method uploads)
             $file->setChunkPath($uploaded_file); //TODO: ist das absoluter pfad?
-        } else {
+        } else {// wenn älterer Firefox
+            die;
             $file->createChunkFile();
         }
         return $file;
