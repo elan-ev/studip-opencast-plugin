@@ -31,12 +31,17 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
     $(function (){
         $('#video_upload').fileupload({
             maxChunkSize: <?= OC_UPLOAD_CHUNK_SIZE ?>,
+            limitMultiFileUploads: 1,
             add: function (e, data) {
-                 $('#total_file_size').attr('value', data.files[0].size);
-                 $( "#progressbar" ).progressbar({
-                    value: 0
+                
+                 $('#btn_accept').click(function(e) {
+                     $('#total_file_size').attr('value', data.files[0].size);
+                     $( "#progressbar" ).progressbar({
+                        value: 0
+                     });
+                     data.submit();
+                     return false;
                  });
-                 data.submit();
            },
            progressall: function(e, data) {
                var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -44,6 +49,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
            },
            done: function(e, data) {
                $( "#progressbar" ).progressbar('destroy');
+               $('#video_upload').val('');
            }
         });
     });
@@ -208,7 +214,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <div id="progressbar"></div>
     </div>
     <div class="form_submit">
-<?= Button::createAccept(_('Übernehmen')) ?>
+<?= Button::createAccept(_('Übernehmen'), null, array('id' => 'btn_accept')) ?>
 <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
     </div>
     <input type="hidden" value="" name="total_file_size" id="total_file_size" />
