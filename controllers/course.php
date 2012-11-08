@@ -58,6 +58,7 @@ class CourseController extends StudipController
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
 
+        $search_client = new SearchClient();
 
         Navigation::activateItem('course/opencast/overview');
 
@@ -69,19 +70,22 @@ class CourseController extends StudipController
         // lets get all episodes for the connected series
         if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
 
+
             $this->episode_ids = array();
             $ids = array();
             $count = 0;
             $this->search_client = new SearchClient();
 
             foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
+               // var_dump($serie['series_id']); die;
+                if ($series = $search_client->getEpisodes($serie['series_id'])){
 
-                if ($series = $this->search_client->getEpisodes($serie['series_id'])){
 
                     foreach($series as $episode) {
                         $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                        if(is_object($episode->mediapackage) && $visibility['visible']){
+                        if(is_object($episode->mediapackage) && true){//$visibility['visible']){
                             $count+=1;
+                            //var_dump($episode);
                             $ids[] = $episode->id;
                             $this->episode_ids[] = array('id' => $episode->id,
                                 'title' => $episode->dcTitle,

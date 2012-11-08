@@ -27,9 +27,9 @@ class OpenCast extends StudipPlugin implements StandardPlugin
             return;
         }
 
-        PageLayout::addScript($this->getPluginURL() . '/javascript/application.js');
-        PageLayout::addScript($this->getPluginURL() . '/javascript/jquery.tipTip.minified.js');
-        PageLayout::addScript($this->getPluginURL() . '/javascript/slimScroll.js');
+        PageLayout::addScript($this->getPluginURL() . '/javascripts/application.js');
+        PageLayout::addScript($this->getPluginURL() . '/javascripts/jquery.tipTip.minified.js');
+        PageLayout::addScript($this->getPluginURL() . '/javascripts/slimScroll.js');
         PageLayout::addStylesheet($this->getPluginURL() . '/stylesheets/oc.css');
         PageLayout::addStylesheet($this->getPluginURL() . '/stylesheets/tipTip.css');
 
