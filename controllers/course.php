@@ -314,9 +314,9 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        //TODO: gibt es keine generische Funktion dafür?
+        $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         Navigation::activateItem('course/opencast/upload');
-        $this->ingest_client = new IngestClient();
-
     }
 
 
