@@ -36,23 +36,23 @@ class OpencastAdministration extends StudipPlugin implements AdministrationPlugi
             $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
             $main->addSubNavigation('oc-resources', $resources);
 
-			// Clienttest
-			$client = new Navigation('OC Client Status');
+            /*// Clienttest
+            $client = new Navigation('OC Client Status');
             $client->setURL(PluginEngine::getURL('opencast/admin/client'));
             $main->addSubNavigation('oc-client', $client);
-			
+            */
             
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
             Navigation::addItem('/admin/config/oc-resources', $resources);
-            Navigation::addItem('/admin/config/oc-client', $client);
+           // Navigation::addItem('/admin/config/oc-client', $client);
 
         }
-        
-         $style_attributes = array(
+
+        $style_attributes = array(
             'rel'   => 'stylesheet',
             'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
-         PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
+        PageLayout::addHeadElement('link',  array_merge($style_attributes, array()),'');
 
          $script_attributes = array(
             'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');

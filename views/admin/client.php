@@ -1,12 +1,14 @@
 <section>
+
 <h1> <?=_('Capture Agent Status')?> </h1>
     <ul>
     <? foreach($agents as $agent) : ?>
+        <? $agent = $agent->agent; ?>
         <li>
-            <?= $agent['name'] ?>
+            <?= $agent->name ?>
             <ul>
-                <li> Status: <?= $agent['state'] ?> </li>
-                <li> URL: <?= $agent['url'] ?> </li>
+                <li> Status: <?= $agent->state ?> </li>
+                <li> URL: <?= $agent->url ?> </li>
             </ul>
         </li>
         <? endforeach ; ?>

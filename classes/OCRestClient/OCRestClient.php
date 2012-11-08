@@ -27,6 +27,14 @@
             curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
             curl_setopt($this->ochandler, CURLOPT_ENCODING, "ISO-8859-1");
             curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
+
+            //ssl
+            //curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
+            //curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
+            //curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
+
+            // debugging
+            //curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
         }
 
         /**

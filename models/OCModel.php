@@ -212,8 +212,72 @@ class OCModel
         return $success;
     }
 
-   
-   
+    /**
+     * createSeriesXML - creates an xml representation for a new OC-Series
+     * @param string $course_id
+     * @return string xml - the xml representation of the string  
+     */
+    static function creatSeriesXML($course_id) {
+
+        require_once 'lib/classes/Institute.class.php';
+        $course = new Seminar($course_id);
+
+        $name = $course->getName();
+        $license = "Creative Commons"; // TODO
+        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
+
+
+        $inst = Institute::find($course->institut_id);
+        $inst_data = $inst->getData();
+        $publisher = $inst_data['name'];
+
+        //$start = $course->getStartSemester();
+        //$end = $course->getEndSemesterVorlesEnde();
+        $audience = "General Public";
+
+        $instructors = $course->getMembers('dozent');
+        $instructor = array_pop($instructors);
+        $contributor = $instructor['fullname'];
+        $creator = $inst_data['name'];
+
+        $language = 'German';
+
+
+        $xml = '<?xml version="1.0"?>
+                <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance/"
+                    xsi:schemaLocation="http://www.opencastproject.org http://www.opencastproject.org/schema.xsd" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                    xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn">
+
+                    <dcterms:title xml:lang="en">
+                        '. $name .'
+                    </dcterms:title>
+                    <dcterms:subject>
+                        '.  $course->description .'
+                    </dcterms:subject>
+                    <dcterms:description xml:lang="en">
+                        ' .$course->description . '
+                    </dcterms:description>
+                    <dcterms:creator>' . $publisher . '</dcterms:creator>
+                    <dcterms:contributor>' . $contributor . '</dcterms:contributor>
+                    <dcterms:publisher>
+                        ' . $publisher . '
+                    </dcterms:publisher>
+                    <dcterms:identifier>
+                        ' . $course_id . '
+                    </dcterms:identifier>
+                    <dcterms:modified xsi:type="dcterms:W3CDTF">
+                        ' . date('Y-m-d',$course->metadate->seminarStartTime) . '
+                    </dcterms:modified>
+                    <dcterms:format xsi:type="dcterms:IMT">
+                        video/x-dv
+                    </dcterms:format>
+                    <oc:promoted>
+                        true
+                    </oc:promoted>
+                </dublincore>';
+
+        return $xml;
+    }
 
     /**
      * createScheduleEventXML - creates an xml representation for a new OC-Series
@@ -256,6 +320,7 @@ class OCModel
 
         $start_time = $date->getStartTime();
         $end_time = $date->getEndTime();
+        /*
         $start = $start_time.'000';
         $end = $end_time.'000';
 
@@ -263,25 +328,29 @@ class OCModel
         $duration = $duration;
         
         $duration_in_hours = $duration;
+        */
 
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
-        $duration = $duration_in_hours;
-        $endDate = $end;
+        //$duration = $duration_in_hours;
+        //$endDate = $end;
         $language = "German";
         $licence = "General PublicS";
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
-        $startDate = $start;
-        $title = $issue->title;
+       if(!$issue->title) {
+           $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+       } else $title = $issue->title;
+
+
         // Additional Metadata
         $location = $room->name;
         $abstract = $course->description;
 
-         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+         /*$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                     <event>
                         <contributor>'.$contributor.'</contributor>
                         <creator>' . $creator . '</creator>
@@ -308,10 +377,40 @@ class OCModel
                         </additionalMetadata>
                     </event>';
 
-         return $xml;
+         */
+         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                            <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <dcterms:creator>' . $creator . '</dcterms:creator>
+                                <dcterms:contributor>' . $contributor . '</dcterms:contributor>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">2011-04-06T08:03Z</dcterms:created>
+                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .' end='. self::getDCTime($end_time) .' scheme=W3C-DTF;</dcterms:temporal>
+                                <dcterms:description>' . $description . '</dcterms:description>
+                                <dcterms:subject>' . $abstract . '</dcterms:subject>
+                                <dcterms:language>' . $language . '</dcterms:language>
+                                <dcterms:spatial>' . $device . '</dcterms:spatial>
+                                <dcterms:title>' . $title . '</dcterms:title>
+                                <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
+                            </dublincore>';
+
+         return $dublincore;
 
      }
-/** moved to Series Model
+
+    static function createACLXML() {
+
+    $acl = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <ns2:acl xmlns:ns2="org.opencastproject.security">
+                    <ace>
+                        <role>admin</role>
+                        <action>delete</action>
+                        <allow>true</allow>
+                     </ace>
+                </ns2:acl>';
+
+    return $acl;
+
+    }
+
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_episodes (seminar_id, episode_id, visible)
@@ -326,7 +425,9 @@ class OCModel
         $episode = $stmt->fetch(PDO::FETCH_ASSOC);
         return $episode;
     }
- * 
- */
+
+    static function getDCTime($timestamp) {
+        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z;';
+    }
 }
 ?>

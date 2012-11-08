@@ -8,12 +8,12 @@
                     <p> <?//=_("Series ohne Zuordnung")?></p>
                     <? if(!empty ($unconnectedSeries)) :?>
                     <select class="series_select" multiple="multiple" name="series[]">
+                        <? $x = 'http://purl.org/dc/terms/'; ?>
+                        <? foreach($rseries as $serie) :?>
+                            <? if(isset($serie->$x->identifier[0]->value)) : ?>
 
-                        <? foreach($unconnectedSeries as $serie) :?>
-                            <? if(isset($serie['identifier'])) : ?>
-
-                                <option value="<?=$serie['identifier']?>">
-                                    <?= $serie['title'] ?>
+                                <option value="<?=$serie->$x->identifier[0]->value?>">
+                                    <?= $serie->$x->title[0]->value?>
                                     <?//= $series->additionalMetadata?>
                                 </option>
                             <? endif ?>
@@ -61,8 +61,8 @@
                 </div>
             </div> 
             <div style="padding-top:2em;clear:both" class="form_submit">
-                <?= makebutton("uebernehmen","input") ?>
-                <a href="<?=PluginEngine::getLink('opencast/course/index')?>"><?= makebutton("abbrechen")?></a>
+                <?= \Studip\Button::createAccept(_('Übernehmen')) ?>
+                <?= \Studip\LinkButton::createCancel(_('Abbrechen'),PluginEngine::getLink('opencast/course/index')) ?>
             </div>
         </form>
         <? endif;?>
