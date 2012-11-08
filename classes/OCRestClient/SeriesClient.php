@@ -3,6 +3,7 @@
 
     require_once "OCRestClient.php";
     require_once $this->trails_root.'/models/OCModel.php';
+    require_once $this->trails_root.'/models/OCSeriesModel.php';
 
     class SeriesClient extends OCRestClient
     {
@@ -70,33 +71,31 @@
         function createSeriesForSeminar($course_id) {
 
 
-            $xml = utf8_encode(OCModel::creatSeriesXML($course_id));
+            $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
+            
+            $ACLData = array( 'ROLE_ADMIN' => array(
+                                                'read' => 'true',
+                                                'write' => 'true',
+                                                'analyze' => 'true'),
+                               'ROLE_ANONYMOUS' => array(
+                                                'read' => 'true'
+                               )
+                        );
+            $ACL = OCSeriesModel::createSeriesACL($ACLData); 
 
-            $acl = utf8_encode(OCModel::createACLXML());
+            $post = array('series' => $dublinCore,
+                        'acl' => $ACL);
 
+            $res = self::getXML('/series', $post, false, true);
+            $string = str_replace('dcterms:', '', $res[0]);
+            $xml = simplexml_load_string($string);
+            $json = json_decode(json_encode($xml), true);
 
-            $post = array('series' => $xml, 'acl' => $acl);
+            if ($res[1] == 201){
 
-
-            $rest_end_point = "/series/";
-            $uri = $rest_end_point;
-            // setting up a curl-handler
-            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
-            curl_setopt($this->ochandler, CURLOPT_POST, true);
-            curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
-
-
-            $response = curl_exec($this->ochandler);
-            $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-            if ($httpCode == 201){
-
-                utf8_decode($response);
-                $s  = new SimpleXMLElement($response);
-                $series_id = $s->xpath('//dcterms:identifier');
-                $series_id = $series_id[0][0];
-
-                OCModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
+                $new_series = json_decode($res[0]);
+                $series_id = $json['identifier'];
+                OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
 
                 return true;
             } else {
