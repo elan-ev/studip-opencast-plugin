@@ -10,12 +10,16 @@
  */
 
 require_once 'app/controllers/studip_controller.php';
-//require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
+require_once $this->trails_root.'/classes/OCUploadFile.php';
+require_once $this->trails_root.'/classes/OCUpload.php';
 require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/models/OCSeriesModel.php';
 
 class CourseController extends StudipController
 {
@@ -39,6 +43,8 @@ class CourseController extends StudipController
             $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
         } elseif (!$this->search_client->getAllSeries()) {
              $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
+        //TODO: Zeile 43 gibt fatal error wenn keine config angelegt ist!
+             
         } else {
             throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
         }
@@ -46,6 +52,7 @@ class CourseController extends StudipController
         $navigation = Navigation::getItem('/course/opencast');
         $this->imgagepath = '../../'.$this->dispatcher->trails_root.'/images/online-prev.png';
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+        
     }
 
     /**
@@ -68,7 +75,7 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
 
         // lets get all episodes for the connected series
-        if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
+        if ($connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
 
 
             $this->episode_ids = array();
@@ -150,7 +157,7 @@ class CourseController extends StudipController
 
         } elseif(count($this->cseries) > 0) {
             $this->connected = false;
-            $serie= $this->cseries;
+            $serie= $this->connectedSeries;
             $serie = array_pop($serie);
 
             $this->serie_name = $this->series_client->getSeries($serie['series_id']);
@@ -179,7 +186,7 @@ class CourseController extends StudipController
     {   
         $series = Request::getArray('series');
         foreach( $series as $serie) {
-            OCModel::setSeriesforCourse($course_id, $serie);
+            OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
         $this->flash['message'] = _("Änderungen wurden erflolgreich übernommen");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
@@ -314,9 +321,15 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        //TODO: gibt es keine generische Funktion dafür?
+        $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         Navigation::activateItem('course/opencast/upload');
-        $this->ingest_client = new IngestClient();
-
+    }
+    
+    
+    function get_seriesID()
+    {
+        return '';
     }
 
 

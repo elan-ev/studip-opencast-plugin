@@ -15,7 +15,6 @@ array(
 
 
 
-
 <h3>
   <?= _('Vorlesungsaufzeichnungen') ?>
 </h3>

@@ -11,7 +11,6 @@
 
 require_once 'app/controllers/authenticated_controller.php';
 require_once $this->trails_root.'/models/OCModel.php';
-//require_once $this->trails_root.'/models/OCRestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';

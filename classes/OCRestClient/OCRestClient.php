@@ -76,15 +76,31 @@
         /**
          *  function getJSON - performs a REST-Call and retrieves response in JSON
          */
-        function getJSON($service_url) {
+        function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false) {
             if(isset($service_url) && self::checkService($service_url)) {
-                curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+                $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                           CURLOPT_FRESH_CONNECT => 1);
+                if(!$is_get) {
+                    $options[CURLOPT_POST] = 1;
+                    if(!empty($data)) {
+                        $options[CURLOPT_POSTFIELDS] = $data;
+                    }
+                } else {
+                    $options[CURLOPT_HTTPGET] = 1;
+                }
+                
+                curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-                if ($httpCode == 404){
-                    return false;
+                
+                if($with_res_code) {
+                    return array(json_decode($response), $httpCode);
                 } else {
-                    return json_decode($response);
+                    if ($httpCode == 404){
+                        return false;
+                    } else {
+                        return json_decode($response);
+                    }
                 }
             } else {
                 throw new Exception(_("Es wurde keine Service URL angegben"));
@@ -94,15 +110,30 @@
         /**
          * function getJSON - performs a REST-Call and retrieves response in JSON
          */
-        function getXML($service_url) {
+        function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false) {
             if(isset($service_url) && self::checkService($service_url)) {
-                curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+                $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                           CURLOPT_FRESH_CONNECT => 1);
+                if(!$is_get) {
+                    $options[CURLOPT_POST] = 1;
+                    if(!empty($data)) {
+                        $options[CURLOPT_POSTFIELDS] = $data;
+                    }
+                } else {
+                    $options[CURLOPT_HTTPGET] = 1;
+                }
+                curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-                if ($httpCode == 404){
-                    return false;
+                
+                if($with_res_code) {
+                    return array($response, $httpCode);
                 } else {
-                    return $response;
+                    if ($httpCode == 404){
+                        return false;
+                    } else {
+                        return $response;
+                    }
                 }
             } else {
                 throw new Exception(_("Es wurde keine Service URL angegben"));
