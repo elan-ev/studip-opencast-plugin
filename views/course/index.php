@@ -50,7 +50,7 @@ array(
                                     </ul>
                                     <div class="ocplayerlink">
                                         <div style="text-align:left; font-style:italic;">Online schauen:</div>
-                                        <?= Studip\LinkButton::create(_('Erweiteret Player'), $engage_player_url, array('class' => 'oc_tooltip',  'target'=> '_blank')) ?>
+                                        <?= Studip\LinkButton::create(_('Erweiterter Player'), $engage_player_url, array('class' => 'oc_tooltip',  'target'=> '_blank')) ?>
                                     </div>
                                     <div class="download" style="visibility: hidden;">
                                     </div>
