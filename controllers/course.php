@@ -120,7 +120,6 @@ class CourseController extends StudipController
     
     function config_action()
     {
-
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
@@ -134,44 +133,8 @@ class CourseController extends StudipController
         
         $this->course_id = $_SESSION['SessionSeminar'];
 
-        $this->series_client = new SeriesClient();
-        $this->series = $this->series_client->getAllSeries();
-
-
-        //$this->series = OCModel::getUnconnectedSeries();
-        //$sem = new Seminar($this->course_id);
-
-
-        $this->cseries = OCModel::getConnectedSeries($this->course_id);
-
-
-        if(!$this->cseries) {
-            $this->rseries = $this->series;
-
-        } elseif(count($this->cseries) > 0) {
-            $this->connected = false;
-            $serie= $this->cseries;
-            $serie = array_pop($serie);
-
-            $this->serie_name = $this->series_client->getSeries($serie['series_id']);
-
-
-
-            $this->serie_id = $serie['series_id'];
-            if($serie['schedule'] == 1){
-                $this->dates  = OCModel::getDates($this->course_id);
-            } else {
-                $this->connected = true;
-
-                if ($series = $this->search_client->getSeries($serie['series_id'])){
-                    $x = 'search-results';
-                    if($series->$x->total > 0) {
-                        $this->episodes = $series->$x->result;
-                    }
-                }
-            }
-
-        }
+        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
 
     }
     
@@ -185,32 +148,11 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     
-    function remove_series_action($series_id, $delete_series = false,$approveRemoval = false, $studipticket = false)
+    function remove_series_action($course_id, $series_id)
     {
-        $course_id = Request::get('cid');
-        $series_client = new SeriesClient();
-
-        if($approveRemoval  && check_ticket($studipticket)) {
-
-            OCModel::removeSeriesforCourse($course_id, $series_id);
-
-            if($delete_series == 'true') {
-                $series_client->removeSeries($series_id);
-            }
-
-            $this->flash['message'] = _("Zuordnung wurde entfernt");
-            $this->redirect(PluginEngine::getLink('opencast/course/config'));
-            return;
-        } else {
-            $template = $GLOBALS['template_factory']->open('shared/question');
-            $template->set_attribute('approvalLink',PluginEngine::getLink('opencast/course/remove_series/' . $series_id . '/'. $delete_series . '/true/' . get_ticket()));
-            $template->set_attribute('disapprovalLink',PluginEngine::getLink('opencast/course/config'));
-            $template->set_attribute('question', _("Sind Sie sicher, dass Sie diese Series löschen möchten?"));
-
-            $this->flash['question'] = $template->render();
-            $this->redirect(PluginEngine::getLink('opencast/course/config'));
-            return;
-        }
+        OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
+        $this->flash['message'] = _("Zuordnung wurde entfernt");
+        $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
 
 
