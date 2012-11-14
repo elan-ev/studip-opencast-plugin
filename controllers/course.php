@@ -257,9 +257,8 @@ class CourseController extends StudipController
     function upload_action()
     {
         $scripts = array(
-            '/vendor/upload/js/jquery.fileupload.js',
-            '/vendor/upload/js/vendor/jquery.ui.widget.js',
-            '/vendor/upload/js/jquery.iframe-transport.js'
+            '/vendor/jquery.fileupload.js',
+            '/vendor/jquery.ui.widget.js'
         );
         foreach($scripts as $path) {
             $script_attributes = array(

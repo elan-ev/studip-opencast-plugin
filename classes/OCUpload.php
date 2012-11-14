@@ -1,7 +1,7 @@
 <?php
 
 
-require_once $this->trails_root.'/vendor/upload/server/php/upload.class.php';
+require_once $this->trails_root.'/vendor/upload.class.php';
 
 class OCUpload extends UploadHandler 
 {
