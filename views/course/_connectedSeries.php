@@ -5,7 +5,9 @@
         <form action="<?= PluginEngine::getLink('opencast/course/edit/' . $course_id) ?>"
               method=post>
             <div style="text-align: center;">
-                <p> <? //=_("Series ohne Zuordnung") ?></p>
+                <h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-state-active ui-corner-top">
+                    <?= _("Series ohne Zuordnung") ?>
+                </h3>
                 <? if (!empty($unconnectedSeries)) : ?>
                     <select class="series_select" multiple="multiple" name="series[]">
 
@@ -24,41 +26,25 @@
 
 
             <div style="dislay:inline;vertical-align:middle">
-                <div style="float:left;">
-                    <p><?= _("Zugeordnete Series") ?></p>
-                    <ul style="list-style-type: none;margin:0;padding-left:50px">
-                        <? if (!empty($connectedSeries)) : ?>
-                            <? foreach ($connectedSeries as $serie) : ?>
-                                <li>
-                                    <?= $serie['title'] ?>
-                                    <a href="<?= PluginEngine::getLink('opencast/course/remove_series/' . $course_id . '/' . $serie['identifier']) ?>">
-                                        <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen'))) ?>
-                                    </a>
-                                </li>
-                            <? endforeach ?>
-                        <? else : ?>
-                            <li style="padding-top:5px">
-                                <p><?= _("Bislang wurde noch keine Series zugeordnet.") ?></p>
+                <h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-state-active ui-corner-top">
+                    <?= _("Zugeordnete Series") ?>
+                </h3>
+                <ul style="list-style-type: none;margin:0;padding-left:50px">
+                    <? if (!empty($connectedSeries)) : ?>
+                        <? foreach ($connectedSeries as $serie) : ?>
+                            <li>
+                                <?= $serie['title'] ?>
+                                <a href="<?= PluginEngine::getLink('opencast/course/remove_series/' . $course_id . '/' . $serie['identifier']) ?>">
+                                    <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen'))) ?>
+                                </a>
                             </li>
-                        <? endif ?>
-                    </ul>
-                </div>
-                <div style="float:center;text-align:center">
-                    <p> <? //=_("Series ohne Zuordnung") ?></p>
-                    <? if (!empty($notConnectedSeries) || true) : ?>
-
-
-                        <select multiple="multiple" name="series[]">
-                            <? foreach ($notConnectedSeries as $serie) : ?>
-                                <? if ($s->series->additionalMetadata != null) : ?>
-                                    <option value="<?= $serie['identifier'] ?>">
-                                        <?= $serie['title'] ?>
-                                    </option>
-                                <? endif ?>
-                            <? endforeach ?>
-                        </select>
+                        <? endforeach ?>
+                    <? else : ?>
+                        <li style="padding-top:5px">
+                            <p><?= _("Bislang wurde noch keine Series zugeordnet.") ?></p>
+                        </li>
                     <? endif ?>
-                </div>
+                </ul>
             </div> 
             <div style="padding-top:2em;clear:both" class="form_submit">
                 <?= makebutton("uebernehmen", "input") ?>

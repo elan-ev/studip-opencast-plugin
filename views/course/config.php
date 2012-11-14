@@ -18,17 +18,18 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 </script>
 <h3><?= _('Verwaltung der eingebundenen Vorlesungsaufzeichnungen') ?></h3>
 
-<? if (true || !empty($this->connectedSeries)) : ?>
+<? if (empty($this->connectedSeries)) : ?>
     <?= MessageBox::info(sprintf(_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft.
                             Bitte verknüpfen eine bereits vorhandene Series oder %s erstellen Sie eine neue.%s"), '<a href="' . PluginEngine::getLink('opencast/course/create_series/') . '">', '</a>'))
     ?>
+<?php endif; ?>
     <div id="admin-accordion">
-        <h3><?= _('Wählen Sie unten eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten') ?>:</h3>
+        <p><?= _('Wählen Sie unten eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten') ?>:</p>
         <?= $this->render_partial("course/_connectedSeries", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
     </div>
 
 
-<? elseif (!$connected) : ?>
+<?/*elseif (!$connected) : ?>
 
 
 
@@ -85,6 +86,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                              *
                              *
                              */
+/*
                             ?>
                         <? else : ?>
                             <?= Assets::img('icons/16/red/exclaim-circle.png', array('title' => _("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht"))) ?>
@@ -131,4 +133,5 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <? endforeach; ?>
 
     </table>
-<? endif; ?>
+<? endif; */ ?>
+
