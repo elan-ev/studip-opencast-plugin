@@ -23,58 +23,8 @@ $infobox_content = array(array(
         ));
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
-<!-- TODO: adresse per funktion erhalten -->
-<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/jquery.fileupload.js"></script>
-<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/vendor/jquery.ui.widget.js"></script>
-<script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/jquery.iframe-transport.js"></script>
 <script language="javascript">
-    $(function (){
-        function getFileSize(input) {
-            if(input/1024 > 1) {
-                var inp_kb = Math.round((input/1024)*100)/100
-                if(inp_kb/1024 > 1) {
-                    var inp_mb = Math.round((inp_kb/1024)*100)/100
-                    if(inp_mb/1024 > 1) {
-                        var inp_gb = Math.round((inp_mb/1024)*100)/100
-                        return inp_gb + 'GB';
-                    }
-                    return inp_mb + 'MB';
-                }
-                return inp_kb + 'KB';
-            }
-            return input + 'Bytes'
-        }
-        $('#video_upload').fileupload({
-            maxChunkSize: <?= OC_UPLOAD_CHUNK_SIZE ?>,
-            limitMultiFileUploads: 1,
-            autoupload: false,
-            add: function(e, data) {
-                console.log($('#uploadinfo').val());
-                var file = data.files[0];
-                $('#uploadinfo')
-                .html('<p>Name: ' + file.name + '<br />Größe: ' + getFileSize(file.size) + '</p>');
-                $('#uploadinfo').val(file.name);
-                $('#btn_accept').click(function() {
-                    data.submit();
-                    return false;
-                });
-                return false;
-            },
-            submit: function (e, data) {
-                $( "#progressbar" ).progressbar({
-                    value: 0
-                });
-            },
-            progressall: function(e, data) {
-                var progress = parseInt(data.loaded / data.total * 100, 10);
-                $( "#progressbar" ).progressbar( "value", progress);
-            },
-            done: function(e, data) {
-                $( "#progressbar" ).progressbar('destroy');
-                $('#video_upload').val('');
-            }
-        });
-    });
+    OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>
     <h2><?= _("Medienupoad") ?></h2>
 

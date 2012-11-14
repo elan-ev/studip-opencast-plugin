@@ -256,6 +256,19 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        $scripts = array(
+            '/vendor/upload/js/jquery.fileupload.js',
+            '/vendor/upload/js/vendor/jquery.ui.widget.js',
+            '/vendor/upload/js/jquery.iframe-transport.js'
+        );
+        foreach($scripts as $path) {
+            $script_attributes = array(
+                'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
+            PageLayout::addHeadElement('script', $script_attributes, '');
+        }
+        
+        
+        
         //TODO: gibt es keine generische Funktion dafür?
         $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         Navigation::activateItem('course/opencast/upload');
