@@ -256,6 +256,10 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        $this->date = date('Y-m-d');
+        $this->hour = date('H');
+        $this->minute = date('i');
+        
         $scripts = array(
             '/vendor/jquery.fileupload.js',
             '/vendor/jquery.ui.widget.js'

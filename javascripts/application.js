@@ -19,9 +19,9 @@ OC = {
                 add: function(e, data) {
                     var file = data.files[0];
                     $('#total_file_size').attr('value', file.size);
-                    $('#uploadinfo')
+                    $('#upload_info')
                     .html('<p>Name: ' + file.name + '<br />Größe: ' + OC.getFileSize(file.size) + '</p>');
-                    $('#uploadinfo').val(file.name);
+                    $('#upload_info').val(file.name);
                     $('#btn_accept').click(function() {
                         data.submit();
                         return false;

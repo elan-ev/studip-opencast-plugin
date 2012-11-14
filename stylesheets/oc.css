@@ -74,3 +74,4 @@
 }
 #file_wrapper { display: inline-block; overflow: hidden; height: 40px; width:130px; background-color: transparent; position: relative;}
 #video_upload { font-size: 99px; opacity: 0; cursor: pointer; position: absolute; right: 0px; top: 0px;}
+#upload_info { display: inline-block; }
