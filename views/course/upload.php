@@ -38,6 +38,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
             <input type="text" maxlength="255" name="title" id="titleField">
         </div>
         <div>
+            // Eingelogter User
             <label id="creatorLabel" for="creator">
                 <span><?= _("Vortragende")?></span>:
             </label><br>
@@ -171,7 +172,10 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         </div>
         <div>
             <label for="video_upload">Datei:</label><br>
-            <input name="video" type="file" id="video_upload">
+            <div id="file_wrapper">
+                <?= Button::create(_('Datei auswählen'), null, array('on_click' => 'return false;')); ?>
+                <input name="video" type="file" id="video_upload">
+            </div>
         </div>
         <div id="uploadinfo">
             
