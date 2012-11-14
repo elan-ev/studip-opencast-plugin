@@ -29,28 +29,50 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 <script src="<?= $this->rel_canonical_path ?>/vendor/upload/js/jquery.iframe-transport.js"></script>
 <script language="javascript">
     $(function (){
+        function getFileSize(input) {
+            if(input/1024 > 1) {
+                var inp_kb = Math.round((input/1024)*100)/100
+                if(inp_kb/1024 > 1) {
+                    var inp_mb = Math.round((inp_kb/1024)*100)/100
+                    if(inp_mb/1024 > 1) {
+                        var inp_gb = Math.round((inp_mb/1024)*100)/100
+                        return inp_gb + 'GB';
+                    }
+                    return inp_mb + 'MB';
+                }
+                return inp_kb + 'KB';
+            }
+            return input + 'Bytes'
+        }
         $('#video_upload').fileupload({
             maxChunkSize: <?= OC_UPLOAD_CHUNK_SIZE ?>,
             limitMultiFileUploads: 1,
-            add: function (e, data) {
-                
-                 $('#btn_accept').click(function(e) {
-                     $('#total_file_size').attr('value', data.files[0].size);
-                     $( "#progressbar" ).progressbar({
-                        value: 0
-                     });
-                     data.submit();
-                     return false;
-                 });
-           },
-           progressall: function(e, data) {
-               var progress = parseInt(data.loaded / data.total * 100, 10);
-               $( "#progressbar" ).progressbar( "value", progress);
-           },
-           done: function(e, data) {
-               $( "#progressbar" ).progressbar('destroy');
-               $('#video_upload').val('');
-           }
+            autoupload: false,
+            add: function(e, data) {
+                console.log($('#uploadinfo').val());
+                var file = data.files[0];
+                $('#uploadinfo')
+                .html('<p>Name: ' + file.name + '<br />Größe: ' + getFileSize(file.size) + '</p>');
+                $('#uploadinfo').val(file.name);
+                $('#btn_accept').click(function() {
+                    data.submit();
+                    return false;
+                });
+                return false;
+            },
+            submit: function (e, data) {
+                $( "#progressbar" ).progressbar({
+                    value: 0
+                });
+            },
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $( "#progressbar" ).progressbar( "value", progress);
+            },
+            done: function(e, data) {
+                $( "#progressbar" ).progressbar('destroy');
+                $('#video_upload').val('');
+            }
         });
     });
 </script>
@@ -200,6 +222,9 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <div>
             <label for="video_upload">Datei:</label><br>
             <input name="video" type="file" id="video_upload">
+        </div>
+        <div id="uploadinfo">
+            
         </div>
         <div id="progressbarholder" style="overflow: hidden; padding-top: 5px; height: 30px; width:50%; margin: 0 auto;">
             <div id="progressbar"></div>
