@@ -2,8 +2,7 @@
     
 class OCModel
 {
-/** moved to series Model
-    static function getUnconnectedSeries() {
+   static function getUnconnectedSeries() {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_series
             WHERE 1");
@@ -11,8 +10,7 @@ class OCModel
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $series;
     }
- */
-    /** moved series model
+
     static function getConnectedSeries($course_id) {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
@@ -22,8 +20,7 @@ class OCModel
         if (empty($series)) return false;
         else return $series;
     }
-    */
-    /* moved to series model
+
     static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible', $schedule=0) {
         $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
@@ -35,8 +32,7 @@ class OCModel
                 VALUES (?, ?, ?, ? )");
         return $stmt->execute(array($series_id, $course_id, $visibility, $schedule));
     }
-     */
-    /* moved to series model
+
     static function removeSeriesforCourse($course_id, $series_id) {
        $stmt = DBManager::get()->prepare("UPDATE 
                 oc_series SET seminars = seminars-1
@@ -47,7 +43,7 @@ class OCModel
                 WHERE series_id = ? AND seminar_id = ?");
         return $stmt->execute(array($series_id, $course_id));
     }
-     */
+
 
     static function getOCRessources() {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro

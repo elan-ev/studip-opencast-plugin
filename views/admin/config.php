@@ -76,6 +76,25 @@ OC.initAdmin();
               <label class="form_label" for="ingest_password"><?=_("Passwort")?>:</label>
               <input id="group_name" type="password" name="ingest_password" value="<?=$ingest_password?>" size="50"><br>
        </div>
+        <h3><?=_("Mediapackage Service")?></h3>
+        <div class="admin-accordion-content">
+            <label class="form_label" for="mediapackage_url"><?=_("Service-URL")?>:</label>
+            <input id="group_name" type="text" name="mediapackage_url" value="<?=$mediapackage_url?>" size="50" placeholder="MEDIAPACKAGE_ENDPOINT_URL"><br>
+            <label class="form_label" for="mediapackage_user"><?=_("Nutzerkennung")?>:</label>
+            <input id="group_name" type="text" name="mediapackage_user" value="<?=$mediapackage_user?>" size="50" placeholder="MEDIAPACKAGE_ENDPOINT_USER"><br>
+            <label class="form_label" for="mediapackage_password"><?=_("Passwort")?>:</label>
+            <input id="group_name" type="password" name="mediapackage_password" value="<?=$mediapackage_password?>" size="50"><br>
+        </div>
+        <h3><?=_("Upload Service")?></h3>
+        <div class="admin-accordion-content">
+            <label class="form_label" for="upload_url"><?=_("Service-URL")?>:</label>
+            <input id="group_name" type="text" name="upload_url" value="<?=$upload_url?>" size="50" placeholder="UPLOAD_ENDPOINT_URL"><br>
+            <label class="form_label" for="upload_user"><?=_("Nutzerkennung")?>:</label>
+            <input id="group_name" type="text" name="upload_user" value="<?=$upload_user?>" size="50" placeholder="UPLOAD_ENDPOINT_USER"><br>
+            <label class="form_label" for="upload_password"><?=_("Passwort")?>:</label>
+            <input id="group_name" type="password" name="upload_password" value="<?=$upload_password?>" size="50"><br>
+        </div>
+
     </div>
 
      <div class="form_submit">

@@ -114,11 +114,17 @@ class AdminController extends AuthenticatedController
         }
 
 
+        /**
+         * TODO: add generic mechanism for the assignment of config params
+         *
+         */
         if( ($this->search_conf = OCRestClient::getConfig('search')) &&
             ($this->series_conf = OCRestClient::getConfig('series')) &&
             ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
             ($this->ingest_conf = OCRestClient::getConfig('ingest')) &&
-            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) || true) {
+            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) &&
+            ($this->upload_conf = OCRestClient::getConfig('upload')) &&
+            ($this->mediapackage_conf = OCRestClient::getConfig('mediapackage'))) {
 
 
             $this->series_url = $this->series_conf['service_url'];
@@ -129,8 +135,6 @@ class AdminController extends AuthenticatedController
             $this->search_url = $this->search_conf['service_url'];
             $this->search_user = $this->search_conf['service_user'];
             $this->search_password = $this->search_conf['service_password'];
-
-
 
             $this->scheduling_url = $this->schedule_conf['service_url'];
             $this->scheduling_user = $this->schedule_conf['service_user'];
@@ -143,6 +147,14 @@ class AdminController extends AuthenticatedController
             $this->captureadmin_url = $this->captureadmin_conf['service_url'];
             $this->captureadmin_user = $this->captureadmin_conf['service_user'];
             $this->captureadmin_password = $this->captureadmin_conf['service_password'];
+
+            $this->upload_url = $this->upload_conf['service_url'];
+            $this->upload_user = $this->upload_conf['service_user'];
+            $this->upload_password = $this->upload_conf['service_password'];
+
+            $this->mediapackage_url = $this->mediapackage_conf['service_url'];
+            $this->mediapackage_user = $this->mediapackage_conf['service_user'];
+            $this->mediapackage_password = $this->mediapackage_conf['service_password'];
 
 
 
@@ -204,11 +216,22 @@ class AdminController extends AuthenticatedController
         $this->captureadmin_user = Request::get('captureadmin_user');
         $this->captureadmin_password = Request::get('captureadmin_password');
 
+        $this->upload_url = $this->upload_conf['upload_url'];
+        $this->upload_user = $this->upload_conf['upload_user'];
+        $this->upload_password = $this->upload_conf['upload_password'];
+
+        $this->mediapackage_url = $this->mediapackage_conf['mediapackage_url'];
+        $this->mediapackage_user = $this->mediapackage_conf['mediapackage_user'];
+        $this->mediapackage_password = $this->mediapackage_conf['mediapackage_password'];
+
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
         OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
         OCRestClient::setConfig('ingest',  $this->ingest_url, $this->ingest_user, $this->ingest_password);
         OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
+        OCRestClient::setConfig('mediapackage',  $this->mediapackage_url, $this->mediapackage_user, $this->mediapackage_password);
+        OCRestClient::setConfig('upload',  $this->upload_url, $this->upload_user, $this->upload_password);
+
 
         $success = _("Änderungen wurden erfolgreich übernommen.");
 
