@@ -12,6 +12,7 @@
 require_once 'vendor/trails/trails.php';
 
 define('OC_UPLOAD_CHUNK_SIZE', '1000000');
+define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
 
 class OpenCast extends StudipPlugin implements StandardPlugin

@@ -225,13 +225,13 @@ class OCUploadFile {
         if(is_array($_SESSION['opencast']['files'])) 
         {
             foreach($_SESSION['opencast']['files'] as $key => $file) {
-                if($file['time'] < (time() - 259200) ) //60*60*24*3 = 259200
+                if($file['time'] < (time() - 
+                        (60 * 60 * 24 * OC_CLEAN_SESSION_AFTER_DAYS )) )
                 {
                     unset($_SESSION['opencast']['files'][$key]);
                 }
             }
         }
-        var_dump(time() - 259200, $_SESSION['opencast']);
     }
             
 }
