@@ -37,7 +37,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <br>
         <input type="text" maxlength="255" name="title" id="titleField">
         <br>
-        // Eingelogter User
+        // Eingelogter User2
         <label id="creatorLabel" for="creator">
             <span><?= _("Vortragende") ?></span>:
         </label>
