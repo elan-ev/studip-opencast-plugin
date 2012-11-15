@@ -113,8 +113,8 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <label for="video_upload">Datei:</label>
         <br>
         <div id="file_wrapper">
-<?= Button::create(_('Datei auswählen'), null, array('on_click' => 'return false;')); ?>
-            <input name="video" type="file" id="video_upload">
+                <?= Button::create(_('Datei auswählen'), null, array('on_click' => 'return false;')); ?>
+                <input name="video" type="file" id="video_upload">
         </div>
         <div id="upload_info">
         </div>
