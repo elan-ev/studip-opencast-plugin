@@ -27,6 +27,10 @@ class UploadController extends StudipController
     private $upload = null;
     private $ingest = null;
     
+    public function clearSession()
+    {
+        $this->file->clearSession();
+    }
     public function upload_file_action() 
     {
         $OCUpload = new OCUpload();
@@ -78,6 +82,7 @@ class UploadController extends StudipController
         }
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
+            $this->clearSession();
             echo 'Ingest Started: '.htmlentities($content);
         } else echo 'mist';
         
@@ -154,7 +159,7 @@ class UploadController extends StudipController
         }
         //TODO: sicherheit Request
         foreach($_POST as $key => $val) {
-            $episodeData[$key] = $val;
+            $episodeData[$key] = Request::get($key);
         }
         
         $this->file->setEpisodeData($episodeData);

@@ -215,6 +215,24 @@ class OCUploadFile {
     {
         return $this->isNew;
     }
+    /**
+     * delete current file from session and look for entries older than 3 days,
+     * delete them too.
+     */
+    public function clearSession()
+    {
+        unset($_SESSION['opencast']['files'][$this->name]);
+        if(is_array($_SESSION['opencast']['files'])) 
+        {
+            foreach($_SESSION['opencast']['files'] as $key => $file) {
+                if($file['time'] < (time() - 259200) ) //60*60*24*3 = 259200
+                {
+                    unset($_SESSION['opencast']['files'][$key]);
+                }
+            }
+        }
+        var_dump(time() - 259200, $_SESSION['opencast']);
+    }
             
 }
 
