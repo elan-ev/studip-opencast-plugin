@@ -72,21 +72,12 @@
     border-bottom: 1px solid #CCC;
     text-align: left;
 }
-#file_wrapper {
-    display: inline-block;
-    overflow: hidden;
-    background-color: transparent;
-    position: relative;
-}
+
 
 #video_upload {
-    opacity: 0;
-    height: 40px;
-    width:130px;
-    position:absolute;
-    top:12px;
-    z-index: 11;
-    cursor: pointer;
+    display: block;
+    height: 0;
+    width: 0;
 }
 
 #upload_info {
