@@ -16,7 +16,7 @@ class OCUpload extends UploadHandler
             $_FILES['video'] : null;
         $totalFileSize = Request::int('total_file_size');
         $file = $this->handle_file_upload($upload['tmp_name'],
-                $upload['name'],
+                Request::get('file_name'),
                 $totalFileSize,
                 $upload['type'],
                 $upload['error']

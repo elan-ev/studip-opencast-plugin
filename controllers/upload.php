@@ -27,10 +27,6 @@ class UploadController extends StudipController
     private $upload = null;
     private $ingest = null;
     
-    public function clearSession()
-    {
-        $this->file->clearSession();
-    }
     public function upload_file_action() 
     {
         $OCUpload = new OCUpload();
@@ -82,9 +78,9 @@ class UploadController extends StudipController
         }
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
-            $this->clearSession();
+            $this->file->clearSession();
             echo 'Ingest Started: '.htmlentities($content);
-        } else echo 'mist';
+        } else echo 'upload failed';
         
     }
    

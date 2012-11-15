@@ -124,6 +124,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <div id="progressbar"></div>
     </div>
     <input type="hidden" value="" name="total_file_size" id="total_file_size" />
+    <input type="hidden" value="" name="file_name" id="file_name" />
     <div class="form_submit">
 <?= Button::createAccept(_('Übernehmen'), null, array('id' => 'btn_accept')) ?>
 <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>

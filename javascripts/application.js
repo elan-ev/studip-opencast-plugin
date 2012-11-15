@@ -5,6 +5,7 @@
 
 
 OC = {
+    formData : {},
     initAdmin : function(){
         jQuery(document).ready(function(){
             jQuery('#admin-accordion').accordion();
@@ -12,6 +13,11 @@ OC = {
     },
     initUpload : function(maxChunk){
         jQuery(document).ready(function(){
+            $('#btn_accept').click(function() {
+                OC.formData.submit();
+                return false;
+            });
+            
             $('#video_upload').fileupload({
                 limitMultiFileUploads: 1,
                 autoupload: false,
@@ -19,13 +25,14 @@ OC = {
                 add: function(e, data) {
                     var file = data.files[0];
                     $('#total_file_size').attr('value', file.size);
-                    $('#upload_info')
-                    .html('<p>Name: ' + file.name + '<br />Größe: ' + OC.getFileSize(file.size) + '</p>');
+                    $('#file_name').attr('value', file.name);
+                    $('#upload_info').html('<p>Name: ' 
+                                                + file.name 
+                                                + '<br />Größe: ' 
+                                                + OC.getFileSize(file.size) 
+                                                + '</p>');
                     $('#upload_info').val(file.name);
-                    $('#btn_accept').click(function() {
-                        data.submit();
-                        return false;
-                    });
+                    OC.formData = data;
                     return false;
                 },
                 submit: function (e, data) {
