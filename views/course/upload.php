@@ -35,21 +35,20 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
             <span style="color: red; font-size: 1.6em">* </span>
         </label>
         <br>
-        <input type="text" maxlength="255" name="title" id="titleField">
+        <input type="text" maxlength="255" name="title" id="titleField" required>
         <br>
-        // Eingelogter User2
         <label id="creatorLabel" for="creator">
             <span><?= _("Vortragende") ?></span>:
         </label>
         <br>
-        <input type="text" maxlength="255" name="creator" id="creator">
+        <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
         <br>
         <label id="recordingDateLabel" class="scheduler-label" for="recordDate">
             <span><?= _('Aufnahmedatum') ?></span>:
             <span style="color: red; font-size: 1.6em">* </span>
         </label>
         <br>
-        <input type="text" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10">
+        <input type="text" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10" required>
         <br>
         <label id="startTimeLabel" for="startTimeHour">
             <span><?= _('Startzeit') ?></span>:
@@ -114,7 +113,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <br>
         <div id="file_wrapper">
                 <?= LinkButton::create(_('Datei auswählen'), null, array('id' => 'video-chooser', 'onClick' => "$('input[type=file]').trigger('click');return false;")); ?>
-                <input name="video" type="file" id="video_upload">
+                <input name="video" type="file" id="video_upload" required>
         </div>
         <div id="upload_info">
         </div>

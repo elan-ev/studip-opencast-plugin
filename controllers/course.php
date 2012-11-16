@@ -29,6 +29,7 @@ class CourseController extends StudipController
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
+        $this->pluginpath = $this->dispatcher->trails_root;
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
@@ -53,6 +54,24 @@ class CourseController extends StudipController
      */
     function index_action($active_id = '')
     {
+
+        /*
+         * Add some JS and CSS
+         *
+         */
+        $style_attributes = array(
+            'rel'   => 'stylesheet',
+            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/tipTip.css');
+        PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
+
+        $script_attributes = array(
+            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/slimScroll.js');
+        PageLayout::addHeadElement('script', $script_attributes, '');
+
+        $script_attributes = array(
+            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.tipTip.minified.js');
+        PageLayout::addHeadElement('script', $script_attributes, '');
+
 
         // set layout for index page
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
