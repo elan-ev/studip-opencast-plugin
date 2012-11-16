@@ -60,9 +60,11 @@ class OpenCast extends StudipPlugin implements StandardPlugin
             'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
         PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
 
+
         $script_attributes = array(
             'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');
         PageLayout::addHeadElement('script', $script_attributes, '');
+  
     }
 
     /**
