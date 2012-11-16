@@ -37,12 +37,11 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         <br>
         <input type="text" maxlength="255" name="title" id="titleField">
         <br>
-        // Eingelogter User2
         <label id="creatorLabel" for="creator">
             <span><?= _("Vortragende") ?></span>:
         </label>
         <br>
-        <input type="text" maxlength="255" name="creator" id="creator">
+        <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
         <br>
         <label id="recordingDateLabel" class="scheduler-label" for="recordDate">
             <span><?= _('Aufnahmedatum') ?></span>:
