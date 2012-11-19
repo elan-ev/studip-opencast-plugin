@@ -11,10 +11,23 @@
 
     class OCRestClient
     {
+        static $me;
         protected $matterhorn_base_url;
         protected $username;
         protected $password;
-
+        public $serviceName = 'ParentRestClientClass';
+        
+        static function getInstance()
+        {
+            if(!property_exists(get_called_class(), 'me')) {
+                throw new Exception('Every child of '.get_class().' needs to implement static property "$me"');
+            }
+            if (!is_object(static::$me)) {
+                static::$me = new static();
+            }
+            return static::$me;
+        }
+        
         function __construct($matterhorn_base_url = null, $username = null, $password = null){
             $this->matterhorn_base_url = $matterhorn_base_url;
             $this->username = $username;
@@ -147,15 +160,11 @@
          *
          *  @return boolean $status
          */
-        static function checkService($service_url) {
-
-          return true;
-          /*if(fsockopen($service_url)) {
-              return true;
-          } else {
-              return true; //throw new Exception(_("Es besteht momentan keine Verbindung zum gewï¿½hlten Service -> .") . );
-          }
-          */
+        function checkService() {
+            if (@fsockopen($this->matterhorn_base_url)) {
+                return true;
+            } 
+            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewählten Service "%s". Versuchen Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
         }
 
     }

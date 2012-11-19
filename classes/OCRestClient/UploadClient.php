@@ -4,6 +4,8 @@ require_once "OCRestClient.php";
 
 
 class UploadClient extends OCRestClient {
+    static $me;
+    public $serviceName = 'Upload';
         
     function __construct() {
         if ($config = parent::getConfig('upload')) {
@@ -14,7 +16,7 @@ class UploadClient extends OCRestClient {
             throw new Exception (_("Die Uploadservice Konfiguration wurde nicht im gültigen Format angegeben."));
         }
     }
-    
+
     /**
      * Generate job ID -- for every new track upload job
      * 
@@ -34,7 +36,7 @@ class UploadClient extends OCRestClient {
         }
         $string = implode('&', $string);
         $params = '?'.$string;
-        return $response = self::getXML('/upload/newjob'.$params);
+        return $response = $this->getXML('/newjob'.$params);
     }
     /**
      * upload one chunk
@@ -44,7 +46,7 @@ class UploadClient extends OCRestClient {
             'chunknumber' => $chunknumber,
             'filedata' => $filedata
         );
-        if($response = self::getXML('/upload/job/'.$jobId, $data, false, true)){
+        if($response = $this->getXML('/job/'.$jobId, $data, false, true)){
             return $response;
         } else return false;
     }
@@ -53,7 +55,7 @@ class UploadClient extends OCRestClient {
      */
     function getState($jobID)
     {
-        return self::getJSON('/upload/job/'.$jobID.'.json');
+        return $this->getJSON('/job/'.$jobID.'.json');
     }
     /**
      * check if state is $state

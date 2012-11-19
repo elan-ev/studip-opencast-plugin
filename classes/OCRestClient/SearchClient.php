@@ -2,6 +2,8 @@
     require_once "OCRestClient.php";
     class SearchClient extends OCRestClient
     {
+        static $me;
+        public $serviceName = 'Search';
         function __construct() {
 
             if ($config = parent::getConfig('search')) {
@@ -22,13 +24,13 @@
          */
         function getEpisodes($series_id) {
 
-            $service_url = "/search/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
+            $service_url = "/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
 
-            if($search = self::getJSON($service_url)){
+            if($search = $this->getJSON($service_url)){
                 $x = "search-results";
                 $episodes = $search->$x->result;
                 return $episodes;
-            } else return false;
+            } else return array();
         }
 
         /**
@@ -40,8 +42,8 @@
          */
         function getSeries($series_id) {
 
-            $service_url = "/search/series.json?id=".$series_id."&episodes=true&series=true";
-            if($search = self::getJSON($service_url)){
+            $service_url = "/series.json?id=".$series_id."&episodes=true&series=true";
+            if($search = $this->getJSON($service_url)){
                 //$x = "search-results";
                 //$episodes = $search->$x->result;
                 return $search;
@@ -57,8 +59,8 @@
          */
         function getAllSeries() {
 
-            $service_url = "/search/series.json";
-            if($series = self::getJSON($service_url)){
+            $service_url = "/series.json";
+            if($series = $this->getJSON($service_url)){
                 //$x = "search-results";
                 //$episodes = $search->$x->result;
                 return $series;
@@ -78,7 +80,7 @@
          *  @return int number of episodes
          */
         function getEpisodeCount($series_id) {
-            if($series = self::getSeries($series_id)) {
+            if($series = $this->getSeries($series_id)) {
                 $x = "search-results";
                 $count = $series->$x->total;
                 return intval($count);

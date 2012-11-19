@@ -2,6 +2,8 @@
     require_once "OCRestClient.php";
     class SchedulerClient extends OCRestClient
     {
+        static $me;
+        public $serviceName = 'Scheduler';
         function __construct() {
 
 
@@ -45,6 +47,7 @@
             curl_setopt($this->ochandler, CURLOPT_POST, true);
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);
+//TODO über REST Classe laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -89,6 +92,7 @@
             // setting up a curl-handler
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
             curl_setopt($this->ochandler,CURLOPT_CUSTOMREQUEST, "DELETE");
+//TODO über REST Classe laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);

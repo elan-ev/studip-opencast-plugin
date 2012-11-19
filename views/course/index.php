@@ -13,7 +13,9 @@ array(
                 );
 ?>
 
-
+<? if (isset($this->flash['error'])): ?>
+    <?= MessageBox::error($this->flash['error']) ?>
+<? endif ?>
 
 <h3>
   <?= _('Vorlesungsaufzeichnungen') ?>

@@ -3,7 +3,8 @@ require_once "OCRestClient.php";
 
 
 class MediaPackageClient extends OCRestClient {
-        
+    static $me;
+    public $serviceName = 'MediaPackage';
     public function __construct() 
     {
 
@@ -20,7 +21,7 @@ class MediaPackageClient extends OCRestClient {
         $data = array('mediapackage' => $mediaPackage,
             'trackUri' => $trackURI,
             'flavor' => $flavor);
-        if($res = self::getXML('/mediapackage/addTrack', $data, false)) {
+        if($res = $this->getXML('/addTrack', $data, false)) {
             return $res;
         } else return false;
     }

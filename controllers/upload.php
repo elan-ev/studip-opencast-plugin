@@ -32,8 +32,8 @@ class UploadController extends StudipController
         $OCUpload = new OCUpload();
         //checks if file is uploaded and returns file object
         if($this->file = $OCUpload->post()) {
-            $this->upload = new UploadClient();
-            $this->ingest = new IngestClient();
+            $this->upload = UploadClient::getInstance();
+            $this->ingest = IngestClient::getInstance();
             
             if($this->file->isNew()) {
                 $this->initNewUpload();
@@ -86,7 +86,7 @@ class UploadController extends StudipController
    
     private function addTrack()
     {
-        $mediaPClient = new MediaPackageClient();
+        $mediaPClient = MediaPackageClient::getInstance();
 
         $trackURI = $this->upload->getTrackURI($this->file->getJobID());
         $newMPackage = $mediaPClient->addTrack($this->file->getMediaPackage(),

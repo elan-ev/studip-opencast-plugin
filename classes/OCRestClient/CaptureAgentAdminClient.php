@@ -2,6 +2,7 @@
     require_once "OCRestClient.php";
     class CaptureAgentAdminClient extends OCRestClient
     {
+        static $me;
         function __construct() {
             if ($config = parent::getConfig('captureadmin')) {
                 parent::__construct($config['service_url'],
@@ -20,8 +21,8 @@
         function getCaptureAgentsXML() {
             // URL for Matterhorn 1.1
             // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
-            $service_url = "/capture-admin/agents";
-            if($response = self::getXML($service_url)){
+            $service_url = "/agents";
+            if($response = $this->getXML($service_url)){
                 // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
                $needle = array('<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
                                 '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
@@ -37,10 +38,10 @@
         }
 
         function getCaptureAgents() {
-            $service_url = "/capture-admin/agents.json";
-            if($agents = self::getJSON($service_url)){
+            $service_url = "/agents.json";
+            if($agents = $this->getJSON($service_url)){
                 return $agents;
             } else return false;
         }
-    }
+        }
 ?>

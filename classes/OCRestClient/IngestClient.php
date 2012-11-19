@@ -2,6 +2,7 @@
     require_once "OCRestClient.php";
     class IngestClient extends OCRestClient
     {
+        static $me;
         function __construct() {
 
             if ($config = parent::getConfig('ingest')) {
@@ -19,7 +20,7 @@
          *  @return array response all series
          */
         function createMediaPackage() {
-            $service_url = "/ingest/createMediaPackage";
+            $service_url = "/createMediaPackage";
             if($response = self::getXML($service_url)){
                 return $response;
             } else return false;
@@ -27,19 +28,19 @@
         
         function addDCCatalog($mediaPackage, $dublinCore, $flavor)
         {
-            $service_url = "/ingest/addDCCatalog";
+            $service_url = "/addDCCatalog";
             $data = array('mediaPackage' => utf8_encode($mediaPackage),
                     'dublinCore' => utf8_encode($dublinCore),
                     'flavor' => $flavor);
-            if($response = self::getXML($service_url, $data, false)){
+            if($response = $this->getXML($service_url, $data, false)){
                 return $response;
             } else return false;
         }
         function ingest($mediaPackage, $workFlowDefinitionID = 'full')
         {
-            $service_url = "/ingest/ingest/".$workFlowDefinitionID;
+            $service_url = "/ingest/".$workFlowDefinitionID;
             $data = array('mediaPackage' => $mediaPackage);
-            if($response = self::getXML($service_url, $data, false)){
+            if($response = $this->getXML($service_url, $data, false)){
                 return $response;
             } else return false;
         }

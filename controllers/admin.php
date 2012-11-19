@@ -244,7 +244,7 @@ class AdminController extends AuthenticatedController
         $GLOBALS['CURRENT_PAGE'] =  'OpenCast Administration';
         Navigation::activateItem('/admin/config/oc-resources');
 
-        $caa_client = new CaptureAgentAdminClient();
+        $caa_client = CaptureAgentAdminClient::getInstance();
 
         $this->resources = OCModel::getOCRessources();
         $this->agents = $caa_client->getCaptureAgents();
@@ -289,7 +289,7 @@ class AdminController extends AuthenticatedController
 
         //$search_client = new SearchClient();
         //$series_client = new SeriesClient();
-        $caa_client    = new CaptureAgentAdminClient();
+        $caa_client    = CaptureAgentAdminClient::getInstance();
         $this->agents  = $caa_client->getCaptureAgents();
     }
 }

@@ -1,3 +1,6 @@
+<? if (isset($this->flash['error'])): ?>
+    <?= MessageBox::error($this->flash['error']) ?>
+<? endif ?>
 <? if (isset($message)): ?>
     <?= MessageBox::success($message) ?>
 <? endif ?>

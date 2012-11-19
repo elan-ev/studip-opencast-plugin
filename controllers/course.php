@@ -14,7 +14,9 @@ require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
 class CourseController extends StudipController
@@ -77,62 +79,57 @@ class CourseController extends StudipController
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
 
-        $search_client = new SearchClient();
-
         Navigation::activateItem('course/opencast/overview');
+        try {
+            $search_client = SearchClient::getInstance();
+            if (isset($this->flash['message'])) {
+                $this->message = $this->flash['message'];
+            }
+            $this->course_id = $_SESSION['SessionSeminar'];
 
-        if (isset($this->flash['message'])) {
-            $this->message = $this->flash['message'];
-        }
-        $this->course_id = $_SESSION['SessionSeminar'];
-
-        // lets get all episodes for the connected series
-        if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
-
-
-            $this->episode_ids = array();
-            $ids = array();
-            $count = 0;
-            $this->search_client = new SearchClient();
-
-            foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
-               // var_dump($serie['series_id']); die;
-                if ($series = $search_client->getEpisodes($serie['series_id'])){
+            // lets get all episodes for the connected series
+            if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
 
 
-                    foreach($series as $episode) {
-                        $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                        if(is_object($episode->mediapackage) && true){//$visibility['visible']){
-                            $count+=1;
-                            //var_dump($episode);
-                            $ids[] = $episode->id;
-                            $this->episode_ids[] = array('id' => $episode->id,
-                                'title' => $episode->dcTitle,
-                                'start' => $episode->mediapackage->start,
-                                'duration' => $episode->mediapackage->duration,
-                                'description' => $episode->dcDescription,
-                                'author' => $episode->dcCreator
-                            );
+                $this->episode_ids = array();
+                $ids = array();
+                $count = 0;
+                $this->search_client = SearchClient::getInstance();
+                    foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
+                       // var_dump($serie['series_id']); die;
+                        $series = $search_client->getEpisodes($serie['series_id']);
+                        foreach($series as $episode) {
+                            $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+                            if(is_object($episode->mediapackage) && true){//$visibility['visible']){
+                                $count+=1;
+                                //var_dump($episode);
+                                $ids[] = $episode->id;
+                                $this->episode_ids[] = array('id' => $episode->id,
+                                    'title' => $episode->dcTitle,
+                                    'start' => $episode->mediapackage->start,
+                                    'duration' => $episode->mediapackage->duration,
+                                    'description' => $episode->dcDescription,
+                                    'author' => $episode->dcCreator
+                                );
+                            }
                         }
                     }
-
-
-                } else {
-                    $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Series Service");
-                }
             }
-        }
 
-        if($active_id) {
-            $this->active_id = $active_id;
-        } else {
-            $this->active_id = $this->episode_ids[0][id];
-        }
+            if($active_id) {
+                $this->active_id = $active_id;
+            } else {
+                $this->active_id = $this->episode_ids[0][id];
+            }
 
 
-        if($count > 0) {
-            $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
-            $this->engage_player_url = 'http://'. $this->search_conf['service_url']."/engage/ui/watch.html?id=".$this->active_id;
+            if($count > 0) {
+                $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+                $this->engage_player_url = 'http://'. $this->search_conf['service_url']."/engage/ui/watch.html?id=".$this->active_id;
+            }
+        } catch (Exception $e) {
+            $this->flash['error'] = $e->getMessage();
+            $this->render_action('_error');
         }
 
     }
@@ -142,18 +139,19 @@ class CourseController extends StudipController
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
-        $this->search_client = new SearchClient();
-        
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
-
-
         
-        $this->course_id = $_SESSION['SessionSeminar'];
-
-        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
-        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
+        try {
+            $this->search_client = SearchClient::getInstance();
+            $this->course_id = $_SESSION['SessionSeminar'];
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
+        } catch (Exception $e) {
+            $this->flash['error'] = $e->getMessage();
+            $this->render_action('_error');
+        }
 
     }
     
@@ -183,11 +181,11 @@ class CourseController extends StudipController
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
 
         $this->course_id = $_SESSION['SessionSeminar'];
+        
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
 
 
         $this->dates  =  OCModel::getDates($this->course_id);
-
 
 
     }
@@ -198,7 +196,7 @@ class CourseController extends StudipController
 
 
         $this->course_id = Request::get('cid');
-        $scheduler_client = new SchedulerClient();
+        $scheduler_client = SchedulerClient::getInstance();
 
         if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Aufzeichnung wurde geplant.");
@@ -215,7 +213,7 @@ class CourseController extends StudipController
 
         $this->course_id = Request::get('cid');
 
-        $scheduler_client = new SchedulerClient();
+        $scheduler_client = SchedulerClient::getInstance();
 
         if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Die geplante Aufzeichnung wurde entfernt");
@@ -247,7 +245,7 @@ class CourseController extends StudipController
     function create_series_action()
     {
         $this->course_id = Request::get('cid');
-        $this->series_client = new SeriesClient();
+        $this->series_client = SeriesClient::getInstance();
 
         if($this->series_client->createSeriesForSeminar($this->course_id)) {
             $this->flash['message'] = _("Series wurde angelegt");
@@ -283,17 +281,29 @@ class CourseController extends StudipController
             '/vendor/jquery.fileupload.js',
             '/vendor/jquery.ui.widget.js'
         );
-        foreach($scripts as $path) {
-            $script_attributes = array(
-                'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
-            PageLayout::addHeadElement('script', $script_attributes, '');
-        }
-        
-        
-        
-        //TODO: gibt es keine generische Funktion dafür?
-        $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         Navigation::activateItem('course/opencast/upload');
+        
+        try {
+            //check needed services before showing upload form
+            UploadClient::getInstance()->checkService();
+            IngestClient::getInstance()->checkService();
+            MediaPackageClient::getInstance()->checkService();
+            SeriesClient::getInstance()->checkService();
+
+            foreach($scripts as $path) {
+                $script_attributes = array(
+                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
+                PageLayout::addHeadElement('script', $script_attributes, '');
+            }
+
+
+
+            //TODO: gibt es keine generische Funktion dafür?
+            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
+        } catch (Exception $e) {
+            $this->flash['error'] = $e->getMessage();
+            $this->render_action('_error');
+        }
     }
 
 

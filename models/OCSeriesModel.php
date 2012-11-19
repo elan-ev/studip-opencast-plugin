@@ -12,8 +12,6 @@ class OCSeriesModel {
     static private $connectedSeries = null;
     // saves unconnected series for later requests
     static private $unconnectedSeries = null;
-    // stores SiriesClient object for further calls
-    static private $seriesClient = null;
 
     /**
      * return connected Siries for $courseID from DB
@@ -45,13 +43,13 @@ class OCSeriesModel {
     static function getConnectedSeries($courseID, $refresh = false) {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
-            $sClient = self::getSeriesClient();
+            $sClient = SeriesClient::getInstance();
 
             $DBSeries = self::getConnectedSeriesDB($courseID);
             if ($DBSeries) {
                 $res = array();
                 foreach ($DBSeries as $series) {
-                    if ($json = $sClient->getJSON('/series/' . $series['series_id'] . '.json')) {
+                    if ($json = $sClient->getOneSeries($series['series_id'])) {
                         $res[] = self::transformSeriesJSON($json);
                     }
                 }
@@ -112,10 +110,10 @@ class OCSeriesModel {
     static function getAllSeries($refresh = false) {
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
-            $sClient = self::getSeriesClient();
+            $sClient = SeriesClient::getInstance();
             $ret = array();
-            if ($json = $sClient->getJSON('/series/series.json?q=*')) {
-                foreach ($json->catalogs as $series) {
+            if ($json = $sClient->getAllSeries()) {
+                foreach ($json as $series) {
                     $ret[] = self::transformSeriesJSON($series);
                 }
             }
@@ -124,19 +122,6 @@ class OCSeriesModel {
         return self::$allSeries;
     }
 
-    /**
-     * return series client
-     * 
-     * @return SeriesClient
-     */
-    static function getSeriesClient() {
-        if (is_null(self::$seriesClient)) {
-            self::$seriesClient = new SeriesClient();
-            return self::$seriesClient;
-        } else {
-            return self::$seriesClient;
-        }
-    }
 
     /**
      * transforms multidimensional series array into 2 dimensional array
@@ -203,7 +188,7 @@ class OCSeriesModel {
         $series = self::getConnectedSeries($courseID);
         $ret = array();
         foreach ($series as $ser) {
-            if ($xml = self::$seriesClient->getXML('/series/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance()->getXML('/series/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
