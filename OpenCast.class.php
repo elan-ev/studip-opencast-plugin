@@ -86,7 +86,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      * @param string   course_id
      * @param string   last_visit
      */
-    function getIconNavigation($course_id, $last_visit, $user_id)
+    function getIconNavigation($course_id, $last_visit, $user_id = NULL)
     {
         return false;
     }
