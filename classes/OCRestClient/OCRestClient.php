@@ -30,14 +30,15 @@
         
         function __construct($matterhorn_base_url = null, $username = null, $password = null){
             $this->matterhorn_base_url = $matterhorn_base_url;
-            $this->username = $username;
-            $this->password = $password;
+            
+            $username = !is_null($username) ? $username : 'admin';
+            $password = !is_null($password) ? $password : 'opencast';
 
             // setting up a curl-handler
             $this->ochandler = curl_init();
             curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-            curl_setopt($this->ochandler, CURLOPT_USERPWD, 'matterhorn_system_account'.':'.'CHANGE_ME');
+            curl_setopt($this->ochandler, CURLOPT_USERPWD, $username.':'.$password);
             curl_setopt($this->ochandler, CURLOPT_ENCODING, "ISO-8859-1");
             curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
 
