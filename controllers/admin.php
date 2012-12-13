@@ -223,6 +223,8 @@ class AdminController extends AuthenticatedController
         $this->mediapackage_url = Request::get('mediapackage_url');
         $this->mediapackage_user = Request::get('mediapackage_user');
         $this->mediapackage_password = Request::get('mediapackage_password');
+        
+        $this->cleanClientURLs();
 
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
@@ -237,6 +239,19 @@ class AdminController extends AuthenticatedController
 
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
+    }
+    /**
+     * brings REST URL in one format before writing in db
+     */
+    function cleanClientURLs()
+    {
+        $urls = array('series', 'search', 'scheduling', 'ingest', 'captureadmin'
+            , 'upload', 'mediapackage');
+        foreach($urls as $pre) {
+            $var = $pre.'_url';
+            $this->$var = rtrim($this->$var,"/");
+        }
+        
     }
 
     function resources_action()
