@@ -216,13 +216,13 @@ class AdminController extends AuthenticatedController
         $this->captureadmin_user = Request::get('captureadmin_user');
         $this->captureadmin_password = Request::get('captureadmin_password');
 
-        $this->upload_url = $this->upload_conf['upload_url'];
-        $this->upload_user = $this->upload_conf['upload_user'];
-        $this->upload_password = $this->upload_conf['upload_password'];
+        $this->upload_url = Request::get('upload_url');
+        $this->upload_user = Request::get('upload_user');
+        $this->upload_password = Request::get('upload_password');
 
-        $this->mediapackage_url = $this->mediapackage_conf['mediapackage_url'];
-        $this->mediapackage_user = $this->mediapackage_conf['mediapackage_user'];
-        $this->mediapackage_password = $this->mediapackage_conf['mediapackage_password'];
+        $this->mediapackage_url = Request::get('mediapackage_url');
+        $this->mediapackage_user = Request::get('mediapackage_user');
+        $this->mediapackage_password = Request::get('mediapackage_password');
 
         OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
         OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
