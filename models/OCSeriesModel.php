@@ -247,10 +247,10 @@ class OCSeriesModel {
             }
         }
 
-        $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        $str = utf8_encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
                 . '<acl xmlns="org.opencastproject.security">'
                 . implode('', $content)
-                . '</acl>';
+                . '</acl>');
         return $str;
     }
 
@@ -270,9 +270,7 @@ class OCSeriesModel {
 
 
         $inst = Institute::find($course->institut_id);
-        $inst_data = $inst->getData();
-        $publisher = $inst_data['name'];
-
+        $publisher = $inst->name;
         //$start = $course->getStartSemester();
         //$end = $course->getEndSemesterVorlesEnde();
         //       $audience = "General Public";
