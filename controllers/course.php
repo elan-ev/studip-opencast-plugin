@@ -88,21 +88,18 @@ class CourseController extends StudipController
             $this->course_id = $_SESSION['SessionSeminar'];
 
             // lets get all episodes for the connected series
-            if ($cseries = OCModel::getConnectedSeries($this->course_id) && !isset($this->flash['error'])) {
-
+            if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
 
                 $this->episode_ids = array();
                 $ids = array();
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
-                    foreach(OCModel::getConnectedSeries($this->course_id) as $serie) {
-                       // var_dump($serie['series_id']); die;
-                        $series = $search_client->getEpisodes($serie['series_id']);
+                    foreach($cseries as $serie) {
+                        $series = $search_client->getEpisodes($serie['identifier']);
                         foreach($series as $episode) {
                             $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
                             if(is_object($episode->mediapackage) && true){//$visibility['visible']){
                                 $count+=1;
-                                //var_dump($episode);
                                 $ids[] = $episode->id;
                                 $this->episode_ids[] = array('id' => $episode->id,
                                     'title' => $episode->dcTitle,
@@ -147,7 +144,13 @@ class CourseController extends StudipController
             $this->search_client = SearchClient::getInstance();
             $this->course_id = $_SESSION['SessionSeminar'];
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+      
             $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
+            
+            $allseries = OCSeriesModel::getAllSeries();
+            
+            
+            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
@@ -157,11 +160,15 @@ class CourseController extends StudipController
     
     function edit_action($course_id)
     {   
+        
+     
         $series = Request::getArray('series');
+        
+    
         foreach( $series as $serie) {
-            OCModel::setSeriesforCourse($course_id, $serie);
+            OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
-        $this->flash['message'] = _("Änderungen wurden erflolgreich übernommen");
+        $this->flash['message'] = _("Änderungen wurden erfolgreich übernommen");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
     

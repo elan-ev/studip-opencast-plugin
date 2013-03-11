@@ -1,3 +1,5 @@
+<? use Studip\Button, Studip\LinkButton; ?>
+
 <div>
     <? if (false && sizeof($connectedSeries) == 0) : ?>
         <?= MessageBox::info(_("Es sind bislang noch keine Series verfügbar. Bitte überprüfen Sie die globalen Opencast Matterhorn Einstellungen.")) ?>
@@ -47,8 +49,8 @@
                 </ul>
             </div> 
             <div style="padding-top:2em;clear:both" class="form_submit">
-                <?= makebutton("uebernehmen", "input") ?>
-                <a href="<?= PluginEngine::getLink('opencast/course/index') ?>"><?= makebutton("abbrechen") ?></a>
+                <?= Button::createAccept(_('Übernehmen'), array('title' => _("Änderungen übernehmen"))); ?>
+                <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/index')); ?>
             </div>
         </form>
     <? endif; ?>

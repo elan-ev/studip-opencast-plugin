@@ -24,11 +24,11 @@ class OCSeriesModel {
             FROM oc_seminar_series
             WHERE seminar_id = ?");
         $stmt->execute(array($courseID));
-        $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (empty($series))
-            return false;
-        else
+            
+        if ($series = $stmt->fetchAll(PDO::FETCH_ASSOC))
             return $series;
+        else
+            return false;
     }
 
     /**
@@ -108,6 +108,7 @@ class OCSeriesModel {
      * @return array
      */
     static function getAllSeries($refresh = false) {
+        
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
@@ -149,6 +150,8 @@ class OCSeriesModel {
      * @return type
      */
     static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
+        
+    
         $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
                 WHERE series_id = ?");

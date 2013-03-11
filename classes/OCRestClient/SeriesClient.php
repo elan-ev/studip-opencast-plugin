@@ -25,14 +25,15 @@
          *  @return array response all series
          */
         function getAllSeries() {
-            $service_url = "/series.json";
+            $service_url = "/series/series.json";
             if($series = $this->getJSON($service_url)){
+
                 return $series->catalogs;
             } else return false;
         }
         function getOneSeries($seriesID)
         {
-            return $this->getJSON('/'.$seriesID. '.json');
+            return $this->getJSON('/series/'.$seriesID. '.json');
         }
 
         /**
@@ -44,7 +45,7 @@
          */
         function getSeries($series_id) {
 
-            $service_url = "/".$series_id.".json";
+            $service_url = "/series/".$series_id.".json";
             if($series = $this->getJSON($service_url)){
                 return $series;
             } else return false;
@@ -59,7 +60,7 @@
          */
         function getSeriesDublinCore($series_id) {
 
-            $service_url = "/".$series_id."/dublincore";
+            $service_url = "/series/".$series_id."/dublincore";
             if($seriesDC = $this->getXML($service_url)){
                 // dublincore representation is returned in XML
                 //$seriesDC = simplexml_load_string($seriesDC);

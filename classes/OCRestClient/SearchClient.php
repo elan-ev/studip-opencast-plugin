@@ -24,7 +24,7 @@
          */
         function getEpisodes($series_id) {
 
-            $service_url = "/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
+            $service_url = "/search/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
 
             if($search = $this->getJSON($service_url)){
                 $x = "search-results";
