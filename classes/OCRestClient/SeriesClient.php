@@ -77,8 +77,14 @@
          */
         function createSeriesForSeminar($course_id) {
 
+            
+            
 
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
+            
+          
+            
+            
             
             $ACLData = array( 'ROLE_ADMIN' => array(
                                                 'read' => 'true',
@@ -90,13 +96,19 @@
                         );
             $ACL = OCSeriesModel::createSeriesACL($ACLData); 
 
-            $post = array('series' => $dublinCore,
-                        'acl' => $ACL);
 
-            $res = $this->getXML('', $post, false, true);
+
+       
+            $post = array('series' => $dublinCore);
+            //,
+            //            'acl' => $ACL);
+
+            $res = $this->getXML('/series', $post, false, true);
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);
+
+            
 
             if ($res[1] == 201){
 
@@ -111,7 +123,7 @@
         }
 
         /**
-         *  getSeriesDublinCore() - retrieves DC Representation for a given series identifier from conntected Opencast-Matterhorn Core
+         *  removeSeries() - removes a series for a given identifier from the Opencast-Matterhorn Core
          *
          *  @param string series_id Identifier for a Series
          *
@@ -119,10 +131,10 @@
          */
         function removeSeries($series_id) {
 
-            $service_url = "/".$series_id;
+            $service_url = "/series/".$series_id;
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
             curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
-//TODO über REST Classe laufen lassen, getXML, getJSON...
+            //TODO über REST Classe laufen lassen, getXML, getJSON...
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
             if($httpCode == 204){

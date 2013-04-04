@@ -38,7 +38,7 @@
         }
 
         function getCaptureAgents() {
-            $service_url = "/agents.json";
+            $service_url = "/capture-admin/agents.json";
             if($agents = $this->getJSON($service_url)){
                 return $agents;
             } else return false;

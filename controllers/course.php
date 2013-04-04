@@ -94,11 +94,12 @@ class CourseController extends StudipController
                 $ids = array();
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
+
                     foreach($cseries as $serie) {
                         $series = $search_client->getEpisodes($serie['identifier']);
                         foreach($series as $episode) {
                             $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                            if(is_object($episode->mediapackage) && true){//$visibility['visible']){
+                            if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
                                 $count+=1;
                                 $ids[] = $episode->id;
                                 $this->episode_ids[] = array('id' => $episode->id,
@@ -175,6 +176,12 @@ class CourseController extends StudipController
     function remove_series_action($course_id, $series_id)
     {
         OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
+        
+        /*
+        $series_client = SeriesClient::getInstance();
+        $series_client->removeSeries($series_id); 
+        */
+        
         $this->flash['message'] = _("Zuordnung wurde entfernt");
         $this->redirect(PluginEngine::getLink('opencast/course/config'));
     }
@@ -190,9 +197,22 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
         
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
+        $this->dates  =  OCModel::getFutureDates($this->course_id);
+        
+        $search_client = SearchClient::getInstance();
+        
+        // lets get all episodes for the connected series
+        if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
 
-
-        $this->dates  =  OCModel::getDates($this->course_id);
+            $this->episode_ids = array();
+            $ids = array();
+            $count = 0;
+            $this->search_client = SearchClient::getInstance();
+                foreach($cseries as $serie) {
+                    $this->episodes = $search_client->getEpisodes($serie['identifier']);
+    
+                }
+        }
 
 
     }
@@ -270,11 +290,11 @@ class CourseController extends StudipController
         if($visible['visible'] == 'true'){
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
            $this->flash['message'] = _("Episode wurde unsichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/config'));
+           $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
         } else {
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
            $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/config'));
+           $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
         }
     }
 
