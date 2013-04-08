@@ -9,7 +9,7 @@
                                     $config['service_user'],
                                     $config['service_password']);
             } else {
-                throw new Exception (_("Die Capture-Agent-Adminservice Konfiguration wurde nicht im gï¿½ltigen Format angegeben."));
+                throw new Exception (_("Die Capture-Agent-Adminservice Konfiguration wurde nicht im gültigen Format angegeben."));
             }
         }
 
