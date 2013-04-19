@@ -260,11 +260,10 @@ class AdminController extends AuthenticatedController
         Navigation::activateItem('/admin/config/oc-resources');
 
         $caa_client = CaptureAgentAdminClient::getInstance();
-
         $this->resources = OCModel::getOCRessources();
         $this->agents = $caa_client->getCaptureAgents();
 
-
+        
         if(empty($this->resources)) {
             $this->flash['info'] = _('Es wurden keine passenden Ressourcen gefunden.');
 

@@ -97,18 +97,20 @@ class CourseController extends StudipController
 
                     foreach($cseries as $serie) {
                         $series = $search_client->getEpisodes($serie['identifier']);
-                        foreach($series as $episode) {
-                            $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                            if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
-                                $count+=1;
-                                $ids[] = $episode->id;
-                                $this->episode_ids[] = array('id' => $episode->id,
-                                    'title' => $episode->dcTitle,
-                                    'start' => $episode->mediapackage->start,
-                                    'duration' => $episode->mediapackage->duration,
-                                    'description' => $episode->dcDescription,
-                                    'author' => $episode->dcCreator
-                                );
+                        if(!empty($series)) {
+                            foreach($series as $episode) {
+                                $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+                                if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
+                                    $count+=1;
+                                    $ids[] = $episode->id;
+                                    $this->episode_ids[] = array('id' => $episode->id,
+                                        'title' => $episode->dcTitle,
+                                        'start' => $episode->mediapackage->start,
+                                        'duration' => $episode->mediapackage->duration,
+                                        'description' => $episode->dcDescription,
+                                        'author' => $episode->dcCreator
+                                    );
+                                }
                             }
                         }
                     }

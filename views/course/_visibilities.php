@@ -1,4 +1,5 @@
 <h4><?=_('Aufzeichnungen verwalten')?> </h4>
+<? if(!empty($episodes)) :?>
 <table class="default">
     <tr>
         <th>Titel</th>
@@ -33,3 +34,6 @@
     <? endforeach; ?>
 
 </table>
+<? else: ?>
+    <?= MessageBox::info(_("Es sind noch keine Aufzeichnungen vorhanden.")) ?>
+<? endif; ?>

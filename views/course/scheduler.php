@@ -20,7 +20,9 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 
 <div class="oc_schedule">
     <h3><?=_('Verwaltung der Veranstaltungsaufzeichnungen')?></h3>
-    <h4><?=_('Veranstaltungsaufzeichnungen Planen')?>:</h4>
+        <?= $this->render_partial("course/_visibilities", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
+    
+    <h4><?=_('Veranstaltungsaufzeichnungen planen')?>:</h4>
     <!--        <h4>Ablaufplan</h4>
 <p>Erst feststellen ob ein Raum mit CA da ist und dann den Ablaufplan posten mit Checkboxes zum Schedulen...</p> -->
     <? if(!empty($dates)) :?>
@@ -88,5 +90,5 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
     <? else: ?>
         <?= MessageBox::info(_('Es gibt keine passenden Termine'));?>
     <? endif;?>
-    <?= $this->render_partial("course/_visibilities", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
+
 </div>

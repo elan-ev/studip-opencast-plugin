@@ -159,10 +159,6 @@ class OCModel
 
     static function scheduleRecording($course_id, $resource_id, $date_id, $event_id) {
 
-        /* TODO
-         *  - call Webservice and schedule that recording...
-         */
-
         // 1st: retrieve series_id
         $series = self::getConnectedSeries($course_id);
         $serie = $series[0];

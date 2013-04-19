@@ -11,6 +11,23 @@ OC = {
             jQuery('#admin-accordion').accordion();
         });
     },
+    
+    
+    initSeries : function(){
+        jQuery(document).ready(function(){
+            if( jQuery('#select-series').data("unconnected") !== 1 ) {
+                jQuery('.series_select').attr("disabled", true);
+                jQuery('.form_submit').children().attr("disabled", true);
+                $('#admin-accordion').accordion({ active: 1,
+                                                  autoHeight: false,
+                                                  clearStyle: true });
+            } else {
+                jQuery('#admin-accordion').accordion({autoHeight: false,
+                                                      clearStyle: true });
+            }
+        })
+    },
+    
     initUpload : function(maxChunk){
         jQuery(document).ready(function(){
             $('#btn_accept').click(function() {

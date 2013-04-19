@@ -17,7 +17,7 @@ $infobox_content = array(array(
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
 <script language="JavaScript">
-    OC.initAdmin();
+    OC.initSeries();
 </script>
 <h3><?= _('Verwaltung der eingebundenen Vorlesungsaufzeichnungen') ?></h3>
 
@@ -26,10 +26,11 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                             Bitte verknüpfen eine bereits vorhandene Series oder %s erstellen Sie eine neue.%s"), '<a href="' . PluginEngine::getLink('opencast/course/create_series/') . '">', '</a>'))
     ?>
 <?php endif; ?>
-    <div id="admin-accordion">
-        <p><?= _('Wählen Sie unten eine Series aus, die Sie mit der aktuellen Veranstaltung verknüpfen möchten') ?>:</p>
-        <?= $this->render_partial("course/_connectedSeries", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
-    </div>
+
+
+<?= $this->render_partial("course/_connectedSeries", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
+
+
 
 
 <?/*elseif (!$connected) : ?>

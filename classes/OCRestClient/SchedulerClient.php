@@ -47,7 +47,7 @@
             curl_setopt($this->ochandler, CURLOPT_POST, true);
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);
-//TODO über REST Classe laufen lassen, getXML, getJSON...
+            //TODO über REST Classe laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -56,9 +56,10 @@
 
             if ($httpCode == 201){
 
-
                 foreach($resArray as $resp) {
-                    if(preg_match('#Location: http:/opencast.virtuos.uos.de:8080/recordings/recordings/(.+?).xml#Uis', $resp, $matches)) {
+                    // THIS might be an pitfal. Keep an eye on futre oc releases...
+                    $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/recordings/recordings/(.+?).xml#Uis';
+                    if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
                     }
                 }

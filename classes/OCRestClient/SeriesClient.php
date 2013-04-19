@@ -77,12 +77,12 @@
          */
         function createSeriesForSeminar($course_id) {
 
-            
+
             
 
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
             
-          
+
             
             
             
@@ -94,16 +94,21 @@
                                                 'read' => 'true'
                                )
                         );
+                        
             $ACL = OCSeriesModel::createSeriesACL($ACLData); 
 
 
+            
+
 
        
-            $post = array('series' => $dublinCore);
-            //,
-            //            'acl' => $ACL);
+            $post = array('series' => $dublinCore,
+                        'acl' => $ACL);
+
+            
 
             $res = $this->getXML('/series', $post, false, true);
+            //var_dump($res); die;
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);
