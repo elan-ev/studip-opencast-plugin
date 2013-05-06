@@ -7,7 +7,7 @@
         function __construct() {
 
 
-            if ($config = parent::getConfig('schedule')) {
+            if ($config = parent::getConfig('recordings')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
                                     $config['service_password']);
@@ -40,7 +40,7 @@
             $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
 
 
-            $rest_end_point = "/recordings/";
+            $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
@@ -55,15 +55,14 @@
             $resArray = explode("\n", $response);
 
             if ($httpCode == 201){
-
+                $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/recordings/(.+?).xml#Uis';
                 foreach($resArray as $resp) {
-                    // THIS might be an pitfal. Keep an eye on futre oc releases...
-                    $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/recordings/recordings/(.+?).xml#Uis';
+
+                    // THIS could be changed. Keep an eye on futre oc releases...
                     if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
                     }
                 }
-
                 OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $eventid);
                 return true;
             } else {
@@ -87,7 +86,7 @@
             $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
             $event = $event_data[0];
 
-            $rest_end_point = "/recordings/".$event['event_id'];
+            $rest_end_point = "/".$event['event_id'];
             $uri = $rest_end_point;
 
             // setting up a curl-handler

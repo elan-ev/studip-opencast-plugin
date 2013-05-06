@@ -35,16 +35,26 @@ class CourseController extends StudipController
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
-        if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->series_conf = OCRestClient::getConfig('schedule'))
-                && ($this->scheduler_conf = OCRestClient::getConfig('series'))) {
-            $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
-            $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
-            $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
-        } elseif (!$this->search_client->getAllSeries()) {
-             $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
-        } else {
-            throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
-        }
+          //       
+          //         var_dump($this->search_conf, $this->schedule_conf, $this->series_conf); die;
+          // 
+          // 
+          // if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->schedule_conf = OCRestClient::getConfig('schedule'))
+          //         && ($this->series_conf = OCRestClient::getConfig('series'))) {
+          //      
+          //     
+          //     
+          //     
+          //     $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
+          //     
+          //     
+          //     $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
+          //     $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
+          // } elseif (!$this->search_client->getAllSeries()) {
+          //      $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
+          // } else {
+          //     throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
+          // }
         // take care of the navigation icon
         $navigation = Navigation::getItem('/course/opencast');
         $this->imgagepath = '../../'.$this->dispatcher->trails_root.'/images/online-prev.png';
@@ -81,7 +91,7 @@ class CourseController extends StudipController
 
         Navigation::activateItem('course/opencast/overview');
         try {
-            $search_client = SearchClient::getInstance();
+            $this->search_client = SearchClient::getInstance();
             if (isset($this->flash['message'])) {
                 $this->message = $this->flash['message'];
             }
@@ -96,7 +106,7 @@ class CourseController extends StudipController
                 $this->search_client = SearchClient::getInstance();
 
                     foreach($cseries as $serie) {
-                        $series = $search_client->getEpisodes($serie['identifier']);
+                        $series = $this->search_client->getEpisodes($serie['identifier']);
                         if(!empty($series)) {
                             foreach($series as $episode) {
                                 $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
@@ -124,7 +134,7 @@ class CourseController extends StudipController
 
 
             if($count > 0) {
-                $this->embed = $this->search_conf['service_url'] ."/engage/ui/embed.html?id=".$this->active_id;
+                $this->embed = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
                 $this->engage_player_url = 'http://'. $this->search_conf['service_url']."/engage/ui/watch.html?id=".$this->active_id;
             }
         } catch (Exception $e) {

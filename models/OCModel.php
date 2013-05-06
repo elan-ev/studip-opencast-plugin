@@ -153,7 +153,8 @@ class OCModel
      * 
      * @param string $course_id
      * @param string $resource_id
-     * @param string $date_id
+     * @param string $date_id - Stud.IP Identifier for the event
+     * @param string $event_id  - Opencast Identifier for the event
      * @return boolean success
      */
 
@@ -428,6 +429,19 @@ class OCModel
 
     static function getDCTime($timestamp) {
         return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z;';
+    }
+    
+    static function retrieveRESTservices($components) {
+
+        $services = array();
+              
+
+        foreach( $components as $service) {
+            $services[preg_replace("/\//", '', $service->path)] = preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->docs);
+
+        }
+        return $services;
+        
     }
 }
 ?>

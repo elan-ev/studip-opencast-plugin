@@ -14,6 +14,7 @@ require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/InfoClient.php';
 
 
 class AdminController extends AuthenticatedController
@@ -107,7 +108,8 @@ class AdminController extends AuthenticatedController
         Navigation::activateItem('/admin/config/oc-config');
 
 
-
+       // $this->info_conf = OCRestClient::setConfig('info', 'vm283.rz.uos.de:8080', 'matterhorn_system_account', 'CHANGE_ME');
+ 
 
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
@@ -118,44 +120,12 @@ class AdminController extends AuthenticatedController
          * TODO: add generic mechanism for the assignment of config params
          *
          */
-        if( ($this->search_conf = OCRestClient::getConfig('search')) &&
-            ($this->series_conf = OCRestClient::getConfig('series')) &&
-            ($this->schedule_conf = OCRestClient::getConfig('schedule')) &&
-            ($this->ingest_conf = OCRestClient::getConfig('ingest')) &&
-            ($this->captureadmin_conf = OCRestClient::getConfig('captureadmin')) &&
-            ($this->upload_conf = OCRestClient::getConfig('upload')) &&
-            ($this->mediapackage_conf = OCRestClient::getConfig('mediapackage'))) {
+        if( ($this->info_conf = OCRestClient::getConfig('info'))) {
 
 
-            $this->series_url = $this->series_conf['service_url'];
-            $this->series_user = $this->series_conf['service_user'];
-            $this->series_password = $this->series_conf['service_password'];
-
-
-            $this->search_url = $this->search_conf['service_url'];
-            $this->search_user = $this->search_conf['service_user'];
-            $this->search_password = $this->search_conf['service_password'];
-
-            $this->scheduling_url = $this->schedule_conf['service_url'];
-            $this->scheduling_user = $this->schedule_conf['service_user'];
-            $this->scheduling_password = $this->schedule_conf['service_password'];
-
-            $this->ingest_url = $this->ingest_conf['service_url'];
-            $this->ingest_user = $this->ingest_conf['service_user'];
-            $this->ingest_password = $this->ingest_conf['service_password'];
-
-            $this->captureadmin_url = $this->captureadmin_conf['service_url'];
-            $this->captureadmin_user = $this->captureadmin_conf['service_user'];
-            $this->captureadmin_password = $this->captureadmin_conf['service_password'];
-
-            $this->upload_url = $this->upload_conf['service_url'];
-            $this->upload_user = $this->upload_conf['service_user'];
-            $this->upload_password = $this->upload_conf['service_password'];
-
-            $this->mediapackage_url = $this->mediapackage_conf['service_url'];
-            $this->mediapackage_user = $this->mediapackage_conf['service_user'];
-            $this->mediapackage_password = $this->mediapackage_conf['service_password'];
-
+            $this->info_url = $this->info_conf['service_url'];
+            $this->info_user = $this->info_conf['service_user'];
+            $this->info_password = $this->info_conf['service_password'];
 
 
         } else {
@@ -195,44 +165,30 @@ class AdminController extends AuthenticatedController
 
     function update_action()
     {
-        $this->series_url = Request::get('series_url');
-        $this->series_user = Request::get('series_user');
-        $this->series_password = Request::get('series_password');
+        $this->info_url = Request::get('info_url');
+        $this->info_user = Request::get('info_user');
+        $this->info_password = Request::get('info_password');
 
-        $this->search_url = Request::get('search_url');
-        $this->search_user = Request::get('search_user');
-        $this->search_password = Request::get('search_password');
-
-
-        $this->scheduling_url = Request::get('scheduling_url');
-        $this->scheduling_user = Request::get('scheduling_user');
-        $this->scheduling_password = Request::get('scheduling_password');
-
-        $this->ingest_url = Request::get('ingest_url');
-        $this->ingest_user = Request::get('ingest_user');
-        $this->ingest_password = Request::get('ingest_password');
-
-        $this->captureadmin_url = Request::get('captureadmin_url');
-        $this->captureadmin_user = Request::get('captureadmin_user');
-        $this->captureadmin_password = Request::get('captureadmin_password');
-
-        $this->upload_url = Request::get('upload_url');
-        $this->upload_user = Request::get('upload_user');
-        $this->upload_password = Request::get('upload_password');
-
-        $this->mediapackage_url = Request::get('mediapackage_url');
-        $this->mediapackage_user = Request::get('mediapackage_user');
-        $this->mediapackage_password = Request::get('mediapackage_password');
+      
         
         $this->cleanClientURLs();
 
-        OCRestClient::setConfig('search', $this->search_url, $this->search_user, $this->search_password);
-        OCRestClient::setConfig('series', $this->series_url, $this->series_user, $this->series_password);
-        OCRestClient::setConfig('schedule',  $this->scheduling_url, $this->scheduling_user, $this->scheduling_password);
-        OCRestClient::setConfig('ingest',  $this->ingest_url, $this->ingest_user, $this->ingest_password);
-        OCRestClient::setConfig('captureadmin',  $this->captureadmin_url, $this->captureadmin_user, $this->captureadmin_password);
-        OCRestClient::setConfig('mediapackage',  $this->mediapackage_url, $this->mediapackage_user, $this->mediapackage_password);
-        OCRestClient::setConfig('upload',  $this->upload_url, $this->upload_user, $this->upload_password);
+        OCRestClient::setConfig('info', $this->info_url, $this->info_user, $this->info_password);
+        
+       
+       
+        $info_client    = InfoClient::getInstance();
+        $comp = $info_client->getRESTComponents();
+        var_dump($comp);
+        
+        $services = OCModel::retrieveRESTservices($comp);
+        
+          
+        foreach($services as $service_type => $service_url) {
+            OCRestClient::setConfig($service_type, $service_url, $this->info_user, $this->info_password);
+        
+        }
+        
 
 
         $success = _("Änderungen wurden erfolgreich übernommen.");
