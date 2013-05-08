@@ -4,7 +4,7 @@
     {
         static $me;
         function __construct() {
-            if ($config = parent::getConfig('captureadmin')) {
+            if ($config = parent::getConfig('capture-admin')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
                                     $config['service_password']);
@@ -38,7 +38,7 @@
         }
 
         function getCaptureAgents() {
-            $service_url = "/capture-admin/agents.json";
+            $service_url = "/agents.json";
 
             if($agents = $this->getJSON($service_url)){
                 return $agents;

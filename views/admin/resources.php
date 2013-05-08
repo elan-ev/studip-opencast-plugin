@@ -65,10 +65,13 @@ OC.initAdmin();
                     </ul>
 
                 <? else :?>
-                    <input type="hidden" name="action" value="add"/>
+                <input type="hidden" name="action" value="add"/>
+
+               
                 <select name="<?=$resource['resource_id']?>">
-                        <? foreach ($agents as $agent) : ?>
-                            <? $agent = $agent->agent; ?>
+                    
+                        <? foreach ($agents->agents->agent as $agent) : ?>
+         
                             <? $agent_name = $agent->name; ?>
                             <? if(!empty($assigned_cas)) :?>
                                 <? foreach($assigned_cas as $aca) : ?>
@@ -79,7 +82,7 @@ OC.initAdmin();
                                     <? endif; ?>
                                 <? endforeach ; ?>
                             <? else : ?>
-                                    <option value="<?= $agent_name ?>" > <?=$agent_name?> </option>
+                                    <option value="<?= $agent_name ?>" > <?=$agent_name?></option>
                             <? endif; ?>
                         <? endforeach; ?>
                     </select>

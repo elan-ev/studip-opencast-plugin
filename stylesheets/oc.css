@@ -1,3 +1,46 @@
+.conf-form {
+    padding-bottom: 19px;
+}
+
+.conf-form-field {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.conf-form-field legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 40px;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.conf-form-field label p {
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+}
+
+.conf-form-field input {
+    display: inline-block;
+    padding: 4px 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #555555;
+    vertical-align: middle;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+
+
 .form_list {
     margin:             1em;
     list-style-type:    none !important;
