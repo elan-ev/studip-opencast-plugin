@@ -110,7 +110,6 @@
             
 
             $res = $this->getXML('/', $post, false, true);
-            //var_dump($res); die;
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);

@@ -165,12 +165,13 @@ class AdminController extends AuthenticatedController
 
     function update_action()
     {
-        $this->info_url = Request::get('info_url');
+        $service_url =  parse_url(Request::get('info_url'));
+        $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path']; 
+
         $this->info_user = Request::get('info_user');
         $this->info_password = Request::get('info_password');
 
-      
-        
+          
         $this->cleanClientURLs();
 
         OCRestClient::setConfig('info', $this->info_url, $this->info_user, $this->info_password);
@@ -179,7 +180,7 @@ class AdminController extends AuthenticatedController
        
         $info_client    = InfoClient::getInstance();
         $comp = $info_client->getRESTComponents();
-        var_dump($comp);
+            
         
         $services = OCModel::retrieveRESTservices($comp);
         
@@ -203,6 +204,7 @@ class AdminController extends AuthenticatedController
     {
         $urls = array('series', 'search', 'scheduling', 'ingest', 'captureadmin'
             , 'upload', 'mediapackage');
+            
         foreach($urls as $pre) {
             $var = $pre.'_url';
             $this->$var = rtrim($this->$var,"/");

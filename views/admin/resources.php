@@ -20,7 +20,7 @@
         'kategorie' => _('Hinweise:'),
         'eintrag'   => array(array(
             'icon' => 'icons/16/black/info.png',
-            'text' => _("Hier können die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen.")
+            'text' => _("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen.")
         ))
     ));
     $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);

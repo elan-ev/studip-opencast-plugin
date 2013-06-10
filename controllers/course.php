@@ -16,6 +16,7 @@ require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
@@ -35,26 +36,6 @@ class CourseController extends StudipController
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
-          //       
-          //         var_dump($this->search_conf, $this->schedule_conf, $this->series_conf); die;
-          // 
-          // 
-          // if(($this->search_conf = OCRestClient::getConfig('search')) && ($this->schedule_conf = OCRestClient::getConfig('schedule'))
-          //         && ($this->series_conf = OCRestClient::getConfig('series'))) {
-          //      
-          //     
-          //     
-          //     
-          //     $this->series_client = new OCRestClient($this->series_conf['service_url'], $this->series_conf['service_user'], $this->series_conf['service_password']);
-          //     
-          //     
-          //     $this->search_client = new OCRestClient($this->search_conf['service_url'], $this->search_conf['service_user'], $this->search_conf['service_password']);
-          //     $this->scheduler_client = new OCRestClient($this->scheduler_conf['service_url'], $this->scheduler_conf['service_user'], $this->scheduler['service_password']);
-          // } elseif (!$this->search_client->getAllSeries()) {
-          //      $this->flash['error'] = _("Es besteht momentan keine Verbindung zum Search Service");
-          // } else {
-          //     throw new Exception(_("Die Verknüpfung  zum Opencast Matterhorn Server wurde nicht korrekt durchgeführt."));
-          // }
         // take care of the navigation icon
         $navigation = Navigation::getItem('/course/opencast');
         $this->imgagepath = '../../'.$this->dispatcher->trails_root.'/images/online-prev.png';
@@ -213,6 +194,11 @@ class CourseController extends StudipController
         
         $search_client = SearchClient::getInstance();
         
+        
+        $workflow_client = WorkflowClient::getInstance();
+        
+        
+        
         // lets get all episodes for the connected series
         if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
 
@@ -221,6 +207,9 @@ class CourseController extends StudipController
             $count = 0;
             $this->search_client = SearchClient::getInstance();
                 foreach($cseries as $serie) {
+                    
+                    
+                    $instances = $workflow_client->getInstances($serie['identifier']);
                     $this->episodes = $search_client->getEpisodes($serie['identifier']);
     
                 }

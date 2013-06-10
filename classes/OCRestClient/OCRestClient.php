@@ -1,7 +1,7 @@
 <?php
     /***
      * OCRestClient.php - The administarion of the opencast player
-     * Copyright (c) 2011  AndrÃ© KlaÃŸen
+     * Copyright (c) 2011  André Klaßen
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License as
@@ -61,12 +61,6 @@
           *
           */
         function getConfig($service_type) {
-            
-            
-            $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` WHERE service_type = ?");
-            $stmt->execute(array($service_type));
-            $dings = $stmt->fetch();
-            //var_dump($stmt, $dings, isset($service_type)); die;
             
             if(isset($service_type)) {
                 $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` WHERE service_type = ?");
@@ -176,7 +170,7 @@
             if (@fsockopen($this->matterhorn_base_url)) {
                 return true;
             }            
-            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewŠhlten Service "%s". Versuchen Sie es bitte zu einem spŠteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
+            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewählten Service "%s". Versuchen Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
         }
         
      

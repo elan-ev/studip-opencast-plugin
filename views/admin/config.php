@@ -16,7 +16,7 @@
         'kategorie' => _('Hinweise:'),
         'eintrag'   => array(array(
             'icon' => 'icons/16/black/info.png',
-            'text' => _("Hier können die Anbindung zum Opencast Matterhorn System verwaltet werden. Geben Sie die jeweiligen URLs zu den REST-Sevices, sowie die dementsprechenen Zugangsdaten an.")
+            'text' => _("Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden.")
         ))
     ));
     $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
@@ -27,7 +27,7 @@ OC.initAdmin();
 <!--
 <h3>Globale Opencast Matterhorn Einstellungen</h3>
 <span>
-  <?=_("Tragen Sie hier die jeweilgen Pfade zu den Matterhorn REST-Endpoints ein.")?>
+  <?=_("Tragen Sie hier die jeweiligen Pfade zum Matterhorn Runtime Information REST-Endpoint ein.")?>
 </span> -->
 
 <form class="conf-form" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
@@ -37,10 +37,10 @@ OC.initAdmin();
         <p><?=_("Tragen Sie hier die den Pfad zu den Matterhorn REST-Endpoints ein.")?></p>
         
         <label  for="info_url"><?=_("Service-URL")?>:</label><br>
-        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="SERIES_ENDPOINT_URL"><br>
+        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="INFO_ENDPOINT_URL"><br>
          
         <label for="info_user"><?=_("Nutzerkennung")?>:</label><br>
-        <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="SERIES_ENDPOINT_USER"><br>
+        <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="INFO_ENDPOINT_USER"><br>
         
         <label for="info_password"><?=_("Passwort")?>:</label><br>
         <input type="password" name="info_password" value="<?=$info_password?>" size="50"><br>
