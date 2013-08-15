@@ -52,7 +52,7 @@ array(
                                     </ul>
                                     <div class="ocplayerlink">
                                         <div style="text-align:left; font-style:italic;">Online schauen:</div>
-                                        <?= Studip\LinkButton::create(_('Erweiterter Player'), $engage_player_url, array('class' => 'oc_tooltip',  'target'=> '_blank')) ?>
+                                        <?= Studip\LinkButton::create(_('Erweiterter Player'), $engage_player_url, array('class' => 'oc_tooltip',  'target'=> '_blank', 'data-preview' => $item['preview'])) ?>
                                     </div>
                                     <div class="download" style="visibility: hidden;">
                                     </div>
@@ -80,6 +80,7 @@ array(
     <script>
         jQuery(document).ready(function init_indexpage() {
             // tooltips
+            
             jQuery(".oc_tooltip").tipTip({
                 defaultPosition: "left",
                 keepAlive: false,
@@ -88,9 +89,37 @@ array(
                 delay: 50,
                 content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ STUDIP.ABSOLUTE_URI_STUDIP +"plugins_packages/elan-ev/OpenCast/images/online-prev.png' /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
             });
+            /*
             jQuery(".oc_tooltip").tipTip({
                 defaultPosition: "top", edgeOffset: 3, delay: 50
             });
+            
+            jQuery(".oc_tooltip").each(function(){
+                jQuery(this).tipTip({
+                    defaultPosition: "left",
+                    keepAlive: false,
+                    maxWidth: 270,
+                    edgeOffset: 8,
+                    delay: 50,
+                    content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ jQuery(this).attr('data-preview') +"' height='50%' width='50%' /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
+                });
+            }); */
+            
+            jQuery('a[title]').live('mouseover', function()
+            {
+                jQuery(this).tipTip({
+                    defaultPosition: "left",
+                    keepAlive: false,
+                    maxWidth: 270,
+                    edgeOffset: 8,
+                    delay: 50,
+                    content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ $(this).data('preview') +" /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
+                });
+
+                jQuery(this).trigger('mouseenter');
+            });
+              
+            
             // Slimscroll
             jQuery('#list').slimScroll({
                 height: '400px',

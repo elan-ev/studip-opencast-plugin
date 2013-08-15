@@ -170,30 +170,21 @@ class AdminController extends AuthenticatedController
 
         $this->info_user = Request::get('info_user');
         $this->info_password = Request::get('info_password');
-
-          
-        $this->cleanClientURLs();
-
-        OCRestClient::setConfig('info', $this->info_url, $this->info_user, $this->info_password);
         
-       
+        OCRestClient::setConfig('info', $this->info_url, $this->info_user, $this->info_password);
        
         $info_client    = InfoClient::getInstance();
         $comp = $info_client->getRESTComponents();
-            
         
         $services = OCModel::retrieveRESTservices($comp);
+        OCRestClient::clearConfig();
         
-          
         foreach($services as $service_type => $service_url) {
             OCRestClient::setConfig($service_type, $service_url, $this->info_user, $this->info_password);
         
         }
-        
-
 
         $success = _("Änderungen wurden erfolgreich übernommen.");
-
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
     }
@@ -220,6 +211,7 @@ class AdminController extends AuthenticatedController
         $caa_client = CaptureAgentAdminClient::getInstance();
         $this->resources = OCModel::getOCRessources();
         $this->agents = $caa_client->getCaptureAgents();
+        
 
         
         if(empty($this->resources)) {

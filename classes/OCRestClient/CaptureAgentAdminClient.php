@@ -39,10 +39,17 @@
 
         function getCaptureAgents() {
             $service_url = "/agents.json";
-
             if($agents = $this->getJSON($service_url)){
-                return $agents;
+              return $agents;
             } else return false;
         }
+        
+        function getCaptureAgent($agent_name) {
+            $service_url = "/agents/" . $agent_name . ".json";
+            
+            if($agent = $this->getJSON($service_url)) {
+                return $agent;
+            } else return false;
         }
+    }
 ?>

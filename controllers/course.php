@@ -36,10 +36,6 @@ class CourseController extends StudipController
 
         $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
         
-        // take care of the navigation icon
-        $navigation = Navigation::getItem('/course/opencast');
-        $this->imgagepath = '../../'.$this->dispatcher->trails_root.'/images/online-prev.png';
-        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
     }
 
     /**
@@ -47,7 +43,7 @@ class CourseController extends StudipController
      */
     function index_action($active_id = '')
     {
-
+         global  $user;
         /*
          * Add some JS and CSS
          *
@@ -99,7 +95,8 @@ class CourseController extends StudipController
                                         'start' => $episode->mediapackage->start,
                                         'duration' => $episode->mediapackage->duration,
                                         'description' => $episode->dcDescription,
-                                        'author' => $episode->dcCreator
+                                        'author' => $episode->dcCreator,
+                                        'preview' => $episode->mediapackage->attachments->attachment[0]->url
                                     );
                                 }
                             }
@@ -116,7 +113,7 @@ class CourseController extends StudipController
 
             if($count > 0) {
                 $this->embed = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
-                $this->engage_player_url = 'http://'. $this->search_conf['service_url']."/engage/ui/watch.html?id=".$this->active_id;
+                $this->engage_player_url = 'http://' . $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id.'&studipuser='.$user->username;
             }
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
@@ -139,7 +136,7 @@ class CourseController extends StudipController
             $this->course_id = $_SESSION['SessionSeminar'];
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
       
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             
             $allseries = OCSeriesModel::getAllSeries();
             
@@ -207,11 +204,8 @@ class CourseController extends StudipController
             $count = 0;
             $this->search_client = SearchClient::getInstance();
                 foreach($cseries as $serie) {
-                    
-                    
-                    $instances = $workflow_client->getInstances($serie['identifier']);
+                   // $instances = $workflow_client->getInstances($serie['identifier']);
                     $this->episodes = $search_client->getEpisodes($serie['identifier']);
-    
                 }
         }
 

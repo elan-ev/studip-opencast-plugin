@@ -30,7 +30,8 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         $main = new Navigation("OpenCast");
         //$main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage('../../'.$this->getPluginPath().'/images/oc-logo.png');
+        $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
+        $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
 
         $admin = new Navigation('Einstellungen');
         $admin->setURL(PluginEngine::getURL('opencast/course/config'));
@@ -39,7 +40,6 @@ class OpenCast extends StudipPlugin implements StandardPlugin
 
         $scheduler = new Navigation('Aufzeichnungen verwalten');
         $scheduler->setURL(PluginEngine::getURL('opencast/course/scheduler'));
-
 
         //$upload = new Navigation('Upload');
         //$upload->setURL(PluginEngine::getURL('opencast/course/upload'));
@@ -55,7 +55,8 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         if ($this->isActivated($_SESSION['SessionSeminar'])) {
             Navigation::addItem('/course/opencast', $main);
         }
-
+        
+   
         $style_attributes = array(
             'rel'   => 'stylesheet',
             'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
@@ -78,6 +79,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         $trails_root = $this->getPluginPath();
         $dispatcher = new Trails_Dispatcher($trails_root, NULL, NULL);
         $dispatcher->dispatch($unconsumed_path);
+        
     }
 
     /**
@@ -88,7 +90,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      */
     function getIconNavigation($course_id, $last_visit, $user_id = NULL)
     {
-        return false;
+        return null;
     }
 
     /**
@@ -108,7 +110,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
      */
     public function getInfoTemplate($course_id)
     {
-        return false;
+        return null;
     }
 
     /**
@@ -146,6 +148,8 @@ class OpenCast extends StudipPlugin implements StandardPlugin
 
     function getTabNavigation($course_id)
     {
+      
+        
         return false;
     }
 

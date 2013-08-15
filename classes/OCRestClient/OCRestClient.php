@@ -80,13 +80,18 @@
          *  @param string $service_password
          */
         function setConfig($service_type, $service_url, $service_user, $service_password) {
-            if(isset($service_type, $service_url, $service_user, $service_password)) {
+            if(isset($service_type, $service_url, $service_user, $service_password)) {                    
                 $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (service_type, service_url, service_user, service_password) VALUES (?,?,?,?)");
                 return $stmt->execute(array($service_type, $service_url, $service_user, $service_password));
             } else {
                 throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
             }
 
+        }
+        
+        function clearConfig() {
+            $stmt = DBManager::get()->prepare("TRUNCATE TABLE`oc_config`;");
+            return $stmt->execute();
         }
 
         /**

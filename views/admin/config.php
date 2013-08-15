@@ -27,7 +27,7 @@ OC.initAdmin();
 <!--
 <h3>Globale Opencast Matterhorn Einstellungen</h3>
 <span>
-  <?=_("Tragen Sie hier die jeweiligen Pfade zum Matterhorn Runtime Information REST-Endpoint ein.")?>
+  <?=_("Tragen Sie hier den Pfad zum Matterhorn Runtime Information REST-Endpoint ein.")?>
 </span> -->
 
 <form class="conf-form" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>

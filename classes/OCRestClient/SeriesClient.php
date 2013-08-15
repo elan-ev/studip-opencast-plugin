@@ -80,12 +80,7 @@
         function createSeriesForSeminar($course_id) {
 
 
-            
-
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
-            
-
-            
             
             
             $ACLData = array( 'ROLE_ADMIN' => array(
@@ -100,16 +95,14 @@
             $ACL = OCSeriesModel::createSeriesACL($ACLData); 
 
 
-            
-
-
-       
+   
             $post = array('series' => $dublinCore,
                         'acl' => $ACL);
 
-            
 
             $res = $this->getXML('/', $post, false, true);
+            
+    
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);

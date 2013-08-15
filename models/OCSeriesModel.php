@@ -114,6 +114,7 @@ class OCSeriesModel {
             $sClient = SeriesClient::getInstance();
             $ret = array();
             if ($json = $sClient->getAllSeries()) {
+
                 foreach ($json as $series) {
                     $ret[] = self::transformSeriesJSON($series);
                 }
@@ -268,43 +269,45 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "Creative Commons"; // TODO: Licence auswahl und Kommentare weg
-//        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "(c) " . date(Y) . $GLOBALS['UNI_NAME_CLEAN'];
+        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
 
         $inst = Institute::find($course->institut_id);
+        
+        
         $publisher = $inst->name;
-        //$start = $course->getStartSemester();
-        //$end = $course->getEndSemesterVorlesEnde();
-        //       $audience = "General Public";
-        //       $instructors = $course->getMembers('dozent');
-        //       $instructor = array_pop($instructors);
-        $contributor = $instructor['fullname'];
-        $creator = $inst_data['name'];
-
+        $start = $course->getStartSemester();
+        $end = $course->getEndSemesterVorlesEnde();
+        $audience = "General Public";
+        $instructors = $course->getMembers('dozent');
+        $instructor = array_pop($instructors);
+        $contributor = $GLOBALS['UNI_NAME_CLEAN'];
+        $creator = $instructor['fullname'];
         $language = 'German';
 
         $data = array(
             'title' => $name,
             'creator' => $creator,
             'contributor' => $contributor,
-            'subject' => $course->description,
+            'subject' => $course->form,
             'language' => $language,
             'license' => $license,
             'description' => $course->description,
             'publisher' => $publisher
         );
+        
+        
         $content = array();
 
         foreach ($data as $key => $val) {
-            $content[] = '<dcterms:' . $key . ' xmlns="">' . $val . '</dcterms:' . $key . '>';
+            $content[] = '<dcterms:' . $key . '>' . $val . '</dcterms:' . $key . '>';
         }
-        $str = '<?xml version="1.0"?>'
-                . '<dublincore '
-                . 'xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
-                . 'xmlns:dcterms="http://purl.org/dc/terms/" '
-                . 'xmlns:dc="http://purl.org/dc/elements/1.1/" '
-                . 'xmlns:oc="http://www.opencastproject.org/matterhorn">'
+        
+        
+        $str = '<?xml version="1.0" encoding="UTF-8"?>'
+                . '<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
+                . 'xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn/">'
                 . implode('', $content)
                 . '</dublincore>';
 

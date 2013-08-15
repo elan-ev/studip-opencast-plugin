@@ -31,6 +31,38 @@ OC.initAdmin();
 
 <h3> <?= _("Zuweisung der Capture Agents") ?> </h3>
 
+<!-- New Table-->
+
+<!--
+
+<table id="oc_resourcestab">
+    <tr>
+        <th><?=_('Raum')?></th>
+        <th><?=_('Capture Agent')?></th>
+        <th><?=_('Status')?></th>
+    </tr>
+    <!--loop the ressources -->
+    <!--
+    <? foreach ($resources as $resource) :?>
+    <tr>
+        <td><?= $resource['name'] ?></td>
+        <td>
+            <? $assigned_agent = OCModel::getCAforResource($resource['resource_id']); ?>
+            <?= $assigned_agent['capture_agent'] ?>
+        </td>
+        <td></td>
+        
+    </tr>    
+    <? endforeach; ?>
+    
+    
+    
+</table>
+
+-->
+
+
+
 <? foreach ($resources as $resource) :?>
     <div class="resources">
         <div class="topic resource"> <?= $resource['name'] ?> </div>
@@ -40,12 +72,12 @@ OC.initAdmin();
                 <? $assigned_agents = OCModel::getCAforResource($resource['resource_id']); ?>
                 <? if(!empty($assigned_agents)) :?>
                     <ul class="form_list">
-                        <? foreach($assigned_agents as $aa) : ?>
+                        <? foreach($assigned_agents as $aagent_name) : ?>
                             <li>
-                                <?= $aa['capture_agent'] ?>
+                                <?= $aagent_name ?>
                                 <? foreach ($agents as $agent) : ?>
                                     <? $agent = $agent->agent; ?>
-                                    <? if($agent->name ==  $aa['capture_agent']):?>
+                                    <? if($agent->name ==  $aagent_name):?>
                                         <? if($agent->state == 'idle') :?>
                                             <?= Assets::img('icons/16/blue/pause.png', array('title' => _("Idle"))) ?>
                                         <? elseif($agent->state = 'unbknown') : ?>
@@ -68,10 +100,8 @@ OC.initAdmin();
                 <input type="hidden" name="action" value="add"/>
 
                
-                <select name="<?=$resource['resource_id']?>">
-                    
-                        <? foreach ($agents->agents->agent as $agent) : ?>
-         
+                <select name="<?=$resource['resource_id']?>">            
+                        <? foreach ($agents->agents as $agent) : ?>
                             <? $agent_name = $agent->name; ?>
                             <? if(!empty($assigned_cas)) :?>
                                 <? foreach($assigned_cas as $aca) : ?>

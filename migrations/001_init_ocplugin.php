@@ -7,8 +7,10 @@ class InitOcplugin extends Migration {
                    `seminars` INT( 11 ) NULL ,
                    PRIMARY KEY ( `series_id` )
                    ) ENGINE = MYISAM;");
+                   
+                   
          DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_config` (
-                  `service_type` ENUM('annotation','caption','capture-admin','composerffmpeg','distributiondownload','episode','ingest','inspection','org','users','roles','info','recordings','search','series','services','distributionstreaming','analysistext','usertracking','analysisvideosegmenter','workflow','files' ) NOT NULL PRIMARY KEY,
+                  `service_type` ENUM(('analysistext','analysisvideosegmenter','analytics-rest','annotation','caption','capture-admin','captureagent','composerffmpeg','confidence','distributionacl','distributiondownload','distributionstreaming','episode','files','gstreamerlaunch','info','ingest','inspection','mediapackage','org','recordings','roles','search','series','services','state','upload','users','usertracking','workflow','youtube') ) NOT NULL PRIMARY KEY,
                   `service_url` VARCHAR( 255 ) NOT NULL,
                   `service_user` VARCHAR( 255 ) NOT NULL,
                   `service_password` VARCHAR( 255 ) NOT NULL

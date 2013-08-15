@@ -79,8 +79,9 @@ class OCModel
         $stmt = DBManager::get()->prepare("SELECT capture_agent FROM
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
-        $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $agents;
+        $agent = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $agent;
     }
 
     static function removeCAforResource($resource_id, $capture_agent) {

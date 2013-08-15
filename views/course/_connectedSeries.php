@@ -21,7 +21,7 @@
                                 <? if (isset($serie['identifier'])) : ?>
 
                                     <option value="<?= $serie['identifier'] ?>">
-                                        <?= $serie['title'] ?>
+                                        <?= utf8_decode($serie['title'])?>
                                         <? //= $series->additionalMetadata?>
                                     </option>
                                 <? endif ?>
@@ -42,7 +42,7 @@
             <? if (!empty($connectedSeries)) : ?>
                 <? foreach ($connectedSeries as $serie) : ?>
                     <li>
-                        <?= $serie['title'] ?>
+                        <?= utf8_decode($serie['title']) ?>
                         <a href="<?= PluginEngine::getLink('opencast/course/remove_series/' . $course_id . '/' . $serie['identifier']) ?>">
                             <?= Assets::img('icons/16/blue/trash.png', array('title' => _('Zuordnung löschen'), 'alt' => _('Zuordnung löschen'))) ?>
                         </a>

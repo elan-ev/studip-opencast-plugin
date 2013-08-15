@@ -51,19 +51,20 @@
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
             $resArray = explode("\n", $response);
 
             if ($httpCode == 201){
-                $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/recordings/(.+?).xml#Uis';
+                $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/(.+?).xml#Uis';
                 foreach($resArray as $resp) {
 
                     // THIS could be changed. Keep an eye on futre oc releases...
-                    if(preg_match($pttrn, $resp, $matches)) {
+                    if(preg_match($pttrn, $resp, $matches)) {                 
                         $eventid = $matches[1];
                     }
                 }
+                
                 OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $eventid);
+                
                 return true;
             } else {
                 return false;

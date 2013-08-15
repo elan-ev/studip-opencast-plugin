@@ -18,7 +18,7 @@ class OpencastEmbedButton extends StudipPlugin implements SystemPlugin
 
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
 
-            //$this->addStudipMarkup();
+            StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpencastMarkupPlugin::markupOpencast');
 
            
     }
