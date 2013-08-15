@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS `oc_config`, `oc_seminar_series`, `oc_resources`, `oc_seminar_episodes`, `oc_scheduled_recordings`;
