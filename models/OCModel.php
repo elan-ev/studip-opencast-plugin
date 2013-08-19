@@ -2,14 +2,15 @@
     
 class OCModel
 {
-   static function getUnconnectedSeries() {
+   
+   /*static function getUnconnectedSeries() {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_series
             WHERE 1");
         $stmt->execute();
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $series;
-    }
+    } */
 
     static function getConnectedSeries($course_id) {
         $stmt = DBManager::get()->prepare("SELECT *

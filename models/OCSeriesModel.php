@@ -153,10 +153,10 @@ class OCSeriesModel {
     static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
         
     
-        $stmt = DBManager::get()->prepare("UPDATE oc_series
+        /* $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
                 WHERE series_id = ?");
-        $stmt->execute(array($seriesID));
+        $stmt->execute(array($seriesID)); */
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (series_id, seminar_id, visibility, schedule)
@@ -240,19 +240,22 @@ class OCSeriesModel {
      * @return bool
      */
     static function createSeriesACL($data) {
+     
+        
+ 
         $content = array();
         foreach ($data as $role => $perm) {
-            foreach ($perm as $key => $val) {
+            foreach ($perm as $action => $val) {
                 $content[] = '<ace>'
                         . '<role>' . $role . '</role>'
-                        . '<action>' . $key . '</action>'
+                        . '<action>' . $action . '</action>'
                         . '<allow>' . $val . '</allow>'
                         . '</ace>';
             }
         }
 
         $str = utf8_encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                . '<acl xmlns="org.opencastproject.security">'
+                . '<acl xmlns="http://org.opencastproject.security">'
                 . implode('', $content)
                 . '</acl>');
         return $str;

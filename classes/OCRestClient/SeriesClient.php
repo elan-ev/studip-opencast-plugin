@@ -83,7 +83,7 @@
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
             
             
-            $ACLData = array( 'ROLE_ADMIN' => array(
+            $ACLData = array('ROLE_ADMIN' => array(
                                                 'read' => 'true',
                                                 'write' => 'true',
                                                 'analyze' => 'true'),
@@ -113,12 +113,35 @@
                 $new_series = json_decode($res[0]);
                 $series_id = $json['identifier'];
                 OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1);
+                
+                self::updateAccescontrolForSeminar($series_id, $ACL);
 
                 return true;
             } else {
                 return false;
             }
         }
+        
+        
+        /**
+         * updateAccescontrolForSeminar - updates the ACL for a given series in OC Matterhorn
+         * @param string $series_id  - series identifier
+         * @param array  $acl_data   -utf8_encoded ACL
+         * @return bool success or not
+         */
+        
+        function updateAccescontrolForSeminar($series_id, $acl_data) {
+            
+            $post =  array('acl' => $acl_data);
+            $res = $this->getXML('/'.$series_id.'/accesscontrol', $post, false, true);
+
+            if ($res[1] == 204){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
 
         /**
          *  removeSeries() - removes a series for a given identifier from the Opencast-Matterhorn Core
