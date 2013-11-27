@@ -1,8 +1,8 @@
 <?php
 
-if (!class_exists('SeriesClient')) {
-    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
-}
+//if (!class_exists('SeriesClient')) {
+//    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
+//}
 
 class OCSeriesModel {
 
@@ -74,6 +74,7 @@ class OCSeriesModel {
         //check if value assignment is needed
         if (is_null(self::$unconnectedSeries) || $refresh) {
             $connected = self::getConnectedSeries($courseID);
+            
             $all = self::getAllSeries();
 
             if (empty($connected)) {

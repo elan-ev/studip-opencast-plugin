@@ -4,6 +4,7 @@
     {
         static $me;
         function __construct() {
+            $this->serviceName = 'InfoClient';
             if ($config = parent::getConfig('info')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],

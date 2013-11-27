@@ -22,6 +22,24 @@ require_once $this->trails_root.'/models/OCModel.php';
 
 class CourseController extends StudipController
 {
+    
+    /**
+     * Sets the page title. Page title always includes the course name.
+     *
+     * @param mixed $title Title of the page (optional)
+     */
+    private function set_title($title = '')
+    {
+        $title_parts   = func_get_args();
+        $title_parts[] = $GLOBALS['SessSemName']['header_line'];
+        $title_parts =  array_reverse($title_parts);
+        $page_title    = implode(' - ', $title_parts);
+        PageLayout::setTitle($page_title);
+    }
+    
+    
+    
+    
     /**
      * Common code for all actions: set default layout and page title.
      */
@@ -33,9 +51,6 @@ class CourseController extends StudipController
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
         $this->pluginpath = $this->dispatcher->trails_root;
-
-        $GLOBALS['CURRENT_PAGE'] = $_SESSION['SessSemName'][0] . ' - Opencast Player';
-        
     }
 
     /**
@@ -61,6 +76,7 @@ class CourseController extends StudipController
             'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.tipTip.minified.js');
         PageLayout::addHeadElement('script', $script_attributes, '');
 
+        $this->set_title(_("Opencast Player"));
 
         // set layout for index page
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -130,22 +146,32 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+        $this->course_id = $_SESSION['SessionSeminar'];
+        $this->set_title(_("Opencast Konfiguration"));
+        
+        
+        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+        
+        /*
         
         try {
-            $this->search_client = SearchClient::getInstance();
-            $this->course_id = $_SESSION['SessionSeminar'];
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+    
+           //  $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+            
+        //    $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
       
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+            //$this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             
-            $allseries = OCSeriesModel::getAllSeries();
-            
-            
+           // $allseries = OCSeriesModel::getAllSeries();
+                    //$this->search_client = SearchClient::getInstance();
+    
             
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
-        }
+        }*/
 
     }
     
@@ -183,6 +209,9 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
+        
+        $this->set_title(_("Opencast Aufzeichnungen verwalten"));
+        
 
         $this->course_id = $_SESSION['SessionSeminar'];
         
@@ -236,6 +265,7 @@ class CourseController extends StudipController
         $this->course_id = Request::get('cid');
 
         $scheduler_client = SchedulerClient::getInstance();
+        
 
         if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
             $this->flash['message'] = _("Die geplante Aufzeichnung wurde entfernt");

@@ -4,7 +4,7 @@
     {
         static $me;
         function __construct() {
-
+            $this->serviceName = 'IngestClient';
             if ($config = parent::getConfig('ingest')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],

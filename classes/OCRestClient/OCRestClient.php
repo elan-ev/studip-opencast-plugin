@@ -109,14 +109,12 @@
                 } else {
                     $options[CURLOPT_HTTPGET] = 1;
                 }
-                
-                
-                
-                
+                         
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-                
+
+				
                 if($with_res_code) {
                     return array(json_decode($response), $httpCode);
                 } else {
@@ -172,9 +170,10 @@
          *  @return boolean $status
          */
         function checkService() {
+            return true;
             if (@fsockopen($this->matterhorn_base_url)) {
                 return true;
-            }            
+            }          
             throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewählten Service "%s". Versuchen Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
         }
         

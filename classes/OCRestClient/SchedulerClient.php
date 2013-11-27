@@ -3,10 +3,8 @@
     class SchedulerClient extends OCRestClient
     {
         static $me;
-        public $serviceName = 'Scheduler';
         function __construct() {
-
-
+            $this->serviceName = 'SchedulerClient';
             if ($config = parent::getConfig('recordings')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
@@ -29,12 +27,30 @@
 
             $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
 
+            
+            $date = new SingleDate($termin_id);
+            $start_time = date('D M d H:i:s e Y', $date->getStartTime());
+            $issues = $date->getIssueIDs();
+            if(is_array($issues)) {
+                foreach($issues as $is) {
+                    $issue = new Issue(array('issue_id' => $is));
+                }
+            }
+            
+            if(!$issue->title) {
+                $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+            } else $title = $issue->title;
+            
+            $room = ResourceObject::Factory($resource_id);
+            $cas = OCModel::checkResource($resource_id);
+            $ca = $cas[0];
+            $device = $ca['capture_agent'];
+            
             $agentparameters = '#Capture Agent specific data
-                                #Wed Apr 06 10:16:19 CEST 2011
-                                event.title=Demotitle
-                                event.location=testdevice
-                                capture.device.id=testdevice';
-
+                                #'. $start_time .'
+                                event.title=' . $title .'
+                                event.location=' . $room->name . '
+                                capture.device.id=' . $device;
 
 
             $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
@@ -47,7 +63,7 @@
             curl_setopt($this->ochandler, CURLOPT_POST, true);
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);
-            //TODO über REST Classe laufen lassen, getXML, getJSON...
+            //TODO über REST Klasse laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -93,7 +109,7 @@
             // setting up a curl-handler
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
             curl_setopt($this->ochandler,CURLOPT_CUSTOMREQUEST, "DELETE");
-//TODO über REST Classe laufen lassen, getXML, getJSON...
+//TODO über REST Klasse laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);

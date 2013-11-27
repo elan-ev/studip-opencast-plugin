@@ -4,6 +4,7 @@
     {
         static $me;
         function __construct() {
+            $this->serviceName = 'CaptureAgentAdminClient';
             if ($config = parent::getConfig('capture-admin')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
@@ -21,8 +22,7 @@
         function getCaptureAgentsXML() {
             // URL for Matterhorn 1.1
             // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
-            $service_url = "/agents";
-            if($response = $this->getXML($service_url)){
+            $service_url = "/agents.xml";
                 // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
                $needle = array('<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
                                 '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
@@ -34,12 +34,15 @@
                 $json = json_encode($xml);
                 $agent_repsonse = json_decode($json,TRUE);
                 return $agent_repsonse['agent-state-update'];
-            } else return false;
+                //} 
+            
+            
+        //     return false;
         }
 
         function getCaptureAgents() {
             $service_url = "/agents.json";
-            if($agents = $this->getJSON($service_url)){
+		    if($agents = $this->getJSON($service_url)){
               return $agents;
             } else return false;
         }

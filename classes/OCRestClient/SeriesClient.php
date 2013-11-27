@@ -26,6 +26,7 @@
          */
         function getAllSeries() {
             $service_url = "/series.json";
+            
             if($series = $this->getJSON($service_url)){
 
                 return $series->catalogs;

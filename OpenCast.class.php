@@ -15,7 +15,7 @@ define('OC_UPLOAD_CHUNK_SIZE', '1000000');
 define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
 
-class OpenCast extends StudipPlugin implements StandardPlugin
+class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     /**
      * Initialize a new instance of the plugin.
@@ -24,37 +24,39 @@ class OpenCast extends StudipPlugin implements StandardPlugin
     {
         parent::__construct();
 
+    
+        
         global $SessSemName, $perm;
+        
+        
+        if($perm->have_perm('admin')) {
+            //.. now the subnavi
+            $main = new Navigation(_("Opencast Administration"));
+            // TODO think about an index page.. for the moment the config page is in charge..
+            $main->setURL(PluginEngine::getURL('opencast/admin/config'));
+    
+            $config = new Navigation('OC Einstellungen');
+            $config->setURL(PluginEngine::getURL('opencast/admin/config'));
+            $main->addSubNavigation('oc-config', $config);
 
-        //.. now the subnavi
-        $main = new Navigation("OpenCast");
-        //$main = new Navigation("Veranstaltungsaufzeichnungen");
-        $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
-        $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
+            $resources = new Navigation('OC Ressourcen');
+            $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
+            $main->addSubNavigation('oc-resources', $resources);
 
-        $admin = new Navigation('Einstellungen');
-        $admin->setURL(PluginEngine::getURL('opencast/course/config'));
-        $overview = new Navigation('Aufzeichnungen');
-        $overview->setURL(PluginEngine::getURL('opencast/course/index'));
-
-        $scheduler = new Navigation('Aufzeichnungen verwalten');
-        $scheduler->setURL(PluginEngine::getURL('opencast/course/scheduler'));
-
-        //$upload = new Navigation('Upload');
-        //$upload->setURL(PluginEngine::getURL('opencast/course/upload'));
-        $main->addSubNavigation('overview', $overview);
-        if ($perm->have_studip_perm('dozent', $SessSemName[1])) {
-            // TODO: Add scheduler iff scheduling is allowed in current course
-            $main->addSubNavigation('scheduler', $scheduler);
-            $main->addSubNavigation('config', $admin);
-          //  $main->addSubNavigation('upload', $upload);
+            /*// Clienttest
+            $client = new Navigation('OC Client Status');
+            $client->setURL(PluginEngine::getURL('opencast/admin/client'));
+            $main->addSubNavigation('oc-client', $client);
+            */
+            
+            Navigation::addItem('/start/opencast', $main);
+            Navigation::addItem('/admin/config/oc-config', $config);
+            Navigation::addItem('/admin/config/oc-resources', $resources);
+           // Navigation::addItem('/admin/config/oc-client', $client);
 
         }
-        // Add everything to the global Navigation
-        if ($this->isActivated($_SESSION['SessionSeminar'])) {
-            Navigation::addItem('/course/opencast', $main);
-        }
+        
+
         
    
         $style_attributes = array(
@@ -66,6 +68,7 @@ class OpenCast extends StudipPlugin implements StandardPlugin
         $script_attributes = array(
             'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');
         PageLayout::addHeadElement('script', $script_attributes, '');
+                    
   
     }
 
@@ -77,9 +80,17 @@ class OpenCast extends StudipPlugin implements StandardPlugin
     function perform($unconsumed_path)
     {
         $trails_root = $this->getPluginPath();
-        $dispatcher = new Trails_Dispatcher($trails_root, NULL, NULL);
+        $dispatcher = new Trails_Dispatcher($trails_root,
+                                            rtrim(PluginEngine::getURL($this, null, ''), '/'),
+                                            null);
+
+        
+        $dispatcher->plugin = $this;
+
         $dispatcher->dispatch($unconsumed_path);
         
+
+                
     }
 
     /**
@@ -148,9 +159,40 @@ class OpenCast extends StudipPlugin implements StandardPlugin
 
     function getTabNavigation($course_id)
     {
-      
+ 
+    
+        if (!$this->isActivated($course_id)) {
+            return;
+        }
+        //.. now the subnavi
+        $main = new Navigation("OpenCast");
+        //$main = new Navigation("Veranstaltungsaufzeichnungen");
+        $main->setURL(PluginEngine::getURL('opencast/course'));
+        $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
+        $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
+
+        $admin = new Navigation('Einstellungen');
+        $admin->setURL(PluginEngine::getURL('opencast/course/config'));
+        $overview = new Navigation('Aufzeichnungen');
+        $overview->setURL(PluginEngine::getURL('opencast/course/index'));
+
+        $scheduler = new Navigation('Aufzeichnungen verwalten');
+        $scheduler->setURL(PluginEngine::getURL('opencast/course/scheduler'));
+
+        //$upload = new Navigation('Upload');
+        //$upload->setURL(PluginEngine::getURL('opencast/course/upload'));
+        $main->addSubNavigation('overview', $overview);
+
         
-        return false;
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+            // TODO: Add scheduler iff scheduling is allowed in current course
+            $main->addSubNavigation('scheduler', $scheduler);
+            $main->addSubNavigation('config', $admin);
+          //  $main->addSubNavigation('upload', $upload);
+
+        }
+
+        return array('opencast' => $main);
     }
 
     /**

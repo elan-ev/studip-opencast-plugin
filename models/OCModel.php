@@ -2,16 +2,6 @@
     
 class OCModel
 {
-   
-   /*static function getUnconnectedSeries() {
-        $stmt = DBManager::get()->prepare("SELECT *
-            FROM oc_series
-            WHERE 1");
-        $stmt->execute();
-        $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $series;
-    } */
-
     static function getConnectedSeries($course_id) {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
@@ -291,7 +281,7 @@ class OCModel
      */
 
      function createScheduleEventXML($course_id, $resource_id, $termin_id) {
-        require_once 'lib/classes/Institute.class.php';
+//        require_once 'lib//Institute.class.php';
 
         date_default_timezone_set("Europe/Berlin");
         
@@ -314,8 +304,8 @@ class OCModel
         $instructors = $course->getMembers('dozent');
         $instructor = array_pop($instructors);
 
-        $inst = Institute::find($course->institut_id);
-        $inst_data = $inst->getData();
+        $inst_data = Institute::find($course->institut_id);
+            //$inst_data = $inst->getData();
 
        
 
