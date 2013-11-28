@@ -35,7 +35,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             // TODO think about an index page.. for the moment the config page is in charge..
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
             
-            /* ostfalia
             $config = new Navigation('OC Einstellungen');
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
@@ -43,8 +42,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $resources = new Navigation('OC Ressourcen');
             $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
             $main->addSubNavigation('oc-resources', $resources);
-            */
-
+            
             /*// Clienttest
             $client = new Navigation('OC Client Status');
             $client->setURL(PluginEngine::getURL('opencast/admin/client'));
@@ -52,10 +50,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             */
             
             Navigation::addItem('/start/opencast', $main);
-            /* ostfalia
             Navigation::addItem('/admin/config/oc-config', $config);
             Navigation::addItem('/admin/config/oc-resources', $resources);
-            */
            // Navigation::addItem('/admin/config/oc-client', $client);
 
         }

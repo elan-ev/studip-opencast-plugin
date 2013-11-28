@@ -22,10 +22,8 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
     <h3><?=_('Verwaltung der Veranstaltungsaufzeichnungen')?></h3>
         <?= $this->render_partial("course/_visibilities", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
     
-        
-    <!-- Ostfalia -->
-    <!--<h4><?=_('Veranstaltungsaufzeichnungen planen')?>:</h4> -->
-    <?//= $this->render_partial("course/_schedule", array('course_id' => $course_id, 'dates' => $dates)) ?>
+    <h4><?=_('Veranstaltungsaufzeichnungen planen')?>:</h4>
+    <?= $this->render_partial("course/_schedule", array('course_id' => $course_id, 'dates' => $dates)) ?>
     
   
 
