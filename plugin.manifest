@@ -1,5 +1,4 @@
 pluginname=OpenCast
 pluginclassname=OpenCast
-pluginclassname=OpencastEmbedButton
 origin=elan-ev
-version=0.3
+version=0.31-ostfalia
