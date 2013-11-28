@@ -1,4 +1,4 @@
-<h4><?=_('Aufzeichnungen verwalten')?> </h4>
+<h4><?=_('Sichtbarkeiten der Aufzeichnungen verwalten')?> </h4>
 <? if(!empty($episodes)) :?>
 <table class="default">
     <tr>
@@ -11,7 +11,7 @@
         <? if (isset($episode->mediapackage)) : ?>
             <tr>
                 <td>
-                    <?= $episode->mediapackage->title ?>
+                    <?=  mb_convert_encoding($episode->mediapackage->title, 'ISO-8859-1', 'UTF-8') ?>
                 </td>
                 <td>
                     <? $visible = OCModel::getVisibilityForEpisode($course_id, $episode->mediapackage->id); ?>
