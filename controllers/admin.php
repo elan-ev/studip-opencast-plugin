@@ -1,7 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  Andr? Kla?en
+ * Copyright (c) 2010  André Klaßen
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -116,18 +116,15 @@ class AdminController extends AuthenticatedController
     {
         PageLayout::setTitle(_("Opencast Capture Agent Verwaltung"));
         Navigation::activateItem('/admin/config/oc-resources');
-
-
-        $caa_client = CaptureAgentAdminClient::getInstance();
-        $this->resources = OCModel::getOCRessources();
-        $this->agents = $caa_client->getCaptureAgents();
-
         
+        $this->resources = OCModel::getOCRessources();
         if(empty($this->resources)) {
             $this->flash['info'] = _('Es wurden keine passenden Ressourcen gefunden.');
 
         }
 
+        $caa_client = CaptureAgentAdminClient::getInstance();
+        $this->agents = $caa_client->getCaptureAgents();
         $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
