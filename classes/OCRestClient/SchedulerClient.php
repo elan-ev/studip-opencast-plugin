@@ -27,31 +27,34 @@
 
             $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
 
-            
+
             $date = new SingleDate($termin_id);
             $start_time = date('D M d H:i:s e Y', $date->getStartTime());
+
+
+
             $issues = $date->getIssueIDs();
             if(is_array($issues)) {
                 foreach($issues as $is) {
                     $issue = new Issue(array('issue_id' => $is));
                 }
             }
-            
+
             if(!$issue->title) {
                 $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
             } else $title = $issue->title;
-            
+
             $room = ResourceObject::Factory($resource_id);
             $cas = OCModel::checkResource($resource_id);
             $ca = $cas[0];
             $device = $ca['capture_agent'];
-            
+
             $agentparameters = '#Capture Agent specific data
                                 #'. $start_time .'
                                 event.title=' . $title .'
                                 event.location=' . $room->name . '
                                 capture.device.id=' . $device;
-
+                   
 
             $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
 
@@ -74,13 +77,13 @@
                 foreach($resArray as $resp) {
 
                     // THIS could be changed. Keep an eye on futre oc releases...
-                    if(preg_match($pttrn, $resp, $matches)) {                 
+                    if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
                     }
                 }
-                
+   
                 OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $eventid);
-                
+   
                 return true;
             } else {
                 return false;

@@ -1,5 +1,5 @@
 <?PHP
-    
+  
 class OCModel
 {
     static function getConnectedSeries($course_id) {
@@ -25,7 +25,7 @@ class OCModel
     }
 
     static function removeSeriesforCourse($course_id, $series_id) {
-       $stmt = DBManager::get()->prepare("UPDATE 
+       $stmt = DBManager::get()->prepare("UPDATE
                 oc_series SET seminars = seminars-1
                 WHERE series_id =?");
        $stmt->execute(array($course_id));
@@ -71,7 +71,7 @@ class OCModel
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
         $agent = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+      
         return $agent;
     }
 
@@ -110,7 +110,7 @@ class OCModel
        $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $dates;
     }
-    
+  
     static function getFutureDates($seminar_id) {
         $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ? AND `date` > UNIX_TIMESTAMP() ORDER BY `date` ASC");
 
@@ -124,11 +124,11 @@ class OCModel
      *
      * @param string $resource_id
      * @return boolean hasCA
-     * 
+     *
      */
 
     static function checkResource($resource_id) {
-       
+     
        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_resources` WHERE `resource_id` = ?");
 
        $stmt->execute(array($resource_id));
@@ -137,12 +137,12 @@ class OCModel
        } else {
             return false;
        }
-       
+     
     }
 
     /**
      * scheduleRecording - schedules a recording for a given date and resource within a course
-     * 
+     *
      * @param string $course_id
      * @param string $resource_id
      * @param string $date_id - Stud.IP Identifier for the event
@@ -158,15 +158,16 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-        
+      
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, event_id, status)
                 VALUES (?, ?, ?, ?, ?, ? ,? )");
         $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], $event_id, 'scheduled'));
 
-            
-       
+ 
+
+     
 
         return $success;
     }
@@ -195,7 +196,7 @@ class OCModel
     static function checkScheduled($course_id, $resource_id, $date_id) {
 
         $stmt = DBManager::get()->prepare("SELECT * FROM
-                oc_scheduled_recordings 
+                oc_scheduled_recordings
                 WHERE seminar_id = ?
                     AND date_id = ?
                     AND resource_id = ?
@@ -208,7 +209,7 @@ class OCModel
     /**
      * createSeriesXML - creates an xml representation for a new OC-Series
      * @param string $course_id
-     * @return string xml - the xml representation of the string  
+     * @return string xml - the xml representation of the string
      */
     static function creatSeriesXML($course_id) {
 
@@ -284,21 +285,21 @@ class OCModel
 //        require_once 'lib//Institute.class.php';
 
         date_default_timezone_set("Europe/Berlin");
-        
+      
         $course = new Seminar($course_id);
         $date = new SingleDate($termin_id);
         $issues = $date->getIssueIDs();
-        
+      
         if(is_array($issues)) {
             foreach($issues as $is) {
                 $issue = new Issue(array('issue_id' => $is));
             }
         }
-  
+
 
         $series = self::getConnectedSeries($course_id);
         $serie = $series[0];
-        
+      
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
         $instructors = $course->getMembers('dozent');
@@ -307,7 +308,7 @@ class OCModel
         $inst_data = Institute::find($course->institut_id);
             //$inst_data = $inst->getData();
 
-       
+     
 
         $room = ResourceObject::Factory($resource_id);
 
@@ -319,7 +320,7 @@ class OCModel
 
         $duration = $end - $start;
         $duration = $duration;
-        
+      
         $duration_in_hours = $duration;
         */
 
@@ -343,40 +344,12 @@ class OCModel
         $location = $room->name;
         $abstract = $course->description;
 
-         /*$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <event>
-                        <contributor>'.$contributor.'</contributor>
-                        <creator>' . $creator . '</creator>
-                        <description>' . $description .'</description>
-                        <device>'. $device .'</device>
-                        <duration>'. $duration .'</duration>
-                        <endDate>' .$endDate . '</endDate>
-                        <language>en</language>
-                        <license>creative commons</license>
-                        <resources>vga, audio</resources>
-                        <seriesId>' . $seriesId.'</seriesId>
-                        <series>' . $course->getName().'</series>
-                        <startDate>'.$startDate . '</startDate>
-                        <title>'. $title .'</title>
-                        <additionalMetadata>
-                            <metadata>
-                                <key>location</key>
-                                <value>' . $location . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>abstract</key>
-                                <value>'. $abstract .'</value>
-                            </metadata>
-                        </additionalMetadata>
-                    </event>';
-
-         */
-         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                 <dcterms:creator>' . $creator . '</dcterms:creator>
                                 <dcterms:contributor>' . $contributor . '</dcterms:contributor>
-                                <dcterms:created xsi:type="dcterms:W3CDTF">2011-04-06T08:03Z</dcterms:created>
-                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .' end='. self::getDCTime($end_time) .' scheme=W3C-DTF;</dcterms:temporal>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
+                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .'; end='. self::getDCTime($end_time) .'; scheme=W3C-DTF;</dcterms:temporal>
                                 <dcterms:description>' . $description . '</dcterms:description>
                                 <dcterms:subject>' . $abstract . '</dcterms:subject>
                                 <dcterms:language>' . $language . '</dcterms:language>
@@ -385,7 +358,7 @@ class OCModel
                                 <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
-         return $dublincore;
+        return $dublincore;
 
      }
 
@@ -420,20 +393,21 @@ class OCModel
     }
 
     static function getDCTime($timestamp) {
-        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z;';
+        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z';
     }
-    
+  
     static function retrieveRESTservices($components) {
 
         $services = array();
-              
+   
+
 
         foreach( $components as $service) {
             $services[preg_replace("/\//", '', $service->path)] = preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->docs);
 
         }
         return $services;
-        
+      
     }
 }
 ?>

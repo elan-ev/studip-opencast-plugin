@@ -24,7 +24,7 @@ class OCSeriesModel {
             FROM oc_seminar_series
             WHERE seminar_id = ?");
         $stmt->execute(array($courseID));
-            
+
         if ($series = $stmt->fetchAll(PDO::FETCH_ASSOC))
             return $series;
         else
@@ -74,7 +74,6 @@ class OCSeriesModel {
         //check if value assignment is needed
         if (is_null(self::$unconnectedSeries) || $refresh) {
             $connected = self::getConnectedSeries($courseID);
-            
             $all = self::getAllSeries();
 
             if (empty($connected)) {
@@ -109,7 +108,8 @@ class OCSeriesModel {
      * @return array
      */
     static function getAllSeries($refresh = false) {
-        
+
+ 
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
@@ -152,7 +152,8 @@ class OCSeriesModel {
      * @return type
      */
     static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
-        
+
+ 
     
         /* $stmt = DBManager::get()->prepare("UPDATE oc_series
                 SET seminars = seminars+1
@@ -242,8 +243,7 @@ class OCSeriesModel {
      */
     static function createSeriesACL($data) {
      
-        
- 
+
         $content = array();
         foreach ($data as $role => $perm) {
             foreach ($perm as $action => $val) {
@@ -273,13 +273,15 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "(c) " . date(Y) . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "(c) " . date(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
 
         $inst = Institute::find($course->institut_id);
-        
-        
+
+
+
+
         $publisher = $inst->name;
         $start = $course->getStartSemester();
         $end = $course->getEndSemesterVorlesEnde();
@@ -300,15 +302,14 @@ class OCSeriesModel {
             'description' => $course->description,
             'publisher' => $publisher
         );
-        
-        
+
+
         $content = array();
 
         foreach ($data as $key => $val) {
             $content[] = '<dcterms:' . $key . '>' . $val . '</dcterms:' . $key . '>';
         }
-        
-        
+
         $str = '<?xml version="1.0" encoding="UTF-8"?>'
                 . '<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
                 . 'xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn/">'
