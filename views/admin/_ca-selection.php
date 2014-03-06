@@ -1,5 +1,7 @@
 <?
     $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
+    
+    
 ?>
 <td>
     <?= $resource['name'] ?>
@@ -8,13 +10,13 @@
 <td>   
     <?=$assigned_agents['capture_agent']?>
 </td>
-<td>
+<td> 
      <? foreach ($agents as $agent_wrapper) : ?>
-         <? $agent = $agent_wrapper->agent; ?>
+         <? $agent = $agent_wrapper->agent[0]; ?>
          <? if($agent->name ==  $assigned_agents['capture_agent']):?>
              <? if($agent->state == 'idle') :?>
                 <?= Assets::img('icons/16/blue/pause.png', array('title' => _("Idle"))) ?>
-             <? elseif($agent->state = 'unbknown') : ?>
+             <? elseif($agent->state = 'unknown') : ?>
                 <?= Assets::img('icons/16/blue/question.png', array('title' => _("Status unbekannt"))) ?>
             <? else: ?>
                 <?= Assets::img('icons/16/blue/video.png', array('title' => _("Beschäftigt"))) ?>
@@ -35,7 +37,7 @@
         <option value="" disabled selected><?=_("Bitte wählen Sie einen CA.")?></option>
         <? if($agents) : ?>            
             <? foreach ($agents->agents as $agent) : ?>
-                <? $agent_name = $agent->name; ?>
+                <? $agent_name = $agent[0]->name; ?>
                 <? if(!empty($assigned_cas)) :?>
                     <? foreach($assigned_cas as $aca) : ?>
                         <? if($aca['capture_agent'] == $agent_name ) :?>

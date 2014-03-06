@@ -11,7 +11,7 @@
         <? if (isset($episode->mediapackage)) : ?>
             <tr>
                 <td>
-                    <?=  mb_convert_encoding($episode->mediapackage->title, 'ISO-8859-1', 'UTF-8') ?>
+                    <?=  mb_convert_encoding($episode->dcTitle, 'ISO-8859-1', 'UTF-8') ?>
                 </td>
                 <td>
                     <? $visible = OCModel::getVisibilityForEpisode($course_id, $episode->mediapackage->id); ?>

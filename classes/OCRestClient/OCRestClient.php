@@ -33,7 +33,7 @@
             
             $this->username = !is_null($username) ? $username : 'matterhorn_system_account';
             $this->password = !is_null($password) ? $password : 'CHANGE_ME';
-            
+
 
             // setting up a curl-handler
             $this->ochandler = curl_init();
@@ -63,9 +63,9 @@
         function getConfig($service_type) {
             
             if(isset($service_type)) {
-                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` WHERE service_type = ?");
+                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` LEFT JOIN `oc_endpoints` ON LOCATE(oc_endpoints.service_host, oc_config.service_url) WHERE service_type = ?");
                 $stmt->execute(array($service_type));
-                return $stmt->fetch();
+                return $stmt->fetch(PDO::FETCH_ASSOC);
             } else {
                 throw new Exception(_("Es wurde kein Servicetyp angegeben."));
             }
@@ -74,23 +74,24 @@
         /**
          *  function setConfig - sets config into DB for given REST-Service-Client
          *
-         *	@param string $service_type
          *	@param string $service_url
          *	@param string $service_user
          *  @param string $service_password
          */
-        function setConfig($service_type, $service_url, $service_user, $service_password) {
-            if(isset($service_type, $service_url, $service_user, $service_password)) {                    
-                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (service_type, service_url, service_user, service_password) VALUES (?,?,?,?)");
-                return $stmt->execute(array($service_type, $service_url, $service_user, $service_password));
+        function setConfig($service_url, $service_user, $service_password) {
+            if(isset($service_url, $service_user, $service_password)) {                    
+                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config`  (service_url, service_user, service_password) VALUES (?,?,?)");
+                return $stmt->execute(array($service_url, $service_user, $service_password));
             } else {
                 throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
             }
 
         }
         
-        function clearConfig() {
-            $stmt = DBManager::get()->prepare("TRUNCATE TABLE`oc_config`;");
+        function clearConfig($host = null) {
+            $stmt = DBManager::get()->prepare("DELETE FROM `oc_config` WHERE 1;");
+            $stmt->execute();
+            $stmt = DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE 1;");
             return $stmt->execute();
         }
 

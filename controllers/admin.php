@@ -11,10 +11,11 @@
 
 require_once 'app/controllers/authenticated_controller.php';
 require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/models/OCEndpointModel.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/InfoClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/ServicesClient.php';
 
 
 class AdminController extends AuthenticatedController
@@ -46,22 +47,12 @@ class AdminController extends AuthenticatedController
         PageLayout::setTitle(_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-
-       // $this->info_conf = OCRestClient::setConfig('info', 'vm283.rz.uos.de:8080', 'matterhorn_system_account', 'CHANGE_ME');
- 
-
         if (isset($this->flash['message'])) {
             $this->message = $this->flash['message'];
         }
 
-
-        /**
-         * TODO: add generic mechanism for the assignment of config params
-         *
-         */
-        if( ($this->info_conf = OCRestClient::getConfig('info'))) {
-
-
+        
+        if(($this->info_conf = OCEndpointModel::getBaseServerConf())) {
             $this->info_url = $this->info_conf['service_url'];
             $this->info_user = $this->info_conf['service_user'];
             $this->info_password = $this->info_conf['service_password'];
@@ -75,28 +66,63 @@ class AdminController extends AuthenticatedController
     function update_action()
     {
         $service_url =  parse_url(Request::get('info_url'));
+        $service_host = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
         $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path']; 
 
         $this->info_user = Request::get('info_user');
         $this->info_password = Request::get('info_password');
         
-        OCRestClient::setConfig('info', $this->info_url, $this->info_user, $this->info_password);
-       
-        $info_client    = InfoClient::getInstance();
-        $comp = $info_client->getRESTComponents();
+  
+  
+        OCRestClient::clearConfig($service_url['host']);
+        OCRestClient::setConfig($service_host, $this->info_user, $this->info_password);
+        
+
+  
+             
+        OCEndpointModel::setEndpoint($this->info_url, 'services');
+        $services_client = ServicesClient::getInstance();
+
+
+        $comp = $services_client->getRESTComponents();
         
         $services = OCModel::retrieveRESTservices($comp);
-        OCRestClient::clearConfig();
+
         
         foreach($services as $service_type => $service_url) {
-            OCRestClient::setConfig($service_type, $service_url, $this->info_user, $this->info_password);
+         
+            
+            OCRestClient::setConfig($service_host, $this->info_user, $this->info_password);
+            
+            $endpoint_url =  parse_url($service_url);
+            
+            OCEndpointModel::setEndpoint($endpoint_url['host']. (isset($endpoint_url['port']) ? ':' . $endpoint_url['port'] : ''), $service_type);
         
         }
+
 
         $success = _("Änderungen wurden erfolgreich übernommen.");
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
     }
+    
+    
+    function endpoints_action()
+    {
+        PageLayout::setTitle(_("Opencast Endpoint Verwaltung"));
+        Navigation::activateItem('/admin/config/oc-endpoints');
+        // hier kann eine Endpointüberischt angezeigt werden.
+        //$services_client = ServicesClient::getInstance();
+        $this->endpoints = OCEndpointModel::getEndpoints(); 
+    }
+    
+    function update_endpoints_action()
+    {    
+        $this->redirect(PluginEngine::getLink('opencast/admin/endpoints'));
+    }
+    
+    
+    
     /**
      * brings REST URL in one format before writing in db
      */

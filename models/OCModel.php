@@ -397,14 +397,9 @@ class OCModel
     }
   
     static function retrieveRESTservices($components) {
-
         $services = array();
-   
-
-
         foreach( $components as $service) {
-            $services[preg_replace("/\//", '', $service->path)] = preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->docs);
-
+            $services[preg_replace("/\//", '', $service->path)] = preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path);
         }
         return $services;
       

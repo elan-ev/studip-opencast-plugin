@@ -1,11 +1,11 @@
 <?php
     require_once "OCRestClient.php";
-    class InfoClient extends OCRestClient
+    class ServicesClient extends OCRestClient
     {
         static $me;
         function __construct() {
-            $this->serviceName = 'InfoClient';
-            if ($config = parent::getConfig('info')) {
+            $this->serviceName = 'ServicesClient';
+            if ($config = parent::getConfig('services')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
                                     $config['service_password']);
@@ -21,10 +21,10 @@
          */
         function getRESTComponents() {
 
-            $service_url = "/components.json";
-
-            if($components = $this->getJSON($service_url)){
-                return $components->rest;
+            $service_url = "/services.json";
+        
+            if($result = $this->getJSON($service_url)){
+                return $result->services->service;
             } else {
                 return false;
             }
