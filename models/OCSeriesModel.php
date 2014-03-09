@@ -174,10 +174,6 @@ class OCSeriesModel {
      * @return bool
      */
     static function removeSeriesforCourse($courseID, $seriesID) {
-        $stmt = DBManager::get()->prepare("UPDATE 
-                oc_series SET seminars = seminars-1
-                WHERE series_id =?");
-        $stmt->execute(array($courseID));
         $stmt = DBManager::get()->prepare("DELETE FROM
                 oc_seminar_series
                 WHERE series_id = ? AND seminar_id = ?");
@@ -317,6 +313,17 @@ class OCSeriesModel {
                 . '</dublincore>';
 
         return $str;
+    }
+    
+    /**
+     * getScheduledEpisodes - returns all scheduled episodes for a given course
+     */
+    
+    static function getScheduledEpisodes($course_id) {
+        $stmt = DBManager::get()->prepare("SELECT  * FROM
+                oc_scheduled_recordings WHERE seminar_id = ?");
+        $stmt->execute(array($course_id));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

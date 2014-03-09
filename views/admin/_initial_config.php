@@ -3,7 +3,7 @@
     <?= CSRFProtection::tokenTag() ?>
     <fieldset class="conf-form-field">
         <legend><?=_("Globale Opencast Matterhorn Einstellungen")?></legend>
-        <p><?=_("Tragen Sie hier die den Pfad zu den Matterhorn REST-Endpoints ein.")?></p>
+        <p><?=_("Tragen Sie hier die den Pfad Ihres Matterhorn Basis System ein.")?></p>
         
         <label  for="info_url"><?=_("Service-URL")?>:</label><br>
         <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="INFO_ENDPOINT_URL"><br>

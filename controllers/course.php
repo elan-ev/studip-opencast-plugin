@@ -191,7 +191,12 @@ class CourseController extends StudipController
     
     function remove_series_action($course_id, $series_id)
     {
+        
+        $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+        
         OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
+        
+        
         
         /*
         $series_client = SeriesClient::getInstance();

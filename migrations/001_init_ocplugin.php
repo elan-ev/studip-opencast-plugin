@@ -63,9 +63,10 @@ class InitOcplugin extends Migration {
     }
     
     function down() {
-        DBManager::get()->query("DROP TABLE oc_series");
-        DBManager::get()->query("DROP TABLE oc_config");
-        DBManager::get()->query("DROP TABLE oc_seminar_series");
+        DBManager::get()->query("DROP TABLE IF EXISTS `oc_series`,`oc_config`,`oc_endpoints`, `oc_seminar_series`, `oc_resources`, `oc_seminar_episodes`, `oc_scheduled_recordings`;");
+        DBManager::get()->query("DELETE FROM  resources_objects_properties 
+        WHERE property_id IN(SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' );");
+        DBManager::get()->query("DELETE FROM resources_properties WHERE name = 'Opencast Capture Agent';");
     }
     
 }

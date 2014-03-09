@@ -63,9 +63,14 @@
         function getConfig($service_type) {
             
             if(isset($service_type)) {
-                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config` LEFT JOIN `oc_endpoints` ON LOCATE(oc_endpoints.service_host, oc_config.service_url) WHERE service_type = ?");
+                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE service_type = ?");
                 $stmt->execute(array($service_type));
-                return $stmt->fetch(PDO::FETCH_ASSOC);
+                $config = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config` WHERE 1");
+                $stmt->execute();
+                $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
+                return $config;
+                
             } else {
                 throw new Exception(_("Es wurde kein Servicetyp angegeben."));
             }
