@@ -143,7 +143,22 @@ class AdminController extends AuthenticatedController
         }
 
         $caa_client = CaptureAgentAdminClient::getInstance();
+        
+        $agents = $caa_client->getCaptureAgents();
+
         $this->agents = $caa_client->getCaptureAgents();
+        foreach ($this->resources as $resource) {
+            $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
+            if($assigned_agents){
+                foreach ($agents->agents->agent as $key => $agent) {
+                    if(in_array($agent->name, $assigned_agents)) unset($agents->agents->agent[$key]);
+                }
+            }
+        }
+        
+
+        $this->available_agents = $agents;
+        
         $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
