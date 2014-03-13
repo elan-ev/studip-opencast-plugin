@@ -396,6 +396,63 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/upload'));
 
     }
+    
+    function bulkschedule_action()
+    {
+        $course_id =  Request::get('cid');
+        $action = Request::get('action');
+
+        $dates = Request::getArray('dates');    
+        foreach($dates as $termin_id => $resource_id){
+            switch($action) {
+                case "create":
+                    $this->schedule($resource_id, $termin_id, $course_id);
+                    break;
+                case "update":
+                    $this->updateschedule($resource_id, $termin_id, $course_id);
+                    break;
+                case "delete":
+                    $this->unschedule($resource_id, $termin_id, $course_id);
+                    break;
+            }
+        }
+
+        $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
+    }
+    
+    static function schedule($resource_id, $termin_id, $course_id) {
+        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        if(!$scheduled) {
+            $scheduler_client = SchedulerClient::getInstance();
+
+            if($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+                return true;
+            } else {
+                // TODO FEEDBACK
+            }
+        }
+    }
+    
+    static function updateschedule($resource_id, $termin_id, $course_id) {
+        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        if($scheduled){
+            $this->unschedule($resource_id, $termin_id, $course_id);
+        }
+        $this->schedule($resource_id, $termin_id, $course_id);
+    }
+    
+    static function unschedule($resource_id, $termin_id, $course_id) {
+        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        if($scheduled) {
+            $scheduler_client = SchedulerClient::getInstance();
+
+            if( $scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
+                return true;
+            } else {
+                // TODO FEEDBACK
+            }
+        }
+    }
 
 
 }

@@ -171,7 +171,34 @@ class OCModel
 
         return $success;
     }
+    
+    /**
+     * checkScheduledRecording - check if a recording is scheduled for a given date and resource within a course
+     *
+     * @param string $course_id
+     * @param string $resource_id
+     * @param string $date_id - Stud.IP Identifier for the event
+     * @return boolean success
+     */
 
+    static function checkScheduledRecording($course_id, $resource_id, $date_id) {
+
+        $series = self::getConnectedSeries($course_id);
+        $serie = $series[0];
+
+        $cas = self::checkResource($resource_id);
+        $ca = $cas[0];
+      
+
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings 
+                                                    WHERE `seminar_id` = ? 
+                                                    AND `series_id` = ? 
+                                                    AND `date_id` = ? 
+                                                    AND`resource_id` = ?");
+        $stmt->execute(array($course_id, $serie['series_id'],$date_id , $resource_id));
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     /**
      * unscheduleRecording -  removes a scheduled recording for a given date and resource within a course
