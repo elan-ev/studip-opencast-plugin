@@ -176,9 +176,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $overview = new Navigation('Aufzeichnungen');
         $overview->setURL(PluginEngine::getURL('opencast/course/index'));
 
-        $scheduler = new Navigation('Aufzeichnungen verwalten');
+        $scheduler = new Navigation('Aufzeichnungen planen');
         $scheduler->setURL(PluginEngine::getURL('opencast/course/scheduler'));
 
+        $manager = new Navigation('Aufzeichnungen verwalten');
+        $manager->setURL(PluginEngine::getURL('opencast/course/manage_episodes'));
         //$upload = new Navigation('Upload');
         //$upload->setURL(PluginEngine::getURL('opencast/course/upload'));
         $main->addSubNavigation('overview', $overview);
@@ -186,6 +188,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         
         if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             // TODO: Add scheduler iff scheduling is allowed in current course
+            $main->addSubNavigation('manager', $manager);
             $main->addSubNavigation('scheduler', $scheduler);
             $main->addSubNavigation('config', $admin);
             // $main->addSubNavigation('upload', $upload);

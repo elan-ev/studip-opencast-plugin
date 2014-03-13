@@ -215,7 +215,7 @@ class CourseController extends StudipController
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
         
-        $this->set_title(_("Opencast Aufzeichnungen verwalten"));
+        $this->set_title(_("Opencast Aufzeichnungen planen"));
         
 
         $this->course_id = $_SESSION['SessionSeminar'];
@@ -228,9 +228,22 @@ class CourseController extends StudipController
         
         $workflow_client = WorkflowClient::getInstance();
         
+    }
+    
+    function manage_episodes_action(){
+        Navigation::activateItem('course/opencast/manager');
+        $navigation = Navigation::getItem('/course/opencast');
+        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
         
+        $this->set_title(_("Opencast Aufzeichnungen verwalten"));
         
+
+        $this->course_id = $_SESSION['SessionSeminar'];
+        
+        $this->search_client = SearchClient::getInstance();
+        $this->cseries = OCModel::getConnectedSeries($this->course_id);
         // lets get all episodes for the connected series
+        // TODO take care of the visibilities
         if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
 
             $this->episode_ids = array();
@@ -239,11 +252,9 @@ class CourseController extends StudipController
             $this->search_client = SearchClient::getInstance();
                 foreach($cseries as $serie) {
                    // $instances = $workflow_client->getInstances($serie['identifier']);
-                    $this->episodes = $search_client->getEpisodes($serie['identifier']);
+                    $this->episodes = $this->search_client->getEpisodes($serie['identifier']);
                 }
         }
-
-
     }
 
 
@@ -320,11 +331,11 @@ class CourseController extends StudipController
         if($visible['visible'] == 'true'){
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
            $this->flash['message'] = _("Episode wurde unsichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
+           $this->redirect(PluginEngine::getLink('opencast/course/manage_episodes'));
         } else {
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
            $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
+           $this->redirect(PluginEngine::getLink('opencast/course/manage_episodes'));
         }
     }
 

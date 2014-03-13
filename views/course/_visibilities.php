@@ -1,3 +1,4 @@
+<? use Studip\Button, Studip\LinkButton; ?>
 <h4><?=_('Sichtbarkeiten der Aufzeichnungen verwalten')?> </h4>
 <? if(!empty($episodes)) :?>
 <table class="default">
@@ -17,14 +18,16 @@
                     <? $visible = OCModel::getVisibilityForEpisode($course_id, $episode->mediapackage->id); ?>
 
                     <? if ($visible && $visible['visible'] == 'false') : ?>
-            
-                        <?= _("Unsichtbar") ?>
+                        <?= Assets::img('icons/16/blue/visibility-invisible.png', array('title' => _("Die Aufzeichnung ist momentan unsichtbar"))) ?>
                     <? else : ?>
-                        <?= _("Sichtbar") ?>
+                        <?= Assets::img('icons/16/blue/visibility-visible.png', array('title' => _("Die Aufzeichnung ist momentan sichtbar"))) ?>
                     <? endif; ?>
                 </td>
 
                 <td>
+                    <?= LinkButton::create(_('Sichtbarkeit ändern'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $episode->mediapackage->id)); ?>
+                    
+                    
                     <a href="<?= PluginEngine::getLink('opencast/course/toggle_visibility/' . $episode->mediapackage->id) ?>">
                         <?= Assets::img('icons/16/blue/visibility-visible.png', array('title' => _("Aufzeichnung unsichtbar schalten"))) ?>
                     </a>

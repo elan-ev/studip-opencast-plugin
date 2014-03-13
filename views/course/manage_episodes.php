@@ -19,10 +19,6 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
 
 
 <div class="oc_schedule">
-    
-    <h2><?//=_('Veranstaltungsaufzeichnungen planen')?></h2>
-    <?= $this->render_partial("course/_schedule", array('course_id' => $course_id, 'dates' => $dates)) ?>
-    
-  
-
+    <h3><?=_('Verwaltung der Veranstaltungsaufzeichnungen')?></h3>
+        <?= $this->render_partial("course/_visibilities", array('course_id' => $course_id, 'connectedSeries' => $connectedSeries, 'unonnectedSeries' => $unonnectedSeries, 'series_client' => $series_client)) ?>
 </div>
