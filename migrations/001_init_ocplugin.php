@@ -53,7 +53,7 @@ class InitOcplugin extends Migration {
                  DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_endpoints` (
                    `service_url` varchar(255) NOT NULL,
                    `service_host` varchar(255) NOT NULL DEFAULT '',
-                   `service_type` enum('analysistext','analysisvideosegmenter','analytics-rest','annotation','caption','capture-admin','captureagent','composerffmpeg','confidence','distributionacl','distributiondownload','distributionstreaming','episode','files','gstreamerlaunch','info','ingest','inspection','mediapackage','org','recordings','roles','search','series','services','state','upload','users','usertracking','workflow','youtube','silencedetection','smil','videoeditor') NOT NULL,
+                   `service_type` varchar(255) NOT NULL DEFAULT '',
                    PRIMARY KEY (`service_url`)
                  ) ENGINE=MyISAM;");
 

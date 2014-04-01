@@ -83,7 +83,7 @@
             <select name="action">
                 <option value="" disabled selected><?=_("Bitte wählen Sie eine Aktion.")?></option>
                 <option value="create"><?=_("Aufzeichnungen planen")?></option>
-                <option value="update"><?=_("Aufzeichnungen aktualisieren")?></option>
+                <option value="update" disabled><?=_("Aufzeichnungen aktualisieren")?></option>
                 <option value="delete"><?=_("Aufzeichnungen löschen")?></option>
             </select>
         </td>

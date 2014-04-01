@@ -420,7 +420,7 @@ class OCModel
     }
 
     static function getDCTime($timestamp) {
-        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z';
+        return gmdate("Y-m-d", $timestamp).'T'.gmdate('H:i:s', $timestamp).'Z';
     }
   
     static function retrieveRESTservices($components) {

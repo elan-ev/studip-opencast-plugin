@@ -269,14 +269,10 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "(c) " . date(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
-
         $inst = Institute::find($course->institut_id);
-
-
-
 
         $publisher = $inst->name;
         $start = $course->getStartSemester();

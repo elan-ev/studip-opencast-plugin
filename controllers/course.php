@@ -445,11 +445,12 @@ class CourseController extends StudipController
     }
     
     static function updateschedule($resource_id, $termin_id, $course_id) {
+        
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if($scheduled){
-            $this->unschedule($resource_id, $termin_id, $course_id);
-        }
-        $this->schedule($resource_id, $termin_id, $course_id);
+            $scheduler_client = SchedulerClient::getInstance();
+            $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id);
+        }   
     }
     
     static function unschedule($resource_id, $termin_id, $course_id) {

@@ -127,5 +127,17 @@
                 return false;
             }
         }
+        
+        /**
+         * updateEventForSeminar - updates an event
+         * TODO: Implement put route
+         * @param string $course_id  - course identifier
+         * @param string $resource_id  - resource identifier
+         * @param string $termin_id  - termin identifier
+         * @return bool success or not
+         */
+        function updateEventForSeminar($course_id, $resource_id, $termin_id) {
+            return true;
+        }
     }
 ?>
