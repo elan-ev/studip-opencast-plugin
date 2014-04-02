@@ -40,7 +40,7 @@
             curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
             curl_setopt($this->ochandler, CURLOPT_USERPWD, $this->username.':'.$this->password);
-            curl_setopt($this->ochandler, CURLOPT_ENCODING, "ISO-8859-1");
+            curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
             curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
 
             //ssl
