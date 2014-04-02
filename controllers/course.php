@@ -417,13 +417,13 @@ class CourseController extends StudipController
         foreach($dates as $termin_id => $resource_id){
             switch($action) {
                 case "create":
-                    $this->schedule($resource_id, $termin_id, $course_id);
+                    self::schedule($resource_id, $termin_id, $course_id);
                     break;
                 case "update":
-                    $this->updateschedule($resource_id, $termin_id, $course_id);
+                    self::updateschedule($resource_id, $termin_id, $course_id);
                     break;
                 case "delete":
-                    $this->unschedule($resource_id, $termin_id, $course_id);
+                    self::unschedule($resource_id, $termin_id, $course_id);
                     break;
             }
         }
@@ -445,12 +445,14 @@ class CourseController extends StudipController
     }
     
     static function updateschedule($resource_id, $termin_id, $course_id) {
-        
+
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if($scheduled){
             $scheduler_client = SchedulerClient::getInstance();
-            $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id);
-        }   
+            $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
+        } else {
+            self::schedule($resource_id, $termin_id, $course_id);
+        }  
     }
     
     static function unschedule($resource_id, $termin_id, $course_id) {
