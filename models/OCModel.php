@@ -333,37 +333,26 @@ class OCModel
         $instructor = array_pop($instructors);
 
         $inst_data = Institute::find($course->institut_id);
-            //$inst_data = $inst->getData();
-
-     
 
         $room = ResourceObject::Factory($resource_id);
 
         $start_time = $date->getStartTime();
-        $end_time = $date->getEndTime();
-        /*
-        $start = $start_time.'000';
-        $end = $end_time.'000';
-
-        $duration = $end - $start;
-        $duration = $duration;
+        $end_time = strtotime("-5 minutes ", intval($date->getEndTime()));
       
-        $duration_in_hours = $duration;
-        */
-
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
-        //$duration = $duration_in_hours;
-        //$endDate = $end;
+
         $language = "German";
-        $licence = "General PublicS";
+        $licence = "General Public";
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
        if(!$issue->title) {
-           $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+           $course = new Seminar($course_id);
+           $name = $course->getName();
+           $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
        } else $title = $issue->title;
 
 

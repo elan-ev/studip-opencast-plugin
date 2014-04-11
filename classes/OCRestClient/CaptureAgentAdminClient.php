@@ -47,11 +47,11 @@
             } else return false;
         }
         
-        function getCaptureAgent($agent_name) {
-            $service_url = "/agents/" . $agent_name . ".json";
-            
+        function getCaptureAgentCapabilities($agent_name) {
+            $service_url = "/agents/" . $agent_name . "/capabilities.json";
             if($agent = $this->getJSON($service_url)) {
-                return $agent;
+                $x = 'properties-response';
+                return $agent->$x->properties->item;
             } else return false;
         }
     }

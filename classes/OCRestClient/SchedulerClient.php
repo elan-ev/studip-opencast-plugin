@@ -1,5 +1,6 @@
 <?php
     require_once "OCRestClient.php";
+    require_once "CaptureAgentAdminClient.php";
     class SchedulerClient extends OCRestClient
     {
         static $me;
@@ -32,7 +33,6 @@
             $start_time = date('D M d H:i:s e Y', $date->getStartTime());
 
 
-
             $issues = $date->getIssueIDs();
             if(is_array($issues)) {
                 foreach($issues as $is) {
@@ -41,20 +41,30 @@
             }
 
             if(!$issue->title) {
-                $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+                $course = new Seminar($course_id);
+                $name = $course->getName();
+                $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
             } else $title = $issue->title;
 
             $room = ResourceObject::Factory($resource_id);
             $cas = OCModel::checkResource($resource_id);
             $ca = $cas[0];
             $device = $ca['capture_agent'];
+            $ca_client = CaptureAgentAdminClient::getInstance();
+            $device_names = '';
+            $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
+            foreach($capabilities as $capability) {
+                if($capability->key == 'capture.device.names') {
+                    $device_names = $capability->value;
+                }
+            }
 
             $agentparameters = '#Capture Agent specific data
                                 #'. $start_time .'
                                 event.title=' . $title .'
                                 event.location=' . $room->name . '
-                                capture.device.id=' . $device;
-                   
+                                capture.device.id=' . $device . '
+                                capture.device.names=' . $device_names;
 
             $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
 

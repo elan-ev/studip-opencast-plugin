@@ -10,6 +10,7 @@
  */
 
 require_once 'vendor/trails/trails.php';
+require_once 'models/OCSeriesModel.php';
 
 define('OC_UPLOAD_CHUNK_SIZE', '1000000');
 define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
@@ -186,10 +187,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main->addSubNavigation('overview', $overview);
 
         
-        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('admin', $course_id)) {
             // TODO: Add scheduler iff scheduling is allowed in current course
             $main->addSubNavigation('manager', $manager);
-            $main->addSubNavigation('scheduler', $scheduler);
+            $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
+            if($series_metadata[0]['schedule'] == '1'){
+                $main->addSubNavigation('scheduler', $scheduler);
+            }
             $main->addSubNavigation('config', $admin);
             // $main->addSubNavigation('upload', $upload);
 
