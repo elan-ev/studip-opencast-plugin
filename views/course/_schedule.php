@@ -15,7 +15,13 @@
     <tr>
         <? $date = new SingleDate($d['termin_id']); ?>
         <? $resource = $date->getResourceID(); ?>
-        <td><input name="dates[<?=$date->termin_id?>]" type="checkbox" value="<?=$resource?>"></input></td>
+        <td>
+            <? if(isset($resource) && OCModel::checkResource($resource)) :?>
+                <input name="dates[<?=$date->termin_id?>]" type="checkbox" value="<?=$resource?>"></input>
+            <? else: ?>
+                <input type="checkbox" disabled></input>
+            <? endif;?>
+        </td>
         <td> <?=$date->getDatesHTML()?> </td>
         <? $issues = $date->getIssueIDs(); ?>
         <? if(is_array($issues)) : ?>
