@@ -299,7 +299,7 @@ class OCSeriesModel {
         $content = array();
 
         foreach ($data as $key => $val) {
-            $content[] = '<dcterms:' . $key . '>' . $val . '</dcterms:' . $key . '>';
+            $content[] = '<dcterms:' . $key . '><![CDATA[' . $val . ']]></dcterms:' . $key . '>';
         }
 
         $str = '<?xml version="1.0" encoding="UTF-8"?>'

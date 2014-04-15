@@ -362,15 +362,15 @@ class OCModel
 
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                <dcterms:creator>' . $creator . '</dcterms:creator>
-                                <dcterms:contributor>' . $contributor . '</dcterms:contributor>
+                                <dcterms:creator><![CDATA[' . $creator . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . $contributor . ']]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
                                 <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .'; end='. self::getDCTime($end_time) .'; scheme=W3C-DTF;</dcterms:temporal>
-                                <dcterms:description>' . $description . '</dcterms:description>
-                                <dcterms:subject>' . $abstract . '</dcterms:subject>
-                                <dcterms:language>' . $language . '</dcterms:language>
+                                <dcterms:description><![CDATA[' . $description . ']]></dcterms:description>
+                                <dcterms:subject><![CDATA[' . $abstract . ']]></dcterms:subject>
+                                <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
-                                <dcterms:title>' . $title . '</dcterms:title>
+                                <dcterms:title><![CDATA[' . $title . ']]></dcterms:title>
                                 <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
