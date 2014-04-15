@@ -25,50 +25,9 @@
          * @return bool success or not
          */
         function scheduleEventForSeminar($course_id, $resource_id, $termin_id) {
-
-            $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
-
-
-            $date = new SingleDate($termin_id);
-            $start_time = date('D M d H:i:s e Y', $date->getStartTime());
-
-
-            $issues = $date->getIssueIDs();
-            if(is_array($issues)) {
-                foreach($issues as $is) {
-                    $issue = new Issue(array('issue_id' => $is));
-                }
-            }
-
-            if(!$issue->title) {
-                $course = new Seminar($course_id);
-                $name = $course->getName();
-                $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
-            } else $title = $issue->title;
-
-            $room = ResourceObject::Factory($resource_id);
-            $cas = OCModel::checkResource($resource_id);
-            $ca = $cas[0];
-            $device = $ca['capture_agent'];
-            $ca_client = CaptureAgentAdminClient::getInstance();
-            $device_names = '';
-            $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
-            foreach($capabilities as $capability) {
-                if($capability->key == 'capture.device.names') {
-                    $device_names = $capability->value;
-                }
-            }
-
-            $agentparameters = '#Capture Agent specific data
-                                #'. $start_time .'
-                                event.title=' . $title .'
-                                event.location=' . $room->name . '
-                                capture.device.id=' . $device . '
-                                capture.device.names=' . $device_names;
-
-            $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
-
-
+      
+            $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
+      
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
@@ -147,41 +106,8 @@
          * @return bool success or not
          */
         function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id) {
-            
-            $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
 
-
-            $date = new SingleDate($termin_id);
-            $start_time = date('D M d H:i:s e Y', $date->getStartTime());
-
-
-
-            $issues = $date->getIssueIDs();
-            if(is_array($issues)) {
-                foreach($issues as $is) {
-                    $issue = new Issue(array('issue_id' => $is));
-                }
-            }
-
-            if(!$issue->title) {
-                $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
-            } else $title = $issue->title;
-
-            $room = ResourceObject::Factory($resource_id);
-            $cas = OCModel::checkResource($resource_id);
-            $ca = $cas[0];
-            $device = $ca['capture_agent'];
-
-            $agentparameters = '#Capture Agent specific data
-                                #'. $start_time .'
-                                event.title=' . $title .'
-                                event.location=' . $room->name . '
-                                capture.device.id=' . $device;
-                   
-
-            $post = array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
-
-
+            $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
@@ -199,6 +125,52 @@
             } else {
                 return false;
             }
+        }
+        
+        
+        static function createEventMetadata($course_id, $resource_id, $termin_id) {
+            $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+
+
+            $date = new SingleDate($termin_id);
+            $start_time = date('D M d H:i:s e Y', $date->getStartTime());
+
+
+            $issues = $date->getIssueIDs();
+            if(is_array($issues)) {
+                foreach($issues as $is) {
+                    $issue = new Issue(array('issue_id' => $is));
+                }
+            }
+
+            if(!$issue->title) {
+                $course = new Seminar($course_id);
+                $name = $course->getName();
+                $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
+            } else $title = $issue->title;
+
+            $room = ResourceObject::Factory($resource_id);
+            $cas = OCModel::checkResource($resource_id);
+            $ca = $cas[0];
+            $device = $ca['capture_agent'];
+            $ca_client = CaptureAgentAdminClient::getInstance();
+            $device_names = '';
+            $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
+            foreach($capabilities as $capability) {
+                if($capability->key == 'capture.device.names') {
+                    $device_names = $capability->value;
+                }
+            }
+
+            $agentparameters = '#Capture Agent specific data
+                                #'. $start_time .'
+                                event.title=' . $title .'
+                                event.location=' . $room->name . '
+                                capture.device.id=' . $device . '
+                                capture.device.names=' . $device_names;
+
+            return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
+            
         }
     }
 ?>
