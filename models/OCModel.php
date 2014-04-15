@@ -257,7 +257,7 @@ class OCModel
         $audience = "General Public";
 
         $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
+        $instructor = array_shift($instructors);
         $contributor = $instructor['fullname'];
         $creator = $inst_data['name'];
 
@@ -330,8 +330,9 @@ class OCModel
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
         $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
-
+       
+        $instructor = array_shift($instructors);
+         
         $inst_data = Institute::find($course->institut_id);
 
         $room = ResourceObject::Factory($resource_id);

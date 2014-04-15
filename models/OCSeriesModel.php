@@ -279,7 +279,7 @@ class OCSeriesModel {
         $end = $course->getEndSemesterVorlesEnde();
         $audience = "General Public";
         $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
+        $instructor = array_shift($instructors);
         $contributor = $GLOBALS['UNI_NAME_CLEAN'];
         $creator = $instructor['fullname'];
         $language = 'German';
