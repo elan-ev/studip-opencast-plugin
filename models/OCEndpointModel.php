@@ -36,8 +36,10 @@ class OCEndpointModel
      */
     function setEndpoint($service_host, $service_type) {
         if(isset($service_host,$service_type)) {                    
-            $stmt = DBManager::get()->prepare("REPLACE INTO `oc_endpoints` (service_url,service_host, service_type) VALUES (?,?,?)");
-            return $stmt->execute(array($service_host.'/'.$service_type, $service_host, $service_type));
+            if($service_host != '') {
+                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_endpoints` (service_url,service_host, service_type) VALUES (?,?,?)");
+                return $stmt->execute(array($service_host.'/'.$service_type, $service_host, $service_type));
+            }
         } else {
             throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
         }
