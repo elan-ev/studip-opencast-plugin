@@ -27,7 +27,6 @@
         function scheduleEventForSeminar($course_id, $resource_id, $termin_id) {
       
             $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
-      
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
