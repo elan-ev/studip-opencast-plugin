@@ -128,8 +128,8 @@ class CourseController extends StudipController
 
 
             if($count > 0) {
-                $this->embed = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
-                $this->engage_player_url = 'http://' . $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id.'&studipuser='.$user->username;
+                $engage_url =  parse_url($this->search_client->getBaseURL());
+                $this->embed = $engage_url['host'] ."/engage/ui/embed.html?id=".$this->active_id;
             }
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
@@ -149,29 +149,9 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
         $this->set_title(_("Opencast Konfiguration"));
         
-        
-        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+  
         $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
         $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-        
-        /*
-        
-        try {
-    
-           //  $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
-            
-        //    $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
-      
-            //$this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-            
-           // $allseries = OCSeriesModel::getAllSeries();
-                    //$this->search_client = SearchClient::getInstance();
-    
-            
-        } catch (Exception $e) {
-            $this->flash['error'] = $e->getMessage();
-            $this->render_action('_error');
-        }*/
 
     }
     
@@ -250,10 +230,10 @@ class CourseController extends StudipController
             $ids = array();
             $count = 0;
             $this->search_client = SearchClient::getInstance();
-                foreach($cseries as $serie) {
-                   // $instances = $workflow_client->getInstances($serie['identifier']);
-                    $this->episodes = $this->search_client->getEpisodes($serie['identifier']);
-                }
+            foreach($cseries as $serie) {
+                // $instances = $workflow_client->getInstances($serie['identifier']);
+                $this->episodes = $this->search_client->getEpisodes($serie['identifier']);
+            }
         }
     }
 

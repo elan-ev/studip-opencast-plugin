@@ -26,7 +26,7 @@ array(
         <table width="100%">
             <tr>
                 <td class="blank" style="vertical-align: top; text-align: center;" width="60%">
-                    <iframe src="http://<?=$embed?>" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>
+                    <iframe src="https://<?=$embed?>" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>
 
                 </td>
 

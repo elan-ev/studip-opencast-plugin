@@ -25,10 +25,9 @@
          *  @return array response all series
          */
         function getAllSeries() {
-            $service_url = "/series.json";
+            $service_url = "/series.json?count=100";
             
             if($series = $this->getJSON($service_url)){
-
                 return $series->catalogs;
             } else return false;
         }

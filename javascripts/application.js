@@ -26,7 +26,7 @@ OC = {
                                                       clearStyle: true });
             }
         })
-    },
+    }/*,
     
     initUpload : function(maxChunk){
         jQuery(document).ready(function(){
@@ -85,6 +85,6 @@ OC = {
             return inp_kb + 'KB';
         }
         return input + 'Bytes'
-    }
+    } */
 };
 
