@@ -105,16 +105,107 @@
     text-align: left;
 }
 
-.occontetlist {
-    list-style-type: none;
-    white-space: nowrap;
-    padding-left: 10px;
+.oce_playercontainer {
+    background: rgb(255, 255, 255) transparent;
+    background: rgba(255, 255, 255, 0.8);
+    width: 99%;
+    padding: 5ex;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+    background-color:#F3F5F8;
+    padding: 0.5em;
+    z-index:1999;
 }
 
-.ocplayerlink {
-    border-bottom: 1px solid #CCC;
-    text-align: left;
+.oce_contetlist {
+    list-style-type: none;
+    white-space: nowrap;
+    padding-left: 0px;
 }
+
+.oce_list {
+    padding-left:0px;
+    list-style: none;
+}
+
+.oce_emetadata {
+    font-size: 80%;
+}
+
+
+.oce_list li {
+    padding: .7em 1em;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-width: 1px 0 0;
+    border-style: solid;
+    margin: 0;
+    display: block;
+    position: relative;
+
+
+    overflow: hidden;
+    background-color: #fff;
+    border-color: #ddd;
+    vertical-align: center;
+
+    
+}
+.oce_preview {
+    position: absolute;
+    left: 0;
+    top: auto;
+    max-height: 96px;
+    max-width: 120px;
+
+}
+
+
+.oce_metadata {
+    display:block;
+    padding-left: 125px;
+}
+/***** Buttons ****/
+
+.button.extern,
+.button.download {
+  white-space: normal;
+}
+
+.button.download:before,
+.button.extern:before {
+  content: " ";
+  float: left;
+  height: 16px;
+  margin: -2px 8px 0 -4px;
+  width: 16px;
+}
+.button.presenter:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/file-video.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-video.png") 1x, url("../../../../assets/images/icons/32/blue/file-video.png") 2x);
+}
+
+.button.presentation:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/file-presentation.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-presentation.png") 1x, url("../../../../assets/images/icons/32/blue/file-presentation.png") 2x);
+}
+
+.button.audio:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/file-audio.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-audio.png") 1x, url("../../../../assets/images/icons/32/blue/file-audio.png") 2x);
+}
+
+
+.button.extern:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/link-intern.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+}
+
 
 
 #video_upload {

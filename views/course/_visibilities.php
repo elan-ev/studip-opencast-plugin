@@ -26,11 +26,6 @@
 
                 <td>
                     <?= LinkButton::create(_('Sichtbarkeit ändern'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $episode->mediapackage->id)); ?>
-                    
-                    
-                    <a href="<?= PluginEngine::getLink('opencast/course/toggle_visibility/' . $episode->mediapackage->id) ?>">
-                        <?= Assets::img('icons/16/blue/visibility-visible.png', array('title' => _("Aufzeichnung unsichtbar schalten"))) ?>
-                    </a>
                 </td>
             </tr>
         <? endif; ?>

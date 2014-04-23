@@ -1,135 +1,52 @@
-<?
-$infobox['picture'] = 'infobox/studygroup.jpg';
-$infobox['content'] = array(
-array(
-        'kategorie'=>_("Information"),
-        'eintrag'=>array(
-array(
-      'text' => _("Hier finden Sie die Vorlesungsaufzeichnungen dieser Veranstaltung. Klicken Sie auf einen Titel in der Liste um die Wiedergabe zu starten."),
-                'icon' => 'icons/16/black/info.png'
-                )
-                )
-                ),
-                );
-?>
-
 <? if (isset($this->flash['error'])): ?>
     <?= MessageBox::error($this->flash['error']) ?>
 <? endif ?>
-
-<h3>
+<script language="JavaScript">
+    OC.initEpisodelist();
+</script>
+<h1>
   <?= _('Vorlesungsaufzeichnungen') ?>
-</h3>
-
+</h1>
 <? if(!(empty($episode_ids))) : ?>
-    <div name='content_list' style='padding:15px;'>
-        <table width="100%">
-            <tr>
-                <td class="blank" style="vertical-align: top; text-align: center;" width="60%">
-                    <iframe src="https://<?=$embed?>" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>
 
-                </td>
-
-                <td class="blank serieslist"  rowspan="3" valign="top" width="100%">
-                    <div class="listwrapper" id="list">
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                            <? foreach($episode_ids as $item) : ?>
-                            <? if ($active_id == $item['id']) : ?>
-                            <tr>
-                                <td class="ocphead" style="padding: 1px;" width="auto" height="25">
-                                    <img src="<?=Assets::image_path("icons/16/grey/arr_1down.png")?>" align="absmiddle">
-                                            <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-                                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8') ?>
-                                    </a>
-                                </td>
-                             </tr>
-                             <tr>
-                                <td class="occontent">
-                                    <ul class="occontetlist">
-                                        <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($item['start']));?> <?=_("Uhr")?></li>
-                                        <li><?=_('Autor : ')?> <?=$item['author'] ? mb_convert_encoding($item['author'], 'ISO-8859-1', 'UTF-8')  : 'Keine Angaben vorhanden';?></li>
-                                        <li><?=_('Beschreibung : ')?> <?=$item['description'] ? mb_convert_encoding($item['description'], 'ISO-8859-1', 'UTF-8')  : 'Keine Beschreibung vorhanden';?></li>
-                                    </ul>
-                                    <div class="ocplayerlink">
-                                        <div style="text-align:left; font-style:italic;">Online schauen:</div>
-                                        <?= Studip\LinkButton::create(_('Erweiterter Player'), $engage_player_url, array('class' => 'oc_tooltip',  'target'=> '_blank', 'data-preview' => $item['preview'])) ?>
-                                    </div>
-                                    <div class="download" style="visibility: hidden;">
-                                    </div>
-                                </td>
-                            </tr>
-                            <? else : ?>
-                            <tr>
-                                <td class="ocphead" style="padding: 1px;" height="25">
-                                    <img src="<?=Assets::image_path("icons/16/grey/arr_1right.png")?>" align="absmiddle">
-                                    <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-                                        <?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8') ?>
-                                    </a>
-                                </td>
-                            </tr>
-                            <? endif; ?>
-                            <? endforeach; ?>
-                    </table>
-                </div>
-                </td>
-                </tr>
-        </table>
+<? $active = $episode_ids[$active_id]?>
+    <div class="oce_playercontainer">
+        <iframe src="https://<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
+        <div class="oce_emetadata">
+            <h2 class="oce_title"><?= mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8')?></h2>
+            <ul class="oce_contetlist">
+                <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
+                <li><?=_('Autor : ')?> <?=$active['author'] ? mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8')  : 'Keine Angaben vorhanden';?></li>
+                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8')  : 'Keine Beschreibung vorhanden';?></li>
+            </ul>
+            <div class="ocplayerlink">
+                <div style="text-align:left; font-style:italic;">Weitere Optionen:</div>
+                <div class="button-group">
+                <?= Studip\LinkButton::create(_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'extern')) ?>
+                <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
+                <?= Studip\LinkButton::create(_('Download Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
+                <?= Studip\LinkButton::create(_('Download Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
+            </div>
+            </div>
+        </div>
     </div>
-
-
-    <script>
-        jQuery(document).ready(function init_indexpage() {
-            // tooltips
-            
-            jQuery(".oc_tooltip").tipTip({
-                defaultPosition: "left",
-                keepAlive: false,
-                maxWidth: 270,
-                edgeOffset: 8,
-                delay: 50,
-                content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ STUDIP.ABSOLUTE_URI_STUDIP +"plugins_packages/elan-ev/OpenCast/images/online-prev.png' /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
-            });
-            /*
-            jQuery(".oc_tooltip").tipTip({
-                defaultPosition: "top", edgeOffset: 3, delay: 50
-            });
-            
-            jQuery(".oc_tooltip").each(function(){
-                jQuery(this).tipTip({
-                    defaultPosition: "left",
-                    keepAlive: false,
-                    maxWidth: 270,
-                    edgeOffset: 8,
-                    delay: 50,
-                    content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ jQuery(this).attr('data-preview') +"' height='50%' width='50%' /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
-                });
-            }); */
-            
-            jQuery('a[title]').live('mouseover', function()
-            {
-                jQuery(this).tipTip({
-                    defaultPosition: "left",
-                    keepAlive: false,
-                    maxWidth: 270,
-                    edgeOffset: 8,
-                    delay: 50,
-                    content: "<h3>Opencast Matterhorn Player</h3><div style='text-align:center;'><img src='"+ $(this).data('preview') +" /></div><p>Klicken Sie hier, um zu dem Vollbildplayer mit beiden<br />Video-Streams zu gelangen.</p>"
-                });
-
-                jQuery(this).trigger('mouseenter');
-            });
-              
-            
-            // Slimscroll
-            jQuery('#list').slimScroll({
-                height: '400px',
-                railVisible: true,
-                alwaysVisible: false,
-                distance: '3px'
-            })
-        });
-
-    </script>
+    
+    <div id="episodes">
+    <ul class="oce_list">
+        <? $test = array_merge($episode_ids, $episode_ids);
+        $episode_ids = array_merge($test, $test);
+        ?>
+        <? foreach($episode_ids as $item) : ?>
+        <li>
+            <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
+            <img class="oce_preview" src="<?=$item['preview']?>"></span>
+            <h3 class="oce_metadata"><?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?></h3>
+            <span class="oce_metadata"><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+            </a>
+        </li>
+        <? endforeach; ?>
+    </ul>
+    </div>
 <? else: ?>
     <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
 <? endif; ?>

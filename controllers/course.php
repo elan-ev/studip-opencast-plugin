@@ -63,18 +63,12 @@ class CourseController extends StudipController
          * Add some JS and CSS
          *
          */
-        $style_attributes = array(
-            'rel'   => 'stylesheet',
-            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/tipTip.css');
-        PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
-
         $script_attributes = array(
-            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/slimScroll.js');
+            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.slimscroll.min.js');
         PageLayout::addHeadElement('script', $script_attributes, '');
-
-        $script_attributes = array(
-            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.tipTip.minified.js');
-        PageLayout::addHeadElement('script', $script_attributes, '');
+       
+        $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
+        $this->set_layout($layout);
 
         $this->set_title(_("Opencast Player"));
 
@@ -82,6 +76,8 @@ class CourseController extends StudipController
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
 
+        $this->placeholder_prev=  $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/placeholder-prev.jpg';
+  
         Navigation::activateItem('course/opencast/overview');
         try {
             $this->search_client = SearchClient::getInstance();
@@ -103,33 +99,61 @@ class CourseController extends StudipController
                         if(!empty($series)) {
                             foreach($series as $episode) {
                                 $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
+                                
                                 if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
                                     $count+=1;
                                     $ids[] = $episode->id;
-                                    $this->episode_ids[] = array('id' => $episode->id,
+                                  
+                                    foreach($episode->mediapackage->attachments->attachment as $attachment) {
+                                        if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+                                    }
+                                    
+                                    foreach($episode->mediapackage->media->track as $track) {
+                                        if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4')){
+                                            $url = parse_url($track->url);
+                                            if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                               $presenter_download = $track->url;
+                                            }
+                                        }
+                                        if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4')){
+                                            $url = parse_url($track->url);
+                                            if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                               $presentation_download = $track->url;
+                                            }
+                                        }
+                                        if(($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3'))
+                                            $audio_download = $track->url;
+                                    }
+                                    $this->episode_ids[$episode->id] = array('id' => $episode->id,
                                         'title' => $episode->dcTitle,
                                         'start' => $episode->mediapackage->start,
                                         'duration' => $episode->mediapackage->duration,
                                         'description' => $episode->dcDescription,
                                         'author' => $episode->dcCreator,
-                                        'preview' => $episode->mediapackage->attachments->attachment[0]->url
+                                        'preview' => $preview,
+                                        'presenter_download' => $presenter_download,
+                                        'presentation_download' => $presentation_download,
+                                        'audio_download' => $audio_download
                                     );
                                 }
                             }
                         }
                     }
             }
-
             if($active_id) {
                 $this->active_id = $active_id;
             } else {
-                $this->active_id = $this->episode_ids[0][id];
+                $x = $this->episode_ids;
+                $first = array_shift($x);
+                $this->active_id = $first['id'];
             }
 
 
             if($count > 0) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
-                $this->embed = $engage_url['host'] ."/engage/ui/embed.html?id=".$this->active_id;
+                $host = $engage_url['host'];
+                $this->embed =  $host ."/engage/ui/embed.html?id=".$this->active_id;
+                $this->engage_player_url = $host ."/engage/ui/watch.html?id=".$this->active_id;
             }
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();

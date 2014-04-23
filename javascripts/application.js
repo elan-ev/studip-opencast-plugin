@@ -1,7 +1,3 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 
 OC = {
@@ -26,6 +22,17 @@ OC = {
                                                       clearStyle: true });
             }
         })
+    },
+    
+    initEpisodelist: function(){
+        jQuery( document ).ready(function() {
+            var height = jQuery('#episodes').height();
+            jQuery('#episodes').slimScroll({
+                height: height,
+                 alwaysVisible: true
+            });
+        });
+
     }/*,
     
     initUpload : function(maxChunk){

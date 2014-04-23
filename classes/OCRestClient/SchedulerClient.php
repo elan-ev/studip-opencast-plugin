@@ -167,7 +167,6 @@
                                 event.location=' . $room->name . '
                                 capture.device.id=' . $device . '
                                 capture.device.names=' . $device_names;
-
             return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
             
         }
