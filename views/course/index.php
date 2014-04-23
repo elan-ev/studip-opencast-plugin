@@ -33,9 +33,6 @@
     
     <div id="episodes">
     <ul class="oce_list">
-        <? $test = array_merge($episode_ids, $episode_ids);
-        $episode_ids = array_merge($test, $test);
-        ?>
         <? foreach($episode_ids as $item) : ?>
         <li>
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
