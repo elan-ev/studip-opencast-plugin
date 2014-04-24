@@ -29,7 +29,7 @@ OC = {
             var height = jQuery('#episodes').height();
             jQuery('#episodes').slimScroll({
                 height: height,
-                 alwaysVisible: true
+                 alwaysVisible: false
             });
         });
 
