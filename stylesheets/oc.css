@@ -168,13 +168,13 @@
 }
 /***** Buttons ****/
 
-.button.extern,
+.button.ocextern,
 .button.download {
   white-space: normal;
 }
 
 .button.download:before,
-.button.extern:before {
+.button.ocextern:before {
   content: " ";
   float: left;
   height: 16px;
@@ -200,13 +200,13 @@
 }
 
 
-.button.extern:before {
+.button.ocextern:before {
   background: no-repeat;
   background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
   background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/link-intern.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
 }
 
-
+/*** Uploader ***/
 
 #video_upload {
     display: block;

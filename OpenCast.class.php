@@ -57,18 +57,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
 
         }
+   
 
-
-
-        $style_attributes = array(
-            'rel'   => 'stylesheet',
-            'href'  => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/stylesheets/oc.css');
-        PageLayout::addHeadElement('link',  array_merge($style_attributes, array()));
-
-
-        $script_attributes = array(
-            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->getPluginPath() . '/javascripts/application.js');
-        PageLayout::addHeadElement('script', $script_attributes, '');
+        PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/oc.css');
+        PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css'); 
+        
+        PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+        //PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
+        //StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
   
     }
 
@@ -192,9 +188,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
             if($series_metadata[0]['schedule'] == '1'){
                 $main->addSubNavigation('scheduler', $scheduler);
+                //$main->addSubNavigation('upload', $upload);
+                
             }
             $main->addSubNavigation('config', $admin);
-            // $main->addSubNavigation('upload', $upload);
 
         }
 
@@ -215,4 +212,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         return false;
     }
+    
+    // static function markupOpencast  ($markup, $matches, $contents)
+//     {
+//        return sprintf('<iframe src="%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $engageplayerurl.$contents);
+//     }
 }
