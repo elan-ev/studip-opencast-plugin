@@ -58,7 +58,6 @@ class CourseController extends StudipController
      */
     function index_action($active_id = '')
     {
-         global  $user;
         /*
          * Add some JS and CSS
          *

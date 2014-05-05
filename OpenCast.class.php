@@ -11,6 +11,7 @@
 
 require_once 'vendor/trails/trails.php';
 require_once 'models/OCSeriesModel.php';
+require_once 'classes/OCRestClient/SearchClient.php';
 
 define('OC_UPLOAD_CHUNK_SIZE', '1000000');
 define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
@@ -63,8 +64,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css'); 
         
         PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
-        //PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
-        //StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
+        PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
+        
+        StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
   
     }
 
@@ -213,8 +215,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         return false;
     }
     
-    // static function markupOpencast  ($markup, $matches, $contents)
-//     {
-//        return sprintf('<iframe src="%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $engageplayerurl.$contents);
-//     }
+    static function markupOpencast  ($markup, $matches, $contents)
+    {
+        $search_client = SearchClient::getInstance();
+        $engage_url =  parse_url($search_client->getBaseURL());
+        $host = $engage_url['host'];
+        $embed =  $host ."/engage/ui/embed.html?id=".$contents;
+        
+   	    return sprintf('<iframe src="https://%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $embed);
+    }
 }
