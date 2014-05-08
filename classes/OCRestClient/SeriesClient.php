@@ -2,8 +2,8 @@
 
 
     require_once "OCRestClient.php";
-    require_once $this->trails_root.'/models/OCModel.php';
-    require_once $this->trails_root.'/models/OCSeriesModel.php';
+    require_once dirname(__FILE__). '/../../models/OCModel.php';
+    require_once dirname(__FILE__). '/../../models/OCSeriesModel.php';
 
     class SeriesClient extends OCRestClient
     {

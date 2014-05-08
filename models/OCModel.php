@@ -427,7 +427,7 @@ class OCModel
     
     static function getUserSeriesIDs($user_id) {
         $stmt = DBManager::get()->prepare("SELECT `series_id` FROM oc_seminar_series WHERE `seminar_id` IN  
-                (SELECT `Seminar_id` FROM `seminar_user` WHERE `user_id` = ? )");
+                (SELECT `Seminar_id` FROM `seminar_user` WHERE `user_id` = ? AND `status` = 'dozent' )");
         $stmt->execute(array($user_id));
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
