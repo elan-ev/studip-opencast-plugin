@@ -25,11 +25,19 @@
          *  @return array response all series
          */
         function getAllSeries() {
-            $service_url = "/series.json?count=100";
             
-            if($series = $this->getJSON($service_url)){
-                return $series->catalogs;
-            } else return false;
+            $cache = StudipCacheFactory::getCache();
+            $cache_key = 'oc_allseries';
+            $all_series = $cache->read($cache_key);
+            
+            if($all_series === false) {
+                $service_url = "/series.json?count=100";
+            
+                if($series = $this->getJSON($service_url)){
+                    $cache->write($cache_key, serialize($series->catalogs), 7200);
+                    return $series->catalogs;
+                } else return false;
+            } else return unserialize($all_series);
         }
         
         // todo

@@ -24,13 +24,21 @@
          */
         function getEpisodes($series_id) {
 
-            $service_url = "/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
-
-            if($search = $this->getJSON($service_url)){
-                $x = "search-results";
-                $episodes = $search->$x->result;
-                return $episodes;
-            } else return array();
+            $cache = StudipCacheFactory::getCache();
+            $cache_key = 'oc_episodesforseries/'.$series_id;
+            $episodes = $cache->read($cache_key);
+            
+            if($episodes === false){
+                $service_url = "/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
+                if($search = $this->getJSON($service_url)){
+                    $x = "search-results";
+                    $episodes = $search->$x->result;
+                    $cache->write($cache_key, serialize($episodes), 7200);
+                    return $episodes;
+                } else return array();
+            } else {
+                return unserialize($episodes);
+            }
         }
 
         /**
