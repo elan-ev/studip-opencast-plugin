@@ -130,7 +130,7 @@ class OpenCastBase extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     public function deactivationWarning($context = null)
     {
-        return _("Das Opencastplugin wurde deaktiviert.");
+        return false;
     }
 
     /**

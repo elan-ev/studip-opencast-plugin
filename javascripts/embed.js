@@ -1,18 +1,18 @@
 (function() {
-
-    var $, dialog, dialog_template, openLinkDialog;
+    var $, dialog, dialog_template, openLinkDialog, iconurl;
     $ = jQuery;
     
-    var iconpath = 'assets/images/icons/';
     
-
-    dialog_template = _.template('<div class="matterhorn"><div id="dialog" title="Matterhorn Video"><div class="ui-widget"><label for="tags"></label><input id="tags" placeholder="Veranstaltung suchen ..." title="Suche hier eine Veranstaltung und dannach eine Aufzeichnung. Reset mit ESC"><img id="reset_series" src="' + iconpath +'16/blue/refresh.png"></div><div id="series_container"><h2>Veranstaltung</h2><br/></div><div id="vertical_border_wrapper"><div id="vertical_border"></div></div><div id="episodes_container"><h2>Aufzeichnung</h2><br/></div></div></div>');
 
     var area;
     openLinkDialog = function(selection, textarea, button) {
         area = function() {
             return textarea
         };
+        
+        iconurl = STUDIP.ASSETS_URL + 'images/icons/16/blue/refresh.png';
+ 
+        dialog_template = _.template('<div class="matterhorn"><div id="dialog" title="Matterhorn Video"><div class="ui-widget"><label for="tags"></label><input id="tags" placeholder="Veranstaltung suchen ..." title="Suche hier eine Veranstaltung und dannach eine Aufzeichnung. Reset mit ESC"><img id="reset_series" src="' + iconurl +'"></div><div id="series_container"><h2>Veranstaltung</h2><br/></div><div id="vertical_border_wrapper"><div id="vertical_border"></div></div><div id="episodes_container"><h2>Aufzeichnung</h2><br/></div></div></div>');
         dialog = $(dialog_template()).dialog({
             buttons: {
                 "Close": function() {
@@ -268,5 +268,5 @@
     STUDIP.Toolbar.buttonSet.right = _.extend({
         embed: embed
     }, STUDIP.Toolbar.buttonSet.right);
-
+    
 }).call(this);
