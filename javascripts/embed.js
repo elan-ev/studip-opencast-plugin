@@ -12,7 +12,7 @@
         
         iconurl = STUDIP.ASSETS_URL + 'images/icons/16/blue/refresh.png';
  
-        dialog_template = _.template('<div class="matterhorn"><div id="dialog" title="Matterhorn Video"><div class="ui-widget"><label for="tags"></label><input id="tags" placeholder="Veranstaltung suchen ..." title="Suche hier eine Veranstaltung und dannach eine Aufzeichnung. Reset mit ESC"><img id="reset_series" src="' + iconurl +'"></div><div id="series_container"><h2>Veranstaltung</h2><br/></div><div id="vertical_border_wrapper"><div id="vertical_border"></div></div><div id="episodes_container"><h2>Aufzeichnung</h2><br/></div></div></div>');
+        dialog_template = _.template('<div class="matterhorn"><div id="dialog" title="Matterhorn Video"><div class="ui-widget"><label for="tags"></label><input id="tags" placeholder="Veranstaltung suchen ..." title="Suche hier eine Veranstaltung und dannach eine Aufzeichnung. Reset mit ESC"><img id="reset_series" src="' + iconurl +'"></div><div id="oc_embed_content"><div id="series_container"><h2>Veranstaltung</h2><br/></div><div id="vertical_border_wrapper"><div id="vertical_border"></div></div><div id="episodes_container"><h2>Aufzeichnung</h2><br/></div></div></div></div>');
         dialog = $(dialog_template()).dialog({
             buttons: {
                 "Close": function() {
@@ -33,12 +33,20 @@
     var loadSeries = function() {
         emptyEpisodes();
         $.get(STUDIP.ABSOLUTE_URI_STUDIP+ "plugins.php/opencast/ajax/getseries").done(function(data) {
+            
             var series = jQuery.parseJSON(data);
             var series_array = [];
             var series_id_array = [];
 
             $('input#tags').focus();
-
+            // place a instructionale note
+            if($.isEmptyObject(series)){
+                $('#oc_embed_content').empty().append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Es gibt momentan leider keine Inhalte in Opencast Matterhorn, die Sie einbetten dürfen.</div>');
+                $('#tags').attr('disabled', 'disabled');
+            } else {
+                $('div#episodes_container').append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Bitte wählen Sie zuerst auf der linken Seite eine Veranstaltung, aus der Sie Inhalte einbetten möchten.</div>');
+            }
+            
             $("div#series_container").append("<ul id='loaded_series'>");
             // Die Serien an die Liste haengen und Arrays befuellen
             for (var i = 0; i < series.length; i++) {
@@ -99,8 +107,8 @@
         $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getepisodes/" + ser_id).done(function(data) {
             var episode = jQuery.parseJSON(data);
             $('div#episodes_container').append("<p class='embed_episode_title'>Veranstaltung: " + ser_title + "</p>");
-            if (episode == null) {
-                setInfoText("Diese Veranstaltung enthält keine Aufzeichnungen, bitte eine andere wählen");
+            if ($.isEmptyObject(episode)) {
+                setInfoText("Diese Veranstaltung enthält keine Aufzeichnungen, bitte wählen Sie eine andere.");
                 $('div#dialog').animate({
                     scrollTop: 0
                 }, 0);
@@ -238,6 +246,7 @@
         $("div#episodes_container").empty();
         $('div#series_container').append('<h2 align=center> Veranstaltungen </h2> <br/>');
         $('div#episodes_container').append('<h2 align=center> Aufzeichnungen </h2> <br/>');
+        
     };
 
     var setSearch = function(series_array, series_id_array) {
