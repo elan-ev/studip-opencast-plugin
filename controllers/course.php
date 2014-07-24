@@ -150,9 +150,9 @@ class CourseController extends StudipController
 
             if($count > 0) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
-                $host = $engage_url['host'];
-                $this->embed =  $host ."/engage/ui/embed.html?id=".$this->active_id;
-                $this->engage_player_url = $host ."/engage/ui/watch.html?id=".$this->active_id;
+                
+                $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();

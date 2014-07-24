@@ -88,9 +88,15 @@ class AdminController extends AuthenticatedController
         
         $services = OCModel::retrieveRESTservices($comp);
 
+
         foreach($services as $service_url => $service_type) {
-            $endpoint_url =  parse_url($service_url);
-            OCEndpointModel::setEndpoint($endpoint_url['host']. (isset($endpoint_url['port']) ? ':' . $endpoint_url['port'] : ''), $service_type);    
+
+            $service_comp = explode("/", $service_url);
+            
+            if(sizeof($service_comp) == 2) {
+                if($service_comp)
+                OCEndpointModel::setEndpoint($service_comp[0], $service_type);
+            }   
         }
 
 
