@@ -66,7 +66,7 @@
             <? $resource = $date->getResourceID(); ?>
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
             <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
-                <?= LinkButton::create(_('Aufzeichnung löschen'), PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))); ?>
+                <?= LinkButton::create(_('Aufzeichnung stornieren'), PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))); ?>
                 <?  else : ?>
                     <? if(date($d['date']) > time()) :?>
                          <?= LinkButton::create(_('Aufzeichnung planen'), PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id )); ?>
@@ -90,7 +90,7 @@
                 <option value="" disabled selected><?=_("Bitte wählen Sie eine Aktion.")?></option>
                 <option value="create"><?=_("Aufzeichnungen planen")?></option>
                 <option value="update"><?=_("Aufzeichnungen aktualisieren")?></option>
-                <option value="delete"><?=_("Aufzeichnungen löschen")?></option>
+                <option value="delete"><?=_("Aufzeichnungen stornieren")?></option>
             </select>
         </td>
         <td></td>
