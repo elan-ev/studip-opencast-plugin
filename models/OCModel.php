@@ -244,7 +244,7 @@ class OCModel
         $course = new Seminar($course_id);
 
         $name = $course->getName();
-        $license = "Creative Commons"; // TODO
+        $license = "All Rights Reserved";
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
 
@@ -346,7 +346,7 @@ class OCModel
         $device = $ca['capture_agent'];
 
         $language = "German";
-        $licence = "General Public";
+        $licence = "All Rights Reserved";
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
