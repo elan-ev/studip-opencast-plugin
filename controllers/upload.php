@@ -9,7 +9,7 @@
  * the License, or (at your option) any later version.
  */
 
-require_once 'app/controllers/studip_controller.php';
+require_once 'app/controllers/authenticated_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
@@ -20,7 +20,7 @@ require_once $this->trails_root.'/classes/OCUpload.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCSeriesModel.php';
 
-class UploadController extends StudipController
+class UploadController extends AuthenticatedController
 {
     private $file = null;
     private $error = array();
