@@ -1,10 +1,10 @@
 <?php
 
-require_once 'app/controllers/authenticated_controller.php';
+require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 
-class AjaxController extends AuthenticatedController
+class AjaxController extends StudipController
 {
 
     function before()

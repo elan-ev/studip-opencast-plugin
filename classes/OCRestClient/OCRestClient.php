@@ -124,7 +124,6 @@
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-				
                 if($with_res_code) {
                     return array(json_decode($response), $httpCode);
                 } else {
@@ -139,6 +138,7 @@
             }
 
         }
+        
         /**
          * function getJSON - performs a REST-Call and retrieves response in JSON
          */
