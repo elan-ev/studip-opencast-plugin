@@ -66,13 +66,13 @@
             <? $resource = $date->getResourceID(); ?>
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
             <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
-                <?= LinkButton::create(_('Aufzeichnung aktualisieren'), PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))); ?>
-                <?= LinkButton::create(_('Aufzeichnung stornieren'), PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))); ?>
+                <?= LinkButton::create(_('Aufzeichnung aktualisieren'), PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"), 'class' => 'ocupdate ocspecial')); ?>
+                <?= LinkButton::create(_('Aufzeichnung stornieren'), PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"), 'class' => 'ocunschedule ocspecial')); ?>
                 <?  else : ?>
                     <? if(date($d['date']) > time()) :?>
-                         <?= LinkButton::create(_('Aufzeichnung planen'), PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id )); ?>
+                         <?= LinkButton::create(_('Aufzeichnung planen'), PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id ), array('class' => 'ocschedule ocspecial')); ?>
                     <? else :?>
-                        <?= Button::create(_("Planung nicht möglich "), array('disabled' => true, 'title' =>  _("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen.")));?>
+                        <?= Button::create(_("Planung nicht möglich "), array('disabled' => true, 'title' =>  _("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."),'class' => 'ocschedule ocspecial'));?>
                     <? endif;?>
                 <? endif; ?>
             <? elseif(false) : ?>

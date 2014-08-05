@@ -169,12 +169,14 @@
 /***** Buttons ****/
 
 .button.ocextern,
-.button.download {
+.button.download,
+.button.ocspecial {
   white-space: normal;
 }
 
 .button.download:before,
-.button.ocextern:before {
+.button.ocextern:before, 
+.button.ocspecial:before {
   content: " ";
   float: left;
   height: 16px;
@@ -205,6 +207,25 @@
   background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
   background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/link-intern.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
 }
+
+.button.ocschedule:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/date.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/video.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+}
+
+.button.ocunschedule:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/trash.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+}
+
+.button.ocupdate:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/refresh.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+}
+
 
 /*** Uploader ***/
 
