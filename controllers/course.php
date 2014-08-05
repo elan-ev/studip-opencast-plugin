@@ -299,16 +299,18 @@ class CourseController extends AuthenticatedController
     function update_action($resource_id, $termin_id)
     {
 
-        $this->course_id = Request::get('cid');
+        $course_id = Request::get('cid');
+        $scheduler_client = SchedulerClient::getInstance();
+        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
-        if( $this->scheduler_client->updateEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+        if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
             $this->flash['message'] = _("Die geplante Aufzeichnung aktualisiert");
         } else {
             $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht aktualisiert werden.");
         }
 
 
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
 
 

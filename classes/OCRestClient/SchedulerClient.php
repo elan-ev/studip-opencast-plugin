@@ -107,6 +107,7 @@
         function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id) {
 
             $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
+            
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
@@ -119,7 +120,7 @@
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
             $resArray = explode("\n", $response);
-            if ($httpCode == 201){
+            if (in_array($httpCode, array(201,200))){
                 return true;
             } else {
                 return false;
@@ -155,9 +156,11 @@
             $ca_client = CaptureAgentAdminClient::getInstance();
             $device_names = '';
             $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
-            foreach($capabilities as $capability) {
-                if($capability->key == 'capture.device.names') {
-                    $device_names = $capability->value;
+            if(isset($capabilities)){
+                foreach($capabilities as $capability) {
+                    if($capability->key == 'capture.device.names') {
+                        $device_names = $capability->value;
+                    }
                 }
             }
 
