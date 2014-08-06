@@ -43,22 +43,21 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $config = new Navigation('OC Einstellungen');
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
-            
-            
-            //$endpoints = new Navigation('OC Endpoints');
-            //$endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
-            //$main->addSubNavigation('oc-endpoints', $endpoints);
-            
-
+  
             $resources = new Navigation('OC Ressourcen');
             $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
             $main->addSubNavigation('oc-resources', $resources);
 
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
-            //Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
             Navigation::addItem('/admin/config/oc-resources', $resources);
-
+            
+            if($perm->have_perm('root')){
+                $endpoints = new Navigation('OC Endpoints');
+                $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
+                $main->addSubNavigation('oc-endpoints', $endpoints);
+                Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
+            }
         }
    
 
@@ -183,8 +182,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $manager = new Navigation('Aufzeichnungen verwalten');
         $manager->setURL(PluginEngine::getURL('opencast/course/manage_episodes'));
-        //$upload = new Navigation('Upload');
-        //$upload->setURL(PluginEngine::getURL('opencast/course/upload'));
+        
+        $upload = new Navigation('Upload');
+        $upload->setURL(PluginEngine::getURL('opencast/course/upload'));
+        
         $main->addSubNavigation('overview', $overview);
 
         
@@ -194,7 +195,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
             if($series_metadata[0]['schedule'] == '1'){
                 $main->addSubNavigation('scheduler', $scheduler);
-                //$main->addSubNavigation('upload', $upload);
+                $main->addSubNavigation('upload', $upload);
                 
             }
             $main->addSubNavigation('config', $admin);

@@ -118,7 +118,7 @@ class OCUploadFile {
     public function createChunkFile()
     {
         $input = fopen('php://input', 'r');
-        $path = tempnam($TMP_PATH, 'opencast_');
+        $path = tempnam('/tmp/opencast_');
         file_put_contents($path, $input);
         $this->setChunkPath($path);
         return true;
