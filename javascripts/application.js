@@ -33,9 +33,10 @@ OC = {
             });
         });
 
-    }/*,
+    },
     
     initUpload : function(maxChunk){
+        console.log(maxChunk);
         jQuery(document).ready(function(){
             $('#btn_accept').click(function() {
                 OC.formData.submit();
@@ -92,6 +93,6 @@ OC = {
             return inp_kb + 'KB';
         }
         return input + 'Bytes'
-    } */
+    }
 };
 

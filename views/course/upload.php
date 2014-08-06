@@ -126,7 +126,7 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
     <input type="hidden" value="" name="file_name" id="file_name" />
     <div class="form_submit">
 <?= Button::createAccept(_('Übernehmen'), null, array('id' => 'btn_accept')) ?>
-<?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
+<?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/upload')) ?>
     </div>
 </form>
 

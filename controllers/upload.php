@@ -9,7 +9,7 @@
  * the License, or (at your option) any later version.
  */
 
-require_once 'app/controllers/authenticated_controller.php';
+require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
@@ -20,7 +20,7 @@ require_once $this->trails_root.'/classes/OCUpload.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCSeriesModel.php';
 
-class UploadController extends AuthenticatedController
+class UploadController extends StudipController
 {
     private $file = null;
     private $error = array();
@@ -38,9 +38,10 @@ class UploadController extends AuthenticatedController
             if($this->file->isNew()) {
                 $this->initNewUpload();
             }
+
             if($this->file->getMediaPackage() && $this->file->getJobID()) {
                 //Step 2.2 Upload all chunks
-                $this->uploadChunk();
+                $x = $this->uploadChunk();
             } else {
                 $this->error[] = _('Fehler beim erstellen der Job ID oder des '
                         .'Media Packages');
@@ -53,7 +54,8 @@ class UploadController extends AuthenticatedController
         } else { //if($file = $OCUpload->post())
                $this->error[] = _('Fehler beim hochladen der Datei');
         }
-        $this->render_nothing();
+        $this->render_text(var_dump($x));
+        //$this->render_nothing();
     }
     private function endUpload()
     {
@@ -169,8 +171,8 @@ class UploadController extends AuthenticatedController
       
         $res = $this->upload->uploadChunk($this->file->getJobID(),
                 $this->file->getChunk(),
-                '@'.$this->file->getChunkPath());
-        switch($res[1]) {
+                $this->file->getChunkPath());
+        switch($res[0]) {
             case 200: 
                 $this->file->setChunkStatus('mh');
                 break;
