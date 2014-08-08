@@ -345,10 +345,11 @@ class CourseController extends StudipController
 
     function upload_action()
     {
+        //TODO this should only work iff an series is connected!
         $this->date = date('Y-m-d');
         $this->hour = date('H');
         $this->minute = date('i');
-        
+       
         $scripts = array(
             '/vendor/jquery.fileupload.js',
             '/vendor/jquery.ui.widget.js'
@@ -368,8 +369,6 @@ class CourseController extends StudipController
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
 
-
-
             //TODO: gibt es keine generische Funktion dafür?
             $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         } catch (Exception $e) {
@@ -379,38 +378,6 @@ class CourseController extends StudipController
     }
 
 
-    function ingest_action()
-    {
-        global $UPLOAD_PATH;
-
-
-
-        //check if an suitable upload dir exits
-        if(!chdir( getcwd() .'/assets/opencast-uploads')) {
-            mkdir($UPLOAD_PATH.  '/opencastupload');
-            symlink($UPLOAD_PATH.  '/opencastupload', getcwd() .'/assets/opencast-uploads');
-        } else {
-            $target_path = $UPLOAD_PATH .'/opencastupload/'. basename( $_FILES['video']['name']);
-
-            if(move_uploaded_file($_FILES['video']['tmp_name'], $target_path)) {
-                // Passende message
-                $this->flash['message'] = _("Das Video ");
-                $video_uri = $GLOBALS['ABSOLUTE_URI_STUDIP'].'assets/opencast-uploads/'. $_FILES['video']['name'];
-
-                //echo "The file ".  basename( $_FILES['video']['name']).
-                    " has been uploaded";
-                //echo "<img src='". $GLOBALS['ABSOLUTE_URI_STUDIP'].'assets/opencast-uploads/'. $_FILES['video']['name']."'>";
-            } else{
-                //pasende message
-                //echo "There was an error uploading the file, please try again!";
-            }
-        }
-
-
-
-        $this->redirect(PluginEngine::getLink('opencast/course/upload'));
-
-    }
     
     function bulkschedule_action()
     {

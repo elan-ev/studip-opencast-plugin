@@ -229,6 +229,43 @@
 
 /*** Uploader ***/
 
+.oc_mediaupload {
+    position: relative;
+    padding-top: 3em;
+    border-color: #d4dbe5;
+    border-style: solid;
+    border-width: 1px;
+    margin-bottom: 10px;
+}
+
+.oc_mediaupload_legend {
+    background-color: #e7ebf1;
+    color: #24437c;
+    position: absolute;
+    top: 0px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    line-height: 2em;
+    width: 100%;
+    left:0px;
+    font-size: 12pt;
+    font-weight: bold;
+    text-indent: 1ex;
+}
+
+
+.oc_mediaupload_progressbar {
+    border: 1px solid #24437c;
+}
+
+.oc_mediaupload_progressbar > .ui-progressbar-value {
+    background: #24437c !important;
+}
+
+
+
+
 #video_upload {
     display: block;
     height: 0;

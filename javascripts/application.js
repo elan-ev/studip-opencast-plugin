@@ -63,7 +63,7 @@ OC = {
                 submit: function (e, data) {
                     $( "#progressbar" ).progressbar({
                         value: 0
-                    });
+                    }).addClass('oc_mediaupload_progressbar');
                 },
                 progressall: function(e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -71,7 +71,7 @@ OC = {
                 },
                 done: function(e, data) {
                     $( "#progressbar" ).progressbar('destroy');
-                    $('#video_upload').val('');
+                    $('#video_upload').val('').removeClass('oc_mediaupload_progressbar');
                 }
             });
             $('#recordDate').datepicker({

@@ -23,13 +23,15 @@ $infobox_content = array(array(
         ));
 $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
+
 <script language="javascript">
     OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>
-<h2><?= _("Medienupoad") ?></h2>
-    
+
 <form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
-    <div>
+    <fieldset class="oc_mediaupload">
+        <legend class="oc_mediaupload_legend"><?= _("Medienupload") ?></legend>
+    
         <label id="title" for="titleField">
             <?= _('Titel') ?>:
             <span style="color: red; font-size: 1.6em">* </span>
@@ -77,12 +79,11 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
                     $in = (string) $i;
                 } ?>
                 <?php if ($in == $this->minute): ?>
-            <option value="<?= $i ?>" selected="selected"><?= $in ?></option>
+                    <option value="<?= $i ?>" selected="selected"><?= $in ?></option>
                 <?php else: ?>
-            <option value="<?= $i ?>"><?= $in ?></option>
+                    <option value="<?= $i ?>"><?= $in ?></option>
                 <?php endif; ?>
-        <?php endfor; ?>
-             
+            <?php endfor; ?>
         </select>
         <br>
         <label id="contributorLabel" for="contributor">
@@ -117,18 +118,16 @@ $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobo
         </div>
         <div id="upload_info">
         </div>
-    </div>
-    
-    <div id="progressbarholder" style="overflow: hidden; padding-top: 5px; height: 30px; width:50%; margin: 0 auto;">
-        <div id="progressbar"></div>
-    </div>
-    <input type="hidden" value="" name="total_file_size" id="total_file_size" />
-    <input type="hidden" value="" name="file_name" id="file_name" />
-    <div class="form_submit">
-<?= Button::createAccept(_('Übernehmen'), null, array('id' => 'btn_accept')) ?>
-<?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/upload')) ?>
-    </div>
+        <div id="progressbarholder" style="overflow: hidden; padding-top: 5px; height: 30px; width:50%; margin: 0 auto;">
+            <div id="progressbar"></div>
+        </div>
+        <input type="hidden" value="" name="total_file_size" id="total_file_size" />
+        <input type="hidden" value="" name="file_name" id="file_name" />
+        <div class="form_submit">
+            <?= Button::createAccept(_('Übernehmen'), null, array('id' => 'btn_accept')) ?>
+            <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/upload')) ?>
+        </div>
+    </fieldset>
 </form>
 
-
-
+  

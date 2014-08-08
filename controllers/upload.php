@@ -54,8 +54,7 @@ class UploadController extends StudipController
         } else { //if($file = $OCUpload->post())
                $this->error[] = _('Fehler beim hochladen der Datei');
         }
-        $this->render_text(var_dump($x));
-        //$this->render_nothing();
+        $this->render_nothing();
     }
     private function endUpload()
     {
@@ -81,7 +80,7 @@ class UploadController extends StudipController
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
             $this->file->clearSession();
-            echo 'Ingest Started: '.htmlentities($content);
+            //echo 'Ingest Started: '.htmlentities($content);
         } else echo 'upload failed';
         
     }
@@ -121,6 +120,7 @@ class UploadController extends StudipController
     }
     private function addSeriesDC() {
         $seriesDCs = OCSeriesModel::getSeriesDCs($_SESSION['SessionSeminar']);
+        if(is_array($seriesDCs)){
         foreach($seriesDCs as $dc) 
         {
             $newMediaPackage = '';
@@ -134,6 +134,7 @@ class UploadController extends StudipController
                 $this->error[] = 'Fehler beim hinzufügen einer Series, '.$dc;
                 return false;
             }
+        }
         }
         return true;
     }
