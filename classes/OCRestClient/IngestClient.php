@@ -15,52 +15,52 @@
         }
 
         /**
-         *  getAllSeries() - retrieves all series from conntected Opencast-Matterhorn Core
+         *  createMediaPackage - Creates an empty media package
          *
-         *  @return array response all series
+         *  @return $mediapackage
          */
         function createMediaPackage() {
             $service_url = "/createMediaPackage";
-            if($response = self::getXML($service_url)){
-                return $response;
+            if($mediapackage = self::getXML($service_url)){
+                return $mediapackage;
             } else return false;
         }
         
+        /**
+         *  addDCCatalog - Add a dublincore episode catalog to a given media package using an url
+         *
+         *  @param $mediapackage
+         *  @param $dublincore
+         *  @param $flavor
+         *
+         *  @return $mediapackage - the augmented mediapackage
+         */
         function addDCCatalog($mediaPackage, $dublinCore, $flavor)
         {
             $service_url = "/addDCCatalog";
             $data = array('mediaPackage' => utf8_encode($mediaPackage),
                     'dublinCore' => utf8_encode($dublinCore),
                     'flavor' => $flavor);
-            if($response = $this->getXML($service_url, $data, false)){
-                return $response;
+            if($mediapackage = $this->getXML($service_url, $data, false)){
+                return $mediapackage;
             } else return false;
         }
+        
+        /**
+         *  ingest - Ingest the completed media package into the system, retrieving all URL-referenced files
+         *
+         *  @param $mediapackage
+         *  @param $workFlowDefinitionID
+         *
+         *  @return $mediapackage 
+         */
         function ingest($mediaPackage, $workFlowDefinitionID = 'full')
         {
             $service_url = "/ingest/".$workFlowDefinitionID;
             $data = array('mediaPackage' => $mediaPackage);
-            if($response = $this->getXML($service_url, $data, false)){
-                return $response;
+            if($mediapackage = $this->getXML($service_url, $data, false)){
+                return $mediapackage;
             } else return false;
         }
-
-
-        // other functions
-
-        function getUploadFrame() {
-
-
-            $frame = '<iframe name="fileChooserAjax" id="fileChooserAjax" frameborder="0" scrolling="no" '
-                   .    'src="http://' . $this->matterhorn_base_url .'/ingest/filechooser-local.html">'
-                   . '</iframe>';
-
-            return $frame;
-
-        }
-
-
     }
-
-
 ?>
