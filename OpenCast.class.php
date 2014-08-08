@@ -16,7 +16,7 @@ require_once 'classes/OCRestClient/SearchClient.php';
 require_once 'classes/OCRestClient/SeriesClient.php';
 
 
-define('OC_UPLOAD_CHUNK_SIZE', '1000000');
+define('OC_UPLOAD_CHUNK_SIZE', '10000000');
 define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
 
