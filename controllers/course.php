@@ -230,6 +230,36 @@ class CourseController extends StudipController
         
         $workflow_client = WorkflowClient::getInstance();
         
+        // upload 
+        //TODO this should only work iff an series is connected!
+        $this->date = date('Y-m-d');
+        $this->hour = date('H');
+        $this->minute = date('i');
+       
+        $scripts = array(
+            '/vendor/jquery.fileupload.js',
+            '/vendor/jquery.ui.widget.js'
+        );
+        
+        try {
+            //check needed services before showing upload form
+            UploadClient::getInstance()->checkService();
+            IngestClient::getInstance()->checkService();
+            MediaPackageClient::getInstance()->checkService();
+            SeriesClient::getInstance()->checkService();
+
+            foreach($scripts as $path) {
+                $script_attributes = array(
+                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
+                PageLayout::addHeadElement('script', $script_attributes, '');
+            }
+
+            //TODO: gibt es keine generische Funktion dafür?
+            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
+        } catch (Exception $e) {
+            $this->flash['error'] = $e->getMessage();
+            $this->render_action('_error');
+        }
     }
     
     function manage_episodes_action(){

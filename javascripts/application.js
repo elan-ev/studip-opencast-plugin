@@ -35,8 +35,19 @@ OC = {
 
     },
     
+    initScheduler: function(){
+        jQuery( document ).ready(function() {
+            $("#upload_dialog").dialog({ autoOpen: false, width: 800 });
+            jQuery("#oc_upload_dialog").click(
+                function () {
+                    jQuery("#upload_dialog").dialog('open');
+                    return false;
+                }
+            );
+        });
+    },
+    
     initUpload : function(maxChunk){
-        console.log(maxChunk);
         jQuery(document).ready(function(){
             $('#btn_accept').click(function() {
                 OC.formData.submit();
@@ -71,7 +82,7 @@ OC = {
                 },
                 done: function(e, data) {
                     $( "#progressbar" ).progressbar('destroy');
-                    $('#video_upload').val('').removeClass('oc_mediaupload_progressbar');
+                    $("#upload_dialog").dialog("close");
                 }
             });
             $('#recordDate').datepicker({
