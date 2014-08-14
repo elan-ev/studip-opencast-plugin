@@ -158,7 +158,7 @@ class UploadController extends StudipController
         }
         //TODO: sicherheit Request
         foreach($_POST as $key => $val) {
-            $episodeData[$key] = Request::get($key);
+            $episodeData[$key] = utf8_encode(Request::get($key));
         }
         
         $this->file->setEpisodeData($episodeData);

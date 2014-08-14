@@ -210,20 +210,32 @@
 
 .button.ocschedule:before {
   background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/date.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/video.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+  background-image: url("../../../../assets/images/icons/16/blue/video.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/video.png") 1x, url("../../../../assets/images/icons/32/blue/video.png") 2x);
 }
 
 .button.ocunschedule:before {
   background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/trash.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+  background-image: url("../../../../assets/images/icons/16/blue/trash.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/trash.png") 1x, url("../../../../assets/images/icons/32/blue/trash.png") 2x);
 }
 
 .button.ocupdate:before {
   background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/refresh.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+  background-image: url("../../../../assets/images/icons/16/blue/refresh.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/refresh.png") 1x, url("../../../../assets/images/icons/32/blue/refresh.png") 2x);
+}
+
+.button.ocvisible:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/visibility-visible.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/visibility-visible.png") 1x, url("../../../../assets/images/icons/32/blue/visibility-visible.png") 2x);
+}
+
+.button.ocinvisible:before {
+  background: no-repeat;
+  background-image: url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
+  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/visibility-invisible.png") 1x, url("../../../../assets/images/icons/32/blue/visibility-invisible.png") 2x);
 }
 
 

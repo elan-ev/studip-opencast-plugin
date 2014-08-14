@@ -5,7 +5,6 @@ use Studip\Button,
 <form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
     <label id="title" for="titleField">
         <?= _('Titel') ?>:
-        <span style="color: red; font-size: 1.6em">* </span>
     </label>
     <br>
     <input type="text" maxlength="255" name="title" id="titleField" required>
@@ -14,11 +13,10 @@ use Studip\Button,
         <span><?= _("Vortragende") ?></span>:
     </label>
     <br>
-    <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
+    <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>" required>
     <br>
     <label id="recordingDateLabel" class="scheduler-label" for="recordDate">
         <span><?= _('Aufnahmedatum') ?></span>:
-        <span style="color: red; font-size: 1.6em">* </span>
     </label>
     <br>
     <input type="text" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10" required>
@@ -26,7 +24,6 @@ use Studip\Button,
     <label id="startTimeLabel" for="startTimeHour">
         <span><?= _('Startzeit') ?></span>:
     </label>
-    <span style="color: red; font-size: 1.6em">* </span><br>
     <select id="startTimeHour" name="startTimeHour">
         <?php for ($i = 0; $i <= 23; $i++): ?>
             <?php if ($i < 10) {
@@ -57,6 +54,7 @@ use Studip\Button,
         <?php endfor; ?>
     </select>
     <br>
+    <div style="display:none;">
     <label id="contributorLabel" for="contributor">
         <span><?= _('Mitwirkende') ?></span>:
     </label>
@@ -75,11 +73,12 @@ use Studip\Button,
     <br>
     <input type="text" maxlength="255" id="language" name="language">
     <br>
+    </div>
     <label id="descriptionLabel" for="description">
         <span><?= _('Beschreibung') ?></span>:
     </label>
     <br>
-    <textarea cols="10" rows="5" id="description" name="description"></textarea>
+    <textarea cols="50" rows="5" id="description" name="description"></textarea>
     <br>
     <label for="video_upload">Datei:</label>
     <br>
@@ -96,6 +95,6 @@ use Studip\Button,
     <input type="hidden" value="" name="file_name" id="file_name" />
     <div class="form_submit">
         <?= Button::createAccept(_('Medien hochladen'), null, array('id' => 'btn_accept')) ?>
-        <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/scheduler')) ?>
+        <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
     </div>
 </form>

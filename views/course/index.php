@@ -2,14 +2,42 @@
     <?= MessageBox::error($this->flash['error']) ?>
 <? endif ?>
 <script language="JavaScript">
-    OC.initEpisodelist();
+    OC.initIndexpage();
+    OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>
+
+<?
+if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+    $aktionen = array();
+    $aktionen[] = array(
+                  "icon" => "icons/16/black/upload.png",
+                  "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
+
+    $infobox_content = array(array(
+        'kategorie' => _('Hinweise:'),
+        'eintrag'   => array(array(
+            'icon' => 'icons/16/black/info.png',
+            'text' => _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern.")
+        )
+    ), ),
+        array("kategorie" => _("Aktionen:"),
+              "eintrag"   => $aktionen
+        ));
+
+    $infobox = array('picture' => 'infobox/lectures.jpg', 'content' => $infobox_content);
+}
+?>
+
+
+
+
 <h1>
   <?= _('Vorlesungsaufzeichnungen') ?>
 </h1>
 <? if(!(empty($episode_ids))) : ?>
 
 <? $active = $episode_ids[$active_id]?>
+<? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
     <div class="oce_playercontainer">
         <iframe src="https://<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
         <div class="oce_emetadata">
@@ -26,7 +54,17 @@
                 <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
                 <?= Studip\LinkButton::create(_('Download Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
                 <?= Studip\LinkButton::create(_('Download Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
-            </div>
+                </div>
+                <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+                <div class="button-group">
+                    <? if ($visible && $visible['visible'] == 'false') : ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id), array('class' => 'ocinvisible ocspecial')); ?>
+                    <? else : ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id), array('class' => 'ocvisible ocspecial')); ?>
+                    <? endif; ?>
+                   
+                </div>
+                <? endif;?>
             </div>
         </div>
     </div>
@@ -47,3 +85,7 @@
 <? else: ?>
     <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
 <? endif; ?>
+
+<div id="upload_dialog" title="<?=_("Medienupload")?>">
+<?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates)) ?>
+</div>

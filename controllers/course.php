@@ -71,9 +71,14 @@ class CourseController extends StudipController
         $this->set_title(_("Opencast Player"));
 
         // set layout for index page
-        $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
-        $this->set_layout($layout);
+        
+        if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 
+            $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
+            $this->set_layout($layout);
+        }
+
+        
         $this->placeholder_prev=  $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/placeholder-prev.jpg';
   
         Navigation::activateItem('course/opencast/overview');
@@ -88,7 +93,6 @@ class CourseController extends StudipController
             if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
 
                 $this->episode_ids = array();
-                $ids = array();
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
 
@@ -97,10 +101,10 @@ class CourseController extends StudipController
                         if(!empty($series)) {
                             foreach($series as $episode) {
                                 $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                                
-                                if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
+                                if(is_object($episode->mediapackage) && 
+                                    (($visibility['visible']!= 'false' && $GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) ||
+                                     $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))){
                                     $count+=1;
-                                    $ids[] = $episode->id;
                                   
                                     foreach($episode->mediapackage->attachments->attachment as $attachment) {
                                         if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
@@ -153,11 +157,37 @@ class CourseController extends StudipController
                 $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
+            
+            // Upload-Dialog
+            
+            $this->date = date('Y-m-d');
+            $this->hour = date('H');
+            $this->minute = date('i');
+            
+            //check needed services before showing upload form
+            UploadClient::getInstance()->checkService();
+            IngestClient::getInstance()->checkService();
+            MediaPackageClient::getInstance()->checkService();
+            SeriesClient::getInstance()->checkService();
+            
+            $scripts = array(
+                '/vendor/jquery.fileupload.js',
+                '/vendor/jquery.ui.widget.js'
+            );
+
+            foreach($scripts as $path) {
+                $script_attributes = array(
+                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
+                PageLayout::addHeadElement('script', $script_attributes, '');
+            }
+
+            //TODO: gibt es keine generische Funktion dafür?
+            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
+            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
         }
-
     }
     
     function config_action()
@@ -180,10 +210,8 @@ class CourseController extends StudipController
     function edit_action($course_id)
     {   
         
-     
         $series = Request::getArray('series');
         
-    
         foreach( $series as $serie) {
             OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
@@ -197,10 +225,8 @@ class CourseController extends StudipController
         $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
         
         OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
-        
-        
-        
-        /*
+
+        /* Uncomment iff you really want to remove this series from the OC Core
         $series_client = SeriesClient::getInstance();
         $series_client->removeSeries($series_id); 
         */
@@ -229,64 +255,6 @@ class CourseController extends StudipController
         
         
         $workflow_client = WorkflowClient::getInstance();
-        
-        // upload 
-        //TODO this should only work iff an series is connected!
-        $this->date = date('Y-m-d');
-        $this->hour = date('H');
-        $this->minute = date('i');
-       
-        $scripts = array(
-            '/vendor/jquery.fileupload.js',
-            '/vendor/jquery.ui.widget.js'
-        );
-        
-        try {
-            //check needed services before showing upload form
-            UploadClient::getInstance()->checkService();
-            IngestClient::getInstance()->checkService();
-            MediaPackageClient::getInstance()->checkService();
-            SeriesClient::getInstance()->checkService();
-
-            foreach($scripts as $path) {
-                $script_attributes = array(
-                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
-                PageLayout::addHeadElement('script', $script_attributes, '');
-            }
-
-            //TODO: gibt es keine generische Funktion dafür?
-            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
-        } catch (Exception $e) {
-            $this->flash['error'] = $e->getMessage();
-            $this->render_action('_error');
-        }
-    }
-    
-    function manage_episodes_action(){
-        Navigation::activateItem('course/opencast/manager');
-        $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png');
-        
-        $this->set_title(_("Opencast Aufzeichnungen verwalten"));
-        
-
-        $this->course_id = $_SESSION['SessionSeminar'];
-        
-        $this->search_client = SearchClient::getInstance();
-        $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        // lets get all episodes for the connected series
-        // TODO take care of the visibilities
-        if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
-
-            $this->episode_ids = array();
-            $ids = array();
-            $count = 0;
-            $this->search_client = SearchClient::getInstance();
-            foreach($cseries as $serie) {
-                // $instances = $workflow_client->getInstances($serie['identifier']);
-                $this->episodes = $this->search_client->getEpisodes($serie['identifier']);
-            }
-        }
     }
 
 
@@ -361,16 +329,21 @@ class CourseController extends StudipController
         $this->course_id = Request::get('cid');
      
         $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
+        // if visibilty wasn't set before do so...
+        if(!$visible){
+            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
+            $visible['visible'] = 'true';
+        }
 
         if($visible['visible'] == 'true'){
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
            $this->flash['message'] = _("Episode wurde unsichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/manage_episodes'));
         } else {
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
            $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
-           $this->redirect(PluginEngine::getLink('opencast/course/manage_episodes'));
         }
+        
+        $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
     }
 
     function upload_action()

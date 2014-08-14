@@ -1,5 +1,3 @@
-
-
 OC = {
     formData : {},
     initAdmin : function(){
@@ -7,7 +5,6 @@ OC = {
             jQuery('#admin-accordion').accordion();
         });
     },
-    
     
     initSeries : function(){
         jQuery(document).ready(function(){
@@ -24,20 +21,16 @@ OC = {
         })
     },
     
-    initEpisodelist: function(){
+    initIndexpage: function(){
         jQuery( document ).ready(function() {
+            // Episode-List
             var height = jQuery('#episodes').height();
             jQuery('#episodes').slimScroll({
                 height: height,
                  alwaysVisible: false
             });
-        });
-
-    },
-    
-    initScheduler: function(){
-        jQuery( document ).ready(function() {
-            $("#upload_dialog").dialog({ autoOpen: false, width: 800 });
+            // Upload Dialog
+            jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800 });
             jQuery("#oc_upload_dialog").click(
                 function () {
                     jQuery("#upload_dialog").dialog('open');
@@ -45,6 +38,7 @@ OC = {
                 }
             );
         });
+
     },
     
     initUpload : function(maxChunk){
