@@ -1,6 +1,10 @@
 <? if (isset($this->flash['error'])): ?>
     <?= MessageBox::error($this->flash['error']) ?>
 <? endif ?>
+<? if($upload_message) :?>
+    <?= MessageBox::success(_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.')); ?>
+<? endif;?>
+
 <script language="JavaScript">
     OC.initIndexpage();
     OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);

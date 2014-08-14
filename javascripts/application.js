@@ -72,11 +72,12 @@ OC = {
                 },
                 progressall: function(e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
-                    $( "#progressbar" ).progressbar( "value", progress);
+                    jQuery( "#progressbar" ).progressbar( "value", progress);
                 },
                 done: function(e, data) {
-                    $( "#progressbar" ).progressbar('destroy');
-                    $("#upload_dialog").dialog("close");
+                    jQuery( "#progressbar" ).progressbar('destroy');
+                    jQuery("#upload_dialog").dialog("close");
+                    window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/ /true", '_self');
                 }
             });
             $('#recordDate').datepicker({

@@ -55,7 +55,7 @@ class CourseController extends StudipController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = '')
+    function index_action($active_id = '', $upload_message = '')
     {
         /*
          * Add some JS and CSS
@@ -69,6 +69,7 @@ class CourseController extends StudipController
         $this->set_layout($layout);
 
         $this->set_title(_("Opencast Player"));
+        $this->upload_message = $upload_message;
 
         // set layout for index page
         
