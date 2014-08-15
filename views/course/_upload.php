@@ -4,25 +4,25 @@ use Studip\Button,
 ?>
 <form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
     <label id="title" for="titleField">
-        <?= _('Titel') ?>:
+        <?= _('Titel') ?>
     </label>
     <br>
     <input type="text" maxlength="255" name="title" id="titleField" required>
     <br>
     <label id="creatorLabel" for="creator">
-        <span><?= _("Vortragende") ?></span>:
+        <span><?= _("Vortragende") ?></span>
     </label>
     <br>
     <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>" required>
     <br>
     <label id="recordingDateLabel" class="scheduler-label" for="recordDate">
-        <span><?= _('Aufnahmedatum') ?></span>:
+        <span><?= _('Aufnahmedatum') ?></span>
     </label>
     <br>
     <input type="text" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10" required>
     <br>
     <label id="startTimeLabel" for="startTimeHour">
-        <span><?= _('Startzeit') ?></span>:
+        <span><?= _('Startzeit') ?></span>
     </label>
     <select id="startTimeHour" name="startTimeHour">
         <?php for ($i = 0; $i <= 23; $i++): ?>
@@ -40,7 +40,7 @@ use Studip\Button,
     </select>
     :
     <select id="startTimeMin" name="startTimeMin">
-        <?php for ($i = 0; $i <= 60; $i++): ?>
+        <?php for ($i = 0; $i < 60; $i++): ?>
             <?php if ($i < 10) {
                 $in = '0' . $i;
             } else {
@@ -56,26 +56,26 @@ use Studip\Button,
     <br>
     <div style="display:none;">
     <label id="contributorLabel" for="contributor">
-        <span><?= _('Mitwirkende') ?></span>:
+        <span><?= _('Mitwirkende') ?></span>
     </label>
     <br>
-    <input type="text" maxlength="255" id="contributor" name="contributor">
+    <input type="text" maxlength="255" id="contributor" name="contributor" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
     <br>
     <label id="subjectLabel" for="subject">
-        <span><?= _('Thema') ?></span>:
+        <span><?= _('Thema') ?></span>
     </label>
     <br>
-    <input type="text" maxlength="255" id="subject" name="subject">
+    <input type="text" maxlength="255" id="subject" name="subject" value="Medienupload aus Stud.IP">
     <br>
     <label id="languageLabel" for="language">
-        <span><?= _('Sprache') ?></span>:
+        <span><?= _('Sprache') ?></span>
     </label>
     <br>
-    <input type="text" maxlength="255" id="language" name="language">
+    <input type="text" maxlength="255" id="language" name="language" value="<?='German'?>">
     <br>
     </div>
     <label id="descriptionLabel" for="description">
-        <span><?= _('Beschreibung') ?></span>:
+        <span><?= _('Beschreibung') ?></span>
     </label>
     <br>
     <textarea cols="50" rows="5" id="description" name="description"></textarea>

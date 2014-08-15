@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__FILE__). '/../models/OCModel.php';
 
 class OCUploadFile {
     private $name = '';
@@ -159,25 +160,51 @@ class OCUploadFile {
     }
     public function getEpisodeDC()
     {
-        //TODO: function steht so ähnlich auch in OCModel sollte vereinheitlicht werden 
         $data = $this->episodeData;
-        $content = array();
+ 
+        $creatition_time = new DateTime($data['recordDate'] . ' ' . $data['startTimeHour'].':'.$data['startTimeMin']);
+        $dc_values = array();
         
-        foreach($data as $key => $val)
+        foreach($data as $key => $value)
         {
-            $content[] = '<dcterms:'.$key.' xmlns="">'.$val.'</dcterms:'.$key.'>';
-            
+            switch ($key) {
+                case 'title':
+                   
+                    $dc_values['title'] = utf8_encode($value);
+                    break;
+                case 'creator':
+                    $dc_values['creator'] = utf8_encode($value);
+                    break;
+                case 'contributor':
+                    $dc_values['contributor'] = utf8_encode($value);
+                    break;
+                case 'subject':
+                    $dc_values['subject'] = utf8_encode($value);
+                    break;
+                case 'language':
+                    $dc_values['language'] = utf8_encode($value);
+                    break;
+                case 'description':
+                    $dc_values['description'] = utf8_encode($value);
+                    break;                    
+                default:
+                    break;
+            }            
         }
-        $str = '<?xml version="1.0"?>'
-                .'<dublincore '
-                .'xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
-                .'xmlns:dcterms="http://purl.org/dc/terms/" '
-                .'xmlns:dc="http://purl.org/dc/elements/1.1/" '
-                .'xmlns:oc="http://www.opencastproject.org/matterhorn">'
-                .  implode('', $content)
-                .'</dublincore>';
-       
-        return $str;
+        
+        $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                            <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . $dc_values['contributor'] . ']]></dcterms:contributor>
+                                <dcterms:subject><![CDATA[' . $dc_values['subject'] . ']]></dcterms:subject>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime($creatition_time->getTimestamp()) . '</dcterms:created>
+                                <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
+                                <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
+                                <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>
+                            </dublincore>';
+        
+
+        return $dublincore;
     }
     public function getJobID() 
     {

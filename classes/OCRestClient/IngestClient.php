@@ -38,8 +38,8 @@
         function addDCCatalog($mediaPackage, $dublinCore, $flavor)
         {
             $service_url = "/addDCCatalog";
-            $data = array('mediaPackage' => utf8_encode($mediaPackage),
-                    'dublinCore' => utf8_encode($dublinCore),
+            $data = array('mediaPackage' =>  utf8_encode($mediaPackage),
+                    'dublinCore' => $dublinCore,
                     'flavor' => $flavor);
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;
