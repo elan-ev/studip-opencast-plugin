@@ -43,7 +43,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 <? $active = $episode_ids[$active_id]?>
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
     <div class="oce_playercontainer">
-        <iframe src="https://<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
+        <iframe src="http://<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
         <div class="oce_emetadata">
             <h2 class="oce_title"><?= mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8')?></h2>
             <ul class="oce_contetlist">
@@ -78,7 +78,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
         <? foreach($episode_ids as $item) : ?>
         <li>
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-            <img class="oce_preview" src="<?=$item['preview']?>"></span>
+            <div class="<?=($item['visibility'] == false) ? 'hidden_ocvideodiv' : ''?>"><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
             <h3 class="oce_metadata"><?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?></h3>
             <span class="oce_metadata"><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
             </a>

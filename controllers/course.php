@@ -136,7 +136,8 @@ class CourseController extends StudipController
                                         'preview' => $preview,
                                         'presenter_download' => $presenter_download,
                                         'presentation_download' => $presentation_download,
-                                        'audio_download' => $audio_download
+                                        'audio_download' => $audio_download,
+                                        'visibility' => ($visibility['visible'] == 'true') ? true : false
                                     );
                                 }
                             }

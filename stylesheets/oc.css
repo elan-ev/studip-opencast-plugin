@@ -166,6 +166,15 @@
     display:block;
     padding-left: 125px;
 }
+
+.hidden_ocvideo {
+    opacity: 0.5;
+}
+
+.hidden_ocvideodiv:before{
+  content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
+}
+
 /***** Buttons ****/
 
 .button.ocextern,
