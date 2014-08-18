@@ -88,8 +88,8 @@ use Studip\Button,
     </div>
     <div id="upload_info">
     </div>
-    <div id="progressbarholder" style="overflow: hidden; padding-top: 5px; height: 30px; width:50%; margin: 0 auto;">
-        <div id="progressbar"></div>
+    <div id="progressbarholder">
+        <div id="progressbar"><div id='progressbar-label'></div></div>
     </div>
     <input type="hidden" value="" name="total_file_size" id="total_file_size" />
     <input type="hidden" value="" name="file_name" id="file_name" />

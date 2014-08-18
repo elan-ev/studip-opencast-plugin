@@ -175,6 +175,15 @@
   content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
 }
 
+
+/** upload dialog **/
+.ocUpload > .ui-widget-header {
+    background: #1e3e70;
+    border: 0;
+    font-size: 1.3em;
+    font-weight: normal;
+}
+
 /***** Buttons ****/
 
 .button.ocextern,
@@ -275,15 +284,32 @@
     text-indent: 1ex;
 }
 
-
-.oc_mediaupload_progressbar {
-    border: 1px solid #24437c;
+.progressbarholder {
+    overflow: hidden;
+    padding: 5px 0;
+    width: 80%;
+    margin: 0 auto;
 }
 
-.oc_mediaupload_progressbar > .ui-progressbar-value {
-    background: #24437c !important;
+
+#progressbar {
+    display:none;
+    border: thin solid lightgrey;
 }
 
+#progressbar > div.ui-progressbar-value {
+    background-color: #899ab9 !important;
+    border-color: #899ab9;
+}
+
+#progressbar-label {
+    color: white;
+    float: left;
+    height: 100%;
+    float: left;
+    margin-left: 50%;
+    margin-top: 5px;
+}
 
 
 

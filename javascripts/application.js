@@ -30,7 +30,7 @@ OC = {
                  alwaysVisible: false
             });
             // Upload Dialog
-            jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800 });
+            jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
             jQuery("#oc_upload_dialog").click(
                 function () {
                     jQuery("#upload_dialog").dialog('open');
@@ -68,11 +68,13 @@ OC = {
                 submit: function (e, data) {
                     $( "#progressbar" ).progressbar({
                         value: 0
-                    }).addClass('oc_mediaupload_progressbar');
+                    }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});;
+                    
                 },
                 progressall: function(e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
                     jQuery( "#progressbar" ).progressbar( "value", progress);
+                    jQuery("#progressbar-label").text(progress + " %");
                 },
                 done: function(e, data) {
                     jQuery( "#progressbar" ).progressbar('destroy');
