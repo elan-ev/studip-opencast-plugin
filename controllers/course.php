@@ -137,7 +137,7 @@ class CourseController extends StudipController
                                         'presenter_download' => $presenter_download,
                                         'presentation_download' => $presentation_download,
                                         'audio_download' => $audio_download,
-                                        'visibility' => ($visibility['visible'] == 'true') ? true : false
+                                        'visibility' => ($visibility['visible'] == 'false') ? false : true
                                     );
                                 }
                             }
@@ -157,6 +157,14 @@ class CourseController extends StudipController
                 $engage_url =  parse_url($this->search_client->getBaseURL());
                 
                 $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                // check wether server supports ssl
+                $embed_headers = @get_headers("https://". $this->embed);
+                if($embed_headers) {
+                    $this->embed = "https://". $this->embed;
+                } else {
+                    $this->embed = "http://". $this->embed;
+                }
+                
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
             
