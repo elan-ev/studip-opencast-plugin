@@ -261,7 +261,7 @@ class OCModel
         $contributor = $instructor['fullname'];
         $creator = $inst_data['name'];
 
-        $language = 'German';
+        $language = 'de';
 
 
         $xml = '<?xml version="1.0"?>
@@ -345,7 +345,7 @@ class OCModel
         $description = $issue->description;
         $device = $ca['capture_agent'];
 
-        $language = "German";
+        $language = "de";
         $licence = "All Rights Reserved";
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];

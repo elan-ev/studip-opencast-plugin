@@ -281,7 +281,7 @@ class OCSeriesModel {
         $instructor = array_shift($instructors);
         $contributor = $GLOBALS['UNI_NAME_CLEAN'];
         $creator = $instructor['fullname'];
-        $language = 'German';
+        $language = 'de';
 
         $data = array(
             'title' => $name,

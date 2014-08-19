@@ -71,7 +71,7 @@ use Studip\Button,
         <span><?= _('Sprache') ?></span>
     </label>
     <br>
-    <input type="text" maxlength="255" id="language" name="language" value="<?='German'?>">
+    <input type="text" maxlength="255" id="language" name="language" value="<?='de'?>">
     <br>
     </div>
     <label id="descriptionLabel" for="description">
