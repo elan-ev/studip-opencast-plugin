@@ -84,6 +84,17 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             </a>
         </li>
         <? endforeach; ?>
+        <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
+            <? foreach($states as $workflow_id => $state) :?>
+            <li class="uploaded">
+                <a>
+                <div ><img class="oce_preview" src="<?=$uploadprogresspic?>"></div>
+                <h3 class="oce_metadata"><?= mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8')?></h3>
+                <span class="oce_metadata"><?=sprintf(_("Hochgeladen %s hat den Zustand %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)), $state->state)?></span>
+                </a>
+            </li>    
+            <? endforeach;?>
+        <? endif;?>
     </ul>
     </div>
 <? else: ?>

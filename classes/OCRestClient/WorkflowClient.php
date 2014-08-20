@@ -4,6 +4,7 @@
     {
         static $me;
         function __construct() {
+            $this->serviceName = 'WorkflowClient';
             if ($config = parent::getConfig('workflow')) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
@@ -11,6 +12,20 @@
             } else {
                 throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
             }
+        }
+        
+        /**
+         * getWorkflowInstance - Get a specific workflow instance
+         *
+         * @param $id The workflow instance identifier
+         * 
+         * @return $result A JSON representation of a workflow instance
+         */
+        function getWorkflowInstance($id) {
+            $service_url = "/instance/" . $id . ".json";
+            if($result = $this->getJSON($service_url)){
+                return $result->workflow;
+            } else return false;
         }
         
         /**
@@ -32,9 +47,4 @@
     
     
     }
-
-    
 ?>
-
-
-

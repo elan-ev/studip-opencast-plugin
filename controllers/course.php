@@ -64,6 +64,7 @@ class CourseController extends StudipController
         $script_attributes = array(
             'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.slimscroll.min.js');
         PageLayout::addHeadElement('script', $script_attributes, '');
+        $this->course_id = $_SESSION['SessionSeminar'];
        
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
@@ -77,18 +78,25 @@ class CourseController extends StudipController
 
             $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
             $this->set_layout($layout);
+        } else {
+            $this->workflow_client = WorkflowClient::getInstance();
+            $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+            $this->states = array();
+            $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
+            if(!empty($workflow_ids)){
+                foreach($workflow_ids as $workflow_id) {
+                    $this->states[$workflow_id['workflow_id']] = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
+                }
+            }
         }
 
-        
-        $this->placeholder_prev=  $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/placeholder-prev.jpg';
-  
+     
         Navigation::activateItem('course/opencast/overview');
         try {
             $this->search_client = SearchClient::getInstance();
             if (isset($this->flash['message'])) {
                 $this->message = $this->flash['message'];
             }
-            $this->course_id = $_SESSION['SessionSeminar'];
 
             // lets get all episodes for the connected series
             if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {

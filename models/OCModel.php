@@ -441,7 +441,7 @@ class OCModel
     }
     
     static function getWorkflowIDsforCourse($seminar_id) {
-        $stmt = DBManager::get()->prepare("SELECT `workflow_id` FROM oc_seminar_workflows WHERE `seminar_id` = ?");
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows WHERE `seminar_id` = ?");
         $stmt->execute(array($seminar_id));
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
