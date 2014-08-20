@@ -432,5 +432,19 @@ class OCModel
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id) {
+        $stmt = DBManager::get()->prepare("INSERT INTO
+                oc_seminar_workflows (workflow_id,seminar_id, user_id)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($workflow_id, $seminar_id, $user_id));
+    }
+    
+    static function getWorkflowIDsforCourse($seminar_id) {
+        $stmt = DBManager::get()->prepare("SELECT `workflow_id` FROM oc_seminar_workflows WHERE `seminar_id` = ?");
+        $stmt->execute(array($seminar_id));
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

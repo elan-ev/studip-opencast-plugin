@@ -79,6 +79,14 @@ class UploadController extends StudipController
         }
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
+           
+            $simplexml = simplexml_load_string($content);
+            $json = json_encode($simplexml);
+            $x = json_decode($json, true);
+            $result = $x['@attributes'];
+            
+            OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid']);
+            
             $this->file->clearSession();
             //echo 'Ingest Started: '.htmlentities($content);
         } else echo 'upload failed';
