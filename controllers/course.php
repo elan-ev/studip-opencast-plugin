@@ -85,7 +85,10 @@ class CourseController extends StudipController
             $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
-                    $this->states[$workflow_id['workflow_id']] = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
+                    $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
+                    if($resp->state == 'SUCCEEDED') {
+                        OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $this->course_id);
+                    } else $this->states[$workflow_id['workflow_id']] = $resp;
                 }
             }
         }

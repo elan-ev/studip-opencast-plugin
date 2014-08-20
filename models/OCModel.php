@@ -446,5 +446,13 @@ class OCModel
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    static function removeWorkflowIDforCourse($workflow_id, $seminar_id){
+        $stmt = DBManager::get()->prepare("DELETE FROM
+                 oc_seminar_workflows 
+                 WHERE `seminar_id` = ? AND `workflow_id`= ?");
+         return $stmt->execute(array($seminar_id, $workflow_id));
+        
+    }
 }
 ?>
