@@ -87,11 +87,13 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             <? endforeach;?>
         <? endif;?>
         <? foreach($episode_ids as $item) : ?>
-        <li>
-            <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">  
-            <div class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?>"><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
-            <h3 class="oce_metadata"><?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?></h3>
-            <span class="oce_metadata"><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+        <li class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?>">
+            <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
+            <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
+            <div class="oce_metadatacontainer">
+                <h3 class="oce_metadata"><?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
+                <span><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+            </div>
             </a>
         </li>
         <? endforeach; ?>

@@ -55,7 +55,7 @@ class CourseController extends StudipController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = '', $upload_message = '')
+    function index_action($active_id = 'false', $upload_message = '')
     {
         /*
          * Add some JS and CSS
@@ -155,7 +155,7 @@ class CourseController extends StudipController
                         }
                     }
             }
-            if(isset($active_id) && $active_id != "false") {
+            if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->episode_ids)){
                 $x = $this->episode_ids;

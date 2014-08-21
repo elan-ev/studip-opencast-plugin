@@ -166,19 +166,23 @@
     top: 27px;
 }
 
-
-.oce_metadata {
+.oce_metadatacontainer {
     display:block;
     padding-left: 125px;
+}
+
+.oce_metadata {
+    top: -10px;
+    position: relative;
 }
 
 .hidden_ocvideo {
     opacity: 0.5;
 }
 
-.hidden_ocvideodiv:before{
+/*.hidden_ocvideodiv:before{
   content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
-}
+}*/
 
 
 /** upload dialog **/
