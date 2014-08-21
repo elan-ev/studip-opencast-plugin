@@ -77,7 +77,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     <ul class="oce_list">
         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
             <? foreach($states as $workflow_id => $state) :?>
-            <li class="uploaded">
+            <li class="uploaded oce_item">
                 <a>
                 <div ><img class="oce_preview oce_inprogress" src="<?=$uploadprogresspic?>"></div>
                 <h3 class="oce_metadata"><?= mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8')?></h3>
@@ -87,7 +87,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             <? endforeach;?>
         <? endif;?>
         <? foreach($episode_ids as $item) : ?>
-        <li class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?>">
+        <li class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item">
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
             <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
             <div class="oce_metadatacontainer">

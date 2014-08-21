@@ -176,6 +176,10 @@
     position: relative;
 }
 
+.oce_item:hover{
+    background-color: #F3F5F4;
+}
+
 .hidden_ocvideo {
     opacity: 0.5;
 }
