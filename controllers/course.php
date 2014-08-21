@@ -155,7 +155,7 @@ class CourseController extends StudipController
                         }
                     }
             }
-            if($active_id) {
+            if(isset($active_id) && $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->episode_ids)){
                 $x = $this->episode_ids;

@@ -79,7 +79,7 @@ OC = {
                 done: function(e, data) {
                     jQuery( "#progressbar" ).progressbar('destroy');
                     jQuery("#upload_dialog").dialog("close");
-                    window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/ /true", '_self');
+                    window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false/true", '_self');
                 }
             });
             $('#recordDate').datepicker({

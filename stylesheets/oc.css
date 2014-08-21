@@ -155,10 +155,15 @@
 .oce_preview {
     position: absolute;
     left: 0;
-    top: auto;
+    top: 8px;
     max-height: 96px;
     max-width: 120px;
 
+}
+
+.oce_inprogress {
+    left: 17px;
+    top: 27px;
 }
 
 
