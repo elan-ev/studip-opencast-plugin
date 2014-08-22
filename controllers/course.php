@@ -107,6 +107,7 @@ class CourseController extends StudipController
                 $this->episode_ids = array();
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
+                $positions = OCModel::getCoursePositions($this->course_id);
 
                     foreach($cseries as $serie) {
                         $series = $this->search_client->getEpisodes($serie['identifier']);
@@ -155,10 +156,25 @@ class CourseController extends StudipController
                         }
                     }
             }
+            
+            // do something wihth the positioning
+            $this->ordered_episode_ids = array();
+            foreach($positions as $position) {
+                if(isset($this->episode_ids[$position['episode_id']])){
+                     $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
+                     unset($this->episode_ids[$position['episode_id']]);
+                }
+            }
+            if(!empty($this->episode_ids)){
+                foreach($this->episode_ids as $episode) {
+                    array_unshift($this->ordered_episode_ids, $episode);
+                }
+            }
+
             if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->episode_ids)){
-                $x = $this->episode_ids;
+                $x = $this->ordered_episode_ids;
                 $first = array_shift($x);
                 $this->active_id = $first['id'];
             }

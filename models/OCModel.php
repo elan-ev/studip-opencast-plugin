@@ -454,5 +454,19 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
         
     }
+    
+    static function setCoursePositionForEpisode($episode_id, $pos, $course_id) {
+        $stmt = DBManager::get()->prepare("REPLACE INTO
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $pos));
+    }
+    
+    static function getCoursePositions($course_id){
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
+        $stmt->execute(array($course_id));
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

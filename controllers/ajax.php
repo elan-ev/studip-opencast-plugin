@@ -58,4 +58,9 @@ class AjaxController extends StudipController
         
     }
     
+    function setEpisodeOrderForCourse_action($episode_id, $pos, $course_id) {
+        OCModel::setCoursePositionForEpisode($episode_id, $pos, $course_id);
+        $this->render_nothing();
+    }
+    
 }

@@ -37,6 +37,16 @@ OC = {
                     return false;
                 }
             );
+            
+            jQuery( "#oce_sortablelist" ).sortable({
+                items: '> li:not(.uploaded)',
+                stop: function( event, ui ) {
+                    jQuery( "ul#oce_sortablelist li" ).each(function(index){
+                        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrderForCourse/" + jQuery( this ).attr('id') +"/"+ index +"/"+ jQuery( this ).data('courseid')).done(function(data) {});
+                    });
+                }
+            });
+            jQuery( "#oce_sortablelist" ).disableSelection();
         });
 
     },

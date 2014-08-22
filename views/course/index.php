@@ -38,9 +38,15 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 <h1>
   <?= _('Vorlesungsaufzeichnungen') ?>
 </h1>
-<? if(!(empty($episode_ids))) : ?>
+<? if(!(empty($ordered_episode_ids))) : ?>
 
-<? $active = $episode_ids[$active_id]?>
+<? foreach($ordered_episode_ids as $oe) :?>
+    <? if($oe['id'] == $active_id) :?>
+         <? $active = $oe;?>
+    <? endif;?>
+<? endforeach;?>
+
+
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
     <div class="oce_playercontainer">
         <iframe src="<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
@@ -74,7 +80,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     </div>
     
     <div id="episodes">
-    <ul class="oce_list">
+    <ul class="oce_list" <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?> >
         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
             <? foreach($states as $workflow_id => $state) :?>
             <li class="uploaded oce_item">
@@ -86,8 +92,8 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             </li>    
             <? endforeach;?>
         <? endif;?>
-        <? foreach($episode_ids as $item) : ?>
-        <li class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item">
+        <? foreach($ordered_episode_ids as $pos => $item) : ?>
+        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item" data-courseId="<?=$course_id?>" >
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
             <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
             <div class="oce_metadatacontainer">

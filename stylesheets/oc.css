@@ -184,6 +184,10 @@
     opacity: 0.5;
 }
 
+#oce_sortablelist  > li {
+    cursor:move;
+}
+
 /*.hidden_ocvideodiv:before{
   content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
 }*/
