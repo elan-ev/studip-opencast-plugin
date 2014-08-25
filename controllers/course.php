@@ -161,6 +161,7 @@ class CourseController extends StudipController
             $this->ordered_episode_ids = array();
             foreach($positions as $position) {
                 if(isset($this->episode_ids[$position['episode_id']])){
+                     $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
                      $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
                      unset($this->episode_ids[$position['episode_id']]);
                 }
@@ -362,21 +363,21 @@ class CourseController extends StudipController
         }
     }
 
-    function toggle_visibility_action($episode_id) {
+    function toggle_visibility_action($episode_id, $position) {
         $this->course_id = Request::get('cid');
      
         $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
         // if visibilty wasn't set before do so...
         if(!$visible){
-            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
+            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
             $visible['visible'] = 'true';
         }
 
         if($visible['visible'] == 'true'){
-           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
+           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
            $this->flash['message'] = _("Episode wurde unsichtbar geschaltet");
         } else {
-           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
+           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
            $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
         }
         

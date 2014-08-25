@@ -394,11 +394,11 @@ class OCModel
 
     }
 
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility, $position) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (seminar_id, episode_id, visible)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $visibility));
+                oc_seminar_episodes (seminar_id, episode_id, visible, position)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $visibility, $position));
     }
 
     static function getVisibilityForEpisode($course_id, $episode_id) {
@@ -455,11 +455,11 @@ class OCModel
         
     }
     
-    static function setCoursePositionForEpisode($episode_id, $pos, $course_id) {
+    static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $pos));
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $pos, $visibility));
     }
     
     static function getCoursePositions($course_id){

@@ -41,9 +41,17 @@ OC = {
             jQuery( "#oce_sortablelist" ).sortable({
                 items: '> li:not(.uploaded)',
                 stop: function( event, ui ) {
+                    var items = [];
                     jQuery( "ul#oce_sortablelist li" ).each(function(index){
-                        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrderForCourse/" + jQuery( this ).attr('id') +"/"+ index +"/"+ jQuery( this ).data('courseid')).done(function(data) {});
+                        items.push({
+                            'episode_id' : jQuery( this ).attr('id'),
+                            'position' :  index,
+                            'course_id' : jQuery( this ).data('courseid'),
+                            'visibility' : jQuery( this ).data('visibility')
+                        });
                     });
+                    jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
+                        { "positions": items });
                 }
             });
             jQuery( "#oce_sortablelist" ).disableSelection();

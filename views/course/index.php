@@ -68,9 +68,9 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
                 <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                 <div class="button-group">
                     <? if ($visible && $visible['visible'] == 'false') : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id), array('class' => 'ocinvisible ocspecial')); ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial')); ?>
                     <? else : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id), array('class' => 'ocvisible ocspecial')); ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial')); ?>
                     <? endif; ?>
                    
                 </div>
@@ -93,7 +93,8 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             <? endforeach;?>
         <? endif;?>
         <? foreach($ordered_episode_ids as $pos => $item) : ?>
-        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item" data-courseId="<?=$course_id?>" >
+        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item" 
+            data-courseId="<?=$course_id?>" data-visibility="<?=var_export($item['visibility'], true)?>">
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
             <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
             <div class="oce_metadatacontainer">
