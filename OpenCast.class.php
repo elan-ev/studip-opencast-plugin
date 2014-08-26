@@ -52,12 +52,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             Navigation::addItem('/admin/config/oc-config', $config);
             Navigation::addItem('/admin/config/oc-resources', $resources);
             
-            if($perm->have_perm('root')){
-                $endpoints = new Navigation('OC Endpoints');
-                $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
-                $main->addSubNavigation('oc-endpoints', $endpoints);
-                Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
-            }
+            // for debug purposes
+            //if($perm->have_perm('root')){
+            //    $endpoints = new Navigation('OC Endpoints');
+            //    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
+            //    $main->addSubNavigation('oc-endpoints', $endpoints);
+            //    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
+            //}
         }
    
 
@@ -196,12 +197,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
     /**
-     * return a list of ContentElement-objects, conatinging
+     * return a list of ContentElement-objects, containing
      * everything new in this module
      *
      * @param  string   $course_id   the course-id to get the new stuff for
      * @param  int      $last_visit  when was the last time the user visited this module
-     * @param  string   $user_id     the user to get the notifcation-objects for
+     * @param  string   $user_id     the user to get the notification-objects for
      *
      * @return array an array of ContentElement-objects
      */

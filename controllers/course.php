@@ -36,9 +36,7 @@ class CourseController extends StudipController
         PageLayout::setTitle($page_title);
     }
     
-    
-    
-    
+
     /**
      * Common code for all actions: set default layout and page title.
      */
@@ -61,9 +59,11 @@ class CourseController extends StudipController
          * Add some JS and CSS
          *
          */
-        $script_attributes = array(
-            'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . $this->pluginpath . '/vendor/jquery.slimscroll.min.js');
-        PageLayout::addHeadElement('script', $script_attributes, '');
+
+        $plugin_path = '../../' . $this->dispatcher->trails_root;
+        PageLayout::addScript($plugin_path . '/vendor/jquery.simplePagination.js');
+        PageLayout::addStylesheet($plugin_path . '/vendor/simplePagination.css'); 
+        
         $this->course_id = $_SESSION['SessionSeminar'];
        
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -73,7 +73,6 @@ class CourseController extends StudipController
         $this->upload_message = $upload_message;
 
         // set layout for index page
-        
         if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 
             $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -157,7 +156,6 @@ class CourseController extends StudipController
                     }
             }
             
-            // do something wihth the positioning
             $this->ordered_episode_ids = array();
             foreach($positions as $position) {
                 if(isset($this->episode_ids[$position['episode_id']])){
@@ -185,19 +183,17 @@ class CourseController extends StudipController
                 $engage_url =  parse_url($this->search_client->getBaseURL());
                 
                 $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
-                // check wether server supports ssl
+                // check whether server supports ssl
                 $embed_headers = @get_headers("https://". $this->embed);
                 if($embed_headers) {
                     $this->embed = "https://". $this->embed;
                 } else {
                     $this->embed = "http://". $this->embed;
                 }
-                
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
             
             // Upload-Dialog
-            
             $this->date = date('Y-m-d');
             $this->hour = date('H');
             $this->minute = date('i');
@@ -212,16 +208,12 @@ class CourseController extends StudipController
                 '/vendor/jquery.fileupload.js',
                 '/vendor/jquery.ui.widget.js'
             );
-
+            
             foreach($scripts as $path) {
                 $script_attributes = array(
                     'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
-
-            //TODO: gibt es keine generische Funktion dafür?
-            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
-            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');

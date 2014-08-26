@@ -23,13 +23,26 @@ OC = {
     
     initIndexpage: function(){
         jQuery( document ).ready(function() {
-            // Episode-List
-            var height = jQuery('#episodes').height();
-            jQuery('#episodes').slimScroll({
-                height: height,
-                 alwaysVisible: false
-            });
-            // Upload Dialog
+  
+            var items = jQuery(".oce_list li");
+            var numItems = items.size();
+            var perPage = 20;
+            if(numItems > perPage) {
+                items.slice(perPage).hide();
+                jQuery('#oce_pagination').pagination({
+                        items: numItems,
+                        itemsOnPage: perPage,
+                        cssStyle: 'light-theme',
+                        prevText: 'Vorherige',
+                        nextText: 'Nächste',
+                        onPageClick: function(pageNumber) {
+                            var showFrom = perPage * (pageNumber - 1);
+                            var showTo = showFrom + perPage;
+                            items.hide().slice(showFrom, showTo).show();
+                        }
+                });
+             }
+             // Upload Dialog
             jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
             jQuery("#oc_upload_dialog").click(
                 function () {

@@ -107,6 +107,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
         </li>
         <? endforeach; ?>
     </ul>
+    <div id="oce_pagination"></div>
     </div>
 <? else: ?>
     <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
