@@ -196,7 +196,7 @@
 
 
 /** upload dialog **/
-.ocUpload > .ui-widget-header {
+.ocUpload > .ui-widget-header,.ocConfig > .ui-widget-header  {
     background: #1e3e70;
     border: 0;
     font-size: 1.3em;

@@ -12,10 +12,14 @@
 
 <?
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
-    $aktionen = array();
-    $aktionen[] = array(
-                  "icon" => "icons/16/black/upload.png",
-                  "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
+    $aktionen = array(array(
+                      "icon" => "icons/16/black/admin.png",
+                      "text" => '<a id="oc_config_dialog"href="#">' . _("Konfiguration") . '</a>'),
+                    array(
+                      "icon" => "icons/16/black/upload.png",
+                      "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>')
+
+                  );
 
     $infobox_content = array(array(
         'kategorie' => _('Hinweise:'),
@@ -113,6 +117,14 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
 <? endif; ?>
 
+
+<? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+
 <div id="upload_dialog" title="<?=_("Medienupload")?>">
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates)) ?>
 </div>
+
+<div id="config_dialog" title="<?=_("Kurseinstellungen")?>">
+    <?= $this->render_partial("course/_config", array()) ?>
+</div>
+<? endif;?>

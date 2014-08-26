@@ -155,29 +155,31 @@ class CourseController extends StudipController
                         }
                     }
             }
+            if($positions) {
+                $this->ordered_episode_ids = array();
+                foreach($positions as $position) {
+                    if(isset($this->episode_ids[$position['episode_id']])){
+                         $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
+                         $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
+                         unset($this->episode_ids[$position['episode_id']]);
+                    }
+                }
+                if(!empty($this->episode_ids)){
+                    foreach($this->episode_ids as $episode) {
+                        array_unshift($this->ordered_episode_ids, $episode);
+                    }
+                }
+            }
             
-            $this->ordered_episode_ids = array();
-            foreach($positions as $position) {
-                if(isset($this->episode_ids[$position['episode_id']])){
-                     $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
-                     $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
-                     unset($this->episode_ids[$position['episode_id']]);
-                }
-            }
-            if(!empty($this->episode_ids)){
-                foreach($this->episode_ids as $episode) {
-                    array_unshift($this->ordered_episode_ids, $episode);
-                }
-            }
-
             if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->episode_ids)){
-                $x = $this->ordered_episode_ids;
+                if($positions) {
+                    $x = $this->ordered_episode_ids;
+                } else $x = $this->episode_ids;
                 $first = array_shift($x);
                 $this->active_id = $first['id'];
             }
-
 
             if($count > 0) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
@@ -214,6 +216,11 @@ class CourseController extends StudipController
                     'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
+            
+            // Config-Dialog
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
@@ -246,7 +253,7 @@ class CourseController extends StudipController
             OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
         $this->flash['message'] = _("Änderungen wurden erfolgreich übernommen");
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
     
     function remove_series_action($course_id, $series_id)
@@ -262,7 +269,7 @@ class CourseController extends StudipController
         */
         
         $this->flash['message'] = _("Zuordnung wurde entfernt");
-        $this->redirect(PluginEngine::getLink('opencast/course/config'));
+        $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
 
 

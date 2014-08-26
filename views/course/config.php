@@ -1,3 +1,5 @@
+<!-- TODO: DELETE THIS TEMPLATE -->
+
 <? if (isset($this->flash['error'])): ?>
     <?= MessageBox::error($this->flash['error']) ?>
 <? endif ?>

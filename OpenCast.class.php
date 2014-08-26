@@ -173,8 +173,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
         $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
 
-        $admin = new Navigation('Einstellungen');
-        $admin->setURL(PluginEngine::getURL('opencast/course/config'));
+
         $overview = new Navigation('Aufzeichnungen');
         $overview->setURL(PluginEngine::getURL('opencast/course/index'));
 
@@ -184,13 +183,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main->addSubNavigation('overview', $overview);
 
 
-        if ($GLOBALS['perm']->have_studip_perm('admin', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
             if($series_metadata[0]['schedule'] == '1'){
                 $main->addSubNavigation('scheduler', $scheduler);
             }
-            $main->addSubNavigation('config', $admin);
-
         }
 
         return array('opencast' => $main);

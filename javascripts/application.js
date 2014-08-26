@@ -51,6 +51,25 @@ OC = {
                 }
             );
             
+            // Config Dialog
+            jQuery("#config_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocConfig'});
+            jQuery("#oc_config_dialog").click(
+                function () {
+                    jQuery("#config_dialog").dialog('open');
+                    if( jQuery('#select-series').data("unconnected") !== 1 ) {
+                        jQuery('.series_select').attr("disabled", true);
+                        jQuery('.form_submit').children().attr("disabled", true);
+                        $('#admin-accordion').accordion({ active: 1,
+                                                          autoHeight: false,
+                                                          clearStyle: true });
+                    } else {
+                        jQuery('#admin-accordion').accordion({autoHeight: false,
+                                                              clearStyle: true });
+                    }
+                    return false;
+                }
+            );
+            
             jQuery( "#oce_sortablelist" ).sortable({
                 items: '> li:not(.uploaded)',
                 stop: function( event, ui ) {

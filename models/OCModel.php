@@ -465,7 +465,7 @@ class OCModel
     static function getCoursePositions($course_id){
         $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
         $stmt->execute(array($course_id));
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
