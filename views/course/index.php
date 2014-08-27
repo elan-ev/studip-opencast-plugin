@@ -12,12 +12,16 @@
 
 <?
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+    $upload = '';
+    if (!empty($this->connectedSeries)){
+        $upload = array(
+                          "icon" => "icons/16/black/upload.png",
+                          "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
+    }
+
     $aktionen = array(array(
                       "icon" => "icons/16/black/admin.png",
-                      "text" => '<a id="oc_config_dialog"href="#">' . _("Konfiguration") . '</a>'),
-                    array(
-                      "icon" => "icons/16/black/upload.png",
-                      "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>')
+                      "text" => '<a id="oc_config_dialog"href="#">' . _("Konfiguration") . '</a>'), $upload
 
                   );
 

@@ -203,6 +203,12 @@
     font-weight: normal;
 }
 
+.oc_config_infotext{
+    text-align: left;
+    padding: 1em;
+    display: block;
+}
+
 /***** Buttons ****/
 
 .button.ocextern,

@@ -5,22 +5,6 @@ OC = {
             jQuery('#admin-accordion').accordion();
         });
     },
-    
-    initSeries : function(){
-        jQuery(document).ready(function(){
-            if( jQuery('#select-series').data("unconnected") !== 1 ) {
-                jQuery('.series_select').attr("disabled", true);
-                jQuery('.form_submit').children().attr("disabled", true);
-                $('#admin-accordion').accordion({ active: 1,
-                                                  autoHeight: false,
-                                                  clearStyle: true });
-            } else {
-                jQuery('#admin-accordion').accordion({autoHeight: false,
-                                                      clearStyle: true });
-            }
-        })
-    },
-    
     initIndexpage: function(){
         jQuery( document ).ready(function() {
   
@@ -58,8 +42,8 @@ OC = {
                     jQuery("#config_dialog").dialog('open');
                     if( jQuery('#select-series').data("unconnected") !== 1 ) {
                         jQuery('.series_select').attr("disabled", true);
-                        jQuery('.form_submit').children().attr("disabled", true);
-                        $('#admin-accordion').accordion({ active: 1,
+                        jQuery('.form_submit.change_series').children().attr("disabled", true);
+                        $('#admin-accordion').accordion({ active: 0,
                                                           autoHeight: false,
                                                           clearStyle: true });
                     } else {
