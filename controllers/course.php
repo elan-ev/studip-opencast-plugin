@@ -55,15 +55,6 @@ class CourseController extends StudipController
      */
     function index_action($active_id = 'false', $upload_message = '')
     {
-        /*
-         * Add some JS and CSS
-         *
-         */
-
-        $plugin_path = '../../' . $this->dispatcher->trails_root;
-        PageLayout::addScript($plugin_path . '/vendor/jquery.simplePagination.js');
-        PageLayout::addStylesheet($plugin_path . '/vendor/simplePagination.css'); 
-        
         $this->course_id = $_SESSION['SessionSeminar'];
        
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -169,6 +160,8 @@ class CourseController extends StudipController
                         array_unshift($this->ordered_episode_ids, $episode);
                     }
                 }
+            } else {
+                $this->ordered_episode_ids = $this->episode_ids;
             }
             
             if(empty($active_id) || $active_id != "false") {
@@ -205,17 +198,6 @@ class CourseController extends StudipController
             IngestClient::getInstance()->checkService();
             MediaPackageClient::getInstance()->checkService();
             SeriesClient::getInstance()->checkService();
-            
-            $scripts = array(
-                '/vendor/jquery.fileupload.js',
-                '/vendor/jquery.ui.widget.js'
-            );
-            
-            foreach($scripts as $path) {
-                $script_attributes = array(
-                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
-                PageLayout::addHeadElement('script', $script_attributes, '');
-            }
             
             // Config-Dialog
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);

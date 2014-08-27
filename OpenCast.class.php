@@ -64,10 +64,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/oc.css');
         PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+        PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.simplePagination.js');
+        PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/simplePagination.css'); 
         
         if($perm->have_perm('dozent')){
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
-            PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css'); 
+            PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
+            PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.fileupload.js');
+            PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.ui.widget.js');
+           
         }
         
         StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
