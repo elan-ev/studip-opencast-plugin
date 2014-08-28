@@ -5,13 +5,16 @@
         static $me;
         public $serviceName = 'Search';
         function __construct() {
+            try {
+                if ($config = parent::getConfig('search')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
 
-            if ($config = parent::getConfig('search')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Searchservice Konfiguration wurde nicht im gültigen Format angegeben."));
             }
         }
 

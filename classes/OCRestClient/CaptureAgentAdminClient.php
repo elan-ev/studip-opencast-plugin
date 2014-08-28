@@ -5,12 +5,16 @@
         static $me;
         function __construct() {
             $this->serviceName = 'CaptureAgentAdminClient';
-            if ($config = parent::getConfig('capture-admin')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Capture-Agent-Adminservice Konfiguration wurde nicht im gültigen Format angegeben."));
+            try {
+                if ($config = parent::getConfig('capture-admin')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
+
             }
         }
 

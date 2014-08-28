@@ -10,12 +10,17 @@
         static $me;
         public $serviceName = 'Series';
         function __construct() {
-            if ($config = parent::getConfig('series')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Seriesservice Konfiguration wurde nicht im gültigen Format angegeben."));
+            try {
+                if ($config = parent::getConfig('series')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                    $fine = true;
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
+
             }
         }
 
@@ -43,7 +48,9 @@
         // todo
         function getOneSeries($seriesID)
         {
-            return $this->getJSON('/'.$seriesID. '.json');
+            if($this->fine) {
+                return $this->getJSON('/'.$seriesID. '.json');
+            } return false;
         }
 
         /**

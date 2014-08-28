@@ -6,12 +6,16 @@
         static $me;
         function __construct() {
             $this->serviceName = 'SchedulerClient';
-            if ($config = parent::getConfig('recordings')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Schedulerservice Konfiguration wurde nicht im gültigen Format angegeben."));
+            try {
+                if ($config = parent::getConfig('recordings')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
+
             }
         }
 

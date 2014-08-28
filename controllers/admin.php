@@ -85,22 +85,25 @@ class AdminController extends AuthenticatedController
 
 
         $comp = $services_client->getRESTComponents();
-        
-        $services = OCModel::retrieveRESTservices($comp);
+        if($comp) {
+            $services = OCModel::retrieveRESTservices($comp);
 
 
-        foreach($services as $service_url => $service_type) {
+            foreach($services as $service_url => $service_type) {
 
-            $service_comp = explode("/", $service_url);
+                $service_comp = explode("/", $service_url);
             
-            if(sizeof($service_comp) == 2) {
-                if($service_comp)
-                OCEndpointModel::setEndpoint($service_comp[0], $service_type);
-            }   
+                if(sizeof($service_comp) == 2) {
+                    if($service_comp)
+                    OCEndpointModel::setEndpoint($service_comp[0], $service_type);
+                }   
+            }
+
+
+            $this->flash['success'] = sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+        } else {
+            $this->flash['error'] = _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.');
         }
-
-
-        $success = _("Änderungen wurden erfolgreich übernommen.");
 
         $this->redirect(PluginEngine::getLink('opencast/admin/config'));
     }

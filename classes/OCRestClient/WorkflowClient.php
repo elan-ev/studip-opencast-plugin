@@ -5,12 +5,16 @@
         static $me;
         function __construct() {
             $this->serviceName = 'WorkflowClient';
-            if ($config = parent::getConfig('workflow')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            try {
+                if ($config = parent::getConfig('workflow')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
+
             }
         }
         

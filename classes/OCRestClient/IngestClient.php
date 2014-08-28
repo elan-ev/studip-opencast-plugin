@@ -5,12 +5,16 @@
         static $me;
         function __construct() {
             $this->serviceName = 'IngestClient';
-            if ($config = parent::getConfig('ingest')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Ingestservice Konfiguration wurde nicht im gültigen Format angegeben."));
+            try {
+                if ($config = parent::getConfig('ingest')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
+
             }
         }
 

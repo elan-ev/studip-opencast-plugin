@@ -61,22 +61,25 @@
           *
           */
         function getConfig($service_type) {
+            try {
+                if(isset($service_type)) {
+                    $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE service_type = ?");
+                    $stmt->execute(array($service_type));
+                    $config = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if($config) {
+                    $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config` WHERE 1");
+                    $stmt->execute();
+                    $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
+                    return $config;
+                    } else {
+                        throw new Exception(sprintf(_("Es sinde keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
+                    }
             
-            if(isset($service_type)) {
-                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE service_type = ?");
-                $stmt->execute(array($service_type));
-                $config = $stmt->fetch(PDO::FETCH_ASSOC);
-                if($config) {
-                $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config` WHERE 1");
-                $stmt->execute();
-                $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
-                return $config;
                 } else {
-                    throw new Exception(sprintf(_("Es sinde keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
+                    throw new Exception(_("Es wurde kein Servicetyp angegeben."));
                 }
-                
-            } else {
-                throw new Exception(_("Es wurde kein Servicetyp angegeben."));
+            } catch (Exception $e) {
+            
             }
         }
 
