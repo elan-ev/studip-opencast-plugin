@@ -1,9 +1,15 @@
 <? if (isset($this->flash['error'])): ?>
     <?= MessageBox::error($this->flash['error']) ?>
 <? endif ?>
-<? if($upload_message) :?>
+<? if($upload_message == true) :?>
     <?= MessageBox::success(_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.')); ?>
 <? endif;?>
+<? if($flash['delete']) : ?>
+    <?= createQuestion2(sprintf(_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()) )?>
+
+<? endif ?>
+
+
 
 <script language="JavaScript">
     OC.initIndexpage();
@@ -14,16 +20,28 @@
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     $upload = '';
     if (!empty($this->connectedSeries)){
+
         $upload = array(
                           "icon" => "icons/16/black/upload.png",
                           "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
+        $unlink = array(
+            "icon" => "icons/16/black/trash.png",
+            "text" => '<a href="' . PluginEngine::getLink('opencast/course/index/'.$active_id .'/ /true' ) .'">' . _("Verknüpfung aufheben") . '</a>');
+        $aktionen = array($unlink, $upload);
+        
+    } else {
+        $aktionen = array(
+                        array(
+                            "icon" => "icons/16/black/tools.png",
+                            "text" => '<a href="' . PluginEngine::getLink('opencast/course/create_series/') .'">' . _("Neue Series anlegen") . '</a>'),
+                        array(
+                          "icon" => "icons/16/black/group.png",
+                          "text" => '<a id="oc_config_dialog"href="#">' . _("Vorhandene Series verknüpfen") . '</a>')
+
+                      );
     }
 
-    $aktionen = array(array(
-                      "icon" => "icons/16/black/admin.png",
-                      "text" => '<a id="oc_config_dialog"href="#">' . _("Konfiguration") . '</a>'), $upload
 
-                  );
 
     $infobox_content = array(array(
         'kategorie' => _('Hinweise:'),
@@ -118,7 +136,11 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     <div id="oce_pagination"></div>
     </div>
 <? else: ?>
-    <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
+    <? if(empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+            <?= MessageBox::info(_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
+    <? else: ?>
+        <?=MessageBox::info(_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
+    <? endif;?>
 <? endif; ?>
 
 
@@ -128,7 +150,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates)) ?>
 </div>
 
-<div id="config_dialog" title="<?=_("Kurseinstellungen")?>">
+<div id="config_dialog" title="<?=_("Series verküpfen")?>">
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 <? endif;?>

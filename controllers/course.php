@@ -53,7 +53,7 @@ class CourseController extends StudipController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = '')
+    function index_action($active_id = 'false', $upload_message = false, $delete_series = false)
     {
         $this->course_id = $_SESSION['SessionSeminar'];
        
@@ -61,7 +61,10 @@ class CourseController extends StudipController
         $this->set_layout($layout);
 
         $this->set_title(_("Opencast Player"));
-        $this->upload_message = $upload_message;
+        if($upload_message == 'true') {
+            $this->upload_message = $upload_message;
+        }
+
 
         // set layout for index page
         if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
@@ -203,6 +206,11 @@ class CourseController extends StudipController
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
             $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             
+            // Remove Series
+            if($delete_series) {
+                $this->flash['delete'] = true;
+            }
+            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
@@ -228,7 +236,7 @@ class CourseController extends StudipController
     
     function edit_action($course_id)
     {   
-        
+
         $series = Request::getArray('series');
         
         foreach( $series as $serie) {
@@ -238,19 +246,29 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
     
-    function remove_series_action($course_id, $series_id)
+    function remove_series_action($ticket)
     {
-        
-        $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
-        
-        OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
+         
+        $course_id = Request::get('course_id');
+        $series_id = Request::get('series_id');
+        $delete = Request::get('delete');
+        if( $delete && check_ticket($ticket)) {
+            
+            $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+            OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
 
-        /* Uncomment iff you really want to remove this series from the OC Core
-        $series_client = SeriesClient::getInstance();
-        $series_client->removeSeries($series_id); 
-        */
+            /* Uncomment iff you really want to remove this series from the OC Core
+            $series_client = SeriesClient::getInstance();
+            $series_client->removeSeries($series_id); 
+            */
+            $this->flash['message'] = _("Die Zuordnung wurde entfernt");
+        }
+        else{
+            $this->flash['message'] = _("Die Zuordnung konnte nicht entfernt werden.");
+        }
         
-        $this->flash['message'] = _("Zuordnung wurde entfernt");
+        
+        
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
 
