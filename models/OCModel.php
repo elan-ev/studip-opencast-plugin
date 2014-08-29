@@ -468,5 +468,13 @@ class OCModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    static function getConfigurationstate() {
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*)  AS COUNT FROM oc_endpoints");
+        $stmt->execute(array($course_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if($rows['0'] > 0) return true;
+        else return false;
+    }
 }
 ?>

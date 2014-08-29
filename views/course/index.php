@@ -19,7 +19,7 @@
 <?
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     $upload = '';
-    if (!empty($this->connectedSeries)){
+    if (!empty($connectedSeries)){
 
         $upload = array(
                           "icon" => "icons/16/black/upload.png",

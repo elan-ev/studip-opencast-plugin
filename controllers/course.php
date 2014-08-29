@@ -203,7 +203,7 @@ class CourseController extends StudipController
             SeriesClient::getInstance()->checkService();
             
             // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
             $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             
             // Remove Series
@@ -353,10 +353,9 @@ class CourseController extends StudipController
     {
         $this->course_id = Request::get('cid');
         $this->series_client = SeriesClient::getInstance();
-
         if($this->series_client->createSeriesForSeminar($this->course_id)) {
             $this->flash['message'] = _("Series wurde angelegt");
-            $this->redirect(PluginEngine::getLink('opencast/course/config'));
+            $this->redirect(PluginEngine::getLink('opencast/course/index'));
         } else {
             throw new Exception("Verbindung zum Series-Service konnte nicht hergestellt werden.");
         }

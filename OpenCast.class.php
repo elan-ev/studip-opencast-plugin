@@ -35,6 +35,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         
         
         if($perm->have_perm('admin')) {
+            
+            //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi
             $main = new Navigation(_("Opencast Administration"));
             // TODO think about an index page.. for the moment the config page is in charge..
@@ -44,21 +46,23 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
   
-            $resources = new Navigation('OC Ressourcen');
-            $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
-            $main->addSubNavigation('oc-resources', $resources);
-
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
-            Navigation::addItem('/admin/config/oc-resources', $resources);
             
-            // for debug purposes
-            //if($perm->have_perm('root')){
-            //    $endpoints = new Navigation('OC Endpoints');
-            //    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
-            //    $main->addSubNavigation('oc-endpoints', $endpoints);
-            //    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
-            //}
+            
+            if(OCModel::getConfigurationstate()){
+                $resources = new Navigation('OC Ressourcen');
+                $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
+                $main->addSubNavigation('oc-resources', $resources);
+                Navigation::addItem('/admin/config/oc-resources', $resources);
+                // for debug purposes
+                //if($perm->have_perm('root')){
+                //    $endpoints = new Navigation('OC Endpoints');
+                //    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
+                //    $main->addSubNavigation('oc-endpoints', $endpoints);
+                //    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
+                //}
+            }
         }
    
 
@@ -67,7 +71,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.simplePagination.js');
         PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/simplePagination.css'); 
         
-        if($perm->have_perm('dozent')){
+        if($perm->have_perm('dozent') && OCModel::getConfigurationstate()){
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
             PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.fileupload.js');
@@ -75,12 +79,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
            
         }
         
-        StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
-        
-        //Rest.IP
-        NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses.get');
-        NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
-        NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
+        if(OCModel::getConfigurationstate()){
+            StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
+            
+            //Rest.IP
+            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses.get');
+            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
+            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
+        }
      
     }
 
@@ -168,7 +174,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
  
     
-        if (!$this->isActivated($course_id)) {
+        if (!$this->isActivated($course_id) || !OCModel::getConfigurationstate()) {
             return;
         }
         //.. now the subnavi

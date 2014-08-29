@@ -6,13 +6,13 @@
         <p><?=_("Tragen Sie hier die den Pfad Ihres Matterhorn Basis System ein.")?></p>
         
         <label  for="info_url"><?=_("Basis URL zur Opencast Matterhorn Installation")?>:</label><br>
-        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="MATTERHORN_URL"><br>
+        <input type="url" name="info_url" value="<?=$info_url?>" size="50" placeholder="http://matterhorn.url" required><br>
          
         <label for="info_user"><?=_("Nutzerkennung")?>:</label><br>
-        <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="ENDPOINT_USER"><br>
+        <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="ENDPOINT_USER" required><br>
         
         <label for="info_password"><?=_("Passwort")?>:</label><br>
-        <input type="password" name="info_password" value="<?=$info_password?>" size="50"><br>
+        <input type="password" name="info_password" value="<?=$info_password?>" size="50" placeholder="ENDPOINT_USER_PASSWORD" required><br>
         
           <div>
          <?= Button::createAccept(_('Übernehmen')) ?>

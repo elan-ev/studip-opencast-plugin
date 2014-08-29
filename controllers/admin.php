@@ -66,46 +66,49 @@ class AdminController extends AuthenticatedController
     function update_action()
     {
         $service_url =  parse_url(Request::get('info_url'));
-        $service_host = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
-        $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path']; 
 
-        $this->info_user = Request::get('info_user');
-        $this->info_password = Request::get('info_password');
-        
-  
-  
-        OCRestClient::clearConfig($service_url['host']);
-        OCRestClient::setConfig($service_host, $this->info_user, $this->info_password);
+        if(!array_key_exists('scheme', $service_url)) {
+            $this->flash['error'] = _('Es wurde kein gültiges URL-Schema angegeben.');
+            OCRestClient::clearConfig($service_url['host']);
+            $this->redirect(PluginEngine::getLink('opencast/admin/config'));
+        } else {
+            $service_host = $service_url['scheme'] .'://' . $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
+            $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path']; 
         
 
+            $this->info_user = Request::get('info_user');
+            $this->info_password = Request::get('info_password');
   
+            OCRestClient::clearConfig($service_url['host']);
+            OCRestClient::setConfig($service_host, $this->info_user, $this->info_password);
              
-        OCEndpointModel::setEndpoint($this->info_url, 'services');
-        $services_client = ServicesClient::getInstance();
+            OCEndpointModel::setEndpoint($this->info_url, 'services');
+            $services_client = ServicesClient::getInstance();
 
 
-        $comp = $services_client->getRESTComponents();
-        if($comp) {
-            $services = OCModel::retrieveRESTservices($comp);
+            $comp = $services_client->getRESTComponents();
+            if($comp) {
+                $services = OCModel::retrieveRESTservices($comp);
 
 
-            foreach($services as $service_url => $service_type) {
+                foreach($services as $service_url => $service_type) {
 
-                $service_comp = explode("/", $service_url);
+                    $service_comp = explode("/", $service_url);
             
-                if(sizeof($service_comp) == 2) {
-                    if($service_comp)
-                    OCEndpointModel::setEndpoint($service_comp[0], $service_type);
-                }   
+                    if(sizeof($service_comp) == 2) {
+                        if($service_comp)
+                        OCEndpointModel::setEndpoint($service_comp[0], $service_type);
+                    }   
+                }
+
+
+                $this->flash['success'] = sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+            } else {
+                $this->flash['error'] = _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.');
             }
 
-
-            $this->flash['success'] = sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
-        } else {
-            $this->flash['error'] = _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.');
+            $this->redirect(PluginEngine::getLink('opencast/admin/config'));
         }
-
-        $this->redirect(PluginEngine::getLink('opencast/admin/config'));
     }
     
     

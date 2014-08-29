@@ -152,13 +152,6 @@ class OCSeriesModel {
      */
     static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
 
- 
-    
-        /* $stmt = DBManager::get()->prepare("UPDATE oc_series
-                SET seminars = seminars+1
-                WHERE series_id = ?");
-        $stmt->execute(array($seriesID)); */
-
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (series_id, seminar_id, visibility, schedule)
                 VALUES (?, ?, ?, ? )");

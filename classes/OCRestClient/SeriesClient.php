@@ -15,7 +15,6 @@
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
                                         $config['service_password']);
-                    $fine = true;
                 } else {
                     throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
                 }
@@ -48,9 +47,7 @@
         // todo
         function getOneSeries($seriesID)
         {
-            if($this->fine) {
                 return $this->getJSON('/'.$seriesID. '.json');
-            } return false;
         }
 
         /**
@@ -93,8 +90,6 @@
          * @return bool success or not
          */
         function createSeriesForSeminar($course_id) {
-
-
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
             
             
@@ -108,21 +103,15 @@
                         );
                         
             $ACL = OCSeriesModel::createSeriesACL($ACLData); 
-
-
-   
             $post = array('series' => $dublinCore,
                         'acl' => $ACL);
 
-
             $res = $this->getXML('/', $post, false, true);
-            
     
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);
 
-            
             if ($res[1] == 201){
 
                 $new_series = json_decode($res[0]);
