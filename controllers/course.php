@@ -62,10 +62,9 @@ class CourseController extends StudipController
 
         $this->set_title(_("Opencast Player"));
         if($upload_message == 'true') {
-            $this->upload_message = $upload_message;
+            $this->flash['messages'] = array('success' =>_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.'));
         }
-
-
+        
         // set layout for index page
         if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 
@@ -90,9 +89,6 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/overview');
         try {
             $this->search_client = SearchClient::getInstance();
-            if (isset($this->flash['message'])) {
-                $this->message = $this->flash['message'];
-            }
 
             // lets get all episodes for the connected series
             if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
@@ -219,8 +215,8 @@ class CourseController extends StudipController
     
     function config_action()
     {
-        if (isset($this->flash['message'])) {
-            $this->message = $this->flash['message'];
+        if (isset($this->flash['messages'])) {
+            $this->message = $this->flash['messages'];
         }
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
@@ -242,7 +238,7 @@ class CourseController extends StudipController
         foreach( $series as $serie) {
             OCSeriesModel::setSeriesforCourse($course_id, $serie);
         }
-        $this->flash['message'] = _("Änderungen wurden erfolgreich übernommen");
+        $this->flash['messages'] = array('success'=> _("Änderungen wurden erfolgreich übernommen. Es wurde eine neue Serie für den Kurs angelegt."));
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
     
@@ -261,10 +257,10 @@ class CourseController extends StudipController
             $series_client = SeriesClient::getInstance();
             $series_client->removeSeries($series_id); 
             */
-            $this->flash['message'] = _("Die Zuordnung wurde entfernt");
+            $this->flash['messages'] = array('success'=> _("Die Zuordnung wurde entfernt"));
         }
         else{
-            $this->flash['message'] = _("Die Zuordnung konnte nicht entfernt werden.");
+            $this->flash['messages']['error'] = _("Die Zuordnung konnte nicht entfernt werden.");
         }
         
         
@@ -303,9 +299,9 @@ class CourseController extends StudipController
         $scheduler_client = SchedulerClient::getInstance();
 
         if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            $this->flash['message'] = _("Aufzeichnung wurde geplant.");
+            $this->flash['messages'] = array('success'=> _("Aufzeichnung wurde geplant."));
         } else {
-            $this->flash['error'] = _("Aufzeichnung konnte nicht geplant werden.");
+            $this->flash['messages'] = array('error'=> _("Aufzeichnung konnte nicht geplant werden."));
         }
 
         
@@ -321,9 +317,9 @@ class CourseController extends StudipController
         
 
         if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            $this->flash['message'] = _("Die geplante Aufzeichnung wurde entfernt");
+            $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung wurde entfernt"));
         } else {
-            $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht entfernt werden.");
+            $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht entfernt werden."));
         }
 
 
@@ -339,9 +335,9 @@ class CourseController extends StudipController
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
         if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
-            $this->flash['message'] = _("Die geplante Aufzeichnung aktualisiert");
+            $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung aktualisiert"));
         } else {
-            $this->flash['error'] = _("Die geplante Aufzeichnung konnte nicht aktualisiert werden.");
+            $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
         }
 
 
@@ -354,7 +350,7 @@ class CourseController extends StudipController
         $this->course_id = Request::get('cid');
         $this->series_client = SeriesClient::getInstance();
         if($this->series_client->createSeriesForSeminar($this->course_id)) {
-            $this->flash['message'] = _("Series wurde angelegt");
+            $this->flash['messages']['success'] = _("Series wurde angelegt");
             $this->redirect(PluginEngine::getLink('opencast/course/index'));
         } else {
             throw new Exception("Verbindung zum Series-Service konnte nicht hergestellt werden.");
@@ -373,12 +369,11 @@ class CourseController extends StudipController
 
         if($visible['visible'] == 'true'){
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
-           $this->flash['message'] = _("Episode wurde unsichtbar geschaltet");
+           $this->flash['messages'] = array('success'=> _("Episode wurde unsichtbar geschaltet"));
         } else {
            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
-           $this->flash['message'] = _("Episode wurde sichtbar geschaltet");
+           $this->flash['messages'] = array('success'=> _("Episode wurde sichtbar geschaltet"));
         }
-        
         $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
     }
 

@@ -1,21 +1,5 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <?
-    if ($success = $flash['success']) {
-        echo MessageBox::success($success);
-    }
-    if ($error = $flash['error']) {
-        echo MessageBox::error($error);
-    }
-
-    if ($info = $flash['info']) {
-        echo MessageBox::info($info);
-    }
-
-    if ($flash['question']) {
-        echo $flash['question'];
-    }
-
-
     $infobox_content = array(array(
         'kategorie' => _('Hinweise:'),
         'eintrag'   => array(array(
@@ -29,6 +13,7 @@
 OC.initAdmin();
 </script>
 
+<?= $this->render_partial('messages') ?>
 
 <!-- New Table-->
 

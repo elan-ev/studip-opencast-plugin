@@ -1,13 +1,9 @@
-<? if (isset($this->flash['error'])): ?>
-    <?= MessageBox::error($this->flash['error']) ?>
-<? endif ?>
-<? if($upload_message == true) :?>
-    <?= MessageBox::success(_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.')); ?>
-<? endif;?>
 <? if($flash['delete']) : ?>
     <?= createQuestion2(sprintf(_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()) )?>
 
 <? endif ?>
+
+<?= $this->render_partial('messages') ?>
 
 
 

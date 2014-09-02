@@ -47,9 +47,6 @@ class AdminController extends AuthenticatedController
         PageLayout::setTitle(_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-        if (isset($this->flash['message'])) {
-            $this->message = $this->flash['message'];
-        }
 
         
         if(($this->info_conf = OCEndpointModel::getBaseServerConf())) {
@@ -68,7 +65,7 @@ class AdminController extends AuthenticatedController
         $service_url =  parse_url(Request::get('info_url'));
 
         if(!array_key_exists('scheme', $service_url)) {
-            $this->flash['error'] = _('Es wurde kein gültiges URL-Schema angegeben.');
+            $this->flash['messages'] = array('error' => _('Es wurde kein gültiges URL-Schema angegeben.'));
             OCRestClient::clearConfig($service_url['host']);
             $this->redirect(PluginEngine::getLink('opencast/admin/config'));
         } else {
@@ -102,9 +99,9 @@ class AdminController extends AuthenticatedController
                 }
 
 
-                $this->flash['success'] = sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+                $this->flash['messages'] = array('success' => sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp)));
             } else {
-                $this->flash['error'] = _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.');
+                $this->flash['messages'] = array('error' => _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
             }
 
             $this->redirect(PluginEngine::getLink('opencast/admin/config'));
@@ -150,7 +147,7 @@ class AdminController extends AuthenticatedController
         
         $this->resources = OCModel::getOCRessources();
         if(empty($this->resources)) {
-            $this->flash['info'] = _('Es wurden keine passenden Ressourcen gefunden.');
+            $this->flash['messages'] =array('info' => _('Es wurden keine passenden Ressourcen gefunden.'));
 
         }
 

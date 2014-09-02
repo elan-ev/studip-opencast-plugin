@@ -1,17 +1,6 @@
 <?
     use Studip\Button, Studip\LinkButton;
 
-    if ($success = $flash['success']) {
-        echo MessageBox::success($success);
-    }
-    if ($error = $flash['error']) {
-        echo MessageBox::error($error);
-    }
-    if ($flash['question']) {
-        echo $flash['question'];
-    }
-
-
     $infobox_content = array(array(
         'kategorie' => _('Hinweise:'),
         'eintrag'   => array(array(
@@ -21,6 +10,9 @@
     ));
     $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
 ?>
+
+<?= $this->render_partial('messages') ?>
+
 <script language="JavaScript">
 OC.initAdmin();
 </script>
