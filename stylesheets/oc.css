@@ -136,6 +136,11 @@
 #oce_pagination {
     float:right;
 }
+
+.oce_active_li {
+    background-color: #F3F5F4;
+}
+
 .oce_list li {
     padding: .7em 1em;
     border-right-width: 1px;
@@ -145,16 +150,15 @@
     margin: 0;
     display: block;
     position: relative;
-
-
     overflow: hidden;
-    background-color: #fff;
     border-color: #ddd;
     vertical-align: center;
 
     
 }
+
 .oce_preview {
+    padding-left:5px;
     position: absolute;
     left: 0;
     top: 8px;
@@ -179,8 +183,10 @@
 }
 
 .oce_item:hover{
-    background-color: #F3F5F4;
+    background-color: #d4dbe5;
 }
+
+
 
 .hidden_ocvideo {
     opacity: 0.5;

@@ -117,7 +117,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             <? endforeach;?>
         <? endif;?>
         <? foreach($ordered_episode_ids as $pos => $item) : ?>
-        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? '' : 'hidden_ocvideodiv'?> oce_item" 
+        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>" 
             data-courseId="<?=$course_id?>" data-visibility="<?=var_export($item['visibility'], true)?>">
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
             <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
