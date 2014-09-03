@@ -160,7 +160,13 @@ class CourseController extends StudipController
                     }
                 }
             } else {
-                $this->ordered_episode_ids = $this->episode_ids;
+                $i = 0;
+                foreach($this->episode_ids as $key => $episode){
+                    $episode['position'] = $i;
+                    $this->ordered_episode_ids[$key] = $episode;
+                    unset($this->episode_ids[$key]);
+                    $i++;
+                }
             }
             
             if(empty($active_id) || $active_id != "false") {

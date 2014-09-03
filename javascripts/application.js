@@ -55,6 +55,10 @@ OC = {
                             'course_id' : jQuery( this ).data('courseid'),
                             'visibility' : jQuery( this ).data('visibility')
                         });
+                        if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {
+                             var new_url =  STUDIP.URLHelper.getURL("plugins.php/opencast/course/toggle_visibility/" + jQuery( this ).attr('id') + "/" + index);
+                             jQuery("#oc-togglevis").attr('href', new_url);
+                        }
                     });
                     jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
                         { "positions": items });
