@@ -73,11 +73,11 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     <div class="oce_playercontainer">
         <iframe src="<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
         <div class="oce_emetadata">
-            <h2 class="oce_title"><?= mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8')?></h2>
+            <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
             <ul class="oce_contetlist">
                 <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
-                <li><?=_('Autor : ')?> <?=$active['author'] ? mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8')  : 'Keine Angaben vorhanden';?></li>
-                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8')  : 'Keine Beschreibung vorhanden';?></li>
+                <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
+                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
             </ul>
             <div class="ocplayerlink">
                 <div style="text-align:left; font-style:italic;">Weitere Optionen:</div>
@@ -109,7 +109,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
                 <a>
                 <div ><img class="oce_preview oce_inprogress" src="<?=$uploadprogresspic?>"></div>
                 <div class="oce_metadatacontainer">
-                    <h3 class="oce_metadata"><?= mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8')?></h3>
+                    <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                     <span class="oce_metadata"><?=sprintf(_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
                 </div>
                 </a>
@@ -122,7 +122,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
             <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
             <div class="oce_metadatacontainer">
-                <h3 class="oce_metadata"><?= mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8')?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
+                <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8'))?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
                 <span><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
             </div>
             </a>

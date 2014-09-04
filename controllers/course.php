@@ -43,7 +43,7 @@ class CourseController extends StudipController
     function before_filter(&$action, &$args)
     {
         $this->flash = Trails_Flash::instance();
-
+        
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -159,11 +159,12 @@ class CourseController extends StudipController
                         array_unshift($this->ordered_episode_ids, $episode);
                     }
                 }
-            } else {
+            } elseif(!empty($this->episode_ids)){
                 $i = 0;
                 foreach($this->episode_ids as $key => $episode){
                     $episode['position'] = $i;
                     $this->ordered_episode_ids[$key] = $episode;
+                    OCModel::setCoursePositionForEpisode($key, $i, $this->course_id, 'true');
                     unset($this->episode_ids[$key]);
                     $i++;
                 }
@@ -291,8 +292,7 @@ class CourseController extends StudipController
         $this->dates  =  OCModel::getFutureDates($this->course_id);
         
         $search_client = SearchClient::getInstance();
-        
-        
+         
         $workflow_client = WorkflowClient::getInstance();
     }
 
@@ -300,16 +300,17 @@ class CourseController extends StudipController
     function schedule_action($resource_id, $termin_id)
     {
 
-
         $this->course_id = Request::get('cid');
-        $scheduler_client = SchedulerClient::getInstance();
-
-        if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            $this->flash['messages'] = array('success'=> _("Aufzeichnung wurde geplant."));
+        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
+            $scheduler_client = SchedulerClient::getInstance();
+            if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+                $this->flash['messages'] = array('success'=> _("Aufzeichnung wurde geplant."));
+            } else {
+                $this->flash['messages'] = array('error'=> _("Aufzeichnung konnte nicht geplant werden."));
+            }
         } else {
-            $this->flash['messages'] = array('error'=> _("Aufzeichnung konnte nicht geplant werden."));
+            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
-
         
         $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
@@ -318,16 +319,16 @@ class CourseController extends StudipController
     {
 
         $this->course_id = Request::get('cid');
-
-        $scheduler_client = SchedulerClient::getInstance();
-        
-
-        if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung wurde entfernt"));
+        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
+            $scheduler_client = SchedulerClient::getInstance();
+            if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+                $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung wurde entfernt"));
+            } else {
+                $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht entfernt werden."));
+            }
         } else {
-            $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht entfernt werden."));
+            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
-
 
         $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
@@ -337,15 +338,18 @@ class CourseController extends StudipController
     {
 
         $course_id = Request::get('cid');
-        $scheduler_client = SchedulerClient::getInstance();
-        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+            $scheduler_client = SchedulerClient::getInstance();
+            $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
-        if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
-            $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung aktualisiert"));
+            if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
+                $this->flash['messages'] = array('success'=> _("Die geplante Aufzeichnung aktualisiert"));
+            } else {
+                $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
+            }
         } else {
-            $this->flash['messages'] = array('error'=> _("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
+            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
-
 
         $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
@@ -354,31 +358,43 @@ class CourseController extends StudipController
     function create_series_action()
     {
         $this->course_id = Request::get('cid');
-        $this->series_client = SeriesClient::getInstance();
-        if($this->series_client->createSeriesForSeminar($this->course_id)) {
-            $this->flash['messages']['success'] = _("Series wurde angelegt");
-            $this->redirect(PluginEngine::getLink('opencast/course/index'));
+        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+            $this->series_client = SeriesClient::getInstance();
+            if($this->series_client->createSeriesForSeminar($this->course_id)) {
+                $this->flash['messages']['success'] = _("Series wurde angelegt");
+                
+            } else {
+                throw new Exception(_("Verbindung zum Series-Service konnte nicht hergestellt werden."));
+            }
         } else {
-            throw new Exception("Verbindung zum Series-Service konnte nicht hergestellt werden.");
+           throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
+        $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
 
     function toggle_visibility_action($episode_id, $position) {
         $this->course_id = Request::get('cid');
-     
-        $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
-        // if visibilty wasn't set before do so...
-        if(!$visible){
-            OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
-            $visible['visible'] = 'true';
-        }
+        $this->user_id = $GLOBALS['auth']->auth['uid'];
 
-        if($visible['visible'] == 'true'){
-           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
-           $this->flash['messages'] = array('success'=> _("Episode wurde unsichtbar geschaltet"));
+        if($GLOBALS['perm']->have_studip_perm('admin', $this->course_id) 
+            || OCModel::checkPermForEpisode($episode_id, $this->user_id))
+        {
+            $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
+            // if visibilty wasn't set before do so...
+            if(!$visible){
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+                $visible['visible'] = 'true';
+            }
+
+            if($visible['visible'] == 'true'){
+               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
+               $this->flash['messages'] = array('success'=> _("Episode wurde unsichtbar geschaltet"));
+            } else {
+               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+               $this->flash['messages'] = array('success'=> _("Episode wurde sichtbar geschaltet"));
+            }
         } else {
-           OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
-           $this->flash['messages'] = array('success'=> _("Episode wurde sichtbar geschaltet"));
+            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
         $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
     }
@@ -423,20 +439,23 @@ class CourseController extends StudipController
     {
         $course_id =  Request::get('cid');
         $action = Request::get('action');
-
-        $dates = Request::getArray('dates');    
-        foreach($dates as $termin_id => $resource_id){
-            switch($action) {
-                case "create":
-                    self::schedule($resource_id, $termin_id, $course_id);
-                    break;
-                case "update":
-                    self::updateschedule($resource_id, $termin_id, $course_id);
-                    break;
-                case "delete":
-                    self::unschedule($resource_id, $termin_id, $course_id);
-                    break;
+        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+            $dates = Request::getArray('dates');
+            foreach($dates as $termin_id => $resource_id){
+                switch($action) {
+                    case "create":
+                        self::schedule($resource_id, $termin_id, $course_id);
+                        break;
+                    case "update":
+                        self::updateschedule($resource_id, $termin_id, $course_id);
+                        break;
+                    case "delete":
+                        self::unschedule($resource_id, $termin_id, $course_id);
+                        break;
+                }
             }
+        } else {
+            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
 
         $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
