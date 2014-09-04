@@ -35,6 +35,14 @@ OC = {
                 }
             );
             
+            
+            jQuery('#ocupload_copyright').change(function(){
+                if (jQuery(this).is(':checked')) {
+                    jQuery('#btn_accept').removeAttr('disabled');
+                } else {
+                    jQuery('#btn_accept').attr('disabled', 'disabled');
+                }
+            });
             // Config Dialog
             jQuery("#config_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocConfig'});
             jQuery("#oc_config_dialog").click(

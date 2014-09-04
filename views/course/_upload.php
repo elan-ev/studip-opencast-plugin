@@ -91,10 +91,18 @@ use Studip\Button,
     <div id="progressbarholder">
         <div id="progressbar"><div id='progressbar-label'></div></div>
     </div>
+    
     <input type="hidden" value="" name="total_file_size" id="total_file_size" />
     <input type="hidden" value="" name="file_name" id="file_name" />
+     <br>
+    <label>
+        <input type="checkbox" id="ocupload_copyright" name="copyright">
+        <span><?= _('Durch das Hochladen des Videos erklären Sie sich mit den Nutzungsbedingungen und den Urheber-Richtlinien einverstanden.') ?></span>
+    </label>
+    <br>
+    <br>
     <div class="form_submit">
-        <?= Button::createAccept(_('Medien hochladen'), null, array('id' => 'btn_accept')) ?>
+        <?= Button::createAccept(_('Medien hochladen'), null, array('id' => 'btn_accept','disabled' => 'true')) ?>
         <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
     </div>
 </form>
