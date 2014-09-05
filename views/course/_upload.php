@@ -4,25 +4,24 @@ use Studip\Button,
 ?>
 <form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
     <label id="title" for="titleField">
-        <?= _('Titel') ?>
+        <h4><?= _('Titel') ?></h4>
     </label>
-    <br>
-    <input type="text" maxlength="255" name="title" id="titleField" required>
-    <br>
+    <input class="oc_input" type="text" maxlength="255" name="title" id="titleField" required>
+
     <label id="creatorLabel" for="creator">
-        <span><?= _("Vortragende") ?></span>
+        <h4><span><?= _("Vortragende") ?></span></h4>
     </label>
-    <br>
-    <input type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>" required>
-    <br>
+
+    <input class="oc_input" type="text" maxlength="255" name="creator" id="creator" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>" required>
+    
+    
     <label id="recordingDateLabel" class="scheduler-label" for="recordDate">
-        <span><?= _('Aufnahmedatum') ?></span>
+        <h4><span><?= _('Aufnahmedatum') ?></span></h4>
     </label>
-    <br>
-    <input type="text" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10" required>
-    <br>
+    <input class="oc_input" type="date" name="recordDate" value="<?= $this->date ?>" id="recordDate" size="10" required>
+
     <label id="startTimeLabel" for="startTimeHour">
-        <span><?= _('Startzeit') ?></span>
+        <h4><span><?= _('Startzeit') ?></span></h4>
     </label>
     <select id="startTimeHour" name="startTimeHour">
         <?php for ($i = 0; $i <= 23; $i++): ?>
@@ -53,10 +52,10 @@ use Studip\Button,
             <?php endif; ?>
         <?php endfor; ?>
     </select>
-    <br>
+
     <div style="display:none;">
     <label id="contributorLabel" for="contributor">
-        <span><?= _('Mitwirkende') ?></span>
+        <h4><span><?= _('Mitwirkende') ?></span></h4>
     </label>
     <br>
     <input type="text" maxlength="255" id="contributor" name="contributor" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
@@ -74,14 +73,13 @@ use Studip\Button,
     <input type="text" maxlength="255" id="language" name="language" value="<?='de'?>">
     <br>
     </div>
+    
     <label id="descriptionLabel" for="description">
-        <span><?= _('Beschreibung') ?></span>
+        <h4><span><?= _('Beschreibung') ?></span></h4>
     </label>
-    <br>
-    <textarea cols="50" rows="5" id="description" name="description"></textarea>
-    <br>
-    <label for="video_upload">Datei:</label>
-    <br>
+    <textarea class="oc_input" cols="50" rows="5" id="description" name="description"></textarea>
+
+    <h4><label for="video_upload">Datei:</label></h4>
     <div id="file_wrapper">
             <?= LinkButton::create(_('Datei auswählen'), null, array('id' => 'video-chooser', 'onClick' => "$('input[type=file]').trigger('click');return false;")); ?>
             <input name="video" type="file" id="video_upload" required>
@@ -95,14 +93,24 @@ use Studip\Button,
     <input type="hidden" value="" name="total_file_size" id="total_file_size" />
     <input type="hidden" value="" name="file_name" id="file_name" />
      <br>
-    <label>
-        <input type="checkbox" id="ocupload_copyright" name="copyright">
-        <span><?= _('Durch das Hochladen des Videos erklären Sie sich mit den Nutzungsbedingungen und den Urheber-Richtlinien einverstanden.') ?></span>
-    </label>
+     <div class="oc_upload_legal_notice">
+         <p>
+             <?=_("Laden sie nur Medien hoch an denen sie das Copyright besitzen!")?>
+         </p>
+         <p>
+             <?=_("Die möglichen Ausnahmen über §52a UrhG sind sehr eingeschränkt, so dürfen nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.")?>
+         </p>
+         <p>
+             <?=_("Nach §52a UrhG dürfen Kinofilme oder Ausschnitte daraus frühstens 2 Jahre nach der Verwertung im Kino und nur mit Einwilligung des Berechtigten zugänglich gemacht werden!")?>
+         </p>
+         <p>
+             <?=_("Medien bei denen Urheberrechtsverstöße vorliegen, werde ohne vorherige Ankündigung umgehend gelöscht.")?>
+         </p>
+     </div>
     <br>
     <br>
     <div class="form_submit">
-        <?= Button::createAccept(_('Medien hochladen'), null, array('id' => 'btn_accept','disabled' => 'true')) ?>
+        <?= Button::createAccept(_('Medien hochladen'), null, array('id' => 'btn_accept')) ?>
         <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
     </div>
 </form>
