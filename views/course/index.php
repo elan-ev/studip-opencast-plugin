@@ -106,12 +106,21 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
             <? foreach($states as $workflow_id => $state) :?>
             <li class="uploaded oce_item">
-                <a>
-                <div ><img class="oce_preview oce_inprogress" src="<?=$uploadprogresspic?>"></div>
+                
+                <? if($state->state == 'FAILED') : ?>
+                    <div><img class="oce_preview oce_inprogress" src="<?=$uploadfailedpic?>"></div>
+                    <div class="oce_metadatacontainer oce_failedstate">
+                        <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                        <?= Studip\LinkButton::create(_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>    
+                    </div>
+                <? else :?>
+                <a class="disabled">
+                <div><img class="oce_preview oce_inprogress" src="<?=$uploadprogresspic?>"></div>
                 <div class="oce_metadatacontainer">
                     <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                     <span class="oce_metadata"><?=sprintf(_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
                 </div>
+                <? endif; ?>
                 </a>
             </li>    
             <? endforeach;?>

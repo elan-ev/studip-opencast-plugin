@@ -48,6 +48,7 @@ class CourseController extends StudipController
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
         $this->pluginpath = $this->dispatcher->trails_root;
+        $this->course_id = $_SESSION['SessionSeminar'];
     }
 
     /**
@@ -55,7 +56,6 @@ class CourseController extends StudipController
      */
     function index_action($active_id = 'false', $upload_message = false, $delete_series = false)
     {
-        $this->course_id = $_SESSION['SessionSeminar'];
        
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
@@ -75,6 +75,7 @@ class CourseController extends StudipController
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
             $this->states = array();
             $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
+            $this->uploadfailedpic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/failed.png';
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
                     $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
@@ -496,6 +497,15 @@ class CourseController extends StudipController
                 // TODO FEEDBACK
             }
         }
+    }
+    
+    function remove_failed_action($workflow_id) {
+        if(OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)){
+            $this->flash['messages'] = array('success'=> _("Die hochgeladenen Daten wurden gelöscht."));
+        } else {
+            $this->flash['messages'] = array('error'=> _("Die hochgeladenen Daten konnten nicht gelöscht werden."));
+        }
+        $this->redirect(PluginEngine::getLink('opencast/course/index/'));
     }
 
 

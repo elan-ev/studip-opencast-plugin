@@ -196,6 +196,15 @@
     cursor:move;
 }
 
+a.disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.oce_failedstate{
+    color: #24437c;
+}
+
 /*.hidden_ocvideodiv:before{
   content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
 }*/
