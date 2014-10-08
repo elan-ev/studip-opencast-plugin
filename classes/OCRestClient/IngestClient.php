@@ -58,9 +58,9 @@
          *
          *  @return $mediapackage 
          */
-        function ingest($mediaPackage, $workFlowDefinitionID = 'full')
+        function ingest($mediaPackage, $workFlowDefinitionID = 'full', $addendum = '')
         {
-            $service_url = "/ingest/".$workFlowDefinitionID;
+            $service_url = "/ingest/".$workFlowDefinitionID.$addendum;
             $data = array('mediaPackage' => $mediaPackage);
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;

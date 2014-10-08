@@ -186,10 +186,10 @@ class OCUploadFile {
                     break;
                 case 'description':
                     $dc_values['description'] = utf8_encode($value);
-                    break;                    
+                    break;
                 default:
                     break;
-            }            
+            }
         }
         
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
