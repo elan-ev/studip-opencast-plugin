@@ -358,8 +358,7 @@ class CourseController extends StudipController
 
     function create_series_action()
     {
-        $this->course_id = Request::get('cid');
-        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $this->series_client = SeriesClient::getInstance();
             if($this->series_client->createSeriesForSeminar($this->course_id)) {
                 $this->flash['messages']['success'] = _("Series wurde angelegt");
