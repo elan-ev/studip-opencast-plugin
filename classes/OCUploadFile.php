@@ -169,7 +169,6 @@ class OCUploadFile {
         {
             switch ($key) {
                 case 'title':
-                   
                     $dc_values['title'] = utf8_encode($value);
                     break;
                 case 'creator':
@@ -187,6 +186,9 @@ class OCUploadFile {
                 case 'description':
                     $dc_values['description'] = utf8_encode($value);
                     break;
+                case 'series_id':
+                    $dc_values['series_id'] = utf8_encode($value);
+                    break;
                 default:
                     break;
             }
@@ -201,8 +203,8 @@ class OCUploadFile {
                                 <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
                                 <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
                                 <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>
+                                <dcterms:isPartOf><![CDATA[' . $dc_values['series_id'] . ']]></dcterms:isPartOf> 
                             </dublincore>';
-        
 
         return $dublincore;
     }

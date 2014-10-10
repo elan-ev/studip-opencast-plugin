@@ -152,7 +152,7 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
 
 <div id="upload_dialog" title="<?=_("Medienupload")?>">
-<?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates)) ?>
+<?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier'])) ?>
 </div>
 
 <div id="config_dialog" title="<?=_("Series verküpfen")?>">
