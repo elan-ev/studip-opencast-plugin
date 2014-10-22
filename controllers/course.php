@@ -116,17 +116,17 @@ class CourseController extends StudipController
                                     foreach($episode->mediapackage->media->track as $track) {
                                         if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4')){
                                             $url = parse_url($track->url);
-                                            if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            if(in_array(array('high-quality', 'hd-quality'), $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                                $presenter_download = $track->url;
                                             }
                                         }
                                         if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4')){
                                             $url = parse_url($track->url);
-                                            if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            if(in_array(array('high-quality', 'hd-quality'), $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                                $presentation_download = $track->url;
                                             }
                                         }
-                                        if(($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3'))
+                                        if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg')))
                                             $audio_download = $track->url;
                                     }
                                     $this->episode_ids[$episode->id] = array('id' => $episode->id,
