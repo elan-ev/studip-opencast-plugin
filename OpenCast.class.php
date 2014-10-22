@@ -76,6 +76,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.fileupload.js');
             PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.ui.widget.js');
+            PageLayout::addScript($this->getpluginUrl()  . '/vendor/chosen/chosen.jquery.min.js');
+            PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/chosen/chosen.min.css');
            
         }
         
