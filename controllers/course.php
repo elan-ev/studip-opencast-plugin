@@ -98,6 +98,9 @@ class CourseController extends StudipController
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
                 $positions = OCModel::getCoursePositions($this->course_id);
+                $presenter_download = false;
+                $presentation_download = false;
+                $audio_download = false;
 
                     foreach($cseries as $serie) {
                         $series = $this->search_client->getEpisodes($serie['identifier']);
@@ -116,17 +119,17 @@ class CourseController extends StudipController
                                     foreach($episode->mediapackage->media->track as $track) {
                                         if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4')){
                                             $url = parse_url($track->url);
-                                            if(in_array(array('high-quality', 'hd-quality'), $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            if((in_array('high-quality', $track->tags->tag) || in_array('hd-quality', $track->tags->tag)) && $url['scheme'] != 'rtmp') {
                                                $presenter_download = $track->url;
                                             }
                                         }
                                         if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4')){
                                             $url = parse_url($track->url);
-                                            if(in_array(array('high-quality', 'hd-quality'), $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            if((in_array('high-quality', $track->tags->tag) || in_array('hd-quality', $track->tags->tag)) && $url['scheme'] != 'rtmp') {
                                                $presentation_download = $track->url;
                                             }
                                         }
-                                        if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg')))
+                                        if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
                                             $audio_download = $track->url;
                                     }
                                     $this->episode_ids[$episode->id] = array('id' => $episode->id,
