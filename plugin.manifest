@@ -1,7 +1,7 @@
 pluginname=OpenCast
 pluginclassname=OpenCast
 origin=elan-ev
-version=0.51-uos-debug
+version=0.51
 studipMinVersion=2.4
 studipMaxVersion=3.99
 summary=Opencast Matterhorn Integration
