@@ -54,7 +54,11 @@ class UploadController extends StudipController
         } else { //if($file = $OCUpload->post())
                $this->error[] = _('Fehler beim hochladen der Datei');
         }
-        $this->render_nothing();
+        $debug = false;
+        if($debug == true){
+             $this->render_text(implode(" ",$x));
+        } else  $this->render_nothing();
+       
     }
     private function endUpload()
     {
@@ -200,6 +204,6 @@ class UploadController extends StudipController
             $this->error[] = 'Fehler beim upload zu Matterhorn: '
                     . $this->file->getChunkError();
             return false;
-        } else return true;
+        } else return true; //res
     }
 }
