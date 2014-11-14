@@ -8,12 +8,16 @@ class UploadClient extends OCRestClient {
     public $serviceName = 'Upload';
         
     function __construct() {
-        if ($config = parent::getConfig('upload')) {
-            parent::__construct($config['service_url'],
-                                $config['service_user'],
-                                $config['service_password']);
-        } else {
-            throw new Exception (_("Die Uploadservice Konfiguration wurde nicht im gültigen Format angegeben."));
+        try {
+            if ($config = parent::getConfig('upload')) {
+                parent::__construct($config['service_url'],
+                                    $config['service_user'],
+                                    $config['service_password']);
+            } else {
+                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            }
+        } catch(Exception $e) {
+
         }
     }
 
@@ -30,25 +34,54 @@ class UploadClient extends OCRestClient {
             'flavor' => urlencode($flavor),
             'mediapackage' => urlencode($mediaPackage)
         );
-        // http_build_query content is not accepted by REST
-        foreach($data as $key => $val) {
-            $string[] = $key.'='.$val;
+        $rest_end_point = "/newjob";
+        $uri = $rest_end_point;
+        
+        // setting up a curl-handler
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        curl_setopt($this->ochandler, CURLOPT_POST, true);
+        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($this->ochandler, CURLOPT_HEADER, false); // we don't need that kind of information now
+        //TODO über REST Klasse laufen lassen, getXML, getJSON...
+
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        if ($httpCode == 200 && isset($response)){
+            return $response;
+        } else {
+            return false;
         }
-        $string = implode('&', $string);
-        $params = '?'.$string;
-        return $response = $this->getXML('/newjob'.$params);
     }
     /**
      * upload one chunk
      */
-    function uploadChunk($jobId, $chunknumber, $filedata) {
+    function uploadChunk($job_id, $chunknumber, $filedata) {
+
         $data = array(
             'chunknumber' => $chunknumber,
-            'filedata' => $filedata
+            'filedata' => '@'.$filedata//$filedata
         );
-        if($response = $this->getXML('/job/'.$jobId, $data, false, true)){
-            return $response;
-        } else return false;
+        
+        $rest_end_point = "/job/".$job_id;
+        $uri = $rest_end_point;
+        
+        // setting up a curl-handler
+        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+        curl_setopt($this->ochandler, CURLOPT_POST, true);
+        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
+        curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
+
+        $response = curl_exec($this->ochandler);
+        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        $res = array();
+        $res[] = $httpCode;
+        $res[] = $response;
+        if ($httpCode == 200 && isset($response)){
+            return $res;
+        } else {
+            return false;
+        }
     }
     /**
      * get State object 

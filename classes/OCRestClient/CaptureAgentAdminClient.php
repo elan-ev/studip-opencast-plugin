@@ -4,12 +4,16 @@
     {
         static $me;
         function __construct() {
-            if ($config = parent::getConfig('captureadmin')) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Capture-Agent-Adminservice Konfiguration wurde nicht im gültigen Format angegeben."));
+            $this->serviceName = 'CaptureAgentAdminClient';
+            try {
+                if ($config = parent::getConfig('capture-admin')) {
+                    parent::__construct($config['service_url'],
+                                        $config['service_user'],
+                                        $config['service_password']);
+                } else {
+                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+                }
+            } catch(Exception $e) {
             }
         }
 
@@ -21,8 +25,7 @@
         function getCaptureAgentsXML() {
             // URL for Matterhorn 1.1
             // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
-            $service_url = "/agents";
-            if($response = $this->getXML($service_url)){
+            $service_url = "/agents.xml";
                 // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
                $needle = array('<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
                                 '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
@@ -34,14 +37,25 @@
                 $json = json_encode($xml);
                 $agent_repsonse = json_decode($json,TRUE);
                 return $agent_repsonse['agent-state-update'];
-            } else return false;
+                //} 
+            
+            
+        //     return false;
         }
 
         function getCaptureAgents() {
-            $service_url = "/capture-admin/agents.json";
-            if($agents = $this->getJSON($service_url)){
-                return $agents;
+            $service_url = "/agents.json";
+		    if($agents = $this->getJSON($service_url)){
+              return $agents;
             } else return false;
         }
+        
+        function getCaptureAgentCapabilities($agent_name) {
+            $service_url = "/agents/" . $agent_name . "/capabilities.json";
+            if($agent = $this->getJSON($service_url)) {
+                $x = 'properties-response';
+                return $agent->$x->properties->item;
+            } else return false;
         }
+    }
 ?>

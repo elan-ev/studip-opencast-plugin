@@ -1,16 +1,7 @@
 <?PHP
-    
+  
 class OCModel
 {
-   static function getUnconnectedSeries() {
-        $stmt = DBManager::get()->prepare("SELECT *
-            FROM oc_series
-            WHERE 1");
-        $stmt->execute();
-        $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $series;
-    }
-
     static function getConnectedSeries($course_id) {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
@@ -34,7 +25,7 @@ class OCModel
     }
 
     static function removeSeriesforCourse($course_id, $series_id) {
-       $stmt = DBManager::get()->prepare("UPDATE 
+       $stmt = DBManager::get()->prepare("UPDATE
                 oc_series SET seminars = seminars-1
                 WHERE series_id =?");
        $stmt->execute(array($course_id));
@@ -48,7 +39,7 @@ class OCModel
     static function getOCRessources() {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
+                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' )
                 AND rop.state = 'on'");
 
        $stmt->execute();
@@ -79,8 +70,9 @@ class OCModel
         $stmt = DBManager::get()->prepare("SELECT capture_agent FROM
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
-        $agents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $agents;
+        $agent = $stmt->fetch(PDO::FETCH_ASSOC);
+      
+        return $agent;
     }
 
     static function removeCAforResource($resource_id, $capture_agent) {
@@ -118,7 +110,7 @@ class OCModel
        $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $dates;
     }
-    
+  
     static function getFutureDates($seminar_id) {
         $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ? AND `date` > UNIX_TIMESTAMP() ORDER BY `date` ASC");
 
@@ -132,11 +124,11 @@ class OCModel
      *
      * @param string $resource_id
      * @return boolean hasCA
-     * 
+     *
      */
 
     static function checkResource($resource_id) {
-       
+     
        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_resources` WHERE `resource_id` = ?");
 
        $stmt->execute(array($resource_id));
@@ -145,23 +137,20 @@ class OCModel
        } else {
             return false;
        }
-       
+     
     }
 
     /**
      * scheduleRecording - schedules a recording for a given date and resource within a course
-     * 
+     *
      * @param string $course_id
      * @param string $resource_id
-     * @param string $date_id
+     * @param string $date_id - Stud.IP Identifier for the event
+     * @param string $event_id  - Opencast Identifier for the event
      * @return boolean success
      */
 
     static function scheduleRecording($course_id, $resource_id, $date_id, $event_id) {
-
-        /* TODO
-         *  - call Webservice and schedule that recording...
-         */
 
         // 1st: retrieve series_id
         $series = self::getConnectedSeries($course_id);
@@ -169,19 +158,47 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-        
+      
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, event_id, status)
                 VALUES (?, ?, ?, ?, ?, ? ,? )");
         $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], $event_id, 'scheduled'));
 
-            
-       
+ 
+
+     
 
         return $success;
     }
+    
+    /**
+     * checkScheduledRecording - check if a recording is scheduled for a given date and resource within a course
+     *
+     * @param string $course_id
+     * @param string $resource_id
+     * @param string $date_id - Stud.IP Identifier for the event
+     * @return boolean success
+     */
 
+    static function checkScheduledRecording($course_id, $resource_id, $date_id) {
+
+        $series = self::getConnectedSeries($course_id);
+        $serie = $series[0];
+
+        $cas = self::checkResource($resource_id);
+        $ca = $cas[0];
+      
+
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings 
+                                                    WHERE `seminar_id` = ? 
+                                                    AND `series_id` = ? 
+                                                    AND `date_id` = ? 
+                                                    AND`resource_id` = ?");
+        $stmt->execute(array($course_id, $serie['series_id'],$date_id , $resource_id));
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     /**
      * unscheduleRecording -  removes a scheduled recording for a given date and resource within a course
@@ -206,7 +223,7 @@ class OCModel
     static function checkScheduled($course_id, $resource_id, $date_id) {
 
         $stmt = DBManager::get()->prepare("SELECT * FROM
-                oc_scheduled_recordings 
+                oc_scheduled_recordings
                 WHERE seminar_id = ?
                     AND date_id = ?
                     AND resource_id = ?
@@ -219,7 +236,7 @@ class OCModel
     /**
      * createSeriesXML - creates an xml representation for a new OC-Series
      * @param string $course_id
-     * @return string xml - the xml representation of the string  
+     * @return string xml - the xml representation of the string
      */
     static function creatSeriesXML($course_id) {
 
@@ -227,7 +244,7 @@ class OCModel
         $course = new Seminar($course_id);
 
         $name = $course->getName();
-        $license = "Creative Commons"; // TODO
+        $license = "All Rights Reserved";
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
 
@@ -240,11 +257,11 @@ class OCModel
         $audience = "General Public";
 
         $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
+        $instructor = array_shift($instructors);
         $contributor = $instructor['fullname'];
         $creator = $inst_data['name'];
 
-        $language = 'German';
+        $language = 'de';
 
 
         $xml = '<?xml version="1.0"?>
@@ -292,61 +309,51 @@ class OCModel
      */
 
      function createScheduleEventXML($course_id, $resource_id, $termin_id) {
-        require_once 'lib/classes/Institute.class.php';
+//        require_once 'lib//Institute.class.php';
 
         date_default_timezone_set("Europe/Berlin");
-        
+      
         $course = new Seminar($course_id);
         $date = new SingleDate($termin_id);
         $issues = $date->getIssueIDs();
-        
+      
         if(is_array($issues)) {
             foreach($issues as $is) {
                 $issue = new Issue(array('issue_id' => $is));
             }
         }
-  
+
 
         $series = self::getConnectedSeries($course_id);
         $serie = $series[0];
-        
+      
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
         $instructors = $course->getMembers('dozent');
-        $instructor = array_pop($instructors);
-
-        $inst = Institute::find($course->institut_id);
-        $inst_data = $inst->getData();
-
        
+        $instructor = array_shift($instructors);
+         
+        $inst_data = Institute::find($course->institut_id);
 
         $room = ResourceObject::Factory($resource_id);
 
         $start_time = $date->getStartTime();
-        $end_time = $date->getEndTime();
-        /*
-        $start = $start_time.'000';
-        $end = $end_time.'000';
-
-        $duration = $end - $start;
-        $duration = $duration;
-        
-        $duration_in_hours = $duration;
-        */
-
+        $end_time = strtotime("-5 minutes ", intval($date->getEndTime()));
+      
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
-        //$duration = $duration_in_hours;
-        //$endDate = $end;
-        $language = "German";
-        $licence = "General PublicS";
+
+        $language = "de";
+        $licence = "All Rights Reserved";
         $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
        if(!$issue->title) {
-           $title = sprintf(_('Aufzeichnung vom %s'), $date->getDatesExport());
+           $course = new Seminar($course_id);
+           $name = $course->getName();
+           $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
        } else $title = $issue->title;
 
 
@@ -354,49 +361,21 @@ class OCModel
         $location = $room->name;
         $abstract = $course->description;
 
-         /*$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <event>
-                        <contributor>'.$contributor.'</contributor>
-                        <creator>' . $creator . '</creator>
-                        <description>' . $description .'</description>
-                        <device>'. $device .'</device>
-                        <duration>'. $duration .'</duration>
-                        <endDate>' .$endDate . '</endDate>
-                        <language>en</language>
-                        <license>creative commons</license>
-                        <resources>vga, audio</resources>
-                        <seriesId>' . $seriesId.'</seriesId>
-                        <series>' . $course->getName().'</series>
-                        <startDate>'.$startDate . '</startDate>
-                        <title>'. $title .'</title>
-                        <additionalMetadata>
-                            <metadata>
-                                <key>location</key>
-                                <value>' . $location . '</value>
-                            </metadata>
-                            <metadata>
-                                <key>abstract</key>
-                                <value>'. $abstract .'</value>
-                            </metadata>
-                        </additionalMetadata>
-                    </event>';
-
-         */
-         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                <dcterms:creator>' . $creator . '</dcterms:creator>
-                                <dcterms:contributor>' . $contributor . '</dcterms:contributor>
-                                <dcterms:created xsi:type="dcterms:W3CDTF">2011-04-06T08:03Z</dcterms:created>
-                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .' end='. self::getDCTime($end_time) .' scheme=W3C-DTF;</dcterms:temporal>
-                                <dcterms:description>' . $description . '</dcterms:description>
-                                <dcterms:subject>' . $abstract . '</dcterms:subject>
-                                <dcterms:language>' . $language . '</dcterms:language>
+                                <dcterms:creator><![CDATA[' . $creator . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . $contributor . ']]></dcterms:contributor>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
+                                <dcterms:temporal xsi:type="dcterms:Period">start='. self::getDCTime($start_time) .'; end='. self::getDCTime($end_time) .'; scheme=W3C-DTF;</dcterms:temporal>
+                                <dcterms:description><![CDATA[' . $description . ']]></dcterms:description>
+                                <dcterms:subject><![CDATA[' . $abstract . ']]></dcterms:subject>
+                                <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
-                                <dcterms:title>' . $title . '</dcterms:title>
+                                <dcterms:title><![CDATA[' . $title . ']]></dcterms:title>
                                 <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
-         return $dublincore;
+        return $dublincore;
 
      }
 
@@ -415,11 +394,11 @@ class OCModel
 
     }
 
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility, $position) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (seminar_id, episode_id, visible)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $visibility));
+                oc_seminar_episodes (seminar_id, episode_id, visible, position)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $visibility, $position));
     }
 
     static function getVisibilityForEpisode($course_id, $episode_id) {
@@ -431,7 +410,81 @@ class OCModel
     }
 
     static function getDCTime($timestamp) {
-        return date("Y-m-d", $timestamp).'T'.date('H:i:s', $timestamp).'Z;';
+        return gmdate("Y-m-d", $timestamp).'T'.gmdate('H:i:s', $timestamp).'Z';
+    }
+  
+    static function retrieveRESTservices($components) {
+        $services = array();
+        foreach( $components as $service) {
+            if(!preg_match('/remote/', $service->type)){
+                $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
+                         = preg_replace("/\//", '', $service->path);
+            }
+        }
+
+        return $services;
+    }
+    
+    static function getUserSeriesIDs($user_id) {
+        $stmt = DBManager::get()->prepare("SELECT `series_id` FROM oc_seminar_series WHERE `seminar_id` IN  
+                (SELECT `Seminar_id` FROM `seminar_user` WHERE `user_id` = ? AND `status` = 'dozent' )");
+        $stmt->execute(array($user_id));
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id) {
+        $stmt = DBManager::get()->prepare("INSERT INTO
+                oc_seminar_workflows (workflow_id,seminar_id, user_id)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($workflow_id, $seminar_id, $user_id));
+    }
+    
+    static function getWorkflowIDsforCourse($seminar_id) {
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows WHERE `seminar_id` = ?");
+        $stmt->execute(array($seminar_id));
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    static function removeWorkflowIDforCourse($workflow_id, $seminar_id){
+        $stmt = DBManager::get()->prepare("DELETE FROM
+                 oc_seminar_workflows 
+                 WHERE `seminar_id` = ? AND `workflow_id`= ?");
+         return $stmt->execute(array($seminar_id, $workflow_id));
+        
+    }
+    
+    static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility) {
+        $stmt = DBManager::get()->prepare("REPLACE INTO
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $pos, $visibility));
+    }
+    
+    static function getCoursePositions($course_id){
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
+        $stmt->execute(array($course_id));
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    static function getConfigurationstate() {
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*)  AS COUNT FROM oc_endpoints");
+        $stmt->execute(array($course_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if($rows['0'] > 0) return true;
+        else return false;
+    }
+    
+    static function checkPermForEpisode($episode_id, $user_id) {
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce 
+            LEFT JOIN seminar_user su ON (oce.seminar_id = su.Seminar_id) 
+            WHERE oce.episode_id = ? AND su.status = 'dozent' AND su.user_id = ?");
+        $stmt->execute(array($episode_id, $user_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if($rows['0'] > 0) return true;
+        else return false;
     }
 }
 ?>

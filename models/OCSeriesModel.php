@@ -1,8 +1,8 @@
 <?php
 
-if (!class_exists('SeriesClient')) {
-    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
-}
+//if (!class_exists('SeriesClient')) {
+//    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
+//}
 
 class OCSeriesModel {
 
@@ -24,7 +24,7 @@ class OCSeriesModel {
             FROM oc_seminar_series
             WHERE seminar_id = ?");
         $stmt->execute(array($courseID));
-            
+
         if ($series = $stmt->fetchAll(PDO::FETCH_ASSOC))
             return $series;
         else
@@ -44,7 +44,6 @@ class OCSeriesModel {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
-
             $DBSeries = self::getConnectedSeriesDB($courseID);
             if ($DBSeries) {
                 $res = array();
@@ -108,12 +107,14 @@ class OCSeriesModel {
      * @return array
      */
     static function getAllSeries($refresh = false) {
-        
+
+ 
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
             $ret = array();
             if ($json = $sClient->getAllSeries()) {
+
                 foreach ($json as $series) {
                     $ret[] = self::transformSeriesJSON($series);
                 }
@@ -150,12 +151,6 @@ class OCSeriesModel {
      * @return type
      */
     static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
-        
-    
-        $stmt = DBManager::get()->prepare("UPDATE oc_series
-                SET seminars = seminars+1
-                WHERE series_id = ?");
-        $stmt->execute(array($seriesID));
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (series_id, seminar_id, visibility, schedule)
@@ -171,10 +166,6 @@ class OCSeriesModel {
      * @return bool
      */
     static function removeSeriesforCourse($courseID, $seriesID) {
-        $stmt = DBManager::get()->prepare("UPDATE 
-                oc_series SET seminars = seminars-1
-                WHERE series_id =?");
-        $stmt->execute(array($courseID));
         $stmt = DBManager::get()->prepare("DELETE FROM
                 oc_seminar_series
                 WHERE series_id = ? AND seminar_id = ?");
@@ -191,7 +182,7 @@ class OCSeriesModel {
         $series = self::getConnectedSeries($courseID);
         $ret = array();
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance()->getXML('/series/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance()->getXML('/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
@@ -239,19 +230,21 @@ class OCSeriesModel {
      * @return bool
      */
     static function createSeriesACL($data) {
+     
+
         $content = array();
         foreach ($data as $role => $perm) {
-            foreach ($perm as $key => $val) {
+            foreach ($perm as $action => $val) {
                 $content[] = '<ace>'
                         . '<role>' . $role . '</role>'
-                        . '<action>' . $key . '</action>'
+                        . '<action>' . $action . '</action>'
                         . '<allow>' . $val . '</allow>'
                         . '</ace>';
             }
         }
 
         $str = utf8_encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                . '<acl xmlns="org.opencastproject.security">'
+                . '<acl xmlns="http://org.opencastproject.security">'
                 . implode('', $content)
                 . '</acl>');
         return $str;
@@ -268,47 +261,57 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "Creative Commons"; // TODO: Licence auswahl und Kommentare weg
-//        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
-
+        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);
-        $publisher = $inst->name;
-        //$start = $course->getStartSemester();
-        //$end = $course->getEndSemesterVorlesEnde();
-        //       $audience = "General Public";
-        //       $instructors = $course->getMembers('dozent');
-        //       $instructor = array_pop($instructors);
-        $contributor = $instructor['fullname'];
-        $creator = $inst_data['name'];
 
-        $language = 'German';
+        $publisher = $inst->name;
+        $start = $course->getStartSemester();
+        $end = $course->getEndSemesterVorlesEnde();
+        $audience = "General Public";
+        $instructors = $course->getMembers('dozent');
+        $instructor = array_shift($instructors);
+        $contributor = $GLOBALS['UNI_NAME_CLEAN'];
+        $creator = $instructor['fullname'];
+        $language = 'de';
 
         $data = array(
             'title' => $name,
             'creator' => $creator,
             'contributor' => $contributor,
-            'subject' => $course->description,
+            'subject' => $course->form,
             'language' => $language,
             'license' => $license,
             'description' => $course->description,
             'publisher' => $publisher
         );
+
+
         $content = array();
 
         foreach ($data as $key => $val) {
-            $content[] = '<dcterms:' . $key . ' xmlns="">' . $val . '</dcterms:' . $key . '>';
+            $content[] = '<dcterms:' . $key . '><![CDATA[' . $val . ']]></dcterms:' . $key . '>';
         }
-        $str = '<?xml version="1.0"?>'
-                . '<dublincore '
-                . 'xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
-                . 'xmlns:dcterms="http://purl.org/dc/terms/" '
-                . 'xmlns:dc="http://purl.org/dc/elements/1.1/" '
-                . 'xmlns:oc="http://www.opencastproject.org/matterhorn">'
+
+        $str = '<?xml version="1.0" encoding="UTF-8"?>'
+                . '<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
+                . 'xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn/">'
                 . implode('', $content)
                 . '</dublincore>';
 
         return $str;
+    }
+    
+    /**
+     * getScheduledEpisodes - returns all scheduled episodes for a given course
+     */
+    
+    static function getScheduledEpisodes($course_id) {
+        $stmt = DBManager::get()->prepare("SELECT  * FROM
+                oc_scheduled_recordings WHERE seminar_id = ?");
+        $stmt->execute(array($course_id));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

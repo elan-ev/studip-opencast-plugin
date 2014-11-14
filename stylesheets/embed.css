@@ -1,0 +1,92 @@
+
+.matterhorn * {
+	margin: 0;
+	padding: 0;
+}
+
+.matterhorn #dialog {
+//	display: none;
+}
+.ui-widget .ui-widget{
+	text-align: right;
+	margin-top: 5px; 
+	margin-bottom: 20px;
+}
+
+div#series_container {
+	width: 49%;
+	float: left;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+div #series_container h2 {
+	text-align: center;
+}
+
+div #episodes_container {
+	width: 49%;
+	float: left;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+div #episodes_container h2 {
+	text-align: center;
+}
+
+#reset_series {
+	font-weight: bold;
+}
+
+#reset_series:hover  {
+	cursor: pointer;
+}
+#vertical_border_wrapper {
+	width: 2%;
+	float: left;
+	//height: 100%;
+}
+
+#vertical_border {
+	margin: 0px auto;
+	width: 1.5px;
+	height: 100%;
+	background: black;
+}
+
+ul#loaded_episodes li {
+	list-style: none;
+	border: 1px solid #cccccc;
+	margin-bottom: 4px;
+	padding: 20px;
+	overflow: hidden;
+}
+
+ul#loaded_episodes li:hover {
+	background-color: gray;
+	cursor: pointer;
+}
+
+ul#loaded_series li {
+	list-style: none;
+	border: 1px solid #cccccc;
+	margin-bottom: 4px;
+	padding: 20px;
+}
+
+ul#loaded_series li:hover {
+	background-color: gray;
+	cursor: pointer;
+}
+
+p.embed_episode_title{
+    font-weight: bold;
+    padding: 1em 0;
+}
+
+img#reset_series{
+    padding-left:5px;
+}

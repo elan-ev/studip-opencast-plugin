@@ -38,9 +38,10 @@ class UploadController extends StudipController
             if($this->file->isNew()) {
                 $this->initNewUpload();
             }
+
             if($this->file->getMediaPackage() && $this->file->getJobID()) {
                 //Step 2.2 Upload all chunks
-                $this->uploadChunk();
+                $x = $this->uploadChunk();
             } else {
                 $this->error[] = _('Fehler beim erstellen der Job ID oder des '
                         .'Media Packages');
@@ -53,7 +54,11 @@ class UploadController extends StudipController
         } else { //if($file = $OCUpload->post())
                $this->error[] = _('Fehler beim hochladen der Datei');
         }
-        $this->render_nothing();
+        $debug = false;
+        if($debug == true){
+             $this->render_text(implode(" ",$x));
+        } else  $this->render_nothing();
+       
     }
     private function endUpload()
     {
@@ -78,8 +83,16 @@ class UploadController extends StudipController
         }
         if($content = $this->ingest->ingest($this->file->getMediaPackage()))
         {
+           
+            $simplexml = simplexml_load_string($content);
+            $json = json_encode($simplexml);
+            $x = json_decode($json, true);
+            $result = $x['@attributes'];
+            
+            OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid']);
+            
             $this->file->clearSession();
-            echo 'Ingest Started: '.htmlentities($content);
+            //echo 'Ingest Started: '.htmlentities($content);
         } else echo 'upload failed';
         
     }
@@ -119,6 +132,7 @@ class UploadController extends StudipController
     }
     private function addSeriesDC() {
         $seriesDCs = OCSeriesModel::getSeriesDCs($_SESSION['SessionSeminar']);
+        if(is_array($seriesDCs)){
         foreach($seriesDCs as $dc) 
         {
             $newMediaPackage = '';
@@ -132,6 +146,7 @@ class UploadController extends StudipController
                 $this->error[] = 'Fehler beim hinzufügen einer Series, '.$dc;
                 return false;
             }
+        }
         }
         return true;
     }
@@ -155,7 +170,9 @@ class UploadController extends StudipController
         }
         //TODO: sicherheit Request
         foreach($_POST as $key => $val) {
-            $episodeData[$key] = Request::get($key);
+            $value  = Request::get($key);
+            $value = mb_convert_encoding($value,"ISO-8859-1",'auto');
+            $episodeData[$key] = $value;
         }
         
         $this->file->setEpisodeData($episodeData);
@@ -169,8 +186,8 @@ class UploadController extends StudipController
       
         $res = $this->upload->uploadChunk($this->file->getJobID(),
                 $this->file->getChunk(),
-                '@'.$this->file->getChunkPath());
-        switch($res[1]) {
+                $this->file->getChunkPath());
+        switch($res[0]) {
             case 200: 
                 $this->file->setChunkStatus('mh');
                 break;
@@ -187,6 +204,6 @@ class UploadController extends StudipController
             $this->error[] = 'Fehler beim upload zu Matterhorn: '
                     . $this->file->getChunkError();
             return false;
-        } else return true;
+        } else return true; //res
     }
 }
