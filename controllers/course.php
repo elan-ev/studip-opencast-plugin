@@ -76,6 +76,7 @@ class CourseController extends StudipController
             $this->states = array();
             $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
             $this->uploadfailedpic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/failed.png';
+            $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
                     $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);

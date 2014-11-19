@@ -29,8 +29,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         parent::__construct();
 
-    
-        
+
         global $SessSemName, $perm;
         
         
@@ -45,7 +44,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $config = new Navigation('OC Einstellungen');
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
-  
+
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
             

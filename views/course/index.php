@@ -16,10 +16,12 @@
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     $upload = '';
     if (!empty($connectedSeries)){
-
-        $upload = array(
-                          "icon" => "icons/16/black/upload.png",
-                          "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
+        if ($series_metadata [0] ['schedule'] == '1') {
+            $upload = array (
+                "icon" => "icons/16/black/upload.png",
+                "text" => '<a id="oc_upload_dialog"href="#">' . _ ( "Medien hochladen" ) . '</a>' 
+            );
+        }
         $unlink = array(
             "icon" => "icons/16/black/trash.png",
             "text" => '<a href="' . PluginEngine::getLink('opencast/course/index/'.$active_id .'/ /true' ) .'">' . _("Verknüpfung aufheben") . '</a>');
