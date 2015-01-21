@@ -1,5 +1,5 @@
 <? if($flash['delete']) : ?>
-    <?= createQuestion2(sprintf(_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()) )?>
+    <?= createQuestion2(sprintf(_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()))?>
 
 <? endif ?>
 
@@ -13,47 +13,35 @@
 </script>
 
 <?
-if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
-    $upload = '';
-    if (!empty($connectedSeries)){
-        if ($series_metadata[0] ['schedule'] == '1') {
-            $upload = array (
-                "icon" => "icons/16/black/upload.png",
-                "text" => '<a id="oc_upload_dialog"href="#">' . _ ( "Medien hochladen" ) . '</a>' 
-            );
+    $sidebar = Sidebar::get ();
+    
+    if($GLOBALS ['perm']->have_studip_perm ('dozent', $this->course_id))
+    {
+        $actions = new ActionsWidget ();
+        $upload = '';
+        if(! empty ($connectedSeries))
+        {
+            $actions->addLink (_ ("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/index/' . $active_id . '/ /true'), 'icons/16/blue/trash.png');
+            if($series_metadata [0] ['schedule'] == '1')
+            {
+                $actions->addLink (_ ("Medien hochladen"), '#', 'icons/16/blue/upload.png', array (
+                        'id' => 'oc_upload_dialog' 
+               ));
+            }
+        } else
+        {
+            $actions->addLink (_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
+            $actions->addLink (_ ('Vorhandene Series verknüpfen'), '#', 'icons/16/blue/group.png', array (
+                    'id' => 'oc_config_dialog' 
+           ));
         }
-        $unlink = array(
-            "icon" => "icons/16/black/trash.png",
-            "text" => '<a href="' . PluginEngine::getLink('opencast/course/index/'.$active_id .'/ /true' ) .'">' . _("Verknüpfung aufheben") . '</a>');
-        $aktionen = array($unlink, $upload);
         
-    } else {
-        $aktionen = array(
-                        array(
-                            "icon" => "icons/16/black/tools.png",
-                            "text" => '<a href="' . PluginEngine::getLink('opencast/course/create_series/') .'">' . _("Neue Series anlegen") . '</a>'),
-                        array(
-                          "icon" => "icons/16/black/group.png",
-                          "text" => '<a id="oc_config_dialog"href="#">' . _("Vorhandene Series verknüpfen") . '</a>')
-
-                      );
+        $sidebar->addWidget ($actions);
+        Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
+    } else
+    {
+        Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
     }
-
-
-
-    $infobox_content = array(array(
-        'kategorie' => _('Hinweise:'),
-        'eintrag'   => array(array(
-            'icon' => 'icons/16/black/info.png',
-            'text' => _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern.")
-        )
-    ), ),
-        array("kategorie" => _("Aktionen:"),
-              "eintrag"   => $aktionen
-        ));
-
-    $infobox = array('picture' => 'infobox/lectures.jpg', 'content' => $infobox_content);
-}
 ?>
 
 
@@ -72,18 +60,24 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 
 
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
-    <div class="oce_playercontainer">
-        <iframe src="<?=$embed?>&hideControls=false" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="100%" height="250px"></iframe><br>
-        <div class="oce_emetadata">
-            <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
-            <ul class="oce_contetlist">
-                <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
-                <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
-                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
-            </ul>
-            <div class="ocplayerlink">
-                <div style="text-align:left; font-style:italic;">Weitere Optionen:</div>
-                <div class="button-group">
+<div class="oce_playercontainer">
+    <iframe src="<?=$embed?>&hideControls=false"
+        style="border: 0px #FFFFFF none;"
+        name="Opencast Matterhorn - Media Player" scrolling="no"
+        frameborder="0" marginheight="0px" marginwidth="0px"
+        width="100%" height="250px"></iframe>
+    <br>
+    <div class="oce_emetadata">
+        <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
+        <ul class="oce_contetlist">
+            <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
+            <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
+            <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
+        </ul>
+        <div class="ocplayerlink">
+            <div style="text-align: left; font-style: italic;">Weitere
+                Optionen:</div>
+            <div class="button-group">
                 <?= Studip\LinkButton::create(_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
                 <? if($active['presenter_download']) : ?> 
                     <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
@@ -106,48 +100,62 @@ if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
                 </div>
                 <? endif;?>
             </div>
-        </div>
     </div>
-    
-    <div id="episodes">
-    <ul class="oce_list" <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?> >
+</div>
+
+<div id="episodes">
+    <ul class="oce_list"
+        <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
             <? foreach($states as $workflow_id => $state) :?>
             <li class="uploaded oce_item">
                 
                 <? if($state->state == 'FAILED') : ?>
-                    <div><img class="oce_preview oce_inprogress" src="<?=$uploadfailedpic?>"></div>
-                    <div class="oce_metadatacontainer oce_failedstate">
-                        <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
-                        <?= Studip\LinkButton::create(_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>    
-                    </div>
+                    <div>
+                <img class="oce_preview oce_inprogress"
+                    src="<?=$uploadfailedpic?>">
+            </div>
+            <div class="oce_metadatacontainer oce_failedstate">
+                <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                        <?= Studip\LinkButton::create(_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
+            </div>
                 <? else :?>
                 <a class="disabled">
-                <div><img class="oce_preview oce_inprogress" src="<?=$uploadprogresspic?>"></div>
+                <div>
+                    <img class="oce_preview oce_inprogress"
+                        src="<?=$uploadprogresspic?>">
+                </div>
                 <div class="oce_metadatacontainer">
                     <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                     <span class="oce_metadata"><?=sprintf(_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
                 </div>
                 <? endif; ?>
                 </a>
-            </li>    
+        </li>    
             <? endforeach;?>
         <? endif;?>
         <? foreach($ordered_episode_ids as $pos => $item) : ?>
-        <li id="<?=$item['id']?>" class="<?=($item['visibility'] != false) ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>" 
-            data-courseId="<?=$course_id?>" data-visibility="<?=var_export($item['visibility'], true)?>">
-            <a href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-            <div><img class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>" src="<?=$item['preview']?>"></div>
-            <div class="oce_metadatacontainer">
-                <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8'))?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
-                <span><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
-            </div>
-            </a>
+        <li id="<?=$item['id']?>"
+            class="<?=($item['visibility'] != false) ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
+            data-courseId="<?=$course_id?>"
+            data-visibility="<?=var_export($item['visibility'], true)?>">
+            <a
+            href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
+                <div>
+                    <img
+                        class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>"
+                        src="<?=$item['preview']?>">
+                </div>
+                <div class="oce_metadatacontainer">
+                    <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8'))?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
+                    <span><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+                </div>
+        </a>
         </li>
         <? endforeach; ?>
     </ul>
     <div id="oce_pagination"></div>
-    </div>
+</div>
 <? else: ?>
     <? if(empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
             <?= MessageBox::info(_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>

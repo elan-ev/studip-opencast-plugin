@@ -1,14 +1,7 @@
 <?
     use Studip\Button, Studip\LinkButton;
-
-    $infobox_content = array(array(
-        'kategorie' => _('Hinweise:'),
-        'eintrag'   => array(array(
-            'icon' => 'icons/16/black/info.png',
-            'text' => _("Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden.")
-        ))
-    ));
-    $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
+    
+    Helpbar::get()->addPlainText('',_("Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden."));
 ?>
 
 <?= $this->render_partial('messages') ?>
