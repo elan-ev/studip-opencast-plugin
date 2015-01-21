@@ -49,6 +49,12 @@ class CourseController extends StudipController
         $this->set_layout($layout);
         $this->pluginpath = $this->dispatcher->trails_root;
         $this->course_id = $_SESSION['SessionSeminar'];
+        
+        // notify on trails action
+        $klass = substr(get_called_class(), 0, -10);
+        $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
+        NotificationCenter::postNotification($name, $this);
+        
     }
 
     /**
@@ -76,7 +82,7 @@ class CourseController extends StudipController
             $this->states = array();
             $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
             $this->uploadfailedpic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/failed.png';
-            $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
+            $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
                     $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
@@ -316,7 +322,6 @@ class CourseController extends StudipController
         } else {
             throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
-        
         $this->redirect(PluginEngine::getLink('opencast/course/scheduler'));
     }
 

@@ -9,7 +9,10 @@ class AjaxController extends StudipController
 
     function before()
     {
- 
+        // notify on trails action
+        $klass = substr(get_called_class(), 0, -10);
+        $name = sprintf('oc_embed.performed.%s_%s', $klass, $action);
+        NotificationCenter::postNotification($name, $this);
     }
 
     function index_action()

@@ -262,7 +262,6 @@ class OCUploadFile {
             }
         }
     }
-            
 }
 
 

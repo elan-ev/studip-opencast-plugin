@@ -174,6 +174,9 @@
                                 event.location=' . $room->name . '
                                 capture.device.id=' . $device . '
                                 capture.device.names=' . $device_names;
+            // uncomment if further parametes should be set like e.g. ncast definitions etc
+            //$agentparameters .= in_array($device, words('ca-01-e01 ca-01-b01')) ? '
+            //                    org.opencastproject.workflow.definition=ncast' : '';
             return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
             
         }

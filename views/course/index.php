@@ -16,7 +16,7 @@
 if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
     $upload = '';
     if (!empty($connectedSeries)){
-        if ($series_metadata [0] ['schedule'] == '1') {
+        if ($series_metadata[0] ['schedule'] == '1') {
             $upload = array (
                 "icon" => "icons/16/black/upload.png",
                 "text" => '<a id="oc_upload_dialog"href="#">' . _ ( "Medien hochladen" ) . '</a>' 

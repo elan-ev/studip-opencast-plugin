@@ -81,7 +81,8 @@ class UploadController extends StudipController
             $this->error[] = _('Fehler beim hinzufügen der Episode');
             return false;
         }
-        if($content = $this->ingest->ingest($this->file->getMediaPackage()))
+        // comment indicates how specific workflows can be chosen
+        if($content = $this->ingest->ingest($this->file->getMediaPackage()))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
         {
            
             $simplexml = simplexml_load_string($content);

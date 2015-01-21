@@ -31,6 +31,11 @@ class AdminController extends AuthenticatedController
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
+        
+        // notify on trails action
+        $klass = substr(get_called_class(), 0, -10);
+        $name = sprintf('oc_admin.performed.%s_%s', $klass, $action);
+        NotificationCenter::postNotification($name, $this);
 
     }
 
