@@ -111,19 +111,17 @@
             <li class="uploaded oce_item">
                 
                 <? if($state->state == 'FAILED') : ?>
-                    <div>
-                <img class="oce_preview oce_inprogress"
-                    src="<?=$uploadfailedpic?>">
-            </div>
+                    <div class="oce_preview_container">
+                        <?=_("Videoverarbeitung fehlerhaft")?>
+                    </div>
             <div class="oce_metadatacontainer oce_failedstate">
                 <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                         <?= Studip\LinkButton::create(_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
             </div>
                 <? else :?>
                 <a class="disabled">
-                <div>
-                    <img class="oce_preview oce_inprogress"
-                        src="<?=$uploadprogresspic?>">
+                <div class="oce_preview_container">
+                    <?=_("Video wird verarbeitet")?>
                 </div>
                 <div class="oce_metadatacontainer">
                     <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
