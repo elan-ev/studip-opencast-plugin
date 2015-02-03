@@ -172,7 +172,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main = new Navigation("OpenCast");
         //$main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
+        $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
         $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
 
 
