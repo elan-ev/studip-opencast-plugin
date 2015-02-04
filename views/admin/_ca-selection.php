@@ -8,7 +8,7 @@
     <td>   
         <?=$assigned_agents['capture_agent']?>
     </td>
-    <? foreach ($agents->agents->agent as $key => $agent) : ?>
+    <? foreach ($agents->agents as $key => $agent) : ?>
         <? if(in_array($agent->name, $assigned_agents)):?>
             <td>
                     <? if($agent->state == 'idle') :?>
@@ -31,10 +31,12 @@
 <? else :?>
 <td>
     <input type="hidden" name="action" value="add"/>
+
     <select name="<?=$resource['resource_id']?>">
         <option value="" disabled selected><?=_("Bitte wählen Sie einen CA.")?></option>
-        <? if($agents) : ?>      
-            <? foreach ($available_agents->agents->agent as $agent) : ?>
+        <? if($agents) : ?>
+
+            <? foreach ($available_agents->agents as $agent) : ?>
                 <? if(isset($agent)) : ?>
                     <option value="<?= $agent->name ?>" > <?=$agent->name?></option>
                 <? endif; ?>
