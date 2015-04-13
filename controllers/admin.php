@@ -16,6 +16,7 @@ require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/ServicesClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 
 
 class AdminController extends AuthenticatedController
@@ -157,6 +158,7 @@ class AdminController extends AuthenticatedController
         }
 
         $caa_client = CaptureAgentAdminClient::getInstance();
+        $workflow_client = WorkflowClient::getInstance();
         
         $agents = $caa_client->getCaptureAgents();
 
@@ -172,7 +174,8 @@ class AdminController extends AuthenticatedController
         
 
         $this->available_agents = $agents;
-        
+        $this->definitions = $workflow_client->getDefinitions();
+
         $this->assigned_cas = OCModel::getAssignedCAS();
 
     }
@@ -184,9 +187,14 @@ class AdminController extends AuthenticatedController
         $this->resources = OCModel::getOCRessources();
 
         foreach($this->resources as $resource) {
-            if(($candidate_ca = Request::get($resource['resource_id'])) &&  Request::get('action') == 'add'){
-                OCModel::setCAforResource($resource['resource_id'], $candidate_ca);
+            if(Request::get('action') == 'add'){
+                if(($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')){
+                    OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
+                }
             }
+
+
+
         }
 
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));

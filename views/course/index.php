@@ -61,11 +61,28 @@
 
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
 <div class="oce_playercontainer">
-    <iframe src="<?=$embed?>&hideControls=false"
-        style="border: 0px #FFFFFF none;"
-        name="Opencast Matterhorn - Media Player" scrolling="no"
-        frameborder="0" marginheight="0px" marginwidth="0px"
-        width="100%" height="250px"></iframe>
+    <? if($theodul) : ?>
+        <iframe src="<?=$embed?>"
+                style="border:0px #FFFFFF none;"
+                name="Opencast Matterhorn video player"
+                scrolling="no"
+                frameborder="0"
+                marginheight="0px"
+                marginwidth="0px"
+                width="640"
+                height="360"
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                mozallowfullscreen="true">
+        </iframe>
+    <? else: ?>
+        <iframe src="<?=$embed?>&hideControls=false"
+            style="border: 0px #FFFFFF none;"
+            name="Opencast Matterhorn - Media Player" scrolling="no"
+            frameborder="0" marginheight="0px" marginwidth="0px"
+            width="100%" height="250px">
+        </iframe>
+     <? endif; ?>
     <br>
     <div class="oce_emetadata">
         <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>

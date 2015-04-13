@@ -59,15 +59,15 @@ class OCModel
        return $resources;
     }
 
-    static function setCAforResource($resource_id, $capture_agent) {
+    static function setCAforResource($resource_id, $capture_agent, $workflow_id) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_resources (resource_id, capture_agent)
-                VALUES (?, ?)");
-        return $stmt->execute(array($resource_id, $capture_agent));
+                oc_resources (resource_id, capture_agent, workflow_id)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($resource_id, $capture_agent, $workflow_id));
     }
 
     static function getCAforResource($resource_id) {
-        $stmt = DBManager::get()->prepare("SELECT capture_agent FROM
+        $stmt = DBManager::get()->prepare("SELECT capture_agent, workflow_id FROM
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
         $agent = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -80,8 +80,6 @@ class OCModel
                 WHERE resource_id =? AND capture_agent = ?");
         return $stmt->execute(array($resource_id, $capture_agent));
     }
-
-
 
 
     static function getAssignedCAS() {

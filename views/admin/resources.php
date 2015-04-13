@@ -9,7 +9,6 @@ OC.initAdmin();
 <?= $this->render_partial('messages') ?>
 
 <!-- New Table-->
-
 <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>" method=post>
     <fieldset class="conf-form-field">
         <legend><?= _("Zuweisung der Capture Agents") ?> </legend>
@@ -17,6 +16,7 @@ OC.initAdmin();
             <tr>
                 <th><?=_('Raum')?></th>
                 <th><?=_('Capture Agent')?></th>
+                <th><?=_('Workflow')?></th>
                 <th><?=_('Status')?></th>
                 <th><?=_('Aktionen')?></th>
             </tr>

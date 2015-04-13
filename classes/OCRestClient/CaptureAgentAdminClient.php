@@ -45,7 +45,7 @@
 
         function getCaptureAgents() {
             $service_url = "/agents.json";
-		    if($agents = $this->getJSON($service_url)){
+            if($agents = $this->getJSON($service_url)){
               return $agents;
             } else return false;
         }

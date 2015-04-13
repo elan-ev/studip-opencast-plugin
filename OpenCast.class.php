@@ -33,7 +33,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         global $SessSemName, $perm;
         
         
-        if($perm->have_perm('admin')) {
+        if($perm->have_perm('root')) {
             
             //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi

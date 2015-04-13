@@ -143,7 +143,7 @@
         }
         
         /**
-         * function getJSON - performs a REST-Call and retrieves response in JSON
+         * function getXML - performs a REST-Call and retrieves response in XML
          */
         function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false) {
             if(isset($service_url) && self::checkService($service_url)) {

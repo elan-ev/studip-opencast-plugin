@@ -157,9 +157,11 @@
             $cas = OCModel::checkResource($resource_id);
             $ca = $cas[0];
             $device = $ca['capture_agent'];
+            $workflow = $ca['workflow_id'];
             $ca_client = CaptureAgentAdminClient::getInstance();
             $device_names = '';
             $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
+
             if(isset($capabilities)){
                 foreach($capabilities as $capability) {
                     if($capability->key == 'capture.device.names') {
@@ -173,10 +175,13 @@
                                 event.title=' . $title .'
                                 event.location=' . $room->name . '
                                 capture.device.id=' . $device . '
-                                capture.device.names=' . $device_names;
+                                capture.device.names=' . $device_names .'
+                                org.opencastproject.workflow.definition=' . $workflow;
+
             // uncomment if further parametes should be set like e.g. ncast definitions etc
             //$agentparameters .= in_array($device, words('ca-01-e01 ca-01-b01')) ? '
             //                    org.opencastproject.workflow.definition=ncast' : '';
+
             return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
             
         }

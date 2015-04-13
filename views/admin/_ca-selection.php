@@ -8,7 +8,10 @@
     <td>   
         <?=$assigned_agents['capture_agent']?>
     </td>
-    <? foreach ($agents->agents as $key => $agent) : ?>
+    <td>
+    <?=$assigned_agents['workflow_id']?>
+    </td>
+    <? foreach ($agents->agents->agent as $key => $agent) : ?>
         <? if(in_array($agent->name, $assigned_agents)):?>
             <td>
                     <? if($agent->state == 'idle') :?>
@@ -31,12 +34,12 @@
 <? else :?>
 <td>
     <input type="hidden" name="action" value="add"/>
-
-    <select name="<?=$resource['resource_id']?>">
+    <select name="<?=$resource['resource_id']?>" required>
         <option value="" disabled selected><?=_("Bitte wählen Sie einen CA.")?></option>
-        <? if($agents) : ?>
+        <? if($available_agents) : ?>
 
-            <? foreach ($available_agents->agents as $agent) : ?>
+            <? foreach ($available_agents->agents->agent as $agent) : ?>
+
                 <? if(isset($agent)) : ?>
                     <option value="<?= $agent->name ?>" > <?=$agent->name?></option>
                 <? endif; ?>
@@ -44,6 +47,20 @@
         <? else: ?>
             <option disabled selected> <?=_("Kein CA mehr verfügbar")?> </option>
         <? endif;?>
+    </select>
+</td>
+<td>
+    <select name="workflow" required>
+        <option value="" disabled selected><?=_("Bitte wählen Sie einen Worflow aus.")?></option>
+        <? foreach($definitions->definitions->definition as $definition) :?>
+            <? if(is_object($definition->tags)) : ?>
+                <? if(is_array($definition->tags->tag) && in_array('schedule', $definition->tags->tag)) :?>
+                <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
+                <? elseif($definition->tags->tag == 'schedule') :?>
+                    <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
+                <? endif;?>
+            <? endif; ?>
+        <? endforeach; ?>
     </select>
 </td>
 <td></td>
