@@ -271,7 +271,8 @@ class CourseController extends StudipController
         $delete = Request::get('delete');
         if( $delete && check_ticket($ticket)) {
             
-            $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+            $scheduled_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+
             OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
 
             /* Uncomment iff you really want to remove this series from the OC Core

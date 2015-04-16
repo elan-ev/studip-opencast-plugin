@@ -45,14 +45,15 @@
                 <? endif; ?>
             <? endforeach ; ?>
         <? else: ?>
-            <option disabled selected> <?=_("Kein CA mehr verfügbar")?> </option>
+            <option disabled selected> <?=_("Kein CA verfügbar")?> </option>
         <? endif;?>
     </select>
 </td>
 <td>
     <select name="workflow" required>
         <option value="" disabled selected><?=_("Bitte wählen Sie einen Worflow aus.")?></option>
-        <? foreach($definitions->definitions->definition as $definition) :?>
+
+        <? if($definitions) :foreach($definitions->definitions->definition as $definition) :?>
             <? if(is_object($definition->tags)) : ?>
                 <? if(is_array($definition->tags->tag) && in_array('schedule', $definition->tags->tag)) :?>
                 <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
@@ -60,7 +61,9 @@
                     <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
                 <? endif;?>
             <? endif; ?>
-        <? endforeach; ?>
+        <? endforeach; else: ?>
+            <option disabled selected> <?=_("Kein Workflow verfügbar")?> </option>
+        <? endif; ?>
     </select>
 </td>
 <td></td>
