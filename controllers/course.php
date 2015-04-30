@@ -44,6 +44,12 @@ class CourseController extends StudipController
     {
         $this->flash = Trails_Flash::instance();
         
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.fileupload.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
+        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css'); 
+        
+        
+        
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
