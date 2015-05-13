@@ -35,12 +35,27 @@
                     'id' => 'oc_config_dialog' 
            ));
         }
+        //UOS FEEDBACK
+        $actions->addLink (_ ('Feedback abgeben'), '#', 'icons/16/blue/evaluation.png', array (
+                          'id' => 'oc_feedback_dialog',
+                          'class' => 'tooltip',
+                          'title' => _('Geben Sie Feedback zum neuen Player ab!')
+        ));
         
         $sidebar->addWidget ($actions);
         Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
     } else
     {
         Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
+        //UOS tmp
+        $actions = new ActionsWidget ();
+        $actions->addLink (_ ('Feedback abgeben'), '#', 'icons/16/blue/evaluation.png', array (
+                'id' => 'oc_feedback_dialog',
+                'class' => 'tooltip',
+                'title' => _('Geben Sie Feedback zum neuen Player ab!')
+       ));
+        $sidebar->addWidget ($actions);
+        
     }
 ?>
 
@@ -190,3 +205,11 @@
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 <? endif;?>
+
+<div id="feedback_dialog" title="<?=_("Neuer Player: Feedback erwünscht")?>">
+  <p>Zum aktuellen Semester haben wir den Player für Vorlesungsaufzeichnungen modernisiert. Wir hoffen, dass sie die neuen Funktionen, wie zum Beispiel die Möglichkeit das Video schneller abspielen zu können, als Verbesserung empfinden. Da es sich aber um ein sehr neues Softwaremodul handelt und technologisch einiges modernisiert wurde, kann es möglicherweise Probleme geben, die nicht in unserer Qualitätssicherung aufgefallen sind.</p>
+
+  <p>Wenn sie also Probleme feststellen, würden wir sie um Feedback bitten. Schreiben sie uns doch bitte ihr Problem an <a href="mailto:virtuos@uni-osnabrueck.de?subject=Feedback%20zum%20neuen%20Opencastplayer">virtuos@uni-osnabrueck.de</a>. Bitte geben sie wenn möglich, die angeschaute Aufzeichnung, den Zeitpunkt zu dem die Probleme aufgetreten sind, die Art ihrer Internetverbindung, ihren Internetbrowser inkl. der Versionsnummer, ihr Betriebssystem und ein paar grobe Daten zum ihrem Rechner (Alter, CPU, RAM) an.</p>
+
+  <p>Vielen Dank für ihre Unterstützung!</p>
+</div>

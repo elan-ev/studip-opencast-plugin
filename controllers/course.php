@@ -48,6 +48,11 @@ class CourseController extends StudipController
         PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
         PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css'); 
         
+        //UOS FEEDBACK
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/tooltipster/js/jquery.tooltipster.min.js');  
+        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/tooltipster/css/tooltipster-shadow.css'); 
+        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/tooltipster/css/tooltipster.css'); 
+        
         
         
         // set default layout
@@ -198,7 +203,7 @@ class CourseController extends StudipController
             if($count > 0) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
                 // set true iff theodul is active
-                $this->theodul = false;
+                $this->theodul = true;
                 if($this->theodul) {
                     $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
                 } else {
@@ -401,15 +406,15 @@ class CourseController extends StudipController
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
             // if visibilty wasn't set before do so...
             if(!$visible){
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
                 $visible['visible'] = 'true';
             }
 
             if($visible['visible'] == 'true'){
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
+               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
                $this->flash['messages'] = array('success'=> _("Episode wurde unsichtbar geschaltet"));
             } else {
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
                $this->flash['messages'] = array('success'=> _("Episode wurde sichtbar geschaltet"));
             }
         } else {

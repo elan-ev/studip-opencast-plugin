@@ -82,7 +82,7 @@ class UploadController extends StudipController
             return false;
         }
         // comment indicates how specific workflows can be chosen
-        if($content = $this->ingest->ingest($this->file->getMediaPackage()))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
+        if($content = $this->ingest->ingest($this->file->getMediaPackage(),'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
         {
            
             $simplexml = simplexml_load_string($content);

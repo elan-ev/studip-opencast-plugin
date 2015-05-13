@@ -26,6 +26,21 @@ OC = {
                         }
                 });
              }
+              // FEEDBACK Dialog UOS TEMPORARY
+             jQuery('.tooltip').tooltipster({
+                theme: 'tooltipster-shadow',
+                position: 'top-left'
+             });
+             jQuery('.tooltip').tooltipster('show');
+             jQuery("#feedback_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
+             jQuery("#oc_feedback_dialog").click(
+                 function () {
+                     jQuery("#feedback_dialog").dialog('open');
+                     return false;
+                 }
+             );
+             
+             
              // Upload Dialog
             jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
             jQuery("#oc_upload_dialog").click(
