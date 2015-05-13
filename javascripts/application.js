@@ -99,6 +99,7 @@ OC = {
                     return false;
                 },
                 submit: function (e, data) {
+                    $("#btn_accept").attr('disabled', true);
                     $( "#progressbar" ).progressbar({
                         value: 0
                     }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});;

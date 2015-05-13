@@ -48,6 +48,21 @@
                 return false;
             }
         }
+
+        /**
+         * getDefinitions() - returns all Workflow definitions
+         *
+         *  @return array Workflow Instances
+         */
+        function getDefinitions() {
+            $service_url = sprintf( "/definitions.json");
+
+            if($definitions = $this->getJSON($service_url)){
+                return $definitions;
+            } else {
+                return false;
+            }
+        }
     
     
     }

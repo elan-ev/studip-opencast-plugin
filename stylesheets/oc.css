@@ -157,6 +157,20 @@
     
 }
 
+.oce_preview_container {
+    position: relative;
+}
+
+.oce_preview_container p {
+    position: absolute;
+    width: 125px;
+    text-align: center;
+    font-weight: bold;
+    vertical-align: middle;
+    margin: -1% 0 0 0;
+
+}
+
 .oce_preview {
     padding-left:5px;
     position: absolute;
@@ -165,11 +179,6 @@
     max-height: 96px;
     max-width: 120px;
 
-}
-
-.oce_inprogress {
-    left: 17px;
-    top: 27px;
 }
 
 .oce_metadatacontainer {

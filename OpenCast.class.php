@@ -31,9 +31,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
 
         global $SessSemName, $perm;
+        $GLOBALS['ocplugin_path'] = $this->getPluginURL(); 
         
-        
-        if($perm->have_perm('admin')) {
+        if($perm->have_perm('root')) {
             
             //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi
@@ -41,7 +41,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             // TODO think about an index page.. for the moment the config page is in charge..
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
             
-            $config = new Navigation('OC Einstellungen');
+            $config = new Navigation('Opencast Einstellungen');
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
 
@@ -50,7 +50,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             
             
             if(OCModel::getConfigurationstate()){
-                $resources = new Navigation('OC Ressourcen');
+                $resources = new Navigation('Opencast Ressourcen');
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
                 Navigation::addItem('/admin/config/oc-resources', $resources);
@@ -67,13 +67,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/oc.css');
         PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
-        PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.simplePagination.js');
-        PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/simplePagination.css'); 
+
         
         if($perm->have_perm('dozent') && OCModel::getConfigurationstate()){
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
             PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
-            PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.fileupload.js');
             PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.ui.widget.js');
             PageLayout::addScript($this->getpluginUrl()  . '/vendor/chosen/chosen.jquery.min.js');
             PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/chosen/chosen.min.css');
@@ -172,7 +170,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main = new Navigation("OpenCast");
         //$main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage($this->getPluginUrl() . '/images/oc-logo.png');
+        $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
         $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
 
 

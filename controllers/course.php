@@ -44,6 +44,12 @@ class CourseController extends StudipController
     {
         $this->flash = Trails_Flash::instance();
         
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.fileupload.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
+        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css'); 
+        
+        
+        
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -80,8 +86,6 @@ class CourseController extends StudipController
             $this->workflow_client = WorkflowClient::getInstance();
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
             $this->states = array();
-            $this->uploadprogresspic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/inprogess.png';
-            $this->uploadfailedpic = $GLOBALS['ABSOLUTE_URI_STUDIP'] . $this->pluginpath . '/images/failed.png';
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
@@ -193,8 +197,13 @@ class CourseController extends StudipController
 
             if($count > 0) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
-                
-                $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                // set true iff theodul is active
+                $this->theodul = false;
+                if($this->theodul) {
+                    $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
+                } else {
+                    $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                }
                 // check whether server supports ssl
                 $embed_headers = @get_headers("https://". $this->embed);
                 if($embed_headers) {
@@ -268,7 +277,8 @@ class CourseController extends StudipController
         $delete = Request::get('delete');
         if( $delete && check_ticket($ticket)) {
             
-            $schedule_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+            $scheduled_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
+
             OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
 
             /* Uncomment iff you really want to remove this series from the OC Core

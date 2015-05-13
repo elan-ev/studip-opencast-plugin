@@ -59,15 +59,15 @@ class OCModel
        return $resources;
     }
 
-    static function setCAforResource($resource_id, $capture_agent) {
+    static function setCAforResource($resource_id, $capture_agent, $workflow_id) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_resources (resource_id, capture_agent)
-                VALUES (?, ?)");
-        return $stmt->execute(array($resource_id, $capture_agent));
+                oc_resources (resource_id, capture_agent, workflow_id)
+                VALUES (?, ?, ?)");
+        return $stmt->execute(array($resource_id, $capture_agent, $workflow_id));
     }
 
     static function getCAforResource($resource_id) {
-        $stmt = DBManager::get()->prepare("SELECT capture_agent FROM
+        $stmt = DBManager::get()->prepare("SELECT capture_agent, workflow_id FROM
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
         $agent = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -80,8 +80,6 @@ class OCModel
                 WHERE resource_id =? AND capture_agent = ?");
         return $stmt->execute(array($resource_id, $capture_agent));
     }
-
-
 
 
     static function getAssignedCAS() {
@@ -393,14 +391,29 @@ class OCModel
     return $acl;
 
     }
-
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility, $position) {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (seminar_id, episode_id, visible, position)
-                VALUES (?, ?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $visibility, $position));
+    
+    /**
+     * Set episode visibility
+     * 
+     * @param string $course_id
+     * @param string $episode_id
+     * @param tyniint 1 or 0
+     * @return bool
+     */
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+        $stmt = DBManager::get()->prepare("UPDATE
+                  oc_seminar_episodes SET visible = ? 
+                  WHERE seminar_id = ? AND  episode_id = ?");
+        return $stmt->execute(array($visibility, $course_id, $episode_id));
     }
-
+    
+    /**
+     * get visibility row
+     * 
+     * @param string $course_id
+     * @param string $episode_id
+     * @return array
+     */
     static function getVisibilityForEpisode($course_id, $episode_id) {
         $stmt = DBManager::get()->prepare("SELECT visible FROM
                 oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");

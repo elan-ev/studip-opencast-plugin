@@ -166,10 +166,14 @@ class OCSeriesModel {
      * @return bool
      */
     static function removeSeriesforCourse($courseID, $seriesID) {
-        $stmt = DBManager::get()->prepare("DELETE FROM
+        $qepisodes =  DBManager::get()->prepare("DELETE FROM oc_seminar_episodes WHERE seminar_id = ?");
+        if($qepisodes->execute(array($courseID))){
+            $stmt = DBManager::get()->prepare("DELETE FROM
                 oc_seminar_series
                 WHERE series_id = ? AND seminar_id = ?");
-        return $stmt->execute(array($seriesID, $courseID));
+            return $stmt->execute(array($seriesID, $courseID));
+    }
+        else return false;
     }
 
     /**

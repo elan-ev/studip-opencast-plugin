@@ -1,13 +1,6 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <?
-    $infobox_content = array(array(
-        'kategorie' => _('Hinweise:'),
-        'eintrag'   => array(array(
-            'icon' => 'icons/16/black/info.png',
-            'text' => _("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen.")
-        ))
-    ));
-    $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
+    Helpbar::get()->addPlainText('',_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen."));
 ?>
 <script language="JavaScript">
 OC.initAdmin();
@@ -16,7 +9,6 @@ OC.initAdmin();
 <?= $this->render_partial('messages') ?>
 
 <!-- New Table-->
-
 <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>" method=post>
     <fieldset class="conf-form-field">
         <legend><?= _("Zuweisung der Capture Agents") ?> </legend>
@@ -24,6 +16,7 @@ OC.initAdmin();
             <tr>
                 <th><?=_('Raum')?></th>
                 <th><?=_('Capture Agent')?></th>
+                <th><?=_('Workflow')?></th>
                 <th><?=_('Status')?></th>
                 <th><?=_('Aktionen')?></th>
             </tr>

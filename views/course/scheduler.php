@@ -1,21 +1,7 @@
 <?= $this->render_partial('messages') ?>
 
 <?
-
-$aktionen = array();
-$aktionen[] = array(
-              "icon" => "icons/16/black/upload.png",
-              "text" => '<a id="oc_upload_dialog"href="#">' . _("Medien hochladen") . '</a>');
-
-$infobox_content = array(array(
-    'kategorie' => _('Hinweise:'),
-    'eintrag'   => array(array(
-        'icon' => 'icons/16/black/info.png',
-        'text' => _("Hier können Sie einzelne Aufzeichnungen für diese Veranstaltung planen.")
-    )
-)));
-
-$infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
+    Helpbar::get()->addPlainText('',_("Hier können Sie einzelne Aufzeichnungen für diese Veranstaltung planen."));
 ?>
 
 
