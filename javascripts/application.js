@@ -32,6 +32,11 @@ OC = {
                 position: 'top-left'
              });
              jQuery('.tooltip').tooltipster('show');
+             jQuery("#layout_content").mousemove(
+                 function() {
+                     jQuery('.tooltip').tooltipster('hide');
+                 }
+             );
              jQuery("#feedback_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
              jQuery("#oc_feedback_dialog").click(
                  function () {
