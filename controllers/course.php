@@ -109,6 +109,7 @@ class CourseController extends StudipController
                 $count = 0;
                 $this->search_client = SearchClient::getInstance();
                 $positions = OCModel::getCoursePositions($this->course_id);
+                $poscount = count($positions);
                 $presenter_download = false;
                 $presentation_download = false;
                 $audio_download = false;
@@ -117,6 +118,20 @@ class CourseController extends StudipController
                         $series = $this->search_client->getEpisodes($serie['identifier']);
                         if(!empty($series)) {
                             foreach($series as $episode) {
+
+                                //taking care of position
+                                if(!empty($positions)){
+                                    $pos_lookup = OCModel::search_positions($positions, 'episode_id',$episode->id );
+                                    if(empty($pos_lookup)){
+                                        OCModel::setCoursePositionForEpisode($episode->id, $poscount, $this->course_id, 'true');
+                                        $poscount++;
+                                    }
+                                } else {
+                                    OCModel::setCoursePositionForEpisode($episode->id, $poscount, $this->course_id, 'true');
+                                    $poscount++;
+                                }
+
+
                                 $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
                                 if(is_object($episode->mediapackage) && 
                                     (($visibility['visible']!= 'false' && $GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) ||
@@ -160,13 +175,15 @@ class CourseController extends StudipController
                         }
                     }
             }
-            if($positions) {
+
+
+            if($positions = OCModel::getCoursePositions($this->course_id)) {
                 $this->ordered_episode_ids = array();
                 foreach($positions as $position) {
                     if(isset($this->episode_ids[$position['episode_id']])){
-                         $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
-                         $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
-                         unset($this->episode_ids[$position['episode_id']]);
+                        $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
+                        $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
+                        unset($this->episode_ids[$position['episode_id']]);
                     }
                 }
                 if(!empty($this->episode_ids)){
@@ -174,17 +191,9 @@ class CourseController extends StudipController
                         array_unshift($this->ordered_episode_ids, $episode);
                     }
                 }
-            } elseif(!empty($this->episode_ids)){
-                $i = 0;
-                foreach($this->episode_ids as $key => $episode){
-                    $episode['position'] = $i;
-                    $this->ordered_episode_ids[$key] = $episode;
-                    OCModel::setCoursePositionForEpisode($key, $i, $this->course_id, 'true');
-                    unset($this->episode_ids[$key]);
-                    $i++;
-                }
             }
-            
+
+
             if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->episode_ids)){
@@ -213,7 +222,7 @@ class CourseController extends StudipController
                 }
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
-            
+
             // Upload-Dialog
             $this->date = date('Y-m-d');
             $this->hour = date('H');
