@@ -29,10 +29,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         parent::__construct();
 
-
         global $SessSemName, $perm;
-        $GLOBALS['ocplugin_path'] = $this->getPluginURL(); 
-        
+        $GLOBALS['ocplugin_path'] = $this->getPluginURL();
+
         if($perm->have_perm('root')) {
             
             //check if we already have an connection to an opencast matterhorn
@@ -47,8 +46,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
-            
-            
+
             if(OCModel::getConfigurationstate()){
                 $resources = new Navigation('Opencast Ressourcen');
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));

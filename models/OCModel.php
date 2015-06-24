@@ -499,5 +499,22 @@ class OCModel
         if($rows['0'] > 0) return true;
         else return false;
     }
+
+    static function search_positions($array, $key, $value)
+    {
+        $results = array();
+
+        if (is_array($array)) {
+            if (isset($array[$key]) && $array[$key] == $value) {
+                $results[] = $array;
+            }
+
+            foreach ($array as $subarray) {
+                $results = array_merge($results, self::search_positions($subarray, $key, $value));
+            }
+        }
+
+        return $results;
+    }
 }
 ?>
