@@ -41,14 +41,18 @@ class UploadController extends StudipController
 
             if($this->file->getMediaPackage() && $this->file->getJobID()) {
                 //Step 2.2 Upload all chunks
+
                 $x = $this->uploadChunk();
+                //file_put_contents("/tmp/oc_log.txt", 'Chunk hochgeladen um: '  . date('d.m.Y H:i:s',time()) .' Uhr: ' . $x[1] .'\n');
             } else {
                 $this->error[] = _('Fehler beim erstellen der Job ID oder des '
                         .'Media Packages');
             }
             //check if last chunk is handled
             if($this->upload->isLastChunk($this->file->getJobID())) {
+                //file_put_contents("/tmp/oc_log.txt", 'Job finalisieren um: '  . date('d.m.Y H:i:s',time()) .' Uhr \n');
                 $this->endUpload();
+                //file_put_contents("/tmp/oc_log.txt", 'Job fertig um: '  . date('d.m.Y H:i:s',time()) .' Uhr \n');
             }
             
         } else { //if($file = $OCUpload->post())
@@ -58,7 +62,6 @@ class UploadController extends StudipController
         if($debug == true){
              $this->render_text(implode(" ",$x));
         } else  $this->render_nothing();
-       
     }
     private function endUpload()
     {
@@ -205,6 +208,6 @@ class UploadController extends StudipController
             $this->error[] = 'Fehler beim upload zu Matterhorn: '
                     . $this->file->getChunkError();
             return false;
-        } else return true; //res
+        } else return $res; //true;
     }
 }

@@ -3,6 +3,7 @@
 require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 
 class AjaxController extends StudipController
 {
@@ -69,5 +70,13 @@ class AjaxController extends StudipController
         }
         $this->render_nothing();
     }
-    
+
+    function getWorkflowStatus_action($workflow_id){
+        $this->workflow_client = WorkflowClient::getInstance();
+        $resp = $this->workflow_client->getWorkflowInstance($workflow_id);
+        $this->render_text(json_encode($resp));
+
+    }
+
+
 }

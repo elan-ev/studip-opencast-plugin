@@ -125,7 +125,7 @@
         <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
             <? foreach($states as $workflow_id => $state) :?>
-            <li class="uploaded oce_item">
+            <li class="uploaded oce_item" style="position: relative;">
                 
                 <? if($state->state == 'FAILED') : ?>
                     <div class="oce_preview_container">
@@ -136,16 +136,17 @@
                         <?= Studip\LinkButton::create(_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
             </div>
                 <? else :?>
-                <a class="disabled">
-                <div class="oce_preview_container">
-                    <?=_("Video wird verarbeitet")?>
+                <div class="oce_preview_container"  style="max-height: 96px; display: inline; max-width: 120px; position: absolute; top: 4px; cursor: default;">
+                    <div id="<?=$workflow_id?>" class="workflow_info" style="max-width: 120px;display: inline;">
+                        <strong style="font-size: 9pt;position: absolute; top:22px; left: 15px; max-width:50px;line-height: 17px;text-align: center"></strong>
+                    </div>
+                    <div style="clear: both;"></div>
                 </div>
                 <div class="oce_metadatacontainer">
-                    <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                    <h3 class="oce_metadata"><?=_('Video wird verarbeitet: ')?> <?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                     <span class="oce_metadata"><?=sprintf(_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
                 </div>
                 <? endif; ?>
-                </a>
         </li>    
             <? endforeach;?>
         <? endif;?>

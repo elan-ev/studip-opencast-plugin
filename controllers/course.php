@@ -44,12 +44,14 @@ class CourseController extends StudipController
     {
         $this->flash = Trails_Flash::instance();
         
-        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.fileupload.js');
+       // PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.fileupload.js');
         PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
-        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css'); 
-        
-        
-        
+        PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css');
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/circle-progress/circle-progress.js');
+
+
+
+
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
@@ -435,7 +437,7 @@ class CourseController extends StudipController
         $this->minute = date('i');
        
         $scripts = array(
-            '/vendor/jquery.fileupload.js',
+            /*'/vendor/jquery.fileupload.js', */
             '/vendor/jquery.ui.widget.js'
         );
         Navigation::activateItem('course/opencast/upload');

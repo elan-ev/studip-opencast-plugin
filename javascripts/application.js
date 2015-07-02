@@ -70,6 +70,8 @@ OC = {
                 }
             });
             jQuery( "#oce_sortablelist" ).disableSelection();
+
+            OC.getWorkflowProgess();
         });
 
     },
@@ -135,6 +137,41 @@ OC = {
             return inp_kb + 'KB';
         }
         return input + 'Bytes'
+    },
+
+    getWorkflowProgess : function(){
+        jQuery(".workflow_info").each(function(index){
+            workflow_id = jQuery(this).attr('id');
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatus/" +  workflow_id).done(function(data) {
+                var response = jQuery.parseJSON(data);
+                var counter = 1;
+                var current_c = counter;
+                var current_description = "";
+
+                jQuery(response.operations.operation).each(function(){
+                    var operations = jQuery(this);
+                    if(operations[0].state == 'SKIPPED' || 'FAILED'){
+                        counter++;
+                    }
+
+                    if(operations[0].state == 'RUNNING'){
+                        current_description = operations[0].description;
+                        current_c = counter;
+                    }
+                });
+                jQuery('#'+workflow_id).circleProgress({
+                    value: current_c / counter,
+                    size: 80,
+                    fill: { color: "#899ab9"}
+                }).on('circle-animation-progress', function(event, progress) {
+                    jQuery(this).find('strong').html( current_c +' / ' + counter + ' Schritten');
+                    jQuery(this).attr('title', current_description);
+                    jQuery(this).attr('alt', current_description);
+                });
+                window.setTimeout(OC.getWorkflowProgess,25000);
+
+            });
+        });
     }
 };
 
