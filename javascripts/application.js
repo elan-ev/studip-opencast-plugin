@@ -168,10 +168,11 @@ OC = {
                     jQuery(this).attr('title', current_description);
                     jQuery(this).attr('alt', current_description);
                 });
-                window.setTimeout(OC.getWorkflowProgess,25000);
+
 
             });
         });
+        //window.setTimeout(OC.getWorkflowProgess,25000);
     }
 };
 
