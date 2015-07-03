@@ -4,6 +4,7 @@ require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
+require_once $this->trails_root.'/models/OCModel.php';
 
 class AjaxController extends StudipController
 {
@@ -71,11 +72,31 @@ class AjaxController extends StudipController
         $this->render_nothing();
     }
 
+    /**
+     * @param $workflow_id
+     * @throws Exception
+     * @throws Trails_DoubleRenderError
+     */
     function getWorkflowStatus_action($workflow_id){
         $this->workflow_client = WorkflowClient::getInstance();
         $resp = $this->workflow_client->getWorkflowInstance($workflow_id);
         $this->render_text(json_encode($resp));
 
+    }
+
+    function getWorkflowStatusforCourse_action($course_id){
+        $workflow_ids = OCModel::getWorkflowIDsforCourse($course_id);
+        $this->workflow_client = WorkflowClient::getInstance();
+        if(!empty($workflow_ids)){
+            foreach($workflow_ids as $workflow_id) {
+                $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
+                if($resp->state == 'SUCCEEDED') {
+                    $states[$workflow_id['workflow_id']] = $resp->state;
+                    OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $this->course_id);
+                } else $states[$workflow_id['workflow_id']] = $resp;
+            }
+            $this->render_text(json_encode($states));
+        } else $this->render_nothing();
     }
 
 

@@ -191,3 +191,6 @@
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 <? endif;?>
+
+<!--- hidden -->
+<div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
