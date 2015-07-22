@@ -60,66 +60,75 @@
 
 
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
-<div class="oce_playercontainer">
-    <? if($theodul) : ?>
-        <iframe src="<?=$embed?>"
-                style="border:0px #FFFFFF none;"
-                name="Opencast Matterhorn video player"
-                scrolling="no"
-                frameborder="0"
-                marginheight="0px"
-                marginwidth="0px"
-                width="640"
-                height="360"
-                allowfullscreen="true"
-                webkitallowfullscreen="true"
-                mozallowfullscreen="true">
-        </iframe>
-    <? else: ?>
-        <iframe src="<?=$embed?>&hideControls=false"
-            style="border: 0px #FFFFFF none;"
-            name="Opencast Matterhorn - Media Player" scrolling="no"
-            frameborder="0" marginheight="0px" marginwidth="0px"
-            width="100%" height="250px">
-        </iframe>
-     <? endif; ?>
-    <br>
-    <div class="oce_emetadata">
-        <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
-        <ul class="oce_contetlist">
-            <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
-            <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
-            <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
-        </ul>
-        <div class="ocplayerlink">
-            <div style="text-align: left; font-style: italic;">Weitere
-                Optionen:</div>
-            <div class="button-group">
-                <?= Studip\LinkButton::create(_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
-                <? if($active['presenter_download']) : ?> 
-                    <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
-                <? endif;?>
-                <? if($active['presentation_download']) : ?>
-                    <?= Studip\LinkButton::create(_('Download Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
-                <? endif;?>
-                <? if($active['audio_download']) :?>
-                    <?= Studip\LinkButton::create(_('Download Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
-                <? endif;?>
-                </div>
-                <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+
+<div style="position: relative;">
+
+    <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="oce_playercontainer">
+        <? if($theodul) : ?>
+            <iframe src="<?=$embed?>"
+                    style="border:0px #FFFFFF none;"
+                    name="Opencast Matterhorn video player"
+                    scrolling="no"
+                    frameborder="0"
+                    marginheight="0px"
+                    marginwidth="0px"
+                    width="640"
+                    height="360"
+                    allowfullscreen="true"
+                    webkitallowfullscreen="true"
+                    mozallowfullscreen="true">
+            </iframe>
+        <? else: ?>
+            <iframe src="<?=$embed?>&hideControls=false"
+                style="border: 0px #FFFFFF none;"
+                name="Opencast Matterhorn - Media Player" scrolling="no"
+                frameborder="0" marginheight="0px" marginwidth="0px"
+                width="100%" height="250px">
+            </iframe>
+         <? endif; ?>
+        <br>
+        <div class="oce_emetadata">
+            <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
+            <ul class="oce_contetlist">
+                <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
+                <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
+                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
+            </ul>
+            <div class="ocplayerlink">
+                <div style="text-align: left; font-style: italic;">Weitere
+                    Optionen:</div>
                 <div class="button-group">
-                    <? if ($visible && $visible['visible'] == 'false') : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
-                    <? else : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
-                    <? endif; ?>
-                   
+                    <?= Studip\LinkButton::create(_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
+                    <? if($active['presenter_download']) : ?>
+                        <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
+                    <? endif;?>
+                    <? if($active['presentation_download']) : ?>
+                        <?= Studip\LinkButton::create(_('Download Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
+                    <? endif;?>
+                    <? if($active['audio_download']) :?>
+                        <?= Studip\LinkButton::create(_('Download Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
+                    <? endif;?>
+                    </div>
+                    <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+                    <div class="button-group">
+                        <? if ($visible && $visible['visible'] == 'false') : ?>
+                            <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
+                        <? else : ?>
+                            <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
+                        <? endif; ?>
+
+                    </div>
+                    <? endif;?>
                 </div>
-                <? endif;?>
-            </div>
+        </div>
     </div>
 </div>
-
 <div id="episodes">
     <ul class="oce_list"
         <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>

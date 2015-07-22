@@ -88,6 +88,8 @@ OC = {
                 jQuery('html, body').animate({
                     scrollTop: jQuery('#barTopFont').offset().top
                 }, 1000);
+                jQuery('#oc_balls').show();
+                jQuery('.oce_playercontainer').addClass('oc_opaque');
 
 
 
@@ -105,6 +107,8 @@ OC = {
                     jQuery('.oce_playercontainer').empty();
                     jQuery('.oce_playercontainer').html(player);
                     jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id  + '/' + episode.position));
+                    jQuery('.oce_playercontainer').removeClass('oc_opaque');
+                    jQuery('#oc_balls').hide();
                     OC.toggleVis(cid);
 
                 });
