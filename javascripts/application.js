@@ -11,6 +11,8 @@ OC = {
             var items = jQuery(".oce_list li");
             var numItems = items.size();
             var perPage = 20;
+            var cid = jQuery('#course_id').data('courseid');
+
             if(numItems > perPage) {
                 items.slice(perPage).hide();
                 jQuery('#oce_pagination').pagination({
@@ -71,7 +73,46 @@ OC = {
             });
             jQuery( "#oce_sortablelist" ).disableSelection();
 
-            OC.getWorkflowProgressForCourse(jQuery('#course_id').data('courseid'), true);
+            OC.getWorkflowProgressForCourse(cid, true);
+
+            // toggle visibility
+            OC.toggleVis(cid);
+
+            // open episode item
+            jQuery('.oce_item').click(function(e){
+                e.preventDefault();
+
+                var episode_id = jQuery(this).attr('id');
+
+                //todo animation / progessindication
+                jQuery('html, body').animate({
+                    scrollTop: jQuery('#barTopFont').offset().top
+                }, 1000);
+
+
+
+
+                jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/get_player/" +  episode_id + "/" +  cid).done(function(data) {
+
+
+
+                    var episode = data.episode_data;
+                    var dozent = data.perm;
+
+                    var player_template = jQuery('#playerTemplate').html();
+                    var player = _.template(player_template,{episode:episode, theodul:data.theodul, embed:data.embed,dozent:dozent,engage_player_url:data.engage_player_url});
+
+                    jQuery('.oce_playercontainer').empty();
+                    jQuery('.oce_playercontainer').html(player);
+                    jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id  + '/' + episode.position));
+                    OC.toggleVis(cid);
+
+                });
+
+            });
+
+
+
 
         });
 
@@ -94,7 +135,7 @@ OC = {
                     $('#file_name').attr('value', file.name);
                     $('#upload_info').html('<p>Name: ' 
                                                 + file.name 
-                                                + ' Größe: ' 
+                                                + ' Größe: '
                                                 + OC.getFileSize(file.size) 
                                                 + '</p>');
                     $('#upload_info').val(file.name);
@@ -194,6 +235,24 @@ OC = {
                 window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/", '_self');
             } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false)}, 25000)
 
+        });
+
+    },
+
+    toggleVis: function(cid){
+        jQuery('#oc-togglevis').click(function(e) {
+            e.preventDefault();
+            var  episode_id = jQuery('#oc-togglevis').data("episode-id");
+            var position =  jQuery('#oc-togglevis').data("position");
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/toggle_visibility/" +  episode_id + "/" + position + "?cid=" + cid ).done(function(data) {
+            });
+            if (jQuery('#oc-togglevis').hasClass('ocvisible')) {
+
+                jQuery('#oc-togglevis').removeClass('ocvisible').addClass('ocinvisible');
+
+            } else {
+                jQuery('#oc-togglevis').removeClass('ocinvisible').addClass('ocvisible');
+            }
         });
 
     }

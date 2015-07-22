@@ -225,6 +225,12 @@ class CourseController extends StudipController
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
 
+            // cache ordered episodes for 15mins
+            $cache = StudipCacheFactory::getCache();
+            $cache_key = 'oc_allepisodes/'.$this->course_id;
+            $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
+
+
             // Upload-Dialog
             $this->date = date('Y-m-d');
             $this->hour = date('H');
@@ -406,7 +412,7 @@ class CourseController extends StudipController
         $this->course_id = Request::get('cid');
         $this->user_id = $GLOBALS['auth']->auth['uid'];
 
-        if($GLOBALS['perm']->have_studip_perm('admin', $this->course_id) 
+        if($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
             || OCModel::checkPermForEpisode($episode_id, $this->user_id))
         {
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
@@ -424,10 +430,22 @@ class CourseController extends StudipController
                $this->flash['messages'] = array('success'=> _("Episode wurde sichtbar geschaltet"));
             }
         } else {
-            throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
+            if (Request::isXhr()) {
+                $this->set_status('500');
+                $this->render_nothing();
+            }
+            else throw new Exception(_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
+
         }
-        $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
+        if (Request::isXhr()) {
+            $this->set_status('201');
+            $this->render_text('toggled');
+            //$this->render_nothing();
+        } else {
+            $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
+        }
     }
+
 
     function upload_action()
     {
@@ -535,6 +553,64 @@ class CourseController extends StudipController
             $this->flash['messages'] = array('error'=> _("Die hochgeladenen Daten konnten nicht gelöscht werden."));
         }
         $this->redirect(PluginEngine::getLink('opencast/course/index/'));
+    }
+
+    function get_player_action($episode_id="", $course_id=""){
+
+        $cache = StudipCacheFactory::getCache();
+        $cache_key = 'oc_allepisodes/'.$course_id;
+
+
+        $all_episodes = $cache->read($cache_key);
+        $all_episodes = unserialize($all_episodes);
+        $cand_episode = array();
+        foreach($all_episodes as $key => $episode) {
+            if($episode['id'] == $episode_id){
+                //sanitize episode content
+                $episode['author'] = $episode['author'] ? htmlready($episode['author'])  : 'Keine Angaben vorhanden';
+                $episode['description'] ? htmlready($episode['description'])  : 'Keine Beschreibung vorhanden';
+                $episode['start'] = date("d.m.Y H:m",strtotime($episode['start']));
+                $cand_episode = $episode;
+            }
+        }
+        if (Request::isXhr()) {
+
+            $this->set_status('200');
+            $active_id = $episode_id;
+            $this->search_client = SearchClient::getInstance();
+
+            $theodul = false;
+
+            if($theodul) {
+                $embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id . "&mode=embed";
+            } else {
+                $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
+            }
+            // check whether server supports ssl
+            $embed_headers = @get_headers("https://". $embed);
+            if($embed_headers) {
+                $embed = "https://". $embed;
+            } else {
+                $embed = "http://". $embed;
+            }
+            $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+
+
+            $episode = array('active_id' => $active_id,
+                            'course_id' => $course_id,
+                            'theodul' => $theodul,
+                            'embed' => $embed,
+                            'perm' => $perm,
+                            'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
+                            'episode_data' => $cand_episode
+            );
+
+            $this->render_json($episode);
+        } else {
+            $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
+        }
+
+
     }
 
 

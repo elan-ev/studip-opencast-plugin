@@ -109,9 +109,9 @@
                 <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                 <div class="button-group">
                     <? if ($visible && $visible['visible'] == 'false') : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id)); ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
                     <? else : ?>
-                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,)); ?>
+                        <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
                     <? endif; ?>
                    
                 </div>
@@ -187,10 +187,11 @@
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier'])) ?>
 </div>
 
-<div id="config_dialog" title="<?=_("Series verküpfen")?>">
+<div id="config_dialog" title="<?=_("Series verknüpfen")?>">
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 <? endif;?>
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
+<?= $this->render_partial("course/_playerfragment", array()) ?>

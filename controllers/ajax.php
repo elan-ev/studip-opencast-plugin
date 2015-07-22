@@ -99,5 +99,4 @@ class AjaxController extends StudipController
         } else $this->render_nothing();
     }
 
-
 }
