@@ -64,11 +64,15 @@ class AjaxController extends StudipController
     }
     
     function setEpisodeOrdersForCourse_action() {
+        $course_id = false;
         $positions =  Request::getArray('positions');
+
         foreach($positions  as $position_item) {
             OCModel::setCoursePositionForEpisode($position_item['episode_id'], $position_item['position'], 
                     $position_item['course_id'], $position_item['visibility']);
+                    $course_id = $position_item['course_id'];
         }
+
         $this->render_nothing();
     }
 

@@ -18,6 +18,7 @@ require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
+require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
 class CourseController extends StudipController
 {
@@ -104,109 +105,37 @@ class CourseController extends StudipController
         try {
             $this->search_client = SearchClient::getInstance();
 
-            // lets get all episodes for the connected series
-            if (($cseries = OCSeriesModel::getConnectedSeries($this->course_id)) && !isset($this->flash['error'])) {
+            $occourse = new OCCourseModel($this->course_id);
 
-                $this->episode_ids = array();
-                $count = 0;
-                $this->search_client = SearchClient::getInstance();
-                $positions = OCModel::getCoursePositions($this->course_id);
-                $poscount = count($positions);
-                $presenter_download = false;
-                $presentation_download = false;
-                $audio_download = false;
+            /*
+            $cache = StudipCacheFactory::getCache();
+            $cache_key = 'oc_allepisodes/'.$this->course_id ;
 
-                    foreach($cseries as $serie) {
-                        $series = $this->search_client->getEpisodes($serie['identifier']);
-                        if(!empty($series)) {
-                            foreach($series as $episode) {
+            $cached_episodes = unserialize($cache->read($cache_key));
 
-                                //taking care of position
-                                if(!empty($positions)){
-                                    $pos_lookup = OCModel::search_positions($positions, 'episode_id',$episode->id );
-                                    if(empty($pos_lookup)){
-                                        OCModel::setCoursePositionForEpisode($episode->id, $poscount, $this->course_id, 'true');
-                                        $poscount++;
-                                    }
-                                } else {
-                                    OCModel::setCoursePositionForEpisode($episode->id, $poscount, $this->course_id, 'true');
-                                    $poscount++;
-                                }
+            if(!$this->ordered_episode_ids = $cached_episodes) {
+                $this->ordered_episode_ids = $occourse->getEpisodes();
+                // cache ordered episodes for 15mins
+                $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
+            } */
+
+            $this->ordered_episode_ids = $occourse->getEpisodes();
 
 
-                                $visibility = OCModel::getVisibilityForEpisode($this->course_id, $episode->id);
-                                if(is_object($episode->mediapackage) && 
-                                    (($visibility['visible']!= 'false' && $GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) ||
-                                     $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))){
-                                    $count+=1;
-                                  
-                                    foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                                        if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
-                                    }
-                                    
-                                    foreach($episode->mediapackage->media->track as $track) {
-                                        if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4')){
-                                            $url = parse_url($track->url);
-                                            if((in_array('high-quality', $track->tags->tag) || in_array('hd-quality', $track->tags->tag)) && $url['scheme'] != 'rtmp') {
-                                               $presenter_download = $track->url;
-                                            }
-                                        }
-                                        if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4')){
-                                            $url = parse_url($track->url);
-                                            if((in_array('high-quality', $track->tags->tag) || in_array('hd-quality', $track->tags->tag)) && $url['scheme'] != 'rtmp') {
-                                               $presentation_download = $track->url;
-                                            }
-                                        }
-                                        if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
-                                            $audio_download = $track->url;
-                                    }
-                                    $this->episode_ids[$episode->id] = array('id' => $episode->id,
-                                        'title' => $episode->dcTitle,
-                                        'start' => $episode->mediapackage->start,
-                                        'duration' => $episode->mediapackage->duration,
-                                        'description' => $episode->dcDescription,
-                                        'author' => $episode->dcCreator,
-                                        'preview' => $preview,
-                                        'presenter_download' => $presenter_download,
-                                        'presentation_download' => $presentation_download,
-                                        'audio_download' => $audio_download,
-                                        'visibility' => ($visibility['visible'] == 'false') ? false : true
-                                    );
-                                }
-                            }
-                        }
-                    }
-            }
 
 
-            if($positions = OCModel::getCoursePositions($this->course_id)) {
-                $this->ordered_episode_ids = array();
-                foreach($positions as $position) {
-                    if(isset($this->episode_ids[$position['episode_id']])){
-                        $this->episode_ids[$position['episode_id']]['position'] = $position['position'];
-                        $this->ordered_episode_ids[$position['position']] = $this->episode_ids[$position['episode_id']];
-                        unset($this->episode_ids[$position['episode_id']]);
-                    }
-                }
-                if(!empty($this->episode_ids)){
-                    foreach($this->episode_ids as $episode) {
-                        array_unshift($this->ordered_episode_ids, $episode);
-                    }
-                }
-            }
+
+
 
 
             if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
-            } else if(isset($this->episode_ids)){
-                if($positions) {
-                    $x = $this->ordered_episode_ids;
-                } else $x = $this->episode_ids;
-                $first = array_shift($x);
+            } else if(isset($this->ordered_episode_ids)){
+                $first = $this->ordered_episode_ids[0];
                 $this->active_id = $first['id'];
             }
 
-            if($count > 0) {
+            if(!empty($this->ordered_episode_ids)) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
                 // set true iff theodul is active
                 $this->theodul = false;
@@ -225,10 +154,7 @@ class CourseController extends StudipController
                 $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
             }
 
-            // cache ordered episodes for 15mins
-            $cache = StudipCacheFactory::getCache();
-            $cache_key = 'oc_allepisodes/'.$this->course_id;
-            $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
+
 
 
             // Upload-Dialog
@@ -439,8 +365,12 @@ class CourseController extends StudipController
         }
         if (Request::isXhr()) {
             $this->set_status('201');
-            $this->render_text('toggled');
-            //$this->render_nothing();
+
+            $occourse = new OCCourseModel($this->course_id);
+            $all_episodes = $occourse->getEpisodes();
+
+            $this->render_json($all_episodes);
+
         } else {
             $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
         }
@@ -557,22 +487,20 @@ class CourseController extends StudipController
 
     function get_player_action($episode_id="", $course_id=""){
 
-        $cache = StudipCacheFactory::getCache();
-        $cache_key = 'oc_allepisodes/'.$course_id;
-
-
-        $all_episodes = $cache->read($cache_key);
-        $all_episodes = unserialize($all_episodes);
+        $occourse = new OCCourseModel($course_id);
+        $episodes = $occourse->getEpisodes();
         $cand_episode = array();
-        foreach($all_episodes as $key => $episode) {
-            if($episode['id'] == $episode_id){
-                //sanitize episode content
-                $episode['author'] = $episode['author'] ? htmlready($episode['author'])  : 'Keine Angaben vorhanden';
-                $episode['description'] ? htmlready($episode['description'])  : 'Keine Beschreibung vorhanden';
-                $episode['start'] = date("d.m.Y H:m",strtotime($episode['start']));
-                $cand_episode = $episode;
+        foreach($episodes as $e){
+            if($e['id'] == $episode_id) {
+                $e['author'] = $e['author'] !=''? $e['author'] : 'Keine Angaben vorhanden';
+                $e['description'] =$e['description'] !='' ? $e['description']  : 'Keine Beschreibung vorhanden';
+                $e['start'] = date("d.m.Y H:m",strtotime($e['start']));
+                $cand_episode = $e;
             }
         }
+
+
+
         if (Request::isXhr()) {
 
             $this->set_status('200');
@@ -609,8 +537,6 @@ class CourseController extends StudipController
         } else {
             $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
         }
-
-
     }
 
 

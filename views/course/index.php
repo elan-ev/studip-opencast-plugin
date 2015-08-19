@@ -70,6 +70,8 @@
         <div></div>
     </div>
     <div class="oce_playercontainer">
+        <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
+        </span>
         <? if($theodul) : ?>
             <iframe src="<?=$embed?>"
                     style="border:0px #FFFFFF none;"
@@ -94,11 +96,11 @@
          <? endif; ?>
         <br>
         <div class="oce_emetadata">
-            <h2 class="oce_title"><?= htmlready(mb_convert_encoding($active['title'], 'ISO-8859-1', 'UTF-8'))?></h2>
+            <h2 class="oce_title"><?= $active['title']?></h2>
             <ul class="oce_contetlist">
                 <li><?=_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=_("Uhr")?></li>
-                <li><?=_('Autor : ')?> <?=$active['author'] ? htmlready(mb_convert_encoding($active['author'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Angaben vorhanden';?></li>
-                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? htmlready(mb_convert_encoding($active['description'], 'ISO-8859-1', 'UTF-8'))  : 'Keine Beschreibung vorhanden';?></li>
+                <li><?=_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
+                <li><?=_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
             </ul>
             <div class="ocplayerlink">
                 <div style="text-align: left; font-style: italic;">Weitere
@@ -161,9 +163,10 @@
         <? endif;?>
         <? foreach($ordered_episode_ids as $pos => $item) : ?>
         <li id="<?=$item['id']?>"
-            class="<?=($item['visibility'] != false) ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
+            class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
             data-courseId="<?=$course_id?>"
-            data-visibility="<?=var_export($item['visibility'], true)?>">
+            data-visibility="<?=$item['visibility']?>"
+            data-pos="<?=$pos?>">
             <a
             href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
                 <div>
@@ -172,7 +175,7 @@
                         src="<?=$item['preview']?>">
                 </div>
                 <div class="oce_metadatacontainer">
-                    <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($item['title'], 'ISO-8859-1', 'UTF-8'))?> <?=($item['visibility'] != false) ? '' : ' (Unsichtbar)'?></h3>
+                    <h3 class="oce_metadata"><?= $item['title']?> <?=($item['visibility'] != 'false') ? '' : ' (Unsichtbar)'?></h3>
                     <span><?=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
                 </div>
         </a>
@@ -204,3 +207,4 @@
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
 <?= $this->render_partial("course/_playerfragment", array()) ?>
+<?= $this->render_partial("course/_episodelist", array()) ?>

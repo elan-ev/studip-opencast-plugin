@@ -1,4 +1,5 @@
 <script type="text/html" id='playerTemplate'>
+    <span id="oc_active_episode" class="hidden" data-activeepisode="<%= episode.id %>"></span>
     <% if (theodul) { %>
         <iframe src="<%= embed %>"
                 style="border:0px #FFFFFF none;"
@@ -47,10 +48,10 @@
             </div>
             <% if (dozent) { %>
                 <div class="button-group">
-                    <% if (episode.visibility)  {%>
+                    <% if (episode.visibility == 'true')  {%>
                         <a class="ocvisible ocspecial button" data-episode-id="<%= episode.id%>" data-position="<%=episode.position%>" href="replaceme" id="oc-togglevis" tabindex="0">Aufzeichnung unsichtbar schalten</a>
                     <% } else { %>
-                        <a class="ocinvisible ocspecial button" data-episode-id="<%=episode.id%>" data-position="<%=episode.position%>" href="replaceme" id="oc-togglevis" tabindex="0">Aufzeichnung unsichtbar schalten</a>
+                        <a class="ocinvisible ocspecial button" data-episode-id="<%=episode.id%>" data-position="<%=episode.position%>" href="replaceme" id="oc-togglevis" tabindex="0">Aufzeichnung sichtbar schalten</a>
                     <% } %>
 
                 </div>

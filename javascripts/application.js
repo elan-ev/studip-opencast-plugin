@@ -10,7 +10,7 @@ OC = {
   
             var items = jQuery(".oce_list li");
             var numItems = items.size();
-            var perPage = 20;
+            var perPage = 2000; // we don't need that in the moment
             var cid = jQuery('#course_id').data('courseid');
 
             if(numItems > perPage) {
@@ -60,60 +60,29 @@ OC = {
                             'episode_id' : jQuery( this ).attr('id'),
                             'position' :  index,
                             'course_id' : jQuery( this ).data('courseid'),
-                            'visibility' : jQuery( this ).data('visibility')
+                            'visibility' : jQuery( this ).data('visibility'),
+                            'oldpos' : jQuery(this).data('pos')
                         });
                         if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {
                              var new_url =  STUDIP.URLHelper.getURL("plugins.php/opencast/course/toggle_visibility/" + jQuery( this ).attr('id') + "/" + index);
                              jQuery("#oc-togglevis").attr('href', new_url);
                         }
                     });
+
                     jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
                         { "positions": items });
                 }
             });
             jQuery( "#oce_sortablelist" ).disableSelection();
 
+
+            // todo iff there is an upload!
             OC.getWorkflowProgressForCourse(cid, true);
 
             // toggle visibility
             OC.toggleVis(cid);
-
-            // open episode item
-            jQuery('.oce_item').click(function(e){
-                e.preventDefault();
-
-                var episode_id = jQuery(this).attr('id');
-
-                //todo animation / progessindication
-                jQuery('html, body').animate({
-                    scrollTop: jQuery('#barTopFont').offset().top
-                }, 1000);
-                jQuery('#oc_balls').show();
-                jQuery('.oce_playercontainer').addClass('oc_opaque');
-
-
-
-
-                jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/get_player/" +  episode_id + "/" +  cid).done(function(data) {
-
-
-
-                    var episode = data.episode_data;
-                    var dozent = data.perm;
-
-                    var player_template = jQuery('#playerTemplate').html();
-                    var player = _.template(player_template,{episode:episode, theodul:data.theodul, embed:data.embed,dozent:dozent,engage_player_url:data.engage_player_url});
-
-                    jQuery('.oce_playercontainer').empty();
-                    jQuery('.oce_playercontainer').html(player);
-                    jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id  + '/' + episode.position));
-                    jQuery('.oce_playercontainer').removeClass('oc_opaque');
-                    jQuery('#oc_balls').hide();
-                    OC.toggleVis(cid);
-
-                });
-
-            });
+            // take care of episodelist
+            OC.episodeListener(cid);
 
 
 
@@ -249,16 +218,67 @@ OC = {
             var  episode_id = jQuery('#oc-togglevis').data("episode-id");
             var position =  jQuery('#oc-togglevis').data("position");
             jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/toggle_visibility/" +  episode_id + "/" + position + "?cid=" + cid ).done(function(data) {
+                if(!jQuery.isEmptyObject(data)){
+                    OC.renderEpisodeList(data);
+                    OC.episodeListener(cid);
+                }
             });
             if (jQuery('#oc-togglevis').hasClass('ocvisible')) {
 
-                jQuery('#oc-togglevis').removeClass('ocvisible').addClass('ocinvisible');
+                jQuery('#oc-togglevis').removeClass('ocvisible').addClass('ocinvisible').text('Aufzeichnung sichtbar schalten');
+
 
             } else {
-                jQuery('#oc-togglevis').removeClass('ocinvisible').addClass('ocvisible');
+                jQuery('#oc-togglevis').removeClass('ocinvisible').addClass('ocvisible').text('Aufzeichnung unsichtbar schalten');
             }
         });
 
+    },
+
+    renderEpisodeList: function(episodes) {
+
+        var episodes_template = jQuery('#episodeList').html();
+        var active_id = jQuery('#oc_active_episode').data('activeepisode');
+        var oce_list = _.template(episodes_template,{episodes:episodes, active:active_id});
+
+
+        jQuery('.oce_list').empty();
+        jQuery('.oce_list').html(oce_list);
+
+
+    },
+
+    episodeListener: function(cid) {
+        // open episode item
+        jQuery('.oce_item').click(function(e){
+            e.preventDefault();
+
+            var episode_id = jQuery(this).attr('id');
+
+            //todo animation / progessindication
+            jQuery('html, body').animate({
+                scrollTop: jQuery('#barTopFont').offset().top
+            }, 1000);
+            jQuery('#oc_balls').show();
+            jQuery('.oce_playercontainer').addClass('oc_opaque');
+
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/get_player/" +  episode_id + "/" +  cid).done(function(data) {
+
+                var episode = data.episode_data;
+                var dozent = data.perm;
+                var player_template = jQuery('#playerTemplate').html();
+                var player = _.template(player_template,{episode:episode, theodul:data.theodul, embed:data.embed,dozent:dozent,engage_player_url:data.engage_player_url});
+
+                jQuery('.oce_playercontainer').empty();
+                jQuery('.oce_playercontainer').html(player);
+                jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id  + '/' + episode.position));
+                jQuery('.oce_playercontainer').removeClass('oc_opaque');
+                jQuery('#oc_balls').hide();
+                OC.toggleVis(cid);
+
+            });
+
+        });
     }
 };
 

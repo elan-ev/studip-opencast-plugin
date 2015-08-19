@@ -19,6 +19,11 @@ require_once 'classes/OCRestClient/SeriesClient.php';
 define('OC_UPLOAD_CHUNK_SIZE', '10000000');
 define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
+//Rest.IP
+NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
+NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
+NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
+
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
@@ -77,12 +82,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
         
         if(OCModel::getConfigurationstate()){
+
             StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
-            
-            //Rest.IP
-            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses.get');
-            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
-            NotificationCenter::addObserver($this, 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
+
         }
      
     }
@@ -220,23 +222,31 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     public function getAPIDataForCourseRecordings()
     {
-        $addon  = $this;
+
         $router = RestIP\Router::getInstance(null);
+
         $router->hook('restip.before.render', function () use ($router, $addon) {
             $result = $router->getRouteResult();
+
+
 
             if (key($result) === 'course') {
                 if (empty($result['course']['course_id'])) {
                     return;
                 }
-
-                $result['course'] = $addon->extendCourseRoute($result['course'],$addon->isActivated($result['course']['course_id']), true);
+                $pm = PluginManager::getInstance();
+                $pinfo = $pm->getPluginInfo('OpenCast');
+                $pid = $pinfo['id'];
+                $result['course'] = OpenCast::extendCourseRoute($result['course'],$pm->isPluginActivated($pid, $result['course']['course_id']), true);
             } elseif (key($result) === 'courses') {
                 foreach ($result['courses'] as $index => $course) {
                     if (empty($course['course_id'])) {
                         continue;
                     }
-                    $result['courses'][$index] = $addon->extendCourseRoute($course,$addon->isActivated($course['course_id']), false);
+                    $pm = PluginManager::getInstance();
+                    $pinfo = $pm->getPluginInfo('OpenCast');
+                    $pid = $pinfo['id'];
+                    $result['courses'][$index] = OpenCast::extendCourseRoute($course, $pm->isPluginActivated($pid, $course['course_id']), false);
                 }
             }
 
@@ -251,7 +261,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 if (!isset($course['additonal_data'])) {
                     $course['additional_data'] = array();
                 }
-                $course['additional_data']['oc_recordings'] = $this->getRecordings($course['course_id']);
+                $course['additional_data']['oc_recordings'] = OpenCast::getRecordings($course['course_id']);
             }
         }
         return $course;
@@ -280,19 +290,18 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                                 }
                                 
                                 foreach($episode->mediapackage->media->track as $track) {
-                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4')){
-                                        $url = parse_url($track->url);
-                                        if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                            $presenter_download = $track->url;
                                         }
                                     }
-                                    if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4')){
+                                    if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
                                         $url = parse_url($track->url);
-                                        if(in_array('high-quality', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                            $presentation_download = $track->url;
                                         }
                                     }
-                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3'))
+                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/m4a'))
                                         $audio_download = $track->url;
                                         $engage_url =  parse_url($audio_download);
                                         $external_player_url = $engage_url['scheme']. '://' . $engage_url['host'] .    
@@ -300,11 +309,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                                 }
                                 
                                 $oc_episodes[] = array('id' => $episode->id,
-                                    'title' => $episode->dcTitle,
-                                    'start' => $episode->mediapackage->start,
-                                    'duration' => $episode->mediapackage->duration,
-                                    'description' => $episode->dcDescription,
-                                    'author' => $episode->dcCreator,
+                                    'title' => htmlready(mb_convert_encoding($episode->dcTitle, 'ISO-8859-1', 'UTF-8')),
+                                    'start' => htmlready(mb_convert_encoding($episode->mediapackage->start, 'ISO-8859-1', 'UTF-8')),
+                                    'duration' => htmlready(mb_convert_encoding($episode->mediapackage->duration, 'ISO-8859-1', 'UTF-8')),
+                                    'description' => htmlready(mb_convert_encoding($episode->dcDescription, 'ISO-8859-1', 'UTF-8')),
+                                    'author' => htmlready(mb_convert_encoding($episode->dcCreator, 'ISO-8859-1', 'UTF-8')),
                                     'preview' => $preview,
                                     'external_player_url' => $external_player_url,
                                     'presenter_download' => $presenter_download,

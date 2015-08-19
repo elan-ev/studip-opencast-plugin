@@ -33,9 +33,9 @@ class OCSeriesModel {
 
     /**
      * checks for connected series in db than checks seriesID at REST if
-     * refresh is true result of last call is overwritten otherwise last cals
-     * result is returned withoud db or REST request 
-     * 
+     * refresh is true result of last call is overwritten otherwise last calls
+     * result is returned without db or REST request
+     *
      * @param string $courseID
      * @param bool $refresh
      * @return array
@@ -60,9 +60,12 @@ class OCSeriesModel {
         return self::$connectedSeries;
     }
 
+
+
+
     /**
      * return unconnected series 
-     * if refresh is true result of last call is overwritten otherwise last cals
+     * if refresh is true result of last call is overwritten otherwise last calls
      * result is returned 
      * 
      * @param string $courseID
@@ -265,7 +268,7 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "ï¿½ " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);

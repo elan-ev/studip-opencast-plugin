@@ -218,6 +218,10 @@ a.disabled {
   content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
 }*/
 
+.hidden_ocvideodiv{
+    opacity: 0.8;
+}
+
 
 /** upload dialog **/
 .ocUpload > .ui-widget-header,.ocConfig > .ui-widget-header  {
@@ -248,7 +252,7 @@ input[type=url].oc_input ,
 input[type=date].oc_input ,
 input[type=password].oc_input ,
 textarea.oc_input  {
-	width: 100%;
+    width: 100%;
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
   border-right: 1px solid #eee;

@@ -476,7 +476,7 @@ class OCModel
     }
     
     static function getCoursePositions($course_id){
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position`, `visible` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -516,5 +516,18 @@ class OCModel
 
         return $results;
     }
+
+    static function removeStoredEpisode($episode_id, $course_id){
+        $stmt = DBManager::get()->prepare("DELETE FROM `oc_seminar_episodes` WHERE `episode_id` = ? AND `seminar_id` = ?");
+
+
+        return $stmt->execute(array($episode_id, $course_id));
+
+    }
+
+    static function sanatizeContent($content){
+        return htmlready(mb_convert_encoding($content, 'ISO-8859-1', 'UTF-8'));
+    }
+
 }
 ?>
