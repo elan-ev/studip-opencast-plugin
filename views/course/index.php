@@ -5,9 +5,9 @@
 
 <?= $this->render_partial('messages') ?>
 
-
-
 <script language="JavaScript">
+    STUDIP.hasperm  = <?=var_export($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))?>;
+    OC.states = <?=var_export($states)?>;
     OC.initIndexpage();
     OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>

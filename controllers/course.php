@@ -63,6 +63,8 @@ class CourseController extends StudipController
         $klass = substr(get_called_class(), 0, -10);
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
+        // change this variable iff theodulplayer is active
+        $this->theodul = false;
         
     }
 
@@ -88,7 +90,7 @@ class CourseController extends StudipController
         } else {
             $this->workflow_client = WorkflowClient::getInstance();
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-            $this->states = array();
+            $this->states = false;
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
@@ -137,8 +139,7 @@ class CourseController extends StudipController
 
             if(!empty($this->ordered_episode_ids)) {
                 $engage_url =  parse_url($this->search_client->getBaseURL());
-                // set true iff theodul is active
-                $this->theodul = false;
+
                 if($this->theodul) {
                     $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
                 } else {
@@ -507,9 +508,7 @@ class CourseController extends StudipController
             $active_id = $episode_id;
             $this->search_client = SearchClient::getInstance();
 
-            $theodul = false;
-
-            if($theodul) {
+            if($this->theodul) {
                 $embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id . "&mode=embed";
             } else {
                 $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;

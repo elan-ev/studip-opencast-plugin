@@ -28,59 +28,67 @@ OC = {
                         }
                 });
              }
-             // Upload Dialog
-            jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
-            jQuery("#oc_upload_dialog").click(
-                function () {
-                    jQuery("#upload_dialog").dialog('open');
-                    return false;
-                }
-            );
-            // Config Dialog
-            jQuery("#config_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocConfig', height: 350});
-            jQuery("#oc_config_dialog").click(
-                function () {
-                    jQuery("#config_dialog").dialog('open');
-                    return false;
-                }
-            );
-            jQuery(".chosen-select").chosen({
-                disable_search_threshold: 10,
-                max_selected_options: 1,
-                no_results_text: "Oops, nothing found!",
-                width: "350px"
-            });
-            
-            jQuery( "#oce_sortablelist" ).sortable({
-                items: '> li:not(.uploaded)',
-                stop: function( event, ui ) {
-                    var items = [];
-                    jQuery( "ul#oce_sortablelist li" ).each(function(index){
-                        items.push({
-                            'episode_id' : jQuery( this ).attr('id'),
-                            'position' :  index,
-                            'course_id' : jQuery( this ).data('courseid'),
-                            'visibility' : jQuery( this ).data('visibility'),
-                            'oldpos' : jQuery(this).data('pos')
+            if(STUDIP.hasperm) {
+                 // Upload Dialog
+                jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
+                jQuery("#oc_upload_dialog").click(
+                    function () {
+                        jQuery("#upload_dialog").dialog('open');
+                        return false;
+                    }
+                );
+                // Config Dialog
+                jQuery("#config_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocConfig', height: 350});
+                jQuery("#oc_config_dialog").click(
+                    function () {
+                        jQuery("#config_dialog").dialog('open');
+                        return false;
+                    }
+                );
+                jQuery(".chosen-select").chosen({
+                    disable_search_threshold: 10,
+                    max_selected_options: 1,
+                    no_results_text: "Oops, nothing found!",
+                    width: "350px"
+                });
+
+                jQuery( "#oce_sortablelist" ).sortable({
+                    items: '> li:not(.uploaded)',
+                    stop: function( event, ui ) {
+                        var items = [];
+                        jQuery( "ul#oce_sortablelist li" ).each(function(index){
+                            items.push({
+                                'episode_id' : jQuery( this ).attr('id'),
+                                'position' :  index,
+                                'course_id' : jQuery( this ).data('courseid'),
+                                'visibility' : jQuery( this ).data('visibility'),
+                                'oldpos' : jQuery(this).data('pos')
+                            });
+                            if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {
+                                var new_url =  STUDIP.URLHelper.getURL("plugins.php/opencast/course/toggle_visibility/" + jQuery( this ).attr('id') + "/" + index);
+                                jQuery("#oc-togglevis").attr('href', new_url);
+                            }
                         });
-                        if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {
-                             var new_url =  STUDIP.URLHelper.getURL("plugins.php/opencast/course/toggle_visibility/" + jQuery( this ).attr('id') + "/" + index);
-                             jQuery("#oc-togglevis").attr('href', new_url);
-                        }
-                    });
 
-                    jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
-                        { "positions": items });
-                }
-            });
-            jQuery( "#oce_sortablelist" ).disableSelection();
+                        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
+                            { "positions": items });
+                    }
+                });
+                jQuery( "#oce_sortablelist" ).disableSelection();
+
+                // toggle visibility
+                OC.toggleVis(cid);
+
+            } else {
+                jQuery('.hidden_ocvideodiv').remove();
+            }
 
 
-            // todo iff there is an upload!
-            OC.getWorkflowProgressForCourse(cid, true);
 
-            // toggle visibility
-            OC.toggleVis(cid);
+            if(!OC.states && STUDIP.hasperm){
+                OC.getWorkflowProgressForCourse(cid, true);
+            }
+
             // take care of episodelist
             OC.episodeListener(cid);
 
