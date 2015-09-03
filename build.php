@@ -27,6 +27,7 @@ function zip()
     addDirectories($archive, array(
         'classes',
         'controllers',
+        'cronjobs',
         'images',
         'javascripts',
         'migrations',
