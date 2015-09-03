@@ -62,6 +62,7 @@ OC = {
                                 'position' :  index,
                                 'course_id' : jQuery( this ).data('courseid'),
                                 'visibility' : jQuery( this ).data('visibility'),
+                                'mkdate' : jQuery( this).data('mkdate'),
                                 'oldpos' : jQuery(this).data('pos')
                             });
                             if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {

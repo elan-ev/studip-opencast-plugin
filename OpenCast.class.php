@@ -11,6 +11,7 @@
 
 require_once 'vendor/trails/trails.php';
 require_once 'models/OCModel.php';
+require_once 'models/OCCourseModel.class.php';
 require_once 'models/OCSeriesModel.php';
 require_once 'classes/OCRestClient/SearchClient.php';
 require_once 'classes/OCRestClient/SeriesClient.php';
@@ -37,14 +38,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         global $SessSemName, $perm;
         $GLOBALS['ocplugin_path'] = $this->getPluginURL();
 
-        if($perm->have_perm('root')) {
-            
+        if ($perm->have_perm('root')) {
+
             //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi
             $main = new Navigation(_("Opencast Administration"));
             // TODO think about an index page.. for the moment the config page is in charge..
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
-            
+
             $config = new Navigation('Opencast Einstellungen');
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
@@ -52,7 +53,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
 
-            if(OCModel::getConfigurationstate()){
+            if (OCModel::getConfigurationstate()) {
                 $resources = new Navigation('Opencast Ressourcen');
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
@@ -66,40 +67,42 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 //}
             }
         }
-   
+
 
         PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/oc.css');
         PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
 
-        
-        if($perm->have_perm('dozent') && OCModel::getConfigurationstate()){
+
+        if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
             PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
-            PageLayout::addScript($this->getpluginUrl()  . '/vendor/jquery.ui.widget.js');
-            PageLayout::addScript($this->getpluginUrl()  . '/vendor/chosen/chosen.jquery.min.js');
-            PageLayout::addStylesheet($this->getpluginUrl()  . '/vendor/chosen/chosen.min.css');
-           
+            PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');
+            PageLayout::addScript($this->getpluginUrl() . '/vendor/chosen/chosen.jquery.min.js');
+            PageLayout::addStylesheet($this->getpluginUrl() . '/vendor/chosen/chosen.min.css');
+
         }
-        
-        if(OCModel::getConfigurationstate()){
+
+        if (OCModel::getConfigurationstate()) {
 
             StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
 
         }
-     
+
+        NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
+
     }
 
     /**
      * This method dispatches all actions.
      *
-     * @param string   part of the dispatch path that was not consumed
+     * @param string  part of the dispatch path that was not consumed
      */
     function perform($unconsumed_path)
     {
         $trails_root = $this->getPluginPath();
         $dispatcher = new Trails_Dispatcher($trails_root,
-                                            rtrim(PluginEngine::getURL($this, null, ''), '/'),
-                                            null);
+            rtrim(PluginEngine::getURL($this, null, ''), '/'),
+            null);
 
         $dispatcher->plugin = $this;
         $dispatcher->dispatch($unconsumed_path);
@@ -113,7 +116,32 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     function getIconNavigation($course_id, $last_visit, $user_id = NULL)
     {
-        return null;
+
+        if (!$this->isActivated($course_id)) {
+            return;
+        }
+
+        $this->image_path = $this->getPluginURL() . '/images/';
+
+        if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
+            $ocmodel = new OCCourseModel($course_id);
+            $ocgetcount = $ocmodel->getCount($last_visit);
+            $text = sprintf(_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'), $ocgetcount);
+        } else {
+            $num_entries = 0;
+            $text = 'Opencast Aufzeichnungen';
+        }
+
+        $navigation = new Navigation('opencast', PluginEngine::getURL($this, array(), 'course/index/false'));
+        $navigation->setBadgeNumber($num_entries);
+
+        if ($ocgetcount > 0) {
+            $navigation->setImage($this->image_path .'oc20red.png', array('title' => $text));
+        } else {
+            $navigation->setImage($this->image_path .'oc20grey.png', array('title' => $text));
+        }
+
+        return $navigation;
     }
 
     /**
@@ -161,13 +189,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     function getTabNavigation($course_id)
     {
- 
-    
+
+
         if (!$this->isActivated($course_id) || !OCModel::getConfigurationstate()) {
             return;
         }
         //.. now the subnavi
-        $main = new Navigation("OpenCast");
+        $main = new Navigation("Opencast");
         //$main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
         $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
@@ -185,7 +213,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
-            if($series_metadata[0]['schedule'] == '1'){
+            if ($series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
@@ -197,9 +225,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      * return a list of ContentElement-objects, containing
      * everything new in this module
      *
-     * @param  string   $course_id   the course-id to get the new stuff for
-     * @param  int      $last_visit  when was the last time the user visited this module
-     * @param  string   $user_id     the user to get the notification-objects for
+     * @param  string $course_id the course-id to get the new stuff for
+     * @param  int $last_visit when was the last time the user visited this module
+     * @param  string $user_id the user to get the notification-objects for
      *
      * @return array an array of ContentElement-objects
      */
@@ -207,16 +235,16 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         return false;
     }
-    
-    static function markupOpencast  ($markup, $matches, $contents)
+
+    static function markupOpencast($markup, $matches, $contents)
     {
         $search_client = SearchClient::getInstance();
-        $embed = $search_client->getBaseURL() ."/engage/ui/embed.html?id=".$contents;
-        
-   	    return sprintf('<iframe src="https://%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $embed);
+        $embed = $search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $contents;
+
+        return sprintf('<iframe src="https://%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $embed);
     }
-    
-    
+
+
     /**
      * getAPIDataForCourseRecordings - Event handler for modifying course data
      */
@@ -229,7 +257,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = $router->getRouteResult();
 
 
-
             if (key($result) === 'course') {
                 if (empty($result['course']['course_id'])) {
                     return;
@@ -237,7 +264,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $pm = PluginManager::getInstance();
                 $pinfo = $pm->getPluginInfo('OpenCast');
                 $pid = $pinfo['id'];
-                $result['course'] = OpenCast::extendCourseRoute($result['course'],$pm->isPluginActivated($pid, $result['course']['course_id']), true);
+                $result['course'] = OpenCast::extendCourseRoute($result['course'], $pm->isPluginActivated($pid, $result['course']['course_id']), true);
             } elseif (key($result) === 'courses') {
                 foreach ($result['courses'] as $index => $course) {
                     if (empty($course['course_id'])) {
@@ -253,11 +280,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $router->setRouteResult($result);
         });
     }
-    
+
     public function extendCourseRoute($course, $activation = false, $additional_data = false)
     {
         if ($course['modules']['oc_matterhorn'] = $activation) {
-            if($additional_data) {
+            if ($additional_data) {
                 if (!isset($course['additonal_data'])) {
                     $course['additional_data'] = array();
                 }
@@ -269,45 +296,46 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
 
-    public function getRecordings($course_id) {
+    public function getRecordings($course_id)
+    {
         $oc_episodes = array();
         try {
             $search_client = SearchClient::getInstance();
             if (($cseries = OCSeriesModel::getConnectedSeries($course_id))) {
 
-                foreach($cseries as $serie) {
+                foreach ($cseries as $serie) {
                     $series = $search_client->getEpisodes($serie['identifier']);
-                    if(!empty($series)) {
-                        foreach($series as $episode) {
+                    if (!empty($series)) {
+                        foreach ($series as $episode) {
                             $visibility = OCModel::getVisibilityForEpisode($course_id, $episode->id);
 
-                            if(is_object($episode->mediapackage) && $visibility['visible']!= 'false' ){
-                                $count+=1;
+                            if (is_object($episode->mediapackage) && $visibility['visible'] != 'false') {
+                                $count += 1;
                                 $ids[] = $episode->id;
-                              
-                                foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                                    if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+
+                                foreach ($episode->mediapackage->attachments->attachment as $attachment) {
+                                    if ($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
                                 }
-                                
-                                foreach($episode->mediapackage->media->track as $track) {
-                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
-                                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                           $presenter_download = $track->url;
+
+                                foreach ($episode->mediapackage->media->track as $track) {
+                                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
+                                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            $presenter_download = $track->url;
                                         }
                                     }
-                                    if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                                         $url = parse_url($track->url);
-                                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                           $presentation_download = $track->url;
+                                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                                            $presentation_download = $track->url;
                                         }
                                     }
-                                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/m4a'))
+                                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/m4a'))
                                         $audio_download = $track->url;
-                                        $engage_url =  parse_url($audio_download);
-                                        $external_player_url = $engage_url['scheme']. '://' . $engage_url['host'] .    
-                                        "/engage/ui/watch.html?id=".$episode->id;
+                                    $engage_url = parse_url($audio_download);
+                                    $external_player_url = $engage_url['scheme'] . '://' . $engage_url['host'] .
+                                        "/engage/ui/watch.html?id=" . $episode->id;
                                 }
-                                
+
                                 $oc_episodes[] = array('id' => $episode->id,
                                     'title' => htmlready(mb_convert_encoding($episode->dcTitle, 'ISO-8859-1', 'UTF-8')),
                                     'start' => htmlready(mb_convert_encoding($episode->mediapackage->start, 'ISO-8859-1', 'UTF-8')),
@@ -323,11 +351,30 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                             }
                         }
                     }
-                }   
+                }
             }
         } catch (Exception $e) {
             die($e->getMessage());
         }
         return $oc_episodes;
+    }
+
+    public function NotifyUserOnNewEpisode($x, $data){
+
+        $course = Course::find($data['course_id']);
+        $members = $course->members;
+
+        $users = array();
+        foreach($members as $member){
+            $users[] = $member->user_id;
+        }
+
+        $notification =  sprintf(_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
+        PersonalNotifications::add(
+            $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
+            $notification, $data['episode_id'],
+            Assets::image_path("icons/40/blue/file-video.png")
+        );
+
     }
 }

@@ -22,6 +22,7 @@
         if(! empty ($connectedSeries))
         {
             $actions->addLink (_ ("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/index/' . $active_id . '/ /true'), 'icons/16/blue/trash.png');
+            $actions->addLink (_ ("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
             if($series_metadata [0] ['schedule'] == '1')
             {
                 $actions->addLink (_ ("Medien hochladen"), '#', 'icons/16/blue/upload.png', array (
@@ -166,7 +167,8 @@
             class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
             data-courseId="<?=$course_id?>"
             data-visibility="<?=$item['visibility']?>"
-            data-pos="<?=$pos?>">
+            data-pos="<?=$pos?>"
+            data-mkdate="<?=$item['mkdate']?>">
             <a
             href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
                 <div>

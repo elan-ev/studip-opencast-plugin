@@ -12,18 +12,6 @@ class OCModel
         else return $series;
     }
 
-    static function setSeriesforCourse($course_id, $series_id, $visibility = 'visible', $schedule=0) {
-        $stmt = DBManager::get()->prepare("UPDATE oc_series
-                SET seminars = seminars+1
-                WHERE series_id = ?");
-        $stmt->execute(array($series_id));
-
-        $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_series (series_id, seminar_id, visibility, schedule)
-                VALUES (?, ?, ?, ? )");
-        return $stmt->execute(array($series_id, $course_id, $visibility, $schedule));
-    }
-
     static function removeSeriesforCourse($course_id, $series_id) {
        $stmt = DBManager::get()->prepare("UPDATE
                 oc_series SET seminars = seminars-1
@@ -446,11 +434,11 @@ class OCModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id) {
+    static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate) {
         $stmt = DBManager::get()->prepare("INSERT INTO
-                oc_seminar_workflows (workflow_id,seminar_id, user_id)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($workflow_id, $seminar_id, $user_id));
+                oc_seminar_workflows (workflow_id,seminar_id, user_id, mkdate)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($workflow_id, $seminar_id, $user_id, $mkdate));
     }
     
     static function getWorkflowIDsforCourse($seminar_id) {
@@ -468,15 +456,15 @@ class OCModel
         
     }
     
-    static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility) {
+    static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility, $mkdate) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`)
-                VALUES (?, ?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $pos, $visibility));
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`, `mkdate`)
+                VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute(array($course_id, $episode_id, $pos, $visibility, $mkdate));
     }
     
     static function getCoursePositions($course_id){
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position`, `visible` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position`, `visible`, `mkdate` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

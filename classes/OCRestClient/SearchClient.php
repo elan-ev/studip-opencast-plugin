@@ -31,7 +31,7 @@
             $cache_key = 'oc_episodesforseries/'.$series_id;
             $episodes = $cache->read($cache_key);
             if($episodes === false || $perm->have_perm('dozent')){
-                $service_url = "/series.json?id=".$series_id."&episodes=true&series=true&limit=0&offset=0";
+                $service_url = "/series.json?id=".$series_id."&q=&episodes=true&sort=&limit=0&offset=0";
                 if($search = $this->getJSON($service_url)){
                     $x = "search-results";
                     $episodes = $search->$x->result;

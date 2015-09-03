@@ -145,20 +145,22 @@ class OCSeriesModel {
     }
 
     /**
-     * write sireies for course in db
+     * write series for course in db
      * 
      * @param string $course_id
      * @param string $series_id
      * @param string $visibility
      * @param int $schedule
+     * @patam int mkdate
+     *
      * @return type
      */
-    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0) {
+    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0) {
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_series (series_id, seminar_id, visibility, schedule)
-                VALUES (?, ?, ?, ? )");
-        return $stmt->execute(array($seriesID, $courseID, $visibility, $schedule));
+                oc_seminar_series (series_id, seminar_id, visibility, schedule, mkdate)
+                VALUES (?, ?, ?, ?, ? )");
+        return $stmt->execute(array($seriesID, $courseID, $visibility, $schedule, $mkdate));
     }
 
     /**
@@ -268,7 +270,7 @@ class OCSeriesModel {
         require_once 'lib/classes/Institute.class.php';
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "ï¿½ " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);
@@ -320,6 +322,40 @@ class OCSeriesModel {
         $stmt->execute(array($course_id));
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    static function getCachedSeriesData($series_id){
+        $stmt = DBManager::get()->prepare("SELECT `content` FROM oc_series_cache WHERE `series_id` = ?");
+        $stmt->execute(array($series_id));
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if(!isset($result)){
+            return false;
+        }
+        else {
+            foreach($result as $c) {
+                $content = $c['content'];
+            }
+            return unserialize($content);
+        }
+    }
+
+    static function setCachedSeriesData($series_id, $data) {
+        $stmt = DBManager::get()->prepare("INSERT INTO
+                oc_series_cache (`series_id`, `content`, `mkdate`, `chdate`)
+                VALUES (?, ?, ?, ?)");
+        return $stmt->execute(array($series_id, $data, time() ,time()));
+    }
+
+    static function updateCachedSeriesData($series_id, $data) {
+        $stmt = DBManager::get()->prepare("UPDATE
+                oc_series_cache SET `content` = ?, `chdate`= ? WHERE `series_id` = ?");
+        return $stmt->execute(array($data, time(), $series_id));
+    }
+
+
+
+
 
 }
 

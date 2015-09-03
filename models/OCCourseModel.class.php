@@ -14,6 +14,12 @@ class OCCourseModel
 {
 
     /**
+     * This is the maximum number of seconds that unread entries are
+     * marked as new.
+     */
+    const LAST_VISIT_MAX = 7776000; // 90 days
+
+    /**
      * @param $course_id
      */
     function __construct($course_id){
@@ -68,20 +74,12 @@ class OCCourseModel
     public function getEpisodes($force_reload = false){
 
 
-       $cache = StudipCacheFactory::getCache();
-       $cache_key = 'oc_episodedata/'.$this->course_id ;
 
-       $series = unserialize($cache->read($cache_key));
-
-       if(empty($series) && !$force_reload) {
-           $search_client = SearchClient::getInstance();
-           $series = $search_client->getEpisodes($this->getSeriesID());
-           // cache ordered episodes for 30mins
-           $cache->write($cache_key, serialize($series), 1800);
-       }
+        $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
 
 
         $stored_episodes = OCModel::getCoursePositions($this->course_id);
+
         $ordered_episodes = array();
 
         //check if series' episodes is already stored in studip
@@ -116,8 +114,10 @@ class OCCourseModel
             if($tmp = $oc_episodes[$stored_episode['episode_id']]){
                 $tmp['visibility'] = $stored_episode['visible'];
                 $tmp['position'] = $stored_episode['position'];
+                $tmp['mkdate']  = $stored_episode['mkdate'];
                 $lastpos = $stored_episode['position'];
-                OCModel::setCoursePositionForEpisode($stored_episode['episode_id'], $lastpos, $this->course_id, $tmp['visibility']);
+
+                OCModel::setCoursePositionForEpisode($stored_episode['episode_id'], $lastpos, $this->course_id, $tmp['visibility'], $stored_episode['mkdate']);
                 $episodes[$stored_episode['position']] = $tmp;
 
                 unset($oc_episodes[$stored_episode['episode_id']]);
@@ -130,11 +130,13 @@ class OCCourseModel
         if(!empty($oc_episodes)){
             foreach($oc_episodes as $episode){
                 $lastpos++;
-
+                $timestamp = time();
                 $episode['visibility'] = true;
                 $episode['position'] = $lastpos;
-                OCModel::setCoursePositionForEpisode($episode['id'], $lastpos, $this->course_id, 'true');
+                $episode['mkdate'] = $timestamp;
+                OCModel::setCoursePositionForEpisode($episode['id'], $lastpos, $this->course_id, 'true', $timestamp);
                 $episodes[$episode['position']] = $episode;
+                NotificationCenter::postNotification('NewEpisodeForCourse',array('episode_id' => $episode['id'],'course_id' => $this->course_id, 'episode_title' => $episode['title']));
             }
 
         }
@@ -198,5 +200,50 @@ class OCCourseModel
 
     }
 
+    private function getCachedEntries($series_id, $forced_reload) {
+
+        $cached_series = OCSeriesModel::getCachedSeriesData($series_id);
+
+
+        if(!$cached_series || $forced_reload){
+
+            $search_client = SearchClient::getInstance();
+            $series = $search_client->getEpisodes($series_id);
+
+            if($forced_reload && $cached_series){
+                OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
+            } else {
+                OCSeriesModel::setCachedSeriesData($series_id, serialize($series));
+            }
+        }
+
+        return $cached_series;
+    }
+
+    /**
+     * return number of new episodes since last visit up to 3 month ago
+     *
+     * @param string $visitdate count all entries newer than this timestamp
+     *
+     * @return int the number of entries
+     */
+    public function getCount($visitdate)
+    {
+        if ($visitdate < time() - OCCourseModel::LAST_VISIT_MAX) {
+            $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
+        }
+
+
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
+            WHERE seminar_id = :seminar_id AND mkdate > :lastvisit");
+
+
+        $stmt->bindParam(':seminar_id', $this->course_id);
+        $stmt->bindParam(':lastvisit', $visitdate);
+
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
 
 }

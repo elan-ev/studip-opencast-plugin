@@ -7,6 +7,7 @@
         <%= episodes[episode]['id']!== active ? '' : ' oce_active_li' %>"
         data-courseId="<?=$course_id?>"
         data-visibility="<%= episodes[episode]['visibility'] %>"
+        data-mkdate="<%= episodes[episode]['mkdate'] %>"
         data-pos="<%= counter %>">
         <a
             href="">

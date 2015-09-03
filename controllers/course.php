@@ -83,6 +83,7 @@ class CourseController extends StudipController
         }
         
         // set layout for index page
+        $this->states = false;
         if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
 
             $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -90,7 +91,7 @@ class CourseController extends StudipController
         } else {
             $this->workflow_client = WorkflowClient::getInstance();
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-            $this->states = false;
+
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
                 foreach($workflow_ids as $workflow_id) {
@@ -126,14 +127,10 @@ class CourseController extends StudipController
 
 
 
-
-
-
-
             if(empty($active_id) || $active_id != "false") {
                 $this->active_id = $active_id;
             } else if(isset($this->ordered_episode_ids)){
-                $first = $this->ordered_episode_ids[0];
+                $first = $this->ordered_episode_ids[1];
                 $this->active_id = $first['id'];
             }
 
@@ -207,7 +204,7 @@ class CourseController extends StudipController
         $series = Request::getArray('series');
         
         foreach( $series as $serie) {
-            OCSeriesModel::setSeriesforCourse($course_id, $serie);
+            OCSeriesModel::setSeriesforCourse($course_id, $serie, 'visible', 0, time());
         }
         $this->flash['messages'] = array('success'=> _("Änderungen wurden erfolgreich übernommen. Es wurde eine neue Serie für den Kurs angelegt."));
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
@@ -536,6 +533,17 @@ class CourseController extends StudipController
         } else {
             $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
         }
+    }
+
+    function refresh_episodes_action($ticket){
+
+        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+            $occourse2 = new OCCourseModel($this->course_id);
+            $occourse2->getEpisodes(true);
+            $this->flash['messages'] = array('success'=> _("Die Episodenliste wurde aktualisiert."));
+        }
+
+        $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
     }
 
 
