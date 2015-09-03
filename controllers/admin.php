@@ -161,17 +161,20 @@ class AdminController extends AuthenticatedController
         $workflow_client = WorkflowClient::getInstance();
         
         $agents = $caa_client->getCaptureAgents();
-
         $this->agents = $caa_client->getCaptureAgents();
+
         foreach ($this->resources as $resource) {
             $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
             if($assigned_agents){
-                foreach ($agents->agents->agent as $key => $agent) {
-                    if(in_array($agent->name, $assigned_agents)) unset($agents->agents->agent[$key]);
+
+                foreach($agents->agents as $key => $agent) {
+                    if(in_array($agent->name, $assigned_agents)) unset($agents->agents->$key);
+                    else{
+                        OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
+                    }
                 }
             }
         }
-        
 
         $this->available_agents = $agents;
         $this->definitions = $workflow_client->getDefinitions();
