@@ -27,7 +27,7 @@ class CronjobRefreshSeries extends Migration
         $stmt->execute(array(time()));
         $stmt = DBManager::get()->prepare("UPDATE `oc_seminar_episodes` SET `mkdate` = ? WHERE 1;");
         $stmt->execute(array(time()));
-        $stmt = DBManager::get()->prepare("UPDATE `oc_seminar_workflows SET `mkdate` = ? WHERE 1;");
+        $stmt = DBManager::get()->prepare("UPDATE `oc_seminar_workflows` SET `mkdate` = ? WHERE 1;");
         $stmt->execute(array(time()));
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_series_cache`  (
