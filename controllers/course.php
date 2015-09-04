@@ -106,75 +106,79 @@ class CourseController extends StudipController
      
         Navigation::activateItem('course/opencast/overview');
         try {
-            $this->search_client = SearchClient::getInstance();
+                $this->search_client = SearchClient::getInstance();
 
-            $occourse = new OCCourseModel($this->course_id);
+                $occourse = new OCCourseModel($this->course_id);
+                if($occourse->getSeriesID()){
 
-            /*
-            $cache = StudipCacheFactory::getCache();
-            $cache_key = 'oc_allepisodes/'.$this->course_id ;
+                    /*
+                    $cache = StudipCacheFactory::getCache();
+                    $cache_key = 'oc_allepisodes/'.$this->course_id ;
 
-            $cached_episodes = unserialize($cache->read($cache_key));
+                    $cached_episodes = unserialize($cache->read($cache_key));
 
-            if(!$this->ordered_episode_ids = $cached_episodes) {
-                $this->ordered_episode_ids = $occourse->getEpisodes();
-                // cache ordered episodes for 15mins
-                $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
-            } */
+                    if(!$this->ordered_episode_ids = $cached_episodes) {
+                        $this->ordered_episode_ids = $occourse->getEpisodes();
+                        // cache ordered episodes for 15mins
+                        $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
+                    } */
 
-            $this->ordered_episode_ids = $occourse->getEpisodes();
+                    $this->ordered_episode_ids = $occourse->getEpisodes();
+                    //var_dump($this->ordered_episode_ids); die;
 
 
 
 
-            if(empty($active_id) || $active_id != "false") {
-                $this->active_id = $active_id;
-            } else if(isset($this->ordered_episode_ids)){
-                $first = $this->ordered_episode_ids[1];
-                $this->active_id = $first['id'];
-            }
+                    if(empty($active_id) || $active_id != "false") {
+                        $this->active_id = $active_id;
+                    } else if(isset($this->ordered_episode_ids)){
+                        $first = $this->ordered_episode_ids[1];
+                        $this->active_id = $first['id'];
+                    }
 
-            if(!empty($this->ordered_episode_ids)) {
-                $engage_url =  parse_url($this->search_client->getBaseURL());
+                    if(!empty($this->ordered_episode_ids)) {
+                        $engage_url =  parse_url($this->search_client->getBaseURL());
 
-                if($this->theodul) {
-                    $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
+                        if($this->theodul) {
+                            $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
+                        } else {
+                            $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                        }
+                        // check whether server supports ssl
+                        $embed_headers = @get_headers("https://". $this->embed);
+                        if($embed_headers) {
+                            $this->embed = "https://". $this->embed;
+                        } else {
+                            $this->embed = "http://". $this->embed;
+                        }
+                        $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
+                    }
+
+
+
+
+                    // Upload-Dialog
+                    $this->date = date('Y-m-d');
+                    $this->hour = date('H');
+                    $this->minute = date('i');
+
+                    //check needed services before showing upload form
+                    UploadClient::getInstance()->checkService();
+                    IngestClient::getInstance()->checkService();
+                    MediaPackageClient::getInstance()->checkService();
+                    SeriesClient::getInstance()->checkService();
+
+                    // Config-Dialog
+                    $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
+                    $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+
+                    // Remove Series
+                    if($delete_series) {
+                        $this->flash['delete'] = true;
+                    }
                 } else {
-                    $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+
                 }
-                // check whether server supports ssl
-                $embed_headers = @get_headers("https://". $this->embed);
-                if($embed_headers) {
-                    $this->embed = "https://". $this->embed;
-                } else {
-                    $this->embed = "http://". $this->embed;
-                }
-                $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
-            }
-
-
-
-
-            // Upload-Dialog
-            $this->date = date('Y-m-d');
-            $this->hour = date('H');
-            $this->minute = date('i');
-            
-            //check needed services before showing upload form
-            UploadClient::getInstance()->checkService();
-            IngestClient::getInstance()->checkService();
-            MediaPackageClient::getInstance()->checkService();
-            SeriesClient::getInstance()->checkService();
-            
-            // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-            
-            // Remove Series
-            if($delete_series) {
-                $this->flash['delete'] = true;
-            }
-            
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');

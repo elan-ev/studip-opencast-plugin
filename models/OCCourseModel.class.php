@@ -24,15 +24,17 @@ class OCCourseModel
      */
     function __construct($course_id){
 
-        $this->course_id = $course_id;
+        $this->setCourseID($course_id);
         // take care of connected series
-        $cseries =OCSeriesModel::getConnectedSeries($this->course_id);
+        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(),true);
+
         if(!empty($cseries)){
             $current_seriesdata = array_pop($cseries);
-
-            self::setSeriesMetadata($current_seriesdata);
-            self::setSeriesID($current_seriesdata['identifier']);
-            self::setEpisodePostions(OCModel::getCoursePositions($this->course_id));
+            $this->setSeriesMetadata($current_seriesdata);
+            $this->setSeriesID($current_seriesdata['identifier']);
+            $this->setEpisodePostions(OCModel::getCoursePositions($this->course_id));
+        } else {
+            $this->setSeriesID(false);
         }
 
     }
@@ -73,35 +75,33 @@ class OCCourseModel
 
     public function getEpisodes($force_reload = false){
 
+        if($this->getSeriesID()) {
+            $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
+            $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
+            $ordered_episodes = array();
 
-
-        $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
-
-
-        $stored_episodes = OCModel::getCoursePositions($this->course_id);
-
-        $ordered_episodes = array();
-
-        //check if series' episodes is already stored in studip
-        if(!empty($stored_episodes)) {
-            if(!empty($series)) {
-                // add additional episode metadata from opencast
-                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+            //check if series' episodes is already stored in studip
+            if(!empty($stored_episodes)) {
+                if(!empty($series)) {
+                    // add additional episode metadata from opencast
+                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                } else {
+                    // someone deleted the connected episodes in opencast
+                    //TODO
+                }
             } else {
-                // someone deleted the connected episodes in opencast
-                //TODO
+                // since we don't have any idea about the episodes...
+                if(!empty($series)) {
+                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                } else {
+                    // that must be a brand new series without any episodes
+                }
             }
-        } else {
-            // since we don't have any idea about the episodes...
-            if(!empty($series)) {
-                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
-            } else {
-                // that must be a brand new series without any episodes
-            }
-        }
 
 
-        return $ordered_episodes;
+            return $ordered_episodes;
+        } else return false;
+
     }
 
     private function episodeComparison($stored_episodes, $remote_episodes) {
@@ -117,7 +117,7 @@ class OCCourseModel
                 $tmp['mkdate']  = $stored_episode['mkdate'];
                 $lastpos = $stored_episode['position'];
 
-                OCModel::setCoursePositionForEpisode($stored_episode['episode_id'], $lastpos, $this->course_id, $tmp['visibility'], $stored_episode['mkdate']);
+                OCModel::setCoursePositionForEpisode($stored_episode['episode_id'], $lastpos, $this->getCourseID(), $tmp['visibility'], $stored_episode['mkdate']);
                 $episodes[$stored_episode['position']] = $tmp;
 
                 unset($oc_episodes[$stored_episode['episode_id']]);
@@ -131,12 +131,12 @@ class OCCourseModel
             foreach($oc_episodes as $episode){
                 $lastpos++;
                 $timestamp = time();
-                $episode['visibility'] = true;
+                $episode['visibility'] = 'true';
                 $episode['position'] = $lastpos;
                 $episode['mkdate'] = $timestamp;
-                OCModel::setCoursePositionForEpisode($episode['id'], $lastpos, $this->course_id, 'true', $timestamp);
+                OCModel::setCoursePositionForEpisode($episode['id'], $lastpos, $this->getCourseID(), 'true', $timestamp);
                 $episodes[$episode['position']] = $episode;
-                NotificationCenter::postNotification('NewEpisodeForCourse',array('episode_id' => $episode['id'],'course_id' => $this->course_id, 'episode_title' => $episode['title']));
+                NotificationCenter::postNotification('NewEpisodeForCourse',array('episode_id' => $episode['id'],'course_id' => $this->getCourseID(), 'episode_title' => $episode['title']));
             }
 
         }
@@ -145,7 +145,7 @@ class OCCourseModel
         if(!empty($stored_episodes)){
             foreach($stored_episodes as $orphaned_episode) {
                 // todo log event for this action
-                OCModel::removeStoredEpisode($orphaned_episode['episode_id'],$this->course_id);
+                OCModel::removeStoredEpisode($orphaned_episode['episode_id'],$this->getCourseID());
             }
         }
 
@@ -238,7 +238,7 @@ class OCCourseModel
             WHERE seminar_id = :seminar_id AND mkdate > :lastvisit");
 
 
-        $stmt->bindParam(':seminar_id', $this->course_id);
+        $stmt->bindParam(':seminar_id', $this->getCourseID());
         $stmt->bindParam(':lastvisit', $visitdate);
 
         $stmt->execute();
