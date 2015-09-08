@@ -64,7 +64,7 @@ class CourseController extends StudipController
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
         // change this variable iff theodulplayer is active
-        $this->theodul = false;
+        $this->theodul = true;
         
     }
 
@@ -73,7 +73,7 @@ class CourseController extends StudipController
      */
     function index_action($active_id = 'false', $upload_message = false, $delete_series = false)
     {
-       
+
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
         $this->set_layout($layout);
 
@@ -89,6 +89,10 @@ class CourseController extends StudipController
             $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
             $this->set_layout($layout);
         } else {
+
+            // Config-Dialog
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             $this->workflow_client = WorkflowClient::getInstance();
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
 
@@ -103,7 +107,6 @@ class CourseController extends StudipController
             }
         }
 
-     
         Navigation::activateItem('course/opencast/overview');
         try {
                 $this->search_client = SearchClient::getInstance();
@@ -111,23 +114,7 @@ class CourseController extends StudipController
                 $occourse = new OCCourseModel($this->course_id);
                 if($occourse->getSeriesID()){
 
-                    /*
-                    $cache = StudipCacheFactory::getCache();
-                    $cache_key = 'oc_allepisodes/'.$this->course_id ;
-
-                    $cached_episodes = unserialize($cache->read($cache_key));
-
-                    if(!$this->ordered_episode_ids = $cached_episodes) {
-                        $this->ordered_episode_ids = $occourse->getEpisodes();
-                        // cache ordered episodes for 15mins
-                        $cache->write($cache_key, serialize($this->ordered_episode_ids), 900);
-                    } */
-
                     $this->ordered_episode_ids = $occourse->getEpisodes();
-                    //var_dump($this->ordered_episode_ids); die;
-
-
-
 
                     if(empty($active_id) || $active_id != "false") {
                         $this->active_id = $active_id;
@@ -154,9 +141,6 @@ class CourseController extends StudipController
                         $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
                     }
 
-
-
-
                     // Upload-Dialog
                     $this->date = date('Y-m-d');
                     $this->hour = date('H');
@@ -168,9 +152,7 @@ class CourseController extends StudipController
                     MediaPackageClient::getInstance()->checkService();
                     SeriesClient::getInstance()->checkService();
 
-                    // Config-Dialog
-                    $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
-                    $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+
 
                     // Remove Series
                     if($delete_series) {

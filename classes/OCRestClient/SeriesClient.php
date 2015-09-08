@@ -24,24 +24,50 @@
         }
 
         /**
-         *  getAllSeries() - retrieves all series from conntected Opencast-Matterhorn Core
+         *  getAllSeries() - retrieves all series from connected Opencast-Matterhorn Core
          *
          *  @return array response all series
          */
         function getAllSeries() {
-            
+
             $cache = StudipCacheFactory::getCache();
             $cache_key = 'oc_allseries';
             $all_series = $cache->read($cache_key);
-            
+
+            $count = 100;
+
             if($all_series === false) {
-                $service_url = "/series.json?count=100";
-            
+                $service_url = "/series.json?count=".$count;
+
                 if($series = $this->getJSON($service_url)){
-                    $cache->write($cache_key, serialize($series->catalogs), 7200);
-                    return $series->catalogs;
+                    $catalog = $series->catalogs;
+                    $offset = intval(ceil($series->totalCount / $count));
+                    for($i = 1; $i < $offset; $i++) {
+                        $additional_series = $this->getSeriesOffset($count, $i);
+                        if($additional_series){
+                            $catalog = array_merge($catalog,$additional_series);
+                        }
+                    }
+                    $cache->write($cache_key, serialize($catalog), 7200);
+                    return $catalog;
                 } else return false;
             } else return unserialize($all_series);
+        }
+
+        /**
+         *  getAllSeries() - retrieves all series for a given offset from connected Opencast-Matterhorn Core
+         *
+         *  @param int count maximal number of series that should be returned
+         *  @param int startpage offset
+         *
+         *  @return array response all series for given offset
+         */
+         function getSeriesOffset($count, $startpage) {
+            $service_url = "/series.json?count=".$count."&startPage=".$startpage;
+
+            if($series = $this->getJSON($service_url)){
+                return $series->catalogs;
+            } else return false;
         }
         
         // todo
