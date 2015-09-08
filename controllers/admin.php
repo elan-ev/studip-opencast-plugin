@@ -153,7 +153,7 @@ class AdminController extends AuthenticatedController
         
         $this->resources = OCModel::getOCRessources();
         if(empty($this->resources)) {
-            $this->flash['messages'] =array('info' => _('Es wurden keine passenden Ressourcen gefunden.'));
+            $this->flash['messages'] = array('info' => _('Es wurden keine passenden Ressourcen gefunden.'));
 
         }
 
@@ -214,6 +214,23 @@ class AdminController extends AuthenticatedController
     {
         $caa_client    = CaptureAgentAdminClient::getInstance();
         $this->agents  = $caa_client->getCaptureAgents();
+    }
+
+    function refresh_episodes_action($ticket){
+        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('admin',$this->course_id)) {
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT ocs.seminar_id, ocs.series_id FROM oc_seminar_series AS ocs WHERE 1");
+            $stmt->execute(array());
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($courses)) {
+                foreach ($courses as $course) {
+                    $ocmodel = new OCCourseModel($course['course_id']);
+                    $ocmodel->getEpisodes(true);
+                    unset($ocmodel);
+                }
+                $this->flash['messages'] = array('success' => _("Die Episodenliste aller Series  wurde aktualisiert."));
+            }
+        }
+        $this->redirect(PluginEngine::getLink('opencast/admin/config/'));
     }
 }
 ?>

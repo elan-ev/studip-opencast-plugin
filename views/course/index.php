@@ -13,7 +13,7 @@
 </script>
 
 <?
-    $sidebar = Sidebar::get ();
+    $sidebar = Sidebar::get();
     
     if($GLOBALS ['perm']->have_studip_perm ('dozent', $this->course_id))
     {
