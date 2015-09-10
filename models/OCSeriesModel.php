@@ -329,14 +329,16 @@ class OCSeriesModel {
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if(!isset($result)){
+        if(empty($result)){
             return false;
         }
         else {
             foreach($result as $c) {
-                $content = $c['content'];
+                $content = unserialize($c['content']);
+
             }
-            return unserialize($content);
+            if(is_null($content)) return 'empty';
+            else return $content;
         }
     }
 
