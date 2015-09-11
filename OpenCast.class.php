@@ -116,7 +116,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     function getIconNavigation($course_id, $last_visit, $user_id = NULL)
     {
-
         if (!$this->isActivated($course_id)) {
             return;
         }
@@ -252,8 +251,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
 
         $router = RestIP\Router::getInstance(null);
-
         $router->hook('restip.before.render', function () use ($router, $addon) {
+
             $result = $router->getRouteResult();
 
 
@@ -298,65 +297,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     public function getRecordings($course_id)
     {
-        $oc_episodes = array();
-        try {
-            $search_client = SearchClient::getInstance();
-            if (($cseries = OCSeriesModel::getConnectedSeries($course_id))) {
 
-                foreach ($cseries as $serie) {
-                    $series = $search_client->getEpisodes($serie['identifier']);
-                    if (!empty($series)) {
-                        foreach ($series as $episode) {
-                            $visibility = OCModel::getVisibilityForEpisode($course_id, $episode->id);
+        $ocmodel = new OCCourseModel($course_id);
+        $episodes = $ocmodel->getEpisodesforREST();
 
-                            if (is_object($episode->mediapackage) && $visibility['visible'] != 'false') {
-                                $count += 1;
-                                $ids[] = $episode->id;
+        return $episodes;
 
-                                foreach ($episode->mediapackage->attachments->attachment as $attachment) {
-                                    if ($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
-                                }
-
-                                foreach ($episode->mediapackage->media->track as $track) {
-                                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                            $presenter_download = $track->url;
-                                        }
-                                    }
-                                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                                        $url = parse_url($track->url);
-                                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                            $presentation_download = $track->url;
-                                        }
-                                    }
-                                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/m4a'))
-                                        $audio_download = $track->url;
-                                    $engage_url = parse_url($audio_download);
-                                    $external_player_url = $engage_url['scheme'] . '://' . $engage_url['host'] .
-                                        "/engage/ui/watch.html?id=" . $episode->id;
-                                }
-
-                                $oc_episodes[] = array('id' => $episode->id,
-                                    'title' => htmlready(mb_convert_encoding($episode->dcTitle, 'ISO-8859-1', 'UTF-8')),
-                                    'start' => htmlready(mb_convert_encoding($episode->mediapackage->start, 'ISO-8859-1', 'UTF-8')),
-                                    'duration' => htmlready(mb_convert_encoding($episode->mediapackage->duration, 'ISO-8859-1', 'UTF-8')),
-                                    'description' => htmlready(mb_convert_encoding($episode->dcDescription, 'ISO-8859-1', 'UTF-8')),
-                                    'author' => htmlready(mb_convert_encoding($episode->dcCreator, 'ISO-8859-1', 'UTF-8')),
-                                    'preview' => $preview,
-                                    'external_player_url' => $external_player_url,
-                                    'presenter_download' => $presenter_download,
-                                    'presentation_download' => $presentation_download,
-                                    'audio_download' => $audio_download
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception $e) {
-            die($e->getMessage());
-        }
-        return $oc_episodes;
     }
 
     public function NotifyUserOnNewEpisode($x, $data){
