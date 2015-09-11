@@ -71,7 +71,7 @@ class CourseController extends StudipController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = false, $delete_series = false)
+    function index_action($active_id = 'false', $upload_message = false)
     {
 
         $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
@@ -155,7 +155,7 @@ class CourseController extends StudipController
 
 
                     // Remove Series
-                    if($delete_series) {
+                    if($this->flash['cand_delete']) {
                         $this->flash['delete'] = true;
                     }
                 } else {
@@ -198,7 +198,9 @@ class CourseController extends StudipController
     
     function remove_series_action($ticket)
     {
-         
+
+
+
         $course_id = Request::get('course_id');
         $series_id = Request::get('series_id');
         $delete = Request::get('delete');
@@ -218,7 +220,7 @@ class CourseController extends StudipController
             $this->flash['messages']['error'] = _("Die Zuordnung konnte nicht entfernt werden.");
         }
         
-        
+        $this->flash['cand_delete'] = true;
         
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }

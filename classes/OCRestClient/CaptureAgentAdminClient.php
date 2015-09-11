@@ -46,7 +46,8 @@
         function getCaptureAgents() {
             $service_url = "/agents.json";
             if($agents = $this->getJSON($service_url)){
-              return $agents;
+                $sanitzed_agents = $this->sanitizeAgents($agents);
+                return $sanitzed_agents;
             } else return false;
         }
         
@@ -57,5 +58,13 @@
                 return $agent->$x->properties->item;
             } else return false;
         }
+
+        private function sanitizeAgents($agents){
+            if(is_array($agents->agents->agent)) $sanitized_agents = $agents->agents->agent;
+            else $sanitized_agents = $agents->agents;
+
+            return $sanitized_agents;
+        }
     }
+
 ?>

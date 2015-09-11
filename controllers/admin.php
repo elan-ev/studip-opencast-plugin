@@ -192,13 +192,12 @@ class AdminController extends AuthenticatedController
         foreach($this->resources as $resource) {
             if(Request::get('action') == 'add'){
                 if(($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')){
-                    OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
+                    $success = OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
                 }
             }
-
-
-
         }
+
+        if($success) $this->flash['messages'] = array('success' => _("Capture Agents wurden zugewiesen."));
 
         $this->redirect(PluginEngine::getLink('opencast/admin/resources'));
     }

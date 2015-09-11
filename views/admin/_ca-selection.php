@@ -1,6 +1,10 @@
 <?
     $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
 ?>
+
+
+
+
 <td>
     <?= $resource['name'] ?>
 </td>
@@ -11,7 +15,7 @@
     <td>
     <?=$assigned_agents['workflow_id']?>
     </td>
-    <? foreach ($agents->agents as $key => $agent) : ?>
+    <? foreach ($agents as $key => $agent) : ?>
         <? if(in_array($agent->name, $assigned_agents)):?>
             <td>
                     <? if($agent->state == 'idle') :?>
@@ -38,7 +42,8 @@
         <option value="" disabled selected><?=_("Bitte wählen Sie einen CA.")?></option>
         <? if($available_agents) : ?>
 
-            <? foreach ($available_agents->agents as $agent) : ?>
+
+            <? foreach ($available_agents as $agent) : ?>
 
                 <? if(isset($agent)) : ?>
                     <option value="<?= $agent->name ?>" > <?=$agent->name?></option>

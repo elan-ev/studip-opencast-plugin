@@ -48,7 +48,7 @@ class OCModel
     }
 
     static function setCAforResource($resource_id, $capture_agent, $workflow_id) {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
+        $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_resources (resource_id, capture_agent, workflow_id)
                 VALUES (?, ?, ?)");
         return $stmt->execute(array($resource_id, $capture_agent, $workflow_id));

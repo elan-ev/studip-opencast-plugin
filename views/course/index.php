@@ -21,7 +21,7 @@
         $upload = '';
         if(! empty ($connectedSeries))
         {
-            $actions->addLink (_ ("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/index/' . $active_id . '/ /true'), 'icons/16/blue/trash.png');
+            $actions->addLink (_ ("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
             $actions->addLink (_ ("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
             if($series_metadata [0] ['schedule'] == '1')
             {
