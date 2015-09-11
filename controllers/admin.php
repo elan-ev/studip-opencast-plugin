@@ -225,9 +225,11 @@ class AdminController extends AuthenticatedController
             $stmt = DBManager::get()->prepare("SELECT DISTINCT ocs.seminar_id, ocs.series_id FROM oc_seminar_series AS ocs WHERE 1");
             $stmt->execute(array());
             $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if (!empty($courses)) {
+
+            if (is_array($courses)) {
                 foreach ($courses as $course) {
-                    $ocmodel = new OCCourseModel($course['course_id']);
+
+                    $ocmodel = new OCCourseModel($course['seminar_id']);
                     $ocmodel->getEpisodes(true);
                     unset($ocmodel);
                 }
