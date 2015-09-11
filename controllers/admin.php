@@ -163,15 +163,20 @@ class AdminController extends AuthenticatedController
         $agents = $caa_client->getCaptureAgents();
         $this->agents = $caa_client->getCaptureAgents();
 
+
         foreach ($this->resources as $resource) {
             $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
             if($assigned_agents){
-
-                foreach($agents->agents as $key => $agent) {
-                    if(in_array($agent->name, $assigned_agents)) unset($agents->agents->$key);
-                    else{
-                        OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
+                $existing_agent = false;
+                foreach($agents as $key => $agent) {
+                    if($agent->name ==  $assigned_agents['capture_agent']) {
+                        unset($agents->$key);
+                        $existing_agent = true;
                     }
+                 }
+                if(!$existing_agent){
+                    OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
+                    $this->flash['messages'] = array('info' => sprintf(_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
                 }
             }
         }
