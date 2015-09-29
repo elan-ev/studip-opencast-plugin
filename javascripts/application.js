@@ -214,7 +214,7 @@ OC = {
                 }
 
             } if(reload || response == ""){
-                window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/", '_self');
+                window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
             } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false)}, 25000)
 
         });
