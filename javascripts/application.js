@@ -86,7 +86,7 @@ OC = {
 
 
 
-            if(!OC.states && STUDIP.hasperm){
+            if(OC.states && STUDIP.hasperm){
                 OC.getWorkflowProgressForCourse(cid, true);
             }
 
@@ -168,8 +168,8 @@ OC = {
         jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatusforCourse/" +  course_id).done(function(data) {
             var response = jQuery.parseJSON(data);
             if(!jQuery.isEmptyObject(response)){
-
                 for (var job_id in response) {
+
                     var job = response[job_id];
 
                     if(job.state == 'RUNNING' ||job.state == 'INSTANTIATED' ) {

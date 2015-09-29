@@ -189,13 +189,19 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     function getTabNavigation($course_id)
     {
 
-
         if (!$this->isActivated($course_id) || !OCModel::getConfigurationstate()) {
             return;
         }
-        //.. now the subnavi
+
+        // TODO select visibility for course in oc_seminar_series and display tab only than
+        // display alway for dozent
+        $ocmodel = new OCCourseModel($course_id);
+        if($ocmodel->getSeriesVisibility() == 'visible');
+
+
+
+
         $main = new Navigation("Opencast");
-        //$main = new Navigation("Veranstaltungsaufzeichnungen");
         $main->setURL(PluginEngine::getURL('opencast/course'));
         $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
         $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
@@ -216,8 +222,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
+        if($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+            return array('opencast' => $main);
+        } else return array();
 
-        return array('opencast' => $main);
     }
 
     /**

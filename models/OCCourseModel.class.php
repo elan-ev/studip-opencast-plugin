@@ -266,4 +266,18 @@ class OCCourseModel
         return $rest_episodes;
     }
 
+    public  function toggleSeriesVisibility() {
+
+        if($this->getSeriesVisibility() == 'visible') $visibility = 'invisible';
+        else $visibility = 'visible';
+        return OCSeriesModel::updateVisibility($this->course_id,$visibility);
+
+    }
+
+    public function getSeriesVisibility(){
+        $visibility = OCSeriesModel::getVisibility($this->course_id);
+        return $visibility['visibility'];
+
+    }
+
 }

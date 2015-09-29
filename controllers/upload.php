@@ -93,7 +93,7 @@ class UploadController extends StudipController
             $x = json_decode($json, true);
             $result = $x['@attributes'];
             
-            OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid']);
+            OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid'], time());
             
             $this->file->clearSession();
             //echo 'Ingest Started: '.htmlentities($content);

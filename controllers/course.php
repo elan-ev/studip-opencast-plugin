@@ -81,7 +81,8 @@ class CourseController extends StudipController
         if($upload_message == 'true') {
             $this->flash['messages'] = array('success' =>_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.'));
         }
-        
+
+        $reload = false;
         // set layout for index page
         $this->states = false;
         if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
@@ -98,10 +99,12 @@ class CourseController extends StudipController
 
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
+
                 foreach($workflow_ids as $workflow_id) {
                     $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
                     if($resp->state == 'SUCCEEDED') {
                         OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $this->course_id);
+                        $reload = true;
                     } else $this->states[$workflow_id['workflow_id']] = $resp;
                 }
             }
@@ -114,7 +117,7 @@ class CourseController extends StudipController
                 $occourse = new OCCourseModel($this->course_id);
                 if($occourse->getSeriesID()){
 
-                    $this->ordered_episode_ids = $occourse->getEpisodes();
+                    $this->ordered_episode_ids = $occourse->getEpisodes($reload);
 
                     if(empty($active_id) || $active_id != "false") {
                         $this->active_id = $active_id;
@@ -531,6 +534,17 @@ class CourseController extends StudipController
             $this->flash['messages'] = array('success'=> _("Die Episodenliste wurde aktualisiert."));
         }
 
+        $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
+    }
+
+    function toggle_tab_visibility_action($ticket){
+        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)) {
+            $occourse = new OCCourseModel($this->course_id);
+            $occourse->toggleSeriesVisibility();
+            $visibility = $occourse->getSeriesVisibility();
+            $vis = array('visible' => 'sichtbar', 'invisible' => 'ausgeblendet');
+            $this->flash['messages'] = array('success'=> sprintf(_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."),$vis[$visibility]));
+        }
         $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
     }
 

@@ -7,7 +7,7 @@
 
 <script language="JavaScript">
     STUDIP.hasperm  = <?=var_export($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))?>;
-    OC.states = <?=var_export($states)?>;
+    OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
     OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>
@@ -29,6 +29,7 @@
                         'id' => 'oc_upload_dialog' 
                ));
             }
+
         } else
         {
             $actions->addLink (_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
@@ -36,7 +37,13 @@
                     'id' => 'oc_config_dialog' 
            ));
         }
-        
+        //todo - should this already be visibile for teachers?
+        if($tab_vis){
+            $actions->addLink (_ ("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
+        } else {
+            $actions->addLink (_ ("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
+        }
+
         $sidebar->addWidget ($actions);
         Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
     } else

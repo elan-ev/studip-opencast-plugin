@@ -355,10 +355,18 @@ class OCSeriesModel {
         return $stmt->execute(array($data, time(), $series_id));
     }
 
+    static function updateVisibility($seminar_id,$visibility){
+        $stmt = DBManager::get()->prepare("UPDATE
+                oc_seminar_series SET `visibility` = ?  WHERE `seminar_id` = ?");
+        return $stmt->execute(array($visibility, $seminar_id));
+    }
 
-
-
-
+    static function getVisibility($seminar_id){
+        $stmt = DBManager::get()->prepare("SELECT `visibility` FROM
+                oc_seminar_series WHERE seminar_id = ?");
+        $stmt->execute(array($seminar_id));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>
