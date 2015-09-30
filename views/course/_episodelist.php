@@ -17,8 +17,8 @@
                     src="<%= episodes[episode]['preview'] %> ">
             </div>
             <div class="oce_metadatacontainer">
-                <h3 class="oce_metadata"><%= episodes[episode]['title'] %> <%= episodes[episode]['visibility']!== 'false' ? '' : '(Unsichtbar)' %></h3>
-                <span>
+                <h3 class="oce_metadata oce_list_title"><%= episodes[episode]['title'] %> <%= episodes[episode]['visibility']!== 'false' ? '' : '(Unsichtbar)' %></h3>
+                <span class="oce_list_date">
                     <% var date = new Date(episodes[episode]['start'])%>
                     Vom <%= ('0' + date.getDate()).slice(-2)%>.<%= ('0' + (date.getMonth()+1)).slice(-2)%>.<%= date.getFullYear()%>  <%= ('0' + date.getHours()).slice(-2)%>:<%= date.getMinutes()%>
                     <?//=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>

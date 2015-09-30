@@ -91,6 +91,7 @@ OC = {
             }
 
             // take care of episodelist
+            OC.searchEpisodeList();
             OC.episodeListener(cid);
 
 
@@ -288,6 +289,14 @@ OC = {
             });
 
         });
+    },
+
+    searchEpisodeList: function(){
+        var options = {
+            valueNames: [ 'oce_list_title', 'oce_list_date' ]
+        };
+
+        var episodeList = new List('episodes', options);
     }
 };
 

@@ -49,6 +49,7 @@ class CourseController extends StudipController
         PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
         PageLayout::addStylesheet($GLOBALS['ocplugin_path']  . '/vendor/simplePagination.css');
         PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/circle-progress/circle-progress.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/listjs/list.min.js');
 
 
 

@@ -1,0 +1,92 @@
+.flex() {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: -webkit-box-flex;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: flex;
+}
+
+.flex-direction-row() {
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    -moz-box-direction: normal;
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    flex-direction: row;
+}
+.flex-direction-row-reverse() {
+    -webkit-flex-direction: row-reverse;
+    -ms-flex-direction: row-reverse;
+    -moz-box-direction: reverse;
+    -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    flex-direction: row-reverse;
+}
+
+.flex-direction-column() {
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    -moz-box-direction: normal;
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    flex-direction: column;
+}
+.flex-direction-column-reverse() {
+    -webkit-flex-direction: column-reverse;
+    -ms-flex-direction: column-reverse;
+    -moz-box-direction: reverse;
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    flex-direction: column-reverse;
+}
+
+.flex-wrap(@wrap) {
+    -webkit-flex-wrap: @wrap;
+    -ms-flex-wrap: @wrap;
+    flex-wrap: @wrap;
+}
+
+.flex-grow(@growth) {
+    -webkit-flex-grow: @growth;
+    flex-grow: @growth;
+}
+
+.flex-align-content(@stretch) {
+    -webkit-align-content: @stretch; 
+    -ms-flex-line-pack: @stretch; 
+    align-content: @stretch; 
+}
+
+.flex-align-items(@stretch) {
+    -webkit-align-items: @stretch; 
+    -ms-flex-align: @stretch; 
+    -moz-box-align: @stretch;
+    align-items: @stretch;
+}
+
+.flex-justify-content(@justification) {
+    -webkit-justify-content: @justification;
+    justify-content: @justification;
+}
+
+.flex-justify-content() {
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    -moz-box-pack: start;
+    justify-content: flex-start;
+}
+
+.flex-align-self(@alignment) {
+    -webkit-align-self: @alignment;
+    align-self: @alignment;
+}
+
+.flex-item(@growth, @shrink) {
+    -webkit-box-flex: @growth;
+    -webkit-flex: @growth @shrink auto;
+    -ms-flex: @growth @shrink auto;
+    -moz-box-flex: @growth;
+    flex: @growth @shrink auto;
+
+}
