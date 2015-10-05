@@ -116,6 +116,8 @@ class CourseController extends StudipController
                 $this->search_client = SearchClient::getInstance();
 
                 $occourse = new OCCourseModel($this->course_id);
+                $this->coursevis = $occourse->getSeriesVisibility();
+
                 if($occourse->getSeriesID()){
 
                     $this->ordered_episode_ids = $occourse->getEpisodes($reload);

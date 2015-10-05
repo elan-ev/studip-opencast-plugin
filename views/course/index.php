@@ -38,7 +38,7 @@
            ));
         }
         //todo - should this already be visibile for teachers?
-        if($tab_vis){
+        if($coursevis == 'visible'){
             $actions->addLink (_ ("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
         } else {
             $actions->addLink (_ ("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
@@ -126,11 +126,11 @@
                         <? endif;?>
                         </div>
                         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                        <div class="button-group">
+                        <div class="button-group" style="float:right">
                             <? if ($visible && $visible['visible'] == 'false') : ?>
-                                <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
+                                <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
                             <? else : ?>
-                                <?= Studip\LinkButton::create(_('Aufzeichnung unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
+                                <?= Studip\LinkButton::create(_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
                             <? endif; ?>
 
                         </div>

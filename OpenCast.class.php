@@ -196,7 +196,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         // TODO select visibility for course in oc_seminar_series and display tab only than
         // display alway for dozent
         $ocmodel = new OCCourseModel($course_id);
-        if($ocmodel->getSeriesVisibility() == 'visible');
+
 
 
 

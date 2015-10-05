@@ -118,6 +118,7 @@
   padding: 0.5em;
   box-shadow: 2px 2px 2px grey;
   width: 600px;
+  height: auto;
   min-width: 310px;
 }
 @media only screen and (max-width: 1685px) {
@@ -148,7 +149,7 @@
   box-shadow: 2px 2px 2px grey;
   z-index: 1999;
   width: 720px;
-  height: 600px;
+  height: auto;
 }
 .oce_playercontainer .oc_playerframe {
   display: block;
@@ -185,7 +186,7 @@
   padding-left: 0px;
   list-style: none;
   overflow: scroll;
-  height: 580px;
+  height: auto;
 }
 .oce_emetadata {
   font-size: 80%;
@@ -197,6 +198,7 @@
 .oce_episode_search {
   float: right;
   margin-right: 0.5em;
+  padding-bottom: 5px;
 }
 .oce_active_li {
   background-color: #F3F5F4;
@@ -429,8 +431,8 @@ textarea.oc_input:focus {
   color: #28497c;
   position: absolute;
   width: auto;
-  top: 8vh;
-  left: 50%;
+  top: 25vh;
+  left: 44%;
   z-index: 9000;
 }
 .oc_opaque {
