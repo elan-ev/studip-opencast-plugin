@@ -8,6 +8,7 @@
  */
 
 require_once 'OCModel.php';
+require_once 'OCSeriesModel.php';
 require_once dirname(__FILE__) .'/../classes/OCRestClient/SearchClient.php';
 
 class OCCourseModel

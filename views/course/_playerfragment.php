@@ -37,13 +37,13 @@
             <div class="button-group">
                 <a class="ocextern button" href="http://<%=engage_player_url%>" target="_blank" tabindex="0"><?= _('Erweiterter Player') ?></a>
                 <% if(episode.presenter_download) { %>
-                    <a class="download presenter button" href="<%=episode.presenter_download%>" target="_blank" tabindex="0"><?= _('Download ReferentIn') ?></a>
+                    <a class="download presenter button" href="<%=episode.presenter_download%>" target="_blank" tabindex="0"><?= _('ReferentIn') ?></a>
                 <% } %>
                 <% if(episode.presentation_download) { %>
-                    <a class="download presentation button" href="<%=episode.presentation_download%>" target="_blank" tabindex="0"> <?= _('Download Bildschirm') ?></a>
+                    <a class="download presentation button" href="<%=episode.presentation_download%>" target="_blank" tabindex="0"> <?= _('Bildschirm') ?></a>
                 <% } %>
                 <% if(episode.audio_download) { %>
-                    <a class="download audio button" href="<%=episode.audio_download%>" target="_blank" tabindex="0"> <?= _('Download Audio') ?></a>
+                    <a class="download audio button" href="<%=episode.audio_download%>" target="_blank" tabindex="0"> <?= _('Audio') ?></a>
                 <% } %>
             </div>
             <% if (dozent) { %>

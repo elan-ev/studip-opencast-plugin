@@ -116,13 +116,13 @@
                     <div class="button-group">
                         <?= Studip\LinkButton::create(_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
                         <? if($active['presenter_download']) : ?>
-                            <?= Studip\LinkButton::create(_('Download ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
+                            <?= Studip\LinkButton::create(_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
                         <? endif;?>
                         <? if($active['presentation_download']) : ?>
-                            <?= Studip\LinkButton::create(_('Download Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
+                            <?= Studip\LinkButton::create(_('Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
                         <? endif;?>
                         <? if($active['audio_download']) :?>
-                            <?= Studip\LinkButton::create(_('Download Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
+                            <?= Studip\LinkButton::create(_('Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
                         <? endif;?>
                         </div>
                         <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
