@@ -1,5 +1,5 @@
 <?php
-
+require_once dirname(__FILE__) .'/../classes/OCRestClient/SeriesClient.php';
 //if (!class_exists('SeriesClient')) {
 //    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
 //}
