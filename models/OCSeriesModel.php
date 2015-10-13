@@ -343,7 +343,7 @@ class OCSeriesModel {
     }
 
     static function setCachedSeriesData($series_id, $data) {
-        $stmt = DBManager::get()->prepare("INSERT INTO
+        $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_series_cache (`series_id`, `content`, `mkdate`, `chdate`)
                 VALUES (?, ?, ?, ?)");
         return $stmt->execute(array($series_id, $data, time() ,time()));
