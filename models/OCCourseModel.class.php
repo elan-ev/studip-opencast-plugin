@@ -268,7 +268,6 @@ class OCCourseModel
     }
 
     public  function toggleSeriesVisibility() {
-
         if($this->getSeriesVisibility() == 'visible') $visibility = 'invisible';
         else $visibility = 'visible';
         return OCSeriesModel::updateVisibility($this->course_id,$visibility);

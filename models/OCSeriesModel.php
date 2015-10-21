@@ -337,13 +337,13 @@ class OCSeriesModel {
                 $content = unserialize($c['content']);
 
             }
-            if(is_null($content)) return 'empty';
+            if(is_null($content) || empty($content)) return 'empty';
             else return $content;
         }
     }
 
     static function setCachedSeriesData($series_id, $data) {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
+        $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_series_cache (`series_id`, `content`, `mkdate`, `chdate`)
                 VALUES (?, ?, ?, ?)");
         return $stmt->execute(array($series_id, $data, time() ,time()));

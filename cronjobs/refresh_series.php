@@ -42,7 +42,6 @@ class RefreshSeries extends CronJob {
             }
         }
 
-
         return true;
     }
 

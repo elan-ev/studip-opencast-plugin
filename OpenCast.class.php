@@ -116,14 +116,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     function getIconNavigation($course_id, $last_visit, $user_id = NULL)
     {
-        if (!$this->isActivated($course_id)) {
+
+        $ocmodel = new OCCourseModel($course_id);
+        if (!$this->isActivated($course_id) || $ocmodel->getSeriesVisibility() != 'visible') {
             return;
         }
 
         $this->image_path = $this->getPluginURL() . '/images/';
 
         if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
-            $ocmodel = new OCCourseModel($course_id);
             $ocgetcount = $ocmodel->getCount($last_visit);
             $text = sprintf(_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'), $ocgetcount);
         } else {
@@ -193,13 +194,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             return;
         }
 
-        // TODO select visibility for course in oc_seminar_series and display tab only than
-        // display alway for dozent
+
         $ocmodel = new OCCourseModel($course_id);
-
-
-
-
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
@@ -314,21 +310,23 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
     public function NotifyUserOnNewEpisode($x, $data){
+        $ocmodel = new OCCourseModel($data['course_id']);
+        if($ocmodel->getSeriesVisibility() == 'visible') {
+            $course = Course::find($data['course_id']);
+            $members = $course->members;
 
-        $course = Course::find($data['course_id']);
-        $members = $course->members;
+            $users = array();
+            foreach($members as $member){
+                $users[] = $member->user_id;
+            }
 
-        $users = array();
-        foreach($members as $member){
-            $users[] = $member->user_id;
+            $notification =  sprintf(_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
+            PersonalNotifications::add(
+                $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
+                $notification, $data['episode_id'],
+                Assets::image_path("icons/40/blue/file-video.png")
+            );
         }
-
-        $notification =  sprintf(_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
-        PersonalNotifications::add(
-            $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
-            $notification, $data['episode_id'],
-            Assets::image_path("icons/40/blue/file-video.png")
-        );
 
     }
 }
