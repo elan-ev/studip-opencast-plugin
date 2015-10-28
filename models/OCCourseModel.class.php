@@ -291,9 +291,10 @@ class OCCourseModel
 
         $episodes = array();
         foreach($ordered_episodes as $episode){
-            if($episode['visibility'] != 'true') $episodes[] = $episode;
+            if($episode['visibility'] == 'true') {
+                $episodes[] = $episode;
+            }
         }
-        
         return $episodes;
     }
 

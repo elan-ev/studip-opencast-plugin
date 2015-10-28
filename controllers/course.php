@@ -122,7 +122,7 @@ class CourseController extends StudipController
 
                     $ordered_episode_ids = $occourse->getEpisodes($reload);
                     if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
-                        $this->ordered_episodes_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
+                        $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
                     } else {
                         $this->ordered_episode_ids = $ordered_episode_ids;
                     }
