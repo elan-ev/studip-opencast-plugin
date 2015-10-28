@@ -280,4 +280,21 @@ class OCCourseModel
 
     }
 
+    /**
+     * refine the list of episodes wrt. the visibility of an episode
+     *
+     * @param array $ordered_episodes list of all episodes for the given course
+     *
+     * @return array episodes refined list of episodes - only visible episodes are considered
+     */
+    public function refineEpisodesForStudents($ordered_episodes) {
+
+        $episodes = array();
+        foreach($ordered_episodes as $episode){
+            if($episode['visibility'] != 'true') $episodes[] = $episode;
+        }
+        
+        return $episodes;
+    }
+
 }

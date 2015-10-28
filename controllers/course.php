@@ -120,7 +120,12 @@ class CourseController extends StudipController
 
                 if($occourse->getSeriesID()){
 
-                    $this->ordered_episode_ids = $occourse->getEpisodes($reload);
+                    $ordered_episode_ids = $occourse->getEpisodes($reload);
+                    if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+                        $this->ordered_episodes_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
+                    } else {
+                        $this->ordered_episode_ids = $ordered_episode_ids;
+                    }
 
                     if(empty($active_id) || $active_id != "false") {
                         $this->active_id = $active_id;
