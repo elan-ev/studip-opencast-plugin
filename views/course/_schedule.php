@@ -25,11 +25,21 @@
         <td> <?=$date->getDatesHTML()?> </td>
         <? $issues = $date->getIssueIDs(); ?>
         <? if(is_array($issues)) : ?>
-        <? foreach($issues as $is) : ?>
-            <? $issue = new Issue(array('issue_id' => $is));?>
-            <? $topic = true; ?>
-            <td> <?= my_substr($issue->getTitle(), 0 ,80 ); ?></td>
+            <? if(sizeof($issues) > 1) :?>
+                <? $titles = array(); ?>
+                <? foreach($issues as $is) : ?>
+                    <? $issue = new Issue(array('issue_id' => $is));?>
+                    <? $topic = true; ?>
+                    <? $titles[] = my_substr($issue->getTitle(), 0 ,80 );?>
+                <? endforeach; ?>
+            <td> <?= _("Themen: ") . my_substr(implode(', ', $titles), 0 ,80 ) ?></td>
+            <? else : ?>
+            <? foreach($issues as $is) : ?>
+                <? $issue = new Issue(array('issue_id' => $is));?>
+                <? $topic = true; ?>
+                <td> <?= my_substr($issue->getTitle(), 0 ,80 ) ?></td>
             <? endforeach; ?>
+            <? endif; ?>
         <? else: ?>
         <? $topic = false; ?>
         <td> <?=_("Kein Titel eingetragen")?></td>

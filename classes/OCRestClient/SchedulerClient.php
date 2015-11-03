@@ -139,11 +139,17 @@
             $date = new SingleDate($termin_id);
             $start_time = date('D M d H:i:s e Y', $date->getStartTime());
 
-
+            $issue_titles = array();
             $issues = $date->getIssueIDs();
             if(is_array($issues)) {
                 foreach($issues as $is) {
                     $issue = new Issue(array('issue_id' => $is));
+                    if(sizeof($issues) > 1) {
+                        $issue_titles[] =  my_substr($issue->getTitle(), 0 ,80 );
+                    } else $issue_titles =  my_substr($issue->getTitle(), 0 ,80 );
+                }
+                if(is_array($issue_titles)){
+                    $issue_titles = _("Themen: ") . my_substr(implode(', ', $issue_titles), 0 ,80 );
                 }
             }
 
@@ -151,7 +157,7 @@
                 $course = new Seminar($course_id);
                 $name = $course->getName();
                 $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
-            } else $title = $issue->title;
+            } else $title = $issue_titles;
 
             $room = ResourceObject::Factory($resource_id);
             $cas = OCModel::checkResource($resource_id);
