@@ -7,27 +7,9 @@ OC = {
     },
     initIndexpage: function(){
         jQuery( document ).ready(function() {
-  
-            var items = jQuery(".oce_list li");
-            var numItems = items.size();
-            var perPage = 2000; // we don't need that in the moment
+
             var cid = jQuery('#course_id').data('courseid');
 
-            if(numItems > perPage) {
-                items.slice(perPage).hide();
-                jQuery('#oce_pagination').pagination({
-                        items: numItems,
-                        itemsOnPage: perPage,
-                        cssStyle: 'light-theme',
-                        prevText: 'Vorherige',
-                        nextText: 'Nächste',
-                        onPageClick: function(pageNumber) {
-                            var showFrom = perPage * (pageNumber - 1);
-                            var showTo = showFrom + perPage;
-                            items.hide().slice(showFrom, showTo).show();
-                        }
-                });
-             }
             if(STUDIP.hasperm) {
                  // Upload Dialog
                 jQuery("#upload_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocUpload'});
@@ -85,7 +67,6 @@ OC = {
             }
 
 
-
             if(OC.states && STUDIP.hasperm){
                 OC.getWorkflowProgressForCourse(cid, true);
             }
@@ -93,9 +74,6 @@ OC = {
             // take care of episodelist
             OC.searchEpisodeList();
             OC.episodeListener(cid);
-
-
-
 
         });
 
@@ -266,9 +244,10 @@ OC = {
             var episode_id = jQuery(this).attr('id');
 
             //todo animation / progessindication
+            /*
             jQuery('html, body').animate({
                 scrollTop: jQuery('#barTopFont').offset().top
-            }, 1000);
+            }, 1000); */
             jQuery('#oc_balls').show();
             jQuery('.oce_playercontainer').addClass('oc_opaque');
 

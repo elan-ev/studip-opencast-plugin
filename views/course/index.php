@@ -198,7 +198,6 @@
             </li>
             <? endforeach; ?>
         </ul>
-        <div id="oce_pagination"></div>
     </div>
 </div>
 <? else: ?>
