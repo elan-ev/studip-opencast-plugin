@@ -110,13 +110,9 @@
   background: #ffffff transparent;
   background: rgba(255, 255, 255, 0.8);
   padding: 5ex;
-  -webkit-border-radius: 9px;
-  -moz-border-radius: 9px;
-  border-radius: 9px;
   background-color: #F3F5F8;
   margin-top: 1em;
   padding: 0.5em;
-  box-shadow: 2px 2px 2px grey;
   width: 600px;
   height: auto;
   min-width: 310px;
@@ -140,13 +136,9 @@
   background: #ffffff transparent;
   background: rgba(255, 255, 255, 0.8);
   padding: 5ex;
-  -webkit-border-radius: 9px;
-  -moz-border-radius: 9px;
-  border-radius: 9px;
   background-color: #F3F5F8;
   margin-top: 1em;
   padding: 0.5em;
-  box-shadow: 2px 2px 2px grey;
   z-index: 1999;
   width: 720px;
   height: auto;
@@ -191,9 +183,6 @@
 .oce_emetadata {
   font-size: 80%;
   margin-left: 0.5em;
-}
-#oce_pagination {
-  float: right;
 }
 .oce_episode_search {
   float: right;
