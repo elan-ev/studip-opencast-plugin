@@ -10,6 +10,8 @@
  */
 
 require_once 'app/controllers/studip_controller.php';
+require_once 'lib/log_events.inc.php';
+
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
@@ -96,6 +98,7 @@ class UploadController extends StudipController
             OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid'], time());
             
             $this->file->clearSession();
+            log_event('OC_UPLOAD_MEDIA', $result['id'], $_SESSION['SessionSeminar']);
             //echo 'Ingest Started: '.htmlentities($content);
         } else echo 'upload failed';
         
