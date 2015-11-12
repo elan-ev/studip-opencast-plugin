@@ -456,6 +456,7 @@ class CourseController extends StudipController
             $scheduler_client = SchedulerClient::getInstance();
 
             if($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+                log_event('OC_SCHEDULE_EVENT', $termin_id, $course_id);
                 return true;
             } else {
                 // TODO FEEDBACK
@@ -469,6 +470,7 @@ class CourseController extends StudipController
         if($scheduled){
             $scheduler_client = SchedulerClient::getInstance();
             $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
+            log_event('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
         } else {
             self::schedule($resource_id, $termin_id, $course_id);
         }  
@@ -480,6 +482,7 @@ class CourseController extends StudipController
             $scheduler_client = SchedulerClient::getInstance();
 
             if( $scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
+                log_event('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
                 return true;
             } else {
                 // TODO FEEDBACK

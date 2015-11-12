@@ -5,47 +5,47 @@ class AddLogActions extends Migration {
     static $log_actions = array(
         array(
             'name'        => 'OC_CHANGE_EPISODE_VISIBILITY',
-            'description' => 'Sichtbarkeit einer Episoden geändert',
+            'description' => 'Opencast: Sichtbarkeit einer Episoden geändert',
             'template'    => '%user ändert Sichtbarkeit der Aufzeichnung %affected in %sem(%coaffected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_CHANGE_TAB_VISIBILITY',
-            'description' => 'Sichtbarkeit des Kursreiters geändert',
+            'description' => 'Opencast:  Sichtbarkeit des Kursreiters geändert',
             'template'    => '%user ändert Sichtbarkeit des Kursreiters in %sem(%affected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_SCHEDULE_EVENT',
-            'description' => 'Planung einer Opencast Aufzeichnung',
+            'description' => 'Opencast: Planung einer Aufzeichnung',
             'template'    => '%user plant Aufzeichnung %affected in %sem(%coaffected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_REFRESH_SCHEDULED_EVENT',
-            'description' => 'Aktualisierung einer Opencast Aufzeichnung',
+            'description' => 'Opencast: Aktualisierung einer Aufzeichnung',
             'template'    => '%user aktualisiert Aufzeichnung %affected in %sem(%coaffected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_CANCEL_SCHEDULED_EVENT',
-            'description' => 'Stornierung einer Opencast Aufzeichnung',
+            'description' => 'Opencast: Stornierung einer Aufzeichnung',
             'template'    => '%user storniert Aufzeichnung %affected in %sem(%coaffected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_CREATE_SERIES',
-            'description' => 'Anlegen einer Opencast Aufzeichnungsserie',
+            'description' => 'Opencast: Anlegen einer Aufzeichnungsserie',
             'template'    => '%user legt neue Aufzeichnungsserie in %sem(%affected) an',
             'active'      => 1
         ), array(
             'name'        => 'OC_CONNECT_SERIES',
-            'description' => 'Verknüpfung einer Opencast Aufzeichnungsserie',
+            'description' => 'Opencast: Verknüpfung einer Aufzeichnungsserie',
             'template'    => '%user verknüpft vorhandene Aufzeichnungsserie %affected in %sem(%coaffected) an',
             'active'      => 1
         ), array(
             'name'        => 'OC_REMOVE_CONNECTED_SERIES',
-            'description' => 'Aufheben einer Opencast Aufzeichnungsserienverknüpfung',
+            'description' => 'Opencast: Aufheben einer Aufzeichnungsserienverknüpfung',
             'template'    => '%user löscht die Verbindung zur Aufzeichnungsserie %affected in %sem(%coaffected) an',
             'active'      => 1
         ), array(
             'name'        => 'OC_UPLOAD_MEDIA',
-            'description' => 'Upload einer Datei in einer Opencast Aufzeichnungsserie',
+            'description' => 'Opencast: Upload einer Datei in einer Aufzeichnungsserie',
             'template'    => '%user lädt eine Datei mit der WorkflowID %affected in %sem(%coaffected) hoch',
             'active'      => 1
         )
