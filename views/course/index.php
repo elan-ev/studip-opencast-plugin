@@ -23,27 +23,31 @@
         $upload = '';
         if(! empty ($connectedSeries))
         {
-            $actions->addLink (_ ("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
-            $actions->addLink (_ ("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
+            $actions->addLink(_("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
+            $actions->addLink(_("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
             if($series_metadata [0] ['schedule'] == '1')
             {
-                $actions->addLink (_ ("Medien hochladen"), '#', 'icons/16/blue/upload.png', array (
-                        'id' => 'oc_upload_dialog' 
-               ));
+                $actions->addLink(_("Medien hochladen"), '#', 'icons/16/blue/upload.png', array (
+                        'id' => 'oc_upload_dialog'
+                ));
+                $actions->addLink(_("Workflow konfigurieren"), '#', 'icons/16/blue/admin.png', array('id' => 'oc_workflow_dialog'));
+
             }
 
         } else
         {
-            $actions->addLink (_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
-            $actions->addLink (_ ('Vorhandene Series verknüpfen'), '#', 'icons/16/blue/group.png', array (
+            $actions->addLink(_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
+            $actions->addLink(_('Vorhandene Series verknüpfen'), '#', 'icons/16/blue/group.png', array (
                     'id' => 'oc_config_dialog' 
            ));
         }
+
+
         //todo - should this already be visibile for teachers?
         if($coursevis == 'visible'){
-            $actions->addLink (_ ("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
+            $actions->addLink(_("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
         } else {
-            $actions->addLink (_ ("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
+            $actions->addLink(_("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
         }
 
         $sidebar->addWidget ($actions);
@@ -217,6 +221,10 @@
 
 <div id="config_dialog" title="<?=_("Series verknüpfen")?>">
     <?= $this->render_partial("course/_config", array()) ?>
+</div>
+
+<div id="workflow_dialog" title="<?=_("Workflow-Konfiguration")?>">
+    <?= $this->render_partial("course/_workflowselection", array('workflows' => $tagged_wfs)); ?>
 </div>
 <? endif;?>
 

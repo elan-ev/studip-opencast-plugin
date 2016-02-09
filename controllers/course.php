@@ -111,13 +111,22 @@ class CourseController extends StudipController
                     } else $this->states[$workflow_id['workflow_id']] = $resp;
                 }
             }
+
+            //workflow
+            $occourse = new OCCourseModel($this->course_id);
+            $this->workflow_client = WorkflowClient::getInstance();
+            $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+            $this->schedulewf = $occourse->getWorkflow('schedule');
+            $this->uploadwf = $occourse->getWorkflow('upload');
+
         }
 
         Navigation::activateItem('course/opencast/overview');
         try {
                 $this->search_client = SearchClient::getInstance();
 
-                $occourse = new OCCourseModel($this->course_id);
+
                 $this->coursevis = $occourse->getSeriesVisibility();
 
                 if($occourse->getSeriesID()){
@@ -571,6 +580,34 @@ class CourseController extends StudipController
             $this->flash['messages'] = array('success'=> sprintf(_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."),$vis[$visibility]));
             log_event('OC_CHANGE_TAB_VISIBILITY', $this->course_id, NULL, sprintf(_("Reiter ist %s."),$vis[$visibility]));
         }
+        $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
+    }
+
+    function setworkflow_action(){
+
+        if(check_ticket(Request::get('ticket')) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+
+            $occcourse = new OCCourseModel($this->course_id);
+
+            if($course_workflow = Request::get('oc_course_workflow')){
+                if($occcourse->getWorkflow('schedule')) {
+                    $occcourse->updateWorkflow($course_workflow, 'schedule');
+                }
+                else {
+                    $occcourse->setWorkflow($course_workflow,'schedule');
+                }
+            }
+            if($course_uploadworkflow = Request::get('oc_course_uploadworkflow')){
+                if($occcourse->getWorkflow('upload')){
+                    $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
+                }
+                else {
+                    $occcourse->setWorkflow($course_uploadworkflow, 'upload');
+                }
+            }
+
+        }
+
         $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
     }
 

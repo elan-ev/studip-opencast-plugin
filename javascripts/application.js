@@ -34,6 +34,15 @@ OC = {
                     width: "350px"
                 });
 
+                // Workflow Config Dialog
+                jQuery("#workflow_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocWorkflow'});
+                jQuery("#oc_workflow_dialog").click(
+                    function () {
+                        jQuery("#workflow_dialog").dialog('open');
+                        return false;
+                    }
+                );
+
                 jQuery( "#oce_sortablelist" ).sortable({
                     items: '> li:not(.uploaded)',
                     stop: function( event, ui ) {

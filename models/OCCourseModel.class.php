@@ -298,4 +298,33 @@ class OCCourseModel
         return $episodes;
     }
 
+    public function getWorkflow($target) {
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflow_configuration
+            WHERE seminar_id = ? AND target = ?");
+
+        $stmt->execute(array($this->getCourseID(), $target));
+        $workflow =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if(empty($workflow)) {
+            return false;
+        }
+        else return array_pop($workflow);
+    }
+
+    public function setWorkflow($workflow_id, $target) {
+
+        $stmt = DBManager::get()->prepare("INSERT INTO
+                oc_seminar_workflow_configuration (seminar_id, workflow_id, target, mkdate, chdate)
+                VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute(array($this->getCourseID(), $workflow_id, $target, time(), time()));
+    }
+
+    public function updateWorkflow($workflow_id, $target) {
+
+        $stmt = DBManager::get()->prepare("UPDATE
+                oc_seminar_workflow_configuration SET workflow_id = ?, chdate = ?
+                WHERE seminar_id = ? AND target = ?");
+        return $stmt->execute(array( $workflow_id, time(), $this->getCourseID(), $target));
+    }
+
 }
