@@ -327,4 +327,11 @@ class OCCourseModel
         return $stmt->execute(array( $workflow_id, time(), $this->getCourseID(), $target));
     }
 
+    public function setWorkflowForDate($termin_id, $workflow_id) {
+        $stmt = DBManager::get()->prepare("UPDATE
+                oc_scheduled_recordings SET workflow_id = ?
+                WHERE seminar_id = ? AND date_id = ?");
+        return $stmt->execute(array($workflow_id,  $this->getCourseID(), $termin_id));
+    }
+
 }

@@ -163,7 +163,14 @@
             $cas = OCModel::checkResource($resource_id);
             $ca = $cas[0];
             $device = $ca['capture_agent'];
-            $workflow = $ca['workflow_id'];
+
+            $custom_workflow = OCSeriesModel::getWorkflowForEvent($course_id, $termin_id);
+
+            if($custom_workflow) {
+                $workflow = $custom_workflow['workflow_id'];
+            }
+            else $workflow = $ca['workflow_id'];
+
             $ca_client = CaptureAgentAdminClient::getInstance();
             $device_names = '';
             $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);

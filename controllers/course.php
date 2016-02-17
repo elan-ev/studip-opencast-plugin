@@ -265,10 +265,14 @@ class CourseController extends StudipController
         
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
         $this->dates  =  OCModel::getFutureDates($this->course_id);
-        
+
+        $this->caa_client = CaptureAgentAdminClient::getInstance();
+
+
         $search_client = SearchClient::getInstance();
          
-        $workflow_client = WorkflowClient::getInstance();
+        $this->workflow_client = WorkflowClient::getInstance();
+        $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
     }
 
 
@@ -609,6 +613,20 @@ class CourseController extends StudipController
         }
 
         $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
+    }
+
+    function setworkflowforscheduledepisode_action($termin_id, $workflow_id, $resource_id){
+
+        if (Request::isXhr() && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)) {
+            $occcourse = new OCCourseModel($this->course_id);
+            $success =  $occcourse->setWorkflowForDate($termin_id, $workflow_id);
+            self::updateschedule($resource_id, $termin_id, $this->course_id);
+            $this->render_json(json_encode($success));
+
+        } else {
+            $this->render_nothing();
+        }
+
     }
 
 

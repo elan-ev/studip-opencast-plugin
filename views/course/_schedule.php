@@ -8,6 +8,7 @@
         <th>Termin</th>
         <th>Titel</th>
         <th>Status</th>
+        <th>Workflow</th>
         <th>Aktionen</th>
     </tr>
 
@@ -75,6 +76,37 @@
         <td>
             <? $resource = $date->getResourceID(); ?>
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
+                <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
+                    <?
+                    $assigned_agent = OCModel::getCAforResource($resource);
+                    $current = OCModel::checkScheduled($course_id, $resource, $date->termin_id);
+                    $current = array_pop($current);
+                    ?>
+                    <select class="wfselect" name="selected_wf">
+                    <? foreach($tagged_wfs as $wf) :?>
+                        <option data-terminid="<?=$date->termin_id?>" data-resource="<?=$resource?>" value="<?=$wf['id']?>" title="<?=$wf['description']?>" <?=($current['workflow_id'] == $wf['id']) ? 'selected' : ''?>>  <?= mila($wf['id'],15)?>  </option>
+                    <? endforeach ; ?>
+                    </select>
+
+                <?  else : ?>
+                    <? if(date($d['date']) > time()) :?>
+                        <? $assigned_agent = OCModel::getCAforResource($resource); ?>
+                        <select disabled>
+                            <option selected><?=$assigned_agent['workflow_id']; ?></option>
+                        </select>
+                    <? else :?>
+                        Hier müsste man den worflow sehen den das Video durchlaufen hat
+                    <? endif;?>
+                <? endif; ?>
+            <? elseif(false) : ?>
+                <?= Assets::img('icons/16/blue/video.png') ?>
+            <? else : ?>
+                <?= Assets::img('icons/16/red/exclaim-circle.png', array('title' =>  _("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht"))) ?>
+            <? endif; ?>
+        </td>
+        <td>
+            <? $resource = $date->getResourceID(); ?>
+            <? if(isset($resource) && OCModel::checkResource($resource)) :?>
             <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
                 <?= LinkButton::create(_('Aufzeichnung aktualisieren'), PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"), 'class' => 'ocupdate ocspecial')); ?>
                 <?= LinkButton::create(_('Aufzeichnung stornieren'), PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id ),array('title' => _("Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren."), 'class' => 'ocunschedule ocspecial')); ?>
@@ -106,7 +138,8 @@
         </td>
         <td></td>
         <td></td>
-        <td></td>    
+        <td></td>
+        <td></td>
     </tr>
     </tfoot>        
 </table>

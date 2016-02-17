@@ -367,6 +367,14 @@ class OCSeriesModel {
         $stmt->execute(array($seminar_id));
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    static function getWorkflowForEvent($seminar_id, $termin_id ){
+        $stmt = DBManager::get()->prepare('SELECT `workflow_id`FROM `oc_scheduled_recordings`
+                            WHERE seminar_id = ? AND `date_id` = ?');
+        $stmt->execute(array($seminar_id, $termin_id));
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>

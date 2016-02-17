@@ -285,6 +285,33 @@ OC = {
         };
 
         var episodeList = new List('episodes', options);
+    },
+
+    // schedule setting
+    initScheduler: function() {
+        $('.wfselect').change(function(){
+
+
+            var workflow_id = $("option:selected", this).attr('value');
+            var termin_id   = $("option:selected", this).data('terminid');
+            var resource_id = $("option:selected", this).data('resource');
+
+
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/setworkflowforscheduledepisode/" +  termin_id + "/" + workflow_id + "/" + resource_id).done(function(data) {
+                if(!jQuery.isEmptyObject(data)){
+                    console.log(data);
+                    //todo trigger success message
+                    if(data === 'true'){
+                        //console.log('lööpt'); TODO STUD.IP Success Box triggern
+                    } else {
+                        alert('Der Workflow konnte für die geplante Aufzeichnung nicht gesetzt werden.')
+                    }
+
+                }
+            });
+
+
+        })
     }
 };
 
