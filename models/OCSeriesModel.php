@@ -267,7 +267,12 @@ class OCSeriesModel {
      */
     static function createSeriesDC($course_id) {
 
-        require_once 'lib/classes/Institute.class.php';
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
+            require_once 'lib/classes/Institute.class.php';
+        } else {
+            require_once 'lib/models/Institute.class.php';
+        }
+
         $course = new Seminar($course_id);
         $name = $course->getName();
         $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];

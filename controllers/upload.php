@@ -99,7 +99,7 @@ class UploadController extends StudipController
         } else {
             $workflow = '';
         }
-        
+
         if($content = $this->ingest->ingest($this->file->getMediaPackage(), $workflow))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
         {
            
