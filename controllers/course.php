@@ -67,7 +67,7 @@ class CourseController extends StudipController
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
         // change this variable iff theodulplayer is active
-        $this->theodul = false;
+        $this->theodul = true;
         
     }
 
@@ -264,7 +264,23 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
         
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        $this->dates  =  OCModel::getFutureDates($this->course_id);
+        
+        $this->dates  =  OCModel::getDatesForSemester($this->course_id);
+        $course = new Seminar($this->course_id);
+
+        $all_semester = SemesterData::GetSemesterArray();
+
+        $this->course_semester = array();
+        
+        foreach($all_semester as $cur_semester) {
+
+            //fix for unbegrenzte kurse add marker for current_semester
+            if($cur_semester['beginn'] == $course->getStartSemester() || $cur_semester['beginn'] == $course->getEndSemester()) {
+                $this->course_semester[] = $cur_semester;
+            }
+
+        }
+
 
         $this->caa_client = CaptureAgentAdminClient::getInstance();
 
