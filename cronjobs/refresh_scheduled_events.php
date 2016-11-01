@@ -1,7 +1,7 @@
 <?php
 
 require_once 'lib/classes/CronJob.class.php';
-require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
+
 
 class RefreshScheduledEvents extends CronJob
 {
@@ -32,6 +32,7 @@ class RefreshScheduledEvents extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
+        require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                   LEFT JOIN oc_seminar_series USING (seminar_id)
                   WHERE oc_seminar_series.schedule=1");
