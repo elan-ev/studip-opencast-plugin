@@ -267,7 +267,12 @@ class OCSeriesModel {
      */
     static function createSeriesDC($course_id) {
 
-        require_once 'lib/classes/Institute.class.php';
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
+            require_once 'lib/classes/Institute.class.php';
+        } else {
+            require_once 'lib/models/Institute.class.php';
+        }
+
         $course = new Seminar($course_id);
         $name = $course->getName();
         $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
@@ -365,6 +370,14 @@ class OCSeriesModel {
         $stmt = DBManager::get()->prepare("SELECT `visibility` FROM
                 oc_seminar_series WHERE seminar_id = ?");
         $stmt->execute(array($seminar_id));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    static function getWorkflowForEvent($seminar_id, $termin_id ){
+        $stmt = DBManager::get()->prepare('SELECT `workflow_id`FROM `oc_scheduled_recordings`
+                            WHERE seminar_id = ? AND `date_id` = ?');
+        $stmt->execute(array($seminar_id, $termin_id));
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

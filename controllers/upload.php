@@ -21,6 +21,7 @@ require_once $this->trails_root.'/classes/OCUploadFile.php';
 require_once $this->trails_root.'/classes/OCUpload.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCSeriesModel.php';
+require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
 class UploadController extends StudipController
 {
@@ -87,7 +88,19 @@ class UploadController extends StudipController
             return false;
         }
         // comment indicates how specific workflows can be chosen
-        if($content = $this->ingest->ingest($this->file->getMediaPackage()))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
+
+        $course_id =  $_SESSION['SessionSeminar'];
+        $occourse = new OCCourseModel($course_id);
+        $uploadwf = $occourse->getWorkflow('upload');
+
+        if($uploadwf) {
+            $workflow = $uploadwf['workflow_id'];
+
+        } else {
+            $workflow = '';
+        }
+
+        if($content = $this->ingest->ingest($this->file->getMediaPackage(), $workflow))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
         {
            
             $simplexml = simplexml_load_string($content);
@@ -95,7 +108,7 @@ class UploadController extends StudipController
             $x = json_decode($json, true);
             $result = $x['@attributes'];
             
-            OCModel::setWorkflowIDforCourse($result['id'], $_SESSION['SessionSeminar'], $GLOBALS['auth']->auth['uid'], time());
+            OCModel::setWorkflowIDforCourse($result['id'], $course_id, $GLOBALS['auth']->auth['uid'], time());
             
             $this->file->clearSession();
             log_event('OC_UPLOAD_MEDIA', $result['id'], $_SESSION['SessionSeminar']);

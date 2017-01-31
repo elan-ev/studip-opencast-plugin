@@ -67,7 +67,7 @@ class CourseController extends StudipController
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
         // change this variable iff theodulplayer is active
-        $this->theodul = false;
+        $this->theodul = true;
         
     }
 
@@ -111,13 +111,22 @@ class CourseController extends StudipController
                     } else $this->states[$workflow_id['workflow_id']] = $resp;
                 }
             }
+
+            //workflow
+            $occourse = new OCCourseModel($this->course_id);
+            $this->workflow_client = WorkflowClient::getInstance();
+            $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+            $this->schedulewf = $occourse->getWorkflow('schedule');
+            $this->uploadwf = $occourse->getWorkflow('upload');
+
         }
 
         Navigation::activateItem('course/opencast/overview');
         try {
                 $this->search_client = SearchClient::getInstance();
 
-                $occourse = new OCCourseModel($this->course_id);
+
                 $this->coursevis = $occourse->getSeriesVisibility();
 
                 if($occourse->getSeriesID()){
@@ -136,7 +145,7 @@ class CourseController extends StudipController
                         $this->active_id = $first['id'];
                     }
 
-                    if(!empty($this->ordered_episode_ids)) {
+                    if(!empty($this->ordered_episode_ids) || true) {
                         $engage_url =  parse_url($this->search_client->getBaseURL());
 
                         if($this->theodul) {
@@ -149,6 +158,8 @@ class CourseController extends StudipController
                         if($embed_headers) {
                             $this->embed = "https://". $this->embed;
                         } else {
+                            // not so nice fix for UOL
+                            //$this->embed = "https://". $this->embed;
                             $this->embed = "http://". $this->embed;
                         }
                         $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
@@ -255,11 +266,31 @@ class CourseController extends StudipController
         $this->course_id = $_SESSION['SessionSeminar'];
         
         $this->cseries = OCModel::getConnectedSeries($this->course_id);
-        $this->dates  =  OCModel::getFutureDates($this->course_id);
         
+        $this->dates  =  OCModel::getDatesForSemester($this->course_id);
+        $course = new Seminar($this->course_id);
+
+        $all_semester = SemesterData::GetSemesterArray();
+
+        $this->course_semester = array();
+        
+        foreach($all_semester as $cur_semester) {
+
+            //fix for unbegrenzte kurse add marker for current_semester
+            if($cur_semester['beginn'] == $course->getStartSemester() || $cur_semester['beginn'] == $course->getEndSemester()) {
+                $this->course_semester[] = $cur_semester;
+            }
+
+        }
+
+
+        $this->caa_client = CaptureAgentAdminClient::getInstance();
+
+
         $search_client = SearchClient::getInstance();
          
-        $workflow_client = WorkflowClient::getInstance();
+        $this->workflow_client = WorkflowClient::getInstance();
+        $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
     }
 
 
@@ -531,7 +562,9 @@ class CourseController extends StudipController
             if($embed_headers) {
                 $embed = "https://". $embed;
             } else {
+                //UOL FIX
                 $embed = "http://". $embed;
+                //$embed = "https://". $embed;
             }
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
@@ -572,6 +605,48 @@ class CourseController extends StudipController
             log_event('OC_CHANGE_TAB_VISIBILITY', $this->course_id, NULL, sprintf(_("Reiter ist %s."),$vis[$visibility]));
         }
         $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
+    }
+
+    function setworkflow_action(){
+
+        if(check_ticket(Request::get('ticket')) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+
+            $occcourse = new OCCourseModel($this->course_id);
+
+            if($course_workflow = Request::get('oc_course_workflow')){
+                if($occcourse->getWorkflow('schedule')) {
+                    $occcourse->updateWorkflow($course_workflow, 'schedule');
+                }
+                else {
+                    $occcourse->setWorkflow($course_workflow,'schedule');
+                }
+            }
+            if($course_uploadworkflow = Request::get('oc_course_uploadworkflow')){
+                if($occcourse->getWorkflow('upload')){
+                    $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
+                }
+                else {
+                    $occcourse->setWorkflow($course_uploadworkflow, 'upload');
+                }
+            }
+
+        }
+
+        $this->redirect(PluginEngine::getLink('opencast/course/index/false'));
+    }
+
+    function setworkflowforscheduledepisode_action($termin_id, $workflow_id, $resource_id){
+
+        if (Request::isXhr() && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)) {
+            $occcourse = new OCCourseModel($this->course_id);
+            $success =  $occcourse->setWorkflowForDate($termin_id, $workflow_id);
+            self::updateschedule($resource_id, $termin_id, $this->course_id);
+            $this->render_json(json_encode($success));
+
+        } else {
+            $this->render_nothing();
+        }
+
     }
 
 

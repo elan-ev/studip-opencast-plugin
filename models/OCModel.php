@@ -97,13 +97,19 @@ class OCModel
        return $dates;
     }
   
-    static function getFutureDates($seminar_id) {
-        $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ? AND `date` > UNIX_TIMESTAMP() ORDER BY `date` ASC");
+    static function getDatesForSemester($seminar_id, $semester = false) {
 
-        $stmt->execute(array($seminar_id));
+        if(!$semester) {
+            $semester = Semester::findCurrent();
+        }
+
+        $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ? AND `date` >= ? AND `date` < ? ORDER BY `date` ASC");
+
+        $stmt->execute(array($seminar_id, $semester->beginn, $semester->ende));
         $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $dates;
     }
+
 
     /**
      * checkResource - checks whether a resource has a CaptureAgent

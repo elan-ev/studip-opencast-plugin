@@ -47,12 +47,12 @@
             if ($httpCode == 201){
                 $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/(.+?).xml#Uis';
                 foreach($resArray as $resp) {
-
-                    // THIS could be changed. Keep an eye on futre oc releases...
+                    // THIS could be changed. Keep an eye on future oc releases...
                     if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
                     }
                 }
+
    
                 OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $eventid);
    
@@ -90,7 +90,8 @@
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
 
-            if ($httpCode == 200){
+            // remove scheduled event from studip even though it isn't available on opencast
+            if ($httpCode == 200 || $httpCode == 404){
                 $event_id = $event['event_id'];
                 OCModel::unscheduleRecording($event_id);
 
@@ -163,7 +164,14 @@
             $cas = OCModel::checkResource($resource_id);
             $ca = $cas[0];
             $device = $ca['capture_agent'];
-            $workflow = $ca['workflow_id'];
+
+            $custom_workflow = OCSeriesModel::getWorkflowForEvent($course_id, $termin_id);
+
+            if($custom_workflow) {
+                $workflow = $custom_workflow['workflow_id'];
+            }
+            else $workflow = $ca['workflow_id'];
+
             $ca_client = CaptureAgentAdminClient::getInstance();
             $device_names = '';
             $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);

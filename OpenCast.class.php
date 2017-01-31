@@ -267,7 +267,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $pm = PluginManager::getInstance();
                 $pinfo = $pm->getPluginInfo('OpenCast');
                 $pid = $pinfo['id'];
-                $result['course'] = OpenCast::extendCourseRoute($result['course'], $pm->isPluginActivated($pid, $result['course']['course_id']), true);
+                $ocmodel = new OCCourseModel($result['course']['course_id']);
+                if($ocmodel->getSeriesVisibility() == 'visible') {
+                    $result['course'] = OpenCast::extendCourseRoute($result['course'], $pm->isPluginActivated($pid, $result['course']['course_id']), true);
+                }
             } elseif (key($result) === 'courses') {
                 foreach ($result['courses'] as $index => $course) {
                     if (empty($course['course_id'])) {
@@ -276,7 +279,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                     $pm = PluginManager::getInstance();
                     $pinfo = $pm->getPluginInfo('OpenCast');
                     $pid = $pinfo['id'];
-                    $result['courses'][$index] = OpenCast::extendCourseRoute($course, $pm->isPluginActivated($pid, $course['course_id']), false);
+                    $ocmodel = new OCCourseModel($course['course_id']);
+                    if($ocmodel->getSeriesVisibility() == 'visible') {
+                        $result['courses'][$index] = OpenCast::extendCourseRoute($course, $pm->isPluginActivated($pid, $course['course_id']), false);
+                    }
                 }
             }
 
