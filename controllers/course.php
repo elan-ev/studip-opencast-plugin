@@ -126,6 +126,7 @@ class CourseController extends StudipController
         try {
                 $this->search_client = SearchClient::getInstance();
 
+                $occourse = new OCCourseModel($this->course_id);
 
                 $this->coursevis = $occourse->getSeriesVisibility();
 
