@@ -8,3 +8,5 @@ summary=Opencast Matterhorn Integration
 description=Mit der Opencast Matterhorn Integration können vorhandene Aufzeichnungsserien/Series aus dem verknüpften Matterhorn System in eine Veranstaltung verknüpft werden. Aufzeichnungen werden in einem entsprechenden Player zur Verfügung gestellt. Darüberhinaus ist es mit dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine gebuchte Ressource mit einem Opencast Matterhorn Capture-Agent. Vorhandene Medien können bei Bedarf nachträglich über die Upload-Funktion zur verknüpften Series hinzugefügt werden.
 homepage=http://elan-ev.github.io/studip-opencast-plugin/
 screenshot=images/screenshots/studip-opencast.png
+
+updateURL=https://elearning.rz.tu-bs.de/studip_plugins/studip_opencast_plugin.xml
