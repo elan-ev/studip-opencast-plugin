@@ -95,7 +95,7 @@
                         frameborder="0"
                         marginheight="0px"
                         marginwidth="0px"
-                        width="640"
+                        width="720"
                         height="360"
                         allowfullscreen="true"
                         webkitallowfullscreen="true"

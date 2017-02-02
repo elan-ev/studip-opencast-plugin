@@ -126,7 +126,6 @@ class CourseController extends StudipController
         try {
                 $this->search_client = SearchClient::getInstance();
 
-                $occourse = new OCCourseModel($this->course_id);
 
                 $this->coursevis = $occourse->getSeriesVisibility();
 
@@ -573,6 +572,9 @@ class CourseController extends StudipController
             $episode = array('active_id' => $active_id,
                             'course_id' => $course_id,
                             'theodul' => $theodul,
+            /* Patch von Andre Klaaßen, um die Fenstergröße auch nach dem ersten Abspielen zu erhalten ---  Beginn */
+                            'theodul' => $this->theodul,
+            /* Patch von Andre Klaaßen, um die Fenstergröße auch nach dem ersten Abspielen zu erhalten ---  Ende   */
                             'embed' => $embed,
                             'perm' => $perm,
                             'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
