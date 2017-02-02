@@ -430,9 +430,13 @@ class OCModel
     static function retrieveRESTservices($components) {
         $services = array();
         foreach( $components as $service) {
+            print($service->type);
             if(!preg_match('/remote/', $service->type)){
                 $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
+                print("[ok] \n");
+            } else {
+                print("[fail] \n");
             }
         }
 
