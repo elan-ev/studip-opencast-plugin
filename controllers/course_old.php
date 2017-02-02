@@ -19,7 +19,6 @@ require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SecurityClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
@@ -126,9 +125,8 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/overview');
         try {
                 $this->search_client = SearchClient::getInstance();
-                $this->security_client = SecurityClient::getInstance();
 
-
+                $occourse = new OCCourseModel($this->course_id);
                 $this->coursevis = $occourse->getSeriesVisibility();
 
                 if($occourse->getSeriesID()){
@@ -151,8 +149,7 @@ class CourseController extends StudipController
                         $engage_url =  parse_url($this->search_client->getBaseURL());
 
                         if($this->theodul) {
-                            $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
-                            $this->security_client->signURL($this->embed);
+                            $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id."&mode=embed";
                         } else {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
                         }
@@ -575,9 +572,6 @@ class CourseController extends StudipController
             $episode = array('active_id' => $active_id,
                             'course_id' => $course_id,
                             'theodul' => $theodul,
-            /* Patch von Andre Klaaßen, um die Fenstergröße auch nach dem ersten Abspielen zu erhalten ---  Beginn */
-                            'theodul' => $this->theodul,
-            /* Patch von Andre Klaaßen, um die Fenstergröße auch nach dem ersten Abspielen zu erhalten ---  Ende   */
                             'embed' => $embed,
                             'perm' => $perm,
                             'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
