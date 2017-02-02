@@ -28,6 +28,6 @@ class SecurityClient extends OCRestClient
 
     function signURL($url) {
         $res = $this->getJSON('/sign', array('url' => $url), false, true);
-        var_dump($res);
+        var_dump(array('url' => $url, 'res' => $res));
     }
 }
