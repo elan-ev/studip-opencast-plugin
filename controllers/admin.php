@@ -97,6 +97,8 @@ class AdminController extends AuthenticatedController
                 foreach($services as $service_url => $service_type) {
 
                     $service_comp = explode("/", $service_url);
+
+                    error_log($service_type  . ' ' . $service_url . ' -> ' . print_r($service_comp, true));
             
                     if(sizeof($service_comp) == 2) {
                         if($service_comp)
