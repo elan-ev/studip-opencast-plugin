@@ -433,9 +433,6 @@ class OCModel
             if(!preg_match('/remote/', $service->type)){
                 $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
-                error_log($service->type . "[OK]");
-            } else {
-                error_log($service->type . "[FAILED]");
             }
         }
 
