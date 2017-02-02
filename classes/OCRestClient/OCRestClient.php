@@ -125,8 +125,6 @@
                          
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
-                ///debug output
-                var_dump(curl_getinfo($this->ochandler, CURLINFO_EFFECTIVE_URL));
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
                 if($with_res_code) {
