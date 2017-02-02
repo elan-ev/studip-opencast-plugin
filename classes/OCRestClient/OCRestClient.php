@@ -125,7 +125,7 @@
                          
                 curl_setopt_array($this->ochandler, $options);
                 ///debug output
-                var_dump(curl_getinfo($this->ochandler));
+                var_dump(curl_getinfo($this->ochandler, CURLOPT_URL));
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
