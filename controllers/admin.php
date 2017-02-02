@@ -100,7 +100,7 @@ class AdminController extends AuthenticatedController
             
                     if(sizeof($service_comp) >= 2) {
                         if($service_comp)
-                        OCEndpointModel::setEndpoint($service_comp[0], $service_type);
+                        OCEndpointModel::setEndpoint($service_comp[0], $service_type, $service_url);
                     }   
                 }
 

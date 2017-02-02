@@ -14,7 +14,7 @@ class SecurityClient extends OCRestClient
     function __construct()
     {
         try {
-            if ($config = parent::getConfig('security')) {
+            if ($config = parent::getConfig('apisecurity')) {
                 parent::__construct($config['service_url'],
                     $config['service_user'],
                     $config['service_password']);
