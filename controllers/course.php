@@ -152,10 +152,14 @@ class CourseController extends StudipController
 
                         if($this->theodul) {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
-                            $this->embed = $this->security_client->signURL($this->embed);
+                            if(get_config("OPENCAST_STREAM_SECURITY")) {
+                                $this->embed = $this->security_client->signURL($this->embed);
+                            }
                         } else {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
-                            $this->embed = $this->security_client->signURL($this->embed);
+                            if(get_config("OPENCAST_STREAM_SECURITY")) {
+                                $this->embed = $this->security_client->signURL($this->embed);
+                            }
                         }
                         // check whether server supports ssl
                         $embed_headers = @get_headers("https://". $this->embed);
