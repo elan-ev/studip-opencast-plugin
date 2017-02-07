@@ -265,7 +265,21 @@ class OCSeriesModel {
      * @param string $course_id
      * @return string xml - the xml representation of the string  
      */
-    static function createSeriesDC($course_id) {
+    static function createSeriesDC($course_id) 
+    {
+        // Patch "Semester anhängen": Hier wird das Semester zu der Veranstaltung ermittelt
+        $stmt = DBManager::get()->prepare("SELECT start_time FROM seminare WHERE `Seminar_id` = ?");
+        $stmt->execute(array($course_id));
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $date = getdate( $res[0]['start_time'] );
+        if ($date['mon'] <= 3)
+            $sem = 'WS' . substr(($date['year']-1), 2, 2) . '-' . $date['year'];
+        else if ($date['mon'] >= 10)
+            $sem = 'WS' . substr(($date['year']), 2, 2) . '-' . ($date['year']+1);
+        else
+            $sem = 'SS' . $date['year'];
+        // Patch "Semester anhängen: Ende       
+        
 
         if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
             require_once 'lib/classes/Institute.class.php';
@@ -291,7 +305,10 @@ class OCSeriesModel {
         $language = 'de';
 
         $data = array(
-            'title' => $name,
+        // Patch "Semester anhängen": Hier wird das Semester an den Namen der Serie gehängt
+            'title' => $name." ".$sem,
+        //  'title' => $name,
+        // Patch "Semester anhängen: Ende
             'creator' => $creator,
             'contributor' => $contributor,
             'subject' => $course->form,
