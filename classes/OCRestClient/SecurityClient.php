@@ -29,6 +29,7 @@ class SecurityClient extends OCRestClient
     function signURL($url) {
         $url = 'http://' . $url;
         $res = $this->getJSON('/sign', array('url' => $url), false, true);
-        return $res[0]->url;
+        $return = preg_replace("/http[s]?:///", "", $res[0]->url);
+        return $return;
     }
 }
