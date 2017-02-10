@@ -53,7 +53,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
 
-            if (OCModel::getConfigurationstate()) {
+            if (OCModel::getConfigurationstate() && get_config("OPENCAST_SCHEDULED_RECORDINGS")) {
                 $resources = new Navigation('Opencast Ressourcen');
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
@@ -212,7 +212,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main->addSubNavigation('overview', $overview);
 
 
-        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && get_config("OPENCAST_SCHEDULED_RECORDINGS")) {
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
             if ($series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
