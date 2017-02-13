@@ -35,9 +35,9 @@
             <div style="text-align: left; font-style: italic;">Weitere
                 Optionen:</div>
             <div class="button-group">
-                <? if(get_config("OPENCAST_EXTENDED_PLAYER_BUTTON")): ?>
-                <a class="ocextern button" href="http://<%=engage_player_url%>" target="_blank" tabindex="0"><?= _('Erweiterter Player') ?></a>
-                <?php endif ?>
+                <? if($extendedPlayerButton) { ?>
+                    <a class="ocextern button" href="http://<%=engage_player_url%>" target="_blank" tabindex="0"><?= _('Erweiterter Player') ?></a>
+                <? } ?>
                 <% if(episode.presenter_download) { %>
                     <a class="download presenter button" href="<%=episode.presenter_download%>" target="_blank" tabindex="0"><?= _('ReferentIn') ?></a>
                 <% } %>
