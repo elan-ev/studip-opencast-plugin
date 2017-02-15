@@ -19,6 +19,7 @@ require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/SecurityClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
@@ -125,6 +126,7 @@ class CourseController extends StudipController
         Navigation::activateItem('course/opencast/overview');
         try {
                 $this->search_client = SearchClient::getInstance();
+                $this->security_client = SecurityClient::getInstance();
 
 
                 $this->coursevis = $occourse->getSeriesVisibility();
@@ -150,8 +152,14 @@ class CourseController extends StudipController
 
                         if($this->theodul) {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
+                            if(get_config("OPENCAST_STREAM_SECURITY")) {
+                                $this->embed = $this->security_client->signURL($this->embed);
+                            }
                         } else {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                            if(get_config("OPENCAST_STREAM_SECURITY")) {
+                                $this->embed = $this->security_client->signURL($this->embed);
+                            }
                         }
                         // check whether server supports ssl
                         $embed_headers = @get_headers("https://". $this->embed);

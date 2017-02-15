@@ -265,9 +265,9 @@ class OCSeriesModel {
      * @param string $course_id
      * @return string xml - the xml representation of the string  
      */
-    static function createSeriesDC($course_id) 
+    static function createSeriesDC($course_id)
     {
-        // Patch "Semester anhängen": Hier wird das Semester zu der Veranstaltung ermittelt
+        // Patch "Semester anhï¿½ngen": Hier wird das Semester zu der Veranstaltung ermittelt
         $stmt = DBManager::get()->prepare("SELECT start_time FROM seminare WHERE `Seminar_id` = ?");
         $stmt->execute(array($course_id));
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -278,7 +278,7 @@ class OCSeriesModel {
             $sem = 'WS' . substr(($date['year']), 2, 2) . '-' . ($date['year']+1);
         else
             $sem = 'SS' . $date['year'];
-        // Patch "Semester anhängen: Ende       
+        // Patch "Semester anhï¿½ngen: Ende
 
         global $STUDIP_BASE_PATH;
 
@@ -290,7 +290,7 @@ class OCSeriesModel {
 
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "ï¿½ " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);
@@ -306,10 +306,10 @@ class OCSeriesModel {
         $language = 'de';
 
         $data = array(
-        // Patch "Semester anhängen": Hier wird das Semester an den Namen der Serie gehängt
+        // Patch "Semester anhï¿½ngen": Hier wird das Semester an den Namen der Serie gehï¿½ngt
             'title' => $name." ".$sem,
         //  'title' => $name,
-        // Patch "Semester anhängen: Ende
+        // Patch "Semester anhï¿½ngen: Ende
             'creator' => $creator,
             'contributor' => $contributor,
             'subject' => $course->form,
