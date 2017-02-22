@@ -25,9 +25,12 @@ require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
 class UploadController extends StudipController
 {
+    /** @var OCUploadFile */
     private $file = null;
     private $error = array();
+    /** @var UploadClient */
     private $upload = null;
+    /** @var IngestClient */
     private $ingest = null;
     
     public function upload_file_action() 
@@ -97,7 +100,7 @@ class UploadController extends StudipController
             $workflow = $uploadwf['workflow_id'];
 
         } else {
-            $workflow = '';
+            $workflow = get_config('OPENCAST_WORKFLOW_ID');
         }
 
         if($content = $this->ingest->ingest($this->file->getMediaPackage(), $workflow))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
@@ -119,6 +122,7 @@ class UploadController extends StudipController
    
     private function addTrack()
     {
+        /** @var MediaPackageClient $mediaPClient */
         $mediaPClient = MediaPackageClient::getInstance();
 
         $trackURI = $this->upload->getTrackURI($this->file->getJobID());
@@ -180,7 +184,7 @@ class UploadController extends StudipController
                                         $this->file->getSize(), 
                                         OC_UPLOAD_CHUNK_SIZE, 
                                         $this->file->getFlavor(), 
-                                        $this->file->getmediaPackage())) {
+                                        $this->file->getMediaPackage())) {
                 $this->file->setJobID($jobID);
             } else {
                 $this->error[] = _('Fehler beim anlegen der Job ID');

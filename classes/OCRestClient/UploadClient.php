@@ -57,9 +57,11 @@ class UploadClient extends OCRestClient {
      */
     function uploadChunk($job_id, $chunknumber, $filedata) {
 
+
+        $file = new CURLFile($filedata);
         $data = array(
             'chunknumber' => $chunknumber,
-            'filedata' => '@'.$filedata//$filedata
+            'filedata' => $file//$filedata
         );
         
         $rest_end_point = "/job/".$job_id;

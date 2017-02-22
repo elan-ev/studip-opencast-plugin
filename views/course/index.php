@@ -9,9 +9,7 @@
     STUDIP.hasperm  = <?=var_export($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))?>;
     OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
-    <?  if($series_metadata [0] ['schedule'] == '1') : ?>
-        OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
-    <? endif; ?>
+    OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
 </script>
 
 <?

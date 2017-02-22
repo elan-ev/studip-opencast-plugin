@@ -53,15 +53,22 @@
         /**
          *  ingest - Ingest the completed media package into the system, retrieving all URL-referenced files
          *
-         *  @param $mediapackage
+         *  @param string $mediapackage
          *  @param $workFlowDefinitionID
          *
          *  @return $mediapackage 
          */
         function ingest($mediaPackage, $workFlowDefinitionID = 'full', $addendum = '')
         {
-            $service_url = "/ingest/".$workFlowDefinitionID.$addendum;
-            $data = array('mediaPackage' => $mediaPackage);
+            $service_url = "/ingest";
+
+            $mediaPackageParsed = new SimpleXMLElement($mediaPackage);
+            $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
+
+            $data = array(
+                'mediaPackage' => utf8_encode($mediaPackage),
+                'workflowDefinitionId' => $workFlowDefinitionID
+            );
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;
             } else return false;
