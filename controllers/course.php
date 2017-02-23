@@ -20,6 +20,7 @@ require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SecurityClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/ArchiveClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
@@ -190,6 +191,11 @@ class CourseController extends StudipController
                     if($this->flash['cand_delete']) {
                         $this->flash['delete'] = true;
                     }
+
+                    //Remove Episode
+                    if($this->flash['cand_delete_episode']) {
+                        $this->flash['delete_episode'] = true;
+                    }
                 } else {
 
                 }
@@ -260,6 +266,33 @@ class CourseController extends StudipController
         $this->redirect(PluginEngine::getLink('opencast/course/index'));
     }
 
+    function remove_episode_action($ticket) {
+        $delete = Request::get('delete');
+        $cancel = Request::get('cancel');
+        $episodeId = Request::get('episode_id');
+
+        if($cancel === '1') {
+            $this->flash['cand_delete_episode'] = false;
+            $this->redirect(PluginEngine::getLink('opencast/course/index'));
+            return;
+        }
+
+        if($delete && check_ticket($ticket)) {
+            /** @var ArchiveClient $archiveClient */
+            $archiveClient = ArchiveClient::getInstance();
+
+            if($archiveClient->applyWorkflow('ng-retract', $episodeId)) {
+                $this->flash['messages'] = array('success'=> _("Die Episode wurde erfolgreich gelöscht.<br>Der Vorgang kann einige Minuten dauern. Bitte aktualisierern Sie in wenigen Minuten die Episodenliste."));
+            } else {
+                $this->flash['messages']['error'] = _("Löschen der Episode fehlgeschlagen!");
+            }
+
+        } else {
+            $this->flash['cand_delete_episode'] = true;
+        }
+
+        $this->redirect(PluginEngine::getLink('opencast/course/index/'.$episodeId));
+    }
 
     function scheduler_action()
     {
