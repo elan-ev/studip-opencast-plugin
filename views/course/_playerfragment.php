@@ -48,6 +48,9 @@
                     <a class="download audio button" href="<%=episode.audio_download%>" target="_blank" tabindex="0"> <?= _('Audio') ?></a>
                 <% } %>
             </div>
+            <form action="<?= PluginEngine::getLink('opencast/course/remove_episode') ?>" id="delete_form" name="delete_form">
+                <input type="hidden" name="episode_id" value="<%=episode.id%>">
+            </form>
             <% if (dozent) { %>
                 <div class="button-group" style="float:right">
                     <% if (episode.visibility == 'true')  {%>
@@ -55,7 +58,7 @@
                     <% } else { %>
                         <a class="ocinvisible ocspecial button" data-episode-id="<%=episode.id%>" data-position="<%=episode.position%>" href="replaceme" id="oc-togglevis" tabindex="0">Aufzeichnung unsichtbar</a>
                     <% } %>
-
+                    <button class="button" form="delete_form">Aufzeichnung löschen</button>
                 </div>
             <% } %>
         </div>
