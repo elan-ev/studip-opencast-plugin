@@ -16,7 +16,6 @@ require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/ArchiveClient.php';
 require_once $this->trails_root.'/classes/OCUploadFile.php';
 require_once $this->trails_root.'/classes/OCUpload.php';
@@ -204,6 +203,7 @@ class UploadController extends StudipController
             $value = mb_convert_encoding($value,"ISO-8859-1",'auto');
             $episodeData[$key] = $value;
         }
+        //$episodeData['creator'] = get_username(get_userid());
         
         $this->file->setEpisodeData($episodeData);
     }
