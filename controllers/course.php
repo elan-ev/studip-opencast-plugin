@@ -181,7 +181,6 @@ class CourseController extends StudipController
                     //check needed services before showing upload form
                     UploadClient::getInstance()->checkService();
                     IngestClient::getInstance()->checkService();
-                    MediaPackageClient::getInstance()->checkService();
                     SeriesClient::getInstance()->checkService();
 
 
