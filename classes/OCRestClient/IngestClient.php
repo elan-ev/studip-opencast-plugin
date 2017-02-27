@@ -26,6 +26,7 @@
         function createMediaPackage() {
             $service_url = "/createMediaPackage";
             if($mediapackage = self::getXML($service_url)){
+                error_log($mediapackage);
                 return $mediapackage;
             } else return false;
         }
@@ -72,6 +73,18 @@
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;
             } else return false;
+        }
+
+        public function addTrack($mediaPackage, $trackURI, $flavor)
+        {
+            $data = array('mediaPackage' => $mediaPackage,
+                          'url' => $trackURI,
+                          'flavor' => $flavor);
+            if($res = $this->getXML('/addTrack', $data, false, false, true)) {
+                return $res;
+            } else {
+                return false;
+            }
         }
     }
 ?>

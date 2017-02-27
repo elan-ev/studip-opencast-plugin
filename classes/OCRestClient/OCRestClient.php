@@ -152,7 +152,7 @@
                 if(!$is_get) {
                     $options[CURLOPT_POST] = 1;
                     if(!empty($data)) {
-                        $options[CURLOPT_POSTFIELDS] = $data;
+                        $options[CURLOPT_POSTFIELDS] = http_build_query($data);
                     }
                 } else {
                     $options[CURLOPT_HTTPGET] = 1;

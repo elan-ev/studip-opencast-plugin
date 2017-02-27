@@ -17,6 +17,7 @@ require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/ArchiveClient.php';
 require_once $this->trails_root.'/classes/OCUploadFile.php';
 require_once $this->trails_root.'/classes/OCUpload.php';
 require_once $this->trails_root.'/models/OCModel.php';
@@ -80,7 +81,7 @@ class UploadController extends StudipController
         if(!$this->addTrack()) {
             $this->error[] = _('Fehler beim hinzufügen des Tracks');
             return false;
-        } 
+        }
         //Step 3. Add catalogs (e.g. series.xml, episode.xml)
         if(!$this->addSeriesDC()) {
             $this->error[] = _('Fehler beim hinzufügen der Series');
@@ -103,9 +104,12 @@ class UploadController extends StudipController
             $workflow = get_config('OPENCAST_WORKFLOW_ID');
         }
 
-        if($content = $this->ingest->ingest($this->file->getMediaPackage(), $workflow))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
+        /** @var IngestClient $ingestClient */
+        $ingestClient = IngestClient::getInstance();
+
+
+        if($content = $ingestClient->ingest($this->file->getMediaPackage(), $workflow))//,'trimming', '?videoPreview=true&trimHold=false&archiveOP=true'))
         {
-           
             $simplexml = simplexml_load_string($content);
             $json = json_encode($simplexml);
             $x = json_decode($json, true);
@@ -114,19 +118,21 @@ class UploadController extends StudipController
             OCModel::setWorkflowIDforCourse($result['id'], $course_id, $GLOBALS['auth']->auth['uid'], time());
             
             $this->file->clearSession();
+
             log_event('OC_UPLOAD_MEDIA', $result['id'], $_SESSION['SessionSeminar']);
             //echo 'Ingest Started: '.htmlentities($content);
+
         } else echo 'upload failed';
         
     }
    
     private function addTrack()
     {
-        /** @var MediaPackageClient $mediaPClient */
-        $mediaPClient = MediaPackageClient::getInstance();
+        /** @var IngestClient $ingestClient */
+        $ingestClient = IngestClient::getInstance();
 
         $trackURI = $this->upload->getTrackURI($this->file->getJobID());
-        $newMPackage = $mediaPClient->addTrack($this->file->getMediaPackage(),
+        $newMPackage = $ingestClient->addTrack($this->file->getMediaPackage(),
                 $trackURI,
                 $this->file->getFlavor());
 

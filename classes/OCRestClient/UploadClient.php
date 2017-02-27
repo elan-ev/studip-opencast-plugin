@@ -47,6 +47,7 @@ class UploadClient extends OCRestClient {
         $response = curl_exec($this->ochandler);
         $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
         if ($httpCode == 200 && isset($response)){
+            error_log($response);
             return $response;
         } else {
             return false;
