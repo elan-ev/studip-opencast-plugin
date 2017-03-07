@@ -283,9 +283,9 @@ class OCSeriesModel {
         global $STUDIP_BASE_PATH;
 
         if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
-            require_once $STUDIP_BASE_PATH.'lib/classes/Institute.class.php';
+            require_once $STUDIP_BASE_PATH.'/lib/classes/Institute.class.php';
         } else {
-            require_once $STUDIP_BASE_PATH.'lib/models/Institute.class.php';
+            require_once $STUDIP_BASE_PATH.'/lib/models/Institute.class.php';
         }
 
         $course = new Seminar($course_id);
