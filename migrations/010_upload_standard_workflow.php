@@ -21,6 +21,10 @@ class UploadStandardWorkflow extends Migration
     function up() {
         $config = Config::get();
 
-        $config->create('OPENCAST_WORKFLOW_ID', array("type" => "string", "value" => "ng-schedule-and-upload", "description" => "Standart OpenCast Workflow bei manuellem Upload", "section" => "opencast"));
+        try {
+            $config->create('OPENCAST_WORKFLOW_ID', array("type" => "string", "value" => "ng-schedule-and-upload", "description" => "Standart OpenCast Workflow bei manuellem Upload", "section" => "opencast"));
+        } catch (InvalidArgumentException $e) {
+
+        }
     }
 }
