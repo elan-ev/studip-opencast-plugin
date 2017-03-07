@@ -119,14 +119,17 @@
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
             
             
-            $ACLData = array('ROLE_ADMIN' => array(
-                                                'read' => 'true',
-                                                'write' => 'true',
-                                                'analyze' => 'true'),
-                               'ROLE_ANONYMOUS' => array(
-                                                'read' => 'true'
-                               )
-                        );
+            $ACLData = array(
+                'ROLE_ADMIN' => array(
+                    'read' => 'true',
+                    'write' => 'true',
+                    'analyze' => 'true'),
+                'ROLE_GROUP_GUI_USER' => array(
+                    'read' => 'true',
+                    'write' => 'true'),
+                'ROLE_ANONYMOUS' => array(
+                    'read' => 'true')
+            );
                         
             $ACL = OCSeriesModel::createSeriesACL($ACLData); 
             $post = array('series' => $dublinCore,
