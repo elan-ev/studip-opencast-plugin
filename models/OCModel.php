@@ -431,7 +431,7 @@ class OCModel
         $services = array();
         foreach( $components as $service) {
             if(!preg_match('/remote/', $service->type)){
-                $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
+                $services[preg_replace("/\/docs/", '', $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
             }
         }

@@ -76,7 +76,7 @@ class AdminController extends AuthenticatedController
             $this->redirect(PluginEngine::getLink('opencast/admin/config'));
         } else {
             $service_host = $service_url['scheme'] .'://' . $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
-            $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path']; 
+            $this->info_url = $service_url['scheme'] .'://' . $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path'];
         
 
             $this->info_user = Request::get('info_user');
@@ -96,8 +96,12 @@ class AdminController extends AuthenticatedController
 
                 foreach($services as $service_url => $service_type) {
 
+                    $service_url = str_replace("//", "<<", $service_url);
                     $service_comp = explode("/", $service_url);
-            
+
+                    $service_comp[0] = str_replace("<<", "//", $service_comp[0]);
+                    $service_url = str_replace("<<", "//", $service_url);
+
                     if(sizeof($service_comp) >= 2) {
                         if($service_comp)
                         OCEndpointModel::setEndpoint($service_comp[0], $service_type, $service_url);
