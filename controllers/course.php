@@ -162,6 +162,7 @@ class CourseController extends StudipController
                             }
                         }
                         // check whether server supports ssl
+                        /*
                         $embed_headers = @get_headers("https://". $this->embed);
                         if($embed_headers) {
                             $this->embed = "https://". $this->embed;
@@ -170,6 +171,7 @@ class CourseController extends StudipController
                             //$this->embed = "https://". $this->embed;
                             $this->embed = "http://". $this->embed;
                         }
+                        */
                         $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
                     }
 
@@ -597,6 +599,7 @@ class CourseController extends StudipController
                 $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
             // check whether server supports ssl
+            /*
             $embed_headers = @get_headers("https://". $embed);
             if($embed_headers) {
                 $embed = "https://". $embed;
@@ -605,6 +608,7 @@ class CourseController extends StudipController
                 $embed = "http://". $embed;
                 //$embed = "https://". $embed;
             }
+            */
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
 
