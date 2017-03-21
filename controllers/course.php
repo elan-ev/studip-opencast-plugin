@@ -93,6 +93,7 @@ class CourseController extends StudipController
 
             $layout = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
             $this->set_layout($layout);
+            $occourse = new OCCourseModel($this->course_id);
         } else {
 
             // Config-Dialog
