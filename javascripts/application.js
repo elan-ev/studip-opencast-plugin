@@ -34,6 +34,15 @@ OC = {
                     width: "350px"
                 });
 
+                // Workflow Config Dialog
+                jQuery("#workflow_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocWorkflow'});
+                jQuery("#oc_workflow_dialog").click(
+                    function () {
+                        jQuery("#workflow_dialog").dialog('open');
+                        return false;
+                    }
+                );
+
                 jQuery( "#oce_sortablelist" ).sortable({
                     items: '> li:not(.uploaded)',
                     stop: function( event, ui ) {
@@ -276,6 +285,33 @@ OC = {
         };
 
         var episodeList = new List('episodes', options);
+    },
+
+    // schedule setting
+    initScheduler: function() {
+        $('.wfselect').change(function(){
+
+
+            var workflow_id = $("option:selected", this).attr('value');
+            var termin_id   = $("option:selected", this).data('terminid');
+            var resource_id = $("option:selected", this).data('resource');
+
+
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/setworkflowforscheduledepisode/" +  termin_id + "/" + workflow_id + "/" + resource_id).done(function(data) {
+                if(!jQuery.isEmptyObject(data)){
+                    console.log(data);
+                    //todo trigger success message
+                    if(data === 'true'){
+                        //console.log('lööpt'); TODO STUD.IP Success Box triggern
+                    } else {
+                        alert('Der Workflow konnte für die geplante Aufzeichnung nicht gesetzt werden.')
+                    }
+
+                }
+            });
+
+
+        })
     }
 };
 

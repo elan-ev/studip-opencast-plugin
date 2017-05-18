@@ -110,12 +110,14 @@
         /**
          *  function getJSON - performs a REST-Call and retrieves response in JSON
          */
-        function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false) {
+        function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false, $request_method = 'POST') {
             if(isset($service_url) && self::checkService($service_url)) {
                 $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
                            CURLOPT_FRESH_CONNECT => 1);
+                $options[CURLOPT_SSL_VERIFYHOST] = 0;
+                $options[CURLOPT_SSL_VERIFYPEER] = 0;
                 if(!$is_get) {
-                    $options[CURLOPT_POST] = 1;
+                    $options[CURLOPT_CUSTOMREQUEST] = $request_method;
                     if(!empty($data)) {
                         $options[CURLOPT_POSTFIELDS] = $data;
                     }
@@ -149,10 +151,12 @@
             if(isset($service_url) && self::checkService($service_url)) {
                 $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
                            CURLOPT_FRESH_CONNECT => 1);
+                $options[CURLOPT_SSL_VERIFYHOST] = 0;
+                $options[CURLOPT_SSL_VERIFYPEER] = 0;
                 if(!$is_get) {
                     $options[CURLOPT_POST] = 1;
                     if(!empty($data)) {
-                        $options[CURLOPT_POSTFIELDS] = $data;
+                        $options[CURLOPT_POSTFIELDS] = http_build_query($data);
                     }
                 } else {
                     $options[CURLOPT_HTTPGET] = 1;

@@ -265,12 +265,32 @@ class OCSeriesModel {
      * @param string $course_id
      * @return string xml - the xml representation of the string  
      */
-    static function createSeriesDC($course_id) {
+    static function createSeriesDC($course_id)
+    {
+        // Patch "Semester anhï¿½ngen": Hier wird das Semester zu der Veranstaltung ermittelt
+        $stmt = DBManager::get()->prepare("SELECT start_time FROM seminare WHERE `Seminar_id` = ?");
+        $stmt->execute(array($course_id));
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $date = getdate( $res[0]['start_time'] );
+        if ($date['mon'] <= 3)
+            $sem = 'WS' . substr(($date['year']-1), 2, 2) . '-' . $date['year'];
+        else if ($date['mon'] >= 10)
+            $sem = 'WS' . substr(($date['year']), 2, 2) . '-' . ($date['year']+1);
+        else
+            $sem = 'SS' . $date['year'];
+        // Patch "Semester anhï¿½ngen: Ende
 
-        require_once 'lib/classes/Institute.class.php';
+        global $STUDIP_BASE_PATH;
+
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
+            require_once $STUDIP_BASE_PATH.'/lib/classes/Institute.class.php';
+        } else {
+            require_once $STUDIP_BASE_PATH.'/lib/models/Institute.class.php';
+        }
+
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "ï¿½ " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);
@@ -286,7 +306,10 @@ class OCSeriesModel {
         $language = 'de';
 
         $data = array(
-            'title' => $name,
+        // Patch "Semester anhï¿½ngen": Hier wird das Semester an den Namen der Serie gehï¿½ngt
+            'title' => $name." ".$sem,
+        //  'title' => $name,
+        // Patch "Semester anhï¿½ngen: Ende
             'creator' => $creator,
             'contributor' => $contributor,
             'subject' => $course->form,
@@ -365,6 +388,14 @@ class OCSeriesModel {
         $stmt = DBManager::get()->prepare("SELECT `visibility` FROM
                 oc_seminar_series WHERE seminar_id = ?");
         $stmt->execute(array($seminar_id));
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    static function getWorkflowForEvent($seminar_id, $termin_id ){
+        $stmt = DBManager::get()->prepare('SELECT `workflow_id`FROM `oc_scheduled_recordings`
+                            WHERE seminar_id = ? AND `date_id` = ?');
+        $stmt->execute(array($seminar_id, $termin_id));
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

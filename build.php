@@ -1,11 +1,8 @@
 <?php
-
 $target = 'zip';
-
 if (isset($_SERVER['argv'][1])) {
     $target = $_SERVER['argv'][1];
 }
-
 switch ($target) {
     case 'zip':
         zip();
@@ -14,9 +11,6 @@ switch ($target) {
         zip();
         break;
 }
-
-
-
 /**
  * Creates the Stud.IP plugin zip archive.
  */
@@ -41,10 +35,8 @@ function zip()
     $archive->addFile('OpenCast.class.php');
     $archive->addFile('plugin.manifest');
     $archive->close();
-
     printSuccess('created the Stud.IP plugin zip archive');
 }
-
 /**
  * Recursively adds a directory tree to a zip archive.
  *
@@ -56,7 +48,6 @@ function zip()
 function addDirectory(ZipArchive $archive, $directory, $ignoredFilesRegex = '')
 {
     $archive->addEmptyDir($directory);
-
     foreach (glob($directory.'/*') as $file) {
         if (is_dir($file)) {
             addDirectory($archive, $file, $ignoredFilesRegex);
@@ -69,7 +60,6 @@ function addDirectory(ZipArchive $archive, $directory, $ignoredFilesRegex = '')
         }
     }
 }
-
 /**
  * Recursively adds directory trees to a zip archive.
  *
@@ -84,7 +74,6 @@ function addDirectories(ZipArchive $archive, array $directories, $ignoredFilesRe
         addDirectory($archive, $directory, $ignoredFilesRegex);
     }
 }
-
 /**
  * Prints a success message to the standard output stream of the console.
  *
@@ -94,7 +83,6 @@ function printSuccess($message)
 {
     echo "\033[32m".$message."\033[39m".PHP_EOL;
 }
-
 /**
  * Prints an info message to the standard output stream of the console.
  *
@@ -104,7 +92,6 @@ function printInfo($message)
 {
     echo $message.PHP_EOL;
 }
-
 /**
  * Prints an error message to the standard output stream of the console.
  *

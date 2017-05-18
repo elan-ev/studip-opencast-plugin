@@ -28,25 +28,15 @@ class UploadClient extends OCRestClient {
      */
     function newJob($name, $size, $chunksize, $flavor, $mediaPackage) {
         $data = array(
-            'filename' => urlencode($name),
+            'filename' => $name,
             'filesize' => $size,
             'chunksize' =>  $chunksize,
-            'flavor' => urlencode($flavor),
-            'mediapackage' => urlencode($mediaPackage)
+            'flavor' => $flavor,
+            'mediapackage' => $mediaPackage
         );
         $rest_end_point = "/newjob";
-        $uri = $rest_end_point;
-        
-        // setting up a curl-handler
-        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
-        curl_setopt($this->ochandler, CURLOPT_POST, true);
-        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($this->ochandler, CURLOPT_HEADER, false); // we don't need that kind of information now
-        //TODO über REST Klasse laufen lassen, getXML, getJSON...
 
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-        if ($httpCode == 200 && isset($response)){
+        if($response = $this->getXML($rest_end_point, $data, false)) {
             return $response;
         } else {
             return false;
@@ -57,9 +47,13 @@ class UploadClient extends OCRestClient {
      */
     function uploadChunk($job_id, $chunknumber, $filedata) {
 
+#<= PHP5.4
+        #$file = new CURLFile($filedata);
+#PHP5.3 <
+        $file = "@".$filedata.";filename=file;type=text/plain";
         $data = array(
             'chunknumber' => $chunknumber,
-            'filedata' => '@'.$filedata//$filedata
+            'filedata' => $file//$filedata
         );
         
         $rest_end_point = "/job/".$job_id;

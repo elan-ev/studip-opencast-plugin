@@ -1,3 +1,4 @@
+
 .conf-form {
   padding-bottom: 19px;
 }
@@ -136,11 +137,11 @@
   background: #ffffff transparent;
   background: rgba(255, 255, 255, 0.8);
   padding: 5ex;
-  background-color: #F3F5F8;
+  background-color: #ffffff;
   margin-top: 1em;
   padding: 0.5em;
   z-index: 1999;
-  width: 720px;
+  width: 640px;
   height: auto;
 }
 .oce_playercontainer .oc_playerframe {
@@ -256,7 +257,8 @@ a.disabled {
 }
 /** upload dialog **/
 .ocUpload > .ui-widget-header,
-.ocConfig > .ui-widget-header {
+.ocConfig > .ui-widget-header,
+.ocWorkflow > .ui-widget-header {
   background: #1e3e70;
   border: 0;
   font-size: 1.3em;
