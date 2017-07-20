@@ -10,8 +10,11 @@ Das Opencast Plugin Plugin stellt eine Verbindung zwischen einer Opencast Matter
 
 <em>Kontrolle der Sichtbarkeit:</em> Die DozentIn soll die Sichtbarkeit jeder Aufzeichnung individuell festlegen können. Dies wird durch eine eigenes Einstellungsmenü in der Kursansicht realisiert. Hier kann die DozentIn pro verfügbarer Vorlesungsaufzeichungen über die Sichtbarkeit entscheiden. Zukünftig soll an dieser Stelle auch entsprechende Distributionskanäle wie z.B. das Lernfunk Portal für jede Aufzeichnung auswählbar sein.<br><br>
 </p>
+
+<p>
 <img src="http://elan-ev.github.io/studip-opencast-plugin/images/opencastplayer.png" width="500">
 </p>
+
 <h4>Features im Überblick</h4>
 <ul>
 <li>Globale Konfiguration</li>
