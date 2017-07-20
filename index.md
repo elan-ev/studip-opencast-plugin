@@ -24,7 +24,7 @@ Das Opencast Plugin Plugin stellt eine Verbindung zwischen einer Opencast Matter
 
 <p>
 <em>Literatur:</em> Andre Klassen, Rudiger Rolf, Lars Kiesow, Denis Meyer, "Integrating Production and Distribution of Lecture Related Media into an LMS," ism, pp.457-460, 2012 IEEE International Symposium on Multimedia, 2012
-
+</p>
 
 ### Support or Contact
 Feel free to contact till.gloeggler@elan-ev.de
