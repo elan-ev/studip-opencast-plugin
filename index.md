@@ -5,4 +5,4 @@ This plugin serves as a connection between Opencast Matterhorn and the LMS Stud.
 
 
 ### Support or Contact
-Feel free to contact andre.klassen@elan.ev.de
+Feel free to contact till.gloeggler@elan-ev.de
