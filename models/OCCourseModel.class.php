@@ -155,16 +155,22 @@ class OCCourseModel
 
     }
 
-    private function prepareEpisodes($oc_episodes){
+    private function prepareEpisodes($oc_episodes)
+    {
         $episodes = array();
+
         if(is_array($oc_episodes)){
             foreach($oc_episodes as $episode) {
 
                 if(is_object($episode->mediapackage)){
-
+                    $prespreview = false;
 
                     foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                        if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+                        if($attachment->type === "presenter/search+preview") $preview = $attachment->url;
+
+                        if($attachment->type === "presentation/player+preview") {
+                            $prespreview = $attachment->url;
+                        }
                     }
 
                     foreach($episode->mediapackage->media->track as $track) {
@@ -191,11 +197,50 @@ class OCCourseModel
                         'description' => OCModel::sanatizeContent($episode->dcDescription),
                         'author' => OCModel::sanatizeContent($episode->dcCreator),
                         'preview' => $preview,
+                        'prespreview' => $prespreview,
                         'presenter_download' => $presenter_download,
                         'presentation_download' => $presentation_download,
                         'audio_download' => $audio_download,
                     );
                 }
+            }
+        }
+        elseif (is_object($oc_episodes)) { // refactor this asap
+            if(is_object($oc_episodes->mediapackage)){
+                $episode = $oc_episodes;
+
+                foreach($episode->mediapackage->attachments->attachment as $attachment) {
+                    if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+                }
+
+                foreach($episode->mediapackage->media->track as $track) {
+                    // TODO CHECK CONDITIONS FOR MEDIAPACKAGE AUDIO AND VIDEO DL
+                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                        $url = parse_url($track->url);
+                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                            $presenter_download = $track->url;
+                        }
+                    }
+                    if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                        $url = parse_url($track->url);
+                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                            $presentation_download = $track->url;
+                        }
+                    }
+                    if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
+                        $audio_download = $track->url;
+                }
+                $episodes[$episode->id] = array('id' => $episode->id,
+                    'title' => OCModel::sanatizeContent($episode->dcTitle),
+                    'start' => $episode->mediapackage->start,
+                    'duration' => $episode->mediapackage->duration,
+                    'description' => OCModel::sanatizeContent($episode->dcDescription),
+                    'author' => OCModel::sanatizeContent($episode->dcCreator),
+                    'preview' => $preview,
+                    'presenter_download' => $presenter_download,
+                    'presentation_download' => $presentation_download,
+                    'audio_download' => $audio_download,
+                );
             }
         }
 
@@ -209,8 +254,7 @@ class OCCourseModel
 
 
         if(!$cached_series || $forced_reload){
-
-            $search_client = SearchClient::getInstance();
+            $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
             $series = $search_client->getEpisodes($series_id);
 
             if($forced_reload && $cached_series){

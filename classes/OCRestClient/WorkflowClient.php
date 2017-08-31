@@ -3,10 +3,10 @@
     class WorkflowClient extends OCRestClient
     {
         static $me;
-        function __construct() {
+        function __construct($config_id = 1) {
             $this->serviceName = 'WorkflowClient';
             try {
-                if ($config = parent::getConfig('workflow')) {
+                if ($config = parent::getConfig('workflow', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
                                         $config['service_password']);

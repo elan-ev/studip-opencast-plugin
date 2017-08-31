@@ -87,6 +87,15 @@
         <div class="oce_playercontainer">
             <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
             </span>
+            <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
+
+            <a href="<?=URLHelper::getURL('http://'.$engage_player_url)?>" target="_blank">
+                <span class="previewimage">
+                    <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
+                    <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
+                </span>
+            </a>
+
             <? if($theodul) : ?>
                 <iframe src="<?=$embed?>"
                         style="border:0px #FFFFFF none;"
@@ -148,7 +157,10 @@
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">
             <input class="search" placeholder="<?=_('Nach Aufzeichung suchen')?>" size="30" />
-            <img class="sort" data-sort="name" src="<?=Assets::image_path('icons/16/blue/search.png')?>">
+            <?= Icon::create('search', 'clickable', array(
+                'class' => 'sort',
+                'data-sort' => 'name'
+            )) ?>
         </span>
         </img>
         <ul class="oce_list list"
@@ -181,12 +193,15 @@
                 <? endforeach;?>
             <? endif;?>
             <? foreach($ordered_episode_ids as $pos => $item) : ?>
+            <? $prev = ($item['prespreview']) ? $item['prespreview'] : $plugin->getPluginURL() .'/images/default-preview.png';?>
+
             <li id="<?=$item['id']?>"
                 class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
                 data-courseId="<?=$course_id?>"
                 data-visibility="<?=$item['visibility']?>"
                 data-pos="<?=$pos?>"
-                data-mkdate="<?=$item['mkdate']?>">
+                data-mkdate="<?=$item['mkdate']?>"
+                data-previewimage="<?=$prev?>" >
                 <a
                 href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
                     <div>
@@ -230,5 +245,6 @@
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
+<?= $this->render_partial("course/_previewimagefragment", array()) ?>
 <?= $this->render_partial("course/_playerfragment", array()) ?>
 <?= $this->render_partial("course/_episodelist", array()) ?>

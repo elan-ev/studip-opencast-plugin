@@ -9,9 +9,9 @@
     {
         static $me;
         public $serviceName = 'Series';
-        function __construct() {
+        function __construct($config_id = 1) {
             try {
-                if ($config = parent::getConfig('series')) {
+                if ($config = parent::getConfig('series', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
                                         $config['service_password']);
@@ -69,7 +69,7 @@
                 return $series->catalogs;
             } else return false;
         }
-        
+
         // todo
         function getOneSeries($seriesID)
         {
@@ -81,7 +81,7 @@
          *
          *  @param string series_id Identifier for a Series
          *
-         *	@return array response of a series
+         *  @return array response of a series
          */
         function getSeries($series_id) {
 
@@ -117,8 +117,8 @@
          */
         function createSeriesForSeminar($course_id) {
             $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
-            
-            
+
+
             $ACLData = array('ROLE_ADMIN' => array(
                                                 'read' => 'true',
                                                 'write' => 'true',
@@ -127,13 +127,13 @@
                                                 'read' => 'true'
                                )
                         );
-                        
-            $ACL = OCSeriesModel::createSeriesACL($ACLData); 
+
+            $ACL = OCSeriesModel::createSeriesACL($ACLData);
             $post = array('series' => $dublinCore,
                         'acl' => $ACL);
 
             $res = $this->getXML('/', $post, false, true);
-    
+
             $string = str_replace('dcterms:', '', $res[0]);
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);
@@ -143,7 +143,7 @@
                 $new_series = json_decode($res[0]);
                 $series_id = $json['identifier'];
                 OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1, time());
-                
+
                 self::updateAccescontrolForSeminar($series_id, $ACL);
 
                 return true;
@@ -151,17 +151,17 @@
                 return false;
             }
         }
-        
-        
+
+
         /**
          * updateAccescontrolForSeminar - updates the ACL for a given series in OC Matterhorn
          * @param string $series_id  - series identifier
          * @param array  $acl_data   -utf8_encoded ACL
          * @return bool success or not
          */
-        
+
         function updateAccescontrolForSeminar($series_id, $acl_data) {
-            
+
             $post =  array('acl' => $acl_data);
             $res = $this->getXML('/'.$series_id.'/accesscontrol', $post, false, true);
 
@@ -171,7 +171,7 @@
                 return false;
             }
         }
-        
+
 
         /**
          *  removeSeries() - removes a series for a given identifier from the Opencast-Matterhorn Core

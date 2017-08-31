@@ -7,9 +7,9 @@ class UploadClient extends OCRestClient {
     static $me;
     public $serviceName = 'Upload';
         
-    function __construct() {
+    function __construct($config_id = 1) {
         try {
-            if ($config = parent::getConfig('upload')) {
+            if ($config = parent::getConfig('upload', $config_id)) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
                                     $config['service_password']);

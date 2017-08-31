@@ -16,21 +16,27 @@
         protected $username;
         protected $password;
         public $serviceName = 'ParentRestClientClass';
-        
-        static function getInstance()
+
+        static function getInstance($course_id = null)
         {
+            $config_id = 1;     // use default config if nothing else is given
+
+            if ($course_id) {
+                $config_id = self::getConfigIdForCourse($course_id);
+            }
+
             if(!property_exists(get_called_class(), 'me')) {
                 throw new Exception('Every child of '.get_class().' needs to implement static property "$me"');
             }
             if (!is_object(static::$me)) {
-                static::$me = new static();
+                static::$me = new static($config_id);
             }
             return static::$me;
         }
-        
+
         function __construct($matterhorn_base_url = null, $username = null, $password = null){
             $this->matterhorn_base_url = $matterhorn_base_url;
-            
+
             $this->username = !is_null($username) ? $username : 'matterhorn_system_account';
             $this->password = !is_null($password) ? $password : 'CHANGE_ME';
 
@@ -60,51 +66,54 @@
           * @return array configuration for corresponding client
           *
           */
-        function getConfig($service_type) {
+        function getConfig($service_type, $config_id = 1)
+        {
             try {
                 if(isset($service_type)) {
-                    $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE service_type = ?");
-                    $stmt->execute(array($service_type));
+                    $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
+                        WHERE service_type = ? AND config_id = ?");
+                    $stmt->execute(array($service_type, $config_id));
                     $config = $stmt->fetch(PDO::FETCH_ASSOC);
                     if($config) {
-                    $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config` WHERE 1");
-                    $stmt->execute();
+                        $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config`
+                            WHERE config_id = ?");
+                        $stmt->execute(array($config_id));
                     $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
                     return $config;
                     } else {
                         throw new Exception(sprintf(_("Es sinde keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
                     }
-            
+
                 } else {
                     throw new Exception(_("Es wurde kein Servicetyp angegeben."));
                 }
             } catch (Exception $e) {
-            
+
             }
         }
 
         /**
          *  function setConfig - sets config into DB for given REST-Service-Client
          *
-         *	@param string $service_url
-         *	@param string $service_user
+         *  @param string $service_url
+         *  @param string $service_user
          *  @param string $service_password
          */
-        function setConfig($service_url, $service_user, $service_password) {
-            if(isset($service_url, $service_user, $service_password)) {                    
-                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config`  (service_url, service_user, service_password) VALUES (?,?,?)");
-                return $stmt->execute(array($service_url, $service_user, $service_password));
+        function setConfig($config_id = 1, $service_url, $service_user, $service_password) {
+            if(isset($service_url, $service_user, $service_password)) {
+                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (config_id, service_url, service_user, service_password) VALUES (?,?,?,?)");
+                return $stmt->execute(array($config_id, $service_url, $service_user, $service_password));
             } else {
                 throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
             }
 
         }
-        
-        function clearConfig($host = null) {
-            $stmt = DBManager::get()->prepare("DELETE FROM `oc_config` WHERE 1;");
-            $stmt->execute();
-            $stmt = DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE 1;");
-            return $stmt->execute();
+
+        function clearConfig($config_id) {
+            $stmt = DBManager::get()->prepare("DELETE FROM `oc_config` WHERE config_id = ?;");
+            $stmt->execute(array($config_id));
+            $stmt = DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE config_id = ?;");
+            return $stmt->execute(array($config_id));
         }
 
         /**
@@ -122,7 +131,7 @@
                 } else {
                     $options[CURLOPT_HTTPGET] = 1;
                 }
-                         
+
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -141,7 +150,7 @@
             }
 
         }
-        
+
         /**
          * function getXML - performs a REST-Call and retrieves response in XML
          */
@@ -160,7 +169,7 @@
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-                
+
                 if($with_res_code) {
                     return array($response, $httpCode);
                 } else {
@@ -186,11 +195,64 @@
             return true;
             if (@fsockopen($this->matterhorn_base_url)) {
                 return true;
-            }          
+            }
             throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewählten Service "%s". Versuchen Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
         }
-        
-     
 
+
+        /**
+         * get id of used config for passed course
+         *
+         * @param string $course_id
+         *
+         * @return int
+         */
+        static function getConfigIdForCourse($course_id)
+        {
+            $stmt = DBManager::get()->prepare("SELECT config_id
+                FROM oc_seminar_series
+                WHERE seminar_id = ?");
+
+            $stmt->execute(array($course_id));
+
+            return $stmt->fetchColumn() ?: 1;
     }
-?>
+
+        /**
+         * get course-id for passed series
+         *
+         * @param string $series_id
+         *
+         * @return string
+         */
+
+        static function getCourseIdForSeries($series_id)
+        {
+            $stmt = DBManager::get()->prepare("SELECT seminar_id
+                FROM oc_seminar_series
+                WHERE series_id = ?");
+
+            $stmt->execute(array($series_id));
+
+            return $stmt->fetchColumn() ?: 1;
+        }
+
+        /**
+         * get course-id for passed series
+         *
+         * @param string $series_id
+         *
+         * @return string
+         */
+
+        static function getCourseIdForWorkflow($workflow_id)
+        {
+            $stmt = DBManager::get()->prepare("SELECT seminar_id
+                FROM oc_seminar_workflows
+                WHERE workflow_id = ?");
+
+            $stmt->execute(array($workflow_id));
+
+            return $stmt->fetchColumn() ?: 1;
+        }
+    }

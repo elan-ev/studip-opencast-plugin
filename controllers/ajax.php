@@ -49,7 +49,7 @@ class AjaxController extends StudipController
     
     function getEpisodes_action($series_id) {
         
-        $search_client = SearchClient::getInstance();
+        $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
         $episodes = $search_client->getEpisodes($series_id);
     
         $result = array();
@@ -82,7 +82,7 @@ class AjaxController extends StudipController
      * @throws Trails_DoubleRenderError
      */
     function getWorkflowStatus_action($workflow_id){
-        $this->workflow_client = WorkflowClient::getInstance();
+        $this->workflow_client = WorkflowClient::getInstance(OCRestClient::getCourseIdForWorkflow($workflow_id));
         $resp = $this->workflow_client->getWorkflowInstance($workflow_id);
         $this->render_text(json_encode($resp));
 
@@ -90,7 +90,7 @@ class AjaxController extends StudipController
 
     function getWorkflowStatusforCourse_action($course_id){
         $workflow_ids = OCModel::getWorkflowIDsforCourse($course_id);
-        $this->workflow_client = WorkflowClient::getInstance();
+        $this->workflow_client = WorkflowClient::getInstance($course_id);
         if(!empty($workflow_ids)){
             foreach($workflow_ids as $workflow_id) {
                 $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);

@@ -3,10 +3,10 @@
     class CaptureAgentAdminClient extends OCRestClient
     {
         static $me;
-        function __construct() {
+        function __construct($config_id = 1) {
             $this->serviceName = 'CaptureAgentAdminClient';
             try {
-                if ($config = parent::getConfig('capture-admin')) {
+                if ($config = parent::getConfig('capture-admin', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
                                         $config['service_password']);
@@ -20,7 +20,7 @@
         /**
          *  getCaptureAgents() - retrieves a representation of all Capture Agents from conntected Opencast-Matterhorn Core
          *
-         *	@return array string response of connected Capture Agents
+         *  @return array string response of connected Capture Agents
          */
         function getCaptureAgentsXML() {
             // URL for Matterhorn 1.1
@@ -37,9 +37,9 @@
                 $json = json_encode($xml);
                 $agent_repsonse = json_decode($json,TRUE);
                 return $agent_repsonse['agent-state-update'];
-                //} 
-            
-            
+                //}
+
+
         //     return false;
         }
 
@@ -50,7 +50,7 @@
                 return $sanitzed_agents;
             } else return false;
         }
-        
+
         function getCaptureAgentCapabilities($agent_name) {
             $service_url = "/agents/" . $agent_name . "/capabilities.json";
             if($agent = $this->getJSON($service_url)) {

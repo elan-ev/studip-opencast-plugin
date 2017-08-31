@@ -4,10 +4,10 @@
     class SchedulerClient extends OCRestClient
     {
         static $me;
-        function __construct() {
+        function __construct($config_id = 1) {
             $this->serviceName = 'SchedulerClient';
             try {
-                if ($config = parent::getConfig('recordings')) {
+                if ($config = parent::getConfig('recordings', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
                                         $config['service_password']);
@@ -45,9 +45,10 @@
             $resArray = explode("\n", $response);
 
             if ($httpCode == 201){
-                $pttrn = '#Location: http:/'.$this->matterhorn_base_url.'/(.+?).xml#Uis';
-                foreach($resArray as $resp) {
+                $location = parse_url($this->matterhorn_base_url);
+                $pttrn = '#Location: http:/.*/recordings/(.+?).xml#Uis';
 
+                foreach($resArray as $resp) {
                     // THIS could be changed. Keep an eye on futre oc releases...
                     if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
@@ -82,7 +83,8 @@
             $uri = $rest_end_point;
 
             // setting up a curl-handler
-            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
+            $location = parse_url($this->matterhorn_base_url);
+            curl_setopt($this->ochandler,CURLOPT_URL,$location['path'].$uri);
             curl_setopt($this->ochandler,CURLOPT_CUSTOMREQUEST, "DELETE");
             //TODO über REST Klasse laufen lassen, getXML, getJSON...
 
@@ -115,7 +117,8 @@
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
-            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri.$event_id);
+            $location = parse_url($this->matterhorn_base_url);
+            curl_setopt($this->ochandler,CURLOPT_URL,$location['path'].$uri.$event_id);
             curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);

@@ -15,7 +15,7 @@ class OCSeriesModel {
 
     /**
      * return connected Siries for $courseID from DB
-     * 
+     *
      * @param string $courseID
      * @return array
      */
@@ -43,7 +43,7 @@ class OCSeriesModel {
     static function getConnectedSeries($courseID, $refresh = false) {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
-            $sClient = SeriesClient::getInstance();
+            $sClient = SeriesClient::getInstance($courseID);
             $DBSeries = self::getConnectedSeriesDB($courseID);
             if ($DBSeries) {
                 $res = array();
@@ -64,10 +64,10 @@ class OCSeriesModel {
 
 
     /**
-     * return unconnected series 
+     * return unconnected series
      * if refresh is true result of last call is overwritten otherwise last calls
-     * result is returned 
-     * 
+     * result is returned
+     *
      * @param string $courseID
      * @param bool $refresh
      * @return array
@@ -102,16 +102,16 @@ class OCSeriesModel {
     }
 
     /**
-     * return all unconnected series 
+     * return all unconnected series
      * if refresh is true result of last call is overwritten otherwise last cals
-     * result is returned 
-     * 
+     * result is returned
+     *
      * @param bool $refresh
      * @return array
      */
     static function getAllSeries($refresh = false) {
 
- 
+
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
@@ -130,7 +130,7 @@ class OCSeriesModel {
 
     /**
      * transforms multidimensional series array into 2 dimensional array
-     * 
+     *
      * @param array $data
      * @return array
      */
@@ -146,7 +146,7 @@ class OCSeriesModel {
 
     /**
      * write series for course in db
-     * 
+     *
      * @param string $course_id
      * @param string $series_id
      * @param string $visibility
@@ -165,7 +165,7 @@ class OCSeriesModel {
 
     /**
      * delete series connection to course
-     * 
+     *
      * @param string $course_id
      * @param string $series_id
      * @return bool
@@ -183,7 +183,7 @@ class OCSeriesModel {
 
     /**
      * return array with connected series dublin core xml
-     * 
+     *
      * @param string $courseID
      * @return array
      */
@@ -191,7 +191,7 @@ class OCSeriesModel {
         $series = self::getConnectedSeries($courseID);
         $ret = array();
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance()->getXML('/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance($courseID)->getXML('/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
@@ -200,7 +200,7 @@ class OCSeriesModel {
 
     /**
      * Set episode visibility
-     * 
+     *
      * @param string $course_id
      * @param string $episode_id
      * @param tyniint 1 or 0
@@ -215,7 +215,7 @@ class OCSeriesModel {
 
     /**
      * get visibility row
-     * 
+     *
      * @param string $course_id
      * @param string $episode_id
      * @return array
@@ -234,12 +234,12 @@ class OCSeriesModel {
      * matterhorn role is the role defined in matterhorn
      * permission is the action to allow or forbid
      * value is bool for allow or forbid
-     * 
+     *
      * @param array $data
      * @return bool
      */
     static function createSeriesACL($data) {
-     
+
 
         $content = array();
         foreach ($data as $role => $perm) {
@@ -260,10 +260,10 @@ class OCSeriesModel {
     }
 
     /**
-     * createSeriesXML - creates an xml representation for a new OC-Series
-     * 
+     * createSeriesDC - creates an xml representation for a new OC-Series
+     *
      * @param string $course_id
-     * @return string xml - the xml representation of the string  
+     * @return string xml - the xml representation of the string
      */
     static function createSeriesDC($course_id) {
 
@@ -290,6 +290,13 @@ class OCSeriesModel {
         $creator = $instructor['fullname'];
         $language = 'de';
 
+        if (studip_strlen($course->description) > 1000){
+                $description .= studip_substr($course->description, 0, 1000);
+                $description .= "... ";
+        } else {
+            $description = $course->description;
+        }
+
         $data = array(
             'title' => $name,
             'creator' => $creator,
@@ -297,7 +304,7 @@ class OCSeriesModel {
             'subject' => $course->form,
             'language' => $language,
             'license' => $license,
-            'description' => $course->description,
+            'description' => $description,
             'publisher' => $publisher
         );
 
@@ -316,11 +323,11 @@ class OCSeriesModel {
 
         return $str;
     }
-    
+
     /**
      * getScheduledEpisodes - returns all scheduled episodes for a given course
      */
-    
+
     static function getScheduledEpisodes($course_id) {
         $stmt = DBManager::get()->prepare("SELECT  * FROM
                 oc_scheduled_recordings WHERE seminar_id = ?");

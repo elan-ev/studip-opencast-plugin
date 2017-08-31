@@ -170,6 +170,26 @@
     height: 415px;
   }
 
+  .previewimage {
+    position: relative;
+    left: 0;
+    top: 0;
+    img.previewimage {
+     position: relative;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    img.playbutton {
+        position: absolute;
+        width: 50%;
+        left: 25%;
+        bottom: 40px;
+        opacity: 0.6;
+
+    }
+  }
+
   @media only screen and (max-width: 1070px) {
     width: auto;
     height: auto;
@@ -201,7 +221,7 @@
   clear: both;
   padding-left: 0px;
   list-style: none;
-  overflow: scroll;
+  overflow: auto;
   height: auto;
 }
 
@@ -290,10 +310,6 @@ a.disabled {
   color: #24437c;
 }
 
-/*.hidden_ocvideodiv:before{
-  content:url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
-}*/
-
 .hidden_ocvideodiv {
   opacity: 0.8;
 }
@@ -370,58 +386,90 @@ textarea.oc_input:focus {
   width: 16px;
 }
 
-.button.presenter:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/file-video.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-video.png") 1x, url("../../../../assets/images/icons/32/blue/file-video.png") 2x);
+.button.presenter {
+  .icon('before', 'file-video', 'clickable');
 }
 
-.button.presentation:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/file-presentation.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-presentation.png") 1x, url("../../../../assets/images/icons/32/blue/file-presentation.png") 2x);
+.button.presenter:hover {
+  .icon('before', 'file-video', 'info_alt');
 }
 
-.button.audio:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/file-audio.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/file-audio.png") 1x, url("../../../../assets/images/icons/32/blue/file-audio.png") 2x);
+
+.button.presentation {
+    .icon('before', 'file-presentation', 'clickable');
 }
 
-.button.ocextern:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/link-intern.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/link-intern.png") 1x, url("../../../../assets/images/icons/32/blue/link-intern.png") 2x);
+.button.presentation:hover {
+    .icon('before', 'file-presentation', 'info_alt');
 }
 
-.button.ocschedule:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/video.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/video.png") 1x, url("../../../../assets/images/icons/32/blue/video.png") 2x);
+
+.button.audio {
+    .icon('before', 'file-audio', 'clickable');
 }
 
-.button.ocunschedule:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/trash.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/trash.png") 1x, url("../../../../assets/images/icons/32/blue/trash.png") 2x);
+.button.audio:hover {
+    .icon('before', 'file-audio', 'info_alt');
 }
 
-.button.ocupdate:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/refresh.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/refresh.png") 1x, url("../../../../assets/images/icons/32/blue/refresh.png") 2x);
+
+.button.ocextern {
+    .icon('before', 'link-intern', 'clickable');
 }
 
-.button.ocvisible:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/visibility-visible.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/visibility-visible.png") 1x, url("../../../../assets/images/icons/32/blue/visibility-visible.png") 2x);
+.button.ocextern:hover {
+    .icon('before', 'link-intern', 'info_alt');
 }
 
-.button.ocinvisible:before {
-  background: no-repeat;
-  background-image: url("../../../../assets/images/icons/16/blue/visibility-invisible.png");
-  background-image: -webkit-image-set(url("../../../../assets/images/icons/16/blue/visibility-invisible.png") 1x, url("../../../../assets/images/icons/32/blue/visibility-invisible.png") 2x);
+
+.button.ocschedule {
+    .icon('before', 'video', 'clickable');
+}
+
+.button.ocschedule:hover {
+    .icon('before', 'video', 'info_alt');
+}
+
+
+.button.ocunschedule {
+    .icon('before', 'trash', 'clickable');
+}
+
+.button.ocunschedule:hover {
+    .icon('before', 'trash', 'info_alt');
+}
+
+
+.button.ocupdate {
+    .icon('before', 'refresh', 'clickable');
+}
+
+.button.ocupdate:hover {
+    .icon('before', 'refresh', 'info_alt');
+}
+
+
+.button.ocvisible {
+    .icon('before', 'visibility-visible', 'clickable');
+}
+
+.button.ocvisible:hover {
+    .icon('before', 'visibility-visible', 'info_alt');
+}
+
+
+.button.ocinvisible {
+    .icon('before', 'visibility-invisible', 'clickable');
+}
+
+.button.ocinvisible:hover {
+    .icon('before', 'visibility-invisible', 'info_alt');
+}
+
+.button::before {
+    background-position: 0px 4px;
+    height: 20px !important;
+    padding-left: 5px;
 }
 
 /*** Uploader ***/
