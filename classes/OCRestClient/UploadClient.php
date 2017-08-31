@@ -37,16 +37,7 @@ class UploadClient extends OCRestClient {
         $rest_end_point = "/newjob";
         $uri = $rest_end_point;
         
-        // setting up a curl-handler
-        curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
-        curl_setopt($this->ochandler, CURLOPT_POST, true);
-        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($this->ochandler, CURLOPT_HEADER, false); // we don't need that kind of information now
-        //TODO über REST Klasse laufen lassen, getXML, getJSON...
-
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-        if ($httpCode == 200 && isset($response)){
+        if($response = $this->getXML($rest_end_point, $data, false)) {
             return $response;
         } else {
             return false;
@@ -55,11 +46,13 @@ class UploadClient extends OCRestClient {
     /**
      * upload one chunk
      */
-    function uploadChunk($job_id, $chunknumber, $filedata) {
-
+    function uploadChunk($job_id, $chunknumber, $filedata)
+    {
+        $file = new CURLFile($filedata);
+	
         $data = array(
             'chunknumber' => $chunknumber,
-            'filedata' => '@'.$filedata//$filedata
+            'filedata' => $file
         );
         
         $rest_end_point = "/job/".$job_id;

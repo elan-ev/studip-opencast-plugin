@@ -29,7 +29,7 @@
                 return $mediapackage;
             } else return false;
         }
-        
+
         /**
          *  addDCCatalog - Add a dublincore episode catalog to a given media package using an url
          *
@@ -49,22 +49,49 @@
                 return $mediapackage;
             } else return false;
         }
-        
+
         /**
          *  ingest - Ingest the completed media package into the system, retrieving all URL-referenced files
          *
-         *  @param $mediapackage
+         *  @param string $mediapackage
          *  @param $workFlowDefinitionID
          *
-         *  @return $mediapackage 
+         *  @return $mediapackage
          */
         function ingest($mediaPackage, $workFlowDefinitionID = 'full', $addendum = '')
         {
             $service_url = "/ingest/".$workFlowDefinitionID.$addendum;
-            $data = array('mediaPackage' => $mediaPackage);
+
+            $mediaPackageParsed = new SimpleXMLElement($mediaPackage);
+            $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
+
+            $data = array(
+                'mediaPackage' => utf8_encode($mediaPackage),
+                'workflowDefinitionId' => $workFlowDefinitionID
+            );
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;
             } else return false;
+        }
+
+        /**
+         * Add a track to the passed media-package
+         *
+         * @param string $mediaPackage
+         * @param string $trackURI
+         * @param string $flavor
+         */
+        public function addTrack($mediaPackage, $trackURI, $flavor)
+        {
+            $data = array('mediaPackage' => $mediaPackage,
+                          'url' => $trackURI,
+                          'flavor' => $flavor);
+                          var_dump($data);die;
+            if($res = $this->getXML('/addTrack', $data, false, false, true)) {
+                return $res;
+            } else {
+                return false;
+            }
         }
     }
 ?>

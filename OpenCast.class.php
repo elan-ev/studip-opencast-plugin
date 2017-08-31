@@ -15,6 +15,7 @@ require_once 'models/OCCourseModel.class.php';
 require_once 'models/OCSeriesModel.php';
 require_once 'classes/OCRestClient/SearchClient.php';
 require_once 'classes/OCRestClient/SeriesClient.php';
+require_once 'controllers/opencast_controller.php';
 
 
 define('OC_UPLOAD_CHUNK_SIZE', '10000000');
@@ -101,9 +102,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     function perform($unconsumed_path)
     {
         $trails_root = $this->getPluginPath();
+
         $dispatcher = new Trails_Dispatcher($trails_root,
             rtrim(PluginEngine::getURL($this, null, ''), '/'),
-            null);
+            'index');
 
         $dispatcher->plugin = $this;
         $dispatcher->dispatch($unconsumed_path);

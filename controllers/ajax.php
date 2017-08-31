@@ -1,12 +1,11 @@
 <?php
 
-require_once 'app/controllers/studip_controller.php';
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 
-class AjaxController extends StudipController
+class AjaxController extends OpencastController
 {
 
     function before()
@@ -21,7 +20,7 @@ class AjaxController extends StudipController
     {
         $this->render_text(_("Ups.."));
     }
-    
+
     function getSeries_action() {
 
         $allseries = OCSeriesModel::getAllSeries();
@@ -43,32 +42,32 @@ class AjaxController extends StudipController
             }
             $this->render_text(json_encode($u_series));
         }
-        
-        
+
+
     }
-    
+
     function getEpisodes_action($series_id) {
-        
+
         $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
         $episodes = $search_client->getEpisodes($series_id);
-    
+
         $result = array();
-        
+
         foreach($episodes as $episode) {
             if(key_exists('mediapackage', $episode)){
                 $result[] = $episode;
-            } 
+            }
         }
         $this->render_text(json_encode($result));
-        
+
     }
-    
+
     function setEpisodeOrdersForCourse_action() {
         $course_id = false;
         $positions =  Request::getArray('positions');
 
         foreach($positions  as $position_item) {
-            OCModel::setCoursePositionForEpisode($position_item['episode_id'], $position_item['position'], 
+            OCModel::setCoursePositionForEpisode($position_item['episode_id'], $position_item['position'],
                     $position_item['course_id'], $position_item['visibility'], $position_item['mkdate']);
                     $course_id = $position_item['course_id'];
         }

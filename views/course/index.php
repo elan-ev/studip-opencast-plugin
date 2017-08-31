@@ -16,35 +16,36 @@
 
 <?
     $sidebar = Sidebar::get();
-    
+
     if($GLOBALS ['perm']->have_studip_perm ('dozent', $this->course_id))
     {
         $actions = new ActionsWidget ();
         $upload = '';
-        if(! empty ($connectedSeries))
-        {
+
+        if (!empty($connectedSeries)) {
             $actions->addLink(_("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
             $actions->addLink(_("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
-            if($series_metadata [0] ['schedule'] == '1')
-            {
-                $actions->addLink(_("Medien hochladen"), '#', 'icons/16/blue/upload.png', array (
-                        'id' => 'oc_upload_dialog'
-                ));
-                $actions->addLink(_("Workflow konfigurieren"), '#', 'icons/16/blue/admin.png', array('id' => 'oc_workflow_dialog'));
 
+            if(true || $series_metadata[0]['schedule'] == '1') {
+                $actions->addLink(_("Medien hochladen"), '#1', 'icons/16/blue/upload.png', array (
+                    'id' => 'oc_upload_dialog'
+                ));
+
+                $actions->addLink(_("Workflow konfigurieren"), '#2', 'icons/16/blue/admin.png', array(
+                    'id' => 'oc_workflow_dialog'
+                ));
             }
 
-        } else
-        {
+        } else {
             $actions->addLink(_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
             $actions->addLink(_('Vorhandene Series verknüpfen'), '#', 'icons/16/blue/group.png', array (
-                    'id' => 'oc_config_dialog' 
+                    'id' => 'oc_config_dialog'
            ));
         }
 
 
         //todo - should this already be visibile for teachers?
-        if($coursevis == 'visible'){
+        if ($coursevis == 'visible'){
             $actions->addLink(_("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
         } else {
             $actions->addLink(_("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
@@ -52,8 +53,7 @@
 
         $sidebar->addWidget ($actions);
         Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
-    } else
-    {
+    } else {
         Helpbar::get ()->addPlainText ('', _("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
     }
 ?>
@@ -89,12 +89,13 @@
             </span>
             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
 
+            <!--
             <a href="<?=URLHelper::getURL('http://'.$engage_player_url)?>" target="_blank">
                 <span class="previewimage">
                     <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
                     <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
                 </span>
-            </a>
+            </a>-->
 
             <? if($theodul) : ?>
                 <iframe src="<?=$embed?>"
