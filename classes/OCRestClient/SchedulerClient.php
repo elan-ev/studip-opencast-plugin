@@ -29,7 +29,7 @@
          * @return bool success or not
          */
         function scheduleEventForSeminar($course_id, $resource_id, $termin_id) {
-      
+
             $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
             $rest_end_point = "/";
             $uri = $rest_end_point;
@@ -54,9 +54,9 @@
                         $eventid = $matches[1];
                     }
                 }
-   
+
                 OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $eventid);
-   
+
                 return true;
             } else {
                 return false;
@@ -101,7 +101,7 @@
                 return false;
             }
         }
-        
+
         /**
          * updateEventForSeminar - updates an event
          * TODO: Implement put route
@@ -113,7 +113,7 @@
         function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id) {
 
             $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
-            
+
             $rest_end_point = "/";
             $uri = $rest_end_point;
             // setting up a curl-handler
@@ -133,8 +133,8 @@
                 return false;
             }
         }
-        
-        
+
+
         static function createEventMetadata($course_id, $resource_id, $termin_id) {
             $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
 
@@ -144,23 +144,30 @@
 
             $issue_titles = array();
             $issues = $date->getIssueIDs();
-            if(is_array($issues)) {
-                foreach($issues as $is) {
+
+            if (is_array($issues)) {
+                foreach ($issues as $is) {
                     $issue = new Issue(array('issue_id' => $is));
-                    if(sizeof($issues) > 1) {
-                        $issue_titles[] =  my_substr($issue->getTitle(), 0 ,80 );
-                    } else $issue_titles =  my_substr($issue->getTitle(), 0 ,80 );
+
+                    if (sizeof($issues) > 1) {
+                        $issue_titles[] =  my_substr(kill_format($issue->getTitle()), 0 ,80 );
+                    } else {
+                        $issue_titles =  my_substr(kill_format($issue->getTitle()), 0 ,80 );
+                    }
                 }
-                if(is_array($issue_titles)){
+
+                if (is_array($issue_titles)) {
                     $issue_titles = _("Themen: ") . my_substr(implode(', ', $issue_titles), 0 ,80 );
                 }
             }
 
-            if(!$issue->title) {
+            if (!$issue->title) {
                 $course = new Seminar($course_id);
                 $name = $course->getName();
                 $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
-            } else $title = $issue_titles;
+            } else {
+                $title = $issue_titles;
+            }
 
             $room = ResourceObject::Factory($resource_id);
             $cas = OCModel::checkResource($resource_id);
@@ -169,7 +176,7 @@
 
             $custom_workflow = OCSeriesModel::getWorkflowForEvent($course_id, $termin_id);
 
-            if($custom_workflow) {
+            if ($custom_workflow) {
                 $workflow = $custom_workflow['workflow_id'];
             }
             else $workflow = $ca['workflow_id'];
@@ -178,7 +185,7 @@
             $device_names = '';
             $capabilities = $ca_client->getCaptureAgentCapabilities($ca['capture_agent']);
 
-            if(isset($capabilities)){
+            if (isset($capabilities)) {
                 foreach($capabilities as $capability) {
                     if($capability->key == 'capture.device.names') {
                         $device_names = $capability->value;
@@ -199,7 +206,6 @@
             //                    org.opencastproject.workflow.definition=ncast' : '';
 
             return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters);
-            
+
         }
     }
-?>
