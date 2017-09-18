@@ -19,7 +19,10 @@
                 style="border: 0px #FFFFFF none;"
                 name="Opencast Matterhorn - Media Player" scrolling="no"
                 frameborder="0" marginheight="0px" marginwidth="0px"
-                width="100%" height="250px">
+                width="100%" width="640" height="360"
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                mozallowfullscreen="true">
         </iframe>
     <% } %>
 

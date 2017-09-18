@@ -115,7 +115,11 @@
                 <iframe class="oc_playerframe" src="<?=$embed?>&hideControls=false"
                     style="border: 0px #FFFFFF none;"
                     name="Opencast Matterhorn - Media Player" scrolling="no"
-                    frameborder="0" marginheight="0px" marginwidth="0px"  height="250px">
+                    frameborder="0" marginheight="0px" marginwidth="0px" width="640"
+                    height="360"
+                    allowfullscreen="true"
+                    webkitallowfullscreen="true"
+                    mozallowfullscreen="true">
                 </iframe>
              <? endif; ?>
             <br>
