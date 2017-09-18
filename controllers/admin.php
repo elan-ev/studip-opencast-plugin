@@ -199,9 +199,9 @@ class AdminController extends OpencastController
                     }
             }
 
-                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegeben Opencast Slave Installation gefunden und eingetragen"), count($comp)));
+                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegebene Opencast Slave Installation gefunden und eingetragen"), count($comp)));
             } else {
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegebene Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
                 }
             }
         }
