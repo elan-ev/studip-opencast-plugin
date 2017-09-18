@@ -29,12 +29,17 @@ NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 're
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
+    const GETTEXT_DOMAIN = 'opencast';
+
     /**
      * Initialize a new instance of the plugin.
      */
     function __construct()
     {
         parent::__construct();
+
+        bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
+        bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'ISO-8859-1');
 
         global $SessSemName, $perm;
         $GLOBALS['ocplugin_path'] = $this->getPluginURL();
@@ -43,11 +48,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi
-            $main = new Navigation(_("Opencast Administration"));
+            $main = new Navigation($this->_("Opencast Administration"));
             // TODO think about an index page.. for the moment the config page is in charge..
             $main->setURL(PluginEngine::getURL('opencast/admin/config'));
 
-            $config = new Navigation('Opencast Einstellungen');
+            $config = new Navigation($this->_('Opencast Einstellungen'));
             $config->setURL(PluginEngine::getURL('opencast/admin/config'));
             $main->addSubNavigation('oc-config', $config);
 
@@ -55,7 +60,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             Navigation::addItem('/admin/config/oc-config', $config);
 
             if (OCModel::getConfigurationstate()) {
-                $resources = new Navigation('Opencast Ressourcen');
+                $resources = new Navigation($this->_('Opencast Ressourcen'));
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
                 Navigation::addItem('/admin/config/oc-resources', $resources);
@@ -95,20 +100,59 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
     /**
-     * This method dispatches all actions.
+     * Plugin localization for a single string.
+     * This method supports sprintf()-like execution if you pass additional
+     * parameters.
      *
-     * @param string  part of the dispatch path that was not consumed
+     * @param String $string String to translate
+     * @return translated string
      */
-    function perform($unconsumed_path)
+    public function _($string)
     {
-        $trails_root = $this->getPluginPath();
+        $result = static::GETTEXT_DOMAIN === null
+                ? $string
+                : dcgettext(static::GETTEXT_DOMAIN, $string, LC_MESSAGES);
+        if ($result === $string) {
+            $result = _($string);
+        }
 
-        $dispatcher = new Trails_Dispatcher($trails_root,
-            rtrim(PluginEngine::getURL($this, null, ''), '/'),
-            'index');
+        if (func_num_args() > 1) {
+            $arguments = array_slice(func_get_args(), 1);
+            $result = vsprintf($result, $arguments);
+        }
 
-        $dispatcher->plugin = $this;
-        $dispatcher->dispatch($unconsumed_path);
+        return $result;
+    }
+
+    /**
+     * Plugin localization for plural strings.
+     * This method supports sprintf()-like execution if you pass additional
+     * parameters.
+     *
+     * @param String $string0 String to translate (singular)
+     * @param String $string1 String to translate (plural)
+     * @param mixed  $n       Quantity factor (may be an array or array-like)
+     * @return translated string
+     */
+    public function _n($string0, $string1, $n)
+    {
+        if (is_array($n)) {
+            $n = count($n);
+        }
+
+        $result = static::GETTEXT_DOMAIN === null
+                ? $string0
+                : dngettext(static::GETTEXT_DOMAIN, $string0, $string1, $n);
+        if ($result === $string0 || $result === $string1) {
+            $result = ngettext($string0, $string1, $n);
+        }
+
+        if (func_num_args() > 3) {
+            $arguments = array_slice(func_get_args(), 3);
+            $result = vsprintf($result, $arguments);
+        }
+
+        return $result;
     }
 
     /**
@@ -129,10 +173,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
             $ocgetcount = $ocmodel->getCount($last_visit);
-            $text = sprintf(_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'), $ocgetcount);
+            $text = sprintf($this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'), $ocgetcount);
         } else {
             $num_entries = 0;
-            $text = 'Opencast Aufzeichnungen';
+            $text = $this->_('Opencast Aufzeichnungen');
         }
 
         $navigation = new Navigation('opencast', PluginEngine::getURL($this, array(), 'course/index/false'));
@@ -329,7 +373,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $users[] = $member->user_id;
             }
 
-            $notification =  sprintf(_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
+            $notification =  sprintf($this->_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
             PersonalNotifications::add(
                 $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
                 $notification, $data['episode_id'],

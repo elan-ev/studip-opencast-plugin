@@ -21,6 +21,53 @@ require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 class AdminController extends OpencastController
 {
     /**
+     * Constructs the controller and provide translations methods.
+     *
+     * @param object $dispatcher
+     * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
+     *      the constructor of the controller
+     */
+    public function __construct($dispatcher)
+    {
+        parent::__construct($dispatcher);
+
+        $this->plugin = $dispatcher->current_plugin;
+
+        // Localization
+        $this->_ = function ($string) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_'],
+                func_get_args()
+            );
+        };
+
+        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_n'],
+                func_get_args()
+            );
+        };
+    }
+
+    /**
+     * Intercepts all non-resolvable method calls in order to correctly handle
+     * calls to _ and _n.
+     *
+     * @param string $method
+     * @param array  $arguments
+     * @return mixed
+     * @throws RuntimeException when method is not found
+     */
+    public function __call($method, $arguments)
+    {
+        $variables = get_object_vars($this);
+        if (isset($variables[$method]) && is_callable($variables[$method])) {
+            return call_user_func_array($variables[$method], $arguments);
+        }
+        throw new RuntimeException("Method {$method} does not exist");
+    }
+
+    /**
      * Common code for all actions: set default layout and page title.
      */
     function before_filter(&$action, &$args)
@@ -49,7 +96,7 @@ class AdminController extends OpencastController
 
     function config_action()
     {
-        PageLayout::setTitle(_("Opencast Administration"));
+        PageLayout::setTitle($this->$this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
 
@@ -76,7 +123,7 @@ class AdminController extends OpencastController
         $config_id = 1; // we assume that we want to configure the new opencast
 
         if(!array_key_exists('scheme', $service_url)) {
-            $this->flash['messages'] = array('error' => _('Es wurde kein gültiges URL-Schema angegeben.'));
+            $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema angegeben.'));
             OCRestClient::clearConfig($config_id);
             $this->redirect('admin/config');
         } else {
@@ -107,10 +154,10 @@ class AdminController extends OpencastController
                         OCEndpointModel::setEndpoint($config_id, $service_comp[0], $service_type);
                     }
                 }
-                $success_message = sprintf(_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+                $success_message = sprintf($this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
                 $this->flash['messages'] = array('success' => $success_message);
             } else {
-                $this->flash['messages'] = array('error' => _('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
                     }
                 }
 
@@ -122,7 +169,7 @@ class AdminController extends OpencastController
         $config_id = 2; // we assume that we want to configure slave opencast server
 
         if (!array_key_exists('scheme', $slave_url)) {
-                $this->flash['messages'] = array('error' => _('Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben.'));
             OCRestClient::clearConfig($config_id);
             //$this->redirect('admin/config');
             } else {
@@ -152,9 +199,9 @@ class AdminController extends OpencastController
                     }
             }
 
-                $this->flash['messages'] = array('success' => $success_message . " " . sprintf(_("Es wurden %s Endpoints für die angegeben Opencast Slave Installation gefunden und eingetragen"), count($comp)));
+                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegeben Opencast Slave Installation gefunden und eingetragen"), count($comp)));
             } else {
-                $this->flash['messages'] = array('error' => _('Es wurden keine Endpoints für die angegeben Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
                 }
             }
         }
@@ -167,7 +214,7 @@ class AdminController extends OpencastController
 
     function endpoints_action()
     {
-        PageLayout::setTitle(_("Opencast Endpoint Verwaltung"));
+        PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
         Navigation::activateItem('/admin/config/oc-endpoints');
         // hier kann eine Endpointüberischt angezeigt werden.
         //$services_client = ServicesClient::getInstance();
@@ -198,12 +245,12 @@ class AdminController extends OpencastController
 
     function resources_action()
     {
-        PageLayout::setTitle(_("Opencast Capture Agent Verwaltung"));
+        PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
         Navigation::activateItem('/admin/config/oc-resources');
 
         $this->resources = OCModel::getOCRessources();
         if(empty($this->resources)) {
-            $this->flash['messages'] = array('info' => _('Es wurden keine passenden Ressourcen gefunden.'));
+            $this->flash['messages'] = array('info' => $this->_('Es wurden keine passenden Ressourcen gefunden.'));
 
         }
 
@@ -226,7 +273,7 @@ class AdminController extends OpencastController
                  }
                 if(!$existing_agent){
                     OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
-                    $this->flash['messages'] = array('info' => sprintf(_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
+                    $this->flash['messages'] = array('info' => sprintf($this->_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
                 }
             }
         }
@@ -252,7 +299,7 @@ class AdminController extends OpencastController
             }
         }
 
-        if($success) $this->flash['messages'] = array('success' => _("Capture Agents wurden zugewiesen."));
+        if($success) $this->flash['messages'] = array('success' => $this->_("Capture Agents wurden zugewiesen."));
 
         $this->redirect('admin/resources');
     }
@@ -283,7 +330,7 @@ class AdminController extends OpencastController
                     $ocmodel->getEpisodes(true);
                     unset($ocmodel);
                 }
-                $this->flash['messages'] = array('success' => _("Die Episodenliste aller Series  wurde aktualisiert."));
+                $this->flash['messages'] = array('success' => $this->_("Die Episodenliste aller Series  wurde aktualisiert."));
             }
         }
         $this->redirect('admin/config/');

@@ -32,6 +32,53 @@ class UploadController extends OpencastController
     /** @var IngestClient */
     private $ingest = null;
 
+    /**
+     * Constructs the controller and provide translations methods.
+     *
+     * @param object $dispatcher
+     * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
+     *      the constructor of the controller
+     */
+    public function __construct($dispatcher)
+    {
+        parent::__construct($dispatcher);
+
+        $this->plugin = $dispatcher->current_plugin;
+
+        // Localization
+        $this->_ = function ($string) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_'],
+                func_get_args()
+            );
+        };
+
+        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_n'],
+                func_get_args()
+            );
+        };
+    }
+
+    /**
+     * Intercepts all non-resolvable method calls in order to correctly handle
+     * calls to _ and _n.
+     *
+     * @param string $method
+     * @param array  $arguments
+     * @return mixed
+     * @throws RuntimeException when method is not found
+     */
+    public function __call($method, $arguments)
+    {
+        $variables = get_object_vars($this);
+        if (isset($variables[$method]) && is_callable($variables[$method])) {
+            return call_user_func_array($variables[$method], $arguments);
+        }
+        throw new RuntimeException("Method {$method} does not exist");
+    }
+
     public function upload_file_action()
     {
         $OCUpload = new OCUpload();
@@ -51,7 +98,7 @@ class UploadController extends OpencastController
                 $x = $this->uploadChunk();
                 //file_put_contents("/tmp/oc_log.txt", 'Chunk hochgeladen um: '  . date('d.m.Y H:i:s',time()) .' Uhr: ' . $x[1] .'\n');
             } else {
-                $this->error[] = _('Fehler beim erstellen der Job ID oder des '
+                $this->error[] = $this->_('Fehler beim erstellen der Job ID oder des '
                         .'Media Packages');
             }
             //check if last chunk is handled
@@ -62,7 +109,7 @@ class UploadController extends OpencastController
             }
 
         } else { //if($file = $OCUpload->post())
-               $this->error[] = _('Fehler beim hochladen der Datei');
+               $this->error[] = $this->_('Fehler beim hochladen der Datei');
         }
 
         $this->flash['messages'] = array('error' => implode('<br>', $this->error));
@@ -80,18 +127,18 @@ class UploadController extends OpencastController
         //Step 2.3  Add track -- for every file successfully uploaded to
         //          get the updated media package
         if(!$this->addTrack()) {
-            $this->error[] = _('Fehler beim hinzufügen des Tracks');
+            $this->error[] = $this->_('Fehler beim hinzufügen des Tracks');
             return false;
         }
 
         //Step 3. Add catalogs (e.g. series.xml, episode.xml)
         if(!$this->addSeriesDC()) {
-            $this->error[] = _('Fehler beim hinzufügen der Series');
+            $this->error[] = $this->_('Fehler beim hinzufügen der Series');
             return false;
         }
 
         if(!$this->addEpisodeDC()) {
-            $this->error[] = _('Fehler beim hinzufügen der Episode');
+            $this->error[] = $this->_('Fehler beim hinzufügen der Episode');
             return false;
         }
         // comment indicates how specific workflows can be chosen
@@ -207,10 +254,10 @@ class UploadController extends OpencastController
                                         $this->file->getMediaPackage())) {
                 $this->file->setJobID($jobID);
             } else {
-                $this->error[] = _('Fehler beim anlegen der Job ID');
+                $this->error[] = $this->_('Fehler beim anlegen der Job ID');
             }
         } else {
-            $this->error[] = _('Fehler beim anlegen des Media Packages');
+            $this->error[] = $this->_('Fehler beim anlegen des Media Packages');
         }
         //TODO: sicherheit Request
         foreach($_POST as $key => $val) {

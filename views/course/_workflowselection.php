@@ -18,7 +18,7 @@ use Studip\Button,
     </p>
 
     <div class="form_submit">
-        <?= Button::createAccept(_('Workflow zuweisen'), null, array('id' => 'btn_accept')) ?>
-        <?= LinkButton::createCancel(_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
+        <?= Button::createAccept($_('Workflow zuweisen'), null, array('id' => 'btn_accept')) ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
     </div>
 </form>

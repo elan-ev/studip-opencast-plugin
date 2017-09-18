@@ -22,7 +22,8 @@ class RefreshSeries extends CronJob {
     }
     public function execute($last_result, $parameters = array())
     {
-        require_once __DIR__ .'/../models/OCCourseModel.class.php'; 
+        require_once __DIR__ .'/../models/OCCourseModel.class.php';
+
         $semester_cur = Semester::findCurrent();
 
 

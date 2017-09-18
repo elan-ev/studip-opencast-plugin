@@ -150,13 +150,13 @@
             }
 
         }
-
+        
         /**
          * function getXML - performs a REST-Call and retrieves response in XML
          */
         function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false) {
             if(isset($service_url) && self::checkService($service_url)) {
-                $options = array(CURLOPT_URL => $url = $this->matterhorn_base_url.$service_url,
+                $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
                            CURLOPT_FRESH_CONNECT => 1);
                 if(!$is_get) {
                     $options[CURLOPT_POST] = 1;
@@ -169,8 +169,7 @@
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-                var_dump($url);
+                
                 if($with_res_code) {
                     return array($response, $httpCode);
                 } else {

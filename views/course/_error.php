@@ -8,6 +8,6 @@ if (isset($this->flash['error'])) {
         echo MessageBox::error($this->flash['error']);
     }
 } else {
-    echo MessageBox::error(_('Es wurde keine Fehlermeldung gesetzt.'));
+    echo MessageBox::error($_('Es wurde keine Fehlermeldung gesetzt.'));
 }
 ?>

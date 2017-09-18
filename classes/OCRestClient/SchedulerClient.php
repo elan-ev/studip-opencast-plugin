@@ -49,7 +49,7 @@
                 $pttrn = '#Location: http:/.*/recordings/(.+?).xml#Uis';
 
                 foreach($resArray as $resp) {
-                    // THIS could be changed. Keep an eye on futre oc releases...
+                    // THIS could be changed. Keep an eye on future oc releases...
                     if(preg_match($pttrn, $resp, $matches)) {
                         $eventid = $matches[1];
                     }
@@ -92,7 +92,8 @@
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
 
-            if ($httpCode == 200){
+            // remove scheduled event from studip even though it isn't available on opencast
+            if ($httpCode == 200 || $httpCode == 404){
                 $event_id = $event['event_id'];
                 OCModel::unscheduleRecording($event_id);
 
