@@ -83,15 +83,17 @@
          */
         public function addTrack($mediaPackage, $trackURI, $flavor)
         {
-            $data = array('mediaPackage' => $mediaPackage,
-                          'url' => $trackURI,
-                          'flavor' => $flavor);
-                          var_dump($data);die;
-            if($res = $this->getXML('/addTrack', $data, false, false, true)) {
+            $data = array(
+                'url' => $trackURI,
+                'flavor' => $flavor,
+                'mediaPackage' => $mediaPackage,
+                'tags' => ''
+            );
+
+            if($res = $this->getXML('/addTrack', http_build_query($data), false, false, true)) {
                 return $res;
             } else {
                 return false;
             }
         }
     }
-?>

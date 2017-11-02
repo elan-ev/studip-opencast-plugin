@@ -112,7 +112,10 @@ class UploadController extends OpencastController
                $this->error[] = $this->_('Fehler beim hochladen der Datei');
         }
 
-        $this->flash['messages'] = array('error' => implode('<br>', $this->error));
+        if (!empty($this->error)) {
+            $this->flash['messages'] = array('error' => implode('<br>', $this->error));
+        }
+
         $this->redirect('course/index');
     }
 
@@ -181,8 +184,6 @@ class UploadController extends OpencastController
         $ingestClient = IngestClient::getInstance();
 
         $trackURI = $this->upload->getTrackURI($this->file->getJobID());
-
-        var_dump($trackURI);
 
         $newMPackage = $ingestClient->addTrack($this->file->getMediaPackage(),
                 $trackURI,

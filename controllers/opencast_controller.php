@@ -18,7 +18,7 @@ class OpencastController extends StudipController
     {
         parent::before_filter($action, $args);
 
-        $this->plugin = $this->dispatcher->plugin;
+        $this->plugin = $this->dispatcher->current_plugin;
 
         $this->flash = Trails_Flash::instance();
     }
@@ -53,7 +53,7 @@ class OpencastController extends StudipController
         $args = array_map('urlencode', $args);
         $args[0] = $to;
 
-        return PluginEngine::getURL($this->dispatcher->plugin, $params, join('/', $args));
+        return PluginEngine::getURL($this->dispatcher->current_plugin, $params, join('/', $args));
     }
 
     /**

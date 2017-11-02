@@ -96,7 +96,7 @@ class AdminController extends OpencastController
 
     function config_action()
     {
-        PageLayout::setTitle($this->$this->_("Opencast Administration"));
+        PageLayout::setTitle($this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
 
