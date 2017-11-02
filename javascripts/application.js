@@ -87,14 +87,14 @@ OC = {
         });
 
     },
-    
+
     initUpload : function(maxChunk){
         jQuery(document).ready(function(){
             $('#btn_accept').click(function() {
                 OC.formData.submit();
                 return false;
             });
-            
+
             $('#video_upload').fileupload({
                 limitMultiFileUploads: 1,
                 autoupload: false,
@@ -103,10 +103,10 @@ OC = {
                     var file = data.files[0];
                     $('#total_file_size').attr('value', file.size);
                     $('#file_name').attr('value', file.name);
-                    $('#upload_info').html('<p>Name: ' 
-                                                + file.name 
+                    $('#upload_info').html('<p>Name: '
+                                                + file.name
                                                 + ' Größe: '
-                                                + OC.getFileSize(file.size) 
+                                                + OC.getFileSize(file.size)
                                                 + '</p>');
                     $('#upload_info').val(file.name);
                     OC.formData = data;
@@ -117,7 +117,7 @@ OC = {
                     $( "#progressbar" ).progressbar({
                         value: 0
                     }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});;
-                    
+
                 },
                 progressall: function(e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -155,36 +155,36 @@ OC = {
         var reload = false;
         jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatusforCourse/" +  course_id).done(function(data) {
             var response = jQuery.parseJSON(data);
-            if(!jQuery.isEmptyObject(response)){
+            if (!jQuery.isEmptyObject(response)) {
                 for (var job_id in response) {
 
                     var job = response[job_id];
 
-                    if(job.state == 'RUNNING' ||job.state == 'INSTANTIATED' ) {
+                    if (job.state == 'RUNNING' ||job.state == 'INSTANTIATED' ) {
 
                         var counter = 1;
-                        var current_c = counter;
                         var current_description = "";
 
-                        for( var operation in job.operations.operation){
-                            if(job.operations.operation[operation].state != 'SKIPPED' || 'FAILED'){
-                                counter++;
-                            }
-                            if(job.operations.operation[operation].state == 'RUNNING'){
+                        for (var operation in job.operations.operation) {
+                            counter++;
+
+                            if (job.operations.operation[operation].state == 'RUNNING'
+                                || job.operations.operation[operation].state == 'INSTANTIATED'
+                            ){
                                 current_description = job.operations.operation[operation].description;
-                                current_c = counter;
+                                break;
                             }
                         }
 
-                        if(animation){
+                        if (animation) {
                             jQuery('#'+job_id).circleProgress({
-                                value: current_c / counter,
+                                value: counter / job.operations.operation.length,
                                 size: 80,
                                 fill: { color: "#899ab9"}
                             });
                         } else {
                             jQuery('#'+job_id).circleProgress({
-                                value: current_c / counter,
+                                value: counter / job.operations.operation.length,
                                 size: 80,
                                 animation: false,
                                 fill: { color: "#899ab9"}
@@ -192,7 +192,7 @@ OC = {
                         }
 
 
-                        jQuery('#'+job_id).find('strong').html( current_c +' / ' + counter + ' Schritten');
+                        jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length + ' Schritten');
                         jQuery('#'+job_id).attr('title', current_description);
                         jQuery('#'+job_id).attr('alt', current_description);
                     }
@@ -320,4 +320,3 @@ OC = {
         })
     }
 };
-
