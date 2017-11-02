@@ -624,6 +624,13 @@ class CourseController extends OpencastController
                 $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
             // check whether server supports ssl
+            stream_context_set_default( [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+            ]);
+
             $embed_headers = @get_headers("https://". $embed);
             if($embed_headers) {
                 $embed = "https://". $embed;
