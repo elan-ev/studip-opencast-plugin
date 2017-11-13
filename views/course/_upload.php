@@ -83,7 +83,7 @@ use Studip\Button,
     <h4><label for="video_upload">Datei:</label></h4>
     <div id="file_wrapper">
             <?= LinkButton::create($_('Datei auswählen'), null, array('id' => 'video-chooser', 'onClick' => "$('input[type=file]').trigger('click');return false;")); ?>
-            <input name="video" type="file" id="video_upload" required>
+            <input name="video" type="file" id="video_upload">
     </div>
     <div id="upload_info">
     </div>

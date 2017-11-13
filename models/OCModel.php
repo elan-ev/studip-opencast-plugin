@@ -1,5 +1,5 @@
 <?PHP
-  
+
 class OCModel
 {
     static function getConnectedSeries($course_id) {
@@ -59,7 +59,7 @@ class OCModel
                 oc_resources WHERE resource_id = ?");
         $stmt->execute(array($resource_id));
         $agent = $stmt->fetch(PDO::FETCH_ASSOC);
-      
+
         return $agent;
     }
 
@@ -96,7 +96,7 @@ class OCModel
        $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $dates;
     }
-  
+
     static function getDatesForSemester($seminar_id, $semester = false) {
 
         if(!$semester) {
@@ -120,7 +120,7 @@ class OCModel
      */
 
     static function checkResource($resource_id) {
-     
+
        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_resources` WHERE `resource_id` = ?");
 
        $stmt->execute(array($resource_id));
@@ -129,7 +129,7 @@ class OCModel
        } else {
             return false;
        }
-     
+
     }
 
     /**
@@ -150,20 +150,20 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-      
+
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_scheduled_recordings (seminar_id,series_id, date_id,resource_id ,capture_agent, event_id, status)
                 VALUES (?, ?, ?, ?, ?, ? ,? )");
         $success = $stmt->execute(array($course_id, $serie['series_id'],$date_id ,  $resource_id, $ca['capture_agent'], $event_id, 'scheduled'));
 
- 
 
-     
+
+
 
         return $success;
     }
-    
+
     /**
      * checkScheduledRecording - check if a recording is scheduled for a given date and resource within a course
      *
@@ -180,12 +180,12 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-      
 
-        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings 
-                                                    WHERE `seminar_id` = ? 
-                                                    AND `series_id` = ? 
-                                                    AND `date_id` = ? 
+
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
+                                                    WHERE `seminar_id` = ?
+                                                    AND `series_id` = ?
+                                                    AND `date_id` = ?
                                                     AND`resource_id` = ?");
         $stmt->execute(array($course_id, $serie['series_id'],$date_id , $resource_id));
 
@@ -304,7 +304,7 @@ class OCModel
 //        require_once 'lib//Institute.class.php';
 
         date_default_timezone_set("Europe/Berlin");
-      
+
         $course = new Seminar($course_id);
         $date = new SingleDate($termin_id);
         $issues = $date->getIssueIDs();
@@ -325,20 +325,20 @@ class OCModel
 
         $series = self::getConnectedSeries($course_id);
         $serie = $series[0];
-      
+
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
         $instructors = $course->getMembers('dozent');
-       
+
         $instructor = array_shift($instructors);
-         
+
         $inst_data = Institute::find($course->institut_id);
 
         $room = ResourceObject::Factory($resource_id);
 
         $start_time = $date->getStartTime();
         $end_time = strtotime("-5 minutes ", intval($date->getEndTime()));
-      
+
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
         $description = $issue->description;
@@ -392,10 +392,10 @@ class OCModel
     return $acl;
 
     }
-    
+
     /**
      * Set episode visibility
-     * 
+     *
      * @param string $course_id
      * @param string $episode_id
      * @param tyniint 1 or 0
@@ -403,14 +403,14 @@ class OCModel
      */
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
         $stmt = DBManager::get()->prepare("UPDATE
-                  oc_seminar_episodes SET visible = ? 
+                  oc_seminar_episodes SET visible = ?
                   WHERE seminar_id = ? AND  episode_id = ?");
         return $stmt->execute(array($visibility, $course_id, $episode_id));
     }
-    
+
     /**
      * get visibility row
-     * 
+     *
      * @param string $course_id
      * @param string $episode_id
      * @return array
@@ -426,7 +426,7 @@ class OCModel
     static function getDCTime($timestamp) {
         return gmdate("Y-m-d", $timestamp).'T'.gmdate('H:i:s', $timestamp).'Z';
     }
-  
+
     static function retrieveRESTservices($components) {
         $services = array();
         foreach( $components as $service) {
@@ -438,51 +438,81 @@ class OCModel
 
         return $services;
     }
-    
+
     static function getUserSeriesIDs($user_id) {
-        $stmt = DBManager::get()->prepare("SELECT `series_id` FROM oc_seminar_series WHERE `seminar_id` IN  
+        $stmt = DBManager::get()->prepare("SELECT `series_id` FROM oc_seminar_series WHERE `seminar_id` IN
                 (SELECT `Seminar_id` FROM `seminar_user` WHERE `user_id` = ? AND `status` = 'dozent' )");
         $stmt->execute(array($user_id));
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate) {
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_seminar_workflows (workflow_id,seminar_id, user_id, mkdate)
                 VALUES (?, ?, ?, ?)");
         return $stmt->execute(array($workflow_id, $seminar_id, $user_id, $mkdate));
     }
-    
+
     static function getWorkflowIDsforCourse($seminar_id) {
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows WHERE `seminar_id` = ?");
         $stmt->execute(array($seminar_id));
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
+    /**
+     * returns the state of all running workflow and even removes broken ones
+     *
+     * @param  string $course_id
+     * @param  string $workflow_ids
+     * @return mixed
+     */
+    static function getWorkflowStates($course_id, $workflow_ids)
+    {
+        $states = array();
+
+        $workflow_client = WorkflowClient::getInstance($course_id);
+
+        foreach ($workflow_ids as $workflow_id) {
+            $resp = $workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
+
+            if ($resp->state == 'SUCCEEDED') {
+                $states[$workflow_id['workflow_id']] = $resp->state;
+                OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $course_id);
+            } else if ($resp) {
+                $states[$workflow_id['workflow_id']] = $resp;
+            } else {
+                // remove the workflow, because it has not been found in OpenCast
+                OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $course_id);
+            }
+        }
+
+        return $states;
+    }
+
     static function removeWorkflowIDforCourse($workflow_id, $seminar_id){
         $stmt = DBManager::get()->prepare("DELETE FROM
-                 oc_seminar_workflows 
+                 oc_seminar_workflows
                  WHERE `seminar_id` = ? AND `workflow_id`= ?");
          return $stmt->execute(array($seminar_id, $workflow_id));
-        
+
     }
-    
+
     static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility, $mkdate) {
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`, `mkdate`)
                 VALUES (?, ?, ?, ?, ?)");
         return $stmt->execute(array($course_id, $episode_id, $pos, $visibility, $mkdate));
     }
-    
+
     static function getCoursePositions($course_id){
         $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position`, `visible`, `mkdate` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     static function getConfigurationstate() {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*)  AS COUNT FROM oc_endpoints");
         $stmt->execute(array($course_id));
@@ -490,10 +520,10 @@ class OCModel
         if($rows['0'] > 0) return true;
         else return false;
     }
-    
+
     static function checkPermForEpisode($episode_id, $user_id) {
-        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce 
-            LEFT JOIN seminar_user su ON (oce.seminar_id = su.Seminar_id) 
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce
+            LEFT JOIN seminar_user su ON (oce.seminar_id = su.Seminar_id)
             WHERE oce.episode_id = ? AND su.status = 'dozent' AND su.user_id = ?");
         $stmt->execute(array($episode_id, $user_id));
         $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);

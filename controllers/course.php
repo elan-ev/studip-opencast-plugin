@@ -114,6 +114,14 @@ class CourseController extends OpencastController
         // change this variable iff theodulplayer is active
         $this->theodul = true;
 
+
+        // set the stream context to ignore ssl erros -> get_headers will not work otherwise
+        stream_context_set_default( [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ],
+        ]);
     }
 
     /**
@@ -147,19 +155,11 @@ class CourseController extends OpencastController
 
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
             if(!empty($workflow_ids)){
-
-                foreach($workflow_ids as $workflow_id) {
-                    $resp = $this->workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
-                    if($resp->state == 'SUCCEEDED') {
-                        OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $this->course_id);
-                        $reload = true;
-                    } else $this->states[$workflow_id['workflow_id']] = $resp;
-                }
+                $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
             }
 
             //workflow
             $occourse = new OCCourseModel($this->course_id);
-            $this->workflow_client = WorkflowClient::getInstance();
             $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
             $this->schedulewf = $occourse->getWorkflow('schedule');
@@ -354,7 +354,7 @@ class CourseController extends OpencastController
 
         $search_client = SearchClient::getInstance();
 
-        $this->workflow_client = WorkflowClient::getInstance();
+        $this->workflow_client = WorkflowClient::getInstance($this->course_id);
         $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
     }
 
@@ -623,15 +623,10 @@ class CourseController extends OpencastController
             } else {
                 $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
-            // check whether server supports ssl
-            stream_context_set_default( [
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                ],
-            ]);
 
+            // check whether server supports ssl
             $embed_headers = @get_headers("https://". $embed);
+
             if($embed_headers) {
                 $embed = "https://". $embed;
             } else {

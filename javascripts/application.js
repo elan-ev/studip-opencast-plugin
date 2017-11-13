@@ -120,14 +120,23 @@ OC = {
 
                 },
                 progressall: function(e, data) {
+                    if (data.bitrate / 8 > 1048576) {
+                        var speed = parseInt(data.bitrate / 8 / 1024 / 1024) + " Mb/s";
+                    } else {
+                        var speed = parseInt(data.bitrate / 8 / 1024) + " kb/s";
+                    }
+
                     var progress = parseInt(data.loaded / data.total * 100, 10);
                     jQuery( "#progressbar" ).progressbar( "value", progress);
-                    jQuery("#progressbar-label").text(progress + " %");
+                    jQuery("#progressbar-label").text(progress + " % / " + speed);
                 },
                 done: function(e, data) {
                     jQuery( "#progressbar" ).progressbar('destroy');
                     jQuery("#upload_dialog").dialog("close");
                     window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false/true", '_self');
+                },
+                error: function(xhr, data) {
+                    console.log('Fehler', data);
                 }
             });
             $('#recordDate').datepicker({
@@ -155,12 +164,13 @@ OC = {
         var reload = false;
         jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatusforCourse/" +  course_id).done(function(data) {
             var response = jQuery.parseJSON(data);
+
             if (!jQuery.isEmptyObject(response)) {
                 for (var job_id in response) {
 
                     var job = response[job_id];
 
-                    if (job.state == 'RUNNING' ||job.state == 'INSTANTIATED' ) {
+                    if (job.state == 'RUNNING' || job.state == 'INSTANTIATED' ) {
 
                         var counter = 1;
                         var current_description = "";
