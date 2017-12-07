@@ -2,7 +2,7 @@
 use Studip\Button,
     Studip\LinkButton;
 ?>
-<form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/') ?>" enctype="multipart/form-data" method="post">
+<form id="upload_fom" action="<?= PluginEngine::getLink('opencast/upload/upload_file/', array('uuid' => md5(uniqid()))) ?>" enctype="multipart/form-data" method="post">
     <input type="hidden" name="series_id" value="<?=$series_id?>">
     <label id="title" for="titleField">
         <h4><?= $_('Titel') ?></h4>

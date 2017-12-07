@@ -83,33 +83,47 @@ class UploadController extends OpencastController
     {
         $OCUpload = new OCUpload();
 
+        tglog('Upload another chunk...');
+
         //checks if file is uploaded and returns file object
         if($this->file = $OCUpload->post()) {
+            tglog('##1 - check if some filedata has been posted passed');
             $this->upload = UploadClient::getInstance();
             $this->ingest = IngestClient::getInstance();
 
+            $this->endUpload();
+
+            /*
             if($this->file->isNew()) {
+                tglog('##2 - we have a new upload, initialize it');
                 $this->initNewUpload();
             }
+            */
 
+            /*
             if($this->file->getMediaPackage() && $this->file->getJobID()) {
+                tglog('##3 - upload the chunk');
                 //Step 2.2 Upload all chunks
 
                 $x = $this->uploadChunk();
                 //file_put_contents("/tmp/oc_log.txt", 'Chunk hochgeladen um: '  . date('d.m.Y H:i:s',time()) .' Uhr: ' . $x[1] .'\n');
             } else {
+                tglog('##4 - error in mediapackage or job');
                 $this->error[] = $this->_('Fehler beim erstellen der Job ID oder des '
                         .'Media Packages');
             }
             //check if last chunk is handled
             if($this->upload->isLastChunk($this->file->getJobID())) {
+                tglog('##5 - last chunk uploaded, end the upload');
                 //file_put_contents("/tmp/oc_log.txt", 'Job finalisieren um: '  . date('d.m.Y H:i:s',time()) .' Uhr \n');
                 $this->endUpload();
                 //file_put_contents("/tmp/oc_log.txt", 'Job fertig um: '  . date('d.m.Y H:i:s',time()) .' Uhr \n');
             }
+            */
 
         } else { //if($file = $OCUpload->post())
-               $this->error[] = $this->_('Fehler beim hochladen der Datei');
+            tglog('##6 - error while receiving filedata');
+            $this->error[] = $this->_('Fehler beim hochladen der Datei');
         }
 
         if (!empty($this->error)) {
@@ -123,25 +137,33 @@ class UploadController extends OpencastController
     private function endUpload()
     {
         //Step 2.2 Wait for upload job finalizing
+        /*
         while(!$this->upload->isComplete($this->file->getJobID())) {
             usleep(500);
         }
+        */
 
         //Step 2.3  Add track -- for every file successfully uploaded to
         //          get the updated media package
+        //
+        tglog('end upload');
+
         if(!$this->addTrack()) {
             $this->error[] = $this->_('Fehler beim hinzufügen des Tracks');
+            tglog('Fehler beim hinzufügen des Tracks');
             return false;
         }
 
         //Step 3. Add catalogs (e.g. series.xml, episode.xml)
         if(!$this->addSeriesDC()) {
             $this->error[] = $this->_('Fehler beim hinzufügen der Series');
+            tglog('Fehler beim hinzufügen der Series');
             return false;
         }
 
         if(!$this->addEpisodeDC()) {
             $this->error[] = $this->_('Fehler beim hinzufügen der Episode');
+            tglog('Fehler beim hinzufügen der Episode');
             return false;
         }
         // comment indicates how specific workflows can be chosen
@@ -160,6 +182,7 @@ class UploadController extends OpencastController
         /** @var IngestClient $ingestClient */
         $ingestClient = IngestClient::getInstance();
 
+        tglog($this->file->getMediaPackage());
 
         if ($content = $ingestClient->ingest($this->file->getMediaPackage(), $workflow))
         {
@@ -281,6 +304,7 @@ class UploadController extends OpencastController
             usleep(500);
         }
 
+        // tglog('Chunk: ' . print_r($this->file, 1));
         $res = $this->upload->uploadChunk($this->file->getJobID(),
                 $this->file->getChunk(),
                 $this->file->getChunkPath());
@@ -300,6 +324,7 @@ class UploadController extends OpencastController
         if($this->file->getChunkStatus() == 'error') {
             $this->error[] = 'Fehler beim upload zu Matterhorn: '
                     . $this->file->getChunkError();
+            tglog('Fehler: ' . $this->file->getChunkError());
             return false;
         } else return $res; //true;
     }

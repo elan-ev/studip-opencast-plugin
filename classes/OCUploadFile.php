@@ -19,7 +19,12 @@ class OCUploadFile {
     public function __construct($name, $size, $type, $error, $index = null)
     {
         $this->name = $name;
-        if(!empty($_SESSION['opencast']['files'][$name]) 
+        $this->size = $size;
+        $this->type = $type;
+        $this->name = $name;
+
+        /*
+        if(!empty($_SESSION['opencast']['files'][$name])
                 && $this->getSess('time') + 10 >= time()) {
             $this->size = $this->getSess('size');
             $this->type = $this->getSess('type');
@@ -42,7 +47,7 @@ class OCUploadFile {
             $this->setSess('chunks', array());
             $this->setSess('chunk', 0);
             $this->setSess('jobID', '');
-            
+
             $this->size = $size;
             $this->type = $type;
             $this->chunk = 0;
@@ -54,6 +59,7 @@ class OCUploadFile {
             'path' => '',
             'errorMSG' => ''
         );
+        */
     }
     public function __destruct()
     {
@@ -63,13 +69,13 @@ class OCUploadFile {
             }
             $this->chunks[$this->chunk]['status'] = 'deleted';
         }
-        $_SESSION['opencast']['files'][$this->name]['chunks'][$this->chunk] = 
+        $_SESSION['opencast']['files'][$this->name]['chunks'][$this->chunk] =
                 $this->chunks[$this->chunk];
     }
-            
-    
+
+
     /**
-     * set path for current chunk. 
+     * set path for current chunk.
      */
     public function setChunkPath($path, $chunk = null) {
         if(is_null($chunk)) {
@@ -101,7 +107,7 @@ class OCUploadFile {
             $chunk = $this->chunk;
         }
         return $this->chunks[$chunk]['errorMSG'];
-    } 
+    }
     public function getChunkStatus($chunk = null) {
         if(is_null($chunk)) {
             $chunk = $this->chunk;
@@ -127,28 +133,28 @@ class OCUploadFile {
     /**
      * set session value
      */
-    private function getSess($data) 
+    private function getSess($data)
     {
         return $_SESSION['opencast']['files'][$this->name][$data];
     }
-            
+
     /**
      * get session value
      */
-    private function setSess($name, $data) 
+    private function setSess($name, $data)
     {
         return $_SESSION['opencast']['files'][$this->name][$name] = $data;
     }
-    public function getMediaPackage() 
+    public function getMediaPackage()
     {
         return $this->mediaPackage;
     }
-    public function setMediaPackage($data) 
+    public function setMediaPackage($data)
     {
         $this->mediaPackage = $data;
         $this->setSess('mediaPackage', $data);
     }
-    public function setJobID($data) 
+    public function setJobID($data)
     {
         $this->jobID = $data;
         $this->setSess('jobID', $data);
@@ -161,10 +167,10 @@ class OCUploadFile {
     public function getEpisodeDC()
     {
         $data = $this->episodeData;
- 
+
         $creatition_time = new DateTime($data['recordDate'] . ' ' . $data['startTimeHour'].':'.$data['startTimeMin']);
         $dc_values = array();
-        
+
         foreach($data as $key => $value)
         {
             switch ($key) {
@@ -193,7 +199,7 @@ class OCUploadFile {
                     break;
             }
         }
-        
+
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                 <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
@@ -203,22 +209,22 @@ class OCUploadFile {
                                 <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
                                 <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
                                 <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>
-                                <dcterms:isPartOf><![CDATA[' . $dc_values['series_id'] . ']]></dcterms:isPartOf> 
+                                <dcterms:isPartOf><![CDATA[' . $dc_values['series_id'] . ']]></dcterms:isPartOf>
                             </dublincore>';
 
         return $dublincore;
     }
-    public function getJobID() 
+    public function getJobID()
     {
         if(!empty($this->jobID)) {
             return $this->jobID;
         } else return false;
     }
-    public function getName() 
+    public function getName()
     {
         return $this->name;
     }
-    public function getSize() 
+    public function getSize()
     {
         return $this->size;
     }
@@ -251,10 +257,10 @@ class OCUploadFile {
     public function clearSession()
     {
         unset($_SESSION['opencast']['files'][$this->name]);
-        if(is_array($_SESSION['opencast']['files'])) 
+        if(is_array($_SESSION['opencast']['files']))
         {
             foreach($_SESSION['opencast']['files'] as $key => $file) {
-                if($file['time'] < (time() - 
+                if($file['time'] < (time() -
                         (60 * 60 * 24 * OC_CLEAN_SESSION_AFTER_DAYS )) )
                 {
                     unset($_SESSION['opencast']['files'][$key]);

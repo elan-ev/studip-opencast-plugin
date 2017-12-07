@@ -114,10 +114,9 @@ OC = {
                 },
                 submit: function (e, data) {
                     $("#btn_accept").attr('disabled', true);
-                    $( "#progressbar" ).progressbar({
+                    $("#progressbar").progressbar({
                         value: 0
-                    }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});;
-
+                    }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});
                 },
                 progressall: function(e, data) {
                     if (data.bitrate / 8 > 1048576) {

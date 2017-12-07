@@ -6,7 +6,7 @@ require_once "OCRestClient.php";
 class UploadClient extends OCRestClient {
     static $me;
     public $serviceName = 'Upload';
-        
+
     function __construct($config_id = 1) {
         try {
             if ($config = parent::getConfig('upload', $config_id)) {
@@ -23,7 +23,7 @@ class UploadClient extends OCRestClient {
 
     /**
      * Generate job ID -- for every new track upload job
-     * 
+     *
      * @return boolean
      */
     function newJob($name, $size, $chunksize, $flavor, $mediaPackage) {
@@ -34,9 +34,12 @@ class UploadClient extends OCRestClient {
             'flavor' => urlencode($flavor),
             'mediapackage' => urlencode($mediaPackage)
         );
+
+        tglog('New Job: ' . print_r($data, 1));
+
         $rest_end_point = "/newjob";
         $uri = $rest_end_point;
-        
+
         if($response = $this->getXML($rest_end_point, $data, false)) {
             return $response;
         } else {
@@ -48,16 +51,18 @@ class UploadClient extends OCRestClient {
      */
     function uploadChunk($job_id, $chunknumber, $filedata)
     {
+        tglog($job_id .' - '. $chunknumber .', Size: '. filesize($filedata));
+
         $file = new CURLFile($filedata);
-	
+
         $data = array(
             'chunknumber' => $chunknumber,
             'filedata' => $file
         );
-        
+
         $rest_end_point = "/job/".$job_id;
         $uri = $rest_end_point;
-        
+
         // setting up a curl-handler
         curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$uri);
         curl_setopt($this->ochandler, CURLOPT_POST, true);
@@ -77,7 +82,7 @@ class UploadClient extends OCRestClient {
         }
     }
     /**
-     * get State object 
+     * get State object
      */
     function getState($jobID)
     {
@@ -122,7 +127,7 @@ class UploadClient extends OCRestClient {
          $state = $this->getState($jobID);
          return $state->uploadjob->payload->mediapackage->media->track->url;
      }
-   
+
     function addTrack($mediapackage, $flavor) {
         return true;
     }

@@ -26,6 +26,20 @@ NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 're
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
 
+function tglog($text)
+{
+    static $fd;
+
+    if (!$fd) {
+        $fd = fopen('/tmp/opencast.log', 'a');
+    }
+
+    $date = DateTime::createFromFormat('U.u', microtime(TRUE));
+    $last = reset(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2));
+
+
+    fputs($fd, $date->format('d.m.Y - H:i:s.u') .' ['. basename($last['file']) .':'. $last['line'] ."]: \t". $text ."\n");
+}
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
