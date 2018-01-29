@@ -655,7 +655,20 @@ class CourseController extends OpencastController
         if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
             $occourse2 = new OCCourseModel($this->course_id);
             $occourse2->getEpisodes(true);
+
             $this->flash['messages'] = array('success'=> $this->_("Die Episodenliste wurde aktualisiert."));
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    function refresh_sorting_action($ticket)
+    {
+        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+            $occourse2 = new OCCourseModel($this->course_id);
+            $occourse2->clearSeminarEpisodes();
+
+            $this->flash['messages'] = array('success'=> $this->_("Die Sortierung wurde zurückgesetzt."));
         }
 
         $this->redirect('course/index/false');
