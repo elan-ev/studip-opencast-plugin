@@ -75,28 +75,52 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
 
-        $this->addStylesheet('stylesheets/oc.less');
+        if (!$GLOBALS['opencast_already_loaded']) {
+            $this->addStylesheet('stylesheets/oc.less');
 
-        PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+            PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+
+            if (class_exists('Context')) {
+                $id = Context::getId();
+            } else {
+                $id = $GLOBALS['SessionSeminar'];
+            }
+
+            $id = Request::get('sem_id', $id);
+
+            // check, if the plugin is enabled in the current course
+            if ($this->isActivated($id)) {
+                PageLayout::addHeadElement('script', array(), "
+                    jQuery( document ).ready(function() {
+                        $('#layout_content').prepend('<div class=\"messagebox messagebox_info\">'
+                            + '<div class=\"messagebox_buttons\"><a class=\"close\" href=\"#\" title=\"Nachrichtenbox schliessen\">'
+                            + '<span>Nachrichtenbox schliessen</span></a></div>'
+                            + 'Diese Veranstaltung wird für Sie mit Bild und Ton automatisiert aufgezeichnet.</div>');
+                    });"
+                );
+            }
 
 
-        if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
-            PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
-            PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
-            PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');
-            PageLayout::addScript($this->getpluginUrl() . '/vendor/chosen/chosen.jquery.min.js');
-            PageLayout::addStylesheet($this->getpluginUrl() . '/vendor/chosen/chosen.min.css');
 
+            if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
+                PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
+                PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
+                PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');
+                PageLayout::addScript($this->getpluginUrl() . '/vendor/chosen/chosen.jquery.min.js');
+                PageLayout::addStylesheet($this->getpluginUrl() . '/vendor/chosen/chosen.min.css');
+
+            }
+
+            if (OCModel::getConfigurationstate()) {
+
+                StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
+
+            }
+
+            NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
         }
 
-        if (OCModel::getConfigurationstate()) {
-
-            StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
-
-        }
-
-        NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
-
+        $GLOBALS['opencast_already_loaded'] = true;
     }
 
     /**
