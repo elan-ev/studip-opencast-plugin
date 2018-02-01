@@ -100,15 +100,13 @@
             </a>-->
 
             <? if($theodul) : ?>
-                <iframe src="<?=$embed?>"
+                <iframe src="<?=$embed?>" class="theodul"
                         style="border:0px #FFFFFF none;"
                         name="Opencast Matterhorn video player"
                         scrolling="no"
                         frameborder="0"
                         marginheight="0px"
                         marginwidth="0px"
-                        width="640"
-                        height="360"
                         allowfullscreen="true"
                         webkitallowfullscreen="true"
                         mozallowfullscreen="true">
@@ -151,17 +149,14 @@
                             <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
                         <? endif ?>
 
-                        </div>
                         <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                        <div class="button-group" style="float:right">
                             <? if ($visible && $visible['visible'] == 'false') : ?>
                                 <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
                             <? else : ?>
                                 <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
-                            <? endif; ?>
-
+                            <? endif;?>
+                        <? endif; ?>
                         </div>
-                        <? endif;?>
                     </div>
             </div>
         </div>
