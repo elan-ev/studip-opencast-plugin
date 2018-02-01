@@ -47,9 +47,9 @@
 
         //todo - should this already be visibile for teachers?
         if ($coursevis == 'visible'){
-            $actions->addLink($_("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
+            $actions->addLink($_("Reiter sichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
         } else {
-            $actions->addLink($_("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
+            $actions->addLink($_("Reiter unsichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
         }
 
         $sidebar->addWidget ($actions);
