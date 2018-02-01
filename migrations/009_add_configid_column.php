@@ -6,16 +6,20 @@ class AddConfigidColumn extends Migration {
     {
         $db = DBManager::get();
 
-        $db->query("ALTER TABLE `oc_config` DROP PRIMARY KEY, ADD UNIQUE KEY(service_url,service_user,service_password);");
-        $db->query("ALTER TABLE `oc_config` ADD `config_id` INT UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;");
-        $db->query("ALTER TABLE `oc_endpoints` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
-        $db->query("ALTER TABLE `oc_resources` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
-        $db->query("ALTER TABLE `oc_seminar_series` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
-        $db->query("ALTER TABLE `oc_seminar_workflows` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
+        $result = $db->query("SHOW INDEXES FROM oc_config WHERE Key_name = 'PRIMARY'");
 
-        $db->query("UPDATE oc_resources SET config_id = 2");
-        $db->query("UPDATE oc_seminar_series SET config_id = 2, schedule = 0");
-        $db->query("UPDATE oc_seminar_workflows SET config_id = 2");
+        if (!empty($result->fetchAll())) {
+            $db->query("ALTER TABLE `oc_config` DROP PRIMARY KEY, ADD UNIQUE KEY(service_url,service_user,service_password);");
+            $db->query("ALTER TABLE `oc_config` ADD `config_id` INT UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;");
+            $db->query("ALTER TABLE `oc_endpoints` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
+            $db->query("ALTER TABLE `oc_resources` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
+            $db->query("ALTER TABLE `oc_seminar_series` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
+            $db->query("ALTER TABLE `oc_seminar_workflows` ADD `config_id` INT NOT NULL DEFAULT 1 FIRST;");
+
+            $db->query("UPDATE oc_resources SET config_id = 2");
+            $db->query("UPDATE oc_seminar_series SET config_id = 2, schedule = 0");
+            $db->query("UPDATE oc_seminar_workflows SET config_id = 2");
+        }
     }
 
     function down()
