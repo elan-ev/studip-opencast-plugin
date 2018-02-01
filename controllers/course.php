@@ -436,37 +436,49 @@ class CourseController extends OpencastController
         $this->redirect('course/index');
     }
 
-    function toggle_visibility_action($episode_id, $position) {
+    function toggle_visibility_action($episode_id, $position)
+    {
         $this->course_id = Request::get('cid');
-        $this->user_id = $GLOBALS['auth']->auth['uid'];
+        $this->user_id   = $GLOBALS['auth']->auth['uid'];
 
-        if($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+        if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
             || OCModel::checkPermForEpisode($episode_id, $this->user_id))
         {
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
             // if visibilty wasn't set before do so...
-            if(!$visible){
+            if (!$visible) {
                 OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
                 $visible['visible'] = 'true';
             }
 
-            if($visible['visible'] == 'true'){
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
-               $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
+            if ($visible['visible'] == 'true') {
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
+
+                if (!Request::isXhr()) {
+                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
+                }
+
                 log_event('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde unsichtbar geschaltet');
             } else {
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
-               $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+
+                if (!Request::isXhr()) {
+                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
+                }
+
                 log_event('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde sichtbar geschaltet');
             }
         } else {
+
             if (Request::isXhr()) {
                 $this->set_status('500');
                 $this->render_nothing();
+            } else {
+                throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
             }
-            else throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
-
         }
+
+
         if (Request::isXhr()) {
             $this->set_status('201');
 
