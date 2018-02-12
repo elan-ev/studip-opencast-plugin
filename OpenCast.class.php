@@ -88,20 +88,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             $id = Request::get('sem_id', $id);
 
-            // check, if the plugin is enabled in the current course
-            if ($this->isActivated($id)) {
-                PageLayout::addHeadElement('script', array(), "
-                    jQuery( document ).ready(function() {
-                        $('#layout_content').prepend('<div class=\"messagebox messagebox_info\">'
-                            + '<div class=\"messagebox_buttons\"><a class=\"close\" href=\"#\" title=\"Nachrichtenbox schliessen\">'
-                            + '<span>Nachrichtenbox schliessen</span></a></div>'
-                            + 'Diese Veranstaltung wird für Sie mit Bild und Ton automatisiert aufgezeichnet.</div>');
-                    });"
-                );
-            }
-
-
-
             if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');

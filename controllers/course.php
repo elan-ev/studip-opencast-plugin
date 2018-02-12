@@ -365,8 +365,25 @@ class CourseController extends OpencastController
         $this->course_id = Request::get('cid');
         if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
-            if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            //if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            if (true) {
                 $this->flash['messages'] = array('success'=> $this->_("Aufzeichnung wurde geplant."));
+
+                $course = Course::find($this->course_id);
+                $members = $course->members;
+
+                $users = array();
+                foreach($members as $member){
+                    $users[] = $member->user_id;
+                }
+
+                $notification =  sprintf($this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'), $course->name);
+                PersonalNotifications::add(
+                    $users, PluginEngine::getLink('opencast/course/index', array('cid' => $this->course_id)),
+                    $notification, $this->course_id,
+                    Icon::create($this->plugin->getPluginUrl(). '/images/newocicon.png')
+                );
+
                 log_event('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
             } else {
                 $this->flash['messages'] = array('error'=> $this->_("Aufzeichnung konnte nicht geplant werden."));
