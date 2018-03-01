@@ -19,6 +19,7 @@ require_once $this->trails_root . '/classes/OCRestClient/ArchiveClient.php';
 require_once $this->trails_root . '/models/OCModel.php';
 require_once $this->trails_root . '/models/OCSeriesModel.php';
 require_once $this->trails_root . '/models/OCCourseModel.class.php';
+require_once $this->trails_root . '/models/OCEndpointModel.php';
 
 require_once $this->trails_root . '/classes/OCJsonFile.php';
 

@@ -57,9 +57,10 @@ class OCJobManager
 
     public static function matterhorn_service_available()
     {
-        $target = '131.173.172.226';
+        $configuration = OCEndpointModel::getBaseServerConf(1);
+        $target = str_replace(array('http://','https://'),'',$configuration['service_url']);
         $socket = @fsockopen($target, 80, $err_number, $err_message, 1);
-        tglog('connection: ' . $err_number . ' -> ' . $err_message);
+
         if ($socket === FALSE) {
             return FALSE;
         }
@@ -113,5 +114,15 @@ class OCJobManager
     public static function existent_jobs()
     {
         return array_diff(scandir(static::$BASE_PATH), array('.', '..'));
+    }
+
+    public static function try_reupload_old_jobs(){
+        $job_ids = static::existent_jobs();
+        foreach ($job_ids as $job_id) {
+            $job = new OCJob($job_id);
+            echo "Versuche Upload von '".$job_id."'...";
+            $job->try_upload_to_opencast();
+            echo "Beende Upload von '".$job_id."'...";
+        }
     }
 }
