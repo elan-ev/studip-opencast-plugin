@@ -1,7 +1,7 @@
 <?php
 /*
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
- * Copyright (c) 2010  André Klaßen
+ * Copyright (c) 2010  Andrï¿½ Klaï¿½en
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

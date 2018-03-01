@@ -51,9 +51,9 @@ class UploadClient extends OCRestClient {
      */
     function uploadChunk($job_id, $chunknumber, $filedata)
     {
-        tglog($job_id .' - '. $chunknumber .', Size: '. filesize($filedata));
-
-        $file = new CURLFile($filedata);
+        $file = new CURLFile($filedata['name']);
+        $file->setMimeType($filedata['mime']);
+        $file->setPostFilename($filedata['postname']);
 
         $data = array(
             'chunknumber' => $chunknumber,
