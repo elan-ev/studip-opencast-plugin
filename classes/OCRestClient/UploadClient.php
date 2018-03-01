@@ -35,8 +35,6 @@ class UploadClient extends OCRestClient {
             'mediapackage' => urlencode($mediaPackage)
         );
 
-        tglog('New Job: ' . print_r($data, 1));
-
         $rest_end_point = "/newjob";
         $uri = $rest_end_point;
 
