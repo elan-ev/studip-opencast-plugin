@@ -1,5 +1,7 @@
 <?php
 /**
+ * This class handle all job related activities
+ *
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
  * @version         1.0 (10:05)
@@ -34,21 +36,36 @@ class OCJob
         $this->opencast_info = new OCJsonFile(OCJobManager::job_path($this->id) . '/opencast_info.json');
     }
 
+    /**
+     * @return array retrieve the basic job-info
+     */
     public function data()
     {
         return $this->data;
     }
 
+    /**
+     * @return int retrieve the time when the job was created
+     */
     public function created_at_time()
     {
         return $this->data['creation_timestamp'];
     }
 
+    /**
+     * @return int get the absolute number of chunks for this job
+     */
     public function number_of_chunks()
     {
         return ceil($this->data['file']['size'] / OC_UPLOAD_CHUNK_SIZE);
     }
 
+    /**
+     * Upload a chunk locally
+     *
+     * @param $tmp_path     string the path to the source file
+     * @param $chunk_number int the number for this chunk
+     */
     public function upload_local($tmp_path, $chunk_number)
     {
         if (move_uploaded_file($tmp_path, OCJobManager::chunk_path($this->id, $chunk_number))) {
@@ -65,6 +82,9 @@ class OCJob
         }
     }
 
+    /**
+     * @return array list of missing local chunk numbers
+     */
     public function missing_local_chunks()
     {
         $chunk_amount = $this->number_of_chunks();
@@ -78,6 +98,9 @@ class OCJob
         return $missing;
     }
 
+    /**
+     * @return array list of chunk numbers not yet uploaded to opencast
+     */
     public function missing_upload_chunks()
     {
         $chunk_amount = $this->number_of_chunks();
@@ -93,11 +116,21 @@ class OCJob
         return $missing;
     }
 
+    /**
+     * Check if something is unloaded
+     *
+     * @param $what
+     *
+     * @return bool
+     */
     private function opencast_unloaded($what)
     {
         return in_array($this->opencast_info[$what], array('NOT GENERATED', 'GENERATION ERROR'));
     }
 
+    /**
+     * Load the media package or create if there is none
+     */
     public function load_media_package()
     {
         if ($this->opencast_unloaded('media_package')) {
@@ -110,6 +143,9 @@ class OCJob
         }
     }
 
+    /**
+     * Load the opencast job id or create if there is none
+     */
     public function load_opencast_job_id()
     {
         if (!$this->opencast_unloaded('media_package') && $this->opencast_unloaded('opencast_job_id')) {
@@ -136,12 +172,17 @@ class OCJob
         }
     }
 
+    /**
+     * Uploads a chunk to opencast
+     *
+     * @param $chunk_name (like 'chunk_1')
+     */
     public function upload_opencast($chunk_name)
     {
         $this->upload_chunk_info->load();
         $this->upload_chunk_info->content[$chunk_name]['upload_tries'] += 1;
         $this->upload_chunk_info->save();
-        if(OCJobManager::matterhorn_service_available()){
+        if (OCJobManager::matterhorn_service_available()) {
             $this->wait_for_previous_upload(5, 500);
             $chunk_number = $this->upload_chunk_info[$chunk_name]['number'];
             $result = $this->upload_client->uploadChunk(
@@ -186,6 +227,9 @@ class OCJob
         }
     }
 
+    /**
+     * Finising touch after every chunk was uploaded
+     */
     public function finish_upload()
     {
         if (OCJobManager::matterhorn_service_available()) {
@@ -287,6 +331,9 @@ class OCJob
         return $dublincore;
     }
 
+    /**
+     * Triggers the ingest if everything was uploaded correctly ('finish_upload()' should run first!)
+     */
     public function trigger_ingest()
     {
         if ($this->both_uploads_succeeded()) {
@@ -311,11 +358,17 @@ class OCJob
         }
     }
 
+    /**
+     * @return bool true if there are no missing chunks, locally and remotely
+     */
     public function both_uploads_succeeded()
     {
         return count($this->missing_upload_chunks()) == 0 && count($this->missing_local_chunks()) == 0;
     }
 
+    /**
+     * Clear all the files and directories belonging to this job
+     */
     public function clear_files()
     {
         $path = OCJobManager::job_path($this->id);
@@ -326,11 +379,14 @@ class OCJob
         rmdir($path);
     }
 
+    /**
+     * Trys the upload of missing chunks to opencast
+     */
     public function try_upload_to_opencast()
     {
         //Gather all missing chunks for the current job
         $missing = $this->missing_upload_chunks();
-        foreach ($missing as $chunk_name){
+        foreach ($missing as $chunk_name) {
             $this->upload_opencast($chunk_name);
         }
 
@@ -339,11 +395,14 @@ class OCJob
         $this->trigger_ingest();
     }
 
+    /**
+     * Just usable from the 'upload.php' controller
+     */
     public function upload_local_from_controller()
     {
         $source = $_FILES['video']['tmp_name'];
         $chunk_number = OCJobManager::calculate_chunk_number_from_range((
-        isset($_SERVER['HTTP_CONTENT_RANGE'])?$_SERVER['HTTP_CONTENT_RANGE']:0
+        isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
         ));
         $this->upload_local(
             $source,

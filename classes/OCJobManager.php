@@ -1,5 +1,7 @@
 <?php
 /**
+ * This class manage a bunch of jobs
+ *
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
  * @version         1.0 (11:19)
@@ -11,16 +13,47 @@ class OCJobManager
     public static $CACHE_SUCCESS = 7 * 24 * 60 * 60;  // 7 days
     public static $CACHE_FAILURE = 14 * 24 * 60 * 60; // 14 days
 
+    /**
+     * Get the path to the job with a specific id
+     *
+     * @param $job_id string a unique job id
+     *
+     * @return string
+     */
     public static function job_path($job_id)
     {
         return static::$BASE_PATH . '/' . $job_id;
     }
 
+    /**
+     * @param $job_id string a unique job id
+     *
+     * @return bool true if the job exist
+     */
     public static function job_exist($job_id)
     {
         return file_exists(static::job_path($job_id));
     }
 
+    /**
+     * Creates a job of a pile of arguments
+     * @param $job_id
+     * @param $course_id
+     * @param $series_id
+     * @param $flavor
+     * @param $title
+     * @param $creator
+     * @param $record_date
+     * @param $start_hour
+     * @param $start_minute
+     * @param $contributor
+     * @param $subject
+     * @param $language
+     * @param $description
+     * @param $file_size
+     * @param $file_name
+     * @param $file_type
+     */
     public static function create_job(
         $job_id, $course_id, $series_id, $flavor,
         $title, $creator, $record_date, $start_hour, $start_minute, $contributor, $subject, $language, $description,
@@ -39,6 +72,11 @@ class OCJobManager
         $opencast_data['flavor'] = $flavor;
     }
 
+    /**
+     * @param $range string something like 'x-y/z' or '0'
+     *
+     * @return int
+     */
     public static function calculate_chunk_number_from_range($range)
     {
         $pattern = '/(\d*)-\d*\/\d*/';
@@ -50,11 +88,23 @@ class OCJobManager
         return 0;
     }
 
+    /**
+     * The path to a chunk-file with a specific number
+     *
+     * @param $job_id
+     * @param $chunk_number
+     *
+     * @return string the path
+     */
     public static function chunk_path($job_id, $chunk_number)
     {
         return static::job_path($job_id) . '/chunk_' . $chunk_number . '.part';
     }
 
+    /**
+     * Is the matterhorn service available?
+     * @return bool true if it is
+     */
     public static function matterhorn_service_available()
     {
         $configuration = OCEndpointModel::getBaseServerConf(1);
@@ -69,6 +119,10 @@ class OCJobManager
         return TRUE;
     }
 
+    /**
+     * For the lazy ones or the upload-controller
+     * @return OCJob
+     */
     public static function from_request()
     {
         $job_id = Request::get('uuid');
@@ -96,6 +150,9 @@ class OCJobManager
         return new OCJob($job_id);
     }
 
+    /**
+     * Removes old jobs and their file-structure
+     */
     public static function cleanup()
     {
         $job_ids = static::existent_jobs();
@@ -111,11 +168,17 @@ class OCJobManager
         }
     }
 
+    /**
+     * @return array list of existend job ids
+     */
     public static function existent_jobs()
     {
         return array_diff(scandir(static::$BASE_PATH), array('.', '..'));
     }
 
+    /**
+     * Try to reupload old jobs
+     */
     public static function try_reupload_old_jobs(){
         $job_ids = static::existent_jobs();
         foreach ($job_ids as $job_id) {
