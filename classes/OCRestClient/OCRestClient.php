@@ -1,7 +1,7 @@
 <?php
     /***
      * OCRestClient.php - The administarion of the opencast player
-     * Copyright (c) 2011  Andr� Kla�en
+     * Copyright (c) 2011  André Klaßen
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License as
