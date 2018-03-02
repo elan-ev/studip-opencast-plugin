@@ -36,7 +36,7 @@ class CronjobRefreshSeries extends Migration
               `mkdate` INT DEFAULT 0,
               `chdate` INT DEFAULT 0,
               PRIMARY KEY (`series_id`)
-              );");
+              ) ROW_FORMAT=DYNAMIC;");
 
 
     }

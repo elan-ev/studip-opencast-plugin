@@ -89,28 +89,38 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
 
-        $this->addStylesheet('stylesheets/oc.less');
+        if (!$GLOBALS['opencast_already_loaded']) {
+            $this->addStylesheet('stylesheets/oc.less');
 
-        PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+            PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
 
+            if (class_exists('Context')) {
+                $id = Context::getId();
+            } else {
+                $id = $GLOBALS['SessionSeminar'];
+            }
 
-        if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
-            PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
-            PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
-            PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');
-            PageLayout::addScript($this->getpluginUrl() . '/vendor/chosen/chosen.jquery.min.js');
-            PageLayout::addStylesheet($this->getpluginUrl() . '/vendor/chosen/chosen.min.css');
+            $id = Request::get('sem_id', $id);
 
+            if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
+                PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
+                PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
+                PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');
+                PageLayout::addScript($this->getpluginUrl() . '/vendor/chosen/chosen.jquery.min.js');
+                PageLayout::addStylesheet($this->getpluginUrl() . '/vendor/chosen/chosen.min.css');
+
+            }
+
+            if (OCModel::getConfigurationstate()) {
+
+                StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
+
+            }
+
+            NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
         }
 
-        if (OCModel::getConfigurationstate()) {
-
-            StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
-
-        }
-
-        NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
-
+        $GLOBALS['opencast_already_loaded'] = true;
     }
 
     /**

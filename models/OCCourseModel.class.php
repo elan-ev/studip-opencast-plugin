@@ -78,30 +78,20 @@ class OCCourseModel
 
         if($this->getSeriesID()) {
             $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
+
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
             $ordered_episodes = array();
 
             //check if series' episodes is already stored in studip
-            if(!empty($stored_episodes)) {
-                if(!empty($series)) {
-                    // add additional episode metadata from opencast
-                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
-                } else {
-                    // someone deleted the connected episodes in opencast
-                    //TODO
-                }
-            } else {
-                // since we don't have any idea about the episodes...
-                if(!empty($series)) {
-                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
-                } else {
-                    // that must be a brand new series without any episodes
-                }
+            if(!empty($series)) {
+                // add additional episode metadata from opencast
+                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
 
-
             return $ordered_episodes;
-        } else return false;
+        } else {
+            return false;
+        }
 
     }
 
@@ -252,16 +242,13 @@ class OCCourseModel
 
         $cached_series = OCSeriesModel::getCachedSeriesData($series_id);
 
-
         if(!$cached_series || $forced_reload){
             $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
             $series = $search_client->getEpisodes($series_id);
 
             if($forced_reload && $cached_series){
-
                 OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
             } else {
-
                 OCSeriesModel::setCachedSeriesData($series_id, serialize($series));
             }
         }
@@ -378,4 +365,11 @@ class OCCourseModel
         return $stmt->execute(array($workflow_id,  $this->getCourseID(), $termin_id));
     }
 
+    public function clearSeminarEpisodes()
+    {
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_episodes
+            WHERE seminar_id = ?");
+
+        return $stmt->execute(array($this->getCourseID()));
+    }
 }

@@ -1,10 +1,11 @@
 pluginname=OpenCast
 pluginclassname=OpenCast
 origin=elan-ev
-version=1.0.2
+version=1.0.4
 studipMinVersion=3.5
 studipMaxVersion=4.1
 summary=Vorlesungsaufzeichnung
+category = Inhalte und Aufgabenstellungen
 description=Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem (OpenCast) mit einer Stud.IP Veranstaltung verknüpft werden. Die Aufzeichnungen werden in einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine gebuchte Ressource mit einem Opencast Capture-Agent. Vorhandene Medien können bei Bedarf nachträglich über die Upload-Funktion zur verknüpften Series hinzugefügt werden.
 homepage=http://elan-ev.github.io/studip-opencast-plugin/
 screenshot=images/screenshots/studip-opencast.png

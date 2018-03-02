@@ -365,8 +365,25 @@ class CourseController extends OpencastController
         $this->course_id = Request::get('cid');
         if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
-            if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            //if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            if (true) {
                 $this->flash['messages'] = array('success'=> $this->_("Aufzeichnung wurde geplant."));
+
+                $course = Course::find($this->course_id);
+                $members = $course->members;
+
+                $users = array();
+                foreach($members as $member){
+                    $users[] = $member->user_id;
+                }
+
+                $notification =  sprintf($this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'), $course->name);
+                PersonalNotifications::add(
+                    $users, PluginEngine::getLink('opencast/course/index', array('cid' => $this->course_id)),
+                    $notification, $this->course_id,
+                    Icon::create($this->plugin->getPluginUrl(). '/images/newocicon.png')
+                );
+
                 log_event('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
             } else {
                 $this->flash['messages'] = array('error'=> $this->_("Aufzeichnung konnte nicht geplant werden."));
@@ -436,37 +453,49 @@ class CourseController extends OpencastController
         $this->redirect('course/index');
     }
 
-    function toggle_visibility_action($episode_id, $position) {
+    function toggle_visibility_action($episode_id, $position)
+    {
         $this->course_id = Request::get('cid');
-        $this->user_id = $GLOBALS['auth']->auth['uid'];
+        $this->user_id   = $GLOBALS['auth']->auth['uid'];
 
-        if($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+        if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
             || OCModel::checkPermForEpisode($episode_id, $this->user_id))
         {
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
             // if visibilty wasn't set before do so...
-            if(!$visible){
+            if (!$visible) {
                 OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
                 $visible['visible'] = 'true';
             }
 
-            if($visible['visible'] == 'true'){
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
-               $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
+            if ($visible['visible'] == 'true') {
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
+
+                if (!Request::isXhr()) {
+                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
+                }
+
                 log_event('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde unsichtbar geschaltet');
             } else {
-               OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
-               $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+
+                if (!Request::isXhr()) {
+                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
+                }
+
                 log_event('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde sichtbar geschaltet');
             }
         } else {
+
             if (Request::isXhr()) {
                 $this->set_status('500');
                 $this->render_nothing();
+            } else {
+                throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
             }
-            else throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
-
         }
+
+
         if (Request::isXhr()) {
             $this->set_status('201');
 
@@ -655,7 +684,20 @@ class CourseController extends OpencastController
         if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
             $occourse2 = new OCCourseModel($this->course_id);
             $occourse2->getEpisodes(true);
+
             $this->flash['messages'] = array('success'=> $this->_("Die Episodenliste wurde aktualisiert."));
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    function refresh_sorting_action($ticket)
+    {
+        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+            $occourse2 = new OCCourseModel($this->course_id);
+            $occourse2->clearSeminarEpisodes();
+
+            $this->flash['messages'] = array('success'=> $this->_("Die Sortierung wurde zurückgesetzt."));
         }
 
         $this->redirect('course/index/false');

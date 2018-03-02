@@ -245,13 +245,13 @@ OC = {
 
         var episodes_template = jQuery('#episodeList').html();
         var active_id = jQuery('#oc_active_episode').data('activeepisode');
-        var oce_list = _.template(episodes_template,{episodes:episodes, active:active_id});
-
+        var oce_list = _.template(episodes_template);
 
         jQuery('.oce_list').empty();
-        jQuery('.oce_list').html(oce_list);
-
-
+        jQuery('.oce_list').html(oce_list({
+            episodes: episodes,
+            active : active_id
+        }));
     },
 
     episodeListener: function(cid) {

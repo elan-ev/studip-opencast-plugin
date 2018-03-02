@@ -25,6 +25,7 @@
         if (!empty($connectedSeries)) {
             $actions->addLink($_("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
             $actions->addLink($_("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
+            $actions->addLink($_("Sortierung zurücksetzen"), PluginEngine::getLink ('opencast/course/refresh_sorting/' . get_ticket()), 'icons/16/blue/refresh.png');
 
             if ($series_metadata[0]['schedule'] == '1') {
                 $actions->addLink($_("Medien hochladen"), '#1', 'icons/16/blue/upload.png', array (
@@ -46,15 +47,16 @@
 
         //todo - should this already be visibile for teachers?
         if ($coursevis == 'visible'){
-            $actions->addLink($_("Reiter verbergen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
+            $actions->addLink($_("Reiter sichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
         } else {
-            $actions->addLink($_("Reiter anzeigen"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
+            $actions->addLink($_("Reiter unsichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
         }
 
         $sidebar->addWidget ($actions);
-        Helpbar::get ()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
+        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
     } else {
-        Helpbar::get ()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
+        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
+        Helpbar::get()->addLink('Bei Problemen: '. $GLOBALS['UNI_CONTACT'], 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback');
     }
 ?>
 
@@ -98,15 +100,13 @@
             </a>-->
 
             <? if($theodul) : ?>
-                <iframe src="<?=$embed?>"
+                <iframe src="<?=$embed?>" class="theodul"
                         style="border:0px #FFFFFF none;"
                         name="Opencast Matterhorn video player"
                         scrolling="no"
                         frameborder="0"
                         marginheight="0px"
                         marginwidth="0px"
-                        width="640"
-                        height="360"
                         allowfullscreen="true"
                         webkitallowfullscreen="true"
                         mozallowfullscreen="true">
@@ -135,26 +135,28 @@
                         Optionen:</div>
                     <div class="button-group">
                         <?= Studip\LinkButton::create($_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
-                        <? if($active['presenter_download']) : ?>
+                        <? if ($active['presenter_download']) : ?>
                             <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
                         <? endif;?>
-                        <? if($active['presentation_download']) : ?>
+                        <? if ($active['presentation_download']) : ?>
                             <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
                         <? endif;?>
-                        <? if($active['audio_download']) :?>
+                        <? if ($active['audio_download']) :?>
                             <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
                         <? endif;?>
-                        </div>
-                        <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                        <div class="button-group" style="float:right">
+
+                        <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
+                            <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
+                        <? endif ?>
+
+                        <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                             <? if ($visible && $visible['visible'] == 'false') : ?>
                                 <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
                             <? else : ?>
                                 <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
-                            <? endif; ?>
-
+                            <? endif;?>
+                        <? endif; ?>
                         </div>
-                        <? endif;?>
                     </div>
             </div>
         </div>
