@@ -1,7 +1,7 @@
 <?php
     /***
      * OCRestClient.php - The administarion of the opencast player
-     * Copyright (c) 2011  André Klaßen
+     * Copyright (c) 2011  AndrÃ© KlaÃŸen
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License as
@@ -37,8 +37,8 @@
         function __construct($matterhorn_base_url = null, $username = null, $password = null){
             $this->matterhorn_base_url = $matterhorn_base_url;
 
-            $this->username = !is_null($username) ? $username : 'matterhorn_system_account';
-            $this->password = !is_null($password) ? $password : 'CHANGE_ME';
+            $this->username = !is_null($username) ? $username : 'opencast_system_account';
+            $this->password = !is_null($password) ? $password : 'opencast';
 
 
             // setting up a curl-handler
@@ -50,9 +50,9 @@
             curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
 
             //ssl
-            //curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
-            //curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
-            //curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
+            curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
+            #curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
 
             // debugging
             //curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
@@ -81,7 +81,7 @@
                     $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
                     return $config;
                     } else {
-                        throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
+                        throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten fï¿½r den Servicetyp **%s** vorhanden."), $service_type));
                     }
 
                 } else {
@@ -119,13 +119,17 @@
         /**
          *  function getJSON - performs a REST-Call and retrieves response in JSON
          */
-        function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false) {
-            if(isset($service_url) && self::checkService($service_url)) {
-                $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
-                           CURLOPT_FRESH_CONNECT => 1);
-                if(!$is_get) {
+        function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false)
+        {
+            if (isset($service_url) && self::checkService($service_url)) {
+                $options = array(
+                    CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                    CURLOPT_FRESH_CONNECT => 1
+                );
+
+                if (!$is_get) {
                     $options[CURLOPT_POST] = 1;
-                    if(!empty($data)) {
+                    if (!empty($data)) {
                         $options[CURLOPT_POSTFIELDS] = $data;
                     }
                 } else {
@@ -150,7 +154,7 @@
             }
 
         }
-        
+
         /**
          * function getXML - performs a REST-Call and retrieves response in XML
          */
@@ -169,7 +173,7 @@
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-                
+
                 if($with_res_code) {
                     return array($response, $httpCode);
                 } else {
@@ -196,7 +200,7 @@
             if (@fsockopen($this->matterhorn_base_url)) {
                 return true;
             }
-            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewählten Service "%s". Versuchen Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
+            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gewï¿½hlten Service "%s". Versuchen Sie es bitte zu einem spï¿½teren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
         }
 
 
