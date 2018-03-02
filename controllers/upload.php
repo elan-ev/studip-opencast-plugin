@@ -1,7 +1,7 @@
 <?php
 /*
  * course.php - course controller
- * Copyright (c) 2010  Andr� Kla�en
+ * Copyright (c) 2010  André Klaßen
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
