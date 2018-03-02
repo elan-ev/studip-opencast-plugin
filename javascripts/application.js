@@ -105,7 +105,7 @@ OC = {
                     $('#file_name').attr('value', file.name);
                     $('#upload_info').html('<p>Name: '
                                                 + file.name
-                                                + ' Größe: '
+                                                + ' Gr&ouml;&szlig;e: '
                                                 + OC.getFileSize(file.size)
                                                 + '</p>');
                     $('#upload_info').val(file.name);
@@ -317,9 +317,9 @@ OC = {
                     console.log(data);
                     //todo trigger success message
                     if(data === 'true'){
-                        //console.log('lööpt'); TODO STUD.IP Success Box triggern
+                        //console.log('lÃ¶Ã¶pt'); TODO STUD.IP Success Box triggern
                     } else {
-                        alert('Der Workflow konnte für die geplante Aufzeichnung nicht gesetzt werden.')
+                        alert('Der Workflow konnte fÃ¼r die geplante Aufzeichnung nicht gesetzt werden.')
                     }
 
                 }

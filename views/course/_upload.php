@@ -82,7 +82,7 @@ use Studip\Button,
 
     <h4><label for="video_upload">Datei:</label></h4>
     <div id="file_wrapper">
-            <?= LinkButton::create($_('Datei auswählen'), null, array('id' => 'video-chooser', 'onClick' => "$('input[type=file]').trigger('click');return false;")); ?>
+            <?= LinkButton::create($_('Datei auswÃ¤hlen'), null, array('id' => 'video-chooser', 'onClick' => "$('input[type=file]').trigger('click');return false;")); ?>
             <input name="video" type="file" id="video_upload">
     </div>
     <div id="upload_info">
@@ -99,13 +99,13 @@ use Studip\Button,
              <?=$_("Laden sie nur Medien hoch an denen sie das Copyright besitzen!")?>
          </p>
          <p>
-             <?=$_("Die möglichen Ausnahmen über §52a UrhG sind sehr eingeschränkt, so dürfen nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.")?>
+             <?=$_("Die mÃ¶glichen Ausnahmen Ã¼ber Â§52a UrhG sind sehr eingeschrÃ¤nkt, so dÃ¼rfen nur maximal 5 minÃ¼tige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.")?>
          </p>
          <p>
-             <?=$_("Nach §52a UrhG dürfen Kinofilme oder Ausschnitte daraus frühstens 2 Jahre nach der Verwertung im Kino und nur mit Einwilligung des Berechtigten zugänglich gemacht werden!")?>
+             <?=$_("Nach Â§52a UrhG dÃ¼rfen Kinofilme oder Ausschnitte daraus frÃ¼hstens 2 Jahre nach der Verwertung im Kino und nur mit Einwilligung des Berechtigten zugÃ¤nglich gemacht werden!")?>
          </p>
          <p>
-             <?=$_("Medien bei denen Urheberrechtsverstöße vorliegen, werde ohne vorherige Ankündigung umgehend gelöscht.")?>
+             <?=$_("Medien bei denen UrheberrechtsverstÃ¶ÃŸe vorliegen, werde ohne vorherige AnkÃ¼ndigung umgehend gelÃ¶scht.")?>
          </p>
      </div>
     <br>

@@ -1,7 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  André Klaßen
+ * Copyright (c) 2010  AndrÃ© KlaÃŸen
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -123,7 +123,7 @@ class AdminController extends OpencastController
         $config_id = 1; // we assume that we want to configure the new opencast
 
         if(!array_key_exists('scheme', $service_url)) {
-            $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema angegeben.'));
+            $this->flash['messages'] = array('error' => $this->_('Es wurde kein gÃ¼ltiges URL-Schema angegeben.'));
             OCRestClient::clearConfig($config_id);
             $this->redirect('admin/config');
         } else {
@@ -154,11 +154,11 @@ class AdminController extends OpencastController
                         OCEndpointModel::setEndpoint($config_id, $service_comp[0], $service_type);
                     }
                 }
-                $success_message = sprintf($this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+                $success_message = sprintf($this->_("Ã„nderungen wurden erfolgreich Ã¼bernommen. Es wurden %s Endpoints fÃ¼r die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
                 $this->flash['messages'] = array('success' => $success_message);
             } else {
                 die('Keine Endpoints gefunden!');
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints fÃ¼r die angegeben Opencast Matterhorn Installation gefunden. ÃœberprÃ¼fen Sie bitte die eingebenen Daten.'));
             }
         }
 
@@ -170,7 +170,7 @@ class AdminController extends OpencastController
         $config_id = 2; // we assume that we want to configure slave opencast server
 
         if (!array_key_exists('scheme', $slave_url)) {
-                $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurde kein gÃ¼ltiges URL-Schema fÃ¼r den Lesezugriff angegeben.'));
             OCRestClient::clearConfig($config_id);
             //$this->redirect('admin/config');
             } else {
@@ -200,9 +200,9 @@ class AdminController extends OpencastController
                     }
             }
 
-                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegebene Opencast Slave Installation gefunden und eingetragen"), count($comp)));
+                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints fÃ¼r die angegebene Opencast Slave Installation gefunden und eingetragen"), count($comp)));
             } else {
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegebene Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints fÃ¼r die angegebene Opencast Slave Installation gefunden. ÃœberprÃ¼fen Sie bitte die eingebenen Daten.'));
                 }
             }
         }
@@ -217,7 +217,7 @@ class AdminController extends OpencastController
     {
         PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
         Navigation::activateItem('/admin/config/oc-endpoints');
-        // hier kann eine Endpointüberischt angezeigt werden.
+        // hier kann eine EndpointÃ¼berischt angezeigt werden.
         //$services_client = ServicesClient::getInstance();
         $this->endpoints = OCEndpointModel::getEndpoints();
     }

@@ -9,8 +9,6 @@
  * the License, or (at your option) any later version.
  */
 
-require_once 'lib/log_events.inc.php';
-
 require_once $this->trails_root . '/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root . '/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root . '/classes/OCRestClient/IngestClient.php';

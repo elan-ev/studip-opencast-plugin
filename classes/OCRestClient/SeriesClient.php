@@ -116,7 +116,7 @@
          * @return bool success or not
          */
         function createSeriesForSeminar($course_id) {
-            $dublinCore = utf8_encode(OCSeriesModel::createSeriesDC($course_id));
+            $dublinCore = studip_utf8encode(OCSeriesModel::createSeriesDC($course_id));
 
 
             $ACLData = array('ROLE_ADMIN' => array(
@@ -156,7 +156,7 @@
         /**
          * updateAccescontrolForSeminar - updates the ACL for a given series in OC Matterhorn
          * @param string $series_id  - series identifier
-         * @param array  $acl_data   -utf8_encoded ACL
+         * @param array  $acl_data   -studip_utf8encoded ACL
          * @return bool success or not
          */
 

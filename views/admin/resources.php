@@ -1,6 +1,6 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <?
-    Helpbar::get()->addPlainText('',$_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen."));
+    Helpbar::get()->addPlainText('',$_("Hier kÃ¶nnen Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknÃ¼pfen."));
 ?>
 <script language="JavaScript">
 OC.initAdmin();
@@ -29,7 +29,7 @@ OC.initAdmin();
         </table>
 
         <div>
-            <?= Button::createAccept($_('Übernehmen'), array('title' => $_("Änderungen übernehmen"))); ?>
+            <?= Button::createAccept($_('Ãœbernehmen'), array('title' => $_("Ã„nderungen Ã¼bernehmen"))); ?>
             <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
         </div>
     </fieldset>

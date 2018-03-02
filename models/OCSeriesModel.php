@@ -252,7 +252,7 @@ class OCSeriesModel {
             }
         }
 
-        $str = utf8_encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        $str = studip_utf8encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
                 . '<acl xmlns="http://org.opencastproject.security">'
                 . implode('', $content)
                 . '</acl>');
@@ -275,7 +275,7 @@ class OCSeriesModel {
 
         $course = new Seminar($course_id);
         $name = $course->getName();
-        $license = "© " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+        $license = "&copy; " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
 
         $inst = Institute::find($course->institut_id);

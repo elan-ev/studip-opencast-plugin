@@ -5,11 +5,11 @@
 <table class="default">
     <tr>
         <th></th>
-        <th>Termin</th>
-        <th>Titel</th>
-        <th>Status</th>
-        <th>Workflow</th>
-        <th>Aktionen</th>
+        <th><?= $_('Termin') ?></th>
+        <th><?= $_('Titel') ?></th>
+        <th><?= $_('Status') ?></th>
+        <th><?= $_('Workflow') ?></th>
+        <th><?= $_('Aktionen') ?></th>
     </tr>
 
     <? foreach($dates as $d) : ?>
@@ -53,7 +53,7 @@
                     <? if(date($d['date']) > time()) :?>
                         <?= Assets::img('icons/16/black/date.png', array('title' => $_("Aufzeichnung planen"))) ?>
                     <? else :?>
-                        <?= Assets::img('icons/16/black/exclaim-circle.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."))) ?>
+                        <?= Assets::img('icons/16/black/exclaim-circle.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie kÃ¶nnen keine Aufzeichnung planen."))) ?>
                     <? endif;?>
                 <? endif; ?>
             <?
@@ -96,7 +96,7 @@
                         </select>
                     <? else :?>
 
-                        Hier müsste man den worflow sehen den das Video durchlaufen hat, sofern einer durchlaufen wurde.
+                        Hier mÃ¼sste man den worflow sehen den das Video durchlaufen hat, sofern einer durchlaufen wurde.
                     <? endif;?>
                 <? endif; ?>
             <? elseif(false) : ?>
@@ -110,7 +110,7 @@
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
                 <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id) && (int)date($d['date']) > time()) :?>
                     <a href="<?=PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id )?>">
-                        <?= Assets::img('icons/16/blue/refresh.png', array('title' =>  $_("Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren."))) ?>
+                        <?= Assets::img('icons/16/blue/refresh.png', array('title' =>  $_("Aufzeichnung ist bereits geplant. Sie kÃ¶nnen die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren."))) ?>
                     </a>
                     <a href="<?=PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id )?>">
                         <?= Assets::img('icons/16/blue/trash.png', array('title' =>  $_("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben."))) ?>
@@ -121,7 +121,7 @@
                             <?= Assets::img('icons/16/blue/video.png', array('title' =>  $_("Aufzeichnung planen."))) ?>
                         </a>
                     <? else :?>
-                        <?= Assets::img('icons/16/grey/video.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."))) ?>
+                        <?= Assets::img('icons/16/grey/video.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie kÃ¶nnen keine Aufzeichnung planen."))) ?>
                     <? endif;?>
                 <? endif; ?>
             <? elseif(false) : ?>
@@ -137,7 +137,7 @@
         <td class="thead"><input type="checkbox" data-proxyfor="[name^=dates]:checkbox" id="checkall"></td>
         <td class="thead">
             <select name="action">
-                <option value="" disabled selected><?=$_("Bitte wählen Sie eine Aktion.")?></option>
+                <option value="" disabled selected><?=$_("Bitte wÃ¤hlen Sie eine Aktion.")?></option>
                 <option value="create"><?=$_("Aufzeichnungen planen")?></option>
                 <option value="update"><?=$_("Aufzeichnungen aktualisieren")?></option>
                 <option value="delete"><?=$_("Aufzeichnungen stornieren")?></option>
@@ -152,7 +152,7 @@
 </table>
 
 <div>
-            <?= Button::createAccept($_('Übernehmen'), array('title' => $_("Änderungen übernehmen"))); ?>
+            <?= Button::createAccept($_('Ãœbernehmen'), array('title' => $_("Ã„nderungen Ã¼bernehmen"))); ?>
             <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/course/scheduler')); ?>
 </div>
 </form>

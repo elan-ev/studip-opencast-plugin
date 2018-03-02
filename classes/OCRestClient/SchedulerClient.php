@@ -137,7 +137,7 @@
 
 
         static function createEventMetadata($course_id, $resource_id, $termin_id) {
-            $dublincore = utf8_encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+            $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
 
 
             $date = new SingleDate($termin_id);

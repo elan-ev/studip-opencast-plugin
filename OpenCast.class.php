@@ -130,7 +130,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return $result;
+        return studip_utf8decode($result);
     }
 
     /**
@@ -161,7 +161,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return $result;
+        return studip_utf8decode($result);
     }
 
     /**
@@ -192,9 +192,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
 
         if ($ocgetcount > 0) {
-            $navigation->setImage($this->image_path .'oc20red.png', array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'oc20red.png'), array('title' => $text));
         } else {
-            $navigation->setImage($this->image_path .'oc20grey.png', array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'oc20grey.png'), array('title' => $text));
         }
 
         return $navigation;
@@ -255,8 +255,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
-        $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
+        $main->setImage(new Icon($this->getPluginUrl() . '/images/oc-logo-white.png'));
+        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/oc-logo-black.png'));
 
 
         $overview = new Navigation($this->_('Aufzeichnungen'));

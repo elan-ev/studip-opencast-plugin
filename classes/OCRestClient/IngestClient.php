@@ -42,7 +42,7 @@
         function addDCCatalog($mediaPackage, $dublinCore, $flavor)
         {
             $service_url = "/addDCCatalog";
-            $data = array('mediaPackage' =>  utf8_encode($mediaPackage),
+            $data = array('mediaPackage' =>  studip_utf8encode($mediaPackage),
                     'dublinCore' => $dublinCore,
                     'flavor' => $flavor);
             if($mediapackage = $this->getXML($service_url, $data, false)){
@@ -66,7 +66,7 @@
             $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
 
             $data = array(
-                'mediaPackage' => utf8_encode($mediaPackage),
+                'mediaPackage' => studip_utf8encode($mediaPackage),
                 'workflowDefinitionId' => $workFlowDefinitionID
             );
             if($mediapackage = $this->getXML($service_url, $data, false)){
