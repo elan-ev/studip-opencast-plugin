@@ -79,13 +79,6 @@ class UploadController extends OpencastController
         throw new RuntimeException("Method {$method} does not exist");
     }
 
-    private function activate_error_handler()
-    {
-        set_error_handler(function ($code, $text, $file, $line) {
-            tglog(implode('; ', array($code, $text, $file, $line)));
-        }, E_ALL);
-    }
-
     public function upload_file_action()
     {
         //Get a job object
