@@ -31,7 +31,7 @@
         <input type="password" name="slave_password" value="<?=$slave_password?>" size="50" placeholder="ENDPOINT_USER_PASSWORD"><br>
 
           <div>
-         <?= Button::createAccept($_('Übernehmen')) ?>
+         <?= Button::createAccept($_('Ãœbernehmen')) ?>
          <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
          </div>
 

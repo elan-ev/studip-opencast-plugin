@@ -2,7 +2,7 @@
     use Studip\Button, Studip\LinkButton;
     $sidebar = Sidebar::get();
     $actions = new ActionsWidget();
-    $actions->addLink($_("Episoden aller Series abgleichen"), PluginEngine::getLink ('opencast/admin/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
+    $actions->addLink($_("Episoden aller Series abgleichen"), PluginEngine::getLink ('opencast/admin/refresh_episodes/' . get_ticket()), new Icon('refresh', 'clickable'));
     $sidebar->addWidget($actions);
 
 

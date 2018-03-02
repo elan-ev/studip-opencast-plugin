@@ -9,8 +9,6 @@
  * the License, or (at your option) any later version.
  */
 
-require_once 'lib/log_events.inc.php';
-
 require_once $this->trails_root . '/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root . '/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root . '/classes/OCRestClient/IngestClient.php';
@@ -77,13 +75,6 @@ class UploadController extends OpencastController
             return call_user_func_array($variables[$method], $arguments);
         }
         throw new RuntimeException("Method {$method} does not exist");
-    }
-
-    private function activate_error_handler()
-    {
-        set_error_handler(function ($code, $text, $file, $line) {
-            tglog(implode('; ', array($code, $text, $file, $line)));
-        }, E_ALL);
     }
 
     public function upload_file_action()

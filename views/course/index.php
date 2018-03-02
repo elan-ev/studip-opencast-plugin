@@ -1,5 +1,5 @@
 <? if($flash['delete']) : ?>
-    <?= createQuestion2(sprintf($_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()))?>
+    <?= createQuestion2(sprintf($_('Wollen Sie die VerknÃ¼pfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])),  array('course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true),array('cancel' => true),PluginEngine::getLink('opencast/course/remove_series/'. get_ticket()))?>
 
 <? endif ?>
 
@@ -23,39 +23,71 @@
         $upload = '';
 
         if (!empty($connectedSeries)) {
-            $actions->addLink($_("Verknüpfung aufheben"), PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()), 'icons/16/blue/trash.png');
-            $actions->addLink($_("Episodenliste aktualisieren"), PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()), 'icons/16/blue/refresh.png');
-            $actions->addLink($_("Sortierung zurücksetzen"), PluginEngine::getLink ('opencast/course/refresh_sorting/' . get_ticket()), 'icons/16/blue/refresh.png');
+            $actions->addLink(
+                $_("VerknÃ¼pfung aufheben"),
+                PluginEngine::getLink ('opencast/course/remove_series/' . get_ticket()),
+                new Icon('trash', 'clickable')
+            );
+
+            $actions->addLink(
+                $_("Episodenliste aktualisieren"),
+                PluginEngine::getLink ('opencast/course/refresh_episodes/' . get_ticket()),
+                new Icon('refresh', 'clickable')
+            );
+
+            $actions->addLink(
+                $_("Sortierung zurÃ¼cksetzen"),
+                PluginEngine::getLink ('opencast/course/refresh_sorting/' . get_ticket()),
+                new Icon('refresh', 'clickable')
+            );
 
             if ($series_metadata[0]['schedule'] == '1') {
-                $actions->addLink($_("Medien hochladen"), '#1', 'icons/16/blue/upload.png', array (
+                $actions->addLink($_("Medien hochladen"), '#1',
+                    new Icon('upload', 'clickable'), array (
                     'id' => 'oc_upload_dialog'
                 ));
 
-                $actions->addLink($_("Workflow konfigurieren"), '#2', 'icons/16/blue/admin.png', array(
+                $actions->addLink($_("Workflow konfigurieren"), '#2',
+                    new Icon('admin', 'clickable'), array(
                     'id' => 'oc_workflow_dialog'
                 ));
             }
 
         } else {
-            $actions->addLink($_('Neue Series anlegen'), PluginEngine::getLink ('opencast/course/create_series/'), 'icons/16/blue/tools.png');
-            $actions->addLink($_('Vorhandene Series verknüpfen'), '#', 'icons/16/blue/group.png', array (
+            $actions->addLink(
+                $_('Neue Series anlegen'),
+                PluginEngine::getLink ('opencast/course/create_series/'),
+                new Icon('tools', 'clickable')
+            );
+
+            $actions->addLink(
+                $_('Vorhandene Series verknÃ¼pfen'), '#',
+                new Icon('group', 'clickable'),
+                array (
                     'id' => 'oc_config_dialog'
-           ));
+            ));
         }
 
 
         //todo - should this already be visibile for teachers?
         if ($coursevis == 'visible'){
-            $actions->addLink($_("Reiter sichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-visible.png');
+            $actions->addLink(
+                $_("Reiter sichtbar"),
+                PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()),
+                new Icon('visibility-visible', 'clickable')
+            );
         } else {
-            $actions->addLink($_("Reiter unsichtbar"), PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()), 'icons/16/blue/visibility-invisible.png');
+            $actions->addLink(
+                $_("Reiter unsichtbar"),
+                PluginEngine::getLink ('opencast/course/toggle_tab_visibility/' . get_ticket()),
+                new Icon('visibility-invisible', 'clickable')
+            );
         }
 
         $sidebar->addWidget ($actions);
-        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
+        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Ãœbersicht ihrer Vorlesungsaufzeichnungen. Sie kÃ¶nnen Ã¼ber den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufÃ¼gen. Je nach GrÃ¶ÃŸe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es mÃ¶glich die ausgewÃ¤hlten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu Ã¤ndern."));
     } else {
-        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
+        Helpbar::get()->addPlainText ('', $_("Hier sehen Sie eine Ãœbersicht ihrer Vorlesungsaufzeichnungen."));
         Helpbar::get()->addLink('Bei Problemen: '. $GLOBALS['UNI_CONTACT'], 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback');
     }
 ?>
@@ -228,7 +260,7 @@
 </div>
 <? else: ?>
     <? if(empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-            <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
+            <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknÃ¼pft. Bitte erstellen Sie eine neue Series oder verknÃ¼pfen eine bereits vorhandene Series.")) ?>
     <? else: ?>
         <?=MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.'));?>
     <? endif;?>
@@ -241,7 +273,7 @@
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier'])) ?>
 </div>
 
-<div id="config_dialog" title="<?=$_("Series verknüpfen")?>">
+<div id="config_dialog" title="<?=$_("Series verknÃ¼pfen")?>">
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 

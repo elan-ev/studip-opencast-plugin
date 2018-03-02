@@ -26,21 +26,6 @@ NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 're
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
 
-function tglog($text)
-{
-    static $fd;
-
-    if (!$fd) {
-        $fd = fopen('/tmp/opencast.log', 'a');
-    }
-
-    $date = DateTime::createFromFormat('U.u', microtime(TRUE));
-    $last = reset(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2));
-
-
-    fputs($fd, $date->format('d.m.Y - H:i:s.u') .' ['. basename($last['file']) .':'. $last['line'] ."]: \t". $text ."\n");
-}
-
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
@@ -145,7 +130,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return $result;
+        return studip_utf8decode($result);
     }
 
     /**
@@ -176,7 +161,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return $result;
+        return studip_utf8decode($result);
     }
 
     /**
@@ -207,9 +192,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
 
         if ($ocgetcount > 0) {
-            $navigation->setImage($this->image_path .'oc20red.png', array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'oc20red.png'), array('title' => $text));
         } else {
-            $navigation->setImage($this->image_path .'oc20grey.png', array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'oc20grey.png'), array('title' => $text));
         }
 
         return $navigation;
@@ -270,8 +255,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage($this->getPluginUrl() . '/images/oc-logo-white.png');
-        $main->setActiveImage($this->getPluginUrl() . '/images/oc-logo-black.png');
+        $main->setImage(new Icon($this->getPluginUrl() . '/images/oc-logo-white.png'));
+        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/oc-logo-black.png'));
 
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
