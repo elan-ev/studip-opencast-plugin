@@ -1,3 +1,4 @@
+//Anpassung f√ºr ge√§nderte Routen in Opencast 4x
 <?php
     require_once "OCRestClient.php";
     require_once "CaptureAgentAdminClient.php";
@@ -38,7 +39,7 @@
             curl_setopt($this->ochandler, CURLOPT_POST, true);
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);
-            //TODO ¸ber REST Klasse laufen lassen, getXML, getJSON...
+            //TODO ÔøΩber REST Klasse laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -86,7 +87,7 @@
             $location = parse_url($this->matterhorn_base_url);
             curl_setopt($this->ochandler,CURLOPT_URL,$location['path'].$uri);
             curl_setopt($this->ochandler,CURLOPT_CUSTOMREQUEST, "DELETE");
-            //TODO ¸ber REST Klasse laufen lassen, getXML, getJSON...
+            //TODO ÔøΩber REST Klasse laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
@@ -123,7 +124,7 @@
             curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
             curl_setopt($this->ochandler, CURLOPT_HEADER, true);
-            //TODO ¸ber REST Klasse laufen lassen, getXML, getJSON...
+            //TODO ÔøΩber REST Klasse laufen lassen, getXML, getJSON...
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
