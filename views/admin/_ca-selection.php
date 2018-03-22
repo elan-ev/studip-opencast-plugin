@@ -23,14 +23,14 @@
                     <? elseif($agent->state = 'unknown') : ?>
                         <?= Assets::img('icons/16/blue/question.png', array('title' => $_("Status unbekannt"))) ?>
                     <? else: ?>
-                        <?= Assets::img('icons/16/blue/video.png', array('title' => $_("Beschäftigt"))) ?>
+                        <?= Assets::img('icons/16/blue/video.png', array('title' => $_("Beschï¿½ftigt"))) ?>
                     <? endif; ?>
 
             </td>
             <td>
                 <a href="<?=PluginEngine::getLink('opencast/admin/remove_ca/'. $resource['resource_id']
                         .'/'. $agent->name)?>">
-                        <?= Assets::img('icons/16/blue/trash.png', array('title' => $_("Verknüpfung entfernen."))) ?>
+                        <?= Assets::img('icons/16/blue/trash.png', array('title' => $_("Verknï¿½pfung entfernen."))) ?>
                 </a>
             </td>
         <? endif; ?>
@@ -39,7 +39,7 @@
 <td>
     <input type="hidden" name="action" value="add"/>
     <select name="<?=$resource['resource_id']?>" required>
-        <option value="" disabled selected><?=$_("Bitte wählen Sie einen CA.")?></option>
+        <option value="" disabled selected><?=$_("Bitte wï¿½hlen Sie einen CA.")?></option>
         <? if($available_agents) : ?>
 
 
@@ -50,25 +50,26 @@
                 <? endif; ?>
             <? endforeach ; ?>
         <? else: ?>
-            <option disabled selected> <?=$_("Kein CA verfügbar")?> </option>
+            <option disabled selected> <?=$_("Kein CA verfï¿½gbar")?> </option>
         <? endif;?>
     </select>
 </td>
 <td>
     <select name="workflow" required>
-        <option value="" disabled selected><?=$_("Bitte wählen Sie einen Worflow aus.")?></option>
-
-        <? if($definitions) :foreach($definitions->definitions->definition as $definition) :?>
+        <option value="" disabled selected><?=$_("Bitte wÃ¤hlen Sie einen Worflow aus.")?></option>
+        <? if($definitions){ foreach($definitions->definitions->definition as $definition){ ?>
             <? if(is_object($definition->tags)) : ?>
-                <? if(is_array($definition->tags->tag) && in_array('schedule', $definition->tags->tag)) :?>
+                <? if(is_array($definition->tags->tag) &&
+                    in_array('schedule', $definition->tags->tag) &&
+                    in_array('schedule-ng', $definition->tags->tag)) :?>
                 <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
-                <? elseif($definition->tags->tag == 'schedule') :?>
+                <? elseif($definition->tags->tag == 'schedule' || $definition->tags->tag == 'schedule-ng') :?>
                     <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
                 <? endif;?>
             <? endif; ?>
-        <? endforeach; else: ?>
-            <option disabled selected> <?=$_("Kein Workflow verfügbar")?> </option>
-        <? endif; ?>
+        <? } } else { ?>
+        <option disabled selected> <?=$_("Kein Workflow verfï¿½gbar")?> </option>
+        <? } ?>
     </select>
 </td>
 <td></td>
