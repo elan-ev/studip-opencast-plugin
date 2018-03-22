@@ -39,12 +39,16 @@
          *
          *  @return $mediapackage - the augmented mediapackage
          */
-        function addDCCatalog($mediaPackage, $dublinCore, $flavor)
+        function addDCCatalog($mediaPackage, $dublinCore, $flavor=null)
         {
             $service_url = "/addDCCatalog";
-            $data = array('mediaPackage' =>  studip_utf8encode($mediaPackage),
-                    'dublinCore' => $dublinCore,
-                    'flavor' => $flavor);
+            $data = array(
+                'mediaPackage' =>  studip_utf8encode($mediaPackage),
+                'dublinCore' => $dublinCore
+            );
+            if($flavor!=null){
+                $data['flavor'] = $flavor;
+            }
             if($mediapackage = $this->getXML($service_url, $data, false)){
                 return $mediapackage;
             } else return false;
@@ -91,6 +95,19 @@
             );
 
             if($res = $this->getXML('/addTrack', http_build_query($data), false, false, true)) {
+                return $res;
+            } else {
+                return false;
+            }
+        }
+
+        public function schedule($media_package,$worklow_definition=null){
+            $uri = '/schedule';
+            if($worklow_definition!=null){
+                $uri .= '/'.$worklow_definition;
+            }
+
+            if($res = $this->getXML($uri, http_build_query(array('mediaPackage'=>$media_package)), false, true, true)) {
                 return $res;
             } else {
                 return false;
