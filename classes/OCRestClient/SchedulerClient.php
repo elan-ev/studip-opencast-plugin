@@ -35,7 +35,6 @@ class SchedulerClient extends OCRestClient
      */
     function scheduleEventForSeminar($course_id, $resource_id, $termin_id)
     {
-
         $ingest_client = new IngestClient();
 
         $media_package = $ingest_client->createMediaPackage();

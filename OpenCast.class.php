@@ -64,12 +64,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $main->addSubNavigation('oc-resources', $resources);
                 Navigation::addItem('/admin/config/oc-resources', $resources);
                 // for debug purposes
-                //if($perm->have_perm('root')){
-                //    $endpoints = new Navigation('OC Endpoints');
-                //    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
-                //    $main->addSubNavigation('oc-endpoints', $endpoints);
-                //    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
-                //}
+                if($perm->have_perm('root')){
+                    $endpoints = new Navigation('OC Endpoints');
+                    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
+                    $main->addSubNavigation('oc-endpoints', $endpoints);
+                    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
+                }
             }
         }
 
