@@ -1,8 +1,8 @@
 ### Stud.IP Opencast
-This plugin serves as a connection between Opencast Matterhorn and the LMS Stud.IP.
+This plugin serves as a connection between Opencast and the LMS Stud.IP.
 
 <p>
-Das Opencast Plugin Plugin stellt eine Verbindung zwischen einer Opencast Matterhorn und dem Lernmanagementsystem Stud.IP her. Das Plugin bildet hierbei die Prozesse für das Management von Audio- und Videoinhalten, vor allem für die Aufzeichnung und Distribution von Lehrveranstaltungen im Lernmanagementsystem ab. Bei der Entwicklung des Plugins wurde sicher gestellt, dass folgende typische Anforderungen sichergestellt sind:<br><br>
+Das Opencast Plugin Plugin stellt eine Verbindung zwischen einer Opencast und dem Lernmanagementsystem Stud.IP her. Das Plugin bildet hierbei die Prozesse für das Management von Audio- und Videoinhalten, vor allem für die Aufzeichnung und Distribution von Lehrveranstaltungen im Lernmanagementsystem ab. Bei der Entwicklung des Plugins wurde sicher gestellt, dass folgende typische Anforderungen sichergestellt sind:<br><br>
 
 <em>Transparenz der Aufzeichnungstechnik:</em> Die DozentIn kann in ihrer Veranstaltung direkt erkennen, ob der gebuchte Veranstaltungsraum mit entsprechender Aufzeichnungstechnik ausgerüstet ist. Dies wird im Plugin durch die Verknüpfung von Stud.IP Ressourcen mit korrespodnierenden Capture Agents aus dem Opencast Matterhon sichergestellt. DozentInnen benötigen hierbei kein technisches Vorwissen über die verwendete Aufzeichnungstechnik.<br><br>
 
