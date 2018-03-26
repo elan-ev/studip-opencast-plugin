@@ -290,7 +290,7 @@ class OCSeriesModel {
         $creator = $instructor['fullname'];
         $language = 'de';
 
-        if (studip_strlen($course->description) > 1000){
+        if (mb_strlen($course->description) > 1000){
                 $description .= studip_substr($course->description, 0, 1000);
                 $description .= "... ";
         } else {
