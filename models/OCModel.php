@@ -446,7 +446,7 @@ class OCModel
                 && !preg_match('#https?://localhost.*#', $service->host)
                 && mb_strpos($service->host, $match_protocol) === 0
             ) {
-                $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
+                $services[preg_replace(array("/\/docs/"), array(''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
             }
         }

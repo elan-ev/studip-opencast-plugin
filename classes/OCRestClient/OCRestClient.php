@@ -83,7 +83,7 @@
                     $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
                     return $config;
                     } else {
-                        throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten f�r den Servicetyp **%s** vorhanden."), $service_type));
+                        throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
                     }
 
                 } else {
