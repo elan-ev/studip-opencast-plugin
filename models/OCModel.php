@@ -2,14 +2,20 @@
 
 class OCModel
 {
-    static function getConnectedSeries($course_id) {
+    static function getConnectedSeries($course_id)
+    {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
             WHERE seminar_id = ?");
+
         $stmt->execute(array($course_id));
         $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (empty($series)) return false;
-        else return $series;
+
+        if (empty($series)) {
+            return false;
+        } else {
+            return $series;
+        }
     }
 
     static function removeSeriesforCourse($course_id, $series_id) {
@@ -430,7 +436,7 @@ class OCModel
     static function retrieveRESTservices($components) {
         $services = array();
         foreach( $components as $service) {
-            if(!preg_match('/remote/', $service->type)){
+            if (!preg_match('/remote/', $service->type) && !preg_match('#https?://localhost.*#', $service->host)) {
                 $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
             }
