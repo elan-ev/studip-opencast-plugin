@@ -17,12 +17,12 @@
 
             }
         }
-        
+
         /**
          * getWorkflowInstance - Get a specific workflow instance
          *
          * @param $id The workflow instance identifier
-         * 
+         *
          * @return $result A JSON representation of a workflow instance
          */
         function getWorkflowInstance($id) {
@@ -31,7 +31,7 @@
                 return $result->workflow;
             } else return false;
         }
-        
+
         /**
          * getInstances() - returns all Workflow instances for a given SeriesID
          *
@@ -57,7 +57,7 @@
         function getDefinitions() {
             $service_url = sprintf( "/definitions.json");
 
-            if($definitions = $this->getJSON($service_url)){
+            if ($definitions = $this->getJSON($service_url)) {
                 return $definitions;
             } else {
                 return false;
@@ -86,7 +86,7 @@
             return $tagged_wfs;
 
         }
-    
-    
+
+
     }
 ?>

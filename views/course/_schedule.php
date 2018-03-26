@@ -48,11 +48,13 @@
         <td>
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
             <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
-                    <?= Assets::img('icons/16/black/video.png', array('title' => $_("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))) ?>
+                    <?= new Icon('video', 'info', array(
+                        'title' => $_("Aufzeichnung ist bereits geplant.")
+                    )) ?>
                 <?  else : ?>
                     <? if(date($d['date']) > time()) :?>
                         <?= new Icon('date', 'info', array(
-                                'title' => $_("Aufzeichnung planen")
+                                'title' => $_("Aufzeichnung ist noch nicht geplant")
                             )) ?>
                     <? else :?>
                         <?= new Icon('exclaim-circle', 'info', array(
@@ -60,19 +62,6 @@
                             )) ?>
                     <? endif;?>
                 <? endif; ?>
-            <?
-
-            ?>
-            <?// $date->getRoom() ?>
-            <? elseif(false) : ?>
-            <?= Assets::img('icons/16/blue/video.png') ?>
-            <?
-            /*  Wenn es eine Aufzeichnung gibt, optionen zum Unsichtbar machen anbieten
-            *  Wenn keine Aufzeichnung aus OC gibt dann ersma nix machen
-            *
-            *
-            */
-            ?>
             <? else : ?>
                 <?= new Icon('exclaim-circle', 'attention', array(
                         'title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht")
@@ -102,7 +91,7 @@
                         </select>
                     <? else :?>
 
-                        Hier müsste man den worflow sehen den das Video durchlaufen hat, sofern einer durchlaufen wurde.
+                        <? /* Hier müsste man den workflow sehen den das Video durchlaufen hat, sofern einer durchlaufen wurde. */ ?>
                     <? endif;?>
                 <? endif; ?>
             <? elseif(false) : ?>
@@ -118,24 +107,32 @@
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
                 <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id) && (int)date($d['date']) > time()) :?>
                     <a href="<?=PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id )?>">
-                        <?= Assets::img('icons/16/blue/refresh.png', array('title' =>  $_("Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren."))) ?>
+                        <?= new Icon('refresh' ,'clickable', array(
+                            'title' =>  $_("Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren.")
+                        )) ?>
                     </a>
                     <a href="<?=PluginEngine::getLink('opencast/course/unschedule/'.$resource .'/'. $date->termin_id )?>">
-                        <?= Assets::img('icons/16/blue/trash.png', array('title' =>  $_("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben."))) ?>
+                        <?= new Icon('trash' ,'clickable', array(
+                            'title' =>  $_("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben.")
+                        )) ?>
                     </a>
                 <?  else : ?>
                     <? if(date($d['date']) > time()) :?>
                         <a href="<?=PluginEngine::getLink('opencast/course/schedule/'.$resource .'/'. $date->termin_id )?>">
-                            <?= Assets::img('icons/16/blue/video.png', array('title' =>  $_("Aufzeichnung planen."))) ?>
+                            <?= new Icon('video', 'clickable', array(
+                                'title' =>  $_("Aufzeichnung planen.")
+                            )) ?>
                         </a>
                     <? else :?>
-                        <?= Assets::img('icons/16/grey/video.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."))) ?>
+                        <?= new Icon('video', 'inactive', array(
+                            'title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen.")
+                        )) ?>
                     <? endif;?>
                 <? endif; ?>
-            <? elseif(false) : ?>
-                <?= Assets::img('icons/16/grey/question.png') ?>
             <? else : ?>
-                <?= Assets::img('icons/16/grey/video.png', array('title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht."))) ?>
+                <?= new Icon('video', 'inactive', array(
+                    'title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht.")
+                )) ?>
             <? endif; ?>
         </td>
     </tr>

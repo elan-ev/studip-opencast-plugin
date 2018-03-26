@@ -9,7 +9,7 @@
     <?= $resource['name'] ?>
 </td>
 <? if(!empty($assigned_agents)) :?>
-    <td>   
+    <td>
         <?=$assigned_agents['capture_agent']?>
     </td>
     <td>
@@ -18,19 +18,21 @@
     <? foreach ($agents as $key => $agent) : ?>
         <? if(in_array($agent->name, $assigned_agents)):?>
             <td>
-                    <? if($agent->state == 'idle') :?>
-                        <?= Assets::img('icons/16/blue/pause.png', array('title' => $_("Idle"))) ?>
-                    <? elseif($agent->state = 'unknown') : ?>
-                        <?= Assets::img('icons/16/blue/question.png', array('title' => $_("Status unbekannt"))) ?>
-                    <? else: ?>
-                        <?= Assets::img('icons/16/blue/video.png', array('title' => $_("Beschäftigt"))) ?>
-                    <? endif; ?>
+                <? if($agent->state == 'idle') :?>
+                    <?= new Icon('pause', 'clickable', array('title' => $_("Idle"))) ?>
+                <? elseif($agent->state = 'unknown') : ?>
+                    <?= new Icon('question', 'clickable', array('title' => $_("Status unbekannt"))) ?>
+                <? else: ?>
+                    <?= new Icon('video', 'clickable', array('title' => $_("BeschÃ¤ftigt"))) ?>
+                <? endif; ?>
 
             </td>
             <td>
                 <a href="<?=PluginEngine::getLink('opencast/admin/remove_ca/'. $resource['resource_id']
                         .'/'. $agent->name)?>">
-                        <?= Assets::img('icons/16/blue/trash.png', array('title' => $_("Verknüpfung entfernen."))) ?>
+                    <?= new Icon('trash', 'clickable', array(
+                        'title' => $_("VerknÃ¼pfung entfernen.")
+                    )) ?>
                 </a>
             </td>
         <? endif; ?>
@@ -39,7 +41,7 @@
 <td>
     <input type="hidden" name="action" value="add"/>
     <select name="<?=$resource['resource_id']?>" required>
-        <option value="" disabled selected><?=$_("Bitte wählen Sie einen CA.")?></option>
+        <option value="" disabled selected><?=$_("Bitte wÃ¤hlen Sie einen CA.")?></option>
         <? if($available_agents) : ?>
 
 
@@ -50,25 +52,30 @@
                 <? endif; ?>
             <? endforeach ; ?>
         <? else: ?>
-            <option disabled selected> <?=$_("Kein CA verfügbar")?> </option>
+            <option disabled selected> <?=$_("Kein CA verfÃ¼gbar")?> </option>
         <? endif;?>
     </select>
 </td>
 <td>
     <select name="workflow" required>
-        <option value="" disabled selected><?=$_("Bitte wählen Sie einen Worflow aus.")?></option>
+        <option value="" disabled selected><?=$_("Bitte wÃ¤hlen Sie einen Worflow aus.")?></option>
 
-        <? if($definitions) :foreach($definitions->definitions->definition as $definition) :?>
-            <? if(is_object($definition->tags)) : ?>
-                <? if(is_array($definition->tags->tag) && in_array('schedule', $definition->tags->tag)) :?>
-                <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
-                <? elseif($definition->tags->tag == 'schedule') :?>
+        <? if ($definitions): ?>
+            <? foreach ($definitions->definitions->definition as $definition) :?>
+                <? if (is_object($definition->tags)) : ?>
+                    <? if (is_array($definition->tags->tag) &&
+                        (in_array('schedule', $definition->tags->tag) ||
+                        in_array('schedule-ng', $definition->tags->tag))
+                    ) :?>
                     <option  value="<?= $definition->id ?>"><?= $definition->id ?></option>
-                <? endif;?>
-            <? endif; ?>
-        <? endforeach; else: ?>
-            <option disabled selected> <?=$_("Kein Workflow verfügbar")?> </option>
-        <? endif; ?>
+                    <? elseif ($definition->tags->tag == 'schedule' || $definition->tags->tag == 'schedule-ng') : ?>
+                        <option value="<?= $definition->id ?>"><?= $definition->id ?></option>
+                    <? endif;?>
+                <? endif; ?>
+            <? endforeach ?>
+        <? else : ?>
+            <option disabled selected> <?=$_("Kein Workflow verfÃ¼gbar")?> </option>
+        <? endif ?>
     </select>
 </td>
 <td></td>

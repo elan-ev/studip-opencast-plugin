@@ -32,7 +32,11 @@ class RefreshScheduledEvents extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
+            require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient_4px.php';
+        } else {
+            require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
+        }
 
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                   LEFT JOIN oc_seminar_series USING (seminar_id)
@@ -45,7 +49,7 @@ class RefreshScheduledEvents extends CronJob
                 $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
                 $course = Course::find($se['seminar_id']);
                 $date = new SingleDate($se['date_id']);
-                echo sprintf(_("Aktualisieriere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n "), $date->getDatesExport(), $course->name);
+                echo sprintf(_("Aktualisieriere die Aufzeichnungsdaten fï¿½r die Veranstaltung am %s fï¿½r den Kurs %s\n "), $date->getDatesExport(), $course->name);
             }
         }
 

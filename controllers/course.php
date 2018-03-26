@@ -11,7 +11,7 @@
 
 require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
+
 require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
@@ -19,6 +19,11 @@ require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
+if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
+    require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient_4px.php';
+} else {
+    require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
+}
 
 class CourseController extends OpencastController
 {
@@ -358,8 +363,7 @@ class CourseController extends OpencastController
     {
         if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
-            //if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            if (true) {
+            if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
                 $this->flash['messages'] = array('success'=> $this->_("Aufzeichnung wurde geplant."));
 
                 $course = Course::find($this->course_id);
@@ -391,9 +395,9 @@ class CourseController extends OpencastController
     {
 
         $this->course_id = Request::get('cid');
-        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
-            if( $scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
                 $this->flash['messages'] = array('success'=> $this->_("Die geplante Aufzeichnung wurde entfernt"));
                 StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $this->course_id);
             } else {
