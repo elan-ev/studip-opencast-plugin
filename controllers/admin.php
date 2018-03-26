@@ -139,11 +139,8 @@ class AdminController extends OpencastController
             $services_client = new ServicesClient($config_id);
             $comp = $services_client->getRESTComponents();
 
-
-            $comp = $services_client->getRESTComponents();
             if($comp) {
                 $services = OCModel::retrieveRESTservices($comp);
-
 
                 foreach($services as $service_url => $service_type) {
 
@@ -154,7 +151,11 @@ class AdminController extends OpencastController
                         OCEndpointModel::setEndpoint($config_id, $service_comp[0], $service_type);
                     }
                 }
-                $success_message = sprintf($this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"), count($comp));
+                $success_message = sprintf(
+                    $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"),
+                    count($services)
+                );
+
                 $this->flash['messages'] = array('success' => $success_message);
             } else {
                 die('Keine Endpoints gefunden!');
