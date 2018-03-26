@@ -167,7 +167,7 @@
                     <div style="text-align: left; font-style: italic;">Weitere
                         Optionen:</div>
                     <div class="button-group">
-                        <?= Studip\LinkButton::create($_('Erweiterter Player'), URLHelper::getURL('http://'.$engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
+                        <?= Studip\LinkButton::create($_('Erweiterter Player'), URLHelper::getURL($engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
                         <? if ($active['presenter_download']) : ?>
                             <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
                         <? endif;?>

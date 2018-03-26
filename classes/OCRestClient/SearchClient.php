@@ -106,6 +106,7 @@
         function getBaseURL() {
            $base = $this->matterhorn_base_url;
            $url = preg_replace('/\/search/', '', $base);
+           $url = str_replace('http://', 'https://', $url);
            return $url;
         }
 
