@@ -51,9 +51,13 @@
                     <?= Assets::img('icons/16/black/video.png', array('title' => $_("Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben"))) ?>
                 <?  else : ?>
                     <? if(date($d['date']) > time()) :?>
-                        <?= Assets::img('icons/16/black/date.png', array('title' => $_("Aufzeichnung planen"))) ?>
+                        <?= new Icon('date', 'info', array(
+                                'title' => $_("Aufzeichnung planen")
+                            )) ?>
                     <? else :?>
-                        <?= Assets::img('icons/16/black/exclaim-circle.png', array('title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen."))) ?>
+                        <?= new Icon('exclaim-circle', 'info', array(
+                                'title' =>  $_("Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung planen.")
+                            )) ?>
                     <? endif;?>
                 <? endif; ?>
             <?
@@ -70,7 +74,9 @@
             */
             ?>
             <? else : ?>
-                <?= Assets::img('icons/16/red/exclaim-circle.png', array('title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht"))) ?>
+                <?= new Icon('exclaim-circle', 'attention', array(
+                        'title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht")
+                    )) ?>
             <? endif; ?>
         </td>
         <td>
@@ -100,9 +106,11 @@
                     <? endif;?>
                 <? endif; ?>
             <? elseif(false) : ?>
-                <?= Assets::img('icons/16/blue/video.png') ?>
+                <?= new Icon('video', 'clickable') ?>
             <? else : ?>
-                <?= Assets::img('icons/16/red/exclaim-circle.png', array('title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht"))) ?>
+                <?= new Icon('exclaim-circle' ,'attention', array(
+                        'title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht")
+                    )) ?>
             <? endif; ?>
         </td>
         <td>

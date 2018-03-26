@@ -23,7 +23,11 @@ class OCCourseModel
     /**
      * @param $course_id
      */
-    function __construct($course_id){
+    function __construct($course_id)
+    {
+        if (!$course_id) {
+            throw new Exception('Missing course-id!');
+        }
 
         $this->setCourseID($course_id);
         // take care of connected series
@@ -83,7 +87,7 @@ class OCCourseModel
             $ordered_episodes = array();
 
             //check if series' episodes is already stored in studip
-            if(!empty($series)) {
+            if (!empty($series)) {
                 // add additional episode metadata from opencast
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }

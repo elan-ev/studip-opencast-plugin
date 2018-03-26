@@ -34,12 +34,12 @@
             return static::$me;
         }
 
-        function __construct($matterhorn_base_url = null, $username = null, $password = null){
+        function __construct($matterhorn_base_url, $username, $password)
+        {
             $this->matterhorn_base_url = $matterhorn_base_url;
 
             $this->username = !is_null($username) ? $username : 'opencast_system_account';
             $this->password = !is_null($password) ? $password : 'opencast';
-
 
             // setting up a curl-handler
             $this->ochandler = curl_init();
@@ -142,11 +142,15 @@
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-                if($with_res_code) {
+                if ($with_res_code) {
                     return array(json_decode($response), $httpCode);
                 } else {
-                    if ($httpCode == 404){
-                        return false;
+                    // throw exception if the endpoint is missing
+                    if ($httpCode == 404) {
+                        throw new Exception('Erorr calling "'
+                            . $this->matterhorn_base_url.$service_url
+                            .'" ' . strip_tags($response)
+                        );
                     } else {
                         return json_decode($response);
                     }
@@ -162,25 +166,33 @@
          */
         function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false) {
             if(isset($service_url) && self::checkService($service_url)) {
-                $options = array(CURLOPT_URL => $this->matterhorn_base_url.$service_url,
-                           CURLOPT_FRESH_CONNECT => 1);
-                if(!$is_get) {
+                $options = array(
+                    CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                    CURLOPT_FRESH_CONNECT => 1
+                );
+
+                if (!$is_get) {
                     $options[CURLOPT_POST] = 1;
-                    if(!empty($data)) {
+                    if (!empty($data)) {
                         $options[CURLOPT_POSTFIELDS] = $data;
                     }
                 } else {
                     $options[CURLOPT_HTTPGET] = 1;
                 }
+
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-                if($with_res_code) {
+                if ($with_res_code) {
                     return array($response, $httpCode);
                 } else {
-                    if ($httpCode == 404){
-                        return false;
+                    // throw exception if the endpoint is missing
+                    if ($httpCode == 404) {
+                        throw new Exception('Erorr calling "'
+                            . $this->matterhorn_base_url.$service_url
+                            .'" ' . strip_tags($response)
+                        );
                     } else {
                         return $response;
                     }

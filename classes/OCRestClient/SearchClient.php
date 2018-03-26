@@ -25,14 +25,18 @@
          *
          *  @return array response of episodes
          */
-        function getEpisodes($series_id) {
+        function getEpisodes($series_id)
+        {
             global $perm;
+
             $cache = StudipCacheFactory::getCache();
             $cache_key = 'oc_episodesforseries/'.$series_id;
             $episodes = $cache->read($cache_key);
-            if($episodes === false || $perm->have_perm('dozent')){
+
+            if ($episodes === false || $perm->have_perm('dozent')) {
                 $service_url = "/series.json?id=".$series_id."&q=&episodes=true&sort=&limit=0&offset=0";
-                if($search = $this->getJSON($service_url)){
+
+                if ($search = $this->getJSON($service_url)) {
                     $x = "search-results";
                     $episodes = $search->$x->result;
                     $cache->write($cache_key, serialize($episodes), 7200);
@@ -97,13 +101,13 @@
             } else return false;
 
         }
-        
-        
+
+
         function getBaseURL() {
            $base = $this->matterhorn_base_url;
            $url = preg_replace('/\/search/', '', $base);
            return $url;
-        } 
+        }
 
 
     }

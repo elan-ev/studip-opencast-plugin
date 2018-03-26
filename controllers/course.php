@@ -178,23 +178,23 @@ class CourseController extends OpencastController
                 $occourse = new OCCourseModel($this->course_id);
                 $this->coursevis = $occourse->getSeriesVisibility();
 
-                if($occourse->getSeriesID()){
+                if ($occourse->getSeriesID()) {
 
                     $ordered_episode_ids = $occourse->getEpisodes($reload);
-                    if(!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+                    if (!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
                         $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
                     } else {
                         $this->ordered_episode_ids = $ordered_episode_ids;
                     }
 
-                    if(empty($active_id) || $active_id != "false") {
+                    if (empty($active_id) || $active_id != "false") {
                         $this->active_id = $active_id;
                     } else if(isset($this->ordered_episode_ids)){
                         $first = current($this->ordered_episode_ids);
                         $this->active_id = $first['id'];
                     }
 
-                    if(!empty($this->ordered_episode_ids)) {
+                    if (!empty($this->ordered_episode_ids)) {
                         $engage_url =  parse_url($this->search_client->getBaseURL());
 
                         foreach($this->ordered_episode_ids as $ep) {
@@ -208,18 +208,12 @@ class CourseController extends OpencastController
                         }
 
 
-                        if($this->theodul) {
+                        if ($this->theodul) {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
                         } else {
                             $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
                         }
-                        // check whether server supports ssl
-                        $embed_headers = @get_headers("https://". $this->embed);
-                        if($embed_headers) {
-                            $this->embed = "https://". $this->embed;
-                        } else {
-                            $this->embed = "http://". $this->embed;
-                        }
+
                         $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
                     }
 
@@ -362,8 +356,6 @@ class CourseController extends OpencastController
 
     function schedule_action($resource_id, $termin_id)
     {
-
-        $this->course_id = Request::get('cid');
         if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
             //if($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
@@ -441,7 +433,7 @@ class CourseController extends OpencastController
     {
         if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
             $this->series_client = SeriesClient::getInstance($this->course_id);
-            if($this->series_client->createSeriesForSeminar($this->course_id)) {
+            if ($this->series_client->createSeriesForSeminar($this->course_id)) {
                 $this->flash['messages']['success'] = $this->_("Series wurde angelegt");
                 StudipLog::log('OC_CREATE_SERIES', $this->course_id);
 
@@ -654,24 +646,17 @@ class CourseController extends OpencastController
                 $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
 
-            // check whether server supports ssl
-            $embed_headers = @get_headers("https://". $embed);
-
-            if($embed_headers) {
-                $embed = "https://". $embed;
-            } else {
-                $embed = "http://". $embed;
-            }
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
 
-            $episode = array('active_id' => $active_id,
-                            'course_id' => $course_id,
-                            'theodul' => $theodul,
-                            'embed' => $embed,
-                            'perm' => $perm,
-                            'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
-                            'episode_data' => $cand_episode
+            $episode = array(
+                'active_id'         => $active_id,
+                'course_id'         => $course_id,
+                'theodul'           => $theodul,
+                'embed'             => $embed,
+                'perm'              => $perm,
+                'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
+                'episode_data'      => $cand_episode
             );
 
             $this->render_json($episode);
@@ -716,9 +701,24 @@ class CourseController extends OpencastController
         $this->redirect('course/index/false');
     }
 
-    function setworkflow_action(){
+    function workflow_action()
+    {
+        if (Request::isXhr()) {
+            $this->set_layout(null);
+        }
 
-        if(check_ticket(Request::get('ticket')) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+        $this->workflow_client = WorkflowClient::getInstance($this->course_id);
+        $this->workflows = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+        $occourse = new OCCourseModel($this->course_id);
+        $this->uploadwf = $occourse->getWorkflow('upload');
+    }
+
+    function setworkflow_action()
+    {
+        if (check_ticket(Request::get('ticket'))
+            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
 
             $occcourse = new OCCourseModel($this->course_id);
 

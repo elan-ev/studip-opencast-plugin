@@ -47,9 +47,10 @@
                     'id' => 'oc_upload_dialog'
                 ));
 
-                $actions->addLink($_("Workflow konfigurieren"), '#2',
+                $actions->addLink($_("Workflow konfigurieren"),
+                    $controller->url_for('course/workflow'),
                     new Icon('admin', 'clickable'), array(
-                    'id' => 'oc_workflow_dialog'
+                        'data-dialog' => 'size=auto'
                 ));
             }
 
@@ -277,9 +278,6 @@
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 
-<div id="workflow_dialog" title="<?=$_("Workflow-Konfiguration")?>">
-    <?= $this->render_partial("course/_workflowselection", array('workflows' => $tagged_wfs)); ?>
-</div>
 <? endif;?>
 
 <!--- hidden -->

@@ -34,40 +34,6 @@ OC = {
                     width: "350px"
                 });
 
-                // Workflow Config Dialog
-                jQuery("#workflow_dialog").dialog({ autoOpen: false, width: 800, dialogClass: 'ocWorkflow'});
-                jQuery("#oc_workflow_dialog").click(
-                    function () {
-                        jQuery("#workflow_dialog").dialog('open');
-                        return false;
-                    }
-                );
-
-                jQuery( "#oce_sortablelist" ).sortable({
-                    items: '> li:not(.uploaded)',
-                    stop: function( event, ui ) {
-                        var items = [];
-                        jQuery( "ul#oce_sortablelist li" ).each(function(index){
-                            items.push({
-                                'episode_id' : jQuery( this ).attr('id'),
-                                'position' :  index,
-                                'course_id' : jQuery( this ).data('courseid'),
-                                'visibility' : jQuery( this ).data('visibility'),
-                                'mkdate' : jQuery( this).data('mkdate'),
-                                'oldpos' : jQuery(this).data('pos')
-                            });
-                            if(jQuery("#oc-togglevis").data('episode-id') === jQuery( this ).attr('id')) {
-                                var new_url =  STUDIP.URLHelper.getURL("plugins.php/opencast/course/toggle_visibility/" + jQuery( this ).attr('id') + "/" + index);
-                                jQuery("#oc-togglevis").attr('href', new_url);
-                            }
-                        });
-
-                        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/setEpisodeOrdersForCourse/",
-                            { "positions": items });
-                    }
-                });
-                jQuery( "#oce_sortablelist" ).disableSelection();
-
                 // toggle visibility
                 OC.toggleVis(cid);
 
@@ -132,7 +98,7 @@ OC = {
                 done: function(e, data) {
                     jQuery( "#progressbar" ).progressbar('destroy');
                     jQuery("#upload_dialog").dialog("close");
-                    window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false/true", '_self');
+                    window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/true"), '_self');
                 },
                 error: function(xhr, data) {
                     console.log('Fehler', data);
@@ -211,7 +177,7 @@ OC = {
                 }
 
             } if(reload || response == ""){
-                window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
+                // window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
             } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false)}, 25000)
 
         });

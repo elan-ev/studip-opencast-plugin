@@ -31,20 +31,26 @@ class OCEndpointModel
     /**
      *  function setEndpoint - sets config into DB for given REST-Service-Endpoint
      *
-     *  @param string $service_host
+     *  @param string $service_url
      *  @param string $service_type
      */
-    function setEndpoint($config_id, $service_host, $service_type) {
-        if(isset($config_id, $service_host,$service_type)) {
-            if($service_host != '') {
+    function setEndpoint($config_id, $service_url, $service_type)
+    {
+        if (isset($config_id, $service_url, $service_type)) {
+            if ($service_url != '') {
+                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_endpoints`
+                    (config_id, service_url, service_type)
+                    VALUES (?,?,?)"
+                );
 
-                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_endpoints` (config_id, service_url,service_host, service_type) VALUES (?,?,?,?)");
-                return $stmt->execute(array($config_id, $service_host.'/'.$service_type, $service_host, $service_type));
+                return $stmt->execute(array(
+                    $config_id,
+                    $service_url,
+                    $service_type
+                ));
             }
         } else {
             throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
         }
-
     }
 }
-?>

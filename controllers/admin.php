@@ -122,7 +122,7 @@ class AdminController extends OpencastController
         $service_url =  parse_url(Request::get('info_url'));
         $config_id = 1; // we assume that we want to configure the new opencast
 
-        if(!array_key_exists('scheme', $service_url)) {
+        if (!array_key_exists('scheme', $service_url)) {
             $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema angegeben.'));
             OCRestClient::clearConfig($config_id);
             $this->redirect('admin/config');
@@ -134,23 +134,18 @@ class AdminController extends OpencastController
 
             OCRestClient::clearConfig($config_id);
             OCRestClient::setConfig($config_id, $service_host, $this->info_user, $this->info_password);
-            OCEndpointModel::setEndpoint($config_id, $this->info_url, 'services');
+            OCEndpointModel::setEndpoint($config_id, $service_host .'/services', 'services');
 
             $services_client = new ServicesClient($config_id);
             $comp = $services_client->getRESTComponents();
 
-            if($comp) {
-                $services = OCModel::retrieveRESTservices($comp);
+            if ($comp) {
+                $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
                 foreach($services as $service_url => $service_type) {
-
-                    $service_comp = explode("/", $service_url);
-
-                    if(sizeof($service_comp) == 2) {
-                        if($service_comp)
-                        OCEndpointModel::setEndpoint($config_id, $service_comp[0], $service_type);
-                    }
+                    OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
                 }
+
                 $success_message = sprintf(
                     $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"),
                     count($services)

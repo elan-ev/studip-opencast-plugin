@@ -115,22 +115,26 @@
          * @param string $course_id  - course identifier
          * @return bool success or not
          */
-        function createSeriesForSeminar($course_id) {
+        function createSeriesForSeminar($course_id)
+        {
             $dublinCore = studip_utf8encode(OCSeriesModel::createSeriesDC($course_id));
 
-
-            $ACLData = array('ROLE_ADMIN' => array(
-                                                'read' => 'true',
-                                                'write' => 'true',
-                                                'analyze' => 'true'),
-                               'ROLE_ANONYMOUS' => array(
-                                                'read' => 'true'
-                               )
-                        );
+            $ACLData = array(
+                'ROLE_ADMIN' => array(
+                    'read' => 'true',
+                    'write' => 'true',
+                    'analyze' => 'true'
+                ),
+               'ROLE_ANONYMOUS' => array(
+                    'read' => 'true'
+               )
+            );
 
             $ACL = OCSeriesModel::createSeriesACL($ACLData);
-            $post = array('series' => $dublinCore,
-                        'acl' => $ACL);
+            $post = array(
+                'series' => $dublinCore,
+                'acl'    => $ACL
+            );
 
             $res = $this->getXML('/', $post, false, true);
 
@@ -138,8 +142,7 @@
             $xml = simplexml_load_string($string);
             $json = json_decode(json_encode($xml), true);
 
-            if ($res[1] == 201){
-
+            if ($res[1] == 201) {
                 $new_series = json_decode($res[0]);
                 $series_id = $json['identifier'];
                 OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1, time());
@@ -185,7 +188,7 @@
             $service_url = "/".$series_id;
             curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
             curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
-            //TODO über REST Classe laufen lassen, getXML, getJSON...
+            //TODO ï¿½ber REST Classe laufen lassen, getXML, getJSON...
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
             if($httpCode == 204){

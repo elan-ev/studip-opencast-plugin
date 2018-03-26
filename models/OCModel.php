@@ -433,10 +433,13 @@ class OCModel
         return gmdate("Y-m-d", $timestamp).'T'.gmdate('H:i:s', $timestamp).'Z';
     }
 
-    static function retrieveRESTservices($components) {
+    static function retrieveRESTservices($components, $match_protocol) {
         $services = array();
-        foreach( $components as $service) {
-            if (!preg_match('/remote/', $service->type) && !preg_match('#https?://localhost.*#', $service->host)) {
+        foreach ($components as $service) {
+            if (!preg_match('/remote/', $service->type)
+                && !preg_match('#https?://localhost.*#', $service->host)
+                && mb_strpos($service->host, $match_protocol) === 0
+            ) {
                 $services[preg_replace(array("/http:\/\//","/\/docs/"), array('',''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
             }
