@@ -99,20 +99,28 @@ class OCCourseModel
 
     }
 
-    private function episodeComparison($stored_episodes, $remote_episodes) {
+    private function episodeComparison($stored_episodes, $remote_episodes)
+    {
         $episodes = array();
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
 
         foreach($stored_episodes as $key => $stored_episode){
 
-            if($tmp = $oc_episodes[$stored_episode['episode_id']]){
+            if ($tmp = $oc_episodes[$stored_episode['episode_id']]){
                 $tmp['visibility'] = $stored_episode['visible'];
                 $tmp['position'] = $stored_episode['position'];
                 $tmp['mkdate']  = $stored_episode['mkdate'];
                 $lastpos = $stored_episode['position'];
 
-                OCModel::setCoursePositionForEpisode($stored_episode['episode_id'], $lastpos, $this->getCourseID(), $tmp['visibility'], $stored_episode['mkdate']);
+                OCModel::setCoursePositionForEpisode(
+                    $stored_episode['episode_id'],
+                    $lastpos,
+                    $this->getCourseID(),
+                    $tmp['visibility'],
+                    $stored_episode['mkdate']
+                );
+
                 $episodes[$stored_episode['position']] = $tmp;
 
                 unset($oc_episodes[$stored_episode['episode_id']]);
@@ -122,28 +130,42 @@ class OCCourseModel
         }
 
         //add new episodes
-        if(!empty($oc_episodes)){
-            foreach($oc_episodes as $episode){
+        if (!empty($oc_episodes)) {
+            foreach ($oc_episodes as $episode) {
                 $lastpos++;
                 $timestamp = time();
                 $episode['visibility'] = 'true';
                 $episode['position'] = $lastpos;
                 $episode['mkdate'] = $timestamp;
-                OCModel::setCoursePositionForEpisode($episode['id'], $lastpos, $this->getCourseID(), 'true', $timestamp);
+
+                OCModel::setCoursePositionForEpisode(
+                    $episode['id'],
+                    $lastpos,
+                    $this->getCourseID(),
+                    'true',
+                    $timestamp
+                );
+
                 $episodes[$episode['position']] = $episode;
-                NotificationCenter::postNotification('NewEpisodeForCourse',array('episode_id' => $episode['id'],'course_id' => $this->getCourseID(), 'episode_title' => $episode['title']));
+                NotificationCenter::postNotification('NewEpisodeForCourse', array(
+                    'episode_id'    => $episode['id'],
+                    'course_id'     => $this->getCourseID(),
+                    'episode_title' => $episode['title']
+                ));
             }
 
         }
 
         // removed orphaned episodes
-        if(!empty($stored_episodes)){
-            foreach($stored_episodes as $orphaned_episode) {
+        if (!empty($stored_episodes)) {
+            foreach ($stored_episodes as $orphaned_episode) {
                 // todo log event for this action
-                OCModel::removeStoredEpisode($orphaned_episode['episode_id'],$this->getCourseID());
+                OCModel::removeStoredEpisode(
+                    $orphaned_episode['episode_id'],
+                    $this->getCourseID()
+                );
             }
         }
-
 
         return $episodes;
 

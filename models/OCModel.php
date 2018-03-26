@@ -565,9 +565,8 @@ class OCModel
 
     }
 
-    static function sanatizeContent($content){
-        return htmlready(mb_convert_encoding($content, 'ISO-8859-1', 'UTF-8'));
+    static function sanatizeContent($content)
+    {
+        return studip_utf8decode($content);
     }
-
 }
-?>
