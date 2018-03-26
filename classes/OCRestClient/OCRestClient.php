@@ -49,6 +49,8 @@
             curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
             curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
 
+            curl_setopt($this->ochandler, CURLOPT_FOLLOWLOCATION, 1);
+
             //ssl
             curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
