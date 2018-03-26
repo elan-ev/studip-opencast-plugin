@@ -7,10 +7,6 @@
 .matterhorn #dialog {
 //	display: none;
 }
-.ui-widget .ui-widget{
-	margin-top: 5px; 
-	margin-bottom: 20px;
-}
 
 div#series_container {
 	width: 49%;
