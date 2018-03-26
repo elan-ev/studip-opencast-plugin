@@ -391,4 +391,28 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
     }
+
+
+    /**
+     * @inherits
+     *
+     * Overwrite default metadata-function to return correctly encoded strings
+     * depending on Stud.IP version
+     *
+     * @return array correctly encoded metadata
+     */
+    public function getMetadata()
+    {
+        $metadata = parent::getMetadata();
+
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
+            foreach ($metadata as $key => $value) {
+                if (is_string($value)) {
+                    $metadata[$key] = utf8_encode($value);
+                }
+            }
+        }
+
+       return $metadata;
+    }
 }
