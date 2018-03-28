@@ -2,7 +2,7 @@
 /**
  * refresh_series.php
  *
- * @author André Klaßen <klassen@elan-ev.de>
+ * @author Andrï¿½ Klaï¿½en <klassen@elan-ev.de>
  * @access public
  */
 
@@ -18,7 +18,7 @@ class RefreshSeries extends CronJob {
     }
     public static function getDescription()
     {
-        return _('Aktualisiert die Episodenüberischt aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
+        return _('Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
     }
     public function execute($last_result, $parameters = array())
     {
@@ -34,12 +34,15 @@ class RefreshSeries extends CronJob {
         $courses  = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if(!empty($courses)){
             foreach($courses as $course_id) {
-                $ocmodel = new OCCourseModel($course_id);
-                $course = Course::find($course_id);
-                echo sprintf(_("Aktualisieriere Episoden für den Kurs %s im Semester %s\n "), $course->name, $semester_cur->name);
-                $ocmodel->getEpisodes(true);
-                unset($ocmodel);
+                try {
+                    $ocmodel = new OCCourseModel($course_id);
+                    $course = Course::find($course_id);
+                    echo sprintf(_("Aktualisieriere Episoden fuer den Kurs %s im Semester %s\n "), $course->name, $semester_cur->name);
 
+                    $ocmodel->getEpisodes(true);
+                } catch (Exception $e) {}
+
+                unset($ocmodel);
             }
         }
 
