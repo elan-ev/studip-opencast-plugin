@@ -111,7 +111,7 @@
 
             if($res = $this->getXML($uri, http_build_query(array(
                     'mediaPackage' => $media_package,
-                    'capture:foo' => $capabilities
+                    'capture.device.names' => $capabilities
                 )), false, true, true)
             ) {
                 return $res;
