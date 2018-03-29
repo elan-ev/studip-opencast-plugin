@@ -70,27 +70,23 @@
           */
         function getConfig($service_type, $config_id = 1)
         {
-            try {
-                if(isset($service_type)) {
-                    $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
-                        WHERE service_type = ? AND config_id = ?");
-                    $stmt->execute(array($service_type, $config_id));
-                    $config = $stmt->fetch(PDO::FETCH_ASSOC);
-                    if($config) {
-                        $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config`
-                            WHERE config_id = ?");
-                        $stmt->execute(array($config_id));
-                    $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
-                    return $config;
-                    } else {
-                        throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
-                    }
-
+            if(isset($service_type)) {
+                $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
+                    WHERE service_type = ? AND config_id = ?");
+                $stmt->execute(array($service_type, $config_id));
+                $config = $stmt->fetch(PDO::FETCH_ASSOC);
+                if($config) {
+                    $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config`
+                        WHERE config_id = ?");
+                    $stmt->execute(array($config_id));
+                $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
+                return $config;
                 } else {
-                    throw new Exception(_("Es wurde kein Servicetyp angegeben."));
+                    throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
                 }
-            } catch (Exception $e) {
 
+            } else {
+                throw new Exception(_("Es wurde kein Servicetyp angegeben."));
             }
         }
 

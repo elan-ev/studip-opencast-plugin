@@ -8,7 +8,6 @@ class UploadClient extends OCRestClient {
     public $serviceName = 'Upload';
 
     function __construct($config_id = 1) {
-        try {
             if ($config = parent::getConfig('upload', $config_id)) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
@@ -16,9 +15,6 @@ class UploadClient extends OCRestClient {
             } else {
                 throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
             }
-        } catch(Exception $e) {
-
-        }
     }
 
     /**

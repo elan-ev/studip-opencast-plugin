@@ -5,7 +5,6 @@
         static $me;
         function __construct($config_id = 1) {
             $this->serviceName = 'IngestClient';
-            try {
                 if ($config = parent::getConfig('ingest', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
@@ -13,9 +12,6 @@
                 } else {
                     throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
                 }
-            } catch(Exception $e) {
-
-            }
         }
 
         /**

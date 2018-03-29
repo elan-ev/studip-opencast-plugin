@@ -15,7 +15,6 @@ require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/MediaPackageClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
@@ -230,7 +229,6 @@ class CourseController extends OpencastController
                     //check needed services before showing upload form
                     UploadClient::getInstance($this->course_id)->checkService();
                     IngestClient::getInstance($this->course_id)->checkService();
-                    MediaPackageClient::getInstance($this->course_id)->checkService();
                     SeriesClient::getInstance($this->course_id)->checkService();
 
 
