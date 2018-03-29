@@ -41,7 +41,6 @@ class SchedulerClient extends OCRestClient
         $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-
         $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
 
         if ($result
