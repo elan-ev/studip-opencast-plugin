@@ -101,7 +101,7 @@
             }
         }
 
-        public function schedule($media_package, $worklow_definition=null)
+        public function schedule($media_package, $capabilities, $worklow_definition=null)
         {
             $uri = '/schedule';
 
@@ -110,7 +110,8 @@
             }
 
             if($res = $this->getXML($uri, http_build_query(array(
-                    'mediaPackage' => $media_package
+                    'mediaPackage' => $media_package,
+                    'capture:foo' => $capabilities
                 )), false, true, true)
             ) {
                 return $res;

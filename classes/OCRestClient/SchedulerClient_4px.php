@@ -37,18 +37,18 @@ class SchedulerClient extends OCRestClient
         $ingest_client = new IngestClient();
 
         $media_package = $ingest_client->createMediaPackage();
-        $xml = simplexml_load_string($media_package);
 
         $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
 
-        $result = $ingest_client->schedule($media_package, $metadata['workflow']);
+        $result = $ingest_client->schedule($media_package, $metadata['device_names'], $metadata['workflow']);
 
         if ($result
             && $result[1] != 400
             && $result[1] != 409) {
 
+            $xml = simplexml_load_string($media_package);
             OCModel::scheduleRecording($course_id, $resource_id, $termin_id, (string)$xml['id']);
 
             return true;
@@ -203,7 +203,7 @@ class SchedulerClient extends OCRestClient
         //$agentparameters .= in_array($device, words('ca-01-e01 ca-01-b01')) ? '
         //                    org.opencastproject.workflow.definition=ncast' : '';
 
-        return array('dublincore' => $dublincore, 'agentparameters' => $agentparameters, 'workflow' => $workflow);
+        return array('device_names'=>$device_names,'dublincore' => $dublincore, 'agentparameters' => $agentparameters, 'workflow' => $workflow);
 
     }
 }

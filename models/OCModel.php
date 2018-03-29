@@ -357,8 +357,6 @@ class OCModel
         $device = $ca['capture_agent'];
 
         $language = "de";
-        $licence = "All Rights Reserved";
-        $resources  = 'vga, audio';
         $seriesId = $serie['series_id'];
 
        if(!$issue->title) {
