@@ -42,7 +42,7 @@ class SchedulerClient extends OCRestClient
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
 
-        $result = $ingest_client->schedule($media_package, $metadata['device_names'], $metadata['workflow']);
+        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
 
         if ($result
             && $result[1] != 400
@@ -203,7 +203,7 @@ class SchedulerClient extends OCRestClient
         //$agentparameters .= in_array($device, words('ca-01-e01 ca-01-b01')) ? '
         //                    org.opencastproject.workflow.definition=ncast' : '';
 
-        return array('device_names'=>$device_names,'dublincore' => $dublincore, 'agentparameters' => $agentparameters, 'workflow' => $workflow);
+        return array('device_capabilities'=>$device_names,'dublincore' => $dublincore, 'agentparameters' => $agentparameters, 'workflow' => $workflow);
 
     }
 }
