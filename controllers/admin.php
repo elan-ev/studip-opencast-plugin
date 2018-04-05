@@ -153,7 +153,6 @@ class AdminController extends OpencastController
 
                 $this->flash['messages'] = array('success' => $success_message);
             } else {
-                die('Keine Endpoints gefunden!');
                 $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
             }
         }
@@ -202,6 +201,9 @@ class AdminController extends OpencastController
                 }
             }
         }
+
+        // after updating the configuration, clear the cached series data
+        OCSeriesModel::clearCachedSeriesData();
 
         if($redirect) {
             $this->redirect('admin/config');

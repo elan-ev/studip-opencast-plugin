@@ -367,6 +367,11 @@ class OCSeriesModel {
         return $stmt->execute(array($data, time(), $series_id));
     }
 
+    static function clearCachedSeriesData()
+    {
+        DBManager::get()->exec("TRUNCATE oc_series_cache");
+    }
+
     static function updateVisibility($seminar_id,$visibility){
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_seminar_series SET `visibility` = ?  WHERE `seminar_id` = ?");
