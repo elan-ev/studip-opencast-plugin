@@ -69,7 +69,6 @@ class SchedulerClient extends OCRestClient
         $event = $event_data[0];
         $event_id = $event['event_id'];
 
-        $rest_end_point = "/api/events/" . $event_id;
 
         curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
