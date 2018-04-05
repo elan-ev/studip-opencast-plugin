@@ -9,6 +9,8 @@
      * the License, or (at your option) any later version.
      */
 
+define(DEBUG_CURL, false);
+
     class OCRestClient
     {
         static $me;
@@ -57,7 +59,11 @@
             #curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
 
             // debugging
-            //curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
+            if (DEBUG_CURL) {
+                curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
+                $this->debug = fopen('php://output', 'w');
+                curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
+            }
         }
 
         /**
@@ -137,6 +143,10 @@
                 curl_setopt_array($this->ochandler, $options);
                 $response = curl_exec($this->ochandler);
                 $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+                if (DEBUG_CURL) {
+                    fclose($this->debug);
+                }
 
                 if ($with_res_code) {
                     return array(json_decode($response), $httpCode);

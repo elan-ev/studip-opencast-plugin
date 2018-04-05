@@ -66,11 +66,13 @@ class SchedulerClient extends OCRestClient
     function deleteEventForSeminar($course_id, $resource_id, $date_id)
     {
         $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
-        $event = $event_data[0];
-        $event_id = $event['event_id'];
-
+        $event_id = $event_data[0]['event_id'];
 
         curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array(
+            'X-Requested-Auth: Digest',
+            'Content-Length: 0'             // in some environments curl incorrectly adds -1
+        ));
 
         $result = $this->getJSON('/'. $event_id, [], false, true);
 
