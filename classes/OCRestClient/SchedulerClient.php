@@ -67,24 +67,16 @@ class SchedulerClient extends OCRestClient
     {
         $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
         $event = $event_data[0];
+        $event_id = $event['event_id'];
 
-        $rest_end_point = "/api/events/" . $event['event_id'];
-        $uri = $rest_end_point;
+        $rest_end_point = "/api/events/" . $event_id;
 
-        // setting up a curl-handler
-        $location = parse_url($this->matterhorn_base_url);
+        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
-        curl_setopt($this->ochandler, CURLOPT_URL, $location['scheme'] .'://'. $location['host'] . $uri);
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
-
-        //TODO Über REST Klasse laufen lassen, getXML, getJSON...
-
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        $result = $this->getJSON('/'. $event_id, [], false, true);
 
         // remove scheduled event from studip even though it isn't available on opencast
-        if ($httpCode == 200 || $httpCode == 204 || $httpCode == 404) {
-            $event_id = $event['event_id'];
+        if (in_array($result[1], array(200, 204, 404))) {
             OCModel::unscheduleRecording($event_id);
 
             return true;
