@@ -105,26 +105,22 @@ class SchedulerClient extends OCRestClient
      */
     function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id)
     {
+        // currently, we only update the start and the end time
+        $date = new SingleDate($termin_id);
 
-        $post = self::createEventMetadata($course_id, $resource_id, $termin_id);
+        $post = array(
+            'start' => $date->getStartTime() * 1000,
+            'end'   => $date->getEndTime() * 1000,
+        );
 
-        $rest_end_point = "/";
-        $uri = $rest_end_point;
-        // setting up a curl-handler
-        $location = parse_url($this->matterhorn_base_url);
-        curl_setopt($this->ochandler, CURLOPT_URL, $location['path'] . $uri . $event_id);
         curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($this->ochandler, CURLOPT_HEADER, TRUE);
-        //TODO �ber REST Klasse laufen lassen, getXML, getJSON...
 
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-        $resArray = explode("\n", $response);
-        if (in_array($httpCode, array(201, 200))) {
-            return TRUE;
+        $result = $this->getJSON("/$event_id", $post, false, true);
+
+        if (in_array($result[1], array(201, 200))) {
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 

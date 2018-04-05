@@ -40,7 +40,7 @@
 <? else :?>
 <td>
     <input type="hidden" name="action" value="add"/>
-    <select name="<?=$resource['resource_id']?>" required>
+    <select name="<?=$resource['resource_id']?>">
         <option value="" disabled selected><?=$_("Bitte wählen Sie einen CA.")?></option>
         <? if($available_agents) : ?>
 
@@ -57,7 +57,7 @@
     </select>
 </td>
 <td>
-    <select name="workflow" required>
+    <select name="workflow">
         <option value="" disabled selected><?=$_("Bitte wählen Sie einen Worflow aus.")?></option>
 
         <? if ($definitions): ?>

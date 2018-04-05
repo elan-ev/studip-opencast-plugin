@@ -414,7 +414,7 @@ class CourseController extends OpencastController
             $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
             if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
-                $this->flash['messages'] = array('success'=> $this->_("Die geplante Aufzeichnung aktualisiert"));
+                $this->flash['messages'] = array('success'=> $this->_("Die geplante Aufzeichnung wurde aktualisiert."));
                 StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
             } else {
                 $this->flash['messages'] = array('error'=> $this->_("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
@@ -521,7 +521,6 @@ class CourseController extends OpencastController
             //check needed services before showing upload form
             UploadClient::getInstance($this->course_id)->checkService();
             IngestClient::getInstance($this->course_id)->checkService();
-            MediaPackageClient::getInstance($this->course_id)->checkService();
             SeriesClient::getInstance($this->course_id)->checkService();
 
             foreach($scripts as $path) {

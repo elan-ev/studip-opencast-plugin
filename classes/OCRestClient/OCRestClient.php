@@ -143,10 +143,12 @@
                 } else {
                     // throw exception if the endpoint is missing
                     if ($httpCode == 404) {
-                        throw new Exception('Erorr calling "'
+                        error_log('[Opencast-Plugin] Error calling "'
                             . $this->matterhorn_base_url.$service_url
                             .'" ' . strip_tags($response)
                         );
+
+                        return false;
                     } else {
                         return json_decode($response);
                     }
@@ -185,10 +187,12 @@
                 } else {
                     // throw exception if the endpoint is missing
                     if ($httpCode == 404) {
-                        throw new Exception('Erorr calling "'
+                        error_log('[Opencast-Plugin] Error calling "'
                             . $this->matterhorn_base_url.$service_url
                             .'" ' . strip_tags($response)
                         );
+
+                        return false;
                     } else {
                         return $response;
                     }

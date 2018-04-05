@@ -8,7 +8,6 @@
         <th><?= $_('Termin') ?></th>
         <th><?= $_('Titel') ?></th>
         <th><?= $_('Status') ?></th>
-        <th><?= $_('Workflow') ?></th>
         <th><?= $_('Aktionen') ?></th>
     </tr>
 
@@ -68,40 +67,7 @@
                     )) ?>
             <? endif; ?>
         </td>
-        <td>
-            <? $resource = $date->getResourceID(); ?>
-            <? if(isset($resource) && OCModel::checkResource($resource)) :?>
-                <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id) && (int)date($d['date']) > time()) :?>
-                    <?
-                    $assigned_agent = OCModel::getCAforResource($resource);
-                    $current = OCModel::checkScheduled($course_id, $resource, $date->termin_id);
-                    $current = array_pop($current);
-                    ?>
-                    <select class="wfselect" name="selected_wf">
-                    <? foreach($tagged_wfs as $wf) :?>
-                        <option data-terminid="<?=$date->termin_id?>" data-resource="<?=$resource?>" value="<?=$wf['id']?>" title="<?=$wf['description']?>" <?=($current['workflow_id'] == $wf['id']) ? 'selected' : ''?>>  <?= mila($wf['id'],15)?>  </option>
-                    <? endforeach ; ?>
-                    </select>
-
-                <?  else : ?>
-                    <? if(date($d['date']) > time()) :?>
-                        <? $assigned_agent = OCModel::getCAforResource($resource); ?>
-                        <select disabled>
-                            <option selected><?=$assigned_agent['workflow_id']; ?></option>
-                        </select>
-                    <? else :?>
-
-                        <? /* Hier müsste man den workflow sehen den das Video durchlaufen hat, sofern einer durchlaufen wurde. */ ?>
-                    <? endif;?>
-                <? endif; ?>
-            <? elseif(false) : ?>
-                <?= new Icon('video', 'clickable') ?>
-            <? else : ?>
-                <?= new Icon('exclaim-circle' ,'attention', array(
-                        'title' =>  $_("Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht")
-                    )) ?>
-            <? endif; ?>
-        </td>
+    
         <td>
             <? $resource = $date->getResourceID(); ?>
             <? if(isset($resource) && OCModel::checkResource($resource)) :?>
