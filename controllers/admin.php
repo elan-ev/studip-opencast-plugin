@@ -176,14 +176,14 @@ class AdminController extends OpencastController
 
             OCRestClient::clearConfig($config_id);
             OCRestClient::setConfig($config_id, $slave_host, $this->slave_user, $this->slave_password);
-            OCEndpointModel::setEndpoint($config_id, $this->slave_url, 'services');
+            OCEndpointModel::setEndpoint($config_id, $slave_host .'/services', 'services');
 
             //fix client call here for new config
             $services_client2 = new ServicesClient($config_id);
             $comp = $services_client2->getRESTComponents();
 
             if ($comp) {
-                $services = OCModel::retrieveRESTservices($comp);
+                $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
                 foreach($services as $slave_url => $slave_type) {
 
