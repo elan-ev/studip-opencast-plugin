@@ -81,12 +81,13 @@ define(DEBUG_CURL, false);
                     WHERE service_type = ? AND config_id = ?");
                 $stmt->execute(array($service_type, $config_id));
                 $config = $stmt->fetch(PDO::FETCH_ASSOC);
+
                 if($config) {
                     $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config`
                         WHERE config_id = ?");
                     $stmt->execute(array($config_id));
-                $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
-                return $config;
+                    $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
+                    return $config;
                 } else {
                     throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
                 }

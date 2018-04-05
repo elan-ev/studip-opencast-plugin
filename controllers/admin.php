@@ -185,15 +185,9 @@ class AdminController extends OpencastController
             if ($comp) {
                 $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
-                foreach($services as $slave_url => $slave_type) {
-
-                    $slave_comp = explode("/", $slave_url);
-
-                    if(sizeof($slave_comp) == 2) {
-                        if($slave_comp)
-                        OCEndpointModel::setEndpoint($config_id, $slave_comp[0], $slave_type);
-                    }
-            }
+                foreach($services as $service_url => $service_type) {
+                    OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                }
 
                 $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegebene Opencast Slave Installation gefunden und eingetragen"), count($comp)));
             } else {
