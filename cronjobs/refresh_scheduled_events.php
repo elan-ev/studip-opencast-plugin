@@ -32,11 +32,7 @@ class RefreshScheduledEvents extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
-            require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient_4px.php';
-        } else {
-            require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
-        }
+        require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
 
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                   LEFT JOIN oc_seminar_series USING (seminar_id)

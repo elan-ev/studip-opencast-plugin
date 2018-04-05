@@ -18,11 +18,7 @@ require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 require_once $this->trails_root.'/models/OCModel.php';
 require_once $this->trails_root.'/models/OCCourseModel.class.php';
 
-if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
-    require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient_4px.php';
-} else {
-    require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
-}
+require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
 
 class CourseController extends OpencastController
 {
