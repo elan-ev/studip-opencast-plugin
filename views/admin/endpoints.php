@@ -5,7 +5,7 @@
         'kategorie' => $_('Hinweise:'),
         'eintrag'   => array(array(
             'icon' => 'icons/16/black/info.png',
-            'text' => $_("Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden.")
+            'text' => $_("Hier kann die Anbindung zum Opencast System verwaltet werden.")
         ))
     ));
     $infobox = array('picture' => 'infobox/administration.jpg', 'content' => $infobox_content);
@@ -15,9 +15,9 @@
 OC.initAdmin();
 </script>
 <!--
-<h3>Globale Opencast Matterhorn Einstellungen</h3>
+<h3>Globale Opencast Einstellungen</h3>
 <span>
-  <?=$_("Tragen Sie hier den Pfad zum Matterhorn Runtime Information REST-Endpoint ein.")?>
+  <?=$_("Tragen Sie hier den Pfad zum Opencast Runtime Information REST-Endpoint ein.")?>
 </span> -->
 
 <?= $this->render_partial("admin/_endpointoverview", array('endpoints' => $endpoints)) ?>

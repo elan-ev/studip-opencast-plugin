@@ -1,7 +1,7 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <div>
     <span class="oc_config_infotext">
-        <?=$_('Suchen Sie eine Series im Opencast Matterhorn System, die Sie mit der aktuellen Veranstaltung verknüpfen möchten.')?>
+        <?=$_('Suchen Sie eine Series im Opencast System, die Sie mit der aktuellen Veranstaltung verknüpfen möchten.')?>
     </span>
     <form action="<?= PluginEngine::getLink('opencast/course/edit/' . $course_id) ?>"
       method=post id="select-series" data-unconnected="<?= (empty($connectedSeries) ? 1 : 'false');?>">

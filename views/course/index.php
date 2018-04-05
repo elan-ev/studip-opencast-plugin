@@ -135,7 +135,7 @@
             <? if($theodul) : ?>
                 <iframe src="<?=$embed?>" class="theodul"
                         style="border:0px #FFFFFF none;"
-                        name="Opencast Matterhorn video player"
+                        name="Opencast video player"
                         scrolling="no"
                         frameborder="0"
                         marginheight="0px"
@@ -147,7 +147,7 @@
             <? else: ?>
                 <iframe class="oc_playerframe" src="<?=$embed?>&hideControls=false"
                     style="border: 0px #FFFFFF none;"
-                    name="Opencast Matterhorn - Media Player" scrolling="no"
+                    name="Opencast - Media Player" scrolling="no"
                     frameborder="0" marginheight="0px" marginwidth="0px" width="640"
                     height="360"
                     allowfullscreen="true"

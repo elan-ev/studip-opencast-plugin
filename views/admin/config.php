@@ -6,7 +6,7 @@
     $sidebar->addWidget($actions);
 
 
-    Helpbar::get()->addPlainText('',$_("Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden."));
+    Helpbar::get()->addPlainText('',$_("Hier kann die Anbindung zum Opencast System verwaltet werden."));
 ?>
 
 <?= $this->render_partial('messages') ?>

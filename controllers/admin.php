@@ -147,13 +147,13 @@ class AdminController extends OpencastController
                 }
 
                 $success_message = sprintf(
-                    $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP Konfiguration eingetragen"),
+                    $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration eingetragen."),
                     count($services)
                 );
 
                 $this->flash['messages'] = array('success' => $success_message);
             } else {
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegebene Opencast Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
             }
         }
 

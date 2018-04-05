@@ -1,6 +1,6 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <?
-    Helpbar::get()->addPlainText('',$_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast Matterhorn System verknüpfen."));
+    Helpbar::get()->addPlainText('',$_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen."));
 ?>
 <script language="JavaScript">
 OC.initAdmin();

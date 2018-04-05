@@ -5,8 +5,8 @@
         <legend><?=$_("Opencast Server Einstellungen (Aufzeichnung)")?></legend>
         <p><?=$_("Tragen Sie hier den Pfad Ihres Opencast Basis-Systems ein.")?></p>
 
-        <label  for="info_url"><?=$_("Basis URL zur Opencast Matterhorn Installation")?>:</label><br>
-        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="http://matterhorn.url" required><br>
+        <label  for="info_url"><?=$_("Basis URL zur Opencast Installation")?>:</label><br>
+        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="http://opencast.url" required><br>
 
         <label for="info_user"><?=$_("Nutzerkennung")?>:</label><br>
         <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="ENDPOINT_USER" required><br>
@@ -22,7 +22,7 @@
         <p><?=$_("Tragen Sie hier den Pfad Ihres optionalen Opencast Systems ein.")?></p>
 
         <label  for="slave_url"><?=$_("Basis URL zur optionalen Opencast Installation")?>:</label><br>
-        <input type="text" name="slave_url" value="<?=$slave_url?>" size="50" placeholder="http://matterhorn.url"><br>
+        <input type="text" name="slave_url" value="<?=$slave_url?>" size="50" placeholder="http://opencast.url"><br>
 
         <label for="slave_user"><?=$_("Nutzerkennung")?>:</label><br>
         <input type="text" name="slave_user" value="<?=$slave_user?>" size="50" placeholder="ENDPOINT_USER"><br>
