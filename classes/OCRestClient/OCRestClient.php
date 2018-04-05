@@ -153,10 +153,12 @@ define(DEBUG_CURL, false);
                 } else {
                     // throw exception if the endpoint is missing
                     if ($httpCode == 404) {
-                        error_log('[Opencast-Plugin] Error calling "'
-                            . $this->matterhorn_base_url.$service_url
-                            .'" ' . strip_tags($response)
-                        );
+                        if (DEBUG_CURL) {
+                            error_log('[Opencast-Plugin] Error calling "'
+                                . $this->matterhorn_base_url.$service_url
+                                .'" ' . strip_tags($response)
+                            );
+                        }
 
                         return false;
                     } else {
@@ -197,10 +199,12 @@ define(DEBUG_CURL, false);
                 } else {
                     // throw exception if the endpoint is missing
                     if ($httpCode == 404) {
-                        error_log('[Opencast-Plugin] Error calling "'
-                            . $this->matterhorn_base_url.$service_url
-                            .'" ' . strip_tags($response)
-                        );
+                        if (DEBUG_CURL) {
+                            error_log('[Opencast-Plugin] Error calling "'
+                                . $this->matterhorn_base_url.$service_url
+                                .'" ' . strip_tags($response)
+                            );
+                        }
 
                         return false;
                     } else {
