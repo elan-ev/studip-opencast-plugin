@@ -9,7 +9,6 @@ class ServicesClient extends OCRestClient
     {
         $this->serviceName = 'ServicesClient';
 
-        try {
             if ($config = parent::getConfig('services', $config_id)) {
                 parent::__construct($config['service_url'],
                                     $config['service_user'],
@@ -17,9 +16,6 @@ class ServicesClient extends OCRestClient
             } else {
                 throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
             }
-        } catch(Exception $e) {
-
-        }
     }
 
     /**

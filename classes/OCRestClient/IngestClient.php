@@ -5,7 +5,6 @@
         static $me;
         function __construct($config_id = 1) {
             $this->serviceName = 'IngestClient';
-            try {
                 if ($config = parent::getConfig('ingest', $config_id)) {
                     parent::__construct($config['service_url'],
                                         $config['service_user'],
@@ -13,9 +12,6 @@
                 } else {
                     throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
                 }
-            } catch(Exception $e) {
-
-            }
         }
 
         /**
@@ -101,7 +97,7 @@
             }
         }
 
-        public function schedule($media_package, $worklow_definition=null)
+        public function schedule($media_package, $capabilities, $worklow_definition=null)
         {
             $uri = '/schedule';
 
@@ -110,7 +106,8 @@
             }
 
             if($res = $this->getXML($uri, http_build_query(array(
-                    'mediaPackage' => $media_package
+                    'mediaPackage' => $media_package,
+                    'capture.device.names' => $capabilities
                 )), false, true, true)
             ) {
                 return $res;
