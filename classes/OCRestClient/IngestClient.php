@@ -58,7 +58,7 @@
          *
          *  @return $mediapackage
          */
-        function ingest($mediaPackage, $workFlowDefinitionID = 'full', $addendum = '')
+        function ingest($mediaPackage, $workFlowDefinitionID, $addendum = '')
         {
             $service_url = "/ingest/".$workFlowDefinitionID.$addendum;
 

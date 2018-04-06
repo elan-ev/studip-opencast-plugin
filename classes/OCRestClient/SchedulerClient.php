@@ -101,9 +101,13 @@ class SchedulerClient extends OCRestClient
         // currently, we only update the start and the end time
         $date = new SingleDate($termin_id);
 
+        $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id);
+
         $post = array(
-            'start' => $date->getStartTime() * 1000,
-            'end'   => $date->getEndTime() * 1000,
+            'start'           => $date->getStartTime() * 1000,
+            'end'             => ($date->getEndTime() - 300) * 1000,  // subtract 5 minutes from the end to prevent overlapping recordings
+            'agentparameters' => $metadata['agentparameters'],
+            'agent'           => $metadata['agent']
         );
 
         curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
@@ -152,16 +156,12 @@ class SchedulerClient extends OCRestClient
             $title = $issue_titles;
         }
 
-        $room = ResourceObject::Factory($resource_id);
-        $cas = OCModel::checkResource($resource_id);
-        $ca = $cas[0];
-        $device = $ca['capture_agent'];
+        $room     = ResourceObject::Factory($resource_id);
+        $cas      = OCModel::checkResource($resource_id);
+        $ca       = $cas[0];
 
-        $custom_workflow = OCSeriesModel::getWorkflowForEvent($course_id, $termin_id);
-
-        if ($custom_workflow) {
-            $workflow = $custom_workflow['workflow_id'];
-        } else $workflow = $ca['workflow_id'];
+        $device   = $ca['capture_agent'];
+        $workflow = $ca['workflow_id'];
 
         $ca_client = CaptureAgentAdminClient::getInstance();
         $device_names = '';
@@ -175,19 +175,19 @@ class SchedulerClient extends OCRestClient
             }
         }
 
-        $agentparameters = '#Capture Agent specific data
-                                #' . $start_time . '
-                                event.title=' . $title . '
-                                event.location=' . $room->name . '
-                                capture.device.id=' . $device . '
-                                capture.device.names=' . $device_names . '
-                                org.opencastproject.workflow.definition=' . $workflow;
+        $agentparameters = 'event.title=' . $title . "\n"
+            . 'event.location=' . $room->name . "\n"
+            . 'capture.device.id=' . $device . "\n"
+            . 'capture.device.names=' . $device_names . "\n"
+            . 'org.opencastproject.workflow.definition=' . $workflow . "\n";
 
-        // uncomment if further parametes should be set like e.g. ncast definitions etc
-        //$agentparameters .= in_array($device, words('ca-01-e01 ca-01-b01')) ? '
-        //                    org.opencastproject.workflow.definition=ncast' : '';
-
-        return array('device_capabilities'=>$device_names,'dublincore' => $dublincore, 'agentparameters' => $agentparameters, 'workflow' => $workflow);
+        return [
+            'device_capabilities' =>$device_names,
+            'dublincore'          => $dublincore,
+            'agentparameters'     => $agentparameters,
+            'workflow'            => $workflow,
+            'agent'               => $device
+        ];
 
     }
 }
