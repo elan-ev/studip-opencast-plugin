@@ -27,13 +27,15 @@ define(DEBUG_CURL, false);
                 $config_id = self::getConfigIdForCourse($course_id);
             }
 
-            if(!property_exists(get_called_class(), 'me')) {
+            if (!property_exists(get_called_class(), 'me')) {
                 throw new Exception('Every child of '.get_class().' needs to implement static property "$me"');
             }
-            if (!is_object(static::$me)) {
-                static::$me = new static($config_id);
+
+            if (!is_object(static::$me[$config_id])) {
+                static::$me[$config_id] = new static($config_id);
             }
-            return static::$me;
+
+            return static::$me[$config_id];
         }
 
         function __construct($matterhorn_base_url, $username, $password)
