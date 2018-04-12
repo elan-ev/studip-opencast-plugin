@@ -9,7 +9,7 @@
      * the License, or (at your option) any later version.
      */
 
-define(DEBUG_CURL, false);
+define(DEBUG_CURL, FALSE);
 
     class OCRestClient
     {
