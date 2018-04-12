@@ -101,75 +101,8 @@
 </h1>
 
 <? if(!(empty($ordered_episode_ids))) : ?>
-
-<? foreach($ordered_episode_ids as $oe) :?>
-    <? if($oe['id'] == $active_id) :?>
-         <? $active = $oe;?>
-    <? endif;?>
-<? endforeach;?>
-
-
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
 <div class="oc_flex">
-
-    <div class="oc_flexitem oc_flexplaycontainer" >
-        <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <div class="oce_playercontainer">
-            <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
-            </span>
-            <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-
-            <a href="<?= URLHelper::getURL($video_url) ?>" target="_blank">
-                <span class="previewimage">
-                    <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
-                    <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
-                </span>
-            </a>
-
-            <br>
-            <div class="oce_emetadata">
-                <h2 class="oce_title"><?= $active['title']?></h2>
-                <ul class="oce_contetlist">
-                    <li><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=$_("Uhr")?></li>
-                    <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                    <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
-                </ul>
-                <div class="ocplayerlink">
-                    <div style="text-align: left; font-style: italic;">Weitere
-                        Optionen:</div>
-                    <div class="button-group">
-                        <?= Studip\LinkButton::create($_('Erweiterter Player'), URLHelper::getURL($engage_player_url), array('target'=> '_blank','class' => 'ocextern')) ?>
-                        <? if ($active['presenter_download']) : ?>
-                            <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
-                        <? endif;?>
-                        <? if ($active['presentation_download']) : ?>
-                            <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
-                        <? endif;?>
-                        <? if ($active['audio_download']) :?>
-                            <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
-                        <? endif;?>
-
-                        <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
-                            <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
-                        <? endif ?>
-
-                        <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                            <? if ($visible && $visible['visible'] == 'false') : ?>
-                                <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
-                            <? else : ?>
-                                <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
-                            <? endif;?>
-                        <? endif; ?>
-                        </div>
-                    </div>
-            </div>
-        </div>
-    </div>
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">
             <input class="search" placeholder="<?=$_('Nach Aufzeichung suchen')?>" size="30" />
@@ -178,7 +111,6 @@
                 'data-sort' => 'name'
             )) ?>
         </span>
-        </img>
         <ul class="oce_list list"
             <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
             <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
@@ -210,7 +142,10 @@
             <? endif;?>
             <? foreach($ordered_episode_ids as $pos => $item) : ?>
             <? $prev = ($item['prespreview']) ? $item['prespreview'] : $plugin->getPluginURL() .'/images/default-preview.png';?>
-
+                <?
+                    $active = $item;
+                    $previewimage = $item['preview'];
+                ?>
             <li id="<?=$item['id']?>"
                 class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
                 data-courseId="<?=$course_id?>"
@@ -218,18 +153,60 @@
                 data-pos="<?=$pos?>"
                 data-mkdate="<?=$item['mkdate']?>"
                 data-previewimage="<?=$prev?>" >
-                <a
-                href="<?= PluginEngine::getLink('opencast/course/index/'. $item['id']) ?>">
-                    <div>
-                        <img
-                            class="oce_preview <?=($item['visibility'] == false) ? 'hidden_ocvideo' : ''?>"
-                            src="<?=$item['preview']?>">
+                <div class="oc_flexitem oc_flexplaycontainer" style="float:left">
+                    <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
-                    <div class="oce_metadatacontainer">
-                        <h3 class="oce_metadata oce_list_title"><?= $item['title']?> <?=($item['visibility'] != 'false') ? '' : ' (Unsichtbar)'?></h3>
-                        <span class="oce_list_date"><?=sprintf($_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+                    <div class="oce_playercontainer">
+            <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
+            </span>
+                        <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
+                        <a href="<?= URLHelper::getURL($video_url) ?>" target="_blank">
+                <span class="previewimage">
+                    <img class="previewimage" style="height:200px; width: auto" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
+                    <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
+                </span>
+                        </a>
                     </div>
-            </a>
+                </div>
+                <div class="oce_emetadata" style="float:left;">
+                    <h2 class="oce_title"><?= $active['title']?></h2>
+                    <ul class="oce_contetlist">
+                        <li><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=$_("Uhr")?></li>
+                        <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
+                        <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
+                    </ul>
+                    <div class="ocplayerlink">
+                        <div style="text-align: left; font-style: italic;">Weitere Optionen:</div>
+                        <div class="button-group">
+                            <? if ($active['presenter_download']) : ?>
+                                <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
+                            <? endif;?>
+                            <? if ($active['presentation_download']) : ?>
+                                <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
+                            <? endif;?>
+                            <? if ($active['audio_download']) :?>
+                                <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
+                            <? endif;?>
+
+                            <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
+                                <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
+                            <? endif ?>
+                        </div>
+                        <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+                            <div class="button-group" style="float:right">
+                                <? if ($visible && $visible['visible'] == 'false') : ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
+                                <? else : ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
+                                <? endif;?>
+                            </div>
+                        <? endif; ?>
+                    </div>
+                </div>
             </li>
             <? endforeach; ?>
         </ul>

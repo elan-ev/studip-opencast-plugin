@@ -614,7 +614,7 @@ class CourseController extends OpencastController
 
         $occourse = new OCCourseModel($course_id);
         $episodes = $occourse->getEpisodes();
-        $cand_episode = array();
+        $episode = array();
         $current_preview = '';
         foreach($episodes as $e){
             if($e['id'] == $episode_id) {
@@ -624,6 +624,7 @@ class CourseController extends OpencastController
                 if($e['preview']){
                     $current_preview = $e['preview'];
                 }
+                $episode = $e;
             }
         }
 
@@ -651,7 +652,7 @@ class CourseController extends OpencastController
                 'video'             => $video,
                 'perm'              => $perm,
                 'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
-                'episode_data'      => $cand_episode
+                'episode_data'      => $episode
             );
 
             $this->render_json($episode);

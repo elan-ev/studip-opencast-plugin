@@ -48,7 +48,7 @@ OC = {
 
             // take care of episodelist
             OC.searchEpisodeList();
-            OC.episodeListener(cid);
+            //OC.episodeListener(cid);
 
         });
 
@@ -247,8 +247,6 @@ OC = {
                     engage_player_url:data.engage_player_url,
                     video:data.video
                 };
-
-                console.log('template:'+player_template(player_template_data));
 
                 jQuery('.oce_playercontainer').empty();
                 jQuery('.oce_playercontainer').html(player_template(player_template_data));
