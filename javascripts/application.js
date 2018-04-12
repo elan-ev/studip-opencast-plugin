@@ -243,10 +243,12 @@ OC = {
                 var player_template_data = {
                     episode:episode,
                     theodul:data.theodul,
-                    embed:data.embed,
                     dozent:dozent,
-                    engage_player_url:data.engage_player_url
+                    engage_player_url:data.engage_player_url,
+                    video:data.video
                 };
+
+                console.log('template:'+player_template(player_template_data));
 
                 jQuery('.oce_playercontainer').empty();
                 jQuery('.oce_playercontainer').html(player_template(player_template_data));

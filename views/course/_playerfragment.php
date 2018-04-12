@@ -1,30 +1,12 @@
 <script type="text/html" id='playerTemplate'>
     <span id="oc_active_episode" class="hidden" data-activeepisode="<%= episode.id %>"></span>
-    <% if (theodul) { %>
-        <iframe src="<%= embed %>"
-                style="border:0px #FFFFFF none;"
-                name="Opencast video player"
-                scrolling="no"
-                frameborder="0"
-                marginheight="0px"
-                marginwidth="0px"
-                width="640"
-                height="360"
-                allowfullscreen="true"
-                webkitallowfullscreen="true"
-                mozallowfullscreen="true">
-        </iframe>
-    <% } else { %>
-        <iframe src="<%= embed %>&hideControls=false"
-                style="border: 0px #FFFFFF none;"
-                name="Opencast - Media Player" scrolling="no"
-                frameborder="0" marginheight="0px" marginwidth="0px"
-                width="100%" width="640" height="360"
-                allowfullscreen="true"
-                webkitallowfullscreen="true"
-                mozallowfullscreen="true">
-        </iframe>
-    <% } %>
+
+    <a href="<%= video.url %>" target="_blank">
+                <span class="previewimage">
+                    <img class="previewimage" src="<%= video.image %>">
+                    <img class="playbutton" src="<%= video.circle %>">
+                </span>
+    </a>
 
     <br>
     <div class="oce_emetadata">

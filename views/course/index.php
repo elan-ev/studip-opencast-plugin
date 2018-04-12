@@ -124,37 +124,13 @@
             </span>
             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
 
-            <!--
-            <a href="<?=URLHelper::getURL('http://'.$engage_player_url)?>" target="_blank">
+            <a href="<?= URLHelper::getURL($video_url) ?>" target="_blank">
                 <span class="previewimage">
                     <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
                     <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
                 </span>
-            </a>-->
+            </a>
 
-            <? if($theodul) : ?>
-                <iframe src="<?=$embed?>" class="theodul"
-                        style="border:0px #FFFFFF none;"
-                        name="Opencast video player"
-                        scrolling="no"
-                        frameborder="0"
-                        marginheight="0px"
-                        marginwidth="0px"
-                        allowfullscreen="true"
-                        webkitallowfullscreen="true"
-                        mozallowfullscreen="true">
-                </iframe>
-            <? else: ?>
-                <iframe class="oc_playerframe" src="<?=$embed?>&hideControls=false"
-                    style="border: 0px #FFFFFF none;"
-                    name="Opencast - Media Player" scrolling="no"
-                    frameborder="0" marginheight="0px" marginwidth="0px" width="640"
-                    height="360"
-                    allowfullscreen="true"
-                    webkitallowfullscreen="true"
-                    mozallowfullscreen="true">
-                </iframe>
-             <? endif; ?>
             <br>
             <div class="oce_emetadata">
                 <h2 class="oce_title"><?= $active['title']?></h2>
