@@ -153,7 +153,7 @@
                 data-pos="<?=$pos?>"
                 data-mkdate="<?=$item['mkdate']?>"
                 data-previewimage="<?=$prev?>">
-                <div class="oc_flexitem oc_flexplaycontainer" style="float:left;width: 30%">
+                <div class="oc_flexitem oc_flexplaycontainer" style="float:left;width: 25%">
                     <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
                         <div></div>
                         <div></div>
@@ -172,14 +172,16 @@
                         </a>
                     </div>
                 </div>
-                <div class="oce_metadatacontainer" style="float:left;position:absolute;height: 100%;left:30%;width:70%">
-                    <h2 class="oce_metadata oce_list_title"><?= $active['title']?></h2>
-                    <ul class="oce_contetlist">
-                        <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=$_("Uhr")?></li>
-                        <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                        <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
-                    </ul>
-                    <div class="ocplayerlink" style="position:absolute;bottom:0px;">
+                <div class="oce_metadatacontainer" style="float:left;position:absolute;height: 100%;left:25%;width:50%">
+                    <div style="position:absolute;height:70%">
+                        <h2 class="oce_metadata oce_list_title"><?= $active['title']?></h2>
+                        <ul class="oce_contetlist">
+                            <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=$_("Uhr")?></li>
+                            <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
+                            <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
+                        </ul>
+                    </div>
+                    <div class="ocplayerlink" style="position:absolute;height:25%;bottom:10%">
                         <div style="text-align: left; font-style: italic;">Weitere Optionen:</div>
                         <div class="button-group">
                             <? if ($active['presenter_download']) : ?>
