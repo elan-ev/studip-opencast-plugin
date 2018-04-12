@@ -634,7 +634,7 @@ class CourseController extends OpencastController
             $this->search_client = SearchClient::getInstance($this->course_id);
 
             if($this->theodul) {
-                $video_url =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id . "&mode=embed";
+                $video_url =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id;
             } else {
                 $video_url =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
