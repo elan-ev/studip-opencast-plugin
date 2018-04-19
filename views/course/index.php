@@ -115,29 +115,28 @@
             <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
             <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
                 <? foreach($states as $workflow_id => $state) :?>
-                <li class="uploaded oce_item" style="position: relative;">
-
+                <li class="uploaded oce_item" style="position: relative;padding:5px">
                     <? if($state->state == 'FAILED') : ?>
                         <div class="oce_preview_container">
                             <?=$_("Videoverarbeitung fehlerhaft")?>
                         </div>
-                <div class="oce_metadatacontainer oce_failedstate">
-                    <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                        <div class="oce_metadatacontainer oce_failedstate">
+                            <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
                             <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
-                </div>
-                    <? else :?>
-                    <div class="oce_preview_container"  style="max-height: 96px; display: inline; max-width: 120px; position: absolute; top: 4px; cursor: default;">
-                        <div id="<?=$workflow_id?>" class="workflow_info" style="max-width: 120px;display: inline;">
-                            <strong style="font-size: 9pt;position: absolute; top:22px; left: 15px; max-width:50px;line-height: 17px;text-align: center"></strong>
                         </div>
-                        <div style="clear: both;"></div>
-                    </div>
-                    <div class="oce_metadatacontainer">
-                        <h3 class="oce_metadata"><?=$_('Video wird verarbeitet: ')?> <?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
-                        <span class="oce_metadata"><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
-                    </div>
+                    <? else :?>
+                        <div style="cursor: default;float:left;width:25%">
+                            <div id="<?=$workflow_id?>" class="workflow_info" style="display: inline;position: relative;left:35%">
+                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:28px"></strong>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div style="margin-left:110px;">
+                            <h3><?=$_('Video wird verarbeitet: ')?> <?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                            <span><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
+                        </div>
                     <? endif; ?>
-            </li>
+                </li>
                 <? endforeach;?>
             <? endif;?>
             <? foreach($ordered_episode_ids as $pos => $item) : ?>

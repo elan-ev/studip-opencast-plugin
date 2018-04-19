@@ -154,20 +154,20 @@ OC = {
                         if (animation) {
                             jQuery('#'+job_id).circleProgress({
                                 value: counter / job.operations.operation.length,
-                                size: 80,
+                                size: 100,
                                 fill: { color: "#899ab9"}
                             });
                         } else {
                             jQuery('#'+job_id).circleProgress({
                                 value: counter / job.operations.operation.length,
-                                size: 80,
+                                size: 100,
                                 animation: false,
                                 fill: { color: "#899ab9"}
                             });
                         }
 
 
-                        jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length + ' Schritten');
+                        jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length);
                         jQuery('#'+job_id).attr('title', current_description);
                         jQuery('#'+job_id).attr('alt', current_description);
                     }
