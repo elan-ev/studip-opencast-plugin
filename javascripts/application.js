@@ -167,7 +167,7 @@ OC = {
                         }
 
 
-                        jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length);
+                        //jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length);
                         jQuery('#'+job_id).attr('title', current_description);
                         jQuery('#'+job_id).attr('alt', current_description);
                     }
