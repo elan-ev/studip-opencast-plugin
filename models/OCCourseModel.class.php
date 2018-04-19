@@ -104,22 +104,38 @@ class OCCourseModel
 
     }
 
+    /**
+     * This function sorts an array 'deep'. This means the content is first sorted
+     * by the first key in the array. If there are more than one entry for this key
+     * the episodes in this group are sorted by the second key and so on.
+     * @param $keys
+     * @param $sort_flags
+     * @param $reversed
+     * @param $episodes
+     *
+     * @return array
+     */
     private function order_episodes_by($keys,$sort_flags,$reversed,$episodes){
         $ordered = array();
 
+        //Get the current settings for this episode group
         $key = array_shift($keys);
         $current_reversed = array_shift($reversed);
         $current_sort_flags = array_shift($sort_flags);
 
+        //Regroup the current episodes bv the key field
         foreach($episodes as $episode){
             $ordered[$episode[$key]][] = $episode;
         }
+
+        //Sort, reverse if needed
         if($current_reversed){
             krsort($ordered,$current_sort_flags);
         }else{
             ksort($ordered,$current_sort_flags);
         }
 
+        //Now remove the grouping but contain the order within
         $episodes = array();
         $counter = 1;
         foreach ($ordered as $entries){
@@ -133,6 +149,7 @@ class OCCourseModel
             }
         }
 
+        //Return really ordered list of episodes
         return $episodes;
     }
 
