@@ -146,7 +146,7 @@ class CourseController extends OpencastController
             $this->flash['messages'] = array('success' =>$this->_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.'));
         }
 
-        $reload = false;
+        $reload = true;
         // set layout for index page
         $this->states = false;
 

@@ -43,7 +43,7 @@ OC = {
 
 
             if(OC.states && STUDIP.hasperm){
-                OC.getWorkflowProgressForCourse(cid, true);
+                OC.getWorkflowProgressForCourse(cid, true, null);
             }
 
             // take care of episodelist
@@ -125,8 +125,12 @@ OC = {
         return input + 'Bytes'
     },
 
-    getWorkflowProgressForCourse: function(course_id, animation) {
+    getWorkflowProgressForCourse: function(course_id, animation, info) {
         var reload = false;
+        if(info == null){
+            info = [];
+            info[0] = [0,0,0];
+        }
         jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatusforCourse/" +  course_id).done(function(data) {
             var response = jQuery.parseJSON(data);
 
@@ -151,21 +155,34 @@ OC = {
                             }
                         }
 
-                        if (animation) {
-                            jQuery('#'+job_id).circleProgress({
-                                value: counter / job.operations.operation.length,
-                                size: 100,
-                                fill: { color: "#899ab9"}
-                            });
-                        } else {
-                            jQuery('#'+job_id).circleProgress({
-                                value: counter / job.operations.operation.length,
-                                size: 100,
-                                animation: false,
-                                fill: { color: "#899ab9"}
-                            });
+                        info[info.length] = [
+                            counter,
+                            job.operations.operation.length,
+                            counter/job.operations.operation.length
+                        ];
+                        var missing = 1;
+                        var maximum = 0;
+                        var base_value = 0;
+                        var value = 0;
+                        for(var i = 0; i < info.length; i++){
+                            var pair = info[i];
+                            if(maximum == pair[1] || missing == 1){
+                                value = base_value + missing*pair[2];
+                            }
+                            if(maximum < pair[1]){
+                                maximum = pair[1];
+                                missing *= 1-info[i-1][2];
+                                base_value += info[i-1][2];
+                            }
                         }
+                        //console.log(value + " " + info[info.length-1]);
 
+                        jQuery('#'+job_id).circleProgress({
+                            value: counter / job.operations.operation.length,
+                            size: 100,
+                            animation: animation,
+                            fill: { color: "#899ab9"}
+                        });
 
                         //jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length);
                         jQuery('#'+job_id).attr('title', current_description);
@@ -177,8 +194,8 @@ OC = {
                 }
 
             } if(reload || response == ""){
-                // window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
-            } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false)}, 25000)
+                //window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
+            } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false, info)}, 5000)
 
         });
 
