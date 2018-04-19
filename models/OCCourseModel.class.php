@@ -139,7 +139,7 @@ class OCCourseModel
         $episodes = array();
         $counter = 1;
         foreach ($ordered as $entries){
-            if(count($keys)>0){
+            if(count($keys)>0 && count($entries)>1){
                 $entries = $this->order_episodes_by($keys,$sort_flags,$reversed,$entries);
             }
             foreach($entries as $entry){
