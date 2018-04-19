@@ -1,4 +1,4 @@
-pluginname=Opencast
+pluginname=OpenCast
 pluginclassname=OpenCast
 origin=elan-ev
 version=1.1.4
