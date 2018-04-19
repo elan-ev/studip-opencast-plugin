@@ -92,11 +92,48 @@ class OCCourseModel
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
 
-            return $ordered_episodes;
+            return $this->order_episodes_by(
+                array('start','title'),
+                array(SORT_NATURAL,SORT_NATURAL),
+                array(true,false),
+                $ordered_episodes
+            );
         } else {
             return false;
         }
 
+    }
+
+    private function order_episodes_by($keys,$sort_flags,$reversed,$episodes){
+        $ordered = array();
+
+        $key = array_shift($keys);
+        $current_reversed = array_shift($reversed);
+        $current_sort_flags = array_shift($sort_flags);
+
+        foreach($episodes as $episode){
+            $ordered[$episode[$key]][] = $episode;
+        }
+        if($current_reversed){
+            krsort($ordered,$current_sort_flags);
+        }else{
+            ksort($ordered,$current_sort_flags);
+        }
+
+        $episodes = array();
+        $counter = 1;
+        foreach ($ordered as $entries){
+            if(count($keys)>0){
+                $entries = $this->order_episodes_by($keys,$sort_flags,$reversed,$entries);
+            }
+            foreach($entries as $entry){
+                $entry['position'] = $counter;
+                $episodes[$counter] = $entry;
+                $counter++;
+            }
+        }
+
+        return $episodes;
     }
 
     private function episodeComparison($stored_episodes, $remote_episodes)
