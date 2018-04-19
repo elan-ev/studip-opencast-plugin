@@ -163,10 +163,10 @@
             <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
             </span>
                         <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                        <a href="<?= URLHelper::getURL($video_url) ?>" target="_blank">
+                        <a href="<?= URLHelper::getURL($video_url.$active['id']) ?>" target="_blank">
                 <span class="previewimage">
                     <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
-                    <img class="playbutton" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
+                    <img class="playbutton" style="bottom:10px" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
                 </span>
                         </a>
                     </div>
@@ -200,9 +200,9 @@
                         <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                             <div class="button-group" style="float:right">
                                 <? if ($visible && $visible['visible'] == 'false') : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id, 'data-position' => $active['position'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'], 'data-position' => $active['position'])); ?>
                                 <? else : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active_id .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active_id,'data-position' => $active['position'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'],'data-position' => $active['position'])); ?>
                                 <? endif;?>
                             </div>
                         <? endif; ?>

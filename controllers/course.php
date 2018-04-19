@@ -197,9 +197,9 @@ class CourseController extends OpencastController
                     if (!empty($this->ordered_episode_ids)) {
 
                         if($this->theodul){
-                            $this->video_url = $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id;
+                            $this->video_url = $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=";
                         }else{
-                            $this->video_url = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
+                            $this->video_url = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=";
                         }
 
                         foreach($this->ordered_episode_ids as $ep) {
