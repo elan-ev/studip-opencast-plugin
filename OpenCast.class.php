@@ -405,10 +405,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         $metadata = parent::getMetadata();
 
-        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '>=')) {
+        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '<=')) {
             foreach ($metadata as $key => $value) {
                 if (is_string($value)) {
-                    $metadata[$key] = utf8_encode($value);
+                    $metadata[$key] = utf8_decode($value);
                 }
             }
         }
