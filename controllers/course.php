@@ -620,11 +620,9 @@ class CourseController extends OpencastController
             if($e['id'] == $episode_id) {
                 $e['author'] = $e['author'] !=''? $e['author'] : 'Keine Angaben vorhanden';
                 $e['description'] =$e['description'] !='' ? $e['description']  : 'Keine Beschreibung vorhanden';
-                $e['start'] = date("d.m.Y H:m",strtotime($e['start']));
-                if($e['preview']){
-                    $current_preview = $e['preview'];
-                }
-                $episode = $e;
+                $e['start'] = date("d.m.Y H:i",strtotime($e['start']));
+
+                $cand_episode = $e;
             }
         }
 

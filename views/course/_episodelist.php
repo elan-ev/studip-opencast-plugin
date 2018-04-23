@@ -21,7 +21,6 @@
                 <span class="oce_list_date">
                     <% var date = new Date(episodes[episode]['start'])%>
                     Vom <%= ('0' + date.getDate()).slice(-2)%>.<%= ('0' + (date.getMonth()+1)).slice(-2)%>.<%= date.getFullYear()%>  <%= ('0' + date.getHours()).slice(-2)%>:<%= date.getMinutes()%>
-                    <?//=sprintf(_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
             </div>
         </a>
     </li>
