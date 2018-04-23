@@ -159,7 +159,7 @@
             <div class="oce_emetadata">
                 <h2 class="oce_title"><?= $active['title']?></h2>
                 <ul class="oce_contetlist">
-                    <li><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:m",strtotime($active['start']));?> <?=$_("Uhr")?></li>
+                    <li><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:i",strtotime($active['start']));?> <?=$_("Uhr")?></li>
                     <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
                     <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
                 </ul>
@@ -226,7 +226,7 @@
                     </div>
                     <div class="oce_metadatacontainer">
                         <h3 class="oce_metadata"><?=$_('Video wird verarbeitet: ')?> <?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
-                        <span class="oce_metadata"><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:m",strtotime($state->mediapackage->start)))?></span>
+                        <span class="oce_metadata"><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:i",strtotime($state->mediapackage->start)))?></span>
                     </div>
                     <? endif; ?>
             </li>
@@ -251,7 +251,7 @@
                     </div>
                     <div class="oce_metadatacontainer">
                         <h3 class="oce_metadata oce_list_title"><?= $item['title']?> <?=($item['visibility'] != 'false') ? '' : ' (Unsichtbar)'?></h3>
-                        <span class="oce_list_date"><?=sprintf($_("Vom %s"),date("d.m.Y H:m",strtotime($item['start'])))?></span>
+                        <span class="oce_list_date"><?=sprintf($_("Vom %s"),date("d.m.Y H:i",strtotime($item['start'])))?></span>
                     </div>
             </a>
             </li>
