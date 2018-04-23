@@ -99,10 +99,8 @@ use Studip\Button,
              <?=$_("Laden sie nur Medien hoch an denen sie das Copyright besitzen!")?>
          </p>
          <p>
-             <?=$_("Die möglichen Ausnahmen über §52a UrhG sind sehr eingeschränkt, so dürfen nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.")?>
-         </p>
-         <p>
-             <?=$_("Nach §52a UrhG dürfen Kinofilme oder Ausschnitte daraus frühstens 2 Jahre nach der Verwertung im Kino und nur mit Einwilligung des Berechtigten zugänglich gemacht werden!")?>
+	  <?=_("Nach §60 dürfen nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.")?>
+          <a href="https://elan-ev.de/themen_p60.php">§60 UrhG Zusammenfassung</a>
          </p>
          <p>
              <?=$_("Medien bei denen Urheberrechtsverstöße vorliegen, werde ohne vorherige Ankündigung umgehend gelöscht.")?>
