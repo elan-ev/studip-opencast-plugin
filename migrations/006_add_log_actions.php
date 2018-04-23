@@ -5,13 +5,13 @@ class AddLogActions extends Migration {
     static $log_actions = array(
         array(
             'name'        => 'OC_CHANGE_EPISODE_VISIBILITY',
-            'description' => 'Opencast: Sichtbarkeit einer Episoden geändert',
-            'template'    => '%user ändert Sichtbarkeit der Aufzeichnung %affected in %sem(%coaffected)',
+            'description' => 'Opencast: Sichtbarkeit einer Episode geandert',
+            'template'    => '%user aendert Sichtbarkeit der Aufzeichnung %affected in %sem(%coaffected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_CHANGE_TAB_VISIBILITY',
-            'description' => 'Opencast:  Sichtbarkeit des Kursreiters geändert',
-            'template'    => '%user ändert Sichtbarkeit des Kursreiters in %sem(%affected)',
+            'description' => 'Opencast:  Sichtbarkeit des Kursreiters geaendert',
+            'template'    => '%user aendert Sichtbarkeit des Kursreiters in %sem(%affected)',
             'active'      => 1
         ), array(
             'name'        => 'OC_SCHEDULE_EVENT',
@@ -35,18 +35,18 @@ class AddLogActions extends Migration {
             'active'      => 1
         ), array(
             'name'        => 'OC_CONNECT_SERIES',
-            'description' => 'Opencast: Verknüpfung einer Aufzeichnungsserie',
-            'template'    => '%user verknüpft vorhandene Aufzeichnungsserie %affected in %sem(%coaffected) an',
+            'description' => 'Opencast: Verknuepfung einer Aufzeichnungsserie',
+            'template'    => '%user verknuepft vorhandene Aufzeichnungsserie %affected in %sem(%coaffected) an',
             'active'      => 1
         ), array(
             'name'        => 'OC_REMOVE_CONNECTED_SERIES',
-            'description' => 'Opencast: Aufheben einer Aufzeichnungsserienverknüpfung',
-            'template'    => '%user löscht die Verbindung zur Aufzeichnungsserie %affected in %sem(%coaffected) an',
+            'description' => 'Opencast: Aufheben einer Aufzeichnungsserienverknuepfung',
+            'template'    => '%user loescht die Verbindung zur Aufzeichnungsserie %affected in %sem(%coaffected) an',
             'active'      => 1
         ), array(
             'name'        => 'OC_UPLOAD_MEDIA',
             'description' => 'Opencast: Upload einer Datei in einer Aufzeichnungsserie',
-            'template'    => '%user lädt eine Datei mit der WorkflowID %affected in %sem(%coaffected) hoch',
+            'template'    => '%user laedt eine Datei mit der WorkflowID %affected in %sem(%coaffected) hoch',
             'active'      => 1
         )
     );
