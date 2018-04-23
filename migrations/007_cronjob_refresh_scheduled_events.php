@@ -13,7 +13,7 @@ class CronjobRefreshScheduledEvents extends Migration
 
         // Schedule job to run every 360 minutes
         if ($task_id) {
-            CronjobScheduler::schedulePeriodic($task_id, -360);  // negative value means "every x minutes"
+            CronjobScheduler::schedulePeriodic($task_id, -120);  // negative value means "every x minutes"
         }
     }
     function down()
