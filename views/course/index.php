@@ -105,7 +105,7 @@
 <div class="oc_flex">
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">
-            <input class="search" placeholder="<?=$_('Nach Aufzeichung suchen')?>" size="30" />
+            <input class="search" placeholder="<?= $_('Nach Aufzeichnung suchen') ?>" size="30" />
             <?= Icon::create('search', 'clickable', array(
                 'class' => 'sort',
                 'data-sort' => 'name'
@@ -121,7 +121,7 @@
                             <?=$_("Videoverarbeitung fehlerhaft")?>
                         </div>
                         <div class="oce_metadatacontainer oce_failedstate">
-                            <h3 class="oce_metadata"><?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
+                            <h3 class="oce_metadata"><?= htmlready(studip_utf8decode($state->mediapackage->title))?></h3>
                             <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
                         </div>
                     <? else :?>
@@ -132,8 +132,8 @@
                             <div style="clear: both;"></div>
                         </div>
                         <div style="margin-left:110px;">
-                            <h3><?=$_('Video wird verarbeitet: ')?> <?= htmlready(mb_convert_encoding($state->mediapackage->title, 'ISO-8859-1', 'UTF-8'))?></h3>
-                            <span><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:i",strtotime($state->mediapackage->start)))?></span>
+                            <h3 class="oce_list_title"><?=$_('Video wird verarbeitet: ')?> <?= htmlready(studip_utf8decode($state->mediapackage->title))?></h3>
+                            <span class="oce_list_date"><?=sprintf($_("Hochgeladen am %s"),date("d.m.Y H:i",strtotime($state->mediapackage->start)))?></span>
                         </div>
                     <? endif; ?>
                 </li>
@@ -224,11 +224,11 @@
 
 <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
 
-<div id="upload_dialog" title="<?=$_("Medienupload")?>">
+<div id="upload_dialog" title="<?=$_("Medienupload")?>" style="display: none;">
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier'])) ?>
 </div>
 
-<div id="config_dialog" title="<?=$_("Series verknüpfen")?>">
+<div id="config_dialog" title="<?=$_("Series verknüpfen")?>" style="display: none;">
     <?= $this->render_partial("course/_config", array()) ?>
 </div>
 
