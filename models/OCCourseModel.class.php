@@ -92,11 +92,65 @@ class OCCourseModel
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
 
-            return $ordered_episodes;
+            return $this->order_episodes_by(
+                array('start','title'),
+                array(SORT_NATURAL,SORT_NATURAL),
+                array(true,false),
+                $ordered_episodes
+            );
         } else {
             return false;
         }
 
+    }
+
+    /**
+     * This function sorts an array 'deep'. This means the content is first sorted
+     * by the first key in the array. If there are more than one entry for this key
+     * the episodes in this group are sorted by the second key and so on.
+     * @param $keys
+     * @param $sort_flags
+     * @param $reversed
+     * @param $episodes
+     *
+     * @return array
+     */
+    private function order_episodes_by($keys,$sort_flags,$reversed,$episodes){
+        $ordered = array();
+
+        //Get the current settings for this episode group
+        $key = array_shift($keys);
+        $current_reversed = array_shift($reversed);
+        $current_sort_flags = array_shift($sort_flags);
+
+        //Regroup the current episodes bv the key field
+        foreach($episodes as $episode){
+            $ordered[$episode[$key]][] = $episode;
+        }
+
+        //Sort, reverse if needed
+        if($current_reversed){
+            krsort($ordered,$current_sort_flags);
+        }else{
+            ksort($ordered,$current_sort_flags);
+        }
+
+        //Now remove the grouping but contain the order within
+        $episodes = array();
+        $counter = 1;
+        foreach ($ordered as $entries){
+            if(count($keys)>0 && count($entries)>1){
+                $entries = $this->order_episodes_by($keys,$sort_flags,$reversed,$entries);
+            }
+            foreach($entries as $entry){
+                $entry['position'] = $counter;
+                $episodes[$counter] = $entry;
+                $counter++;
+            }
+        }
+
+        //Return really ordered list of episodes
+        return $episodes;
     }
 
     private function episodeComparison($stored_episodes, $remote_episodes)

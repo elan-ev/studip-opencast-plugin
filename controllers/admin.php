@@ -125,7 +125,7 @@ class AdminController extends OpencastController
         if (!array_key_exists('scheme', $service_url)) {
             $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema angegeben.'));
             OCRestClient::clearConfig($config_id);
-            $this->redirect('admin/config');
+            //$this->redirect('admin/config');
         } else {
             $service_host = $service_url['scheme'] .'://' . $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
             $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path'];

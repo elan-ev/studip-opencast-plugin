@@ -146,7 +146,7 @@ class CourseController extends OpencastController
             $this->flash['messages'] = array('success' =>$this->_('Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Server kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird.'));
         }
 
-        $reload = false;
+        $reload = true;
         // set layout for index page
         $this->states = false;
 
@@ -195,26 +195,22 @@ class CourseController extends OpencastController
                     }
 
                     if (!empty($this->ordered_episode_ids)) {
-                        $engage_url =  parse_url($this->search_client->getBaseURL());
+
+                        if($this->theodul){
+                            $this->video_url = $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=";
+                        }else{
+                            $this->video_url = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=";
+                        }
 
                         foreach($this->ordered_episode_ids as $ep) {
                             if($ep['id'] == $this->active_id) {
-                                if($ep['prespreview']){
-                                    $this->previewimage = $ep['prespreview'];
+                                if($ep['preview']){
+                                    $this->previewimage = $ep['preview'];
                                 } else {
                                     $this->previewimage = false;
                                 }
                             }
                         }
-
-
-                        if ($this->theodul) {
-                            $this->embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$this->active_id . "&mode=embed";
-                        } else {
-                            $this->embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$this->active_id;
-                        }
-
-                        $this->engage_player_url = $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$this->active_id;
                     }
 
                     // Upload-Dialog
@@ -618,7 +614,8 @@ class CourseController extends OpencastController
 
         $occourse = new OCCourseModel($course_id);
         $episodes = $occourse->getEpisodes();
-        $cand_episode = array();
+        $episode = array();
+        $current_preview = '';
         foreach($episodes as $e){
             if($e['id'] == $episode_id) {
                 $e['author'] = $e['author'] !=''? $e['author'] : 'Keine Angaben vorhanden';
@@ -629,8 +626,6 @@ class CourseController extends OpencastController
             }
         }
 
-
-
         if (Request::isXhr()) {
 
             $this->set_status('200');
@@ -638,22 +633,24 @@ class CourseController extends OpencastController
             $this->search_client = SearchClient::getInstance($this->course_id);
 
             if($this->theodul) {
-                $embed =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id . "&mode=embed";
+                $video_url =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id;
             } else {
-                $embed =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
+                $video_url =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
             }
 
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
+            $plugin = PluginEngine::getPlugin('OpenCast');
+            $video = array('url'=>$video_url,'image'=>$current_preview,'circle'=> $plugin->getPluginURL() .'/images/play-circle.png');
 
             $episode = array(
                 'active_id'         => $active_id,
                 'course_id'         => $course_id,
                 'theodul'           => $theodul,
-                'embed'             => $embed,
+                'video'             => $video,
                 'perm'              => $perm,
                 'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
-                'episode_data'      => $cand_episode
+                'episode_data'      => $episode
             );
 
             $this->render_json($episode);

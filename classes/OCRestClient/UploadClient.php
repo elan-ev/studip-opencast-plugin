@@ -32,7 +32,6 @@ class UploadClient extends OCRestClient {
         );
 
         $rest_end_point = "/newjob";
-        $uri = $rest_end_point;
 
         if($response = $this->getXML($rest_end_point, $data, false)) {
             return $response;
