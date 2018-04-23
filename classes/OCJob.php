@@ -309,13 +309,14 @@ class OCJob
         $ids = $this->data['id_list'];
         $creatition_time = new DateTime($info['record_date'] . ' ' . $info['start']['h'] . ':' . $info['start']['h']);
         $dc_values = array();
-        $dc_values['title'] = studip_utf8encode($info['title']);
-        $dc_values['creator'] = studip_utf8encode($info['creator']);
-        $dc_values['contributor'] = studip_utf8encode($info['contributor']);
-        $dc_values['subject'] = studip_utf8encode($info['subject']);
-        $dc_values['language'] = studip_utf8encode($info['language']);
-        $dc_values['description'] = studip_utf8encode($info['description']);
-        $dc_values['series_id'] = studip_utf8encode($ids['series']);
+
+        $dc_values['title'] = $info['title'];
+        $dc_values['creator'] = $info['creator'];
+        $dc_values['contributor'] = $info['contributor'];
+        $dc_values['subject'] = $info['subject'];
+        $dc_values['language'] = $info['language'];
+        $dc_values['description'] = $info['description'];
+        $dc_values['series_id'] = $ids['series'];
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                                 <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
