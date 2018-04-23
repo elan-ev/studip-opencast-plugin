@@ -222,28 +222,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
 
-    /**
-     * Callback function called after enabling a plugin.
-     * The plugin's ID is transmitted for convenience.
-     *
-     * @param $pluginId string The ID of the plugin just enabled.
-     */
-    public static function onEnable($pluginId)
-    {
-        return false;
-    }
-
-    /**
-     * Callback function called after disabling a plugin.
-     * The plugin's ID is transmitted for convenience.
-     *
-     * @param $pluginId string The ID of the plugin just disabled.
-     */
-    public static function onDisable($pluginId)
-    {
-        return false;
-    }
-
     function getTabNavigation($course_id)
     {
 
