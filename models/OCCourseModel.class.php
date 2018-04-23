@@ -78,9 +78,9 @@ class OCCourseModel
 
     /*  */
 
-    public function getEpisodes($force_reload = false){
-
-        if($this->getSeriesID()) {
+    public function getEpisodes($force_reload = false)
+    {
+        if ($this->getSeriesID()) {
             $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
 
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
@@ -318,15 +318,15 @@ class OCCourseModel
 
     }
 
-    private function getCachedEntries($series_id, $forced_reload) {
-
+    private function getCachedEntries($series_id, $forced_reload)
+    {
         $cached_series = OCSeriesModel::getCachedSeriesData($series_id);
 
-        if(!$cached_series || $forced_reload){
+        if (!$cached_series || $forced_reload) {
             $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
-            $series = $search_client->getEpisodes($series_id);
+            $series = $search_client->getEpisodes($series_id, true);
 
-            if($forced_reload && $cached_series){
+            if ($forced_reload && $cached_series) {
                 OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
             } else {
                 OCSeriesModel::setCachedSeriesData($series_id, serialize($series));

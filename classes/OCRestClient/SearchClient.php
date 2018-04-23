@@ -21,7 +21,7 @@
          *
          *  @return array response of episodes
          */
-        function getEpisodes($series_id)
+        function getEpisodes($series_id, $refresh = false)
         {
             global $perm;
 
@@ -29,8 +29,8 @@
             $cache_key = 'oc_episodesforseries/'.$series_id;
             $episodes = $cache->read($cache_key);
 
-            if ($episodes === false || $perm->have_perm('dozent')) {
-                $service_url = "/series.json?id=".$series_id."&q=&episodes=true&sort=&limit=0&offset=0";
+            if ($refresh || $episodes === false || $perm->have_perm('dozent')) {
+                $service_url = "/episode.json?sid=".$series_id."&q=&episodes=true&sort=&limit=0&offset=0";
 
                 if ($search = $this->getJSON($service_url)) {
                     $x = "search-results";

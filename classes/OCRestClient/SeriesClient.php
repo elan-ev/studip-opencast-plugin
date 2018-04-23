@@ -24,8 +24,8 @@
          *
          *  @return array response all series
          */
-        function getAllSeries() {
-
+        function getAllSeries()
+        {
             $cache = StudipCacheFactory::getCache();
             $cache_key = 'oc_allseries';
             $all_series = $cache->read($cache_key);

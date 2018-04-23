@@ -430,7 +430,7 @@ class CourseController extends OpencastController
             if ($this->series_client->createSeriesForSeminar($this->course_id)) {
                 $this->flash['messages']['success'] = $this->_("Series wurde angelegt");
                 StudipLog::log('OC_CREATE_SERIES', $this->course_id);
-
+                StudipCacheFactory::getCache()->expire('oc_allseries');
             } else {
                 throw new Exception($this->_("Verbindung zum Series-Service konnte nicht hergestellt werden."));
             }

@@ -76,7 +76,7 @@ class OCSeriesModel {
         //check if value assignment is needed
         if (is_null(self::$unconnectedSeries) || $refresh) {
             $connected = self::getConnectedSeries($courseID);
-            $all = self::getAllSeries();
+            $all = self::getAllSeries($refresh);
 
             if (empty($connected)) {
                 self::$unconnectedSeries = $all;
@@ -109,9 +109,8 @@ class OCSeriesModel {
      * @param bool $refresh
      * @return array
      */
-    static function getAllSeries($refresh = false) {
-
-
+    static function getAllSeries($refresh = false)
+    {
         //check if value assignment is needed
         if (is_null(self::$allSeries) || $refresh) {
             $sClient = SeriesClient::getInstance();
@@ -335,22 +334,26 @@ class OCSeriesModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    static function getCachedSeriesData($series_id){
-        $stmt = DBManager::get()->prepare("SELECT `content` FROM oc_series_cache WHERE `series_id` = ?");
+    static function getCachedSeriesData($series_id)
+    {
+        $stmt = DBManager::get()->prepare("SELECT `content`
+            FROM oc_series_cache WHERE `series_id` = ?");
         $stmt->execute(array($series_id));
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if(empty($result)){
+        if (empty($result)) {
             return false;
-        }
-        else {
+        } else {
             foreach($result as $c) {
                 $content = unserialize($c['content']);
-
             }
-            if(is_null($content) || empty($content)) return 'empty';
-            else return $content;
+
+            if (is_null($content) || empty($content)) {
+                return 'empty';
+            } else {
+                return $content;
+            }
         }
     }
 
