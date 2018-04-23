@@ -261,7 +261,7 @@ class CourseController extends OpencastController
         $series = Request::getArray('series');
         foreach( $series as $serie) {
             OCSeriesModel::setSeriesforCourse($course_id, $serie, 'visible', 0, time());
-            StudipLog::log('OC_CONNECT_SERIES',$serie, $course_id);
+            StudipLog::log('OC_CONNECT_SERIES', null, $course_id, $serie);
         }
         $this->flash['messages'] = array('success'=> $this->_("Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft."));
 
@@ -288,7 +288,7 @@ class CourseController extends OpencastController
             */
             $this->flash['messages'] = array('success'=> $this->_("Die Zuordnung wurde entfernt"));
 
-            StudipLog::log('OC_REMOVE_CONNECTED_SERIES',$series_id, $course_id);
+            StudipLog::log('OC_REMOVE_CONNECTED_SERIES', null, $course_id, $series_id);
         }
         else{
             $this->flash['messages']['error'] = $this->_("Die Zuordnung konnte nicht entfernt werden.");
