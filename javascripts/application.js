@@ -161,35 +161,8 @@ OC = {
                             counter/job.operations.operation.length
                         ];
 
-                        var base_value = 0;
-                        var representational_value = 0;
-
-                        for(var i = 0; i < info.length; i++) {
-                            var step_data = info[i];
-                            var next_index = i + 1;
-                            var step_value = (1-base_value) * step_data[2];
-                            representational_value = base_value + step_value;
-
-                            if (next_index < info.length && step_data[1] < info[next_index][1]) {
-                                base_value += step_value;
-                            }
-                        }
-
-                        jQuery('#'+job_id).circleProgress({
-                            value: representational_value,
-                            size: 100,
-                            animation: animation,
-                            fill: { color: "#899ab9"}
-                        });
-
-                        var percent = representational_value * 100;
-                        if(percent > 100){
-                            percent = 100;
-                        }
-
-                        jQuery('#'+job_id).find('strong').html( percent.toPrecision(7) + "%" );
-                        jQuery('#'+job_id).attr('title', current_description);
-                        jQuery('#'+job_id).attr('alt', current_description);
+                        jQuery('#'+job_id).attr('title',counter +'/'+ job.operations.operation.length +': '+ current_description);
+                        jQuery('#'+job_id).attr('alt', counter +'/'+ job.operations.operation.length +': '+ current_description);
                     }
                     else {
                         reload = true;
