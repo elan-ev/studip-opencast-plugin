@@ -1,3 +1,8 @@
+@item-height: auto;
+@item-width : 25em;
+@item-height-small: auto;
+@item-width-small : 16em;
+
 .conf-form {
   padding-bottom: 19px;
 }
@@ -123,6 +128,9 @@
 
 .oc_flexplaycontainer {
   margin: 0 1px;
+  float:left;
+  width: @item-width;
+  height: @item-height;
 }
 
 .oc_flexepisodelist {
@@ -143,7 +151,7 @@
   margin-top: 1em;
   padding-right: 0.5em;
   z-index: 1999;
-  height: auto;
+  height: @item-height;
 
   .oc_playerframe {
     display: block;
@@ -211,7 +219,6 @@
 
 .oce_contetlist {
   list-style-type: none;
-  white-space: nowrap;
   padding-left: 0px;
 }
 
@@ -222,6 +229,25 @@
   overflow: auto;
   height: auto;
 }
+
+.oce_wip {
+    cursor: default;
+    float: left;
+    width: @item-width;
+    height: @item-height;
+
+    .oce_wip_preview {
+        padding-right: 0.5em;
+        text-align: center;
+
+        img {
+            height: 6em;
+        }
+    }
+
+}
+
+
 
 .oce_emetadata {
   font-size: 80%;
@@ -277,15 +303,32 @@
 
 .oce_metadatacontainer {
   display: block;
+  margin-left: @item-width;
 }
 
-.oce_metadata {
-  top: -10px;
-  position: relative;
+.oce_item {
+    height: @item-height;
 }
 
-.oce_item:hover {
-  background-color: #d4dbe5;
+
+@media only screen and (max-width: 1200px) {
+    .oce_wip {
+        width: @item-width-small;
+        height: @item-height-small;
+    }
+
+    .oce_item {
+        height: @item-height-small;
+    }
+
+    .oc_flexplaycontainer {
+        width: @item-width-small;
+        height: @item-height-small;
+    }
+
+    .oce_metadatacontainer {
+        margin-left: @item-width-small;
+    }
 }
 
 .hidden_ocvideo {
