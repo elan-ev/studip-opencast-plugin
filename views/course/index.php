@@ -117,17 +117,26 @@
                 <? foreach($states as $workflow_id => $state) :?>
                 <li class="uploaded oce_item">
                     <? if(in_array($state->state,array('FAILING','FAILED'))) : ?>
-                        <div class="oce_preview_container">
-                            <?=$_("Videoverarbeitung fehlerhaft")?>
+                        <div class="oce_wip">
+                            <div class="oce_wip_preview">
+                                <img src="<?= $plugin->getPluginURL() .'/images/oc_logo_red.png' ?>">
+                            </div>
                         </div>
                         <div class="oce_metadatacontainer oce_failedstate">
-                            <h3 class="oce_metadata"><?= htmlready(studip_utf8decode($state->mediapackage->title))?></h3>
+                            <h2 class="oce_list_title">
+                                <?= htmlready(studip_utf8decode($state->mediapackage->title))?>
+                            </h2>
+
+                            <div>
+                                <?=$_("Videoverarbeitung fehlgeschlagen")?>
+                            </div>
+
                             <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
                         </div>
                     <? else :?>
                         <div class="oce_wip" id="<?=$workflow_id?>" >
                             <div class="oce_wip_preview">
-                                <img src="<?= $plugin->getPluginURL() .'/images/newocicon.png' ?>">
+                                <img src="<?= $plugin->getPluginURL() .'/images/oc_logo_black.png' ?>">
                             </div>
 
                             <div style="clear: both;"></div>
@@ -174,7 +183,9 @@
                 </div>
                 <div class="oce_metadatacontainer">
                     <div>
-                        <h2 class="oce_metadata oce_list_title"><?= $active['title']?></h2>
+                        <h2 class="oce_metadata oce_list_title">
+                            <?= $active['title']?>
+                        </h2>
                         <ul class="oce_contetlist">
                             <li class="oce_list_date" >
                                 <?= $_('Aufzeichnungsdatum') ?>:
