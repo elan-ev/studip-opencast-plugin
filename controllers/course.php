@@ -49,6 +49,8 @@ class CourseController extends OpencastController
                 func_get_args()
             );
         };
+
+        PageLayout::setHelpKeyword('Opencast');
     }
 
     /**
@@ -689,8 +691,19 @@ class CourseController extends OpencastController
             $this->set_layout(null);
         }
 
+        PageLayout::setTitle($this->_('Workflow konfigurieren'));
+
         $this->workflow_client = WorkflowClient::getInstance($this->course_id);
-        $this->workflows = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+        $this->workflows = array_filter(
+            $this->workflow_client->getTaggedWorkflowDefinitions(),
+            function($element) {
+                return (in_array('schedule', $element['tags']) !== false
+                        || in_array('schedule-ng', $element['tags']) !== false)
+                    ? $element
+                    : false;
+            }
+        );
 
         $occourse = new OCCourseModel($this->course_id);
         $this->uploadwf = $occourse->getWorkflow('upload');

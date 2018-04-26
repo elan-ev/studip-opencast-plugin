@@ -16,7 +16,10 @@ use Studip\Button,
 
             <select name="oc_course_uploadworkflow">
                 <? foreach($workflows as $workflow) :?>
-                    <option value="<?=$workflow['id']?>" title="<?=$workflow['description']?>" <?=($uploadwf['workflow_id'] == $workflow['id']) ? 'selected' : ''?>><?=$workflow['id']?></option>
+                    <option value="<?=$workflow['id']?>" title="<?=$workflow['description']?>"
+                            <?=($uploadwf['workflow_id'] == $workflow['id']) ? 'selected' : ''?>>
+                        <?=$workflow['title']?>
+                    </option>
                 <? endforeach; ?>
             </select>
         </label>
