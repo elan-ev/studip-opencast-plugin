@@ -176,11 +176,21 @@
                     <div>
                         <h2 class="oce_metadata oce_list_title"><?= $active['title']?></h2>
                         <ul class="oce_contetlist">
-                            <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:i",strtotime($active['start']));?> <?=$_("Uhr")?></li>
-                            <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                            <li><?=$_('Beschreibung : ')?> <?= $active['description'] ? htmlspecialchars($active['description']) : 'Keine Beschreibung vorhanden';?></li>
+                            <li class="oce_list_date" >
+                                <?= $_('Aufzeichnungsdatum') ?>:
+                                <?= date("d.m.Y H:i",strtotime($active['start'])) ?> <?= $_("Uhr") ?>
+                            </li>
+                            <li>
+                                <?= $_('Autor') ?>:
+                                <?= $active['author'] ? htmlReady($active['author']) : 'Keine Angaben vorhanden' ?>
+                            </li>
+                            <li>
+                                <?= $_('Beschreibung') ?>:
+                                <?= $active['description'] ? htmlReady($active['description']) : 'Keine Beschreibung vorhanden' ?>
+                            </li>
                         </ul>
                     </div>
+
                     <div class="ocplayerlink">
                         <div class="button-group">
                             <? if ($active['presenter_download']) : ?>
@@ -236,5 +246,4 @@
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
 <?= $this->render_partial("course/_previewimagefragment", array()) ?>
-<?= $this->render_partial("course/_playerfragment", array()) ?>
 <?= $this->render_partial("course/_episodelist", array()) ?>
