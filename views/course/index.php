@@ -127,7 +127,7 @@
                     <? else :?>
                         <div style="cursor: default;float:left;width:25%">
                             <div id="<?=$workflow_id?>" class="workflow_info" style="display: inline;position: relative;left:35%">
-                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:28px"></strong>
+                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:15px"></strong>
                             </div>
                             <div style="clear: both;"></div>
                         </div>
