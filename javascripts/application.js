@@ -156,7 +156,7 @@ OC = {
                         }
 
                         info[info.length] = [
-                            counter,
+                            (counter>job.operations.operation.length?job.operations.operation.length:counter),
                             job.operations.operation.length,
                             counter/job.operations.operation.length
                         ];
