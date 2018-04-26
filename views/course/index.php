@@ -177,7 +177,7 @@
                         <ul class="oce_contetlist">
                             <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:i",strtotime($active['start']));?> <?=$_("Uhr")?></li>
                             <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                            <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
+                            <li><?=$_('Beschreibung : ')?> <?= $active['description'] ? htmlspecialchars($active['description']) : 'Keine Beschreibung vorhanden';?></li>
                         </ul>
                     </div>
                     <div class="ocplayerlink" style="position:absolute;height:25%;bottom:10%">
