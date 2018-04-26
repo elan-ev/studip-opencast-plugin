@@ -127,7 +127,7 @@
                     <? else :?>
                         <div style="cursor: default;float:left;width:25%">
                             <div id="<?=$workflow_id?>" class="workflow_info" style="display: inline;position: relative;left:35%">
-                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:28px"></strong>
+                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:15px"></strong>
                             </div>
                             <div style="clear: both;"></div>
                         </div>
@@ -177,7 +177,7 @@
                         <ul class="oce_contetlist">
                             <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:i",strtotime($active['start']));?> <?=$_("Uhr")?></li>
                             <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                            <li><?=$_('Beschreibung : ')?> <?=$active['description'] ? $active['description']  : 'Keine Beschreibung vorhanden';?></li>
+                            <li><?=$_('Beschreibung : ')?> <?= $active['description'] ? htmlspecialchars($active['description']) : 'Keine Beschreibung vorhanden';?></li>
                         </ul>
                     </div>
                     <div class="ocplayerlink" style="position:absolute;height:25%;bottom:10%">

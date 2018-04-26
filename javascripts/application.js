@@ -156,35 +156,38 @@ OC = {
                         }
 
                         info[info.length] = [
-                            counter,
+                            (counter>job.operations.operation.length?job.operations.operation.length:counter),
                             job.operations.operation.length,
                             counter/job.operations.operation.length
                         ];
-                        var missing = 1;
-                        var maximum = 0;
+
                         var base_value = 0;
-                        var value = 0;
-                        for(var i = 0; i < info.length; i++){
-                            var pair = info[i];
-                            if(maximum == pair[1] || missing == 1){
-                                value = base_value + missing*pair[2];
-                            }
-                            if(maximum < pair[1]){
-                                maximum = pair[1];
-                                missing *= 1-info[i-1][2];
-                                base_value += info[i-1][2];
+                        var representational_value = 0;
+
+                        for(var i = 0; i < info.length; i++) {
+                            var step_data = info[i];
+                            var next_index = i + 1;
+                            var step_value = (1-base_value) * step_data[2];
+                            representational_value = base_value + step_value;
+
+                            if (next_index < info.length && step_data[1] < info[next_index][1]) {
+                                base_value += step_value;
                             }
                         }
-                        //console.log(value + " " + info[info.length-1]);
 
                         jQuery('#'+job_id).circleProgress({
-                            value: counter / job.operations.operation.length,
+                            value: representational_value,
                             size: 100,
                             animation: animation,
                             fill: { color: "#899ab9"}
                         });
 
-                        //jQuery('#'+job_id).find('strong').html( counter +' / ' + job.operations.operation.length);
+                        var percent = representational_value * 100;
+                        if(percent > 100){
+                            percent = 100;
+                        }
+
+                        jQuery('#'+job_id).find('strong').html( percent.toPrecision(7) + "%" );
                         jQuery('#'+job_id).attr('title', current_description);
                         jQuery('#'+job_id).attr('alt', current_description);
                     }
@@ -194,7 +197,7 @@ OC = {
                 }
 
             } if(reload || response == ""){
-                //window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
+                window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
             } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false, info)}, 5000)
 
         });
