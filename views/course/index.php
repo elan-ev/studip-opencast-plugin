@@ -213,7 +213,7 @@
                             <? endif ?>
 
                             <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                                <? if ($visible && $visible['visible'] == 'false') : ?>
+                                <? if ($active['visibility'] == 'false') : ?>
                                     <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
                                 <? else : ?>
                                     <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
