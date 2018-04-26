@@ -21,8 +21,8 @@ switch ($target) {
 
 function translate()
 {
-    shell_exec('find * \( -iname "*.php" -o -iname "*.ihtml" \) | xargs xgettext --from-code=CP1252 -j --add-location=never --package-name=Opencast --language=PHP -o "locale/en/LC_MESSAGES/opencast.po"');
-    shell_exec('msgconv --to-code=CP1252 "locale/en/LC_MESSAGES/opencast.po" -o "locale/en/LC_MESSAGES/opencast.po"');
+    shell_exec('find * \( -iname "*.php" -o -iname "*.ihtml" \) | xargs xgettext --from-code=UTF-8 -j --add-location=never --package-name=Opencast --language=PHP -o "locale/en/LC_MESSAGES/opencast.po"');
+    #shell_exec('msgconv --to-code=CP1252 "locale/en/LC_MESSAGES/opencast.po" -o "locale/en/LC_MESSAGES/opencast.po"');
     shell_exec('msgfmt "locale/en/LC_MESSAGES/opencast.po" --output-file="locale/en/LC_MESSAGES/opencast.mo"');
 }
 

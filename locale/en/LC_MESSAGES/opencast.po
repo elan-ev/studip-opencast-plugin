@@ -3,24 +3,24 @@
 # This file is distributed under the same license as the Opencast package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-18 11:50+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2018-04-26 17:00+0200\n"
+"PO-Revision-Date: 2018-04-26 17:07+0200\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CP1252\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: \n"
+"Language-Team: Till GlÃ¶ggler\n"
+"X-Generator: Poedit 2.0.6\n"
 
 msgid "Die Konfiguration wurde nicht korrekt angegeben"
 msgstr "The configuration was not specified correctly"
 
-msgid "Es sinde keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."
+msgid "Es sinde keine Konfigurationsdaten fÃ¼r den Servicetyp **%s** vorhanden."
 msgstr "There is no configuration data for the service type **%s **."
 
 msgid "Es wurde kein Servicetyp angegeben."
@@ -34,8 +34,8 @@ msgstr "No service URL has been provided."
 
 #, php-format
 msgid ""
-"Es besteht momentan keine Verbindung zum gewählten Service \"%s\". Versuchen "
-"Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem "
+"Es besteht momentan keine Verbindung zum gewÃ¤hlten Service \"%s\". Versuchen "
+"Sie es bitte zu einem spÃ¤teren Zeitpunkt noch einmal. Sollte dieses Problem "
 "weiterhin auftreten kontaktieren Sie bitte einen Administrator"
 msgstr ""
 "There is currently no connection to the selected service \"%s\". Please try "
@@ -51,12 +51,12 @@ msgstr "(%s)"
 msgid "Opencast Administration"
 msgstr "Opencast administration"
 
-msgid "Es wurde kein gültiges URL-Schema angegeben."
+msgid "Es wurde kein gÃ¼ltiges URL-Schema angegeben."
 msgstr "No valid URL schema was specified."
 
 #, php-format
 msgid ""
-"Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die "
+"Ã„nderungen wurden erfolgreich Ã¼bernommen. Es wurden %s Endpoints fÃ¼r die "
 "angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP "
 "Konfiguration eingetragen"
 msgstr ""
@@ -64,8 +64,8 @@ msgstr ""
 "Opencast installation were found and entered into the Stud.IP configuration."
 
 msgid ""
-"Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation "
-"gefunden. Überprüfen Sie bitte die eingebenen Daten."
+"Es wurden keine Endpoints fÃ¼r die angegeben Opencast Matterhorn Installation "
+"gefunden. ÃœberprÃ¼fen Sie bitte die eingebenen Daten."
 msgstr ""
 "No endpoints were found for the specified Opencast installation. Please "
 "check the data entered."
@@ -96,7 +96,7 @@ msgid "Opencast Player"
 msgstr "Opencast player"
 
 msgid ""
-"Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und "
+"Die Datei wurden erfolgreich hochgeladen. Je nach GrÃ¶ÃŸe der Datei und "
 "Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch "
 "nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird."
 msgstr ""
@@ -108,8 +108,8 @@ msgid "Opencast Konfiguration"
 msgstr "Opencast configuration"
 
 msgid ""
-"Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs "
-"verknüpft."
+"Ã„nderungen wurden erfolgreich Ã¼bernommen. Es wurde eine Serie fÃ¼r den Kurs "
+"verknÃ¼pft."
 msgstr ""
 "Changes have been applied successfully. A series has been assigned to the "
 "course."
@@ -129,7 +129,7 @@ msgstr "Recording has been scheduled."
 msgid "Aufzeichnung konnte nicht geplant werden."
 msgstr "Recording could not be scheduled."
 
-msgid "Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"
+msgid "Sie haben leider keine Berechtigungen um diese Aktion durchzufÃ¼hren"
 msgstr "Sorry, you are not authorized to perform this action."
 
 msgid "Die geplante Aufzeichnung wurde entfernt"
@@ -156,17 +156,17 @@ msgstr "Episode hidden"
 msgid "Episode wurde sichtbar geschaltet"
 msgstr "Episode made visible"
 
-msgid "Die hochgeladenen Daten wurden gelöscht."
+msgid "Die hochgeladenen Daten wurden gelÃ¶scht."
 msgstr "The uploaded data have been deleted."
 
-msgid "Die hochgeladenen Daten konnten nicht gelöscht werden."
+msgid "Die hochgeladenen Daten konnten nicht gelÃ¶scht werden."
 msgstr "The uploaded data could not be deleted."
 
 msgid "Die Episodenliste wurde aktualisiert."
 msgstr "The episodes list has been updated."
 
 #, php-format
-msgid "Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."
+msgid "Der Reiter in der Kursnavigation ist jetzt fÃ¼r alle Kursteilnehmer %s."
 msgstr "The tab in the course navigation is now %s for all students."
 
 #, php-format
@@ -179,13 +179,13 @@ msgstr "Error when creating job ID or media package"
 msgid "Fehler beim hochladen der Datei"
 msgstr "Error when uploading file"
 
-msgid "Fehler beim hinzufügen des Tracks"
+msgid "Fehler beim hinzufÃ¼gen des Tracks"
 msgstr "Error when adding track"
 
-msgid "Fehler beim hinzufügen der Series"
+msgid "Fehler beim hinzufÃ¼gen der Series"
 msgstr "Error when adding series"
 
-msgid "Fehler beim hinzufügen der Episode"
+msgid "Fehler beim hinzufÃ¼gen der Episode"
 msgstr "Error when adding episode"
 
 msgid "Fehler beim anlegen der Job ID"
@@ -203,7 +203,7 @@ msgstr "Updates all scheduled recordings of series connected in Stud.IP."
 
 #, php-format
 msgid ""
-"Aktualisieriere die Aufzeichnungsdaten für die Veranstaltung am %s für den "
+"Aktualisieriere die Aufzeichnungsdaten fÃ¼r die Veranstaltung am %s fÃ¼r den "
 "Kurs %s\n"
 " "
 msgstr "Update the recording data for the course on %s for the course %s"
@@ -212,7 +212,7 @@ msgid "Opencast - \"Serien-Refresh\""
 msgstr "Opencast \"Series refresh\""
 
 msgid ""
-"Aktualisiert die Episodenüberischt aller in Stud.IP verbundenen Serien, die "
+"Aktualisiert die EpisodenÃ¼berischt aller in Stud.IP verbundenen Serien, die "
 "aufgezeichnet werden."
 msgstr ""
 "Updates the episode catalogue of all the series connected in Stud.IP that "
@@ -220,7 +220,7 @@ msgstr ""
 
 #, php-format
 msgid ""
-"Aktualisieriere Episoden für den Kurs %s im Semester %s\n"
+"Aktualisieriere Episoden fÃ¼r den Kurs %s im Semester %s\n"
 " "
 msgstr "Updated episodes for the course %s in the semester %s"
 
@@ -238,22 +238,22 @@ msgstr "Idle"
 msgid "Status unbekannt"
 msgstr "Status unknown"
 
-msgid "Beschäftigt"
+msgid "BeschÃ¤ftigt"
 msgstr "Working"
 
-msgid "Verknüpfung entfernen."
+msgid "VerknÃ¼pfung entfernen."
 msgstr "Remove shortcut."
 
-msgid "Bitte wählen Sie einen CA."
+msgid "Bitte wÃ¤hlen Sie einen CA."
 msgstr "Please select a CA."
 
-msgid "Kein CA verfügbar"
+msgid "Kein CA verfÃ¼gbar"
 msgstr "No CA available"
 
-msgid "Bitte wählen Sie einen Worflow aus."
+msgid "Bitte wÃ¤hlen Sie einen Worflow aus."
 msgstr "Please select a workflow."
 
-msgid "Kein Workflow verfügbar"
+msgid "Kein Workflow verfÃ¼gbar"
 msgstr "No workflow available"
 
 msgid "Endpoint"
@@ -286,7 +286,7 @@ msgstr "User ID"
 msgid "Passwort"
 msgstr "Password"
 
-msgid "Übernehmen"
+msgid "Ãœbernehmen"
 msgstr "Accept"
 
 msgid "Abbrechen"
@@ -308,8 +308,8 @@ msgid ""
 msgstr "Enter the path to the Opencast runtime information REST endpoint."
 
 msgid ""
-"Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents "
-"aus dem Opencast Matterhorn System verknüpfen."
+"Hier kÃ¶nnen Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents "
+"aus dem Opencast Matterhorn System verknÃ¼pfen."
 msgstr "Here you can link Stud.IP resources to the Opencast capture agents."
 
 msgid "Zuweisung der Capture Agents"
@@ -327,17 +327,17 @@ msgstr "Workflow"
 msgid "Aktionen"
 msgstr "Actions"
 
-msgid "Änderungen übernehmen"
+msgid "Ã„nderungen Ã¼bernehmen"
 msgstr "Accept changes"
 
 msgid ""
 "Suchen Sie eine Series im Opencast Matterhorn System, die Sie mit der "
-"aktuellen Veranstaltung verknüpfen möchten."
+"aktuellen Veranstaltung verknÃ¼pfen mÃ¶chten."
 msgstr ""
 "Find a series in the Opencast system that you want to link to the current "
 "course."
 
-msgid "Wählen Sie eine Series aus."
+msgid "WÃ¤hlen Sie eine Series aus."
 msgstr "Select a series."
 
 msgid "Es wurde keine Fehlermeldung gesetzt."
@@ -380,7 +380,7 @@ msgid "Aufzeichnung planen"
 msgstr "Schedule recording"
 
 msgid ""
-"Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung "
+"Dieses Datum liegt in der Vergangenheit. Sie kÃ¶nnen keine Aufzeichnung "
 "planen."
 msgstr "This date is in the past. You cannot schedule a recording."
 
@@ -388,7 +388,7 @@ msgid "Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht"
 msgstr "A room with recording technology has not been booked yet."
 
 msgid ""
-"Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren "
+"Aufzeichnung ist bereits geplant. Sie kÃ¶nnen die Aufzeichnung stornieren "
 "oder entsprechende Metadaten aktualisieren."
 msgstr ""
 "Recording is already scheduled. You can cancel the recording or update the "
@@ -406,7 +406,7 @@ msgstr "Schedule recording"
 msgid "Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht."
 msgstr "A room with recording technology has not been booked yet."
 
-msgid "Bitte wählen Sie eine Aktion."
+msgid "Bitte wÃ¤hlen Sie eine Aktion."
 msgstr "Please select an action."
 
 msgid "Aufzeichnungen planen"
@@ -445,15 +445,15 @@ msgstr "Language"
 msgid "Beschreibung"
 msgstr "Description"
 
-msgid "Datei auswählen"
+msgid "Datei auswÃ¤hlen"
 msgstr "Select file"
 
 msgid "Laden sie nur Medien hoch an denen sie das Copyright besitzen!"
 msgstr "Upload only media to which you own the copyright."
 
 msgid ""
-"Die möglichen Ausnahmen über §52a UrhG sind sehr eingeschränkt, so dürfen "
-"nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen "
+"Die mÃ¶glichen Ausnahmen Ã¼ber Â§52a UrhG sind sehr eingeschrÃ¤nkt, so dÃ¼rfen "
+"nur maximal 5 minÃ¼tige Sequenzen aus Filmen oder Musikaufnahmen "
 "bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes "
 "ausmachen."
 msgstr ""
@@ -462,17 +462,17 @@ msgstr ""
 "these make up a small extent of the total work."
 
 msgid ""
-"Nach §52a UrhG dürfen Kinofilme oder Ausschnitte daraus frühstens 2 Jahre "
+"Nach Â§52a UrhG dÃ¼rfen Kinofilme oder Ausschnitte daraus frÃ¼hstens 2 Jahre "
 "nach der Verwertung im Kino und nur mit Einwilligung des Berechtigten "
-"zugänglich gemacht werden!"
+"zugÃ¤nglich gemacht werden!"
 msgstr ""
 "According to Section 52(a) UrhG, cinema films or excerpts may be made "
 "available at the earliest 2 years after cinema release and only with the "
 "consent of the copyright holder."
 
 msgid ""
-"Medien bei denen Urheberrechtsverstöße vorliegen, werde ohne vorherige "
-"Ankündigung umgehend gelöscht."
+"Medien bei denen UrheberrechtsverstÃ¶ÃŸe vorliegen, werde ohne vorherige "
+"AnkÃ¼ndigung umgehend gelÃ¶scht."
 msgstr ""
 "Media which infringes copyright will be immediately deleted without prior "
 "notice."
@@ -484,10 +484,10 @@ msgid "Workflow zuweisen"
 msgstr "Assign workflow"
 
 #, php-format
-msgid "Wollen Sie die Verknüpfung zur Series \"%s\" wirklich aufheben?"
+msgid "Wollen Sie die VerknÃ¼pfung zur Series \"%s\" wirklich aufheben?"
 msgstr "Are you sure you want to remove the link to the series \"%s\"?"
 
-msgid "Verknüpfung aufheben"
+msgid "VerknÃ¼pfung aufheben"
 msgstr "Remove link"
 
 msgid "Episodenliste aktualisieren"
@@ -499,22 +499,22 @@ msgstr "Configure workflow"
 msgid "Neue Series anlegen"
 msgstr "Create new series"
 
-msgid "Vorhandene Series verknüpfen"
+msgid "Vorhandene Series verknÃ¼pfen"
 msgstr "Link existing series"
 
 msgid "Reiter verbergen"
-msgstr "Hide tab"
+msgstr "Hide navigation tab"
 
 msgid "Reiter anzeigen"
-msgstr "View tab"
+msgstr "Show navigation tab"
 
 msgid ""
-"Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können "
-"über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen "
-"hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, "
+"Hier sehen Sie eine Ãœbersicht ihrer Vorlesungsaufzeichnungen. Sie kÃ¶nnen "
+"Ã¼ber den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen "
+"hinzufÃ¼gen. Je nach GrÃ¶ÃŸe der Datei kann es einige Zeit in Anspruch nehmen, "
 "bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist "
-"es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der "
-"Veranstaltung direkt zu ändern."
+"es mÃ¶glich die ausgewÃ¤hlten Sichtbarkeit einer Aufzeichnung innerhalb der "
+"Veranstaltung direkt zu Ã¤ndern."
 msgstr ""
 "Here you can see an overview of your lecture recordings. You can add other "
 "media to the list of recordings using the Actions menu item. Depending on "
@@ -522,7 +522,7 @@ msgstr ""
 "in the list. Furthermore, you can change the visibility of a recording "
 "within a course directly."
 
-msgid "Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."
+msgid "Hier sehen Sie eine Ãœbersicht ihrer Vorlesungsaufzeichnungen."
 msgstr "Here you can see an overview of your lecture recordings."
 
 msgid "Vorlesungsaufzeichnungen"
@@ -558,8 +558,8 @@ msgid "Vom %s"
 msgstr "by %s"
 
 msgid ""
-"Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. "
-"Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene "
+"Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknÃ¼pft. "
+"Bitte erstellen Sie eine neue Series oder verknÃ¼pfen eine bereits vorhandene "
 "Series."
 msgstr ""
 "You have not linked any series from Opencast to this course yet. Please "
@@ -571,31 +571,32 @@ msgstr "No lecture recordings are available."
 msgid "Medienupload"
 msgstr "Upload media"
 
-msgid "Series verknüpfen"
+msgid "Series verknÃ¼pfen"
 msgstr "Link series"
 
 msgid "Workflow-Konfiguration"
 msgstr "Workflow configuration"
 
-msgid "Hier können Sie einzelne Aufzeichnungen für diese Veranstaltung planen."
+msgid "Hier kÃ¶nnen Sie einzelne Aufzeichnungen fÃ¼r diese Veranstaltung planen."
 msgstr "Here you can schedule individual recordings for this event."
 
 #, php-format
-msgid "Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."
+msgid "Es sind keine Konfigurationsdaten fÃ¼r den Servicetyp **%s** vorhanden."
 msgstr "There is no configiguration for the servicetype **%s**."
 
-msgid "Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben."
+msgid "Es wurde kein gÃ¼ltiges URL-Schema fÃ¼r den Lesezugriff angegeben."
 msgstr "Invalid URL scheme for read access."
 
 #, php-format
 msgid ""
-"Es wurden %s Endpoints für die angegebene Opencast Slave Installation "
+"Es wurden %s Endpoints fÃ¼r die angegebene Opencast Slave Installation "
 "gefunden und eingetragen"
-msgstr "%s endpoints have been found and added for the Opencast slave installation."
+msgstr ""
+"%s endpoints have been found and added for the Opencast slave installation."
 
 msgid ""
-"Es wurden keine Endpoints für die angegebene Opencast Slave Installation "
-"gefunden. Überprüfen Sie bitte die eingebenen Daten."
+"Es wurden keine Endpoints fÃ¼r die angegebene Opencast Slave Installation "
+"gefunden. ÃœberprÃ¼fen Sie bitte die eingebenen Daten."
 msgstr "No endpoints have been found for the Opencast slave installation."
 
 msgid "Opencast Einstellungen"
@@ -624,3 +625,113 @@ msgstr "Path to optional Opencast system."
 
 msgid "Basis URL zur optionalen Opencast Installation"
 msgstr "Base URL to optional Opencast system."
+
+#, php-format
+msgid ""
+"Es besteht momentan keine Verbindung zum gewï¿½hlten Service \"%s\". Versuchen "
+"Sie es bitte zu einem spï¿½teren Zeitpunkt noch einmal. Sollte dieses Problem "
+"weiterhin auftreten kontaktieren Sie bitte einen Administrator"
+msgstr ""
+
+msgid ""
+"Die Datei wurden erfolgreich hochgeladen. Je nach GrÃ¶ÃŸe der Datei und "
+"Auslastung des Opencast-Server kann es einige Zeit in Anspruch nehmen, bis "
+"die entsprechende Aufzeichnung in der Liste sichtbar wird."
+msgstr ""
+
+#, php-format
+msgid ""
+"Die Veranstaltung \"%s\" wird fÃ¼r Sie mit Bild und Ton automatisiert "
+"aufgezeichnet."
+msgstr ""
+
+msgid "Die geplante Aufzeichnung wurde aktualisiert."
+msgstr ""
+
+#, php-format
+msgid ""
+"Ã„nderungen wurden erfolgreich Ã¼bernommen. Es wurden %s Endpoints fÃ¼r die "
+"angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration "
+"eingetragen."
+msgstr ""
+
+msgid ""
+"Es wurden keine Endpoints fÃ¼r die angegebene Opencast Installation gefunden. "
+"ÃœberprÃ¼fen Sie bitte die eingebenen Daten."
+msgstr ""
+
+msgid "Opencast - \"Reupload\""
+msgstr ""
+
+msgid "Versucht gescheiterte Upload-Jobs nochmal zu wiederholen."
+msgstr ""
+
+msgid ""
+"Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die "
+"aufgezeichnet werden."
+msgstr ""
+
+#, php-format
+msgid ""
+"Aktualisieriere Episoden fuer den Kurs %s im Semester %s\n"
+" "
+msgstr ""
+
+msgid "Basis URL zur Opencast Installation"
+msgstr ""
+
+msgid "Hier kann die Anbindung zum Opencast System verwaltet werden."
+msgstr ""
+
+msgid ""
+"Tragen Sie hier den Pfad zum Opencast Runtime Information REST-Endpoint ein."
+msgstr ""
+
+msgid ""
+"Hier kÃ¶nnen Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents "
+"aus dem Opencast System verknÃ¼pfen."
+msgstr ""
+
+msgid ""
+"Suchen Sie eine Series im Opencast System, die Sie mit der aktuellen "
+"Veranstaltung verknÃ¼pfen mÃ¶chten."
+msgstr ""
+
+msgid "Reiter sichtbar machen"
+msgstr "Show navigation tab"
+
+msgid "Nach Aufzeichnung suchen"
+msgstr "Search for recording"
+
+msgid "Videoverarbeitung fehlgeschlagen"
+msgstr "Creation of recording failed"
+
+msgid "Aufzeichnungsdatum"
+msgstr "Date of recording"
+
+msgid "Autor"
+msgstr "Author"
+
+msgid "Feedback"
+msgstr "Feedback"
+
+msgid ""
+"Nach Â§60 dÃ¼rfen nur maximal 5 minÃ¼tige Sequenzen aus Filmen oder "
+"Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des "
+"Gesamtwerkes ausmachen."
+msgstr ""
+
+msgid "Â§60 UrhG Zusammenfassung"
+msgstr ""
+
+msgid "Termin"
+msgstr "Date"
+
+msgid "Aufzeichnung ist bereits geplant."
+msgstr "Recording is already scheduled"
+
+msgid "Aufzeichnung ist noch nicht geplant"
+msgstr "Recording is not yet scheduled"
+
+msgid "Workflow fÃ¼r Uploads"
+msgstr "Workflow for uploads"

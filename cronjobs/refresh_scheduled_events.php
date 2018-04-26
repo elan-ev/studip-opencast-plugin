@@ -45,7 +45,12 @@ class RefreshScheduledEvents extends CronJob
                 $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
                 $course = Course::find($se['seminar_id']);
                 $date = new SingleDate($se['date_id']);
-                echo sprintf(_("Aktualisieriere die Aufzeichnungsdaten f�r die Veranstaltung am %s f�r den Kurs %s\n "), $date->getDatesExport(), $course->name);
+                echo sprintf(
+                    studip_utf8decode(
+                        _("Aktualisieriere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n ")
+                    ),
+                    $date->getDatesExport(), $course->name
+                );
             }
         }
 
