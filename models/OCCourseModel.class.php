@@ -37,7 +37,6 @@ class OCCourseModel
             $current_seriesdata = array_pop($cseries);
             $this->setSeriesMetadata($current_seriesdata);
             $this->setSeriesID($current_seriesdata['identifier']);
-            $this->setEpisodePostions(OCModel::getCoursePositions($this->course_id));
         } else {
             $this->setSeriesID(false);
         }
@@ -56,10 +55,6 @@ class OCCourseModel
         return $this->seriesMetadata;
     }
 
-    public function getEpisodePositions(){
-        return $this->episodePositions;
-    }
-
     public function setSeriesID($series_id){
         $this->series_id = $series_id;
     }
@@ -70,10 +65,6 @@ class OCCourseModel
 
     public function setSeriesMetadata($seriesMetadata){
         $this->seriesMetadata = $seriesMetadata;
-    }
-
-    public function setEpisodePostions($positions){
-        $this->episodePositions = $positions;
     }
 
     /*  */
@@ -137,15 +128,13 @@ class OCCourseModel
 
         //Now remove the grouping but contain the order within
         $episodes = array();
-        $counter = 1;
+
         foreach ($ordered as $entries){
             if(count($keys)>0 && count($entries)>1){
                 $entries = $this->order_episodes_by($keys,$sort_flags,$reversed,$entries);
             }
             foreach($entries as $entry){
-                $entry['position'] = $counter;
-                $episodes[$counter] = $entry;
-                $counter++;
+                $episodes[] = $entry;
             }
         }
 
@@ -163,19 +152,16 @@ class OCCourseModel
 
             if ($tmp = $oc_episodes[$stored_episode['episode_id']]){
                 $tmp['visibility'] = $stored_episode['visible'];
-                $tmp['position'] = $stored_episode['position'];
                 $tmp['mkdate']  = $stored_episode['mkdate'];
-                $lastpos = $stored_episode['position'];
 
-                OCModel::setCoursePositionForEpisode(
+                OCModel::setEpisode(
                     $stored_episode['episode_id'],
-                    $lastpos,
                     $this->getCourseID(),
                     $tmp['visibility'],
                     $stored_episode['mkdate']
                 );
 
-                $episodes[$stored_episode['position']] = $tmp;
+                $episodes[] = $tmp;
 
                 unset($oc_episodes[$stored_episode['episode_id']]);
                 unset($stored_episodes[$key]);
@@ -189,18 +175,16 @@ class OCCourseModel
                 $lastpos++;
                 $timestamp = time();
                 $episode['visibility'] = 'true';
-                $episode['position'] = $lastpos;
                 $episode['mkdate'] = $timestamp;
 
-                OCModel::setCoursePositionForEpisode(
+                OCModel::setEpisode(
                     $episode['id'],
-                    $lastpos,
                     $this->getCourseID(),
                     'true',
                     $timestamp
                 );
 
-                $episodes[$episode['position']] = $episode;
+                $episodes[] = $episode;
                 NotificationCenter::postNotification('NewEpisodeForCourse', array(
                     'episode_id'    => $episode['id'],
                     'course_id'     => $this->getCourseID(),

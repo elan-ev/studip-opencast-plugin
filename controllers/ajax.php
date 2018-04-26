@@ -108,19 +108,6 @@ class AjaxController extends OpencastController
 
     }
 
-    function setEpisodeOrdersForCourse_action() {
-        $course_id = false;
-        $positions =  Request::getArray('positions');
-
-        foreach($positions  as $position_item) {
-            OCModel::setCoursePositionForEpisode($position_item['episode_id'], $position_item['position'],
-                    $position_item['course_id'], $position_item['visibility'], $position_item['mkdate']);
-                    $course_id = $position_item['course_id'];
-        }
-
-        $this->render_nothing();
-    }
-
     /**
      * @param $workflow_id
      * @throws Exception

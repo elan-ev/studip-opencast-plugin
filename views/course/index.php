@@ -35,12 +35,6 @@
                 new Icon('refresh', 'clickable')
             );
 
-            $actions->addLink(
-                $_("Sortierung zurücksetzen"),
-                PluginEngine::getLink ('opencast/course/refresh_sorting/' . get_ticket()),
-                new Icon('refresh', 'clickable')
-            );
-
             if ($series_metadata[0]['schedule'] == '1') {
                 $actions->addLink($_("Medien hochladen"), '#1',
                     new Icon('upload', 'clickable'), array (
@@ -220,9 +214,9 @@
 
                             <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                                 <? if ($visible && $visible['visible'] == 'false') : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'], 'data-position' => $active['position'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
                                 <? else : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'],'data-position' => $active['position'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
                                 <? endif;?>
                             <? endif; ?>
                         </div>
@@ -256,5 +250,3 @@
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
-<?= $this->render_partial("course/_previewimagefragment", array()) ?>
-<?= $this->render_partial("course/_episodelist", array()) ?>

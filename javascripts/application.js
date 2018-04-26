@@ -48,8 +48,6 @@ OC = {
 
             // take care of episodelist
             OC.searchEpisodeList();
-            //OC.episodeListener(cid);
-
         });
 
     },
@@ -183,14 +181,10 @@ OC = {
     toggleVis: function(cid){
         jQuery('#oc-togglevis').click(function(e) {
             e.preventDefault();
-            var  episode_id = jQuery('#oc-togglevis').data("episode-id");
-            var position =  jQuery('#oc-togglevis').data("position");
-            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/toggle_visibility/" +  episode_id + "/" + position + "?cid=" + cid ).done(function(data) {
-                if(!jQuery.isEmptyObject(data)){
-                    OC.renderEpisodeList(data);
-                    OC.episodeListener(cid);
-                }
-            });
+            var episode_id = jQuery('#oc-togglevis').data("episode-id");
+
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/toggle_visibility/"
+                + episode_id + "?cid=" + cid);
             if (jQuery('#oc-togglevis').hasClass('ocvisible')) {
 
                 jQuery('#oc-togglevis').removeClass('ocvisible').addClass('ocinvisible').text('Aufzeichnung unsichtbar');
@@ -201,19 +195,6 @@ OC = {
             }
         });
 
-    },
-
-    renderEpisodeList: function(episodes) {
-
-        var episodes_template = jQuery('#episodeList').html();
-        var active_id = jQuery('#oc_active_episode').data('activeepisode');
-        var oce_list = _.template(episodes_template);
-
-        jQuery('.oce_list').empty();
-        jQuery('.oce_list').html(oce_list({
-            episodes: episodes,
-            active : active_id
-        }));
     },
 
     episodeListener: function(cid) {
@@ -246,7 +227,7 @@ OC = {
 
                 jQuery('.oce_playercontainer').empty();
                 jQuery('.oce_playercontainer').html(player_template(player_template_data));
-                jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id  + '/' + episode.position));
+                jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id));
                 jQuery('.oce_playercontainer').removeClass('oc_opaque');
                 jQuery('#oc_balls').hide();
                 OC.toggleVis(cid);

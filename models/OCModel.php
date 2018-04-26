@@ -411,10 +411,12 @@ class OCModel
      * @param tyniint 1 or 0
      * @return bool
      */
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
+    {
         $stmt = DBManager::get()->prepare("UPDATE
                   oc_seminar_episodes SET visible = ?
                   WHERE seminar_id = ? AND  episode_id = ?");
+
         return $stmt->execute(array($visibility, $course_id, $episode_id));
     }
 
@@ -425,12 +427,13 @@ class OCModel
      * @param string $episode_id
      * @return array
      */
-    static function getVisibilityForEpisode($course_id, $episode_id) {
+    static function getVisibilityForEpisode($course_id, $episode_id)
+    {
         $stmt = DBManager::get()->prepare("SELECT visible FROM
                 oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
         $stmt->execute(array($course_id, $episode_id));
-        $episode = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $episode;
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     static function getDCTime($timestamp) {
@@ -512,15 +515,20 @@ class OCModel
 
     }
 
-    static function setCoursePositionForEpisode($episode_id, $pos, $course_id, $visibility, $mkdate) {
+    static function setEpisode($episode_id, $course_id, $visibility, $mkdate)
+    {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `position`, `visible`, `mkdate`)
-                VALUES (?, ?, ?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $pos, $visibility, $mkdate));
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `mkdate`)
+                VALUES (?, ?, ?, ?)");
+
+        return $stmt->execute(array($course_id, $episode_id, $visibility, $mkdate));
     }
 
-    static function getCoursePositions($course_id){
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `position`, `visible`, `mkdate` FROM oc_seminar_episodes WHERE `seminar_id` = ? ORDER BY `position` ASC");
+    static function getCoursePositions($course_id)
+    {
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`
+            FROM oc_seminar_episodes
+            WHERE `seminar_id` = ? ORDER BY mkdate DESC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

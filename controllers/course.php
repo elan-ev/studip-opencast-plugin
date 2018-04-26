@@ -440,7 +440,7 @@ class CourseController extends OpencastController
         $this->redirect('course/index');
     }
 
-    function toggle_visibility_action($episode_id, $position)
+    function toggle_visibility_action($episode_id)
     {
         $this->course_id = Request::get('cid');
         $this->user_id   = $GLOBALS['auth']->auth['uid'];
@@ -451,26 +451,26 @@ class CourseController extends OpencastController
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
             // if visibilty wasn't set before do so...
             if (!$visible) {
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
                 $visible['visible'] = 'true';
             }
 
             if ($visible['visible'] == 'true') {
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false', $position);
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
 
                 if (!Request::isXhr()) {
                     $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
                 }
 
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde unsichtbar geschaltet');
+                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episode wurde unsichtbar geschaltet ($episode_id)");
             } else {
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true', $position);
+                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
 
                 if (!Request::isXhr()) {
                     $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
                 }
 
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', $episode_id, $this->course_id, 'Episode wurde sichtbar geschaltet');
+                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id,  "Episode wurde sichtbar geschaltet ($episode_id)");
             }
         } else {
 
@@ -666,18 +666,6 @@ class CourseController extends OpencastController
             $occourse2->getEpisodes(true);
 
             $this->flash['messages'] = array('success'=> $this->_("Die Episodenliste wurde aktualisiert."));
-        }
-
-        $this->redirect('course/index/false');
-    }
-
-    function refresh_sorting_action($ticket)
-    {
-        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
-            $occourse2 = new OCCourseModel($this->course_id);
-            $occourse2->clearSeminarEpisodes();
-
-            $this->flash['messages'] = array('success'=> $this->_("Die Sortierung wurde zurückgesetzt."));
         }
 
         $this->redirect('course/index/false');
