@@ -115,7 +115,7 @@
             <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
             <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
                 <? foreach($states as $workflow_id => $state) :?>
-                <li class="uploaded oce_item" style="position: relative;padding:5px">
+                <li class="uploaded oce_item">
                     <? if(in_array($state->state,array('FAILING','FAILED'))) : ?>
                         <div class="oce_preview_container">
                             <?=$_("Videoverarbeitung fehlerhaft")?>
@@ -125,10 +125,11 @@
                             <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
                         </div>
                     <? else :?>
-                        <div style="cursor: default;float:left;width:25%">
-                            <div id="<?=$workflow_id?>" class="workflow_info" style="display: inline;position: relative;left:35%">
-                                <strong style=";line-height: 17px;text-align: center;position:absolute;bottom:45px;left:15px"></strong>
+                        <div class="oce_wip" id="<?=$workflow_id?>" >
+                            <div class="oce_wip_preview">
+                                <img src="<?= $plugin->getPluginURL() .'/images/newocicon.png' ?>">
                             </div>
+
                             <div style="clear: both;"></div>
                         </div>
                         <div style="margin-left:110px;">
@@ -152,7 +153,7 @@
                 data-pos="<?=$pos?>"
                 data-mkdate="<?=$item['mkdate']?>"
                 data-previewimage="<?=$prev?>">
-                <div class="oc_flexitem oc_flexplaycontainer" style="float:left;width: 25%">
+                <div class="oc_flexitem oc_flexplaycontainer">
                     <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
                         <div></div>
                         <div></div>
@@ -171,17 +172,26 @@
                         </a>
                     </div>
                 </div>
-                <div class="oce_metadatacontainer" style="float:left;position:absolute;height: 100%;left:25%;width:50%">
-                    <div style="position:absolute;height:70%">
+                <div class="oce_metadatacontainer">
+                    <div>
                         <h2 class="oce_metadata oce_list_title"><?= $active['title']?></h2>
                         <ul class="oce_contetlist">
-                            <li class="oce_list_date" ><?=$_('Aufzeichnungsdatum : ')?> <?=date("d.m.Y H:i",strtotime($active['start']));?> <?=$_("Uhr")?></li>
-                            <li><?=$_('Autor : ')?> <?=$active['author'] ? $active['author']  : 'Keine Angaben vorhanden';?></li>
-                            <li><?=$_('Beschreibung : ')?> <?= $active['description'] ? htmlspecialchars($active['description']) : 'Keine Beschreibung vorhanden';?></li>
+                            <li class="oce_list_date" >
+                                <?= $_('Aufzeichnungsdatum') ?>:
+                                <?= date("d.m.Y H:i",strtotime($active['start'])) ?> <?= $_("Uhr") ?>
+                            </li>
+                            <li>
+                                <?= $_('Autor') ?>:
+                                <?= $active['author'] ? htmlReady($active['author']) : 'Keine Angaben vorhanden' ?>
+                            </li>
+                            <li>
+                                <?= $_('Beschreibung') ?>:
+                                <?= $active['description'] ? htmlReady($active['description']) : 'Keine Beschreibung vorhanden' ?>
+                            </li>
                         </ul>
                     </div>
-                    <div class="ocplayerlink" style="position:absolute;height:25%;bottom:10%">
-                        <div style="text-align: left; font-style: italic;">Weitere Optionen:</div>
+
+                    <div class="ocplayerlink">
                         <div class="button-group">
                             <? if ($active['presenter_download']) : ?>
                                 <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
@@ -196,16 +206,15 @@
                             <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
                                 <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[OpenCast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
                             <? endif ?>
-                        </div>
-                        <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
-                            <div class="button-group" style="float:right">
+
+                            <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
                                 <? if ($visible && $visible['visible'] == 'false') : ?>
                                     <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'], 'data-position' => $active['position'])); ?>
                                 <? else : ?>
                                     <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id'] .'/'. $active['position']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'],'data-position' => $active['position'])); ?>
                                 <? endif;?>
-                            </div>
-                        <? endif; ?>
+                            <? endif; ?>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -237,5 +246,4 @@
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?=$course_id?>"></div>
 <?= $this->render_partial("course/_previewimagefragment", array()) ?>
-<?= $this->render_partial("course/_playerfragment", array()) ?>
 <?= $this->render_partial("course/_episodelist", array()) ?>
