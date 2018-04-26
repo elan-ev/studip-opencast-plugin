@@ -126,6 +126,7 @@ OC = {
     },
 
     getWorkflowProgressForCourse: function(course_id, animation, info) {
+
         var reload = false;
         if(info == null){
             info = [];
@@ -191,14 +192,16 @@ OC = {
                         jQuery('#'+job_id).attr('title', current_description);
                         jQuery('#'+job_id).attr('alt', current_description);
                     }
-                    else {
+                    else if(jQuery('#'+job_id).length > 0){
                         reload = true;
                     }
                 }
 
-            } if(reload || response == ""){
+            } if((reload || response == "")){
                 window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
-            } else window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false, info)}, 5000)
+            } else {
+                window.setTimeout(function(){OC.getWorkflowProgressForCourse(course_id, false, info)}, 5000)
+            }
 
         });
 

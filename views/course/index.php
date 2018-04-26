@@ -116,7 +116,7 @@
             <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
                 <? foreach($states as $workflow_id => $state) :?>
                 <li class="uploaded oce_item" style="position: relative;padding:5px">
-                    <? if($state->state == 'FAILED') : ?>
+                    <? if($state->state == 'FAILED' || $state->state == 'FAILING') : ?>
                         <div class="oce_preview_container">
                             <?=$_("Videoverarbeitung fehlerhaft")?>
                         </div>
