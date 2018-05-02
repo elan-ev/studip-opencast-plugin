@@ -33,8 +33,7 @@ Aufzeichnung in Stud.IP individuell festlegen können. Dies wird durch eine
 eigenes Einstellungsmenü in der Kursansicht realisiert. Hier können die
 DozentInnen über die Sichtbarkeit jeder einzelnen Aufzeichnung entscheiden.
 
-
-![Das Opencast-Stud.IP-Plugin](images/opencastplayer.png)
+> ![Das Opencast-Stud.IP-Plugin](images/opencastplayer.png)
 
 
 Features im Überblick
