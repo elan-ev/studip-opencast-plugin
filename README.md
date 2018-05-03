@@ -10,7 +10,7 @@ Dies ermöglicht die Erstellung, Verwaltung und Veröffentlichung von
 Vorlesungsaufzeichnungen direkt in Stud.IP.
 
 Der Fokus der Entwicklung liegt bei einer möglichst intuitiven und einfachen
-Bedienung. Somit ist für das Verwendung des Plugins kaum Vorwissen nötig.
+Bedienung. Somit ist für dis Verwendung des Plugins kaum Vorwissen nötig.
 Außerdem wurde sichergestellt, dass das Plugin folgende
 Anforderungen erfüllt:
 
