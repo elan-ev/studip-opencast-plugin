@@ -19,7 +19,6 @@ require_once 'controllers/opencast_controller.php';
 
 
 define('OC_UPLOAD_CHUNK_SIZE', '10000000');
-define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
