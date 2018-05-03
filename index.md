@@ -5,33 +5,31 @@ Stud.IP-Opencast-Plugin
 the LMS [Stud.IP](http://studip.de/).*
 
 Mit dem Opencast-Plugin kann eine Verbindung zwischen einer
-Opencast-Installation und dem Lernmanagementsystem Stud.IP hergestellt werden.
-Das Plugin bildet hierbei die Prozesse für das Management von Audio- und
-Videoinhalten, vor allem für die Aufzeichnung und Distribution von
-Lehrveranstaltungen im Lernmanagementsystem ab.
+Opencast-Installation und dem Lernmanagementsystem Stud.IP hergestellt werden. 
+Dies ermöglicht die Erstellung, Verwaltung und Veröffentlichung von 
+Vorlesungsaufzeichnungen direkt aus Stud.IP.
 
-Der Fokus liegt bei einer intuitiven einfachen Bedienung. Somit ist für das
-Verwenden und Verwalten von Videoinhalten kaum Vorwissen nötig.
-
-Bei der Entwicklung des Plugins wurde sichergestellt, dass folgende typische
-Anforderungen erfüllt sind:
+Der Fokus der Entwicklung liegt bei einer möglichst intuitiven und einfachen 
+Bedienung. Somit ist für das Verwendung des Plugins kaum Vorwissen nötig.
+Außerdem wurde sichergestellt, dass das Plugin folgende 
+Anforderungen erfüllt:
 
 *Transparenz der Aufzeichnungstechnik:* Die DozentInnen können in ihren
 Veranstaltung direkt erkennen, ob der gebuchte Veranstaltungsraum mit
 entsprechender Aufzeichnungstechnik ausgerüstet ist. Dies wird im Plugin durch
 die Verknüpfung von Stud.IP-Ressourcen mit Aufzeichnungsgeräten in Opencast
-sichergestellt.  DozentInnen benötigen hierbei kein technisches Vorwissen über
+sichergestellt. DozentInnen benötigen dafür kein technisches Vorwissen über
 die verwendete Aufzeichnungstechnik.
 
 *Einfache Aufzeichnungsplanung:* Vorlesungsaufzeichnungen sollen direkt aus dem
-Kurs im LMS von der DozentIn geplant werden können. Im Kurs verfügbare
-Metadaten sollen bei der Planung berücksichtigt werden. Umgesetzt wird dies mit
-einer eigenen Planungsansicht im Plugin, basierend auf dem Ablaufplan.  Hiermit
+Kurs im LMS von der DozentIn geplant werden können. Außerdem sollen im Kurs 
+verfügbare Metadaten bei der Planung berücksichtigt werden. Möglich ist dies mit
+einer eigenen Planungsansicht im Plugin, basierend auf dem Ablaufplan. Hiermit
 entfällt die mehrfache Eingabe von kursbezogenen Metadaten.
 
 *Kontrolle der Sichtbarkeit:* Die DozentInnen sollen die Sichtbarkeit jeder
-Aufzeichnung in Stud.IP individuell festlegen können.  Dies ermöglicht ein
-eigenes Einstellungsmenü in der Kursansicht.  Hier können die DozentInnen über
+Aufzeichnung in Stud.IP individuell festlegen können. Dies ermöglicht ein
+eigenes Einstellungsmenü in der Kursansicht. Hier können die DozentInnen über
 die Sichtbarkeit jeder einzelnen Aufzeichnung entscheiden.
 
 > ![Das Opencast-Stud.IP-Plugin](images/opencastplayer.png)
@@ -40,10 +38,9 @@ die Sichtbarkeit jeder einzelnen Aufzeichnung entscheiden.
 Features im Überblick
 ---------------------
 
-- Globale Konfiguration
-- Verknüpfung von Opencast-Capture-Agents
-- Planen von Aufzeichnungen
-- Verknüpfung von Aufzeichnungserien
+- Verknüpfung von Räumen mit Aufzeichnungsgeräten
+- Planung von Aufzeichnungen
+- Verknüpfung von Kursen mit Aufzeichnungserien
 - Upload von Medien zu Opencast
 
 
