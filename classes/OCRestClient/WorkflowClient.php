@@ -61,6 +61,25 @@ class WorkflowClient extends OCRestClient
         }
     }
 
+    function removeInstanceComplete($id){
+        $service_url = sprintf( '/remove/'.$id);
+        $options = array(
+            CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+            CURLOPT_FRESH_CONNECT => 1,
+            CURLOPT_CUSTOMREQUEST => 'DELETE'
+        );
+
+        curl_setopt_array($this->ochandler, $options);
+        $response = curl_exec($this->ochandler);
+        $http = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+        if (in_array($http,array(204,404))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
      ####################
      # HELPER FUNCTIONS #
      ####################
