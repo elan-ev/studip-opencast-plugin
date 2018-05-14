@@ -10,7 +10,7 @@
             return textarea
         };
 
-        iconurl = STUDIP.ASSETS_URL + 'images/icons/16/blue/refresh.png';
+        iconurl = STUDIP.ASSETS_URL + 'images/icons/blue/refresh.svg';
 
         dialog_template = _.template('<div class="matterhorn"><div id="dialog" title="Opencast Video"><div class="ui-widget"><label for="tags"></label><input id="tags" placeholder="Veranstaltung suchen ..." title="Suche hier eine Veranstaltung und dannach eine Aufzeichnung. Reset mit ESC"><img id="reset_series" src="' + iconurl +'"></div><div id="oc_embed_content"><div id="series_container"><h2>Veranstaltung</h2><br/></div><div id="vertical_border_wrapper"><div id="vertical_border"></div></div><div id="episodes_container"><h2>Aufzeichnung</h2><br/></div></div></div></div>');
         dialog = $(dialog_template()).dialog({
@@ -32,7 +32,7 @@
 
     var loadSeries = function() {
         emptyEpisodes();
-        $.get(STUDIP.ABSOLUTE_URI_STUDIP+ "plugins.php/opencast/ajax/getseries").done(function(data) {
+        $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getseries").done(function(data) {
 
             var series = jQuery.parseJSON(data);
             var series_array = [];
@@ -41,10 +41,10 @@
             $('input#tags').focus();
             // place a instructionale note
             if($.isEmptyObject(series)){
-                $('#oc_embed_content').empty().append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Es gibt momentan leider keine Inhalte in Opencast Matterhorn, die Sie einbetten d�rfen.</div>');
+                $('#oc_embed_content').empty().append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Es gibt momentan leider keine Inhalte in Opencast Matterhorn, die Sie einbetten d&uuml;rfen.</div>');
                 $('#tags').attr('disabled', 'disabled');
             } else {
-                $('div#episodes_container').append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Bitte w�hlen Sie zuerst auf der linken Seite eine Veranstaltung, aus der Sie Inhalte einbetten m�chten.</div>');
+                $('div#episodes_container').append('<div class="messagebox messagebox_info "><div class="messagebox_buttons"><a class="close" href="#" title="Nachrichtenbox schliessen"><span>Nachrichtenbox schliessen</span></a></div>Bitte w&auml;hlen Sie zuerst auf der linken Seite eine Veranstaltung, aus der Sie Inhalte einbetten m&ouml;chten.</div>');
             }
 
             $("div#series_container").append("<ul id='loaded_series'>");
@@ -75,7 +75,7 @@
             $('#reset_series').click(function() {
                 emptyEpisodes();
                 setSearch(series_array, series_id_array);
-                setInfoText("Veranstaltung w�hlen ...");
+                setInfoText("Veranstaltung w&auml;hlen ...");
                 setTag("Veranstaltung suchen ...");
                 $('input#tags').focus();
             });
@@ -84,7 +84,7 @@
                 if (e.keyCode == 27) {
                     emptyEpisodes();
                     setSearch(series_array, series_id_array);
-                    setInfoText("Veranstaltung w�hlen ...");
+                    setInfoText("Veranstaltung w&auml;hlen ...");
                     setTag("Aufzeichnung suchen ...");
                     $('input#tags').focus();
                 }
@@ -106,9 +106,10 @@
     var loadEpisodes = function(ser_id, ser_title) {
         $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getepisodes/" + ser_id).done(function(data) {
             var episode = jQuery.parseJSON(data);
+            console.log('TGEPI', episode);
             $('div#episodes_container').append("<p class='embed_episode_title'>Veranstaltung: " + ser_title + "</p>");
-            if ($.isEmptyObject(episode)) {
-                setInfoText("Diese Veranstaltung enth�lt keine Aufzeichnungen, bitte w�hlen Sie eine andere.");
+            if ($.isEmptyObject(episode) || (Array.isArray(episode) && !episode.length)) {
+                setInfoText("Diese Veranstaltung enth&auml;lt keine Aufzeichnungen, bitte w&auml;hlen Sie eine andere.");
                 $('div#dialog').animate({
                     scrollTop: 0
                 }, 0);
@@ -119,7 +120,7 @@
                 return;
             };
 
-            setTag("Auchzeichnung suche ... ");
+            setTag("Aufzeichnung suchen");
             var episodes_list = [];
             var episodes_id_list = [];
             var series_title = "";
@@ -160,7 +161,7 @@
                     minutes = minutes <= 9 ? "0" + minutes : minutes;
                     seconds = seconds <= 9 ? "0" + seconds : seconds;
 
-                    var duration = "<i> L�nge: </i>" + minutes + ":" + seconds + " Minuten";
+                    var duration = "<i> L&auml;nge: </i>" + minutes + ":" + seconds + " Minuten";
                 } catch (err) {
                     duration = "";
                 }
