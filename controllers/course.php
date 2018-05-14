@@ -9,16 +9,16 @@
  * the License, or (at your option) any later version.
  */
 
-require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
+require_once $this->trails_root . '/classes/OCRestClient/SearchClient.php';
+require_once $this->trails_root . '/classes/OCRestClient/SeriesClient.php';
 
-require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
-require_once $this->trails_root.'/models/OCModel.php';
-require_once $this->trails_root.'/models/OCCourseModel.class.php';
+require_once $this->trails_root . '/classes/OCRestClient/UploadClient.php';
+require_once $this->trails_root . '/classes/OCRestClient/IngestClient.php';
+require_once $this->trails_root . '/classes/OCRestClient/WorkflowClient.php';
+require_once $this->trails_root . '/models/OCModel.php';
+require_once $this->trails_root . '/models/OCCourseModel.class.php';
 
-require_once $this->trails_root.'/classes/OCRestClient/SchedulerClient.php';
+require_once $this->trails_root . '/classes/OCRestClient/SchedulerClient.php';
 
 class CourseController extends OpencastController
 {
@@ -26,6 +26,7 @@ class CourseController extends OpencastController
      * Constructs the controller and provide translations methods.
      *
      * @param object $dispatcher
+     *
      * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
      *      the constructor of the controller
      */
@@ -59,6 +60,7 @@ class CourseController extends OpencastController
      *
      * @param string $method
      * @param array  $arguments
+     *
      * @return mixed
      * @throws RuntimeException when method is not found
      */
@@ -78,7 +80,7 @@ class CourseController extends OpencastController
      */
     private function set_title($title = '')
     {
-        $title_parts   = func_get_args();
+        $title_parts = func_get_args();
 
         if (class_exists('Context')) {
             $title_parts[] = Context::getHeaderLine();
@@ -86,8 +88,8 @@ class CourseController extends OpencastController
             $title_parts[] = $GLOBALS['SessSemName']['header_line'];
         }
 
-        $title_parts =  array_reverse($title_parts);
-        $page_title    = implode(' - ', $title_parts);
+        $title_parts = array_reverse($title_parts);
+        $page_title = implode(' - ', $title_parts);
 
 
         PageLayout::setTitle($page_title);
@@ -101,12 +103,10 @@ class CourseController extends OpencastController
     {
         $this->flash = Trails_Flash::instance();
 
-        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.fileupload.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/jquery.simplePagination.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/circle-progress/circle-progress.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path']  . '/vendor/listjs/list.min.js');
-
-
+        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/jquery.fileupload.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/jquery.simplePagination.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/circle-progress/circle-progress.js');
+        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/listjs/list.min.js');
 
 
         // set default layout
@@ -126,14 +126,14 @@ class CourseController extends OpencastController
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
         // change this variable iff theodulplayer is active
-        $this->theodul = true;
+        $this->theodul = TRUE;
 
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
-        stream_context_set_default( [
+        stream_context_set_default([
             'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
+                'verify_peer'      => FALSE,
+                'verify_peer_name' => FALSE,
             ],
         ]);
     }
@@ -141,26 +141,27 @@ class CourseController extends OpencastController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = false)
+    function index_action($active_id = 'false', $upload_message = FALSE)
     {
         $this->set_title($this->_("Opencast Player"));
-        if($upload_message == 'true') {
-            $this->flash['messages'] = array('success' =>$this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.'));
+
+        if ($upload_message == 'true') {
+            $this->flash['messages'] = array('success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.'));
         }
 
-        $reload = true;
+        $reload = TRUE;
         // set layout for index page
-        $this->states = false;
+        $this->states = FALSE;
 
-        if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, TRUE);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, TRUE);
             $this->workflow_client = WorkflowClient::getInstance($this->course_id);
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
 
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
-            if(!empty($workflow_ids)){
+            if (!empty($workflow_ids)) {
                 $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
             }
 
@@ -175,65 +176,63 @@ class CourseController extends OpencastController
 
         Navigation::activateItem('course/opencast/overview');
         try {
-                $this->search_client = SearchClient::getInstance($this->course_id);
+            $this->search_client = SearchClient::getInstance($this->course_id);
 
-                $occourse = new OCCourseModel($this->course_id);
-                $this->coursevis = $occourse->getSeriesVisibility();
+            $occourse = new OCCourseModel($this->course_id);
+            $this->coursevis = $occourse->getSeriesVisibility();
 
-                if ($occourse->getSeriesID()) {
+            if ($occourse->getSeriesID()) {
 
-                    $ordered_episode_ids = $occourse->getEpisodes($reload);
-                    if (!$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
-                        $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
+                $ordered_episode_ids = $occourse->getEpisodes($reload);
+                if (!$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+                    $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
+                } else {
+                    $this->ordered_episode_ids = $ordered_episode_ids;
+                }
+
+                if (empty($active_id) || $active_id != "false") {
+                    $this->active_id = $active_id;
+                } else if (isset($this->ordered_episode_ids)) {
+                    $first = current($this->ordered_episode_ids);
+                    $this->active_id = $first['id'];
+                }
+
+                if (!empty($this->ordered_episode_ids)) {
+
+                    if ($this->theodul) {
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
                     } else {
-                        $this->ordered_episode_ids = $ordered_episode_ids;
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
                     }
 
-                    if (empty($active_id) || $active_id != "false") {
-                        $this->active_id = $active_id;
-                    } else if(isset($this->ordered_episode_ids)){
-                        $first = current($this->ordered_episode_ids);
-                        $this->active_id = $first['id'];
-                    }
-
-                    if (!empty($this->ordered_episode_ids)) {
-
-                        if($this->theodul){
-                            $this->video_url = $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=";
-                        }else{
-                            $this->video_url = $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=";
-                        }
-
-                        foreach($this->ordered_episode_ids as $ep) {
-                            if($ep['id'] == $this->active_id) {
-                                if($ep['preview']){
-                                    $this->previewimage = $ep['preview'];
-                                } else {
-                                    $this->previewimage = false;
-                                }
+                    foreach ($this->ordered_episode_ids as $ep) {
+                        if ($ep['id'] == $this->active_id) {
+                            if ($ep['preview']) {
+                                $this->previewimage = $ep['preview'];
+                            } else {
+                                $this->previewimage = FALSE;
                             }
                         }
                     }
-
-                    // Upload-Dialog
-                    $this->date = date('Y-m-d');
-                    $this->hour = date('H');
-                    $this->minute = date('i');
-
-                    //check needed services before showing upload form
-                    UploadClient::getInstance($this->course_id)->checkService();
-                    IngestClient::getInstance($this->course_id)->checkService();
-                    SeriesClient::getInstance($this->course_id)->checkService();
-
-
-
-                    // Remove Series
-                    if($this->flash['cand_delete']) {
-                        $this->flash['delete'] = true;
-                    }
-                } else {
-
                 }
+
+                // Upload-Dialog
+                $this->date = date('Y-m-d');
+                $this->hour = date('H');
+                $this->minute = date('i');
+
+                //check needed services before showing upload form
+                UploadClient::getInstance($this->course_id)->checkService();
+                IngestClient::getInstance($this->course_id)->checkService();
+                SeriesClient::getInstance($this->course_id)->checkService();
+
+                // Remove Series
+                if ($this->flash['cand_delete']) {
+                    $this->flash['delete'] = TRUE;
+                }
+            } else {
+
+            }
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
@@ -247,13 +246,13 @@ class CourseController extends OpencastController
         }
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
 
         $this->set_title($this->_("Opencast Konfiguration"));
 
 
         $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
-        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
+        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, TRUE);
 
     }
 
@@ -261,11 +260,11 @@ class CourseController extends OpencastController
     {
 
         $series = Request::getArray('series');
-        foreach( $series as $serie) {
+        foreach ($series as $serie) {
             OCSeriesModel::setSeriesforCourse($course_id, $serie, 'visible', 0, time());
-            StudipLog::log('OC_CONNECT_SERIES', null, $course_id, $serie);
+            StudipLog::log('OC_CONNECT_SERIES', NULL, $course_id, $serie);
         }
-        $this->flash['messages'] = array('success'=> $this->_("Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft."));
+        $this->flash['messages'] = array('success' => $this->_("Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft."));
 
         $this->redirect('course/index');
     }
@@ -274,11 +273,10 @@ class CourseController extends OpencastController
     {
 
 
-
         $course_id = Request::get('course_id');
         $series_id = Request::get('series_id');
         $delete = Request::get('delete');
-        if( $delete && check_ticket($ticket)) {
+        if ($delete && check_ticket($ticket)) {
 
             $scheduled_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
 
@@ -288,15 +286,14 @@ class CourseController extends OpencastController
             $series_client = SeriesClient::getInstance($this->course_id);
             $series_client->removeSeries($series_id);
             */
-            $this->flash['messages'] = array('success'=> $this->_("Die Zuordnung wurde entfernt"));
+            $this->flash['messages'] = array('success' => $this->_("Die Zuordnung wurde entfernt"));
 
-            StudipLog::log('OC_REMOVE_CONNECTED_SERIES', null, $course_id, $series_id);
-        }
-        else{
+            StudipLog::log('OC_REMOVE_CONNECTED_SERIES', NULL, $course_id, $series_id);
+        } else {
             $this->flash['messages']['error'] = $this->_("Die Zuordnung konnte nicht entfernt werden.");
         }
 
-        $this->flash['cand_delete'] = true;
+        $this->flash['cand_delete'] = TRUE;
 
         $this->redirect('course/index');
     }
@@ -307,7 +304,7 @@ class CourseController extends OpencastController
         require_once 'lib/raumzeit/raumzeit_functions.inc.php';
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../'.$this->dispatcher->trails_root.'/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
 
         $this->set_title($this->_("Opencast Aufzeichnungen planen"));
 
@@ -316,7 +313,7 @@ class CourseController extends OpencastController
         $course = new Seminar($this->course_id);
 
         $start_semester = $course->getStartSemester();
-        $end_semester   = $course->getEndSemester();
+        $end_semester = $course->getEndSemester();
 
         if ($start_semester > time() || $end_semester == 0) {
             $semester = Semester::findByTimestamp($start_semester);
@@ -325,16 +322,16 @@ class CourseController extends OpencastController
         } else {
             $semester = Semester::findCurrent();
         }
-        $this->dates  =  OCModel::getDatesForSemester($this->course_id, $semester);
+        $this->dates = OCModel::getDatesForSemester($this->course_id, $semester);
 
         $all_semester = SemesterData::GetSemesterArray();
 
         $this->course_semester = array();
 
-        foreach($all_semester as $cur_semester) {
+        foreach ($all_semester as $cur_semester) {
 
             //fix for unbegrenzte kurse add marker for current_semester
-            if($cur_semester['beginn'] == $course->getStartSemester() || $cur_semester['beginn'] == $course->getEndSemester()) {
+            if ($cur_semester['beginn'] == $course->getStartSemester() || $cur_semester['beginn'] == $course->getEndSemester()) {
                 $this->course_semester[] = $cur_semester;
             }
 
@@ -353,29 +350,29 @@ class CourseController extends OpencastController
 
     function schedule_action($resource_id, $termin_id)
     {
-        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
             if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-                $this->flash['messages'] = array('success'=> $this->_("Aufzeichnung wurde geplant."));
+                $this->flash['messages'] = array('success' => $this->_("Aufzeichnung wurde geplant."));
 
                 $course = Course::find($this->course_id);
                 $members = $course->members;
 
                 $users = array();
-                foreach($members as $member){
+                foreach ($members as $member) {
                     $users[] = $member->user_id;
                 }
 
-                $notification =  sprintf($this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'), $course->name);
+                $notification = sprintf($this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'), $course->name);
                 PersonalNotifications::add(
                     $users, PluginEngine::getLink('opencast/course/index', array('cid' => $this->course_id)),
                     $notification, $this->course_id,
-                    Icon::create($this->plugin->getPluginUrl(). '/images/newocicon.png')
+                    Icon::create($this->plugin->getPluginUrl() . '/images/newocicon.png')
                 );
 
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
             } else {
-                $this->flash['messages'] = array('error'=> $this->_("Aufzeichnung konnte nicht geplant werden."));
+                $this->flash['messages'] = array('error' => $this->_("Aufzeichnung konnte nicht geplant werden."));
             }
         } else {
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
@@ -390,10 +387,10 @@ class CourseController extends OpencastController
         if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
             if ($scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-                $this->flash['messages'] = array('success'=> $this->_("Die geplante Aufzeichnung wurde entfernt"));
+                $this->flash['messages'] = array('success' => $this->_("Die geplante Aufzeichnung wurde entfernt"));
                 StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $this->course_id);
             } else {
-                $this->flash['messages'] = array('error'=> $this->_("Die geplante Aufzeichnung konnte nicht entfernt werden."));
+                $this->flash['messages'] = array('error' => $this->_("Die geplante Aufzeichnung konnte nicht entfernt werden."));
             }
         } else {
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
@@ -407,15 +404,15 @@ class CourseController extends OpencastController
     {
 
         $course_id = Request::get('cid');
-        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $scheduler_client = SchedulerClient::getInstance($this->course_id);
             $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
-            if( $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
-                $this->flash['messages'] = array('success'=> $this->_("Die geplante Aufzeichnung wurde aktualisiert."));
+            if ($scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
+                $this->flash['messages'] = array('success' => $this->_("Die geplante Aufzeichnung wurde aktualisiert."));
                 StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
             } else {
-                $this->flash['messages'] = array('error'=> $this->_("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
+                $this->flash['messages'] = array('error' => $this->_("Die geplante Aufzeichnung konnte nicht aktualisiert werden."));
             }
         } else {
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
@@ -427,7 +424,7 @@ class CourseController extends OpencastController
 
     function create_series_action()
     {
-        if($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)){
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $this->series_client = SeriesClient::getInstance($this->course_id);
             if ($this->series_client->createSeriesForSeminar($this->course_id)) {
                 $this->flash['messages']['success'] = $this->_("Series wurde angelegt");
@@ -437,7 +434,7 @@ class CourseController extends OpencastController
                 throw new Exception($this->_("Verbindung zum Series-Service konnte nicht hergestellt werden."));
             }
         } else {
-           throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
+            throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
         $this->redirect('course/index');
     }
@@ -445,11 +442,10 @@ class CourseController extends OpencastController
     function toggle_visibility_action($episode_id)
     {
         $this->course_id = Request::get('cid');
-        $this->user_id   = $GLOBALS['auth']->auth['uid'];
+        $this->user_id = $GLOBALS['auth']->auth['uid'];
 
         if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            || OCModel::checkPermForEpisode($episode_id, $this->user_id))
-        {
+            || OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
             $visible = OCModel::getVisibilityForEpisode($this->course_id, $episode_id);
             // if visibilty wasn't set before do so...
             if (!$visible) {
@@ -461,18 +457,18 @@ class CourseController extends OpencastController
                 OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
 
                 if (!Request::isXhr()) {
-                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde unsichtbar geschaltet"));
+                    $this->flash['messages'] = array('success' => $this->_("Episode wurde unsichtbar geschaltet"));
                 }
 
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episode wurde unsichtbar geschaltet ($episode_id)");
+                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', NULL, $this->course_id, "Episode wurde unsichtbar geschaltet ($episode_id)");
             } else {
                 OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
 
                 if (!Request::isXhr()) {
-                    $this->flash['messages'] = array('success'=> $this->_("Episode wurde sichtbar geschaltet"));
+                    $this->flash['messages'] = array('success' => $this->_("Episode wurde sichtbar geschaltet"));
                 }
 
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id,  "Episode wurde sichtbar geschaltet ($episode_id)");
+                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', NULL, $this->course_id, "Episode wurde sichtbar geschaltet ($episode_id)");
             }
         } else {
 
@@ -521,9 +517,9 @@ class CourseController extends OpencastController
             IngestClient::getInstance($this->course_id)->checkService();
             SeriesClient::getInstance($this->course_id)->checkService();
 
-            foreach($scripts as $path) {
+            foreach ($scripts as $path) {
                 $script_attributes = array(
-                    'src'   => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
+                    'src' => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
 
@@ -536,15 +532,14 @@ class CourseController extends OpencastController
     }
 
 
-
     function bulkschedule_action()
     {
-        $course_id =  Request::get('cid');
+        $course_id = Request::get('cid');
         $action = Request::get('action');
-        if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             $dates = Request::getArray('dates');
-            foreach($dates as $termin_id => $resource_id){
-                switch($action) {
+            foreach ($dates as $termin_id => $resource_id) {
+                switch ($action) {
                     case "create":
                         self::schedule($resource_id, $termin_id, $course_id);
                         break;
@@ -563,24 +558,27 @@ class CourseController extends OpencastController
         $this->redirect('course/scheduler');
     }
 
-    static function schedule($resource_id, $termin_id, $course_id) {
+    static function schedule($resource_id, $termin_id, $course_id)
+    {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
-        if(!$scheduled) {
+        if (!$scheduled) {
             $scheduler_client = SchedulerClient::getInstance($course_id);
 
-            if($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
-                return true;
+
+                return TRUE;
             } else {
                 // TODO FEEDBACK
             }
         }
     }
 
-    static function updateschedule($resource_id, $termin_id, $course_id) {
+    static function updateschedule($resource_id, $termin_id, $course_id)
+    {
 
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
-        if($scheduled){
+        if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance($course_id);
             $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
             StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
@@ -589,40 +587,51 @@ class CourseController extends OpencastController
         }
     }
 
-    static function unschedule($resource_id, $termin_id, $course_id) {
+    static function unschedule($resource_id, $termin_id, $course_id)
+    {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
-        if($scheduled) {
+        if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance($course_id);
 
-            if( $scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
                 StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
-                return true;
+
+                return TRUE;
             } else {
                 // TODO FEEDBACK
             }
         }
     }
 
-    function remove_failed_action($workflow_id) {
-        if(OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)){
-            $this->flash['messages'] = array('success'=> $this->_("Die hochgeladenen Daten wurden gelöscht."));
+    function remove_failed_action($workflow_id)
+    {
+        $workflow_client = WorkflowClient::getInstance($this->course_id);
+
+        if ($workflow_client->removeInstanceComplete($workflow_id)) {
+            if (OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
+                $this->flash['messages'] = array('success' => $this->_("Die hochgeladenen Daten wurden gelöscht."));
+            } else {
+                $this->flash['messages'] = array('error' => $this->_("Die Referenz in der Datenbank konnte nicht gelöscht werden."));
+            }
         } else {
-            $this->flash['messages'] = array('error'=> $this->_("Die hochgeladenen Daten konnten nicht gelöscht werden."));
+            $this->flash['messages'] = array('error' => $this->_("Die hochgeladenen Daten konnten nicht gelöscht werden."));
         }
+
         $this->redirect('course/index/');
     }
 
-    function get_player_action($episode_id="", $course_id=""){
+    function get_player_action($episode_id = "", $course_id = "")
+    {
 
         $occourse = new OCCourseModel($course_id);
         $episodes = $occourse->getEpisodes();
         $episode = array();
         $current_preview = '';
-        foreach($episodes as $e){
-            if($e['id'] == $episode_id) {
-                $e['author'] = $e['author'] !=''? $e['author'] : 'Keine Angaben vorhanden';
-                $e['description'] =$e['description'] !='' ? $e['description']  : 'Keine Beschreibung vorhanden';
-                $e['start'] = date("d.m.Y H:i",strtotime($e['start']));
+        foreach ($episodes as $e) {
+            if ($e['id'] == $episode_id) {
+                $e['author'] = $e['author'] != '' ? $e['author'] : 'Keine Angaben vorhanden';
+                $e['description'] = $e['description'] != '' ? $e['description'] : 'Keine Beschreibung vorhanden';
+                $e['start'] = date("d.m.Y H:i", strtotime($e['start']));
 
                 $cand_episode = $e;
             }
@@ -634,16 +643,16 @@ class CourseController extends OpencastController
             $active_id = $episode_id;
             $this->search_client = SearchClient::getInstance($this->course_id);
 
-            if($this->theodul) {
-                $video_url =  $this->search_client->getBaseURL() ."/engage/theodul/ui/core.html?id=".$active_id;
+            if ($this->theodul) {
+                $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
             } else {
-                $video_url =  $this->search_client->getBaseURL() ."/engage/ui/embed.html?id=".$active_id;
+                $video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $active_id;
             }
 
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
             $plugin = PluginEngine::getPlugin('OpenCast');
-            $video = array('url'=>$video_url,'image'=>$current_preview,'circle'=> $plugin->getPluginURL() .'/images/play-circle.png');
+            $video = array('url' => $video_url, 'image' => $current_preview, 'circle' => $plugin->getPluginURL() . '/images/play-circle.png');
 
             $episode = array(
                 'active_id'         => $active_id,
@@ -651,7 +660,7 @@ class CourseController extends OpencastController
                 'theodul'           => $theodul,
                 'video'             => $video,
                 'perm'              => $perm,
-                'engage_player_url' => $this->search_client->getBaseURL() ."/engage/ui/watch.html?id=".$active_id,
+                'engage_player_url' => $this->search_client->getBaseURL() . "/engage/ui/watch.html?id=" . $active_id,
                 'episode_data'      => $episode
             );
 
@@ -661,26 +670,28 @@ class CourseController extends OpencastController
         }
     }
 
-    function refresh_episodes_action($ticket){
+    function refresh_episodes_action($ticket)
+    {
 
-        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)){
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $occourse2 = new OCCourseModel($this->course_id);
-            $occourse2->getEpisodes(true);
+            $occourse2->getEpisodes(TRUE);
 
-            $this->flash['messages'] = array('success'=> $this->_("Die Episodenliste wurde aktualisiert."));
+            $this->flash['messages'] = array('success' => $this->_("Die Episodenliste wurde aktualisiert."));
         }
 
         $this->redirect('course/index/false');
     }
 
-    function toggle_tab_visibility_action($ticket){
-        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)) {
+    function toggle_tab_visibility_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $occourse = new OCCourseModel($this->course_id);
             $occourse->toggleSeriesVisibility();
             $visibility = $occourse->getSeriesVisibility();
             $vis = array('visible' => 'sichtbar', 'invisible' => 'ausgeblendet');
-            $this->flash['messages'] = array('success'=> sprintf($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."),$vis[$visibility]));
-            StudipLog::log('OC_CHANGE_TAB_VISIBILITY', $this->course_id, NULL, sprintf($this->_("Reiter ist %s."),$vis[$visibility]));
+            $this->flash['messages'] = array('success' => sprintf($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."), $vis[$visibility]));
+            StudipLog::log('OC_CHANGE_TAB_VISIBILITY', $this->course_id, NULL, sprintf($this->_("Reiter ist %s."), $vis[$visibility]));
         }
         $this->redirect('course/index/false');
     }
@@ -688,7 +699,7 @@ class CourseController extends OpencastController
     function workflow_action()
     {
         if (Request::isXhr()) {
-            $this->set_layout(null);
+            $this->set_layout(NULL);
         }
 
         PageLayout::setTitle($this->_('Workflow konfigurieren'));
@@ -697,11 +708,11 @@ class CourseController extends OpencastController
 
         $this->workflows = array_filter(
             $this->workflow_client->getTaggedWorkflowDefinitions(),
-            function($element) {
-                return (in_array('schedule', $element['tags']) !== false
-                        || in_array('schedule-ng', $element['tags']) !== false)
+            function ($element) {
+                return (in_array('schedule', $element['tags']) !== FALSE
+                    || in_array('schedule-ng', $element['tags']) !== FALSE)
                     ? $element
-                    : false;
+                    : FALSE;
             }
         );
 
@@ -717,19 +728,17 @@ class CourseController extends OpencastController
 
             $occcourse = new OCCourseModel($this->course_id);
 
-            if($course_workflow = Request::get('oc_course_workflow')){
-                if($occcourse->getWorkflow('schedule')) {
+            if ($course_workflow = Request::get('oc_course_workflow')) {
+                if ($occcourse->getWorkflow('schedule')) {
                     $occcourse->updateWorkflow($course_workflow, 'schedule');
-                }
-                else {
-                    $occcourse->setWorkflow($course_workflow,'schedule');
+                } else {
+                    $occcourse->setWorkflow($course_workflow, 'schedule');
                 }
             }
-            if($course_uploadworkflow = Request::get('oc_course_uploadworkflow')){
-                if($occcourse->getWorkflow('upload')){
+            if ($course_uploadworkflow = Request::get('oc_course_uploadworkflow')) {
+                if ($occcourse->getWorkflow('upload')) {
                     $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
-                }
-                else {
+                } else {
                     $occcourse->setWorkflow($course_uploadworkflow, 'upload');
                 }
             }
@@ -739,11 +748,12 @@ class CourseController extends OpencastController
         $this->redirect('course/index/false');
     }
 
-    function setworkflowforscheduledepisode_action($termin_id, $workflow_id, $resource_id){
+    function setworkflowforscheduledepisode_action($termin_id, $workflow_id, $resource_id)
+    {
 
-        if (Request::isXhr() && $GLOBALS['perm']->have_studip_perm('dozent',$this->course_id)) {
+        if (Request::isXhr() && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $occcourse = new OCCourseModel($this->course_id);
-            $success =  $occcourse->setWorkflowForDate($termin_id, $workflow_id);
+            $success = $occcourse->setWorkflowForDate($termin_id, $workflow_id);
             self::updateschedule($resource_id, $termin_id, $this->course_id);
             $this->render_json(json_encode($success));
 
@@ -755,4 +765,5 @@ class CourseController extends OpencastController
 
 
 }
+
 ?>

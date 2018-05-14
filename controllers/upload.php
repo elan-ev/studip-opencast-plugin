@@ -79,17 +79,19 @@ class UploadController extends OpencastController
 
     public function upload_file_action()
     {
-        //Get a job object
-        $job = OCJobManager::from_request();
+        if($GLOBALS['perm']->have_studip_perm('tutor', Request::get('cid'))){
+            //Get a job object
+            $job = OCJobManager::from_request();
 
-        //Upload local
-        $job->upload_local_from_controller();
+            //Upload local/
+            $job->upload_local_from_controller();
 
-        //Upload to opencast
-        $job->try_upload_to_opencast();
+            //Upload to opencast
+            $job->try_upload_to_opencast();
 
-        //Remove old jobs if necessary
-        OCJobManager::cleanup();
+            //Remove old jobs if necessary
+            OCJobManager::cleanup();
+        }
 
         //go back
         $this->redirect('course/index');

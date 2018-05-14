@@ -19,7 +19,6 @@ require_once 'controllers/opencast_controller.php';
 
 
 define('OC_UPLOAD_CHUNK_SIZE', '10000000');
-define('OC_CLEAN_SESSION_AFTER_DAYS', '1');
 
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
@@ -88,7 +87,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             $id = Request::get('sem_id', $id);
 
-            if ($perm->have_perm('dozent') && OCModel::getConfigurationstate()) {
+            if ($perm->have_perm('tutor') && OCModel::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
                 PageLayout::addScript($this->getpluginUrl() . '/vendor/jquery.ui.widget.js');

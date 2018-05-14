@@ -6,7 +6,7 @@
 <?= $this->render_partial('messages') ?>
 
 <script language="JavaScript">
-    STUDIP.hasperm  = <?=var_export($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id))?>;
+    STUDIP.hasperm  = <?=var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id))?>;
     OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
     <?  if($series_metadata[0]['schedule'] == '1') : ?>
@@ -17,7 +17,7 @@
 <?
     $sidebar = Sidebar::get();
 
-    if($GLOBALS ['perm']->have_studip_perm ('dozent', $this->course_id))
+    if($GLOBALS ['perm']->have_studip_perm ('tutor', $this->course_id))
     {
         $actions = new ActionsWidget ();
         $upload = '';
@@ -88,14 +88,11 @@
     Helpbar::get()->addLink('Bei Problemen: '. $GLOBALS['UNI_CONTACT'], 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback');
 ?>
 
-
-
-
 <h1>
   <?= $_('Vorlesungsaufzeichnungen') ?>
 </h1>
 
-<? if(!(empty($ordered_episode_ids))) : ?>
+<? if(!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
 <? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
 <div class="oc_flex">
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
@@ -107,8 +104,8 @@
             )) ?>
         </span>
         <ul class="oce_list list"
-            <?=($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
-            <? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && !empty($states)) :?>
+            <?=($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : ''?>>
+            <? if($GLOBALS['perm']->have_studip_perm('tutor', $course_id) && !empty($states)) :?>
                 <? foreach($states as $workflow_id => $state) :?>
                 <li class="uploaded oce_item">
                     <? if(in_array($state->state,array('FAILING','FAILED'))) : ?>
@@ -213,7 +210,7 @@
                                 <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
                             <? endif ?>
 
-                            <? if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+                            <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) :?>
                                 <? if ($active['visibility'] == 'false') : ?>
                                     <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
                                 <? else : ?>
@@ -237,7 +234,7 @@
 <? endif; ?>
 
 
-<? if($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
+<? if($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) :?>
 
 <div id="upload_dialog" title="<?=$_("Medienupload")?>" style="display: none;">
 <?= $this->render_partial("course/_upload", array('course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier'])) ?>
