@@ -254,18 +254,19 @@ class OCCourseModel
                         if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
                             $audio_download = $track->url;
                     }
-                    $episodes[$episode->id] = array('id'                    => $episode->id,
-                                                    'title'                 => OCModel::sanatizeContent($episode->dcTitle),
-                                                    'start'                 => $episode->mediapackage->start,
-                                                    'duration'              => $episode->mediapackage->duration,
-                                                    'description'           => OCModel::sanatizeContent($episode->dcDescription),
-                                                    'author'                => OCModel::sanatizeContent($episode->dcCreator),
-                                                    'preview'               => $preview,
-                                                    'presentation_preview'  => $presentation_preview,
-                                                    'presenter_download'    => $presenter_download,
-                                                    'presentation_download' => $presentation_download,
-                                                    'audio_download'        => $audio_download,
-                    );
+                    $episodes[$episode->id] = [
+                        'id'                    => $episode->id,
+                        'title'                 => OCModel::sanatizeContent($episode->dcTitle),
+                        'start'                 => $episode->mediapackage->start,
+                        'duration'              => $episode->mediapackage->duration,
+                        'description'           => OCModel::sanatizeContent($episode->dcDescription),
+                        'author'                => OCModel::sanatizeContent($episode->dcCreator),
+                        'preview'               => $preview,
+                        'presentation_preview'  => $presentation_preview,
+                        'presenter_download'    => $presenter_download,
+                        'presentation_download' => $presentation_download,
+                        'audio_download'        => $audio_download,
+                    ];
                 }
             }
         } elseif (is_object($oc_episodes)) { // refactor this asap
@@ -293,17 +294,18 @@ class OCCourseModel
                     if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
                         $audio_download = $track->url;
                 }
-                $episodes[$episode->id] = array('id'                    => $episode->id,
-                                                'title'                 => OCModel::sanatizeContent($episode->dcTitle),
-                                                'start'                 => $episode->mediapackage->start,
-                                                'duration'              => $episode->mediapackage->duration,
-                                                'description'           => OCModel::sanatizeContent($episode->dcDescription),
-                                                'author'                => OCModel::sanatizeContent($episode->dcCreator),
-                                                'preview'               => $preview,
-                                                'presenter_download'    => $presenter_download,
-                                                'presentation_download' => $presentation_download,
-                                                'audio_download'        => $audio_download,
-                );
+                $episodes[$episode->id] = [
+                    'id'                    => $episode->id,
+                    'title'                 => OCModel::sanatizeContent($episode->dcTitle),
+                    'start'                 => $episode->mediapackage->start,
+                    'duration'              => $episode->mediapackage->duration,
+                    'description'           => OCModel::sanatizeContent($episode->dcDescription),
+                    'author'                => OCModel::sanatizeContent($episode->dcCreator),
+                    'preview'               => $preview,
+                    'presenter_download'    => $presenter_download,
+                    'presentation_download' => $presentation_download,
+                    'audio_download'        => $audio_download,
+                ];
             }
         }
 
