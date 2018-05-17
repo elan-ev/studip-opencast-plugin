@@ -12,7 +12,7 @@ use Studip\Button,
         </legend>
 
         <label>
-            <?= $_('Workflow für Uploads') ?>
+            <?= _('Workflow für Uploads'); ?>
 
             <select name="oc_course_uploadworkflow">
                 <? foreach($workflows as $workflow) :?>
