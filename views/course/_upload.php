@@ -53,26 +53,19 @@ use Studip\Button,
             <?php endif; ?>
         <?php endfor; ?>
     </select>
-
-    <div style="display:none;">
     <label id="contributorLabel" for="contributor">
         <h4><span><?= $_('Mitwirkende') ?></span></h4>
     </label>
-    <br>
     <input type="text" maxlength="255" id="contributor" name="contributor" value="<?=get_fullname_from_uname($GLOBALS['auth']->auth['uname']) ?>">
-    <br>
     <label id="subjectLabel" for="subject">
-        <span><?= $_('Thema') ?></span>
+        <h4><span><?= $_('Thema') ?></span></h4>
     </label>
-    <br>
-    <input type="text" maxlength="255" id="subject" name="subject" value="Medienupload aus Stud.IP">
-    <br>
+    <input type="text" maxlength="255" id="subject" name="subject" value="Medienupload, Stud.IP">
+    <div style="display:none">
     <label id="languageLabel" for="language">
-        <span><?= $_('Sprache') ?></span>
+        <h4><span><?= $_('Sprache') ?></span></h4>
     </label>
-    <br>
     <input type="text" maxlength="255" id="language" name="language" value="<?='de'?>">
-    <br>
     </div>
 
     <label id="descriptionLabel" for="description">
