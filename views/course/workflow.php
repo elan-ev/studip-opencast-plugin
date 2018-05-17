@@ -10,7 +10,10 @@ use Studip\Button,
         <legend>
             <?= $_('Workflow-Konfiguration') ?>
         </legend>
-
+        <p>
+            Bereits geplante Aufzeichnungen werden weiterhin mit dem vorherigen Workkflow verarbeitet.</br>
+            <b style="color:orangered">Die Änderung hier gilt nur für neue Aufzeichnungsplanungen!</b>
+        </p>
         <label>
             <?= _('Workflow für Uploads'); ?>
 
