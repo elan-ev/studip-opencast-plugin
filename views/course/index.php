@@ -141,13 +141,19 @@
                 <? endforeach;?>
             <? endif;?>
             <? foreach($ordered_episode_ids as $pos => $item) : ?>
-            <li id="<?=$item['id']?>"
+                <?
+                    $image = $item['presentation_preview'];
+                    if($image == FALSE || is_empty($image)){
+                        $image = ($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png' ;
+                    }
+                ?>
+                <li id="<?=$item['id']?>"
                 class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?>"
                 data-courseId="<?=$course_id?>"
                 data-visibility="<?=$item['visibility']?>"
                 data-pos="<?=$pos?>"
                 data-mkdate="<?=$item['mkdate']?>"
-                data-previewimage="<?=$prev?>">
+                data-previewimage="<?=$image?>">
                 <div class="oc_flexitem oc_flexplaycontainer">
                     <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
                         <div></div>
@@ -160,7 +166,7 @@
                         <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                         <a href="<?= URLHelper::getURL($video_url.$item['id']) ?>" target="_blank">
                 <span class="previewimage">
-                    <img class="previewimage" src="<?=($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
+                    <img class="previewimage" src="<?= $image ?>">
                     <img class="playbutton" style="bottom:10px" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
                 </span>
                         </a>

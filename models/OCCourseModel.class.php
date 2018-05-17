@@ -9,7 +9,7 @@
 
 require_once 'OCModel.php';
 require_once 'OCSeriesModel.php';
-require_once dirname(__FILE__) .'/../classes/OCRestClient/SearchClient.php';
+require_once dirname(__FILE__) . '/../classes/OCRestClient/SearchClient.php';
 
 class OCCourseModel
 {
@@ -31,45 +31,51 @@ class OCCourseModel
 
         $this->setCourseID($course_id);
         // take care of connected series
-        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(),true);
+        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(), TRUE);
 
-        if(!empty($cseries)){
+        if (!empty($cseries)) {
             $current_seriesdata = array_pop($cseries);
             $this->setSeriesMetadata($current_seriesdata);
             $this->setSeriesID($current_seriesdata['identifier']);
         } else {
-            $this->setSeriesID(false);
+            $this->setSeriesID(FALSE);
         }
 
     }
 
-    public function getCourseID(){
+    public function getCourseID()
+    {
         return $this->course_id;
     }
 
-    public function getSeriesID(){
+    public function getSeriesID()
+    {
         return $this->series_id;
     }
 
-    public function getSeriesMetadata(){
+    public function getSeriesMetadata()
+    {
         return $this->seriesMetadata;
     }
 
-    public function setSeriesID($series_id){
+    public function setSeriesID($series_id)
+    {
         $this->series_id = $series_id;
     }
 
-    public function setCourseID($course_id){
+    public function setCourseID($course_id)
+    {
         $this->course_id = $course_id;
     }
 
-    public function setSeriesMetadata($seriesMetadata){
+    public function setSeriesMetadata($seriesMetadata)
+    {
         $this->seriesMetadata = $seriesMetadata;
     }
 
     /*  */
 
-    public function getEpisodes($force_reload = false)
+    public function getEpisodes($force_reload = FALSE)
     {
         if ($this->getSeriesID()) {
             $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
@@ -84,13 +90,13 @@ class OCCourseModel
             }
 
             return $this->order_episodes_by(
-                array('start','title'),
-                array(SORT_NATURAL,SORT_NATURAL),
-                array(true,false),
+                array('start', 'title'),
+                array(SORT_NATURAL, SORT_NATURAL),
+                array(TRUE, FALSE),
                 $ordered_episodes
             );
         } else {
-            return false;
+            return FALSE;
         }
 
     }
@@ -99,6 +105,7 @@ class OCCourseModel
      * This function sorts an array 'deep'. This means the content is first sorted
      * by the first key in the array. If there are more than one entry for this key
      * the episodes in this group are sorted by the second key and so on.
+     *
      * @param $keys
      * @param $sort_flags
      * @param $reversed
@@ -106,7 +113,8 @@ class OCCourseModel
      *
      * @return array
      */
-    private function order_episodes_by($keys,$sort_flags,$reversed,$episodes){
+    private function order_episodes_by($keys, $sort_flags, $reversed, $episodes)
+    {
         $ordered = array();
 
         //Get the current settings for this episode group
@@ -115,25 +123,25 @@ class OCCourseModel
         $current_sort_flags = array_shift($sort_flags);
 
         //Regroup the current episodes bv the key field
-        foreach($episodes as $episode){
+        foreach ($episodes as $episode) {
             $ordered[$episode[$key]][] = $episode;
         }
 
         //Sort, reverse if needed
-        if($current_reversed){
-            krsort($ordered,$current_sort_flags);
-        }else{
-            ksort($ordered,$current_sort_flags);
+        if ($current_reversed) {
+            krsort($ordered, $current_sort_flags);
+        } else {
+            ksort($ordered, $current_sort_flags);
         }
 
         //Now remove the grouping but contain the order within
         $episodes = array();
 
-        foreach ($ordered as $entries){
-            if(count($keys)>0 && count($entries)>1){
-                $entries = $this->order_episodes_by($keys,$sort_flags,$reversed,$entries);
+        foreach ($ordered as $entries) {
+            if (count($keys) > 0 && count($entries) > 1) {
+                $entries = $this->order_episodes_by($keys, $sort_flags, $reversed, $entries);
             }
-            foreach($entries as $entry){
+            foreach ($entries as $entry) {
                 $episodes[] = $entry;
             }
         }
@@ -148,11 +156,11 @@ class OCCourseModel
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
 
-        foreach($stored_episodes as $key => $stored_episode){
+        foreach ($stored_episodes as $key => $stored_episode) {
 
-            if ($tmp = $oc_episodes[$stored_episode['episode_id']]){
+            if ($tmp = $oc_episodes[$stored_episode['episode_id']]) {
                 $tmp['visibility'] = $stored_episode['visible'];
-                $tmp['mkdate']  = $stored_episode['mkdate'];
+                $tmp['mkdate'] = $stored_episode['mkdate'];
 
                 OCModel::setEpisode(
                     $stored_episode['episode_id'],
@@ -213,87 +221,88 @@ class OCCourseModel
     {
         $episodes = array();
 
-        if(is_array($oc_episodes)){
-            foreach($oc_episodes as $episode) {
+        if (is_array($oc_episodes)) {
+            foreach ($oc_episodes as $episode) {
 
-                if(is_object($episode->mediapackage)){
-                    $prespreview = false;
+                if (is_object($episode->mediapackage)) {
+                    $presentation_preview = FALSE;
 
-                    foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                        if($attachment->type === "presenter/search+preview") $preview = $attachment->url;
+                    foreach ($episode->mediapackage->attachments->attachment as $attachment) {
+                        if ($attachment->type === "presenter/search+preview") {
+                            $preview = $attachment->url;
+                        }
 
-                        if($attachment->type === "presentation/player+preview") {
-                            $prespreview = $attachment->url;
+                        if ($attachment->type === "presentation/player+preview") {
+                            $presentation_preview = $attachment->url;
                         }
                     }
 
-                    foreach($episode->mediapackage->media->track as $track) {
+                    foreach ($episode->mediapackage->media->track as $track) {
                         // TODO CHECK CONDITIONS FOR MEDIAPACKAGE AUDIO AND VIDEO DL
-                        if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                        if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                             $url = parse_url($track->url);
-                            if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                            if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                 $presenter_download = $track->url;
                             }
                         }
-                        if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                        if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                             $url = parse_url($track->url);
-                            if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                            if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                                 $presentation_download = $track->url;
                             }
                         }
-                        if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
+                        if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
                             $audio_download = $track->url;
                     }
-                    $episodes[$episode->id] = array('id' => $episode->id,
-                        'title' => OCModel::sanatizeContent($episode->dcTitle),
-                        'start' => $episode->mediapackage->start,
-                        'duration' => $episode->mediapackage->duration,
-                        'description' => OCModel::sanatizeContent($episode->dcDescription),
-                        'author' => OCModel::sanatizeContent($episode->dcCreator),
-                        'preview' => $preview,
-                        'prespreview' => $prespreview,
-                        'presenter_download' => $presenter_download,
-                        'presentation_download' => $presentation_download,
-                        'audio_download' => $audio_download,
+                    $episodes[$episode->id] = array('id'                    => $episode->id,
+                                                    'title'                 => OCModel::sanatizeContent($episode->dcTitle),
+                                                    'start'                 => $episode->mediapackage->start,
+                                                    'duration'              => $episode->mediapackage->duration,
+                                                    'description'           => OCModel::sanatizeContent($episode->dcDescription),
+                                                    'author'                => OCModel::sanatizeContent($episode->dcCreator),
+                                                    'preview'               => $preview,
+                                                    'presentation_preview'  => $presentation_preview,
+                                                    'presenter_download'    => $presenter_download,
+                                                    'presentation_download' => $presentation_download,
+                                                    'audio_download'        => $audio_download,
                     );
                 }
             }
-        }
-        elseif (is_object($oc_episodes)) { // refactor this asap
-            if(is_object($oc_episodes->mediapackage)){
+        } elseif (is_object($oc_episodes)) { // refactor this asap
+            if (is_object($oc_episodes->mediapackage)) {
                 $episode = $oc_episodes;
 
-                foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                    if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+                foreach ($episode->mediapackage->attachments->attachment as $attachment) {
+                    if ($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
                 }
 
-                foreach($episode->mediapackage->media->track as $track) {
+                foreach ($episode->mediapackage->media->track as $track) {
                     // TODO CHECK CONDITIONS FOR MEDIAPACKAGE AUDIO AND VIDEO DL
-                    if(($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                         $url = parse_url($track->url);
-                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                             $presenter_download = $track->url;
                         }
                     }
-                    if(($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')){
+                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                         $url = parse_url($track->url);
-                        if(in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                             $presentation_download = $track->url;
                         }
                     }
-                    if(($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
+                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
                         $audio_download = $track->url;
                 }
-                $episodes[$episode->id] = array('id' => $episode->id,
-                    'title' => OCModel::sanatizeContent($episode->dcTitle),
-                    'start' => $episode->mediapackage->start,
-                    'duration' => $episode->mediapackage->duration,
-                    'description' => OCModel::sanatizeContent($episode->dcDescription),
-                    'author' => OCModel::sanatizeContent($episode->dcCreator),
-                    'preview' => $preview,
-                    'presenter_download' => $presenter_download,
-                    'presentation_download' => $presentation_download,
-                    'audio_download' => $audio_download,
+                $episodes[$episode->id] = array('id'                    => $episode->id,
+                                                'title'                 => OCModel::sanatizeContent($episode->dcTitle),
+                                                'start'                 => $episode->mediapackage->start,
+                                                'duration'              => $episode->mediapackage->duration,
+                                                'description'           => OCModel::sanatizeContent($episode->dcDescription),
+                                                'author'                => OCModel::sanatizeContent($episode->dcCreator),
+                                                'preview'               => $preview,
+                                                'presenter_download'    => $presenter_download,
+                                                'presentation_download' => $presentation_download,
+                                                'audio_download'        => $audio_download,
                 );
             }
         }
@@ -308,7 +317,7 @@ class OCCourseModel
 
         if (!$cached_series || $forced_reload) {
             $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
-            $series = $search_client->getEpisodes($series_id, true);
+            $series = $search_client->getEpisodes($series_id, TRUE);
 
             if ($forced_reload && $cached_series) {
                 OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
@@ -346,31 +355,37 @@ class OCCourseModel
         return $stmt->fetchColumn();
     }
 
-    public function getEpisodesforREST() {
+    public function getEpisodesforREST()
+    {
         $rest_episodes = array();
         $is_dozent = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
         $episodes = $this->getEpisodes();
-        foreach($episodes as $episode){
-            if($episode['visibility'] == 'true'){
+        foreach ($episodes as $episode) {
+            if ($episode['visibility'] == 'true') {
                 $rest_episodes[] = $episode;
             } else {
-                if($is_dozent){
+                if ($is_dozent) {
                     $rest_episodes[] = $episode;
                 }
             }
         }
+
         return $rest_episodes;
     }
 
-    public  function toggleSeriesVisibility() {
-        if($this->getSeriesVisibility() == 'visible') $visibility = 'invisible';
+    public function toggleSeriesVisibility()
+    {
+        if ($this->getSeriesVisibility() == 'visible') $visibility = 'invisible';
         else $visibility = 'visible';
-        return OCSeriesModel::updateVisibility($this->course_id,$visibility);
+
+        return OCSeriesModel::updateVisibility($this->course_id, $visibility);
 
     }
 
-    public function getSeriesVisibility(){
+    public function getSeriesVisibility()
+    {
         $visibility = OCSeriesModel::getVisibility($this->course_id);
+
         return $visibility['visibility'];
 
     }
@@ -382,51 +397,59 @@ class OCCourseModel
      *
      * @return array episodes refined list of episodes - only visible episodes are considered
      */
-    public function refineEpisodesForStudents($ordered_episodes) {
+    public function refineEpisodesForStudents($ordered_episodes)
+    {
 
         $episodes = array();
-        foreach($ordered_episodes as $episode){
-            if($episode['visibility'] == 'true') {
+        foreach ($ordered_episodes as $episode) {
+            if ($episode['visibility'] == 'true') {
                 $episodes[] = $episode;
             }
         }
+
         return $episodes;
     }
 
-    public function getWorkflow($target) {
+    public function getWorkflow($target)
+    {
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflow_configuration
             WHERE seminar_id = ? AND target = ?");
 
         $stmt->execute(array($this->getCourseID(), $target));
-        $workflow =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $workflow = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if(empty($workflow)) {
-            return false;
-        }
-        else return array_pop($workflow);
+        if (empty($workflow)) {
+            return FALSE;
+        } else return array_pop($workflow);
     }
 
-    public function setWorkflow($workflow_id, $target) {
+    public function setWorkflow($workflow_id, $target)
+    {
 
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_seminar_workflow_configuration (seminar_id, workflow_id, target, mkdate, chdate)
                 VALUES (?, ?, ?, ?, ?)");
+
         return $stmt->execute(array($this->getCourseID(), $workflow_id, $target, time(), time()));
     }
 
-    public function updateWorkflow($workflow_id, $target) {
+    public function updateWorkflow($workflow_id, $target)
+    {
 
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_seminar_workflow_configuration SET workflow_id = ?, chdate = ?
                 WHERE seminar_id = ? AND target = ?");
-        return $stmt->execute(array( $workflow_id, time(), $this->getCourseID(), $target));
+
+        return $stmt->execute(array($workflow_id, time(), $this->getCourseID(), $target));
     }
 
-    public function setWorkflowForDate($termin_id, $workflow_id) {
+    public function setWorkflowForDate($termin_id, $workflow_id)
+    {
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_scheduled_recordings SET workflow_id = ?
                 WHERE seminar_id = ? AND date_id = ?");
-        return $stmt->execute(array($workflow_id,  $this->getCourseID(), $termin_id));
+
+        return $stmt->execute(array($workflow_id, $this->getCourseID(), $termin_id));
     }
 
     public function clearSeminarEpisodes()
