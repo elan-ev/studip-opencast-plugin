@@ -190,29 +190,12 @@ class CourseController extends OpencastController
                     $this->ordered_episode_ids = $ordered_episode_ids;
                 }
 
-                if (empty($active_id) || $active_id != "false") {
-                    $this->active_id = $active_id;
-                } else if (isset($this->ordered_episode_ids)) {
-                    $first = current($this->ordered_episode_ids);
-                    $this->active_id = $first['id'];
-                }
-
                 if (!empty($this->ordered_episode_ids)) {
 
                     if ($this->theodul) {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
                     } else {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
-                    }
-
-                    foreach ($this->ordered_episode_ids as $ep) {
-                        if ($ep['id'] == $this->active_id) {
-                            if ($ep['preview']) {
-                                $this->previewimage = $ep['preview'];
-                            } else {
-                                $this->previewimage = FALSE;
-                            }
-                        }
                     }
                 }
 

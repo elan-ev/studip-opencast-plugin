@@ -93,7 +93,6 @@
 </h1>
 
 <? if(!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
-<? $visible = OCModel::getVisibilityForEpisode($course_id, $active['id'])?>
 <div class="oc_flex">
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">
@@ -142,13 +141,8 @@
                 <? endforeach;?>
             <? endif;?>
             <? foreach($ordered_episode_ids as $pos => $item) : ?>
-            <? $prev = ($item['prespreview']) ? $item['prespreview'] : $plugin->getPluginURL() .'/images/default-preview.png';?>
-                <?
-                    $active = $item;
-                    $previewimage = $item['preview'];
-                ?>
             <li id="<?=$item['id']?>"
-                class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?><?=($item['id'] == $active['id']) ? ' oce_active_li' : ''?>"
+                class="<?=($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item'?>"
                 data-courseId="<?=$course_id?>"
                 data-visibility="<?=$item['visibility']?>"
                 data-pos="<?=$pos?>"
@@ -162,12 +156,11 @@
                         <div></div>
                     </div>
                     <div class="oce_playercontainer">
-            <span id="oc_active_episode" class="hidden" data-activeepisode="<?=$active['id']?>">
             </span>
                         <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                        <a href="<?= URLHelper::getURL($video_url.$active['id']) ?>" target="_blank">
+                        <a href="<?= URLHelper::getURL($video_url.$item['id']) ?>" target="_blank">
                 <span class="previewimage">
-                    <img class="previewimage" src="<?=($previewimage != false) ? $previewimage : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
+                    <img class="previewimage" src="<?=($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png' ; ?>">
                     <img class="playbutton" style="bottom:10px" src="<?= $plugin->getPluginURL() .'/images/play-circle.png' ?>">
                 </span>
                         </a>
@@ -176,45 +169,45 @@
                 <div class="oce_metadatacontainer">
                     <div>
                         <h2 class="oce_metadata oce_list_title">
-                            <?= $active['title']?>
+                            <?= $item['title']?>
                         </h2>
                         <ul class="oce_contetlist">
                             <li class="oce_list_date" >
                                 <?= $_('Aufzeichnungsdatum') ?>:
-                                <?= date("d.m.Y H:i",strtotime($active['start'])) ?> <?= $_("Uhr") ?>
+                                <?= date("d.m.Y H:i",strtotime($item['start'])) ?> <?= $_("Uhr") ?>
                             </li>
                             <li>
                                 <?= $_('Autor') ?>:
-                                <?= $active['author'] ? htmlReady($active['author']) : 'Keine Angaben vorhanden' ?>
+                                <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                             </li>
                             <li>
                                 <?= $_('Beschreibung') ?>:
-                                <?= $active['description'] ? htmlReady($active['description']) : 'Keine Beschreibung vorhanden' ?>
+                                <?= $item['description'] ? htmlReady($item['description']) : 'Keine Beschreibung vorhanden' ?>
                             </li>
                         </ul>
                     </div>
 
                     <div class="ocplayerlink">
                         <div class="button-group">
-                            <? if ($active['presenter_download']) : ?>
-                                <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($active['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
+                            <? if ($item['presenter_download']) : ?>
+                                <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($item['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
                             <? endif;?>
-                            <? if ($active['presentation_download']) : ?>
-                                <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($active['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
+                            <? if ($item['presentation_download']) : ?>
+                                <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($item['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
                             <? endif;?>
-                            <? if ($active['audio_download']) :?>
-                                <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($active['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
+                            <? if ($item['audio_download']) :?>
+                                <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($item['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
                             <? endif;?>
 
                             <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
-                                <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $active['id'])); ?>
+                                <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $item['id'])); ?>
                             <? endif ?>
 
                             <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) :?>
-                                <? if ($active['visibility'] == 'false') : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
+                                <? if ($item['visibility'] == 'false') : ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id'])); ?>
                                 <? else : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $active['id']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $active['id'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id'])); ?>
                                 <? endif;?>
                             <? endif; ?>
                         </div>
