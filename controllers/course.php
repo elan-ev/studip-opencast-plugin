@@ -775,14 +775,15 @@ class CourseController extends OpencastController
 
     private function nice_size_text($size)
     {
-        $possible_sizes = ['Bytes','KB','MB','GB','TB'];
-        for($depth = 0; $depth < count($possible_sizes); $depth++){
-            if(($size / 1024) > 1){
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        for ($depth = 0; $depth < count($possible_sizes); $depth++) {
+            if (($size / 1024) > 1) {
                 $size /= 1024;
-            }else{
-                return round($size,2).' '.$possible_sizes[$depth];
+            } else {
+                return round($size, 2) . ' ' . $possible_sizes[$depth];
             }
         }
+
         return $size;
     }
 
