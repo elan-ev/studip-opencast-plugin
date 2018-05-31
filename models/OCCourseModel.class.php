@@ -245,14 +245,13 @@ class OCCourseModel
                                 }
                             }
                             $presenter_download[$quality] = $track->url;
-                            $download_size['video'][$quality] = $this->calculate_video_size(
-                                $track->video->framecount,
-                                $track->video->resolution
-                            );
-                            $download_size['video'][$quality] += $this->calculate_audio_size(
-                                $track->audio->bitrate,
-                                $track->duration
-                            );
+                            $download_size['presenter'][$quality] = 0;
+                            if(!empty($track->video)){
+                                $download_size['presenter'][$quality] += $this->calculate_size(
+                                    $track->video->bitrate,
+                                    $track->duration
+                                );
+                            }
                         }
                     }
                     if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
@@ -265,10 +264,13 @@ class OCCourseModel
                                 }
                             }
                             $presentation_download[$quality] = $track->url;
-                            $download_size['presentation'][$quality] = $this->calculate_video_size(
-                                $track->video->framecount,
-                                $track->video->resolution
-                            );
+                            $download_size['presentation'][$quality] = 0;
+                            if(!empty($track->video)){
+                                $download_size['presentation'][$quality] += $this->calculate_size(
+                                    $track->video->bitrate,
+                                    $track->duration
+                                );
+                            }
                         }
                     }
                     if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a'))) {
@@ -279,10 +281,13 @@ class OCCourseModel
                             }
                         }
                         $audio_download[$quality] = $track->url;
-                        $download_size['audio'][$quality] = $this->calculate_audio_size(
-                            $track->audio->bitrate,
-                            $track->duration
-                        );
+                        $download_size['audio'][$quality] = 0;
+                        if(!empty($track->audio)){
+                            $download_size['audio'][$quality] += $this->calculate_size(
+                                $track->audio->bitrate,
+                                $track->duration
+                            );
+                        }
                     }
 
                 }
@@ -455,13 +460,7 @@ class OCCourseModel
         return $stmt->execute(array($this->getCourseID()));
     }
 
-    private function calculate_video_size($framecount, $resolution)
-    {
-        $resolution = explode($resolution,'x');
-        return $resolution[0]*$resolution[1]*$framecount;
-    }
-
-    private function calculate_audio_size($bitrate, $duration)
+    private function calculate_size($bitrate, $duration)
     {
         return ($bitrate/8) * ($duration/1000);
     }
