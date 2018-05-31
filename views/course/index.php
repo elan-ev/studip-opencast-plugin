@@ -194,17 +194,14 @@
                     </div>
 
                     <div class="ocplayerlink">
+                        <select onclick="OC.change_download_quality($(this).val(),'<?=$item['id']?>')" onchange="OC.change_download_quality($(this).val(),'<?=$item['id']?>')">
+                            <option selected value="hd">HD</option>
+                            <option value="high">Hoch</option>
+                            <option value="medium">Mittel</option>
+                            <option value="low">Niedrig</option>
+                        </select>
                         <div class="button-group">
-                            <? if ($item['presenter_download']) : ?>
-                                <?= Studip\LinkButton::create($_('ReferentIn'), URLHelper::getURL($item['presenter_download']), array('target'=> '_blank', 'class' => 'download presenter')) ?>
-                            <? endif;?>
-                            <? if ($item['presentation_download']) : ?>
-                                <?= Studip\LinkButton::create($_('Bildschirm '), URLHelper::getURL($item['presentation_download']), array('target'=> '_blank', 'class' => 'download presentation')) ?>
-                            <? endif;?>
-                            <? if ($item['audio_download']) :?>
-                                <?= Studip\LinkButton::create($_('Audio'), URLHelper::getURL($item['audio_download']), array('target'=> '_blank', 'class' => 'download audio')) ?>
-                            <? endif;?>
-
+                            <? echo $download_options[$item['id']]; ?>
                             <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
                                 <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $item['id'])); ?>
                             <? endif ?>

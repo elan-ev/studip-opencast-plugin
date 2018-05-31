@@ -199,6 +199,8 @@ class CourseController extends OpencastController
                     }
                 }
 
+                $this->download_options = $this->prepare_download_options($ordered_episode_ids);
+
                 // Upload-Dialog
                 $this->date = date('Y-m-d');
                 $this->hour = date('H');
@@ -744,6 +746,32 @@ class CourseController extends OpencastController
             $this->render_nothing();
         }
 
+    }
+
+    private function prepare_download_options($episodes)
+    {
+        $qualities = ['low-quality', 'medium-quality', 'high-quality', 'hd-quality'];
+        $buttons = [];
+        foreach($episodes as $episode){
+            $buttons[$episode['id']] = '';
+            foreach ($qualities as $quality){
+                $buttons[$episode['id']].= '<div data-episode_id="'.$episode['id'].'" style="display:none" id="dbquality_'.$quality.'_'.$episode['id'].'">';
+                if ($episode['presenter_download']){
+                    $presenter_download = (key_exists($quality,$episode['presenter_download'])?$episode['presenter_download'][$quality]:$episode['presenter_download']['unknown']);
+                    $buttons[$episode['id']] .= Studip\LinkButton::create(_('ReferentIn'), URLHelper::getURL($presenter_download), array('target'=> '_blank', 'class' => 'download presenter'))->__toString();
+                }
+                if($episode['presentation_download']){
+                    $presentation_download = (key_exists($quality,$episode['presentation_download'])?$episode['presentation_download'][$quality]:$episode['presenter_download']['unknown']);
+                    $buttons[$episode['id']] .= Studip\LinkButton::create(_('Bildschirm '), URLHelper::getURL($presentation_download), array('target'=> '_blank', 'class' => 'download presentation'))->__toString();
+                }
+                if($episode['audio_download']){
+                    $audio_download = (key_exists($quality,$episode['audio_download'])?$episode['audio_download'][$quality]:$episode['audio_download']['unknown']);
+                    $buttons[$episode['id']] .= Studip\LinkButton::create(_('Audio'), URLHelper::getURL($audio_download), array('target'=> '_blank', 'class' => 'download audio'))->__toString();
+                }
+                $buttons[$episode['id']] .= '</div>';
+            }
+        }
+        return $buttons;
     }
 
 

@@ -238,17 +238,37 @@ class OCCourseModel
                     if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                         $url = parse_url($track->url);
                         if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $presenter_download = $track->url;
+                            $quality = 'unknown';
+                            foreach($track->tags->tag as $tag){
+                                if(strpos($tag, 'quality') !== false){
+                                    $quality = $tag;
+                                }
+                            }
+                            $presenter_download[$quality] = $track->url;
                         }
                     }
                     if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
                         $url = parse_url($track->url);
                         if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $presentation_download = $track->url;
+                            $quality = 'unknown';
+                            foreach($track->tags->tag as $tag){
+                                if(strpos($tag, 'quality') !== false){
+                                    $quality = $tag;
+                                }
+                            }
+                            $presentation_download[$quality] = $track->url;
                         }
                     }
-                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
-                        $audio_download = $track->url;
+                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a'))){
+                        $quality = 'unknown';
+                        foreach($track->tags->tag as $tag){
+                            if(strpos($tag, 'quality') !== false){
+                                $quality = $tag;
+                            }
+                        }
+                        $audio_download[$quality] = $track->url;
+                    }
+
                 }
                 $episodes[$episode->id] = [
                     'id'                    => $episode->id,
