@@ -760,8 +760,10 @@ class CourseController extends OpencastController
                     $download_type = $type . '_download';
                     if ($episode[$download_type]) {
                         $download = (key_exists($quality, $episode[$download_type]) ? $episode[$download_type][$quality] : $episode[$download_type]['unknown']);
-                        $size = (key_exists($quality, $episode['download_size_byte'][$type]) ? $episode['download_size_byte'][$type][$quality] : $episode['download_size_byte'][$type]['unknown']);
-                        $size = $this->nice_size_text($size);
+                        $size = $this->nice_size_text(
+                            (key_exists($quality, $episode['download_size_byte'][$type]) ? $episode['download_size_byte'][$type][$quality] : $episode['download_size_byte'][$type]['unknown'])
+                            ,1
+                        );
                         $episode[$download_type]['unknown'] = $download;
                         $buttons[$episode['id']] .= Studip\LinkButton::create(_($button_text) . ' (' . $size . ')', URLHelper::getURL($download), ['target' => '_blank', 'class' => 'download ' . $type])->__toString();
                     }
@@ -773,14 +775,14 @@ class CourseController extends OpencastController
         return $buttons;
     }
 
-    private function nice_size_text($size)
+    private function nice_size_text($size, $precision = 2,$conversion_factor = 1000)
     {
         $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         for ($depth = 0; $depth < count($possible_sizes); $depth++) {
-            if (($size / 1024) > 1) {
-                $size /= 1024;
+            if (($size / $conversion_factor) > 1) {
+                $size /= $conversion_factor;
             } else {
-                return round($size, 2) . ' ' . $possible_sizes[$depth];
+                return round($size, $precision) . ' ' . $possible_sizes[$depth];
             }
         }
 
