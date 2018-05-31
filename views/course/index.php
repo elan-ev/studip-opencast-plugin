@@ -194,9 +194,7 @@
                     </div>
 
                     <div class="ocplayerlink">
-                        <select name="download_quality_select"
-                                onclick="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')"
-                                onchange="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')">
+                        <select name="download_quality_select" onchange="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')">
                             <option selected value="hd"><?= $_('Auflösung: HD') ?></option>
                             <option value="high"><?= $_('Auflösung: Hoch') ?></option>
                             <option value="medium"><?= $_('Auflösung: Mittel') ?></option>
