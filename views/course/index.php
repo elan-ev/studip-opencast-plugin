@@ -194,24 +194,26 @@
                     </div>
 
                     <div class="ocplayerlink">
-                        <select name="download_quality_select" onclick="OC.change_download_quality($(this).val(),'<?=$item['id']?>')" onchange="OC.change_download_quality($(this).val(),'<?=$item['id']?>')">
-                            <option selected value="hd"><?=$_('Auflösung: HD')?></option>
-                            <option value="high"><?=$_('Auflösung: Hoch')?></option>
-                            <option value="medium"><?=$_('Auflösung: Mittel')?></option>
-                            <option value="low"><?=$_('Auflösung: Niedrig')?></option>
+                        <select name="download_quality_select"
+                                onclick="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')"
+                                onchange="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')">
+                            <option selected value="hd"><?= $_('Auflösung: HD') ?></option>
+                            <option value="high"><?= $_('Auflösung: Hoch') ?></option>
+                            <option value="medium"><?= $_('Auflösung: Mittel') ?></option>
+                            <option value="low"><?= $_('Auflösung: Niedrig') ?></option>
                         </select>
                         <div class="button-group">
                             <? echo $download_options[$item['id']]; ?>
-                            <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') :?>
-                                <?= Studip\LinkButton::create($_('Feedback'), 'mailto:'. $GLOBALS['UNI_CONTACT'] .'?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/'. $item['id'])); ?>
+                            <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
+                                <?= Studip\LinkButton::create($_('Feedback'), 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id'])); ?>
                             <? endif ?>
 
-                            <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) :?>
+                            <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
                                 <? if ($item['visibility'] == 'false') : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), array('class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id'])); ?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
                                 <? else : ?>
-                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), array('class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id'])); ?>
-                                <? endif;?>
+                                    <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
+                                <? endif; ?>
                             <? endif; ?>
                         </div>
                     </div>
