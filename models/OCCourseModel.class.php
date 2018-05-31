@@ -219,13 +219,13 @@ class OCCourseModel
 
     private function prepareEpisodes($oc_episodes)
     {
-        $episodes = array();
-        if(is_object($oc_episodes)){
-            $oc_episodes = array($oc_episodes);
+        $episodes = [];
+        if (is_object($oc_episodes)) {
+            $oc_episodes = [$oc_episodes];
         }
         foreach ($oc_episodes as $episode) {
             if (is_object($episode->mediapackage)) {
-                $presentation_preview = FALSE;
+                $presentation_preview = false;
                 foreach ($episode->mediapackage->attachments->attachment as $attachment) {
                     if ($attachment->type === "presenter/search+preview") {
                         $preview = $attachment->url;
@@ -265,6 +265,7 @@ class OCCourseModel
                 ];
             }
         }
+
         return $episodes;
     }
 
