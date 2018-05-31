@@ -194,7 +194,7 @@
                     </div>
 
                     <div class="ocplayerlink">
-                        <select onclick="OC.change_download_quality($(this).val(),'<?=$item['id']?>')" onchange="OC.change_download_quality($(this).val(),'<?=$item['id']?>')">
+                        <select name="download_quality_select" onclick="OC.change_download_quality($(this).val(),'<?=$item['id']?>')" onchange="OC.change_download_quality($(this).val(),'<?=$item['id']?>')">
                             <option selected value="hd">HD</option>
                             <option value="high">Hoch</option>
                             <option value="medium">Mittel</option>
@@ -221,6 +221,13 @@
         </ul>
     </div>
 </div>
+
+<script type="text/javascript">
+    $("select[name='download_quality_select']").each(function (index,object) {
+        $(object).click();
+    });
+</script>
+
 <? else: ?>
     <? if(empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) :?>
             <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
