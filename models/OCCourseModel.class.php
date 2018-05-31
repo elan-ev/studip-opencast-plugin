@@ -239,8 +239,8 @@ class OCCourseModel
                         $url = parse_url($track->url);
                         if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                             $quality = 'unknown';
-                            foreach($track->tags->tag as $tag){
-                                if(strpos($tag, 'quality') !== false){
+                            foreach ($track->tags->tag as $tag) {
+                                if (strpos($tag, 'quality') !== false) {
                                     $quality = $tag;
                                 }
                             }
@@ -251,18 +251,18 @@ class OCCourseModel
                         $url = parse_url($track->url);
                         if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
                             $quality = 'unknown';
-                            foreach($track->tags->tag as $tag){
-                                if(strpos($tag, 'quality') !== false){
+                            foreach ($track->tags->tag as $tag) {
+                                if (strpos($tag, 'quality') !== false) {
                                     $quality = $tag;
                                 }
                             }
                             $presentation_download[$quality] = $track->url;
                         }
                     }
-                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a'))){
+                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a'))) {
                         $quality = 'unknown';
-                        foreach($track->tags->tag as $tag){
-                            if(strpos($tag, 'quality') !== false){
+                        foreach ($track->tags->tag as $tag) {
+                            if (strpos($tag, 'quality') !== false) {
                                 $quality = $tag;
                             }
                         }
