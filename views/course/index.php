@@ -143,7 +143,7 @@
             <? foreach($ordered_episode_ids as $pos => $item) : ?>
                 <?
                     $image = $item['presentation_preview'];
-                    if($image == FALSE || is_empty($image)){
+                    if(empty($image)){
                         $image = ($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png' ;
                     }
                 ?>
