@@ -39,6 +39,7 @@ function zip()
         'cronjobs',
         'images',
         'javascripts',
+        'locale',
         'migrations',
         'models',
         'sql',
