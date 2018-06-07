@@ -107,7 +107,8 @@ use Studip\LinkButton;
         </p>
         <p>
             <?
-            $workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload');
+            $occourse = new OCCourseModel($course_id);
+            $workflow = $occourse->getWorkflow('upload');
             if (!$workflow) {
                 $workflow_text = '<b style="color:red">'.$_('Es wurde noch kein Standardworkflow eingestellt. Der Upload ist erst möglich nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!').'</b>';
             }else{
