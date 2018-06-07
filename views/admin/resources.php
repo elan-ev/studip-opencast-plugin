@@ -35,6 +35,7 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
     </fieldset>
     <?
     if ($perm->have_perm('root')) { ?>
+        <br>
         <?= $_('Standardworkflow für Uploads:'); ?>
         <select name="oc_course_uploadworkflow">
             <? foreach ($workflows as $workflow) : ?>
@@ -48,13 +49,14 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
                 echo '<option selected>' . $_('Undefiniert') . '</option>';
             }
             ?>
-        </select>
+        </select><br>
+        <input name="override_other_workflows" type="checkbox"> <?=$_('Alle anderen Workflows überschreiben');?>
         <?
         if (!$current_workflow) {
             echo '<b style="color:red">' . $_('Es wurde noch kein Standardworkflow definiert!') . '</b>';
-        }
-    }
-    ?>
+        }?>
+        <br><br>
+    <? } ?>
     <div>
         <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
         <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
