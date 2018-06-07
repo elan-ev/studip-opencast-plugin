@@ -1,9 +1,10 @@
-<? use Studip\Button, Studip\LinkButton; ?>
+<? use Studip\Button;
+use Studip\LinkButton; ?>
 <?
-    Helpbar::get()->addPlainText('',$_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen."));
+Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen."));
 ?>
 <script language="JavaScript">
-OC.initAdmin();
+    OC.initAdmin();
 </script>
 
 <?= $this->render_partial('messages') ?>
@@ -14,23 +15,31 @@ OC.initAdmin();
         <legend><?= $_("Zuweisung der Capture Agents") ?> </legend>
         <table id="oc_resourcestab" class="default">
             <tr>
-                <th><?=$_('Raum')?></th>
-                <th><?=$_('Capture Agent')?></th>
-                <th><?=$_('Workflow')?></th>
-                <th><?=$_('Status')?></th>
-                <th><?=$_('Aktionen')?></th>
+                <th><?= $_('Raum') ?></th>
+                <th><?= $_('Capture Agent') ?></th>
+                <th><?= $_('Workflow') ?></th>
+                <th><?= $_('Status') ?></th>
+                <th><?= $_('Aktionen') ?></th>
             </tr>
             <!--loop the ressources -->
-            <? foreach ($resources as $resource) :?>
+            <? foreach ($resources as $resource) : ?>
                 <tr>
-                    <?= $this->render_partial("admin/_ca-selection", array('resource' => $resource, 'agents' => $agents, 'available_agents' => $available_agents)) ?>
+                    <?= $this->render_partial("admin/_ca-selection", ['resource' => $resource, 'agents' => $agents, 'available_agents' => $available_agents]) ?>
                 </tr>
             <? endforeach; ?>
         </table>
-
-        <div>
-            <?= Button::createAccept($_('Übernehmen'), array('title' => $_("Änderungen übernehmen"))); ?>
-            <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
-        </div>
     </fieldset>
+    <?= $_('Standardworkflow für Uploads:'); ?>
+    <select name="oc_course_uploadworkflow">
+        <? foreach($workflows as $workflow) :?>
+            <option value="<?=$workflow['id']?>" title="<?=$workflow['description']?>"
+                <?=($uploadwf['workflow_id'] == $workflow['id']) ? 'selected' : ''?>>
+                <?=$workflow['title']?>
+            </option>
+        <? endforeach; ?>
+    </select>
+    <div>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
+    </div>
 </form>
