@@ -508,8 +508,6 @@ class CourseController extends OpencastController
                     'src' => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
-
-            //TODO: gibt es keine generische Funktion dafür?
             $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
@@ -722,7 +720,7 @@ class CourseController extends OpencastController
                 }
             }
             if ($course_uploadworkflow = Request::get('oc_course_uploadworkflow')) {
-                if ($occcourse->getWorkflow('upload')) {
+                if (OCCourseModel::getWorkflowWithCustomCourseID($this->course_id,'upload')) {
                     $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
                 } else {
                     $occcourse->setWorkflow($course_uploadworkflow, 'upload');
