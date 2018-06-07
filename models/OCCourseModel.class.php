@@ -464,6 +464,13 @@ class OCCourseModel
         return $stmt->execute([$workflow_id, time(), $course_id, $target]);
     }
 
+    public static function removeWorkflowsWithoutCustomCourseID($course_id, $target){
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_workflow_configuration
+            WHERE NOT seminar_id = ? AND target = ?");
+
+        return $stmt->execute([$course_id, $target]);
+    }
+
     public function setWorkflowForDate($termin_id, $workflow_id)
     {
         $stmt = DBManager::get()->prepare("UPDATE
