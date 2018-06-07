@@ -15,6 +15,7 @@
 </script>
 
 <?
+global $perm;
 $sidebar = Sidebar::get();
 
 if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
@@ -39,12 +40,13 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
                 new Icon('upload', 'clickable'), [
                     'id' => 'oc_upload_dialog'
                 ]);
-
-            $actions->addLink($_("Workflow konfigurieren"),
-                $controller->url_for('course/workflow'),
-                new Icon('admin', 'clickable'), [
-                    'data-dialog' => 'size=auto'
-                ]);
+            if ($perm->have_perm('root')) {
+                $actions->addLink($_("Kursspezifischen Workflow konfigurieren"),
+                    $controller->url_for('course/workflow'),
+                    new Icon('admin', 'clickable'), [
+                        'data-dialog' => 'size=auto'
+                    ]);
+            }
         }
 
     } else {
@@ -62,8 +64,6 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
             ]);
     }
 
-
-    //todo - should this already be visibile for teachers?
     if ($coursevis == 'visible') {
         $actions->addLink(
             $_("Reiter verbergen"),

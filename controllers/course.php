@@ -141,22 +141,23 @@ class CourseController extends OpencastController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = FALSE)
+    function index_action($active_id = 'false', $upload_message = false)
     {
+        global $perm;
+
         $this->set_title($this->_("Opencast Player"));
 
         if ($upload_message == 'true') {
-            $this->flash['messages'] = array('success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.'));
+            $this->flash['messages'] = ['success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.')];
         }
 
-        $reload = TRUE;
-        // set layout for index page
-        $this->states = FALSE;
+        $reload = true;
+        $this->states = false;
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        if ($perm->have_perm('root')) {
             // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, TRUE);
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, TRUE);
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             $this->workflow_client = WorkflowClient::getInstance($this->course_id);
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
 
@@ -213,7 +214,7 @@ class CourseController extends OpencastController
 
                 // Remove Series
                 if ($this->flash['cand_delete']) {
-                    $this->flash['delete'] = TRUE;
+                    $this->flash['delete'] = true;
                 }
             } else {
 
