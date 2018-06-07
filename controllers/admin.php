@@ -272,7 +272,6 @@ class AdminController extends OpencastController
 
         $this->assigned_cas = OCModel::getAssignedCAS();
 
-        $workflow_client = WorkflowClient::getInstance();
         $this->workflows = array_filter(
             $workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
@@ -282,23 +281,39 @@ class AdminController extends OpencastController
                     : false;
             }
         );
+
+        $this->current_workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow','upload');
     }
 
 
     function update_resource_action()
     {
-
         $this->resources = OCModel::getOCRessources();
-
-        foreach($this->resources as $resource) {
-            if(Request::get('action') == 'add'){
-                if(($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')){
+        foreach ($this->resources as $resource) {
+            if (Request::get('action') == 'add') {
+                if (($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')) {
                     $success = OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
                 }
             }
         }
+        if ($success) {
+            $this->flash['messages'] = ['success' => $this->_("Capture Agents wurden zugewiesen.")];
+        }
 
-        if($success) $this->flash['messages'] = array('success' => $this->_("Capture Agents wurden zugewiesen."));
+        $workflow = Request::get('oc_course_uploadworkflow');
+        if (!OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload')) {
+            $workflow_success = OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
+        } else {
+            $workflow_success = OCCourseModel::updateWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
+        }
+
+        if ($workflow_success) {
+            if (!empty($this->flash['messages']['success'])) {
+                $this->flash['messages']['success'] . ' ' . $this->_('Standardworkflow eingestellt.');
+            } else {
+                $this->flash['messages'] = ['success' => $this->_('Standardworkflow eingestellt.')];
+            }
+        }
 
         $this->redirect('admin/resources');
     }
