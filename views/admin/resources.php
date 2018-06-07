@@ -1,5 +1,7 @@
 <? use Studip\Button;
-use Studip\LinkButton; ?>
+use Studip\LinkButton;
+
+?>
 <?
 Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen."));
 ?>
@@ -31,13 +33,23 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
     </fieldset>
     <?= $_('Standardworkflow für Uploads:'); ?>
     <select name="oc_course_uploadworkflow">
-        <? foreach($workflows as $workflow) :?>
-            <option value="<?=$workflow['id']?>" title="<?=$workflow['description']?>"
-                <?=($uploadwf['workflow_id'] == $workflow['id']) ? 'selected' : ''?>>
-                <?=$workflow['title']?>
+        <? foreach ($workflows as $workflow) : ?>
+            <option value="<?= $workflow['id'] ?>" title="<?= $workflow['description'] ?>"
+                <?= ($current_workflow['workflow_id'] == $workflow['id']) ? 'selected' : '' ?>>
+                <?= $workflow['title'] ?>
             </option>
         <? endforeach; ?>
+        <?
+            if(!$current_workflow){
+                echo '<option selected>'.$_('Undefiniert').'</option>';
+            }
+        ?>
     </select>
+    <?
+        if (!$current_workflow) {
+            echo '<b style="color:red">' . $_('Es wurde noch kein Standardworkflow definiert!') . '</b>';
+        }
+    ?>
     <div>
         <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
         <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
