@@ -108,14 +108,21 @@ use Studip\LinkButton;
         <p>
             <?
             $workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload');
+            if (!$workflow) {
+                $workflow_text = '<b style="color:red">'.$_('Es wurde noch kein Standardworkflow eingestellt. Der Upload ist erst möglich nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!').'</b>';
+            }else{
+                $workflow_text = $_('Für diesen Upload gilt der folgende Workflow:').' '.$workflow['workflow_id'];
+            }
             ?>
-            <?= $_('Für diesen Upload gilt der folgende Workflow: <i>') . $workflow['workflow_id'] . '</i>' ?>
+            <i><?= $workflow_text ?></i>
         </p>
     </div>
     <br>
     <br>
     <div class="form_submit">
-        <?= Button::createAccept($_('Medien hochladen'), null, ['id' => 'btn_accept']) ?>
+        <? if($workflow){
+            echo Button::createAccept($_('Medien hochladen'), null, ['id' => 'btn_accept']);
+        } ?>
         <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/course/index')) ?>
     </div>
 </form>
