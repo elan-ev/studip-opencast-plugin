@@ -99,19 +99,15 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-
-
-        if(($this->info_conf = OCEndpointModel::getBaseServerConf(1))) {
+        if (($this->info_conf = OCEndpointModel::getBaseServerConf(1))) {
             $this->info_url = $this->info_conf['service_url'];
             $this->info_user = $this->info_conf['service_user'];
             $this->info_password = $this->info_conf['service_password'];
         }
-        if(($this->slave_conf = OCEndpointModel::getBaseServerConf(2))) {
+        if (($this->slave_conf = OCEndpointModel::getBaseServerConf(2))) {
             $this->slave_url = $this->slave_conf['service_url'];
             $this->slave_user = $this->slave_conf['service_user'];
             $this->slave_password = $this->slave_conf['service_password'];
-
-
         }
 
     }
@@ -276,6 +272,16 @@ class AdminController extends OpencastController
 
         $this->assigned_cas = OCModel::getAssignedCAS();
 
+        $workflow_client = WorkflowClient::getInstance();
+        $this->workflows = array_filter(
+            $workflow_client->getTaggedWorkflowDefinitions(),
+            function ($element) {
+                return (in_array('schedule', $element['tags']) !== false
+                    || in_array('schedule-ng', $element['tags']) !== false)
+                    ? $element
+                    : false;
+            }
+        );
     }
 
 
