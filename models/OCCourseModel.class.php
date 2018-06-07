@@ -414,7 +414,7 @@ class OCCourseModel
     {
         $workflow = static::getWorkflowWithCustomCourseID($this->getCourseID(), $target);
         if (!$workflow) {
-            $workflow = static::getWorkflowWithCustomCourseID('default_wf', $target);
+            $workflow = static::getWorkflowWithCustomCourseID('default_workflow', $target);
         }
 
         return $workflow;
@@ -435,7 +435,7 @@ class OCCourseModel
 
     public function setWorkflow($workflow_id, $target)
     {
-        static::setWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
+        return static::setWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
     }
 
     public static function setWorkflowWithCustomCourseID($course_id, $workflow_id, $target)
