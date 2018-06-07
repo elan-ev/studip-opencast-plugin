@@ -154,25 +154,25 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        if ($perm->have_perm('root')) {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
             $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-            $this->workflow_client = WorkflowClient::getInstance($this->course_id);
-            $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
-            if (!empty($workflow_ids)) {
-                $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+
+            if($perm->have_perm('root')){
+                $this->workflow_client = WorkflowClient::getInstance($this->course_id);
+                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                if (!empty($workflow_ids)) {
+                    $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+                }
+                //workflow
+                $occourse = new OCCourseModel($this->course_id);
+                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+                $this->schedulewf = $occourse->getWorkflow('schedule');
+                $this->uploadwf = $occourse->getWorkflow('upload');
             }
-
-            //workflow
-            $occourse = new OCCourseModel($this->course_id);
-            $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-
-            $this->schedulewf = $occourse->getWorkflow('schedule');
-            $this->uploadwf = $occourse->getWorkflow('upload');
-
         }
 
         Navigation::activateItem('course/opencast/overview');
