@@ -296,8 +296,11 @@ class AdminController extends OpencastController
                 }
             }
         }
+
+        $messages = [];
+
         if ($success) {
-            $this->flash['messages'] = ['success' => $this->_("Capture Agents wurden zugewiesen.")];
+            $messages['success'][] = $this->_("Capture Agents wurden zugewiesen.");
         }
 
         $workflow = Request::get('oc_course_uploadworkflow');
@@ -308,12 +311,24 @@ class AdminController extends OpencastController
         }
 
         if ($workflow_success) {
-            if (!empty($this->flash['messages']['success'])) {
-                $this->flash['messages']['success'] . ' ' . $this->_('Standardworkflow eingestellt.');
-            } else {
-                $this->flash['messages'] = ['success' => $this->_('Standardworkflow eingestellt.')];
+            $messages['success'][] = $this->_("Standardworkflow eingestellt.");
+            $override = Request::option('override_other_workflows','off'); // on / off
+            if($override == 'on'){
+                $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow','upload');
+                if($override_success){
+                    $messages['success'][] = $this->_("Andere Workflow Einstellungen wurden entfernt.");
+                }else{
+                    $messages['error'][] = $this->_('Andere Workflows konnten nicht entfernt werden.');
+                }
             }
+        }else{
+            $messages['error'][] = $this->_("Standardworkflow konnte nicht eingestellt werden.");
         }
+
+        foreach ($messages as $type=>$collection){
+            $messages[$type] = implode(' ',$collection);
+        }
+        $this->flash['messages'] = $messages;
 
         $this->redirect('admin/resources');
     }
