@@ -197,10 +197,10 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                                 <select name="download_quality_select"
                                         onclick="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')""
                                         onchange="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')">
-                                    <option selected value="hd"><?= $_('Auflösung: HD') ?></option>
-                                    <option value="high"><?= $_('Auflösung: Hoch') ?></option>
-                                    <option value="medium"><?= $_('Auflösung: Mittel') ?></option>
-                                    <option value="low"><?= $_('Auflösung: Niedrig') ?></option>
+                                    <option selected value="hd"><?= $_('Qualität: Höchste') ?></option>
+                                    <option value="high"><?= $_('Qualität: Hoch') ?></option>
+                                    <option value="medium"><?= $_('Qualität: Mittel') ?></option>
+                                    <option value="low"><?= $_('Qualität: Niedrig') ?></option>
                                 </select>
                                 <div class="button-group">
                                     <? echo $download_options[$item['id']]; ?>
