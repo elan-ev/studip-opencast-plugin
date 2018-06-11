@@ -4,6 +4,10 @@ Stud.IP-Opencast-Plugin
 *This plugin serves as a connection between [Opencast](http://opencast.org) and
 the LMS [Stud.IP](http://studip.de/).*
 
+Plugin-Version: 1.1.8  
+Kompatibel zu Stud.IP Versionen: 3.5 - 4.2  
+Kompatibel zu Opencast Versionen: 4.x  
+
 Mit dem Opencast-Plugin kann eine Verbindung zwischen einer
 Opencast-Installation und dem Lernmanagementsystem Stud.IP hergestellt werden.
 Dies ermöglicht die Erstellung, Verwaltung und Veröffentlichung von
