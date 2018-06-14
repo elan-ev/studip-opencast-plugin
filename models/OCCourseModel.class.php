@@ -238,8 +238,7 @@ class OCCourseModel
                     }
                 }
 
-                $tracks = sizeof($episode->mediapackage->media->track) > 1
-                    ?: [$episode->mediapackage->media->track];
+                $tracks = (sizeof($episode->mediapackage->media->track) > 1) ? $episode->mediapackage->media->track : [$episode->mediapackage->media->track];
 
                 foreach ($tracks as $track) {
                     if($track->type === 'presenter/delivery'){
