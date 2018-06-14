@@ -27,6 +27,16 @@ OC = {
                         return false;
                     }
                 );
+                // Download Dialog
+                jQuery('[id^="download_dialog"]').each(function(index,element){
+                    jQuery(element).dialog({ autoOpen: false, width: 800, dialogClass: 'ocDownload'});
+                });
+                jQuery(".oc_download_dialog").each(function(index,element){
+                    jQuery(element).click(function(){
+                        jQuery("#download_dialog-"+jQuery(element).data('episode_id')).dialog('open');
+                        return false;
+                    });
+                });
                 jQuery(".chosen-select").chosen({
                     disable_search_threshold: 10,
                     max_selected_options: 1,

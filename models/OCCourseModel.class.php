@@ -226,6 +226,9 @@ class OCCourseModel
         foreach ($oc_episodes as $episode) {
             if (is_object($episode->mediapackage)) {
                 $presentation_preview = false;
+                $presenter_download = [];
+                $presentation_download = [];
+                $audio_download = [];
                 foreach ($episode->mediapackage->attachments->attachment as $attachment) {
                     if ($attachment->type === "presenter/search+preview") {
                         $preview = $attachment->url;
@@ -235,62 +238,46 @@ class OCCourseModel
                     }
                 }
                 foreach ($episode->mediapackage->media->track as $track) {
-                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                        $url = parse_url($track->url);
-                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $quality = 'unknown';
-                            foreach ($track->tags->tag as $tag) {
-                                if (strpos($tag, 'quality') !== false) {
-                                    $quality = $tag;
-                                }
-                            }
-                            $presenter_download[$quality] = $track->url;
-                            $download_size['presenter'][$quality] = 0;
-                            if(!empty($track->video)){
-                                $download_size['presenter'][$quality] += $this->calculate_size(
-                                    $track->video->bitrate,
-                                    $track->duration
-                                );
-                            }
+                    if($track->type === 'presenter/delivery'){
+                        $parsed_url = parse_url($track->url);
+                        if($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video)){
+                            $quality = $this->calculate_size(
+                                $track->video->bitrate,
+                                $track->duration
+                            );
+                            $presenter_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => $track->video->resolution
+                            ];
                         }
-                    }
-                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                        $url = parse_url($track->url);
-                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $quality = 'unknown';
-                            foreach ($track->tags->tag as $tag) {
-                                if (strpos($tag, 'quality') !== false) {
-                                    $quality = $tag;
-                                }
-                            }
-                            $presentation_download[$quality] = $track->url;
-                            $download_size['presentation'][$quality] = 0;
-                            if(!empty($track->video)){
-                                $download_size['presentation'][$quality] += $this->calculate_size(
-                                    $track->video->bitrate,
-                                    $track->duration
-                                );
-                            }
-                        }
-                    }
-                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a'))) {
-                        $quality = 'unknown';
-                        foreach ($track->tags->tag as $tag) {
-                            if (strpos($tag, 'quality') !== false) {
-                                $quality = $tag;
-                            }
-                        }
-                        $audio_download[$quality] = $track->url;
-                        $download_size['audio'][$quality] = 0;
-                        if(!empty($track->audio)){
-                            $download_size['audio'][$quality] += $this->calculate_size(
+                        if($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)){
+                            $quality = $this->calculate_size(
                                 $track->audio->bitrate,
                                 $track->duration
                             );
+                            $audio_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => round($track->audio->bitrate/1000,1).'kHz'
+                            ];
                         }
                     }
-
+                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video))) {
+                        $url = parse_url($track->url);
+                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
+                            $quality = $this->calculate_size(
+                                $track->video->bitrate,
+                                $track->duration
+                            );
+                            $presentation_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => $track->video->resolution
+                            ];
+                        }
+                    }
                 }
+                ksort($presenter_download);
+                ksort($presentation_download);
+                ksort($audio_download);
                 $episodes[$episode->id] = [
                     'id'                    => $episode->id,
                     'title'                 => OCModel::sanatizeContent($episode->dcTitle),
@@ -303,7 +290,6 @@ class OCCourseModel
                     'presenter_download'    => $presenter_download,
                     'presentation_download' => $presentation_download,
                     'audio_download'        => $audio_download,
-                    'download_size_byte'    => $download_size
                 ];
             }
         }

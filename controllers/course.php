@@ -184,12 +184,7 @@ class CourseController extends OpencastController
 
             if ($occourse->getSeriesID()) {
 
-                $ordered_episode_ids = $occourse->getEpisodes($reload);
-                if (!$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-                    $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
-                } else {
-                    $this->ordered_episode_ids = $ordered_episode_ids;
-                }
+                $this->ordered_episode_ids = $this->get_ordered_episode_ids($reload);
 
                 if (!empty($this->ordered_episode_ids)) {
 
@@ -199,8 +194,6 @@ class CourseController extends OpencastController
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
                     }
                 }
-
-                $this->download_options = $this->prepare_download_options($ordered_episode_ids);
 
                 // Upload-Dialog
                 $this->date = date('Y-m-d');
@@ -223,6 +216,19 @@ class CourseController extends OpencastController
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
         }
+    }
+
+    private function get_ordered_episode_ids($reload,$minimum_full_view_perm = 'tutor'){
+        try {
+            $oc_course = new OCCourseModel($this->course_id);
+            if($oc_course->getSeriesID()){
+                $ordered_episode_ids = $oc_course->getEpisodes($reload);
+                if (!$GLOBALS['perm']->have_studip_perm($minimum_full_view_perm, $this->course_id)) {
+                    $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
+                }
+            }
+            return $ordered_episode_ids;
+        } catch (Exception $e) { return false; }
     }
 
     function config_action()
@@ -747,37 +753,11 @@ class CourseController extends OpencastController
 
     }
 
-    private function prepare_download_options($episodes)
+    public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
     {
-        $qualities = ['low-quality', 'medium-quality', 'high-quality', 'hd-quality'];
-        $buttons = [];
-        foreach ($episodes as $episode) {
-            $buttons[$episode['id']] = '';
-            foreach ($qualities as $quality) {
-                $buttons[$episode['id']] .= '<div data-episode_id="' . $episode['id'] . '" style="display:none" id="dbquality_' . $quality . '_' . $episode['id'] . '">';
-                foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' => 'Audio'] as $type => $button_text) {
-                    $download_type = $type . '_download';
-                    if ($episode[$download_type]) {
-                        $download = (key_exists($quality, $episode[$download_type]) ? $episode[$download_type][$quality] : $episode[$download_type]['unknown']);
-                        $size = $this->nice_size_text(
-                            (key_exists($quality, $episode['download_size_byte'][$type]) ? $episode['download_size_byte'][$type][$quality] : $episode['download_size_byte'][$type]['unknown'])
-                        );
-                        $episode[$download_type]['unknown'] = $download;
-                        $buttons[$episode['id']] .= Studip\LinkButton::create(_($button_text) . ' (' . $size . ')', URLHelper::getURL($download), ['target' => '_blank', 'class' => 'download ' . $type])->__toString();
-                    }
-                }
-                $buttons[$episode['id']] .= '</div>';
-            }
-        }
-
-        return $buttons;
-    }
-
-    private function nice_size_text($size, $precision = 1,$conversion_factor = 1000)
-    {
-        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB','PB'];
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
         for ($depth = 0; $depth < count($possible_sizes); $depth++) {
-            if (($size / $conversion_factor) > 0.5) {
+            if (($size / $conversion_factor) > $display_threshold) {
                 $size /= $conversion_factor;
             } else {
                 return round($size, $precision) . ' ' . $possible_sizes[$depth];
@@ -786,7 +766,6 @@ class CourseController extends OpencastController
 
         return $size;
     }
-
 
 }
 

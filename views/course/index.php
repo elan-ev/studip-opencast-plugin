@@ -194,14 +194,10 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                             </div>
 
                             <div class="ocplayerlink">
-                                <select name="download_quality_select"
-                                        onclick="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')""
-                                        onchange="OC.change_download_quality($(this).val(),'<?= $item['id'] ?>')">
-                                    <option selected value="hd"><?= $_('Qualität: Höchste') ?></option>
-                                    <option value="high"><?= $_('Qualität: Hoch') ?></option>
-                                    <option value="medium"><?= $_('Qualität: Mittel') ?></option>
-                                    <option value="low"><?= $_('Qualität: Niedrig') ?></option>
-                                </select>
+                                <?= \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']])?>
+                                <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
+                                    <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'episode'=> $item]) ?>
+                                </div>
                                 <div class="button-group">
                                     <? echo $download_options[$item['id']]; ?>
                                     <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
@@ -224,12 +220,6 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
         </div>
     </div>
 
-    <script type="text/javascript">
-        $("select[name='download_quality_select']").each(function (index, object) {
-            $(object).click();
-        });
-    </script>
-
 <? else: ?>
     <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
         <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
@@ -237,7 +227,6 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
         <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
     <? endif; ?>
 <? endif; ?>
-
 
 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
 
