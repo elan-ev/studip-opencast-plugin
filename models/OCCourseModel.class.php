@@ -247,7 +247,7 @@ class OCCourseModel
                             );
                             $presenter_download[$quality] = [
                                 'url' => $track->url,
-                                'info' => $track->video->resolution
+                                'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
                         if($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)){
@@ -268,9 +268,10 @@ class OCCourseModel
                                 $track->video->bitrate,
                                 $track->duration
                             );
+
                             $presentation_download[$quality] = [
                                 'url' => $track->url,
-                                'info' => $track->video->resolution
+                                'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
                     }
@@ -477,5 +478,10 @@ class OCCourseModel
     private function calculate_size($bitrate, $duration)
     {
         return ($bitrate/8) * ($duration/1000);
+    }
+
+    private function add_px_to_resolution($resolution)
+    {
+        return $resolution.'px';
     }
 }
