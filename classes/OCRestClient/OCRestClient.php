@@ -290,4 +290,20 @@ define(DEBUG_CURL, FALSE);
 
             return $stmt->fetchColumn() ?: 1;
         }
+
+        /**
+         * returns the main opencast version
+         * @return int main oc version number: 3, 4, 5, ...
+         */
+        function getBaseVersion()
+        {
+            $data = $this->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
+
+            // always use the first found version information
+            if (is_array($data) && sizeof($data) > 1) {
+                $data = $data[0];
+            }
+
+            return substr($data->version, 0, 1);
+        }
     }
