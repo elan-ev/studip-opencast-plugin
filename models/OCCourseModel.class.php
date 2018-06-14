@@ -237,7 +237,11 @@ class OCCourseModel
                         $presentation_preview = $attachment->url;
                     }
                 }
-                foreach ($episode->mediapackage->media->track as $track) {
+
+                $tracks = sizeof($episode->mediapackage->media->track) > 1
+                    ?: [$episode->mediapackage->media->track];
+
+                foreach ($tracks as $track) {
                     if($track->type === 'presenter/delivery'){
                         $parsed_url = parse_url($track->url);
                         if($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video)){
