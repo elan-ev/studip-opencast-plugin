@@ -219,81 +219,66 @@ class OCCourseModel
 
     private function prepareEpisodes($oc_episodes)
     {
-        $episodes = array();
-
-        if (is_array($oc_episodes)) {
-            foreach ($oc_episodes as $episode) {
-
-                if (is_object($episode->mediapackage)) {
-                    $presentation_preview = FALSE;
-
-                    foreach ($episode->mediapackage->attachments->attachment as $attachment) {
-                        if ($attachment->type === "presenter/search+preview") {
-                            $preview = $attachment->url;
-                        }
-
-                        if ($attachment->type === "presentation/player+preview") {
-                            $presentation_preview = $attachment->url;
-                        }
-                    }
-
-                    foreach ($episode->mediapackage->media->track as $track) {
-                        // TODO CHECK CONDITIONS FOR MEDIAPACKAGE AUDIO AND VIDEO DL
-                        if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                            $url = parse_url($track->url);
-                            if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                $presenter_download = $track->url;
-                            }
-                        }
-                        if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                            $url = parse_url($track->url);
-                            if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                                $presentation_download = $track->url;
-                            }
-                        }
-                        if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
-                            $audio_download = $track->url;
-                    }
-                    $episodes[$episode->id] = [
-                        'id'                    => $episode->id,
-                        'title'                 => OCModel::sanatizeContent($episode->dcTitle),
-                        'start'                 => $episode->mediapackage->start,
-                        'duration'              => $episode->mediapackage->duration,
-                        'description'           => OCModel::sanatizeContent($episode->dcDescription),
-                        'author'                => OCModel::sanatizeContent($episode->dcCreator),
-                        'preview'               => $preview,
-                        'presentation_preview'  => $presentation_preview,
-                        'presenter_download'    => $presenter_download,
-                        'presentation_download' => $presentation_download,
-                        'audio_download'        => $audio_download,
-                    ];
-                }
-            }
-        } elseif (is_object($oc_episodes)) { // refactor this asap
-            if (is_object($oc_episodes->mediapackage)) {
-                $episode = $oc_episodes;
-
+        $episodes = [];
+        if (is_object($oc_episodes)) {
+            $oc_episodes = [$oc_episodes];
+        }
+        foreach ($oc_episodes as $episode) {
+            if (is_object($episode->mediapackage)) {
+                $presentation_preview = false;
+                $presenter_download = [];
+                $presentation_download = [];
+                $audio_download = [];
                 foreach ($episode->mediapackage->attachments->attachment as $attachment) {
-                    if ($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
+                    if ($attachment->type === "presenter/search+preview") {
+                        $preview = $attachment->url;
+                    }
+                    if ($attachment->type === "presentation/player+preview") {
+                        $presentation_preview = $attachment->url;
+                    }
                 }
-
                 foreach ($episode->mediapackage->media->track as $track) {
-                    // TODO CHECK CONDITIONS FOR MEDIAPACKAGE AUDIO AND VIDEO DL
-                    if (($track->type === 'presenter/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
-                        $url = parse_url($track->url);
-                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $presenter_download = $track->url;
+                    if($track->type === 'presenter/delivery'){
+                        $parsed_url = parse_url($track->url);
+                        if($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video)){
+                            $quality = $this->calculate_size(
+                                $track->video->bitrate,
+                                $track->duration
+                            );
+                            $presenter_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => $this->add_px_to_resolution($track->video->resolution)
+                            ];
+                        }
+                        if($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)){
+                            $quality = $this->calculate_size(
+                                $track->audio->bitrate,
+                                $track->duration
+                            );
+                            $audio_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => round($track->audio->bitrate/1000,1).'kHz'
+                            ];
                         }
                     }
-                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi')) {
+                    if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video))) {
                         $url = parse_url($track->url);
                         if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp') {
-                            $presentation_download = $track->url;
+                            $quality = $this->calculate_size(
+                                $track->video->bitrate,
+                                $track->duration
+                            );
+
+                            $presentation_download[$quality] = [
+                                'url' => $track->url,
+                                'info' => $this->add_px_to_resolution($track->video->resolution)
+                            ];
                         }
                     }
-                    if (($track->type === 'presenter/delivery') && (($track->mimetype === 'audio/mp3') || ($track->mimetype === 'audio/mpeg') || ($track->mimetype === 'audio/m4a')))
-                        $audio_download = $track->url;
                 }
+                ksort($presenter_download);
+                ksort($presentation_download);
+                ksort($audio_download);
                 $episodes[$episode->id] = [
                     'id'                    => $episode->id,
                     'title'                 => OCModel::sanatizeContent($episode->dcTitle),
@@ -302,6 +287,7 @@ class OCCourseModel
                     'description'           => OCModel::sanatizeContent($episode->dcDescription),
                     'author'                => OCModel::sanatizeContent($episode->dcCreator),
                     'preview'               => $preview,
+                    'presentation_preview'  => $presentation_preview,
                     'presenter_download'    => $presenter_download,
                     'presentation_download' => $presentation_download,
                     'audio_download'        => $audio_download,
@@ -310,7 +296,6 @@ class OCCourseModel
         }
 
         return $episodes;
-
     }
 
     private function getCachedEntries($series_id, $forced_reload)
@@ -414,35 +399,63 @@ class OCCourseModel
 
     public function getWorkflow($target)
     {
+        $workflow = static::getWorkflowWithCustomCourseID($this->getCourseID(), $target);
+        if (!$workflow) {
+            $workflow = static::getWorkflowWithCustomCourseID('default_workflow', $target);
+        }
+
+        return $workflow;
+    }
+
+    public static function getWorkflowWithCustomCourseID($course_id, $target)
+    {
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflow_configuration
             WHERE seminar_id = ? AND target = ?");
 
-        $stmt->execute(array($this->getCourseID(), $target));
+        $stmt->execute([$course_id, $target]);
         $workflow = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($workflow)) {
-            return FALSE;
+            return false;
         } else return array_pop($workflow);
     }
 
     public function setWorkflow($workflow_id, $target)
+    {
+        return static::setWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
+    }
+
+    public static function setWorkflowWithCustomCourseID($course_id, $workflow_id, $target)
     {
 
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_seminar_workflow_configuration (seminar_id, workflow_id, target, mkdate, chdate)
                 VALUES (?, ?, ?, ?, ?)");
 
-        return $stmt->execute(array($this->getCourseID(), $workflow_id, $target, time(), time()));
+        return $stmt->execute([$course_id, $workflow_id, $target, time(), time()]);
     }
 
     public function updateWorkflow($workflow_id, $target)
+    {
+
+        return static::updateWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
+    }
+
+    public static function updateWorkflowWithCustomCourseID($course_id, $workflow_id, $target)
     {
 
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_seminar_workflow_configuration SET workflow_id = ?, chdate = ?
                 WHERE seminar_id = ? AND target = ?");
 
-        return $stmt->execute(array($workflow_id, time(), $this->getCourseID(), $target));
+        return $stmt->execute([$workflow_id, time(), $course_id, $target]);
+    }
+
+    public static function removeWorkflowsWithoutCustomCourseID($course_id, $target){
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_workflow_configuration
+            WHERE NOT seminar_id = ? AND target = ?");
+
+        return $stmt->execute([$course_id, $target]);
     }
 
     public function setWorkflowForDate($termin_id, $workflow_id)
@@ -460,5 +473,15 @@ class OCCourseModel
             WHERE seminar_id = ?");
 
         return $stmt->execute(array($this->getCourseID()));
+    }
+
+    private function calculate_size($bitrate, $duration)
+    {
+        return ($bitrate/8) * ($duration/1000);
+    }
+
+    private function add_px_to_resolution($resolution)
+    {
+        return $resolution.'px';
     }
 }

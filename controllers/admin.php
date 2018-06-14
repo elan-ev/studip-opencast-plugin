@@ -99,19 +99,15 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-
-
-        if(($this->info_conf = OCEndpointModel::getBaseServerConf(1))) {
+        if (($this->info_conf = OCEndpointModel::getBaseServerConf(1))) {
             $this->info_url = $this->info_conf['service_url'];
             $this->info_user = $this->info_conf['service_user'];
             $this->info_password = $this->info_conf['service_password'];
         }
-        if(($this->slave_conf = OCEndpointModel::getBaseServerConf(2))) {
+        if (($this->slave_conf = OCEndpointModel::getBaseServerConf(2))) {
             $this->slave_url = $this->slave_conf['service_url'];
             $this->slave_user = $this->slave_conf['service_user'];
             $this->slave_password = $this->slave_conf['service_password'];
-
-
         }
 
     }
@@ -276,23 +272,63 @@ class AdminController extends OpencastController
 
         $this->assigned_cas = OCModel::getAssignedCAS();
 
+        $this->workflows = array_filter(
+            $workflow_client->getTaggedWorkflowDefinitions(),
+            function ($element) {
+                return (in_array('schedule', $element['tags']) !== false
+                    || in_array('schedule-ng', $element['tags']) !== false)
+                    ? $element
+                    : false;
+            }
+        );
+
+        $this->current_workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow','upload');
     }
 
 
     function update_resource_action()
     {
-
         $this->resources = OCModel::getOCRessources();
-
-        foreach($this->resources as $resource) {
-            if(Request::get('action') == 'add'){
-                if(($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')){
+        foreach ($this->resources as $resource) {
+            if (Request::get('action') == 'add') {
+                if (($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')) {
                     $success = OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
                 }
             }
         }
 
-        if($success) $this->flash['messages'] = array('success' => $this->_("Capture Agents wurden zugewiesen."));
+        $messages = [];
+
+        if ($success) {
+            $messages['success'][] = $this->_("Capture Agents wurden zugewiesen.");
+        }
+
+        $workflow = Request::get('oc_course_uploadworkflow');
+        if (!OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload')) {
+            $workflow_success = OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
+        } else {
+            $workflow_success = OCCourseModel::updateWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
+        }
+
+        if ($workflow_success) {
+            $messages['success'][] = $this->_("Standardworkflow eingestellt.");
+            $override = Request::option('override_other_workflows','off'); // on / off
+            if($override == 'on'){
+                $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow','upload');
+                if($override_success){
+                    $messages['success'][] = $this->_("Andere Workflow Einstellungen wurden entfernt.");
+                }else{
+                    $messages['error'][] = $this->_('Andere Workflows konnten nicht entfernt werden.');
+                }
+            }
+        }else{
+            $messages['error'][] = $this->_("Standardworkflow konnte nicht eingestellt werden.");
+        }
+
+        foreach ($messages as $type=>$collection){
+            $messages[$type] = implode(' ',$collection);
+        }
+        $this->flash['messages'] = $messages;
 
         $this->redirect('admin/resources');
     }

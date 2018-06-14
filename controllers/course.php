@@ -141,37 +141,38 @@ class CourseController extends OpencastController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = FALSE)
+    function index_action($active_id = 'false', $upload_message = false)
     {
+        global $perm;
+
         $this->set_title($this->_("Opencast Player"));
 
         if ($upload_message == 'true') {
-            $this->flash['messages'] = array('success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.'));
+            $this->flash['messages'] = ['success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.')];
         }
 
-        $reload = TRUE;
-        // set layout for index page
-        $this->states = FALSE;
+        $reload = true;
+        $this->states = false;
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, TRUE);
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, TRUE);
-            $this->workflow_client = WorkflowClient::getInstance($this->course_id);
-            $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-
+            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
+            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
-            if (!empty($workflow_ids)) {
-                $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+
+            if($perm->have_perm('root')){
+                $this->workflow_client = WorkflowClient::getInstance($this->course_id);
+                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                if (!empty($workflow_ids)) {
+                    $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+                }
+                //workflow
+                $occourse = new OCCourseModel($this->course_id);
+                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+                $this->schedulewf = $occourse->getWorkflow('schedule');
+                $this->uploadwf = $occourse->getWorkflow('upload');
             }
-
-            //workflow
-            $occourse = new OCCourseModel($this->course_id);
-            $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-
-            $this->schedulewf = $occourse->getWorkflow('schedule');
-            $this->uploadwf = $occourse->getWorkflow('upload');
-
         }
 
         Navigation::activateItem('course/opencast/overview');
@@ -183,12 +184,7 @@ class CourseController extends OpencastController
 
             if ($occourse->getSeriesID()) {
 
-                $ordered_episode_ids = $occourse->getEpisodes($reload);
-                if (!$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-                    $this->ordered_episode_ids = $occourse->refineEpisodesForStudents($ordered_episode_ids);
-                } else {
-                    $this->ordered_episode_ids = $ordered_episode_ids;
-                }
+                $this->ordered_episode_ids = $this->get_ordered_episode_ids($reload);
 
                 if (!empty($this->ordered_episode_ids)) {
 
@@ -211,7 +207,7 @@ class CourseController extends OpencastController
 
                 // Remove Series
                 if ($this->flash['cand_delete']) {
-                    $this->flash['delete'] = TRUE;
+                    $this->flash['delete'] = true;
                 }
             } else {
 
@@ -220,6 +216,19 @@ class CourseController extends OpencastController
             $this->flash['error'] = $e->getMessage();
             $this->render_action('_error');
         }
+    }
+
+    private function get_ordered_episode_ids($reload,$minimum_full_view_perm = 'tutor'){
+        try {
+            $oc_course = new OCCourseModel($this->course_id);
+            if($oc_course->getSeriesID()){
+                $ordered_episode_ids = $oc_course->getEpisodes($reload);
+                if (!$GLOBALS['perm']->have_studip_perm($minimum_full_view_perm, $this->course_id)) {
+                    $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
+                }
+            }
+            return $ordered_episode_ids;
+        } catch (Exception $e) { return false; }
     }
 
     function config_action()
@@ -505,8 +514,6 @@ class CourseController extends OpencastController
                     'src' => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);
                 PageLayout::addHeadElement('script', $script_attributes, '');
             }
-
-            //TODO: gibt es keine generische Funktion dafür?
             $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
         } catch (Exception $e) {
             $this->flash['error'] = $e->getMessage();
@@ -719,7 +726,7 @@ class CourseController extends OpencastController
                 }
             }
             if ($course_uploadworkflow = Request::get('oc_course_uploadworkflow')) {
-                if ($occcourse->getWorkflow('upload')) {
+                if (OCCourseModel::getWorkflowWithCustomCourseID($this->course_id,'upload')) {
                     $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
                 } else {
                     $occcourse->setWorkflow($course_uploadworkflow, 'upload');
@@ -746,6 +753,19 @@ class CourseController extends OpencastController
 
     }
 
+    public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
+    {
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        for ($depth = 0; $depth < count($possible_sizes); $depth++) {
+            if (($size / $conversion_factor) > $display_threshold) {
+                $size /= $conversion_factor;
+            } else {
+                return round($size, $precision) . ' ' . $possible_sizes[$depth];
+            }
+        }
+
+        return $size;
+    }
 
 }
 
