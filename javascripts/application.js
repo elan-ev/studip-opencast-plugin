@@ -281,16 +281,4 @@ OC = {
 
         })
     },
-
-    change_download_quality: function (quality, video_id) {
-        var target_id = 'dbquality_' + quality + "-quality_" + video_id;
-        $("[id*='dbquality']").each(function (index, element) {
-            if (element.id === target_id) {
-                $(element).css('display', 'inline');
-            } else if ($(element).data('episode_id') === video_id) {
-                $(element).css('display', 'none');
-            }
-        });
-
-    }
 };
