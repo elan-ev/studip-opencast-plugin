@@ -99,95 +99,97 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-        if (($this->info_conf = OCEndpointModel::getBaseServerConf(1))) {
-            $this->info_url = $this->info_conf['service_url'];
-            $this->info_user = $this->info_conf['service_user'];
-            $this->info_password = $this->info_conf['service_password'];
-        }
-        if (($this->slave_conf = OCEndpointModel::getBaseServerConf(2))) {
-            $this->slave_url = $this->slave_conf['service_url'];
-            $this->slave_user = $this->slave_conf['service_user'];
-            $this->slave_password = $this->slave_conf['service_password'];
-        }
-
+        $this->config = OCEndpointModel::getBaseServerConf();
     }
 
 
-    function update_action()
+    private function getOCBaseVersion($service_host, $username, $password)
     {
-        $service_url =  parse_url(Request::get('info_url'));
-        $config_id = 1; // we assume that we want to configure the new opencast
+        $oc = new OCRestClient($service_host, $username, $password);
+        $data = $oc->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
 
-        if (!array_key_exists('scheme', $service_url)) {
-            $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema angegeben.'));
-            OCRestClient::clearConfig($config_id);
-            //$this->redirect('admin/config');
-        } else {
-            $service_host = $service_url['scheme'] .'://' . $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') ;
-            $this->info_url = $service_url['host'] . (isset($service_url['port']) ? ':' . $service_url['port'] : '') .  $service_url['path'];
-            $this->info_user = Request::get('info_user');
-            $this->info_password = Request::get('info_password');
-
-            OCRestClient::clearConfig($config_id);
-            OCRestClient::setConfig($config_id, $service_host, $this->info_user, $this->info_password);
-            OCEndpointModel::setEndpoint($config_id, $service_host .'/services', 'services');
-
-            $services_client = new ServicesClient($config_id);
-            $comp = $services_client->getRESTComponents();
-
-            if ($comp) {
-                $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
-
-                foreach($services as $service_url => $service_type) {
-                    OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
-                }
-
-                $success_message = sprintf(
-                    $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration eingetragen."),
-                    count($services)
-                );
-
-                $this->flash['messages'] = array('success' => $success_message);
-            } else {
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegebene Opencast Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
-            }
+        // always use the first found version information
+        if (is_array($data->versions)) {
+            $data = $data->versions[0];
         }
 
-        $redirect = true;
+        return (int)substr($data->version, 0, 1);
+    }
 
-        if (!empty(Request::get('slave_url'))) {
-        // stupid duplication for slave-config
-        $slave_url =  parse_url(Request::get('slave_url'));
-        $config_id = 2; // we assume that we want to configure slave opencast server
+    function update_action()
+    {
+        foreach (Request::getArray('config') as $config_id => $config) {
+            // if no data is given (i.e.: The selected config shall be deleted!),
+            // remove config data properly
+            if (!$config['url']) {
+                OCRestClient::clearConfig($config_id);
+                continue;
+            }
 
-        if (!array_key_exists('scheme', $slave_url)) {
-                $this->flash['messages'] = array('error' => $this->_('Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben.'));
-            OCRestClient::clearConfig($config_id);
-            //$this->redirect('admin/config');
+            $service_url =  parse_url($config['url']);
+
+            // check the selected url for validity
+            if (!array_key_exists('scheme', $service_url)) {
+                $this->flash['messages'] = [
+                    'error' => sprintf(
+                        $this->_('Ungültiges URL-Schema: "%s"'),
+                        $config['url']
+                    )
+                ];
+                OCRestClient::clearConfig($config_id);
             } else {
-            $slave_host           = $slave_url['scheme'] .'://' . $slave_url['host'] . (isset($slave_url['port']) ? ':' . $slave_url['port'] : '') ;
-            $this->slave_url      = $slave_url['host'] . (isset($slave_url['port']) ? ':' . $slave_url['port'] : '') .  $slave_url['path'];
-            $this->slave_user     = Request::get('slave_user');
-            $this->slave_password = Request::get('slave_password');
+                $service_host =
+                    $service_url['scheme'] .'://' .
+                    $service_url['host'] .
+                    (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
-            OCRestClient::clearConfig($config_id);
-            OCRestClient::setConfig($config_id, $slave_host, $this->slave_user, $this->slave_password);
-            OCEndpointModel::setEndpoint($config_id, $slave_host .'/services', 'services');
+                $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
 
-            //fix client call here for new config
-            $services_client2 = new ServicesClient($config_id);
-            $comp = $services_client2->getRESTComponents();
+                OCRestClient::clearConfig($config_id);
+                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
 
-            if ($comp) {
-                $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
+                // check, if the same url has been provided for multiple oc-instances
+                foreach (Request::getArray('config') as $zw_id => $zw_conf) {
+                    if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
+                        $this->flash['messages'] = array(
+                            'error' => sprintf(
+                                $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
+                                    Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
+                                 $config['url']
+                            )
+                        );
 
-                foreach($services as $service_url => $service_type) {
-                    OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                        continue 2;
+                    }
                 }
 
-                $this->flash['messages'] = array('success' => $success_message . " " . sprintf($this->_("Es wurden %s Endpoints für die angegebene Opencast Slave Installation gefunden und eingetragen"), count($comp)));
-            } else {
-                $this->flash['messages'] = array('error' => $this->_('Es wurden keine Endpoints für die angegebene Opencast Slave Installation gefunden. Überprüfen Sie bitte die eingebenen Daten.'));
+
+                OCEndpointModel::setEndpoint($config_id, $service_host .'/services', 'services');
+
+                $services_client = new ServicesClient($config_id);
+                $comp = $services_client->getRESTComponents();
+
+                if ($comp) {
+                    $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
+
+                    foreach($services as $service_url => $service_type) {
+                        OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                    }
+
+                    $success_message = sprintf(
+                        $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration eingetragen."),
+                        count($services)
+                    );
+
+                    $this->flash['messages'] = array('success' => $success_message);
+                } else {
+                    OCEndpointModel::removeEndpoint($config_id, 'services');
+                    $this->flash['messages'] = array(
+                        'error' => sprintf(
+                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
+                            $service_host
+                        )
+                    );
                 }
             }
         }
@@ -195,9 +197,7 @@ class AdminController extends OpencastController
         // after updating the configuration, clear the cached series data
         OCSeriesModel::clearCachedSeriesData();
 
-        if($redirect) {
-            $this->redirect('admin/config');
-        }
+        $this->redirect('admin/config');
     }
 
 

@@ -1,39 +1,50 @@
 <? use Studip\Button, Studip\LinkButton; ?>
-<form class="conf-form" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
+<form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
     <?= CSRFProtection::tokenTag() ?>
+
+    <? foreach ([1,2] as $config_id): ?>
     <fieldset class="conf-form-field">
-        <legend><?=$_("Opencast Server Einstellungen (Aufzeichnung)")?></legend>
-        <p><?=$_("Tragen Sie hier den Pfad Ihres Opencast Basis-Systems ein.")?></p>
+        <legend>
+            <? if ($config_id == 1) : ?>
+                <?= $_("Opencast Server Einstellungen (Aufzeichnung)") ?>
+            <? else : ?>
+                <?=$_("Optionale Opencast Server Einstellungen (Lesezugriff)")?>
+            <? endif ?>
+        </legend>
 
-        <label  for="info_url"><?=$_("Basis URL zur Opencast Installation")?>:</label><br>
-        <input type="text" name="info_url" value="<?=$info_url?>" size="50" placeholder="http://opencast.url" required><br>
+        <label>
+            <?=$_("Basis URL zur Opencast Installation")?>
+            <input type="text" name="config[<?= $config_id ?>][url]"
+                value="<?= $config[$config_id]['service_url'] ?>"
+                placeholder="http://opencast.url">
+        </label>
 
-        <label for="info_user"><?=$_("Nutzerkennung")?>:</label><br>
-        <input type="text" name="info_user" value="<?=$info_user?>" size="50" placeholder="ENDPOINT_USER" required><br>
+        <label>
+            <?=$_("Nutzerkennung")?>
+            <input type="text" name="config[<?= $config_id ?>][user]"
+                value="<?= $config[$config_id]['service_user'] ?>"
+                placeholder="ENDPOINT_USER">
+        </label>
 
-        <label for="info_password"><?=$_("Passwort")?>:</label><br>
-        <input type="password" name="info_password" value="<?=$info_password?>" size="50" placeholder="ENDPOINT_USER_PASSWORD" required><br>
+        <label>
+            <?= $_("Passwort") ?>
+            <input type="password" name="config[<?= $config_id ?>][password]"
+                value="<?= $config[$config_id]['service_password'] ?>"
+                placeholder="ENDPOINT_USER_PASSWORD">
+        </label>
 
+        <? if ($config[$config_id]['service_version']) : ?>
+        <label>
+            <?= $_('Opencast Basisversion') ?><br>
+            <?= $config[$config_id]['service_version']  ?>
+        </label>
+        <? endif ?>
 
     </fieldset>
+    <? endforeach ?>
 
-    <fieldset class="conf-form-field">
-        <legend><?=$_("Optionale Opencast Server Einstellungen (Lesezugriff)")?></legend>
-        <p><?=$_("Tragen Sie hier den Pfad Ihres optionalen Opencast Systems ein.")?></p>
-
-        <label  for="slave_url"><?=$_("Basis URL zur optionalen Opencast Installation")?>:</label><br>
-        <input type="text" name="slave_url" value="<?=$slave_url?>" size="50" placeholder="http://opencast.url"><br>
-
-        <label for="slave_user"><?=$_("Nutzerkennung")?>:</label><br>
-        <input type="text" name="slave_user" value="<?=$slave_user?>" size="50" placeholder="ENDPOINT_USER"><br>
-
-        <label for="slave_password"><?=$_("Passwort")?>:</label><br>
-        <input type="password" name="slave_password" value="<?=$slave_password?>" size="50" placeholder="ENDPOINT_USER_PASSWORD"><br>
-
-          <div>
-         <?= Button::createAccept($_('Übernehmen')) ?>
-         <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
-         </div>
-
-    </fieldset>
+    <footer>
+        <?= Button::createAccept($_('Übernehmen')) ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
+    </footer>
 </form>

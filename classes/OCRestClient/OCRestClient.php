@@ -106,10 +106,18 @@ define(DEBUG_CURL, FALSE);
          *  @param string $service_user
          *  @param string $service_password
          */
-        function setConfig($config_id = 1, $service_url, $service_user, $service_password) {
-            if(isset($service_url, $service_user, $service_password)) {
-                $stmt = DBManager::get()->prepare("REPLACE INTO `oc_config` (config_id, service_url, service_user, service_password) VALUES (?,?,?,?)");
-                return $stmt->execute(array($config_id, $service_url, $service_user, $service_password));
+        function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
+        {
+            if (isset($service_url, $service_user, $service_password, $version)) {
+                $stmt = DBManager::get()->prepare('REPLACE INTO `oc_config`
+                    (config_id, service_url, service_user, service_password, service_version)
+                    VALUES (?,?,?,?,?)'
+                );
+
+                return $stmt->execute([
+                    $config_id, $service_url, $service_user,
+                    $service_password, (int)$version
+                ]);
             } else {
                 throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
             }
@@ -289,21 +297,5 @@ define(DEBUG_CURL, FALSE);
             $stmt->execute(array($workflow_id));
 
             return $stmt->fetchColumn() ?: 1;
-        }
-
-        /**
-         * returns the main opencast version
-         * @return int main oc version number: 3, 4, 5, ...
-         */
-        function getBaseVersion()
-        {
-            $data = $this->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
-
-            // always use the first found version information
-            if (is_array($data) && sizeof($data) > 1) {
-                $data = $data[0];
-            }
-
-            return substr($data->version, 0, 1);
         }
     }
