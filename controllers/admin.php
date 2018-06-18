@@ -105,7 +105,12 @@ class AdminController extends OpencastController
 
     private function getOCBaseVersion($service_host, $username, $password)
     {
-        $oc = new OCRestClient($service_host, $username, $password);
+        $oc = new OCRestClient([
+            'service_url'      => $service_host,
+            'service_user'     => $username,
+            'service_password' => $password
+        ]);
+
         $data = $oc->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
 
         // always use the first found version information
@@ -118,6 +123,9 @@ class AdminController extends OpencastController
 
     function update_action()
     {
+        // invalidate series-cache when editing configuration
+        StudipCacheFactory::getCache()->expire('oc_allseries');
+
         foreach (Request::getArray('config') as $config_id => $config) {
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly

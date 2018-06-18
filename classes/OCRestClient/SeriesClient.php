@@ -9,14 +9,14 @@
     {
         static $me;
         public $serviceName = 'Series';
-        function __construct($config_id = 1) {
-                if ($config = parent::getConfig('series', $config_id)) {
-                    parent::__construct($config['service_url'],
-                                        $config['service_user'],
-                                        $config['service_password']);
-                } else {
-                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
-                }
+
+        function __construct($config_id = 1)
+        {
+            if ($config = parent::getConfig('series', $config_id)) {
+                parent::__construct($config);
+            } else {
+                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            }
         }
 
         /**
@@ -182,7 +182,7 @@
         function removeSeries($series_id) {
 
             $service_url = "/".$series_id;
-            curl_setopt($this->ochandler,CURLOPT_URL,$this->matterhorn_base_url.$service_url);
+            curl_setopt($this->ochandler,CURLOPT_URL,$this->base_url.$service_url);
             curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
             //TODO �ber REST Classe laufen lassen, getXML, getJSON...
             $response = curl_exec($this->ochandler);

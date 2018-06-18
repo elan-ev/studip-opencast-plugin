@@ -4,14 +4,14 @@
     {
         static $me;
         public $serviceName = 'Search';
-        function __construct($config_id = 1) {
-                if ($config = parent::getConfig('search', $config_id)) {
-                    parent::__construct($config['service_url'],
-                                        $config['service_user'],
-                                        $config['service_password']);
-                } else {
-                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
-                }
+
+        function __construct($config_id = 1)
+        {
+            if ($config = parent::getConfig('search', $config_id)) {
+                parent::__construct($config);
+            } else {
+                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            }
         }
 
         /**
@@ -100,7 +100,7 @@
 
 
         function getBaseURL() {
-           $base = $this->matterhorn_base_url;
+           $base = $this->base_url;
            $url = preg_replace('/\/search/', '', $base);
            $url = str_replace('http://', 'https://', $url);
            return $url;

@@ -3,15 +3,15 @@
     class IngestClient extends OCRestClient
     {
         static $me;
-        function __construct($config_id = 1) {
+        function __construct($config_id = 1)
+        {
             $this->serviceName = 'IngestClient';
-                if ($config = parent::getConfig('ingest', $config_id)) {
-                    parent::__construct($config['service_url'],
-                                        $config['service_user'],
-                                        $config['service_password']);
-                } else {
-                    throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
-                }
+
+            if ($config = parent::getConfig('ingest', $config_id)) {
+                parent::__construct($config);
+            } else {
+                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            }
         }
 
         /**

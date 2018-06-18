@@ -13,12 +13,11 @@ class ArchiveClient extends OCRestClient
 {
     static $me;
     public $serviceName = "Archive";
+
     function __construct()
     {
         if ($config = parent::getConfig('archive')) {
-            parent::__construct($config['service_url'],
-                $config['service_user'],
-                $config['service_password']);
+            parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
         }

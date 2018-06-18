@@ -14,7 +14,7 @@ define(DEBUG_CURL, FALSE);
     class OCRestClient
     {
         static $me;
-        protected $matterhorn_base_url;
+        protected $base_url;
         protected $username;
         protected $password;
         public $serviceName = 'ParentRestClientClass';
@@ -38,12 +38,12 @@ define(DEBUG_CURL, FALSE);
             return static::$me[$config_id];
         }
 
-        function __construct($matterhorn_base_url, $username, $password)
+        function __construct($config)
         {
-            $this->matterhorn_base_url = $matterhorn_base_url;
-
-            $this->username = !is_null($username) ? $username : 'opencast_system_account';
-            $this->password = !is_null($password) ? $password : 'opencast';
+            $this->base_url   = $config['service_url'];
+            $this->username   = $config['service_user'];
+            $this->password   = $config['service_password'];
+            $this->oc_version = $config['service_version'];
 
             // setting up a curl-handler
             $this->ochandler = curl_init();
@@ -78,14 +78,14 @@ define(DEBUG_CURL, FALSE);
           */
         function getConfig($service_type, $config_id = 1)
         {
-            if(isset($service_type)) {
+            if (isset($service_type)) {
                 $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
                     WHERE service_type = ? AND config_id = ?");
                 $stmt->execute(array($service_type, $config_id));
                 $config = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if($config) {
-                    $stmt = DBManager::get()->prepare("SELECT `service_user`, `service_password`  FROM `oc_config`
+                if ($config) {
+                    $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config`
                         WHERE config_id = ?");
                     $stmt->execute(array($config_id));
                     $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
@@ -136,9 +136,9 @@ define(DEBUG_CURL, FALSE);
          */
         function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false)
         {
-            if (isset($service_url) && self::checkService($service_url)) {
+            if (isset($service_url)) {
                 $options = array(
-                    CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                    CURLOPT_URL => $this->base_url.$service_url,
                     CURLOPT_FRESH_CONNECT => 1
                 );
 
@@ -160,13 +160,13 @@ define(DEBUG_CURL, FALSE);
                 }
 
                 if ($with_res_code) {
-                    return array(json_decode($response), $httpCode);
+                    return array(json_decode($response) ?: $response, $httpCode);
                 } else {
                     // throw exception if the endpoint is missing
                     if ($httpCode == 404) {
                         if (DEBUG_CURL) {
                             error_log('[Opencast-Plugin] Error calling "'
-                                . $this->matterhorn_base_url.$service_url
+                                . $this->base_url.$service_url
                                 .'" ' . strip_tags($response)
                             );
                         }
@@ -185,10 +185,11 @@ define(DEBUG_CURL, FALSE);
         /**
          * function getXML - performs a REST-Call and retrieves response in XML
          */
-        function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false) {
-            if(isset($service_url) && self::checkService($service_url)) {
+        function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false)
+        {
+            if (isset($service_url)) {
                 $options = array(
-                    CURLOPT_URL => $this->matterhorn_base_url.$service_url,
+                    CURLOPT_URL => $this->base_url.$service_url,
                     CURLOPT_FRESH_CONNECT => 1
                 );
 
@@ -212,7 +213,7 @@ define(DEBUG_CURL, FALSE);
                     if ($httpCode == 404) {
                         if (DEBUG_CURL) {
                             error_log('[Opencast-Plugin] Error calling "'
-                                . $this->matterhorn_base_url.$service_url
+                                . $this->base_url.$service_url
                                 .'" ' . strip_tags($response)
                             );
                         }
@@ -226,22 +227,6 @@ define(DEBUG_CURL, FALSE);
                 throw new Exception(_("Es wurde keine Service URL angegben"));
             }
         }
-
-        /**
-         * function checkService - checks the status of desired REST-Endpoint
-         *
-         *  @param string $service_url
-         *
-         *  @return boolean $status
-         */
-        function checkService() {
-            return true;
-            if (@fsockopen($this->matterhorn_base_url)) {
-                return true;
-            }
-            throw new Exception(sprintf(_('Es besteht momentan keine Verbindung zum gew�hlten Service "%s". Versuchen Sie es bitte zu einem sp�teren Zeitpunkt noch einmal. Sollte dieses Problem weiterhin auftreten kontaktieren Sie bitte einen Administrator'), $this->serviceName));
-        }
-
 
         /**
          * get id of used config for passed course

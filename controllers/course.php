@@ -200,11 +200,6 @@ class CourseController extends OpencastController
                 $this->hour = date('H');
                 $this->minute = date('i');
 
-                //check needed services before showing upload form
-                UploadClient::getInstance($this->course_id)->checkService();
-                IngestClient::getInstance($this->course_id)->checkService();
-                SeriesClient::getInstance($this->course_id)->checkService();
-
                 // Remove Series
                 if ($this->flash['cand_delete']) {
                     $this->flash['delete'] = true;
@@ -504,11 +499,6 @@ class CourseController extends OpencastController
         Navigation::activateItem('course/opencast/upload');
 
         try {
-            //check needed services before showing upload form
-            UploadClient::getInstance($this->course_id)->checkService();
-            IngestClient::getInstance($this->course_id)->checkService();
-            SeriesClient::getInstance($this->course_id)->checkService();
-
             foreach ($scripts as $path) {
                 $script_attributes = array(
                     'src' => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path);

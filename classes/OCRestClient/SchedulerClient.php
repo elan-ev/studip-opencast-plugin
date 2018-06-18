@@ -9,13 +9,12 @@ class SchedulerClient extends OCRestClient
     function __construct($config_id = 1)
     {
         $this->serviceName = 'SchedulerClient';
-            if ($config = parent::getConfig('recordings', $config_id)) {
-                parent::__construct($config['service_url'],
-                    $config['service_user'],
-                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
-            }
+
+        if ($config = parent::getConfig('recordings', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+        }
     }
 
     /**
@@ -31,20 +30,38 @@ class SchedulerClient extends OCRestClient
     function scheduleEventForSeminar($course_id, $resource_id, $termin_id)
     {
         $ingest_client = new IngestClient();
-
         $media_package = $ingest_client->createMediaPackage();
-
-        $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id);
+        $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
+        $event_id      = null;
+
+        if ($this->oc_version == 3) {
+            curl_setopt($this->ochandler, CURLOPT_HEADER, true);
+
+            $result = $this->getJSON('/', $metadata, false, true);
+
+            $resArray = explode("\n", $result[0]);
+
+            $location = parse_url($this->base_url);
+            $pttrn = '#Location: http:/.*/recordings/(.+?).xml#Uis';
+
+            foreach($resArray as $resp) {
+                // THIS could be changed. Keep an eye on future oc releases...
+                if(preg_match($pttrn, $resp, $matches)) {
+                    $event_id = $matches[1];
+                }
+            }
+        } else {
+            $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
+        }
 
         if ($result
             && $result[1] != 400
             && $result[1] != 409) {
 
             $xml = simplexml_load_string($media_package);
-            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, (string)$xml['id']);
+            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $event_id ?: (string)$xml['id']);
 
             return true;
         } else {
@@ -181,7 +198,7 @@ class SchedulerClient extends OCRestClient
             . 'org.opencastproject.workflow.definition=' . $workflow . "\n";
 
         return [
-            'device_capabilities' =>$device_names,
+            'device_capabilities' => $device_names,
             'dublincore'          => $dublincore,
             'agentparameters'     => $agentparameters,
             'workflow'            => $workflow,

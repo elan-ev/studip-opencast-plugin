@@ -108,8 +108,9 @@ class OCJobManager
     public static function matterhorn_service_available()
     {
         $configuration = OCEndpointModel::getBaseServerConf(1);
-        $target = str_replace(array('http://','https://'),'',$configuration['service_url']);
-        $socket = @fsockopen($target, 80, $err_number, $err_message, 1);
+        $service_url = parse_url($configuration['service_url']);
+
+        $socket = @fsockopen($service_url[''], $service_url['port'], $err_number, $err_message, 1);
 
         if ($socket === FALSE) {
             return FALSE;

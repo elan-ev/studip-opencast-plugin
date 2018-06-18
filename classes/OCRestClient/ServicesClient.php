@@ -9,13 +9,11 @@ class ServicesClient extends OCRestClient
     {
         $this->serviceName = 'ServicesClient';
 
-            if ($config = parent::getConfig('services', $config_id)) {
-                parent::__construct($config['service_url'],
-                                    $config['service_user'],
-                                    $config['service_password']);
-            } else {
-                throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
-            }
+        if ($config = parent::getConfig('services', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+        }
     }
 
     /**
