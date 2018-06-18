@@ -37,7 +37,7 @@ class RefreshSeries extends CronJob {
                 try {
                     $ocmodel = new OCCourseModel($course_id);
                     $course = Course::find($course_id);
-                    echo sprintf(_("Aktualisieriere Episoden fuer den Kurs %s im Semester %s\n "), $course->name, $semester_cur->name);
+                    echo sprintf(_("Aktualisiere Episoden fuer den Kurs %s im Semester %s\n "), $course->name, $semester_cur->name);
 
                     $ocmodel->getEpisodes(true);
                 } catch (Exception $e) {}

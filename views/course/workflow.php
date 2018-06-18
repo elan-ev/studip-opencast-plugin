@@ -12,7 +12,7 @@ use Studip\Button,
         </legend>
         <?=
             '<p>'.
-            $_('Bereits geplante Aufzeichnungen werden weiterhin mit dem vorherigen Workkflow verarbeitet.')
+            $_('Bereits geplante Aufzeichnungen werden weiterhin mit dem vorherigen Workflow verarbeitet.')
             .'</br><b style="color:orangered">'.
             $_('Die Änderung hier gilt nur für neue Aufzeichnungsplanungen!')
             .'</b>'.

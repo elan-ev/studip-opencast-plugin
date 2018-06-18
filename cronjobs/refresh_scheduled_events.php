@@ -47,7 +47,7 @@ class RefreshScheduledEvents extends CronJob
                 $date = new SingleDate($se['date_id']);
                 echo sprintf(
                     studip_utf8decode(
-                        _("Aktualisieriere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n ")
+                        _("Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n ")
                     ),
                     $date->getDatesExport(), $course->name
                 );

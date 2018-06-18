@@ -177,7 +177,7 @@ define(DEBUG_CURL, FALSE);
                     }
                 }
             } else {
-                throw new Exception(_("Es wurde keine Service URL angegben"));
+                throw new Exception(_("Es wurde keine Service URL angegeben"));
             }
 
         }
@@ -224,7 +224,7 @@ define(DEBUG_CURL, FALSE);
                     }
                 }
             } else {
-                throw new Exception(_("Es wurde keine Service URL angegben"));
+                throw new Exception(_("Es wurde keine Service URL angegeben"));
             }
         }
 

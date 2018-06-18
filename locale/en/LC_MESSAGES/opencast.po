@@ -3,19 +3,19 @@
 # This file is distributed under the same license as the Opencast package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-26 17:00+0200\n"
-"PO-Revision-Date: 2018-04-26 17:07+0200\n"
-"Language: en\n"
+"POT-Creation-Date: 2018-06-18 15:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: \n"
-"Language-Team: Till Glöggler\n"
-"X-Generator: Poedit 2.0.6\n"
 
 msgid "Die Konfiguration wurde nicht korrekt angegeben"
 msgstr "The configuration was not specified correctly"
@@ -29,20 +29,11 @@ msgstr "No service type was specified."
 msgid "Die Konfigurationsparameter wurden nicht korrekt angegeben."
 msgstr "The configuration parameters were not specified correctly."
 
-msgid "Es wurde keine Service URL angegben"
-msgstr "No service URL has been provided."
-
-#, php-format
-msgid ""
-"Es besteht momentan keine Verbindung zum gewählten Service \"%s\". Versuchen "
-"Sie es bitte zu einem späteren Zeitpunkt noch einmal. Sollte dieses Problem "
-"weiterhin auftreten kontaktieren Sie bitte einen Administrator"
-msgstr ""
-"There is currently no connection to the selected service \"%s\". Please try "
-"again later. If this problem persists, please contact an administrator."
+msgid "Es wurde keine Service URL angegeben"
+msgstr "No service URL has been provided"
 
 msgid "Themen: "
-msgstr "Subjects:"
+msgstr "Subjects: "
 
 #, php-format
 msgid "(%s)"
@@ -53,22 +44,6 @@ msgstr "Opencast administration"
 
 msgid "Es wurde kein gültiges URL-Schema angegeben."
 msgstr "No valid URL schema was specified."
-
-#, php-format
-msgid ""
-"Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die "
-"angegeben Opencast Matterhorn Installation gefunden und in der Stud.IP "
-"Konfiguration eingetragen"
-msgstr ""
-"Changes have been applied successfully. %s endpoints for the specified "
-"Opencast installation were found and entered into the Stud.IP configuration."
-
-msgid ""
-"Es wurden keine Endpoints für die angegeben Opencast Matterhorn Installation "
-"gefunden. Überprüfen Sie bitte die eingebenen Daten."
-msgstr ""
-"No endpoints were found for the specified Opencast installation. Please "
-"check the data entered."
 
 msgid "Opencast Endpoint Verwaltung"
 msgstr "Opencast endpoint management"
@@ -94,15 +69,6 @@ msgstr "Oops..."
 
 msgid "Opencast Player"
 msgstr "Opencast player"
-
-msgid ""
-"Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und "
-"Auslastung des Opencast Matterhorn-Server kann es einige Zeit in Anspruch "
-"nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar wird."
-msgstr ""
-"The file has been uploaded successfully. Depending on the size of the file "
-"and the current load on the Opencast server, it may take some time until the "
-"recording is visible in the list."
 
 msgid "Opencast Konfiguration"
 msgstr "Opencast configuration"
@@ -201,13 +167,6 @@ msgid ""
 "Aktualisiert alle geplanten Aufzeichnungen der in Stud.IP verbundenen Serien."
 msgstr "Updates all scheduled recordings of series connected in Stud.IP."
 
-#, php-format
-msgid ""
-"Aktualisieriere die Aufzeichnungsdaten für die Veranstaltung am %s für den "
-"Kurs %s\n"
-" "
-msgstr "Update the recording data for the course on %s for the course %s"
-
 msgid "Opencast - \"Serien-Refresh\""
 msgstr "Opencast \"Series refresh\""
 
@@ -294,10 +253,6 @@ msgstr "Cancel"
 
 msgid "Episoden aller Series abgleichen"
 msgstr "Compare episodes of all series"
-
-msgid ""
-"Hier kann die Anbindung zum Opencast Matterhorn System verwaltet werden."
-msgstr "Here you can manage the connection to the Opencast system."
 
 msgid "Hinweise:"
 msgstr "NB:"
@@ -628,25 +583,14 @@ msgstr "Base URL to optional Opencast system."
 
 #, php-format
 msgid ""
-"Es besteht momentan keine Verbindung zum gew�hlten Service \"%s\". Versuchen "
-"Sie es bitte zu einem sp�teren Zeitpunkt noch einmal. Sollte dieses Problem "
-"weiterhin auftreten kontaktieren Sie bitte einen Administrator"
-msgstr ""
-
-msgid ""
-"Die Datei wurden erfolgreich hochgeladen. Je nach Größe der Datei und "
-"Auslastung des Opencast-Server kann es einige Zeit in Anspruch nehmen, bis "
-"die entsprechende Aufzeichnung in der Liste sichtbar wird."
-msgstr ""
-
-#, php-format
-msgid ""
 "Die Veranstaltung \"%s\" wird für Sie mit Bild und Ton automatisiert "
 "aufgezeichnet."
 msgstr ""
+"The course \"%s\" will be automatically recorded for you with picture and "
+"sound."
 
 msgid "Die geplante Aufzeichnung wurde aktualisiert."
-msgstr ""
+msgstr "The scheduled recording has been updated"
 
 #, php-format
 msgid ""
@@ -654,48 +598,40 @@ msgid ""
 "angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration "
 "eingetragen."
 msgstr ""
+"Changes have been applied successfully. %s endpoints for the specified "
+"Opencast installation were found and entered into the Stud.IP configuration."
 
 msgid ""
 "Es wurden keine Endpoints für die angegebene Opencast Installation gefunden. "
 "Überprüfen Sie bitte die eingebenen Daten."
 msgstr ""
+"No endpoints were found for the specified Opencast installation. Please "
+"check the data entered."
 
 msgid "Opencast - \"Reupload\""
-msgstr ""
+msgstr "Opencast - \"Reupload\""
 
 msgid "Versucht gescheiterte Upload-Jobs nochmal zu wiederholen."
-msgstr ""
+msgstr "Tries to reupload failes upload-jobs"
 
 msgid ""
 "Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die "
 "aufgezeichnet werden."
 msgstr ""
-
-#, php-format
-msgid ""
-"Aktualisieriere Episoden fuer den Kurs %s im Semester %s\n"
-" "
-msgstr ""
+"Updates the episodes for all series connected to Stud.IP, which are recorded"
 
 msgid "Basis URL zur Opencast Installation"
-msgstr ""
-
-msgid "Hier kann die Anbindung zum Opencast System verwaltet werden."
-msgstr ""
-
-msgid ""
-"Tragen Sie hier den Pfad zum Opencast Runtime Information REST-Endpoint ein."
-msgstr ""
+msgstr "Base URL for Opencast system"
 
 msgid ""
 "Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents "
 "aus dem Opencast System verknüpfen."
-msgstr ""
+msgstr "Connect Stud.IP ressources with Opencast capture agents."
 
 msgid ""
 "Suchen Sie eine Series im Opencast System, die Sie mit der aktuellen "
 "Veranstaltung verknüpfen möchten."
-msgstr ""
+msgstr "Search for series from Opencast to connect with the current seminar."
 
 msgid "Reiter sichtbar machen"
 msgstr "Show navigation tab"
@@ -715,14 +651,8 @@ msgstr "Author"
 msgid "Feedback"
 msgstr "Feedback"
 
-msgid ""
-"Nach §60 dürfen nur maximal 5 minütige Sequenzen aus Filmen oder "
-"Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des "
-"Gesamtwerkes ausmachen."
-msgstr ""
-
 msgid "§60 UrhG Zusammenfassung"
-msgstr ""
+msgstr "§60 UrhG summary"
 
 msgid "Termin"
 msgstr "Date"
@@ -735,3 +665,127 @@ msgstr "Recording is not yet scheduled"
 
 msgid "Workflow für Uploads"
 msgstr "Workflow for uploads"
+
+msgid ""
+"Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und "
+"Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die "
+"Aufzeichnung in der Liste sichtbar wird."
+msgstr ""
+"The file has been uploaded successfully. Depending on filesize  and workload "
+"on the Opencast server, it may take some time for the recording to  become "
+"visible in the list."
+
+msgid "Die Referenz in der Datenbank konnte nicht gelöscht werden."
+msgstr "Could not delete reference in database."
+
+#, php-format
+msgid "Ungültiges URL-Schema: \"%s\""
+msgstr "Incorrect URL scheme: \"%s\""
+
+#, php-format
+msgid ""
+"Sie haben mehr als einmal dieselbe URL für eine Opencast Installation "
+"angegeben.\n"
+"                                    Dies ist jedoch nicht gestattet. Bitte "
+"korrigieren Sie Ihre Eingaben. URL: \"%s\""
+msgstr ""
+"You specified the same URL more than once\n"
+"This is prohibited. Please correct your input. URL: \"%s\""
+
+#, php-format
+msgid ""
+"Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
+"gefunden. Überprüfen Sie bitte die eingebenen Daten."
+msgstr ""
+"Could not retrieve endpoints for Opencast installation with URL \"%s\". "
+"Please check the entered data."
+
+msgid "Standardworkflow eingestellt."
+msgstr "Default workflow has been set."
+
+msgid "Andere Workflow Einstellungen wurden entfernt."
+msgstr "All user defined workflow settings have been removed."
+
+msgid "Andere Workflows konnten nicht entfernt werden."
+msgstr "Could not remove user defined workflow settings."
+
+msgid "Standardworkflow konnte nicht eingestellt werden."
+msgstr "The default workflow could not be configured."
+
+msgid "Opencast Basisversion"
+msgstr "Opencast major version"
+
+msgid ""
+"Hier wird die Anbindung zum Opencast System verwaltet.\n"
+"Geben Sie die Daten ihres Opencast-Systems ein, um Aufzeichnungen in Ihren "
+"Veranstaltungen bereitstellen zu können.\n"
+"Optional haben Sie die Möglichkeit, ein zweites Opencast-System im Nur-Lesen-"
+"Modus anzubinden."
+msgstr ""
+"Manage the connection to the Opencast system.\n"
+"Enter to connection data to your Opencast system, to provide recordings in "
+"your courses.\n"
+"You may configure an additional, read-only, Opencast system."
+
+msgid "Standardworkflow für Uploads:"
+msgstr "Default workflow for uploads:"
+
+msgid "Undefiniert"
+msgstr "Undefined"
+
+msgid "Alle anderen Workflows überschreiben"
+msgstr "Overwrite all workflow settings"
+
+msgid "Es wurde noch kein Standardworkflow definiert!"
+msgstr "No default workflow has been set!"
+
+msgid "Kursspezifischen Workflow konfigurieren"
+msgstr "Configure course-specific worklow"
+
+msgid "Mediendownload"
+msgstr "Media Download"
+
+msgid ""
+"Es wurde noch kein Standardworkflow eingestellt. Der Upload ist erst möglich "
+"nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!"
+msgstr ""
+"No default workflow has been set. No uploads are possible unless a default "
+"or course-specific workflow has been set!"
+
+msgid "Für diesen Upload gilt der folgende Workflow:"
+msgstr "Workflow for this upload:"
+
+msgid "Die Änderung hier gilt nur für neue Aufzeichnungsplanungen!"
+msgstr "The changes apply to newly scheduled recordings only!"
+
+msgid ""
+"Bereits geplante Aufzeichnungen werden weiterhin mit dem vorherigen Workflow "
+"verarbeitet."
+msgstr "Already scheduled recordings still use the previous workflow."
+
+msgid ""
+"Nach §60 UrhG dürfen nur maximal 5 minütige Sequenzen aus Filmen oder "
+"Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des "
+"Gesamtwerkes ausmachen."
+msgstr ""
+"According to §60 UrhG, only film sequences or music recordings with a length "
+"of up to 5 minutes may be provided, if these make up a small extent of the "
+"whole work"
+
+msgid ""
+"Hier finden Sie eine Auflistung aller gefundenen Services der angebundenen "
+"Opencast-Systeme."
+msgstr "List of all discovered services for the configured Opencast system."
+
+#, php-format
+msgid ""
+"Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs "
+"%s\n"
+" "
+msgstr "Update recording data for the course %s - %s"
+
+#, php-format
+msgid ""
+"Aktualisiere Episoden fuer den Kurs %s im Semester %s\n"
+" "
+msgstr "Update the recording data for the course on %s in the semester %s"
