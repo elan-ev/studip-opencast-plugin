@@ -1,6 +1,18 @@
 <? if ($flash['delete']) : ?>
-    <?= createQuestion2(sprintf($_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'), utf8_decode($this->connectedSeries[0]['title'])), ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'delete' => true], ['cancel' => true], PluginEngine::getLink('opencast/course/remove_series/' . get_ticket())) ?>
-
+    <?= createQuestion2(sprintf(    // question
+        $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
+            utf8_decode($this->connectedSeries[0]['title'])
+        ),
+        [   // approveParams
+            'course_id' => $course_id,
+            'series_id' => $this->connectedSeries[0]['identifier'],
+            'delete' => true
+        ],
+        [   // disapproveParams
+            'cancel' => true
+        ],
+        PluginEngine::getLink('opencast/course/remove_series/' . get_ticket())  // baseUrl
+    ) ?>
 <? endif ?>
 
 <?= $this->render_partial('messages') ?>

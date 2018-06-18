@@ -223,7 +223,8 @@ class OCCourseModel
         if (is_object($oc_episodes)) {
             $oc_episodes = [$oc_episodes];
         }
-        foreach ($oc_episodes as $episode) {
+
+        if (is_array($oc_episodes)) foreach ($oc_episodes as $episode) {
             if (is_object($episode->mediapackage)) {
                 $presentation_preview = false;
                 $presenter_download = [];
