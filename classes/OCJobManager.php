@@ -110,7 +110,7 @@ class OCJobManager
         $configuration = OCEndpointModel::getBaseServerConf(1);
         $service_url = parse_url($configuration['service_url']);
 
-        $socket = @fsockopen($service_url[''], $service_url['port'], $err_number, $err_message, 1);
+        $socket = @fsockopen($service_url['host'], $service_url['port'] ?: 80, $err_number, $err_message, 1);
 
         if ($socket === FALSE) {
             return FALSE;

@@ -182,9 +182,11 @@ class OCJob
         $this->upload_chunk_info->load();
         $this->upload_chunk_info->content[$chunk_name]['upload_tries'] += 1;
         $this->upload_chunk_info->save();
+
         if (OCJobManager::matterhorn_service_available()) {
             $this->wait_for_previous_upload(5, 500);
             $chunk_number = $this->upload_chunk_info[$chunk_name]['number'];
+
             $result = $this->upload_client->uploadChunk(
                 $this->opencast_info['opencast_job_id'],
                 $chunk_number,
@@ -194,6 +196,7 @@ class OCJob
                     'postname' => $this->data['file']['name']
                 )
             );
+
             if ($result !== NULL) {
                 $this->upload_chunk_info->load();
                 $this->upload_chunk_info[$chunk_name]['upload_success'] = TRUE;
@@ -403,8 +406,9 @@ class OCJob
     {
         $source = $_FILES['video']['tmp_name'];
         $chunk_number = OCJobManager::calculate_chunk_number_from_range((
-        isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
+            isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
         ));
+
         $this->upload_local(
             $source,
             $chunk_number
