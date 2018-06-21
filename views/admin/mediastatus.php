@@ -6,6 +6,14 @@
  */
 ?>
 
-<pre><?= print_r($uploading_episodes) ?></pre>
+<h3>opencast successful upload jobs</h3>
+<pre><?= var_dump($upload_jobs['successful'])?></pre>
 
-<pre><?= print_r($uploaded_episodes)?></pre>
+<h3>uploaded</h3>
+<pre><?= var_dump($uploaded_episodes)?></pre>
+
+<h3>opencast unfinished upload jobs</h3>
+<pre><?= var_dump($upload_jobs['unfinished'])?></pre>
+
+<h3>currently ingesting</h3>
+<pre><?= var_dump($uploading_episodes) ?></pre>

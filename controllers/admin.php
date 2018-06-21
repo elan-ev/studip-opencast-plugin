@@ -17,6 +17,13 @@ require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.p
 require_once $this->trails_root.'/classes/OCRestClient/ServicesClient.php';
 require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
 
+require_once $this->trails_root.'/classes/OCJobManager.php';
+require_once $this->trails_root.'/classes/OCJob.php';
+require_once $this->trails_root.'/classes/OCJobLocation.php';
+require_once $this->trails_root.'/classes/OCJsonFile.php';
+require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
+require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
+
 
 class AdminController extends OpencastController
 {
@@ -377,14 +384,22 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Medienstatus"));
         Navigation::activateItem('/admin/config/oc-mediastatus');
 
+        // EPISODES
         $series_data = OCSeriesModel::getSeminarAndSeriesData();
         for($index = 0; $index<count($series_data); $index++){
             $oc_course = new OCCourseModel($series_data[$index]['seminar_id']);
             $series_data[$index]['episodes'] = $oc_course->getEpisodes(true);
         }
-
         $this->uploaded_episodes = $series_data;
         $this->uploading_episodes = OCModel::getWorkflowStatesFromSQL(OCModel::getWorkflowIDs());
+
+        //OPENCAST TMP-DIRECTORY CONTENT
+        $undeleted_jobs = OCJobManager::existent_jobs();
+        $this->upload_jobs = ['successful'=>[],'unfinished'=>[]];
+        foreach ($undeleted_jobs as $undeleted_job_id){
+            $job = new OCJob($undeleted_job_id);
+            $this->upload_jobs[($job->both_uploads_succeeded()?'successful':'unfinished')][] = $job;
+        }
 
     }
 }

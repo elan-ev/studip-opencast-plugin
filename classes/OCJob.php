@@ -44,6 +44,16 @@ class OCJob
         return $this->data;
     }
 
+    public function complete_data()
+    {
+        return [
+            'job_data'          => new OCJsonFile(OCJobManager::job_path($this->id) . '/job_data.json'),
+            'local_chunk_info'  => new OCJsonFile(OCJobManager::job_path($this->id) . '/local_chunk_info.json'),
+            'upload_chunk_info' => new OCJsonFile(OCJobManager::job_path($this->id) . '/upload_chunk_info.json'),
+            'opencast_info'     => new OCJsonFile(OCJobManager::job_path($this->id) . '/opencast_info.json')
+        ];
+    }
+
     /**
      * @return int retrieve the time when the job was created
      */
