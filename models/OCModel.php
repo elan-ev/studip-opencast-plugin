@@ -477,6 +477,13 @@ class OCModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    static function getWorkflowIDs(){
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * returns the state of all running workflow and even removes broken ones
      *
@@ -486,24 +493,27 @@ class OCModel
      */
     static function getWorkflowStates($course_id, $workflow_ids)
     {
-        $states = array();
+        $states = static::getWorkflowStatesFromSQL($workflow_ids);
+        if(isset($states[$course_id])){
+            return $states[$course_id];
+        }
+        return [];
+    }
 
-        $workflow_client = WorkflowClient::getInstance($course_id);
-
-        foreach ($workflow_ids as $workflow_id) {
-            $resp = $workflow_client->getWorkflowInstance($workflow_id['workflow_id']);
-
-            if ($resp->state == 'SUCCEEDED') {
-                $states[$workflow_id['workflow_id']] = $resp->state;
-                OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $course_id);
-            } else if ($resp) {
-                $states[$workflow_id['workflow_id']] = $resp;
+    static function getWorkflowStatesFromSQL($table_entries){
+        $states = [];
+        foreach ($table_entries as $table_entry){
+            $current_workflow_client = WorkflowClient::getInstance($table_entry['seminar_id']);
+            $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
+            if($current_workflow_instance->state == 'SUCCEEDED'){
+                $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
+                OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
+            }else if($current_workflow_instance){
+                $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
             } else {
-                // remove the workflow, because it has not been found in OpenCast
-                OCModel::removeWorkflowIDforCourse($workflow_id['workflow_id'], $course_id);
+                OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
             }
         }
-
         return $states;
     }
 
