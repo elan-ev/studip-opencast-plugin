@@ -376,6 +376,16 @@ class AdminController extends OpencastController
     function mediastatus_action(){
         PageLayout::setTitle($this->_("Opencast Medienstatus"));
         Navigation::activateItem('/admin/config/oc-mediastatus');
+
+        $series_data = OCSeriesModel::getSeminarAndSeriesData();
+        for($index = 0; $index<count($series_data); $index++){
+            $oc_course = new OCCourseModel($series_data[$index]['seminar_id']);
+            $series_data[$index]['episodes'] = $oc_course->getEpisodes(true);
+        }
+
+        $this->uploaded_episodes = $series_data;
+        $this->uploading_episodes = OCModel::getWorkflowStatesFromSQL(OCModel::getWorkflowIDs());
+
     }
 }
 ?>

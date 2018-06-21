@@ -169,7 +169,7 @@ class CourseController extends OpencastController
                 $this->workflow_client = WorkflowClient::getInstance($this->course_id);
                 $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
                 if (!empty($workflow_ids)) {
-                    $this->states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+                    $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
                 }
                 //workflow
                 $occourse = new OCCourseModel($this->course_id);

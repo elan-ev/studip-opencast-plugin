@@ -31,6 +31,13 @@ class OCSeriesModel {
             return false;
     }
 
+    static function getSeminarAndSeriesData(){
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_series WHERE schedule = '1';");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * checks for connected series in db than checks seriesID at REST if
      * refresh is true result of last call is overwritten otherwise last calls

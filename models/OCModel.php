@@ -509,7 +509,7 @@ class OCModel
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
                 OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
             }else if($current_workflow_instance){
-                $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
+                $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance;
             } else {
                 OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
             }
