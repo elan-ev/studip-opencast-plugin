@@ -68,6 +68,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                     $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
                     $main->addSubNavigation('oc-endpoints', $endpoints);
                     Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
+
+                    $mediastatus = new Navigation($this->_('Opencast Medienstatus'));
+                    $mediastatus->setURL(PluginEngine::getURL('opencast/admin/mediastatus'));
+                    $main->addSubNavigation('oc-mediastatus', $mediastatus);
+                    Navigation::addItem('/admin/config/oc-mediastatus', $mediastatus);
                 }
             }
         }

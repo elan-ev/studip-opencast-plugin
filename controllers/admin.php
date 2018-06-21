@@ -372,5 +372,10 @@ class AdminController extends OpencastController
         }
         $this->redirect('admin/config/');
     }
+
+    function mediastatus_action(){
+        PageLayout::setTitle($this->_("Opencast Medienstatus"));
+        Navigation::activateItem('/admin/config/oc-mediastatus');
+    }
 }
 ?>
