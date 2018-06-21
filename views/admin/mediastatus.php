@@ -11,13 +11,25 @@
 <progress value="<?= $memory_space['bytes']['used'] ?>" max="<?= $memory_space['bytes']['total'] ?>" data-label="test"></progress>
 
 <h3>opencast successful upload jobs</h3>
-<pre><?= var_dump($upload_jobs['successful']) ?></pre>
+<details>
+    <pre><?= print_r($upload_jobs['successful']) ?></pre>
+</details>
+
 
 <h3>uploaded</h3>
-<pre><?= var_dump($uploaded_episodes) ?></pre>
+<details>
+    <pre><?= print_r($uploaded_episodes) ?></pre>
+</details>
+
 
 <h3>opencast unfinished upload jobs</h3>
-<pre><?= var_dump($upload_jobs['unfinished']) ?></pre>
+<details>
+    <pre><?= print_r($upload_jobs['unfinished']) ?></pre>
+</details>
+
 
 <h3>currently ingesting</h3>
-<pre><?= var_dump($uploading_episodes) ?></pre>
+<details>
+    <pre><?= print_r($uploading_episodes) ?></pre>
+</details>
+
