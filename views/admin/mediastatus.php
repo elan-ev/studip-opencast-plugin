@@ -28,7 +28,7 @@
 </details>
 
 
-<h3>currently ingesting</h3>
+<h3>currently ingesting / possible failed</h3>
 <details>
     <pre><?= print_r($uploading_episodes) ?></pre>
 </details>
