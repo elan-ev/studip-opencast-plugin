@@ -402,7 +402,6 @@ class AdminController extends OpencastController
         }
 
         $this->memory_space = OCJobManager::save_dir_size();
-
     }
 }
 ?>

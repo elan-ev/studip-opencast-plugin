@@ -211,9 +211,9 @@ class OCJobManager
         ];
     }
 
-    public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
+    public static function nice_size_text($size, $precision = 2, $conversion_factor = 1000, $display_threshold = 0.5)
     {
-        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
         for ($depth = 0; $depth < count($possible_sizes); $depth++) {
             if (($size / $conversion_factor) > $display_threshold) {
                 $size /= $conversion_factor;
@@ -223,6 +223,13 @@ class OCJobManager
         }
 
         return $size;
+    }
+
+    public static function command_exist($cmd)
+    {
+        $return = shell_exec(sprintf("which %s", escapeshellarg($cmd)));
+
+        return !empty($return);
     }
 
 }

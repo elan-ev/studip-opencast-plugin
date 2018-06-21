@@ -7,7 +7,10 @@
 ?>
 
 <h3>space on system</h3>
-<pre><?= var_dump($memory_space)?></pre>
+<pre>
+    <?= var_dump($memory_space); ?>
+    <?= $quota ?>
+</pre>
 
 <h3>opencast successful upload jobs</h3>
 <pre><?= var_dump($upload_jobs['successful'])?></pre>
