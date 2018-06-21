@@ -191,4 +191,38 @@ class OCJobManager
             echo "Beende Upload von '" . $job_id . "'...";
         }
     }
+
+    public static function save_dir_size()
+    {
+        $space_in_byte = [
+            'total' => disk_total_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH),
+            'free'  => disk_free_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH)
+        ];
+        $space_in_byte['used'] = $space_in_byte['total'] - $space_in_byte['free'];
+
+        $space_polished = [];
+        foreach ($space_in_byte as $key => $value) {
+            $space_polished[$key] = static::nice_size_text($value);
+        }
+
+        return [
+            'bytes'    => $space_in_byte,
+            'readable' => $space_polished
+        ];
+    }
+
+    public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
+    {
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        for ($depth = 0; $depth < count($possible_sizes); $depth++) {
+            if (($size / $conversion_factor) > $display_threshold) {
+                $size /= $conversion_factor;
+            } else {
+                return round($size, $precision) . ' ' . $possible_sizes[$depth];
+            }
+        }
+
+        return $size;
+    }
+
 }

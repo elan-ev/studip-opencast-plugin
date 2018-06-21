@@ -401,6 +401,8 @@ class AdminController extends OpencastController
             $this->upload_jobs[($job->both_uploads_succeeded()?'successful':'unfinished')][] = $job;
         }
 
+        $this->memory_space = OCJobManager::save_dir_size();
+
     }
 }
 ?>
