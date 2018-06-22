@@ -376,10 +376,14 @@ class AdminController extends OpencastController
 
         //OPENCAST TMP-DIRECTORY CONTENT
         $undeleted_jobs = OCJobManager::existent_jobs();
-        $this->upload_jobs = ['successful'=>[],'unfinished'=>[]];
+        $this->upload_jobs = [
+            'successful'=>[],
+            'unfinished'=>[]
+        ];
+
         foreach ($undeleted_jobs as $undeleted_job_id){
             $job = new OCJob($undeleted_job_id);
-            $this->upload_jobs[($job->both_uploads_succeeded()?'successful':'unfinished')][] = $job;
+            $this->upload_jobs[($job->both_uploads_succeeded() ? 'successful' : 'unfinished')][] = $job;
         }
 
         $this->memory_space = OCJobManager::save_dir_size();
