@@ -2,7 +2,6 @@
 
 require_once 'lib/classes/CronJob.class.php';
 
-
 class RefreshScheduledEvents extends CronJob
 {
 

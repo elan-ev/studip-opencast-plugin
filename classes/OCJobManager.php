@@ -1,10 +1,7 @@
 <?php
 /**
- * This class manage a bunch of jobs
+ * OCJobManager.php This class manages a bunch of jobs
  *
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (11:19)
  */
 
 class OCJobManager

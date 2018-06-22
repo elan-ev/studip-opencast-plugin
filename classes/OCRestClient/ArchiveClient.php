@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: jayjay
- * Date: 22.02.17
- * Time: 09:50
- */
-
-require_once "OCRestClient.php";
-
 class ArchiveClient extends OCRestClient
 {
     static $me;

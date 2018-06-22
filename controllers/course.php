@@ -1,24 +1,7 @@
 <?php
 /*
  * course.php - course controller
- * Copyright (c) 2010  André Klaßen
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
  */
-
-require_once $this->trails_root . '/classes/OCRestClient/SearchClient.php';
-require_once $this->trails_root . '/classes/OCRestClient/SeriesClient.php';
-
-require_once $this->trails_root . '/classes/OCRestClient/UploadClient.php';
-require_once $this->trails_root . '/classes/OCRestClient/IngestClient.php';
-require_once $this->trails_root . '/classes/OCRestClient/WorkflowClient.php';
-require_once $this->trails_root . '/models/OCModel.php';
-require_once $this->trails_root . '/models/OCCourseModel.class.php';
-
-require_once $this->trails_root . '/classes/OCRestClient/SchedulerClient.php';
 
 class CourseController extends OpencastController
 {
@@ -293,7 +276,6 @@ class CourseController extends OpencastController
 
     function scheduler_action()
     {
-        require_once 'lib/raumzeit/raumzeit_functions.inc.php';
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));

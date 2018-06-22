@@ -2,9 +2,6 @@
 /**
  * This class handle all job related activities
  *
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (10:05)
  */
 
 class OCJob

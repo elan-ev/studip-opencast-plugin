@@ -1,5 +1,4 @@
 <?php
-require_once "OCRestClient.php";
 
 class ServicesClient extends OCRestClient
 {

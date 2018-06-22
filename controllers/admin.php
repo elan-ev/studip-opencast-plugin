@@ -1,29 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  André Klaßen
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
  */
-
-require_once $this->trails_root.'/models/OCModel.php';
-require_once $this->trails_root.'/models/OCEndpointModel.php';
-require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/ServicesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
-
-require_once $this->trails_root.'/classes/OCJobManager.php';
-require_once $this->trails_root.'/classes/OCJob.php';
-require_once $this->trails_root.'/classes/OCJobLocation.php';
-require_once $this->trails_root.'/classes/OCJsonFile.php';
-require_once $this->trails_root.'/classes/OCRestClient/IngestClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/UploadClient.php';
-
 
 class AdminController extends OpencastController
 {
@@ -361,7 +339,8 @@ class AdminController extends OpencastController
         $this->agents  = $caa_client->getCaptureAgents();
     }
 
-    function refresh_episodes_action($ticket){
+    function refresh_episodes_action($ticket)
+    {
         if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('admin',$this->course_id)) {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT ocs.seminar_id, ocs.series_id FROM oc_seminar_series AS ocs WHERE 1");
             $stmt->execute(array());
@@ -380,16 +359,18 @@ class AdminController extends OpencastController
         $this->redirect('admin/config/');
     }
 
-    function mediastatus_action(){
+    function mediastatus_action()
+    {
         PageLayout::setTitle($this->_("Opencast Medienstatus"));
         Navigation::activateItem('/admin/config/oc-mediastatus');
 
         // EPISODES
         $series_data = OCSeriesModel::getSeminarAndSeriesData();
-        for($index = 0; $index<count($series_data); $index++){
+        for ($index = 0; $index<count($series_data); $index++) {
             $oc_course = new OCCourseModel($series_data[$index]['seminar_id']);
             $series_data[$index]['episodes'] = $oc_course->getEpisodes(true);
         }
+
         $this->uploaded_episodes = $series_data;
         $this->uploading_episodes = OCModel::getWorkflowStatesFromSQL(OCModel::getWorkflowIDs());
 
@@ -404,4 +385,3 @@ class AdminController extends OpencastController
         $this->memory_space = OCJobManager::save_dir_size();
     }
 }
-?>

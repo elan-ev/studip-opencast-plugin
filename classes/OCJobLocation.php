@@ -2,9 +2,6 @@
 /**
  * This class is used to create the job locations and file structures
  *
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (10:08)
  */
 
 class OCJobLocation

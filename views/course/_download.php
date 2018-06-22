@@ -1,9 +1,4 @@
 <?php
-/**
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (12:45)
- */
 
 foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' => 'Audio'] as $type => $button_text) {
     $download_type = $type . '_download';
@@ -19,4 +14,3 @@ foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' =
         </div>
     <? }
 }
-?>

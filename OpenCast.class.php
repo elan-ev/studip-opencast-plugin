@@ -1,22 +1,9 @@
 <?php
 /*
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
- * Copyright (c) 2010  André Klaßen
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
  */
 
-require_once 'vendor/trails/trails.php';
-require_once 'models/OCModel.php';
-require_once 'models/OCCourseModel.class.php';
-require_once 'models/OCSeriesModel.php';
-require_once 'classes/OCRestClient/SearchClient.php';
-require_once 'classes/OCRestClient/SeriesClient.php';
-require_once 'controllers/opencast_controller.php';
-
+include('bootstrap.php');
 
 define('OC_UPLOAD_CHUNK_SIZE', '10000000');
 

@@ -1,5 +1,4 @@
 <?php
-require_once "OCRestClient.php";
 
 class WorkflowClient extends OCRestClient
 {
