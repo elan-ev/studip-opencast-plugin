@@ -224,12 +224,4 @@ class OCJobManager
 
         return $size;
     }
-
-    public static function command_exist($cmd)
-    {
-        $return = shell_exec(sprintf("which %s", escapeshellarg($cmd)));
-
-        return !empty($return);
-    }
-
 }
