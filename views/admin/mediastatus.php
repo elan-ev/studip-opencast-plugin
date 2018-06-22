@@ -3,8 +3,12 @@
         <?= $_('Festplattenplatz im Tempverzeichnis') ?>
     </h2>
 
-    <?= $_('Belegt') ?>: <?= $memory_space['readable']['used'] ?>
-    <?= $_('von') ?> <?= $memory_space['readable']['total'] ?><br>
+    <?= sprintf($_('Belegt: %s von %s'),
+        $memory_space['readable']['used'],
+        $memory_space['readable']['total']
+    ) ?>
+    <br>
+
     <progress value="<?= $memory_space['bytes']['used'] ?>" max="<?= $memory_space['bytes']['total'] ?>" data-label="test"></progress>
 
     <br><br>
