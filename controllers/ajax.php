@@ -1,10 +1,5 @@
 <?php
 
-require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
-require_once $this->trails_root.'/models/OCModel.php';
-
 class AjaxController extends OpencastController
 {
     /**

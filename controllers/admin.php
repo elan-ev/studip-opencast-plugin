@@ -1,22 +1,7 @@
 <?php
 /*
  * admin.php - admin plugin controller
- * Copyright (c) 2010  André Klaßen
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
  */
-
-require_once $this->trails_root.'/models/OCModel.php';
-require_once $this->trails_root.'/models/OCEndpointModel.php';
-require_once $this->trails_root.'/classes/OCRestClient/SearchClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/SeriesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/CaptureAgentAdminClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/ServicesClient.php';
-require_once $this->trails_root.'/classes/OCRestClient/WorkflowClient.php';
-
 
 class AdminController extends OpencastController
 {
@@ -354,7 +339,8 @@ class AdminController extends OpencastController
         $this->agents  = $caa_client->getCaptureAgents();
     }
 
-    function refresh_episodes_action($ticket){
+    function refresh_episodes_action($ticket)
+    {
         if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('admin',$this->course_id)) {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT ocs.seminar_id, ocs.series_id FROM oc_seminar_series AS ocs WHERE 1");
             $stmt->execute(array());
@@ -372,5 +358,24 @@ class AdminController extends OpencastController
         }
         $this->redirect('admin/config/');
     }
+
+    function mediastatus_action()
+    {
+        PageLayout::setTitle($this->_("Opencast Medienstatus"));
+        Navigation::activateItem('/admin/config/oc-mediastatus');
+
+        // OPENCAST TMP-DIRECTORY CONTENT
+        $undeleted_jobs = OCJobManager::existent_jobs();
+        $this->upload_jobs = [
+            'successful'=>[],
+            'unfinished'=>[]
+        ];
+
+        foreach ($undeleted_jobs as $undeleted_job_id){
+            $job = new OCJob($undeleted_job_id);
+            $this->upload_jobs[($job->both_uploads_succeeded() ? 'successful' : 'unfinished')][] = $job;
+        }
+
+        $this->memory_space = OCJobManager::save_dir_size();
+    }
 }
-?>

@@ -7,11 +7,12 @@ class OCEndpointModel
      *
      *  @return array endpoints
      */
-    static function getEndpoints(){
+    static function getEndpoints()
+    {
         $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE 1");
         $stmt->execute();
-        $endpoints =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $endpoints;
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 

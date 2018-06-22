@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-18 15:24+0200\n"
+"POT-Creation-Date: 2018-06-22 10:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -789,3 +789,34 @@ msgid ""
 "Aktualisiere Episoden fuer den Kurs %s im Semester %s\n"
 " "
 msgstr "Update the recording data for the course on %s in the semester %s"
+
+msgid "Opencast Medienstatus"
+msgstr "Opencast mediastatus"
+
+msgid "Festplattenplatz im Tempverzeichnis"
+msgstr "Diskspace on tempdir"
+
+#, php-format
+msgid "Belegt: %s von %s"
+msgstr "Used: %s of %s"
+
+msgid "Nicht abgeschlossene / abgebrochene Uploads"
+msgstr "Unfinished / cancelled uploads"
+
+msgid "Erfolgreiche Uploads"
+msgstr "Finished uploads"
+
+msgid "Medientitel"
+msgstr "Mediatitle"
+
+msgid "Datum des Uploads"
+msgstr "Upload date"
+
+msgid "An Opencast zu schickende Chunks"
+msgstr "Chunks to send to Opencast"
+
+msgid "In Stud.IP fehlende Chunks"
+msgstr "Chunks missing in Stud.IP"
+
+msgid "Veranstaltung"
+msgstr ""

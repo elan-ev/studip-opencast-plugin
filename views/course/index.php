@@ -21,7 +21,7 @@
     STUDIP.hasperm = <?=var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id))?>;
     OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
-    <?  if($series_metadata[0]['schedule'] == '1') : ?>
+    <?  if($series_metadata['schedule'] == '1') : ?>
     OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
     <? endif; ?>
 </script>
@@ -47,7 +47,7 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
             new Icon('refresh', 'clickable')
         );
 
-        if ($series_metadata[0]['schedule'] == '1') {
+        if ($series_metadata['schedule'] == '1') {
             $actions->addLink($_("Medien hochladen"), '#1',
                 new Icon('upload', 'clickable'), [
                     'id' => 'oc_upload_dialog'

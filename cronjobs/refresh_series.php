@@ -1,25 +1,24 @@
 <?php
 /**
  * refresh_series.php
- *
- * @author Andr� Kla�en <klassen@elan-ev.de>
- * @access public
  */
-
 
 require_once 'lib/classes/CronJob.class.php';
 
 
-class RefreshSeries extends CronJob {
+class RefreshSeries extends CronJob
+{
 
     public static function getName()
     {
         return _('Opencast - "Serien-Refresh"');
     }
+
     public static function getDescription()
     {
         return _('Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
     }
+
     public function execute($last_result, $parameters = array())
     {
         require_once __DIR__ .'/../models/OCCourseModel.class.php';

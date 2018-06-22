@@ -504,10 +504,35 @@ textarea.oc_input:focus {
     .icon('before', 'visibility-invisible', 'info_alt');
 }
 
-.oc_flex .button::before {
-    background-position: 0px 4px;
-    height: 20px !important;
-    padding-left: 5px;
+.oc_flex {
+    .button::before {
+        background-position: 0px 4px;
+        height: 20px !important;
+        padding-left: 5px;
+    }
+}
+
+#opencast {
+    progress
+    {
+    	text-align:center;
+    	height: 1.5em;
+    	width: 50%;
+    	-webkit-appearance: progress-bar;
+    }
+
+    progress::-webkit-progress-bar {
+    	background-color: #c9c9c9;
+    }
+
+    progress::-webkit-progress-value {
+    	background-color: #7cc4ff;
+    }
+
+    progress::-moz-progress-bar
+    {
+    	background-color: #7cc4ff;
+    }
 }
 
 /*** Uploader ***/

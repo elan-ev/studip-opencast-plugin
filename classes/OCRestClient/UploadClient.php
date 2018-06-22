@@ -1,7 +1,4 @@
 <?php
-require_once "OCRestClient.php";
-// TODO: config in Datenbank
-
 
 class UploadClient extends OCRestClient {
     static $me;

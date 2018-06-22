@@ -2,9 +2,6 @@
 /**
  * This class handle all job related activities
  *
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (10:05)
  */
 
 class OCJob
@@ -42,6 +39,16 @@ class OCJob
     public function data()
     {
         return $this->data;
+    }
+
+    public function complete_data()
+    {
+        return [
+            'job_data'          => new OCJsonFile(OCJobManager::job_path($this->id) . '/job_data.json'),
+            'local_chunk_info'  => new OCJsonFile(OCJobManager::job_path($this->id) . '/local_chunk_info.json'),
+            'upload_chunk_info' => new OCJsonFile(OCJobManager::job_path($this->id) . '/upload_chunk_info.json'),
+            'opencast_info'     => new OCJsonFile(OCJobManager::job_path($this->id) . '/opencast_info.json')
+        ];
     }
 
     /**

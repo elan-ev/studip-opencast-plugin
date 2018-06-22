@@ -1,10 +1,6 @@
 <?php
-require_once dirname(__FILE__) .'/../classes/OCRestClient/SeriesClient.php';
-//if (!class_exists('SeriesClient')) {
-//    throw new Exception('SeriesClient needs to be included before OCSeriesModel is included');
-//}
-
-class OCSeriesModel {
+class OCSeriesModel
+{
 
     // saves all series for later requests
     static private $allSeries = null;
@@ -19,7 +15,8 @@ class OCSeriesModel {
      * @param string $courseID
      * @return array
      */
-    static function getConnectedSeriesDB($courseID) {
+    static function getConnectedSeriesDB($courseID)
+    {
         $stmt = DBManager::get()->prepare("SELECT *
             FROM oc_seminar_series
             WHERE seminar_id = ?");
@@ -31,6 +28,14 @@ class OCSeriesModel {
             return false;
     }
 
+    static function getSeminarAndSeriesData()
+    {
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_series WHERE schedule = '1';");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * checks for connected series in db than checks seriesID at REST if
      * refresh is true result of last call is overwritten otherwise last calls
@@ -40,7 +45,8 @@ class OCSeriesModel {
      * @param bool $refresh
      * @return array
      */
-    static function getConnectedSeries($courseID, $refresh = false) {
+    static function getConnectedSeries($courseID, $refresh = false)
+    {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
             $sClient = SeriesClient::getInstance($courseID);
@@ -61,8 +67,6 @@ class OCSeriesModel {
     }
 
 
-
-
     /**
      * return unconnected series
      * if refresh is true result of last call is overwritten otherwise last calls
@@ -72,7 +76,8 @@ class OCSeriesModel {
      * @param bool $refresh
      * @return array
      */
-    static function getUnconnectedSeries($courseID, $refresh = false) {
+    static function getUnconnectedSeries($courseID, $refresh = false)
+    {
         //check if value assignment is needed
         if (is_null(self::$unconnectedSeries) || $refresh) {
             $connected = self::getConnectedSeries($courseID);
@@ -133,7 +138,8 @@ class OCSeriesModel {
      * @param array $data
      * @return array
      */
-    static private function transformSeriesJSON($data) {
+    static private function transformSeriesJSON($data)
+    {
         $res = array();
         $var_name = 'http://purl.org/dc/terms/';
 
@@ -154,7 +160,8 @@ class OCSeriesModel {
      *
      * @return type
      */
-    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0) {
+    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    {
         $configID = SeriesClient::getConfigIdForCourse($courseID);
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
@@ -169,15 +176,17 @@ class OCSeriesModel {
      * @param string $series_id
      * @return bool
      */
-    static function removeSeriesforCourse($courseID, $seriesID) {
+    static function removeSeriesforCourse($courseID, $seriesID)
+    {
         $qepisodes =  DBManager::get()->prepare("DELETE FROM oc_seminar_episodes WHERE seminar_id = ?");
-        if($qepisodes->execute(array($courseID))){
+        if ($qepisodes->execute(array($courseID))) {
             $stmt = DBManager::get()->prepare("DELETE FROM
                 oc_seminar_series
                 WHERE series_id = ? AND seminar_id = ?");
             return $stmt->execute(array($seriesID, $courseID));
-    }
-        else return false;
+        }
+
+        return false;
     }
 
     /**
@@ -186,14 +195,17 @@ class OCSeriesModel {
      * @param string $courseID
      * @return array
      */
-    static function getSeriesDCs($courseID) {
+    static function getSeriesDCs($courseID)
+    {
         $series = self::getConnectedSeries($courseID);
         $ret = array();
+
         foreach ($series as $ser) {
             if ($xml = SeriesClient::getInstance($courseID)->getXML('/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
+
         return $ret;
     }
 
@@ -205,7 +217,8 @@ class OCSeriesModel {
      * @param tyniint 1 or 0
      * @return bool
      */
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility) {
+    static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
+    {
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_episodes (seminar_id, episode_id, visible)
                 VALUES (?, ?, ?)");
@@ -219,11 +232,13 @@ class OCSeriesModel {
      * @param string $episode_id
      * @return array
      */
-    static function getVisibilityForEpisode($course_id, $episode_id) {
+    static function getVisibilityForEpisode($course_id, $episode_id)
+    {
         $stmt = DBManager::get()->prepare("SELECT visible FROM
                 oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
         $stmt->execute(array($course_id, $episode_id));
         $episode = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return $episode;
     }
 
@@ -237,10 +252,10 @@ class OCSeriesModel {
      * @param array $data
      * @return bool
      */
-    static function createSeriesACL($data) {
-
-
+    static function createSeriesACL($data)
+    {
         $content = array();
+
         foreach ($data as $role => $perm) {
             foreach ($perm as $action => $val) {
                 $content[] = '<ace>'
@@ -255,6 +270,7 @@ class OCSeriesModel {
                 . '<acl xmlns="http://org.opencastproject.security">'
                 . implode('', $content)
                 . '</acl>');
+
         return $str;
     }
 
@@ -264,39 +280,32 @@ class OCSeriesModel {
      * @param string $course_id
      * @return string xml - the xml representation of the string
      */
-    static function createSeriesDC($course_id) {
-
-        if (version_compare($GLOBALS['SOFTWARE_VERSION'], "3.3", '<=')) {
-            require_once 'lib/classes/Institute.class.php';
-        } else {
-            require_once 'lib/models/Institute.class.php';
-        }
-
-        $course = new Seminar($course_id);
-        $name = $course->getName();
-        $license = "&copy; " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
+    static function createSeriesDC($course_id)
+    {
+        $course       = new Seminar($course_id);
+        $name         = $course->getName();
+        $license      = "&copy; " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
+        $inst         = Institute::find($course->institut_id);
 
-        $inst = Institute::find($course->institut_id);
+        $publisher    = $inst->name;
+        $start        = $course->getStartSemester();
+        $end          = $course->getEndSemesterVorlesEnde();
+        $audience     = "General Public";
+        $instructors  = $course->getMembers('dozent');
+        $instructor   = array_shift($instructors);
+        $contributor  = $GLOBALS['UNI_NAME_CLEAN'];
+        $creator      = $instructor['fullname'];
+        $language     = 'de';
 
-        $publisher = $inst->name;
-        $start = $course->getStartSemester();
-        $end = $course->getEndSemesterVorlesEnde();
-        $audience = "General Public";
-        $instructors = $course->getMembers('dozent');
-        $instructor = array_shift($instructors);
-        $contributor = $GLOBALS['UNI_NAME_CLEAN'];
-        $creator = $instructor['fullname'];
-        $language = 'de';
-
-        if (mb_strlen($course->description) > 1000){
-                $description .= studip_substr($course->description, 0, 1000);
-                $description .= "... ";
+        if (mb_strlen($course->description) > 1000) {
+            $description .= studip_substr($course->description, 0, 1000);
+            $description .= "... ";
         } else {
             $description = $course->description;
         }
 
-        $data = array(
+        $data = [
             'title' => $name,
             'creator' => $creator,
             'contributor' => $contributor,
@@ -305,10 +314,10 @@ class OCSeriesModel {
             'license' => $license,
             'description' => $description,
             'publisher' => $publisher
-        );
+        ];
 
 
-        $content = array();
+        $content = [];
 
         foreach ($data as $key => $val) {
             $content[] = '<dcterms:' . $key . '><![CDATA[' . $val . ']]></dcterms:' . $key . '>';
@@ -327,10 +336,12 @@ class OCSeriesModel {
      * getScheduledEpisodes - returns all scheduled episodes for a given course
      */
 
-    static function getScheduledEpisodes($course_id) {
+    static function getScheduledEpisodes($course_id)
+    {
         $stmt = DBManager::get()->prepare("SELECT  * FROM
                 oc_scheduled_recordings WHERE seminar_id = ?");
         $stmt->execute(array($course_id));
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -357,16 +368,21 @@ class OCSeriesModel {
         }
     }
 
-    static function setCachedSeriesData($series_id, $data) {
+    static function setCachedSeriesData($series_id, $data)
+    {
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_series_cache (`series_id`, `content`, `mkdate`, `chdate`)
                 VALUES (?, ?, ?, ?)");
+
         return $stmt->execute(array($series_id, $data, time() ,time()));
     }
 
-    static function updateCachedSeriesData($series_id, $data) {
-        $stmt = DBManager::get()->prepare("UPDATE
-                oc_series_cache SET `content` = ?, `chdate`= ? WHERE `series_id` = ?");
+    static function updateCachedSeriesData($series_id, $data)
+    {
+        $stmt = DBManager::get()->prepare("UPDATE oc_series_cache
+            SET `content` = ?, `chdate`= ?
+            WHERE `series_id` = ?");
+
         return $stmt->execute(array($data, time(), $series_id));
     }
 
@@ -375,20 +391,25 @@ class OCSeriesModel {
         DBManager::get()->exec("TRUNCATE oc_series_cache");
     }
 
-    static function updateVisibility($seminar_id,$visibility){
+    static function updateVisibility($seminar_id,$visibility)
+    {
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_seminar_series SET `visibility` = ?  WHERE `seminar_id` = ?");
+
         return $stmt->execute(array($visibility, $seminar_id));
     }
 
-    static function getVisibility($seminar_id){
+    static function getVisibility($seminar_id)
+    {
         $stmt = DBManager::get()->prepare("SELECT `visibility` FROM
                 oc_seminar_series WHERE seminar_id = ?");
         $stmt->execute(array($seminar_id));
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    static function getWorkflowForEvent($seminar_id, $termin_id ){
+    static function getWorkflowForEvent($seminar_id, $termin_id )
+    {
         $stmt = DBManager::get()->prepare('SELECT `workflow_id`FROM `oc_scheduled_recordings`
                             WHERE seminar_id = ? AND `date_id` = ?');
         $stmt->execute(array($seminar_id, $termin_id));
@@ -396,5 +417,3 @@ class OCSeriesModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
-
-?>

@@ -1,6 +1,4 @@
 <?php
-require_once "OCRestClient.php";
-require_once "CaptureAgentAdminClient.php";
 
 class SchedulerClient extends OCRestClient
 {

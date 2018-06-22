@@ -1,9 +1,9 @@
 <?php
-require_once "OCRestClient.php";
 
 class WorkflowClient extends OCRestClient
 {
     static $me;
+
     function __construct($config_id = 1)
     {
         $this->serviceName = 'WorkflowClient';
@@ -22,11 +22,14 @@ class WorkflowClient extends OCRestClient
      *
      * @return $result A JSON representation of a workflow instance
      */
-    function getWorkflowInstance($id) {
+    function getWorkflowInstance($id)
+    {
         $service_url = "/instance/" . $id . ".json";
-        if($result = $this->getJSON($service_url)){
+        if ($result = $this->getJSON($service_url)) {
             return $result->workflow;
-        } else return false;
+        }
+
+        return false;
     }
 
     /**
@@ -34,16 +37,16 @@ class WorkflowClient extends OCRestClient
      *
      *  @return array Workflow Instances
      */
-    function getInstances($seriesID) {
-
+    function getInstances($seriesID)
+    {
         $service_url = sprintf( "/instances.json?state=&q=&seriesId=%s&seriesTitle=&creator=&contributor=&fromdate=&todate=&language="
                      . "&license=&title=&subject=&workflowdefinition=&mp=&op=&sort=&startPage=0&count=1000&compact=true", $seriesID);
 
-        if($instances = $this->getJSON($service_url)){
+        if ($instances = $this->getJSON($service_url)) {
             return $instances;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -51,17 +54,19 @@ class WorkflowClient extends OCRestClient
      *
      *  @return array Workflow Instances
      */
-    function getDefinitions() {
+    function getDefinitions()
+    {
         $service_url = sprintf( "/definitions.json");
 
         if ($definitions = $this->getJSON($service_url)) {
             return $definitions;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
-    function removeInstanceComplete($id){
+    function removeInstanceComplete($id)
+    {
         $service_url = sprintf( '/remove/'.$id);
         $options = array(
             CURLOPT_URL => $this->base_url.$service_url,
@@ -75,9 +80,9 @@ class WorkflowClient extends OCRestClient
 
         if (in_array($http,array(204,404))) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
      ####################
@@ -95,14 +100,16 @@ class WorkflowClient extends OCRestClient
 
         $tagged_wfs = array();
 
-        foreach ($wf_defs->definitions->definition as $wdef) {
-            if (is_array($wdef->tags->tag)) {
-                $tagged_wfs[] = array(
-                    'id'          => $wdef->id,
-                    'title'       => $wdef->title,
-                    'description' => $wdef->description,
-                    'tags'        => $wdef->tags->tag
-                );
+        if (!empty($wf_defs->definitions->definition)) {
+            foreach ($wf_defs->definitions->definition as $wdef) {
+                if (is_array($wdef->tags->tag)) {
+                    $tagged_wfs[] = array(
+                        'id'          => $wdef->id,
+                        'title'       => $wdef->title,
+                        'description' => $wdef->description,
+                        'tags'        => $wdef->tags->tag
+                    );
+                }
             }
         }
 

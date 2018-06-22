@@ -1,15 +1,12 @@
 <?php
 /**
- * This class manage a bunch of jobs
+ * OCJobManager.php This class manages a bunch of jobs
  *
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
- * @copyright   (c) Authors
- * @version         1.0 (11:19)
  */
 
 class OCJobManager
 {
-    public static $BASE_PATH = '/tmp/opencast';
+    public static $BASE_PATH = '/opencast';
     public static $CACHE_SUCCESS = 7 * 24 * 60 * 60;  // 7 days
     public static $CACHE_FAILURE = 14 * 24 * 60 * 60; // 14 days
 
@@ -22,7 +19,7 @@ class OCJobManager
      */
     public static function job_path($job_id)
     {
-        return static::$BASE_PATH . '/' . $job_id;
+        return $GLOBALS['TMP_PATH'] . static::$BASE_PATH . '/' . $job_id;
     }
 
     /**
@@ -37,6 +34,7 @@ class OCJobManager
 
     /**
      * Creates a job of a pile of arguments
+     *
      * @param $job_id
      * @param $course_id
      * @param $series_id
@@ -63,9 +61,9 @@ class OCJobManager
         $location->create();
         $job_data = new OCJsonFile($location->path() . '/job_data.json');
         $opencast_data = new OCJsonFile($location->path() . '/opencast_info.json');
-        $job_data['id_list'] = array('job' => $job_id, 'course' => $course_id, 'series' => $series_id);
-        $job_data['file'] = array('name' => $file_name, 'size' => $file_size, 'type' => $file_type);
-        $job_data['info'] = array('title' => $title, 'creator' => $creator, 'record_date' => $record_date, 'start' => array('h' => $start_hour, 'm' => $start_minute), 'contributor' => $contributor, 'subject' => $subject, 'language' => $language, 'description' => $description);
+        $job_data['id_list'] = ['job' => $job_id, 'course' => $course_id, 'series' => $series_id];
+        $job_data['file'] = ['name' => $file_name, 'size' => $file_size, 'type' => $file_type];
+        $job_data['info'] = ['title' => $title, 'creator' => $creator, 'record_date' => $record_date, 'start' => ['h' => $start_hour, 'm' => $start_minute], 'contributor' => $contributor, 'subject' => $subject, 'language' => $language, 'description' => $description];
         $job_data['creation_timestamp'] = time();
         $opencast_data['media_package'] = 'NOT GENERATED';
         $opencast_data['opencast_job_id'] = 'NOT GENERATED';
@@ -110,14 +108,14 @@ class OCJobManager
         $configuration = OCEndpointModel::getBaseServerConf(1);
         $service_url = parse_url($configuration['service_url']);
 
-        $socket = @fsockopen($service_url['host'], $service_url['port'] ?: 80, $err_number, $err_message, 1);
+        $socket = @fsockopen($service_url['host'], $service_url['port'] ? : 80, $err_number, $err_message, 1);
 
-        if ($socket === FALSE) {
-            return FALSE;
+        if ($socket === false) {
+            return false;
         }
         fclose($socket);
 
-        return TRUE;
+        return true;
     }
 
     /**
@@ -174,19 +172,53 @@ class OCJobManager
      */
     public static function existent_jobs()
     {
-        return array_diff(scandir(static::$BASE_PATH), array('.', '..'));
+        return array_diff(scandir($GLOBALS['TMP_PATH'] . static::$BASE_PATH), ['.', '..']);
     }
 
     /**
      * Try to reupload old jobs
      */
-    public static function try_reupload_old_jobs(){
+    public static function try_reupload_old_jobs()
+    {
         $job_ids = static::existent_jobs();
         foreach ($job_ids as $job_id) {
             $job = new OCJob($job_id);
-            echo "Versuche Upload von '".$job_id."'...";
+            echo "Versuche Upload von '" . $job_id . "'...";
             $job->try_upload_to_opencast();
-            echo "Beende Upload von '".$job_id."'...";
+            echo "Beende Upload von '" . $job_id . "'...";
         }
+    }
+
+    public static function save_dir_size()
+    {
+        $space_in_byte = [
+            'total' => disk_total_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH),
+            'free'  => disk_free_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH)
+        ];
+        $space_in_byte['used'] = $space_in_byte['total'] - $space_in_byte['free'];
+
+        $space_polished = [];
+        foreach ($space_in_byte as $key => $value) {
+            $space_polished[$key] = static::nice_size_text($value);
+        }
+
+        return [
+            'bytes'    => $space_in_byte,
+            'readable' => $space_polished
+        ];
+    }
+
+    public static function nice_size_text($size, $precision = 2, $conversion_factor = 1000, $display_threshold = 0.5)
+    {
+        $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
+        for ($depth = 0; $depth < count($possible_sizes); $depth++) {
+            if (($size / $conversion_factor) > $display_threshold) {
+                $size /= $conversion_factor;
+            } else {
+                return round($size, $precision) . ' ' . $possible_sizes[$depth];
+            }
+        }
+
+        return $size;
     }
 }

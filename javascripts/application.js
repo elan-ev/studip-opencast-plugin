@@ -180,7 +180,7 @@ OC = {
 
             }
             if ((reload || response == "")) {
-                window.open(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/index/false", '_self');
+                window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/true"), '_self');
             } else {
                 window.setTimeout(function () {
                     OC.getWorkflowProgressForCourse(course_id, false, info)
