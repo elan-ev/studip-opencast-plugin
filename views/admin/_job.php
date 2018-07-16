@@ -36,9 +36,11 @@
             </td>
 
             <td>
+                <? try { ?>
                 <a href="<?= URLHelper::getLink('plugins.php/opencast/course', ['cid' => $job->data()['id_list']['course']]) ?>" target="_blank">
                     <?= Seminar::getInstance($job->data()['id_list']['course'])->Name ?>
                 </a>
+                <? } catch (Exception $e) {} ?>
             </td>
 
             <td>

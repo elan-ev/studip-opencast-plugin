@@ -48,7 +48,9 @@ function zip()
         'views',
     ), '/^(assets|blocks).*\.less$/');
     $archive->addFile('README');
+    $archive->addFile('LICENSE');
     $archive->addFile('OpenCast.class.php');
+    $archive->addFile('bootstrap.php');
     $archive->addFile('plugin.manifest');
     $archive->close();
 

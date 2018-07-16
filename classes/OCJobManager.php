@@ -172,7 +172,11 @@ class OCJobManager
      */
     public static function existent_jobs()
     {
-        return array_diff(scandir($GLOBALS['TMP_PATH'] . static::$BASE_PATH), ['.', '..']);
+        if (!is_dir(self::path())) {
+            mkdir(self::path(), 0750, true);
+        }
+
+        return array_diff(scandir(self::path()), ['.', '..']);
     }
 
     /**
@@ -192,8 +196,8 @@ class OCJobManager
     public static function save_dir_size()
     {
         $space_in_byte = [
-            'total' => disk_total_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH),
-            'free'  => disk_free_space($GLOBALS['TMP_PATH'] . static::$BASE_PATH)
+            'total' => disk_total_space(self::path()),
+            'free'  => disk_free_space(self::path())
         ];
         $space_in_byte['used'] = $space_in_byte['total'] - $space_in_byte['free'];
 
@@ -220,5 +224,10 @@ class OCJobManager
         }
 
         return $size;
+    }
+
+    public static function path()
+    {
+        return $GLOBALS['TMP_PATH'] . static::$BASE_PATH;
     }
 }
