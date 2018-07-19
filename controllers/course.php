@@ -142,6 +142,8 @@ class CourseController extends OpencastController
             $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
             $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
             $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
+            $series_client = SeriesClient::getInstance($this->course_id);
+            $this->config_error = $series_client->has_config_error();
             foreach ($this->series_metadata as $metadata) {
                 if ($metadata['schedule']==1) {
                     $this->series_metadata = $metadata;
