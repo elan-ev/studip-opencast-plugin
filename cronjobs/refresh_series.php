@@ -3,8 +3,8 @@
  * refresh_series.php
  */
 
-require_once '../bootstrap.php';
 
+require_once __DIR__.'/../bootstrap.php';
 
 class RefreshSeries extends CronJob
 {

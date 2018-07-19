@@ -3,7 +3,7 @@
  * try_reupload_failed_jobs.php - cronjob to retry failed upload jobs
  */
 
-require_once '../bootstrap.php';
+require_once __DIR__.'/../bootstrap.php';
 
 
 class TryReuploadFailedJobs extends CronJob
