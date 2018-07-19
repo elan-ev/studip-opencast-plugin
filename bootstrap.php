@@ -29,3 +29,6 @@ require_once 'classes/OCRestClient/SeriesClient.php';
 require_once 'classes/OCRestClient/ServicesClient.php';
 require_once 'classes/OCRestClient/UploadClient.php';
 require_once 'classes/OCRestClient/WorkflowClient.php';
+
+/* cronjobs */
+require_once 'lib/classes/CronJob.class.php';
