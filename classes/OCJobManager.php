@@ -174,6 +174,7 @@ class OCJobManager
     {
         if (!is_dir(self::path())) {
             mkdir(self::path(), 0750, true);
+            return [];
         }
 
         return array_diff(scandir(self::path()), ['.', '..']);
