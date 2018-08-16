@@ -168,7 +168,7 @@ class OCJobManager
     }
 
     /**
-     * @return array list of existend job ids
+     * @return array list of existent job ids
      */
     public static function existent_jobs()
     {
