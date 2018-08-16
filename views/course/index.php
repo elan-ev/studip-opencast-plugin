@@ -236,11 +236,11 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 
 <? else: ?>
     <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
-        <?if($this->config_error){?>
-            <?= MessageBox::error($_('Die aktuell verknüpfte Series hat eine fehlerhafte Konfigurations ID!')) ?>
-        <?}else{?>
+        <? if($this->config_error) : ?>
+            <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
+        <? else : ?>
             <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
-        <?}?>
+        <? endif; ?>
     <? else: ?>
         <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
     <? endif; ?>
