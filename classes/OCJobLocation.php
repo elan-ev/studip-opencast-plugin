@@ -18,7 +18,7 @@ class OCJobLocation
      */
     public function path()
     {
-        return $GLOBALS['TMP_PATH'] . OCJobManager::$BASE_PATH . '/' . $this->job_id;
+        return OCJobManager::job_path($this->job_id);
     }
 
     /**
@@ -34,8 +34,6 @@ class OCJobLocation
      */
     public function create()
     {
-        $old_mask = umask(0);
         mkdir($this->path(), 0750, true);
-        umask($old_mask);
     }
 }

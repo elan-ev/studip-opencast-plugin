@@ -76,16 +76,16 @@ class OCJob
     public function upload_local($tmp_path, $chunk_number)
     {
         if (move_uploaded_file($tmp_path, OCJobManager::chunk_path($this->id, $chunk_number))) {
-            $this->local_chunk_info['chunk_' . $chunk_number] = array(
+            $this->local_chunk_info['chunk_' . $chunk_number] = [
                 'number'            => $chunk_number,
                 'local_upload_time' => time()
-            );
-            $this->upload_chunk_info['chunk_' . $chunk_number] = array(
+            ];
+            $this->upload_chunk_info['chunk_' . $chunk_number] = [
                 'number'         => $chunk_number,
                 'upload_tries'   => 0,
-                'upload_success' => FALSE,
-                'removed'        => FALSE
-            );
+                'upload_success' => false,
+                'removed'        => false
+            ];
         }
     }
 
@@ -95,7 +95,7 @@ class OCJob
     public function missing_local_chunks()
     {
         $chunk_amount = $this->number_of_chunks();
-        $missing = array();
+        $missing = [];
         for ($index = 0; $index < $chunk_amount; $index++) {
             if (!isset($this->local_chunk_info['chunk_' . $index])) {
                 $missing[] = 'chunk_' . $index;
@@ -111,7 +111,7 @@ class OCJob
     public function missing_upload_chunks()
     {
         $chunk_amount = $this->number_of_chunks();
-        $missing = array();
+        $missing = [];
         for ($index = 0; $index < $chunk_amount; $index++) {
             if (
                 isset($this->upload_chunk_info['chunk_' . $index]) &&
@@ -132,7 +132,7 @@ class OCJob
      */
     private function opencast_unloaded($what)
     {
-        return in_array($this->opencast_info[$what], array('NOT GENERATED', 'GENERATION ERROR'));
+        return in_array($this->opencast_info[$what], ['NOT GENERATED', 'GENERATION ERROR']);
     }
 
     /**
@@ -142,7 +142,7 @@ class OCJob
     {
         if ($this->opencast_unloaded('media_package')) {
             $media_package = $this->ingest_client->createMediaPackage();
-            if ($media_package === FALSE) {
+            if ($media_package === false) {
                 $this->opencast_info['media_package'] = 'GENERATION ERROR';
             } else {
                 $this->opencast_info['media_package'] = $media_package;
@@ -163,7 +163,7 @@ class OCJob
                 $this->opencast_info['flavor'],
                 $this->opencast_info['media_package']
             );
-            if ($opencast_job_id === FALSE) {
+            if ($opencast_job_id === false) {
                 $this->opencast_info['opencast_job_id'] = 'GENERATION ERROR';
             } else {
                 $this->opencast_info['opencast_job_id'] = $opencast_job_id;
@@ -197,16 +197,16 @@ class OCJob
             $result = $this->upload_client->uploadChunk(
                 $this->opencast_info['opencast_job_id'],
                 $chunk_number,
-                array(
+                [
                     'name'     => OCJobManager::chunk_path($this->id, $chunk_number),
                     'mime'     => $this->data['file']['type'],
                     'postname' => $this->data['file']['name']
-                )
+                ]
             );
 
-            if ($result !== NULL) {
+            if ($result !== null) {
                 $this->upload_chunk_info->load();
-                $this->upload_chunk_info[$chunk_name]['upload_success'] = TRUE;
+                $this->upload_chunk_info[$chunk_name]['upload_success'] = true;
                 $this->upload_chunk_info->save();
                 $this->upload_chunk_info->load();
                 $this->upload_chunk_info[$chunk_name]['removed'] = unlink(OCJobManager::chunk_path($this->id, $chunk_number));
@@ -245,11 +245,11 @@ class OCJob
         if (OCJobManager::matterhorn_service_available()) {
             if ($this->both_uploads_succeeded()) {
                 $this->wait_for_completeness(5, 500);
-                $result = array(
+                $result = [
                     'track'   => $this->add_track_to_media_package(),
                     'series'  => $this->add_series_dcs_to_media_package(),
                     'episode' => $this->add_episode_dc_to_media_package(),
-                );
+                ];
                 $this->opencast_info['upload'] = $result;
             }
         }
@@ -264,7 +264,7 @@ class OCJob
             $this->opencast_info['flavor']
         );
         $result = 'SUCCESS';
-        if ($media_package === FALSE) {
+        if ($media_package === false) {
             $result = 'ERROR';
         } else {
             $this->opencast_info['media_package'] = $media_package;
@@ -276,7 +276,7 @@ class OCJob
     private function add_series_dcs_to_media_package()
     {
         $series_dcs = OCSeriesModel::getSeriesDCs($this->data['id_list']['course']);
-        $result = array();
+        $result = [];
         if (is_array($series_dcs)) {
             foreach ($series_dcs as $dc) {
                 $media_package = $this->ingest_client->addDCCatalog(
@@ -284,7 +284,7 @@ class OCJob
                     $dc,
                     'dublincore/series'
                 );
-                if ($media_package === FALSE) {
+                if ($media_package === false) {
                     $result[] = 'ERROR WITH: ' . $dc;
                 } else {
                     $this->opencast_info['media_package'] = $media_package;
@@ -304,7 +304,7 @@ class OCJob
             'dublincore/episode'
         );
         $result = 'SUCCESS';
-        if ($media_package === FALSE) {
+        if ($media_package === false) {
             $result = 'ERROR';
         } else {
             $this->opencast_info['media_package'] = $media_package;
@@ -318,7 +318,7 @@ class OCJob
         $info = $this->data['info'];
         $ids = $this->data['id_list'];
         $creatition_time = new DateTime($info['record_date'] . ' ' . $info['start']['h'] . ':' . $info['start']['h']);
-        $dc_values = array();
+        $dc_values = [];
 
         $dc_values['title'] = $info['title'];
         $dc_values['creator'] = $info['creator'];
@@ -356,12 +356,12 @@ class OCJob
                 $workflow = get_config('OPENCAST_WORKFLOW_ID');
             }
             $content = $this->ingest_client->ingest($this->opencast_info['media_package'], $workflow);
-            if ($content === FALSE) {
+            if ($content === false) {
                 $this->opencast_info['ingest'] = 'ERROR';
             } else {
                 $simplexml = simplexml_load_string($content);
                 $json = json_encode($simplexml);
-                $x = json_decode($json, TRUE);
+                $x = json_decode($json, true);
                 $result = $x['@attributes'];
                 OCModel::setWorkflowIDforCourse($result['id'], $this->data['id_list']['course'], $GLOBALS['auth']->auth['uid'], time());
                 $this->opencast_info['ingest'] = $result;
@@ -383,7 +383,7 @@ class OCJob
     public function clear_files()
     {
         $path = OCJobManager::job_path($this->id);
-        $files = array_diff(scandir($path), array('..', '.'));
+        $files = array_diff(scandir($path), ['..', '.']);
         foreach ($files as $file) {
             unlink($path . '/' . $file);
         }
@@ -413,7 +413,7 @@ class OCJob
     {
         $source = $_FILES['video']['tmp_name'];
         $chunk_number = OCJobManager::calculate_chunk_number_from_range((
-            isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
+        isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
         ));
 
         $this->upload_local(

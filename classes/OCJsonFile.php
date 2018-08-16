@@ -7,7 +7,7 @@ class OCJsonFile implements ArrayAccess
 {
 
     private $path = '';
-    public $content = array();
+    public $content = [];
 
     public function __construct($path)
     {
@@ -25,7 +25,7 @@ class OCJsonFile implements ArrayAccess
 
     public function load()
     {
-        $this->content = json_decode(file_get_contents($this->path), TRUE);
+        $this->content = json_decode(file_get_contents($this->path), true);
     }
 
     public function save()
