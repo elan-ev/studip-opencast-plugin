@@ -3,7 +3,7 @@
  * try_reupload_failed_jobs.php - cronjob to retry failed upload jobs
  */
 
-require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 
 class TryReuploadFailedJobs extends CronJob
@@ -19,9 +19,10 @@ class TryReuploadFailedJobs extends CronJob
         return _('Versucht gescheiterte Upload-Jobs nochmal zu wiederholen.');
     }
 
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         OCJobManager::try_reupload_old_jobs();
+
         return true;
     }
 

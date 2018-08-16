@@ -174,15 +174,17 @@ class OCJobManager
     {
         if (!is_dir(self::path())) {
             mkdir(self::path(), 0750, true);
+
             return [];
         }
 
-        return array_filter(scandir(self::path()), function($value){
+        return array_filter(scandir(self::path()), function ($value) {
             return self::is_valid_md5($value);
         });
     }
 
-    private static function is_valid_md5($string_to_test){
+    private static function is_valid_md5($string_to_test)
+    {
         return strlen($string_to_test) == 32 && ctype_xdigit($string_to_test);
     }
 

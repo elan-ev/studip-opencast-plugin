@@ -57,7 +57,7 @@ class UploadController extends OpencastController
 
     public function upload_file_action()
     {
-        if($GLOBALS['perm']->have_studip_perm('tutor', Request::get('cid'))){
+        if ($GLOBALS['perm']->have_studip_perm('tutor', Request::get('cid'))) {
             //Get a job object
             $job = OCJobManager::from_request();
 
