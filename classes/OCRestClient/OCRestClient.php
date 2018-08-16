@@ -62,6 +62,15 @@ class OCRestClient
         }
     }
 
+    public function has_config_error()
+    {
+        return
+            ($this->username == 'error' || $this->username == null) &&
+            ($this->password == 'error' || $this->password == null) &&
+            ($this->oc_version == 'error' || $this->oc_version == null) &&
+            ($this->base_url == 'error' || $this->base_url == null);
+    }
+
     /**
       * function getConfig  - retries configutation for a given REST-Service-Client
       *
@@ -85,7 +94,10 @@ class OCRestClient
                 $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
                 return $config;
             } else {
-                throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
+                return [
+                    $this->empty_config()
+                ];
+                #throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
             }
 
         } else {
@@ -276,5 +288,16 @@ class OCRestClient
         $stmt->execute(array($workflow_id));
 
         return $stmt->fetchColumn() ?: 1;
+    }
+
+    public function empty_config()
+    {
+        return [
+            'config_id'        => 'error',
+            'service_url'      => 'error',
+            'service_user'     => 'error',
+            'service_password' => 'error',
+            'service_version'  => 'error'
+        ];
     }
 }
