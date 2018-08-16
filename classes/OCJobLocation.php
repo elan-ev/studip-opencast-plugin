@@ -34,8 +34,6 @@ class OCJobLocation
      */
     public function create()
     {
-        $old_mask = umask(0);
         mkdir($this->path(), 0750, true);
-        umask($old_mask);
     }
 }
