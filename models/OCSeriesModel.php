@@ -299,7 +299,7 @@ class OCSeriesModel
         $language     = 'de';
 
         if (mb_strlen($course->description) > 1000) {
-            $description .= studip_substr($course->description, 0, 1000);
+            $description .= mb_substr($course->description, 0, 1000);
             $description .= "... ";
         } else {
             $description = $course->description;
