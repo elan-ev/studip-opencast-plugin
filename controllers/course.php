@@ -248,7 +248,10 @@ class CourseController extends OpencastController
 
     function remove_series_action($ticket)
     {
-
+        if (Request::submitted('cancel')) {
+            $this->redirect('course/index');
+            return;
+        }
 
         $course_id = Request::get('course_id');
         $series_id = Request::get('series_id');
