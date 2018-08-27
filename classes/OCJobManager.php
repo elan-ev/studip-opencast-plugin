@@ -7,8 +7,8 @@
 class OCJobManager
 {
     public static $BASE_PATH = '/opencast';
-    public static $CACHE_SUCCESS = 7 * 24 * 60 * 60;  // 7 days
-    public static $CACHE_FAILURE = 14 * 24 * 60 * 60; // 14 days
+    public static $CACHE_SUCCESS = 604800;  // 7 days
+    public static $CACHE_FAILURE = 1209600; // 14 days
 
     /**
      * Get the path to the job with a specific id
