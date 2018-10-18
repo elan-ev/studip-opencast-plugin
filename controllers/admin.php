@@ -341,8 +341,15 @@ class AdminController extends OpencastController
 
     function refresh_episodes_action($ticket)
     {
-        if(check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('admin',$this->course_id)) {
-            $stmt = DBManager::get()->prepare("SELECT DISTINCT ocs.seminar_id, ocs.series_id FROM oc_seminar_series AS ocs WHERE 1");
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('admin',$this->course_id)) {
+            // expire Stud.IP Cache
+            StudipCacheFactory::getCache()->expire('oc_allseries');
+
+            // refresh database entries
+            $stmt = DBManager::get()->prepare("SELECT
+                DISTINCT ocs.seminar_id, ocs.series_id
+                FROM oc_seminar_series AS ocs
+                WHERE 1");
             $stmt->execute(array());
             $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -353,9 +360,13 @@ class AdminController extends OpencastController
                     $ocmodel->getEpisodes(true);
                     unset($ocmodel);
                 }
-                $this->flash['messages'] = array('success' => $this->_("Die Episodenliste aller Series  wurde aktualisiert."));
+
+                $this->flash['messages'] = [
+                    'success' => $this->_("Die Episodenliste aller Series  wurde aktualisiert.")
+                ];
             }
         }
+
         $this->redirect('admin/config/');
     }
 
