@@ -250,7 +250,7 @@ class OCCourseModel
                             );
                             $audio_download[$quality] = [
                                 'url' => $track->url,
-                                'info' => round($track->audio->bitrate/1000,1).'kHz'
+                                'info' => round($track->audio->bitrate/1000,1).'kb/s'
                             ];
                         }
                     }
