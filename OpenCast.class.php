@@ -240,7 +240,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
             $series_metadata = OCSeriesModel::getConnectedSeriesDB($course_id);
-            if ($series_metadata[0]['schedule'] == '1') {
+            if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }

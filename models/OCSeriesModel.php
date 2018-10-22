@@ -25,7 +25,7 @@ class OCSeriesModel
         if ($series = $stmt->fetchAll(PDO::FETCH_ASSOC))
             return $series;
         else
-            return false;
+            return array();
     }
 
     static function getSeminarAndSeriesData()
