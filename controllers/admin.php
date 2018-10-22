@@ -96,7 +96,13 @@ class AdminController extends OpencastController
             'service_password' => $password
         ]);
 
+        // for versions < 5
         $data = $oc->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
+
+        // for versions > 4 (name was changed to opencast after that)
+        if(!$data){
+            $data = $oc->getJSON('/sysinfo/bundles/version?prefix=opencast');
+        }
 
         // always use the first found version information
         if (is_array($data->versions)) {
