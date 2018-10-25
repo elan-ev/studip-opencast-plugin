@@ -179,7 +179,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                 <span class="previewimage">
                     <img class="previewimage" src="<?= $image ?>">
                     <img class="playbutton" style="bottom:10px"
-                         src="<?= $plugin->getPluginURL() . '/images/play-circle.png' ?>">
+                         src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                 </span>
                                 </a>
                             </div>

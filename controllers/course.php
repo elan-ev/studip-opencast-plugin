@@ -624,7 +624,7 @@ class CourseController extends OpencastController
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
 
             $plugin = PluginEngine::getPlugin('OpenCast');
-            $video = array('url' => $video_url, 'image' => $current_preview, 'circle' => $plugin->getPluginURL() . '/images/play-circle.png');
+            $video = array('url' => $video_url, 'image' => $current_preview, 'circle' => $plugin->getPluginURL() . '/images/play.svg');
 
             $episode = array(
                 'active_id'         => $active_id,

@@ -163,10 +163,17 @@
       height: 360px;
   }
 
-  .previewimage {
+  span.previewimage {
     position: relative;
     left: 0;
     top: 0;
+
+    &:hover {
+        img.playbutton {
+            opacity: 0.9;
+        }
+    }
+
     img.previewimage {
      position: relative;
       left: 0;
@@ -177,7 +184,8 @@
         position: absolute;
         width: 50%;
         left: 25%;
-        bottom: 20%;
+        max-height: 100px;
+        padding-bottom: 40px;
         opacity: 0.6;
 
     }
