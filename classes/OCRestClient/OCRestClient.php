@@ -112,17 +112,17 @@ class OCRestClient
      *  @param string $service_user
      *  @param string $service_password
      */
-    function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
+    function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version, $puffer)
     {
         if (isset($service_url, $service_user, $service_password, $version)) {
             $stmt = DBManager::get()->prepare('REPLACE INTO `oc_config`
-                (config_id, service_url, service_user, service_password, service_version)
-                VALUES (?,?,?,?,?)'
+                (config_id, service_url, service_user, service_password, service_version, schedule_time_puffer_seconds)
+                VALUES (?,?,?,?,?,?)'
             );
 
             return $stmt->execute([
                 $config_id, $service_url, $service_user,
-                $service_password, (int)$version
+                $service_password, (int)$version, (int)$puffer
             ]);
         } else {
             throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));

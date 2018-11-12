@@ -113,6 +113,9 @@ class SchedulerClient extends OCRestClient
      */
     function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id)
     {
+        $config_id = OCRestClient::getConfigIdForCourse($course_id);
+        $config = $this->getConfig('recordings',$config_id);
+
         // currently, we only update the start and the end time
         $date = new SingleDate($termin_id);
 
@@ -120,7 +123,7 @@ class SchedulerClient extends OCRestClient
 
         $post = array(
             'start'           => $date->getStartTime() * 1000,
-            'end'             => ($date->getEndTime() - 300) * 1000,  // subtract 5 minutes from the end to prevent overlapping recordings
+            'end'             => ($date->getEndTime() - $config['schedule_time_puffer_seconds']) * 1000,
             'agentparameters' => $metadata['agentparameters'],
             'agent'           => $metadata['agent']
         );
@@ -138,7 +141,10 @@ class SchedulerClient extends OCRestClient
 
     static function createEventMetadata($course_id, $resource_id, $termin_id)
     {
-        $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id));
+        $config_id = OCRestClient::getConfigIdForCourse($course_id);
+        $config = OCRestClient::getInstance()->getConfig('recordings',$config_id);
+
+        $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id, $config['schedule_time_puffer_seconds']));
 
         $date = new SingleDate($termin_id);
         $start_time = date('D M d H:i:s e Y', $date->getStartTime());

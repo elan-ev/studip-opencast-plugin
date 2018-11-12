@@ -145,7 +145,7 @@ class AdminController extends OpencastController
                 $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
 
                 OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
-                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version, $config['puffer']);
 
                 // check, if the same url has been provided for multiple oc-instances
                 foreach (Request::getArray('config') as $zw_id => $zw_conf) {

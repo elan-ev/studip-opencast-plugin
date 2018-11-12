@@ -41,6 +41,20 @@
         <? endif ?>
 
     </fieldset>
+
+    <fieldset class="conf-form-field">
+        <legend>
+            <? if ($config_id == 1) : ?>
+                <?= $_("Zeitpuffer für Aufzeichnungsplanungen (Aufzeichnung)") ?>
+            <? else : ?>
+                <?=$_("Zeitpuffer für Aufzeichnungsplanungen (Lesezugriff)")?>
+            <? endif ?>
+        </legend>
+        <label>
+            <?= $_("Zeitpuffer (in Sekunden) zur Verhinderung von Aufzeichnungsüberlappungen bei Vorausplanung") ?>
+            <input name="config[<?= $config_id ?>][puffer]" type="number" min="1" step="1" value="<?= $config[$config_id]['schedule_time_puffer_seconds'] ?>">
+        </label>
+    </fieldset>
     <? endforeach ?>
 
     <footer>

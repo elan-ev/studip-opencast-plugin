@@ -319,7 +319,7 @@ class OCModel
      * @param string $termin_id
      * @return string xml - the xml representation of the string
      */
-     function createScheduleEventXML($course_id, $resource_id, $termin_id)
+     function createScheduleEventXML($course_id, $resource_id, $termin_id, $puffer)
      {
         date_default_timezone_set("Europe/Berlin");
 
@@ -355,7 +355,7 @@ class OCModel
         $room = ResourceObject::Factory($resource_id);
 
         $start_time = $date->getStartTime();
-        $end_time = strtotime("-5 minutes ", intval($date->getEndTime()));
+        $end_time = strtotime("-$puffer seconds ", intval($date->getEndTime()));
 
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];
