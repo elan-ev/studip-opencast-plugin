@@ -130,7 +130,7 @@ class OCRestClient
 
     }
 
-    function clearConfig($config_id) {
+    function clearConfigAndAssociatedEndpoints($config_id) {
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_config` WHERE config_id = ?;");
         $stmt->execute(array($config_id));
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE config_id = ?;");
