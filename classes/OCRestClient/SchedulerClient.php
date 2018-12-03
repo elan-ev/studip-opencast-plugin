@@ -114,7 +114,7 @@ class SchedulerClient extends OCRestClient
     function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id)
     {
         $config_id = OCRestClient::getConfigIdForCourse($course_id);
-        $config = $this->getConfig('recordings',$config_id);
+        $precise_config = Configuration::instance($config_id);
 
         // currently, we only update the start and the end time
         $date = new SingleDate($termin_id);
@@ -123,7 +123,7 @@ class SchedulerClient extends OCRestClient
 
         $post = array(
             'start'           => $date->getStartTime() * 1000,
-            'end'             => ($date->getEndTime() - $config['schedule_time_puffer_seconds']) * 1000,
+            'end'             => ($date->getEndTime() - $precise_config['time_buffer_overlap']) * 1000,
             'agentparameters' => $metadata['agentparameters'],
             'agent'           => $metadata['agent']
         );
