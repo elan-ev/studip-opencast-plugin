@@ -215,25 +215,26 @@ class Configuration implements ArrayAccess
             'oc_seminar_workflows' => 'config_id'
         ];
         $found_ids = [];
-        foreach ($tables_to_look_at as $table=>$column) {
-            $stmt = DBManager::get()->prepare('SELECT '.$column.' FROM '.$table);
-            if($stmt->execute()){
+        foreach ($tables_to_look_at as $table => $column) {
+            $stmt = DBManager::get()->prepare('SELECT ' . $column . ' FROM ' . $table);
+            if ($stmt->execute()) {
                 foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
                     $id = $entry[$column];
-                    if($id == OC_GLOBAL_CONFIG_ID){
+                    if ($id == OC_GLOBAL_CONFIG_ID) {
                         continue;
                     }
-                    if(!$found_ids[$id]){
+                    if (!$found_ids[$id]) {
                         $found_ids[$id] = [];
                     }
-                    if(!in_array($id,$found_ids)){
-                        if(!in_array($table,$found_ids[$id])){
+                    if (!in_array($id, $found_ids)) {
+                        if (!in_array($table, $found_ids[$id])) {
                             $found_ids[$id][] = $table;
                         }
                     }
                 }
             }
         }
+
         return $found_ids;
     }
 }
