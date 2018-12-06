@@ -86,10 +86,6 @@ class AdminController extends OpencastController
 
         $this->config = OCEndpointModel::getBaseServerConf();
         $this->global_config = Configuration::instance(OC_GLOBAL_CONFIG_ID);
-
-        $stmt = DBManager::get()->prepare('SELECT `config_id` from `oc_config`');
-        $result = $stmt->execute();
-        $this->configs_in_database = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 

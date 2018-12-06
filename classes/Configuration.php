@@ -188,4 +188,51 @@ class Configuration implements ArrayAccess
     {
         return $this->remove($offset);
     }
+
+    public static function registered_base_config_ids()
+    {
+        $stmt = DBManager::get()->prepare('SELECT `config_id` from `oc_config`');
+        if ($stmt->execute()) {
+            $to_return = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
+                $to_return[] = $entry['config_id'];
+            }
+
+            return $to_return;
+        }
+
+        return [];
+    }
+
+    public static function overall_used_config_ids()
+    {
+        $tables_to_look_at = [
+            //Tabellenname            //Spaltenname
+            'oc_config_precise'    => 'for_config',
+            'oc_endpoints'         => 'config_id',
+            'oc_resources'         => 'config_id',
+            'oc_seminar_series'    => 'config_id',
+            'oc_seminar_workflows' => 'config_id'
+        ];
+        $found_ids = [];
+        foreach ($tables_to_look_at as $table=>$column) {
+            $stmt = DBManager::get()->prepare('SELECT '.$column.' FROM '.$table);
+            if($stmt->execute()){
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
+                    if($entry[$column] == OC_GLOBAL_CONFIG_ID){
+                        continue;
+                    }
+                    if(!$found_ids[$entry[$column]]){
+                        $found_ids[$entry[$column]] = [];
+                    }
+                    if(!in_array($entry[$column],$found_ids)){
+                        if(!in_array($table,$found_ids[$entry[$column]])){
+                            $found_ids[$entry[$column]][] = $table;
+                        }
+                    }
+                }
+            }
+        }
+        return $found_ids;
+    }
 }

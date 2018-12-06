@@ -1,4 +1,3 @@
-
 <? use Studip\Button, Studip\LinkButton; ?>
 <form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/precise_update/') ?>" method=post>
     <fieldset class="conf-form-field">
@@ -13,7 +12,16 @@
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
         </details>
-        <br><?= $_('Anzahl der in der Datenbank eingetragenen Konfigurationen: ').'<b>'.count($configs_in_database).'</b>' ?>
+        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ',Configuration::registered_base_config_ids()) ?></b>
+        <br><?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?> <b>
+            <?php
+            $counter = 0;
+            foreach (Configuration::overall_used_config_ids() as $id=>$tables) {
+                echo ($counter==0?'':', ').'<b title="'.implode(', ',$tables).'">'.$id.'</b>';
+                $counter++;
+            }
+            ?>
+        </b>
     </fieldset>
 </form>
 
