@@ -219,15 +219,16 @@ class Configuration implements ArrayAccess
             $stmt = DBManager::get()->prepare('SELECT '.$column.' FROM '.$table);
             if($stmt->execute()){
                 foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
-                    if($entry[$column] == OC_GLOBAL_CONFIG_ID){
+                    $id = $entry[$column];
+                    if($id == OC_GLOBAL_CONFIG_ID){
                         continue;
                     }
-                    if(!$found_ids[$entry[$column]]){
-                        $found_ids[$entry[$column]] = [];
+                    if(!$found_ids[$id]){
+                        $found_ids[$id] = [];
                     }
-                    if(!in_array($entry[$column],$found_ids)){
-                        if(!in_array($table,$found_ids[$entry[$column]])){
-                            $found_ids[$entry[$column]][] = $table;
+                    if(!in_array($id,$found_ids)){
+                        if(!in_array($table,$found_ids[$id])){
+                            $found_ids[$id][] = $table;
                         }
                     }
                 }
