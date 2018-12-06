@@ -150,6 +150,25 @@ class Configuration implements ArrayAccess
         return $entries;
     }
 
+    public function get_names()
+    {
+        $names_in_current_config = array_keys($this->values);
+        if ($this->config_id == OC_GLOBAL_CONFIG_ID) {
+            return $names_in_current_config;
+        }
+
+        return array_unique(array_merge(Configuration::instance(OC_GLOBAL_CONFIG_ID)->get_names(), $names_in_current_config));
+    }
+
+    private function determine_value_type($value)
+    {
+        if (is_numeric($value)) {
+            return 'number';
+        }
+
+        return 'text';
+    }
+
     public function offsetExists($offset)
     {
         return $this->has($offset);
@@ -168,14 +187,5 @@ class Configuration implements ArrayAccess
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
-    }
-
-    private function determine_value_type($value)
-    {
-        if (is_numeric($value)) {
-            return 'number';
-        }
-
-        return 'text';
     }
 }
