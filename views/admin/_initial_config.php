@@ -27,10 +27,16 @@
 
 <form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
     <?= CSRFProtection::tokenTag() ?>
-    <? foreach (range(1,$global_config['number_of_configs']) as $config_id): ?>
+    <?php
+        $config_ids = [];
+        if($global_config['number_of_configs']>0){
+            $config_ids = range(1,$global_config['number_of_configs']);
+        }
+    ?>
+    <? foreach ($config_ids as $config_id): ?>
     <fieldset class="conf-form-field">
         <legend>
-            <?= $_("Opencast Server Einstellungen")."(ID:$config_id)" ?>
+            <?= $_("Opencast Server Einstellungen")." (ID:$config_id)" ?>
         </legend>
 
         <label>
