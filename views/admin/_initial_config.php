@@ -13,14 +13,16 @@
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
         </details>
+        <br><?= $_('Anzahl der in der Datenbank eingetragenen Konfigurationen: ').'<b>'.count($configs_in_database).'</b>' ?>
     </fieldset>
 </form>
+
 <form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
     <?= CSRFProtection::tokenTag() ?>
     <? foreach (range(1,$global_config['number_of_configs']) as $config_id): ?>
     <fieldset class="conf-form-field">
         <legend>
-            <?= $_("Opencast Server Einstellungen (ID:$config_id)") ?>
+            <?= $_("Opencast Server Einstellungen")."(ID:$config_id)" ?>
         </legend>
 
         <label>
