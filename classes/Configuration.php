@@ -16,7 +16,7 @@ class Configuration implements ArrayAccess
      *
      * @return Configuration
      */
-    public static function instance(int $config_id = OC_GLOBAL_CONFIG_ID)
+    public static function instance($config_id = OC_GLOBAL_CONFIG_ID)
     {
         $name = 'c_(' . $config_id . ')';
         if (!static::$instances[$name]) {
@@ -33,7 +33,7 @@ class Configuration implements ArrayAccess
      *
      * @return Configuration
      */
-    public static function i(int $config_id = OC_GLOBAL_CONFIG_ID)
+    public static function i($config_id = OC_GLOBAL_CONFIG_ID)
     {
         return static::instance($config_id);
     }
@@ -43,7 +43,7 @@ class Configuration implements ArrayAccess
     private $database_ids;
     private $config_id;
 
-    private function __construct(int $config_id)
+    private function __construct($config_id)
     {
         $this->config_id = $config_id;
         $this->values = [];
