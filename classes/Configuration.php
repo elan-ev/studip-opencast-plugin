@@ -10,6 +10,7 @@ define('OC_GLOBAL_CONFIG_ID', -1);
 class Configuration implements ArrayAccess
 {
     private static $instances = [];
+    private static $actions = [];
 
     /**
      * @param int $config_id
@@ -38,6 +39,34 @@ class Configuration implements ArrayAccess
         return static::instance($config_id);
     }
 
+    /**
+     * @param $setting_name
+     * @param $function_to_trigger
+     */
+    public static function set_global_change_action($setting_name, $function_to_trigger){
+        static::$actions[$setting_name] = $function_to_trigger;
+    }
+
+    /**
+     * @param $name
+     *
+     * @return bool
+     */
+    public static function has_action($name)
+    {
+        return isset(static::$actions[$name]);
+    }
+
+    /**
+     * @param $name
+     * @param $old_value
+     * @param $new_value
+     */
+    public static function trigger($name,$old_value,$new_value){
+        $function = static::$actions[$name];
+        $function($old_value,$new_value);
+    }
+
     private $values;
     private $descriptions;
     private $database_ids;
@@ -57,9 +86,10 @@ class Configuration implements ArrayAccess
         return isset($this->values[$name]);
     }
 
-    public function set($name, $value, $description = '', $database_id = '')
+    public function set($name, $new_value, $description = '', $database_id = '')
     {
-        $this->values[$name] = $value;
+        $old_value = $this->values[$name];
+        $this->values[$name] = $new_value;
         if (!empty($description) && $description != '') {
             $this->descriptions[$name] = $description;
         }
@@ -68,12 +98,16 @@ class Configuration implements ArrayAccess
         }
         if ($this->has_id($name)) {
             $stmt = DBManager::get()->prepare("UPDATE `oc_config_precise` SET `name`=?,`value`=?,`description`=? WHERE id=?");
-            $result = $stmt->execute([$name, $value, $this->descriptions[$name], $this->database_ids[$name]]);
+            $result = $stmt->execute([$name, $new_value, $this->descriptions[$name], $this->database_ids[$name]]);
         } else {
             $stmt = DBManager::get()->prepare("INSERT INTO `oc_config_precise` (`name`,`value`,`description`,`for_config`)VALUES(?,?,?,?)");
-            $result = $stmt->execute([$name, $value, $this->descriptions[$name], $this->config_id]);
+            $result = $stmt->execute([$name, $new_value, $this->descriptions[$name], $this->config_id]);
             $new_id = $stmt->insert_id;
             $this->database_ids[$name] = $new_id;
+        }
+
+        if(Configuration::has_action($name)){
+            Configuration::trigger($name,$old_value,$new_value);
         }
 
         return $result;

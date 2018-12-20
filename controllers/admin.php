@@ -419,6 +419,14 @@ class AdminController extends OpencastController
     }
 
     function precise_update_action(){
+
+        Configuration::set_global_change_action('capture_agent_attribute',function ($old_value,$new_value){
+            if($old_value != $new_value){
+                $statement = DBManager::get()->prepare('UPDATE `resources_properties` SET name=? WHERE name=?');
+                $statement->execute([$new_value,$old_value]);
+            }
+        });
+
         foreach (Request::getArray('precise_config') as $database_id=>$config){
             foreach ($config as $name=>$value){
                 Configuration::instance($database_id)[$name] = $value;

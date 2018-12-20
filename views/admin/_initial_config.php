@@ -64,7 +64,7 @@
             <summary>Weitere Einstellungen</summary>
             <? $special_config = Configuration::i($config_id)->get_entries_for_display(); ?>
             <? foreach (Configuration::i()->get_entries_for_display() as $name=>$data){
-                if($name == 'number_of_configs'){continue;}
+                if(in_array($name,['number_of_configs','capture_agent_attribute'])){continue;}
                 $special_config_exists = isset($special_config[$name]); ?>
                 <label title="Name der Einstellung: <?= $name ?>">
                     <?= ($special_config_exists?$special_config[$name]['description']:$data['description']) ?>
