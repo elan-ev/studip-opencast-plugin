@@ -283,7 +283,7 @@ class OCSeriesModel
     static function createSeriesDC($course_id)
     {
         $course       = new Seminar($course_id);
-        $name         = $course->getName();
+        $name         = $course->getName() . ' - ' . $course->getStartSemesterName();
         $license      = "&copy; " . gmdate(Y) . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
         $inst         = Institute::find($course->institut_id);
