@@ -43,8 +43,8 @@ class Configuration implements ArrayAccess
      * @param $setting_name
      * @param $function_to_trigger
      */
-    public static function set_global_change_action($setting_name, $function_to_trigger){
-        static::$actions[$setting_name] = $function_to_trigger;
+    public static function set_global_action($setting_name, ConfigurationAction $action){
+        static::$actions[$setting_name] = $action;
     }
 
     /**
@@ -63,8 +63,7 @@ class Configuration implements ArrayAccess
      * @param $new_value
      */
     public static function trigger($name,$old_value,$new_value){
-        $function = static::$actions[$name];
-        $function($old_value,$new_value);
+        static::$actions[$name]->onchange($name,$old_value,$new_value);
     }
 
     private $values;
@@ -104,10 +103,6 @@ class Configuration implements ArrayAccess
             $result = $stmt->execute([$name, $new_value, $this->descriptions[$name], $this->config_id]);
             $new_id = $stmt->insert_id;
             $this->database_ids[$name] = $new_id;
-        }
-
-        if(Configuration::has_action($name)){
-            Configuration::trigger($name,$old_value,$new_value);
         }
 
         return $result;
@@ -225,7 +220,7 @@ class Configuration implements ArrayAccess
 
     public static function registered_base_config_ids()
     {
-        $stmt = DBManager::get()->prepare('SELECT `config_id` from `oc_config`');
+        $stmt = DBManager::get()->prepare('SELECT `config_id` FROM `oc_config`');
         if ($stmt->execute()) {
             $to_return = [];
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
