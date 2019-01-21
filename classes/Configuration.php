@@ -105,6 +105,8 @@ class Configuration implements ArrayAccess
             $this->database_ids[$name] = $new_id;
         }
 
+        NotificationCenter::postNotification('opencast.configuration.possible_change',$this,[$name, $old_value, $new_value]);
+
         return $result;
     }
 

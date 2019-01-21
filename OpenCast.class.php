@@ -12,6 +12,8 @@ NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 're
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
 
+NotificationCenter::addObserver('ResourceObjectAttributeChangeAction', 'trigger', 'opencast.configuration.possible_change');
+
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
