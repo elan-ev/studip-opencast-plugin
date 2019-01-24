@@ -12,6 +12,8 @@ class ResourceObjectAttributeChangeAction extends ConfigurationAction
 
     public function trigger($event, $object, $data)
     {
-        print_r([$event,$object,$data]);
+        $prefix = 'OCCA#';
+        $stmt = DBManager::get()->prepare("UPDATE `resources_properties` SET `name`=? WHERE `name`=?");
+        $result = $stmt->execute([$prefix.$data['new'],$prefix.$data['old']]);
     }
 }

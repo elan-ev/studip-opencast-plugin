@@ -81,7 +81,7 @@ class Configuration implements ArrayAccess
         $event = "opencast.configuration.$change_type.$name";
 
         try {
-            NotificationCenter::postNotification($event, $this, [$old_value, $new_value]);
+            NotificationCenter::postNotification($event, $this, ['old'=>$old_value, 'new'=>$new_value]);
         } catch (NotificationVetoException $e) {
             error_log("Vetoed Notification: $event");
         }

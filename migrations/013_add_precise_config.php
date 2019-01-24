@@ -5,7 +5,7 @@
  * @version         1.0 (14:00)
  */
 
-class AddSchedulePuffer extends Migration
+class AddPreciseConfig extends Migration
 {
 
     function up()
