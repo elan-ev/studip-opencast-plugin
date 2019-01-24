@@ -244,7 +244,7 @@ class AdminController extends OpencastController
 
     function resources_action()
     {
-        PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
+        PageLayout::setTitle($this->_("myuosOpencast Capture Agent Verwaltung"));
         Navigation::activateItem('/admin/config/oc-resources');
 
         $this->resources = OCModel::getOCRessources();
