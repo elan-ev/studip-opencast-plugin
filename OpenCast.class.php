@@ -12,8 +12,6 @@ NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 're
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
 
-NotificationCenter::addObserver('ResourceObjectAttributeChangeAction', 'trigger', 'opencast.configuration.possible_change');
-
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
@@ -100,6 +98,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
+
+        $this->add_observers();
     }
 
     /**
@@ -386,5 +386,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
        return $metadata;
+    }
+
+    private function add_observers()
+    {
+        $change_capture_agent_name = new ResourceObjectAttributeChangeAction();
+        $change_capture_agent_name->add_as_observer('change.capture_agent_attribute');
     }
 }

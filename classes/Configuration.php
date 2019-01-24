@@ -10,7 +10,6 @@ define('OC_GLOBAL_CONFIG_ID', -1);
 class Configuration implements ArrayAccess
 {
     private static $instances = [];
-    private static $actions = [];
 
     /**
      * @param int $config_id
@@ -37,33 +36,6 @@ class Configuration implements ArrayAccess
     public static function i($config_id = OC_GLOBAL_CONFIG_ID)
     {
         return static::instance($config_id);
-    }
-
-    /**
-     * @param $setting_name
-     * @param $function_to_trigger
-     */
-    public static function set_global_action($setting_name, ConfigurationAction $action){
-        static::$actions[$setting_name] = $action;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return bool
-     */
-    public static function has_action($name)
-    {
-        return isset(static::$actions[$name]);
-    }
-
-    /**
-     * @param $name
-     * @param $old_value
-     * @param $new_value
-     */
-    public static function trigger($name,$old_value,$new_value){
-        static::$actions[$name]->onchange($name,$old_value,$new_value);
     }
 
     private $values;
@@ -105,7 +77,14 @@ class Configuration implements ArrayAccess
             $this->database_ids[$name] = $new_id;
         }
 
-        NotificationCenter::postNotification('opencast.configuration.possible_change',$this,[$name, $old_value, $new_value]);
+        $change_type = $this->determine_change_type($old_value, $new_value);
+        $event = "opencast.configuration.$change_type.$name";
+
+        try {
+            NotificationCenter::postNotification($event, $this, [$old_value, $new_value]);
+        } catch (NotificationVetoException $e) {
+            error_log("Vetoed Notification: $event");
+        }
 
         return $result;
     }
@@ -267,5 +246,18 @@ class Configuration implements ArrayAccess
         }
 
         return $found_ids;
+    }
+
+    private function determine_change_type($old_value, $new_value)
+    {
+        //no change
+        if ($old_value == $new_value){
+            return 'no_change';
+        }
+        //init of value
+        if ($old_value == '' && $new_value != ''){
+            return 'just_init';
+        }
+        return 'change';
     }
 }

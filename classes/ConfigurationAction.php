@@ -9,15 +9,11 @@ abstract class ConfigurationAction
 {
     public abstract function trigger($event, $object, $data);
 
-    public static function determine_change_type($old_value, $new_value){
-        //no change
-        if ($old_value == $new_value){
-            return 'no_change';
-        }
-        //init of value
-        if ($old_value == '' && $new_value != ''){
-            return 'just_init';
-        }
-        return 'change';
+    /**
+     * @param        $special_event
+     */
+    public function add_as_observer($special_event){
+        $event = "opencast.configuration.$special_event";
+        NotificationCenter::addObserver($this,'trigger',$event);
     }
 }
