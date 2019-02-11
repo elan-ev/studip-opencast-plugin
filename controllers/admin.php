@@ -166,7 +166,24 @@ class AdminController extends OpencastController
                 OCEndpointModel::setEndpoint($config_id, $service_host .'/services', 'services');
 
                 $services_client = new ServicesClient($config_id);
-                $comp = $services_client->getRESTComponents();
+
+                $comp = null;
+
+                try {
+                    $comp = $services_client->getRESTComponents();
+                } catch (AccessDeniedException $e) {
+                    OCEndpointModel::removeEndpoint($config_id, 'services');
+
+                    $this->flash['messages'] = array(
+                        'error' => sprintf(
+                            $this->_('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
+                            $service_host
+                        )
+                    );
+
+                    $this->redirect('admin/config');
+                    return;
+                }
 
                 if ($comp) {
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);

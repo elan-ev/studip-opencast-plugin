@@ -178,6 +178,8 @@ class OCRestClient
                     }
 
                     return false;
+                } else if ($httpCode == 401) {
+                    throw new AccessDeniedException('Wrong username/password for Opencast server!');
                 } else {
                     return json_decode($response);
                 }
