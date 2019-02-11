@@ -85,6 +85,7 @@ class AdminController extends OpencastController
         Navigation::activateItem('/admin/config/oc-config');
 
         $this->config = OCEndpointModel::getBaseServerConf();
+        $this->global_config = Configuration::instance(OC_GLOBAL_CONFIG_ID);
     }
 
 
@@ -118,6 +119,16 @@ class AdminController extends OpencastController
         StudipCacheFactory::getCache()->expire('oc_allseries');
 
         foreach (Request::getArray('config') as $config_id => $config) {
+            //set precise settings if any
+            $precise_config = $config['precise'];
+            foreach($precise_config as $name=>$value){
+                if(Configuration::i()[$name] != $value){
+                    Configuration::i($config_id)->set($name,$value,Configuration::i()->get_description_for($name));
+                }else{
+                    Configuration::i($config_id)->remove($name);
+                }
+            }
+
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
             if (!$config['url']) {
@@ -145,7 +156,7 @@ class AdminController extends OpencastController
                 $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
 
                 OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
-                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version, $config['puffer']);
+                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
 
                 // check, if the same url has been provided for multiple oc-instances
                 foreach (Request::getArray('config') as $zw_id => $zw_conf) {
@@ -422,5 +433,25 @@ class AdminController extends OpencastController
         }
 
         $this->memory_space = OCJobManager::save_dir_size();
+    }
+
+    function precise_update_action(){
+        foreach (Request::getArray('precise_config') as $database_id=>$config){
+            foreach ($config as $name=>$value){
+                Configuration::instance($database_id)[$name] = $value;
+            }
+        }
+
+        $this->redirect('admin/config/');
+    }
+
+    function precise_add_action(){
+
+        $this->redirect('admin/config/');
+    }
+
+    function precise_remove_action(){
+
+        $this->redirect('admin/config/');
     }
 }

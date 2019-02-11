@@ -5,6 +5,10 @@ require_once 'lib/raumzeit/raumzeit_functions.inc.php';
 require_once 'vendor/trails/trails.php';
 
 /* OC plugin dependencies*/
+require_once 'classes/Configuration.php';
+require_once 'classes/ConfigurationAction.php';
+require_once 'classes/config_actions/ResourceObjectAttributeChangeAction.php';
+
 require_once 'controllers/opencast_controller.php';
 
 require_once 'models/OCModel.php';

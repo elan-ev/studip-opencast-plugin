@@ -3,7 +3,7 @@
  * OCRestClient.php - The administarion of the opencast player
  */
 
-define(DEBUG_CURL, FALSE);
+define(DEBUG_CURL, false);
 
 class OCRestClient
 {
@@ -11,6 +11,8 @@ class OCRestClient
     protected $base_url;
     protected $username;
     protected $password;
+    protected $oc_version;
+    protected $config_id;
     public $serviceName = 'ParentRestClientClass';
 
     static function getInstance($course_id = null)
@@ -22,7 +24,7 @@ class OCRestClient
         }
 
         if (!property_exists(get_called_class(), 'me')) {
-            throw new Exception('Every child of '.get_class().' needs to implement static property "$me"');
+            throw new Exception('Every child of ' . get_class() . ' needs to implement static property "$me"');
         }
 
         if (!is_object(static::$me[$config_id])) {
@@ -34,25 +36,31 @@ class OCRestClient
 
     function __construct($config)
     {
-        $this->base_url   = $config['service_url'];
-        $this->username   = $config['service_user'];
-        $this->password   = $config['service_password'];
+        $this->base_url = $config['service_url'];
+        $this->username = $config['service_user'];
+        $this->password = $config['service_password'];
         $this->oc_version = $config['service_version'];
+        if($config['config_id']==null){
+            $config['config_id'] = -1;
+        }
+        $precise_config = Configuration::instance($config['config_id']);
 
         // setting up a curl-handler
         $this->ochandler = curl_init();
         curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-        curl_setopt($this->ochandler, CURLOPT_USERPWD, $this->username.':'.$this->password);
-        curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
-        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array("X-Requested-Auth: Digest"));
+        curl_setopt($this->ochandler, CURLOPT_USERPWD, $this->username . ':' . $this->password);
+        curl_setopt($this->ochandler, CURLOPT_ENCODING, $precise_config['upload_encoding']);
+        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ["X-Requested-Auth: Digest"]);
 
         curl_setopt($this->ochandler, CURLOPT_FOLLOWLOCATION, 1);
 
         //ssl
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
-        #curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, $precise_config['ssl_verify_peer']);
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, $precise_config['ssl_verify_host']);
+        if($precise_config['ssl_cipher_list']!='none') {
+            curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, $precise_config['ssl_cipher_list']);
+        }
 
         // debugging
         if (DEBUG_CURL) {
@@ -72,26 +80,27 @@ class OCRestClient
     }
 
     /**
-      * function getConfig  - retries configutation for a given REST-Service-Client
-      *
-      * @param string $service_type - client label
-      *
-      * @return array configuration for corresponding client
-      *
-      */
+     * function getConfig  - retries configutation for a given REST-Service-Client
+     *
+     * @param string $service_type - client label
+     *
+     * @return array configuration for corresponding client
+     *
+     */
     function getConfig($service_type, $config_id = 1)
     {
         if (isset($service_type)) {
             $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
                 WHERE service_type = ? AND config_id = ?");
-            $stmt->execute(array($service_type, $config_id));
+            $stmt->execute([$service_type, $config_id]);
             $config = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($config) {
                 $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config`
                     WHERE config_id = ?");
-                $stmt->execute(array($config_id));
+                $stmt->execute([$config_id]);
                 $config = $config + $stmt->fetch(PDO::FETCH_ASSOC);
+
                 return $config;
             } else {
                 return [
@@ -108,21 +117,25 @@ class OCRestClient
     /**
      *  function setConfig - sets config into DB for given REST-Service-Client
      *
-     *  @param string $service_url
-     *  @param string $service_user
-     *  @param string $service_password
+     * @param string $service_url
+     * @param string $service_user
+     * @param string $service_password
+     *
+     * @return
+     * @throws Exception
      */
-    function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version, $puffer)
+    static function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
     {
         if (isset($service_url, $service_user, $service_password, $version)) {
+
             $stmt = DBManager::get()->prepare('REPLACE INTO `oc_config`
-                (config_id, service_url, service_user, service_password, service_version, schedule_time_puffer_seconds)
-                VALUES (?,?,?,?,?,?)'
+                (config_id, service_url, service_user, service_password, service_version)
+                VALUES (?, ?, ?, ?, ?)'
             );
 
             return $stmt->execute([
                 $config_id, $service_url, $service_user,
-                $service_password, (int)$version, (int)$puffer
+                $service_password, (int)$version
             ]);
         } else {
             throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
@@ -130,23 +143,25 @@ class OCRestClient
 
     }
 
-    function clearConfigAndAssociatedEndpoints($config_id) {
+    static function clearConfigAndAssociatedEndpoints($config_id)
+    {
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_config` WHERE config_id = ?;");
-        $stmt->execute(array($config_id));
+        $stmt->execute([$config_id]);
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE config_id = ?;");
-        return $stmt->execute(array($config_id));
+
+        return $stmt->execute([$config_id]);
     }
 
     /**
      *  function getJSON - performs a REST-Call and retrieves response in JSON
      */
-    function getJSON($service_url, $data = array(), $is_get = true, $with_res_code = false)
+    function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
-            $options = array(
-                CURLOPT_URL => $this->base_url.$service_url,
+            $options = [
+                CURLOPT_URL           => $this->base_url . $service_url,
                 CURLOPT_FRESH_CONNECT => 1
-            );
+            ];
 
             if (!$is_get) {
                 $options[CURLOPT_POST] = 1;
@@ -166,14 +181,14 @@ class OCRestClient
             }
 
             if ($with_res_code) {
-                return array(json_decode($response) ?: $response, $httpCode);
+                return [json_decode($response) ? : $response, $httpCode];
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
                     if (DEBUG_CURL) {
                         error_log('[Opencast-Plugin] Error calling "'
-                            . $this->base_url.$service_url
-                            .'" ' . strip_tags($response)
+                            . $this->base_url . $service_url
+                            . '" ' . strip_tags($response)
                         );
                     }
 
@@ -193,13 +208,13 @@ class OCRestClient
     /**
      * function getXML - performs a REST-Call and retrieves response in XML
      */
-    function getXML($service_url, $data = array(), $is_get = true, $with_res_code = false)
+    function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
-            $options = array(
-                CURLOPT_URL => $this->base_url.$service_url,
+            $options = [
+                CURLOPT_URL           => $this->base_url . $service_url,
                 CURLOPT_FRESH_CONNECT => 1
-            );
+            ];
 
             if (!$is_get) {
                 $options[CURLOPT_POST] = 1;
@@ -215,14 +230,14 @@ class OCRestClient
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
             if ($with_res_code) {
-                return array($response, $httpCode);
+                return [$response, $httpCode];
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
                     if (DEBUG_CURL) {
                         error_log('[Opencast-Plugin] Error calling "'
-                            . $this->base_url.$service_url
-                            .'" ' . strip_tags($response)
+                            . $this->base_url . $service_url
+                            . '" ' . strip_tags($response)
                         );
                     }
 
@@ -249,10 +264,10 @@ class OCRestClient
             FROM oc_seminar_series
             WHERE seminar_id = ?");
 
-        $stmt->execute(array($course_id));
+        $stmt->execute([$course_id]);
 
-        return $stmt->fetchColumn() ?: 1;
-}
+        return $stmt->fetchColumn() ? : 1;
+    }
 
     /**
      * get course-id for passed series
@@ -268,9 +283,9 @@ class OCRestClient
             FROM oc_seminar_series
             WHERE series_id = ?");
 
-        $stmt->execute(array($series_id));
+        $stmt->execute([$series_id]);
 
-        return $stmt->fetchColumn() ?: 1;
+        return $stmt->fetchColumn() ? : 1;
     }
 
     /**
@@ -287,9 +302,9 @@ class OCRestClient
             FROM oc_seminar_workflows
             WHERE workflow_id = ?");
 
-        $stmt->execute(array($workflow_id));
+        $stmt->execute([$workflow_id]);
 
-        return $stmt->fetchColumn() ?: 1;
+        return $stmt->fetchColumn() ? : 1;
     }
 
     public function empty_config()
