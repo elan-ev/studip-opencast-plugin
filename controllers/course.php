@@ -170,6 +170,7 @@ class CourseController extends OpencastController
             $this->search_client = SearchClient::getInstance($this->course_id);
 
             $occourse = new OCCourseModel($this->course_id);
+
             $this->coursevis = $occourse->getSeriesVisibility();
 
             if ($occourse->getSeriesID()) {

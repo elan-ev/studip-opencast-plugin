@@ -20,14 +20,14 @@ class OCCourseModel
 
         $this->setCourseID($course_id);
         // take care of connected series
-        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(), TRUE);
+        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(), true);
 
         if (!empty($cseries)) {
             $current_seriesdata = array_pop($cseries);
             $this->setSeriesMetadata($current_seriesdata);
             $this->setSeriesID($current_seriesdata['identifier']);
         } else {
-            $this->setSeriesID(FALSE);
+            $this->setSeriesID(false);
         }
 
     }
@@ -64,13 +64,13 @@ class OCCourseModel
 
     /*  */
 
-    public function getEpisodes($force_reload = FALSE)
+    public function getEpisodes($force_reload = false)
     {
         if ($this->getSeriesID()) {
             $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
 
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
-            $ordered_episodes = array();
+            $ordered_episodes = [];
 
             //check if series' episodes is already stored in studip
             if (!empty($series)) {
@@ -79,13 +79,13 @@ class OCCourseModel
             }
 
             return $this->order_episodes_by(
-                array('start', 'title'),
-                array(SORT_NATURAL, SORT_NATURAL),
-                array(TRUE, FALSE),
+                ['start', 'title'],
+                [SORT_NATURAL, SORT_NATURAL],
+                [true, false],
                 $ordered_episodes
             );
         } else {
-            return FALSE;
+            return false;
         }
 
     }
@@ -104,7 +104,7 @@ class OCCourseModel
      */
     private function order_episodes_by($keys, $sort_flags, $reversed, $episodes)
     {
-        $ordered = array();
+        $ordered = [];
 
         //Get the current settings for this episode group
         $key = array_shift($keys);
@@ -124,7 +124,7 @@ class OCCourseModel
         }
 
         //Now remove the grouping but contain the order within
-        $episodes = array();
+        $episodes = [];
 
         foreach ($ordered as $entries) {
             if (count($keys) > 0 && count($entries) > 1) {
@@ -141,7 +141,7 @@ class OCCourseModel
 
     private function episodeComparison($stored_episodes, $remote_episodes)
     {
-        $episodes = array();
+        $episodes = [];
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
 
@@ -182,11 +182,11 @@ class OCCourseModel
                 );
 
                 $episodes[] = $episode;
-                NotificationCenter::postNotification('NewEpisodeForCourse', array(
+                NotificationCenter::postNotification('NewEpisodeForCourse', [
                     'episode_id'    => $episode['id'],
                     'course_id'     => $this->getCourseID(),
                     'episode_title' => $episode['title']
-                ));
+                ]);
             }
 
         }
@@ -231,26 +231,26 @@ class OCCourseModel
                 $tracks = (sizeof($episode->mediapackage->media->track) > 1) ? $episode->mediapackage->media->track : [$episode->mediapackage->media->track];
 
                 foreach ($tracks as $track) {
-                    if($track->type === 'presenter/delivery'){
+                    if ($track->type === 'presenter/delivery') {
                         $parsed_url = parse_url($track->url);
-                        if($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video)){
+                        if ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp') && !empty($track->video)) {
                             $quality = $this->calculate_size(
                                 $track->video->bitrate,
                                 $track->duration
                             );
                             $presenter_download[$quality] = [
-                                'url' => $track->url,
+                                'url'  => $track->url,
                                 'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
-                        if($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)){
+                        if ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)) {
                             $quality = $this->calculate_size(
                                 $track->audio->bitrate,
                                 $track->duration
                             );
                             $audio_download[$quality] = [
-                                'url' => $track->url,
-                                'info' => round($track->audio->bitrate/1000,1).'kb/s'
+                                'url'  => $track->url,
+                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s'
                             ];
                         }
                     }
@@ -263,7 +263,7 @@ class OCCourseModel
                             );
 
                             $presentation_download[$quality] = [
-                                'url' => $track->url,
+                                'url'  => $track->url,
                                 'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
@@ -297,7 +297,7 @@ class OCCourseModel
 
         if (!$cached_series || $forced_reload) {
             $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
-            $series = $search_client->getEpisodes($series_id, TRUE);
+            $series = $search_client->getEpisodes($series_id, true);
 
             if ($forced_reload && $cached_series) {
                 OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
@@ -337,7 +337,7 @@ class OCCourseModel
 
     public function getEpisodesforREST()
     {
-        $rest_episodes = array();
+        $rest_episodes = [];
         $is_dozent = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
         $episodes = $this->getEpisodes();
         foreach ($episodes as $episode) {
@@ -380,7 +380,7 @@ class OCCourseModel
     public function refineEpisodesForStudents($ordered_episodes)
     {
 
-        $episodes = array();
+        $episodes = [];
         foreach ($ordered_episodes as $episode) {
             if ($episode['visibility'] == 'true') {
                 $episodes[] = $episode;
@@ -444,7 +444,8 @@ class OCCourseModel
         return $stmt->execute([$workflow_id, time(), $course_id, $target]);
     }
 
-    public static function removeWorkflowsWithoutCustomCourseID($course_id, $target){
+    public static function removeWorkflowsWithoutCustomCourseID($course_id, $target)
+    {
         $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_workflow_configuration
             WHERE NOT seminar_id = ? AND target = ?");
 
@@ -457,7 +458,7 @@ class OCCourseModel
                 oc_scheduled_recordings SET workflow_id = ?
                 WHERE seminar_id = ? AND date_id = ?");
 
-        return $stmt->execute(array($workflow_id, $this->getCourseID(), $termin_id));
+        return $stmt->execute([$workflow_id, $this->getCourseID(), $termin_id]);
     }
 
     public function clearSeminarEpisodes()
@@ -465,16 +466,16 @@ class OCCourseModel
         $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_episodes
             WHERE seminar_id = ?");
 
-        return $stmt->execute(array($this->getCourseID()));
+        return $stmt->execute([$this->getCourseID()]);
     }
 
     private function calculate_size($bitrate, $duration)
     {
-        return ($bitrate/8) * ($duration/1000);
+        return ($bitrate / 8) * ($duration / 1000);
     }
 
     private function add_px_to_resolution($resolution)
     {
-        return $resolution.'px';
+        return $resolution . 'px';
     }
 }

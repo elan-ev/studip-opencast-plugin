@@ -9,6 +9,9 @@ require_once 'classes/Configuration.php';
 require_once 'classes/ConfigurationAction.php';
 require_once 'classes/config_actions/ResourceObjectAttributeChangeAction.php';
 
+require_once 'classes/lti/AccessControlList.php';
+require_once 'classes/lti/OpencastLTI.php';
+
 require_once 'controllers/opencast_controller.php';
 
 require_once 'models/OCModel.php';
@@ -33,6 +36,7 @@ require_once 'classes/OCRestClient/SeriesClient.php';
 require_once 'classes/OCRestClient/ServicesClient.php';
 require_once 'classes/OCRestClient/UploadClient.php';
 require_once 'classes/OCRestClient/WorkflowClient.php';
+require_once 'classes/OCRestClient/ACLManagerClient.php';
 
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
