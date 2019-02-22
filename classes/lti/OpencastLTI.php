@@ -8,9 +8,67 @@
 class OpencastLTI
 {
 
-    public static function generate_complete_acl_mapping()
+    public static function apply_defined_acls($defined_acls)
     {
-        $courses = OpenCast::activated_in_courses();
+        $acl_manager = ACLManagerClient::getInstance();
+        foreach ($defined_acls['s'] as $series_id => $setting) {
+            $created_acl = $acl_manager->createACL($setting['acl']);
+            if ($acl_manager->applyACLto('series', $series_id, $created_acl['id'])) {
+                foreach ($setting['courses'] as $course) {
+                    OCAccessControlModel::set_acl_for_course($series_id, 'series', $course, $created_acl['id']);
+                }
+            }
+        }
+        foreach ($defined_acls['e'] as $episode_id => $setting) {
+            $created_acl = $acl_manager->createACL($setting['acl']);
+            if ($acl_manager->applyACLto('episode', $episode_id, $created_acl['id'])) {
+                foreach ($setting['courses'] as $course) {
+                    OCAccessControlModel::set_acl_for_course($episode_id, 'episode', $course, $created_acl['id']);
+                }
+            }
+        }
+    }
+
+    public static function mapping_to_defined_acls($mapping)
+    {
+        $acls = [
+            's' => [],
+            'e' => []
+        ];
+
+        foreach ($mapping['s'] as $series_id => $setting) {
+            $acls['s'][$series_id] = [
+                'courses' => array_keys($setting),
+                'acl'     => static::generate_combined_acls(array_keys($setting), array_values($setting))
+            ];
+        }
+        foreach ($mapping['e'] as $episode_id => $setting) {
+            $acls[$series_id] = [
+                'courses' => array_keys($setting),
+                'acl'     => static::generate_combined_acls(array_keys($setting), array_values($setting))
+            ];
+        }
+
+        return $acls;
+    }
+
+    public static function generate_acl_mapping_for_series($series_id)
+    {
+        $courses = OCSeriesModel::getCoursesForSeries($series_id);
+        $refined = [];
+        foreach ($courses as $course) {
+            $refined[] = $course['seminar_id'];
+        }
+
+        return self::generate_complete_acl_mapping($refined);
+    }
+
+    public static function generate_complete_acl_mapping($courses = [])
+    {
+        if (count($courses) == 0) {
+            $courses = OpenCast::activated_in_courses();
+        }
+
         $result = [
             's' => [],
             'e' => []
@@ -32,17 +90,14 @@ class OpencastLTI
         ];
 
         foreach ($series_list as $series) {
-            $series_visible = $series['visibility'] == 'visible';
-            $result['s'][$series['series_id']][$course_id] = ($series_visible ? static::generate_acl_name($course_id, 'visible') : static::generate_acl_name($course_id, 'invisible'));
+            $result['s'][$series['series_id']][$course_id] = $series['visibility'];
 
-            if ($series_visible) {
+            if ($series['visibility'] == 'visible') {
                 $course_model = new OCCourseModel($course_id);
                 $episodes = $course_model->getEpisodes();
                 foreach ($episodes as $episode) {
                     if ($episode['visibility'] == 'false') {
-                        $result['e'][$episode['id']][$course_id] = static::generate_acl_name($course_id, 'invisible');
-                    } else {
-                        $result['e'][$episode['id']][$course_id] = 'none';
+                        $result['e'][$episode['id']][$course_id] = 'invisible';
                     }
                 }
             }
@@ -136,13 +191,18 @@ class OpencastLTI
 
     public static function generate_combined_acls(array $course_ids, array $modes)
     {
-        $resulting_acl = new AccessControlList(static::generate_acl_name(uniqid(), 'mixed', 'combined'));
+        $name = static::generate_acl_name(uniqid(), 'mixed', 'combined');
+        if (count($course_ids) == 1) {
+            $name = static::generate_acl_name($course_ids[0], $modes[0], 'course');
+        }
+        $resulting_acl = new AccessControlList($name);
         for ($index = 0; $index < count($course_ids); $index++) {
             $course_id = $course_ids[$index];
             $mode = $modes[$index];
 
             $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
         }
+
         return $resulting_acl;
     }
 

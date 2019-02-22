@@ -416,4 +416,11 @@ class OCSeriesModel
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    static function getCoursesForSeries($series_id){
+        $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_series WHERE series_id = ?;");
+        $stmt->execute([$series_id]);
+
+        return $stmt->fetchAll();
+    }
 }

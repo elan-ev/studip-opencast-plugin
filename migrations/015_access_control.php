@@ -10,7 +10,7 @@ class AccessControl extends Migration
 
     function up()
     {
-        $stmt = DBManager::get()->query("CREATE TABLE `oc_access_control` ( `course_id` TEXT NOT NULL ,  `acl_visible_id` INT NOT NULL ,  `acl_invisible_id` INT NOT NULL )");
+        $stmt = DBManager::get()->query("CREATE TABLE `oc_access_control` ( `id` TEXT NOT NULL ,  `type` ENUM('episode','series') NOT NULL ,  `course_id` TEXT NOT NULL ,  `acl_id` INT NOT NULL )");
     }
 
     function down()
