@@ -29,13 +29,23 @@ class ACLManagerClient extends OCRestClient
         return $this->getJSON('/acl', $data, false);
     }
 
+    function applyACLto($type, $id, $acl_id)
+    {
+        $data = [
+            'aclId' => $acl_id
+        ];
+
+        return $this->getJSON('/apply/' . $type . '/' . $id, $data, false);
+    }
+
     function getAllACLs()
     {
         return $this->getJSON('/acl/acls.json');
     }
 
-    function getACL($acl_id){
-        return $this->getJSON('/acl/'.$acl_id);
+    function getACL($acl_id)
+    {
+        return $this->getJSON('/acl/' . $acl_id);
     }
 
 }
