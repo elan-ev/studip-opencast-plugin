@@ -25,8 +25,17 @@ class ACLManagerClient extends OCRestClient
             'name' => $acl->get_name(),
             'acl'  => $acl->as_xml()
         ];
-        return $this->getJSON('/acl', $data, false, true);
+
+        return $this->getJSON('/acl', $data, false);
     }
 
-    
+    function getAllACLs()
+    {
+        return $this->getJSON('/acl/acls.json');
+    }
+
+    function getACL($acl_id){
+        return $this->getJSON('/acl/'.$acl_id);
+    }
+
 }

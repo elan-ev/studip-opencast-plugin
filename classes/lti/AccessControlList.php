@@ -23,11 +23,17 @@ class AccessControlList
 
     public function add_ace(AccessControlEntity $to_add)
     {
+        foreach ($this->entities as $entity) {
+            if ($entity->equals($to_add)) {
+                return true;
+            }
+        }
         $this->entities[] = $to_add;
     }
 
-    public function add_acl(AccessControlList $to_add){
-        foreach ($to_add->get_entities() as $entity){
+    public function add_acl(AccessControlList $to_add)
+    {
+        foreach ($to_add->get_entities() as $entity) {
             $this->add_ace($entity);
         }
     }
@@ -76,7 +82,7 @@ class AccessControlEntity
 
     private function allow()
     {
-        return ($this->allow?'true':'false');
+        return ($this->allow ? 'true' : 'false');
     }
 
     public function as_xml()
@@ -87,5 +93,18 @@ class AccessControlEntity
     public function __toString()
     {
         return $this->as_xml();
+    }
+
+    public function get_role()
+    {
+        return $this->role;
+    }
+
+    public function get_action(){
+        return $this->action;
+    }
+
+    public function get_allow(){
+        return $this->allow;
     }
 }

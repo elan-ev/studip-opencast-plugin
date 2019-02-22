@@ -146,7 +146,11 @@ class CourseController extends OpencastController
             LTIResourceLink::generate_link('test', 'test'),
             true
         ));
-
+        print_r(OpencastLTI::generate_complete_acl_mapping());
+        print_r(OpencastLTI::generate_combined_acls(
+            ['5ccff3d00a4d6e372d3f2d2f37813f8c', 'a07535cf2f8a72df33c12ddfa4b53dde'],
+            ['visible', 'visible'])
+        );
 
         $reload = true;
         $this->states = false;

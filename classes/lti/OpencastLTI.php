@@ -8,7 +8,7 @@
 class OpencastLTI
 {
 
-    public static function generate_all_acls()
+    public static function generate_complete_acl_mapping()
     {
         $courses = OpenCast::activated_in_courses();
         $result = [
@@ -16,34 +16,34 @@ class OpencastLTI
             'e' => []
         ];
         foreach ($courses as $course) {
-            $acls = static::generate_course_acls($course);
-            $result['s'] += $acls['s'];
-            $result['e'] += $acls['e'];
+            $acls = static::generate_acl_mapping_for_course($course);
+            $result = array_merge_recursive($result, $acls);
         }
 
         return $result;
     }
 
-    public static function generate_course_acls($course_id)
+    public static function generate_acl_mapping_for_course($course_id)
     {
-        $acls = static::generate_standard_acls($course_id);
-
-        $series_visible = OCSeriesModel::getVisibility($course_id)['visibility'] == 'visible';
+        $series_list = OCSeriesModel::getConnectedSeriesDB($course_id);
         $result = [
             's' => [],
             'e' => []
         ];
 
-        $result['s'][$course_id] = ($series_visible ? $acls['visible'] : $acls['invisible']);
+        foreach ($series_list as $series) {
+            $series_visible = $series['visibility'] == 'visible';
+            $result['s'][$series['series_id']][$course_id] = ($series_visible ? static::generate_acl_name($course_id, 'visible') : static::generate_acl_name($course_id, 'invisible'));
 
-        if ($series_visible) {
-            $course_model = new OCCourseModel($course_id);
-            $episodes = $course_model->getEpisodes();
-            foreach ($episodes as $episode) {
-                if ($episode['visibility'] == 'false') {
-                    $result['e'][$episode['id']] = $acls['invisible'];
-                } else {
-                    $result['e'][$episode['id']] = 'none';
+            if ($series_visible) {
+                $course_model = new OCCourseModel($course_id);
+                $episodes = $course_model->getEpisodes();
+                foreach ($episodes as $episode) {
+                    if ($episode['visibility'] == 'false') {
+                        $result['e'][$episode['id']][$course_id] = static::generate_acl_name($course_id, 'invisible');
+                    } else {
+                        $result['e'][$episode['id']][$course_id] = 'none';
+                    }
                 }
             }
         }
@@ -82,7 +82,7 @@ class OpencastLTI
                 'lis_person_name_family',
                 'lis_person_contact_email_primary'
             ];
-            foreach ($privatize as $key){
+            foreach ($privatize as $key) {
                 $launch_data[$key] = $private_text;
             }
         }
@@ -107,12 +107,7 @@ class OpencastLTI
         return $course_id . '_Learner';
     }
 
-    public static function acl_name($course_id, $addendum)
-    {
-        return 'course_' . $course_id . '_' . $addendum;
-    }
-
-    private static function generate_standard_acls($course_id)
+    public static function generate_standard_acls($course_id)
     {
         $role_l = static::role_learner($course_id);
         $role_i = static::role_instructor($course_id);
@@ -124,11 +119,11 @@ class OpencastLTI
         $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
         $base_acl->add_ace(new AccessControlEntity($role_l, 'write', false));
 
-        $acl_visible = new AccessControlList(static::acl_name($course_id, 'visible'));
+        $acl_visible = new AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
         $acl_visible->add_ace(new AccessControlEntity($role_l, 'read', true));
 
-        $acl_invisible = new AccessControlList(static::acl_name($course_id, 'invisible'));
+        $acl_invisible = new AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
         $acl_invisible->add_ace(new AccessControlEntity($role_l, 'read', false));
 
@@ -136,6 +131,34 @@ class OpencastLTI
             'base'      => $base_acl,
             'visible'   => $acl_visible,
             'invisible' => $acl_invisible
+        ];
+    }
+
+    public static function generate_combined_acls(array $course_ids, array $modes)
+    {
+        $resulting_acl = new AccessControlList(static::generate_acl_name(uniqid(), 'mixed', 'combined'));
+        for ($index = 0; $index < count($course_ids); $index++) {
+            $course_id = $course_ids[$index];
+            $mode = $modes[$index];
+
+            $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
+        }
+        return $resulting_acl;
+    }
+
+    public static function generate_acl_name($base_id, $mode, $base = 'course')
+    {
+        return $base . '_' . $base_id . '_' . $mode;
+    }
+
+    public static function parse_acl_name($acl_name)
+    {
+        $content = explode('_', $acl_name);
+
+        return [
+            'base'    => $content[0],
+            'base_id' => $content[1],
+            'mode'    => $content[2]
         ];
     }
 }
