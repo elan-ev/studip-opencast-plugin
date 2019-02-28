@@ -29,13 +29,27 @@ class ACLManagerClient extends OCRestClient
         return $this->getJSON('/acl', $data, false);
     }
 
+    function removeACL($acl_id){
+        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
+        $result = $this->getJSON('/acl/'.$acl_id, [], true, true);
+        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, null);
+
+        return $result[1] == 200 || $result[1] == 204;
+    }
+
     function applyACLto($type, $id, $acl_id)
     {
         $data = [
             'aclId' => $acl_id
         ];
 
-        return $this->getJSON('/apply/' . $type . '/' . $id, $data, false);
+        if($type == 'series'){
+            $data['override'] = 'true';
+        }
+
+        $result = $this->getJSON('/apply/' . $type . '/' . $id, $data, false, true);
+
+        return $result[1] == 200;
     }
 
     function getAllACLs()

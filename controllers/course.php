@@ -134,20 +134,7 @@ class CourseController extends OpencastController
             $this->flash['messages'] = ['success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.')];
         }
 
-        // print_r([OpencastLTI::get_complete_user_roles(),OpencastLTI::get_complete_course_acls()]);
-        print_r(OpencastLTI::generate_lti_launch_data(
-            '205f3efb7997a0fc9755da2b535038da',
-            $this->course_id,
-            LTIResourceLink::generate_link('test', 'test')
-        ));
-        print_r(OpencastLTI::generate_lti_launch_data(
-            '205f3efb7997a0fc9755da2b535038da',
-            $this->course_id,
-            LTIResourceLink::generate_link('test', 'test'),
-            true
-        ));
-        #print_r(OpencastLTI::generate_complete_acl_mapping());
-        print_r(OpencastLTI::mapping_to_defined_acls(OpencastLTI::generate_complete_acl_mapping()));
+        #print_r(OpencastLTI::apply_defined_acls(OpencastLTI::mapping_to_defined_acls(OpencastLTI::generate_complete_acl_mapping())));
 
         $reload = true;
         $this->states = false;

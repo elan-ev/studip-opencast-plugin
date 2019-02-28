@@ -10,22 +10,11 @@ class OpencastLTI
 
     public static function apply_defined_acls($defined_acls)
     {
-        $acl_manager = ACLManagerClient::getInstance();
         foreach ($defined_acls['s'] as $series_id => $setting) {
-            $created_acl = $acl_manager->createACL($setting['acl']);
-            if ($acl_manager->applyACLto('series', $series_id, $created_acl['id'])) {
-                foreach ($setting['courses'] as $course) {
-                    OCAccessControlModel::set_acl_for_course($series_id, 'series', $course, $created_acl['id']);
-                }
-            }
+            self::apply_acl_to_courses($setting['acl'], $setting['courses'], $series_id, 'series');
         }
         foreach ($defined_acls['e'] as $episode_id => $setting) {
-            $created_acl = $acl_manager->createACL($setting['acl']);
-            if ($acl_manager->applyACLto('episode', $episode_id, $created_acl['id'])) {
-                foreach ($setting['courses'] as $course) {
-                    OCAccessControlModel::set_acl_for_course($episode_id, 'episode', $course, $created_acl['id']);
-                }
-            }
+            self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode');
         }
     }
 
@@ -220,6 +209,32 @@ class OpencastLTI
             'base_id' => $content[1],
             'mode'    => $content[2]
         ];
+    }
+
+    /**
+     * @param $acl_manager
+     * @param $acl
+     * @param $series_id
+     *
+     * @return array
+     */
+    public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
+    {
+        $acl_manager = ACLManagerClient::getInstance();
+
+        $acls_to_remove = OCAccessControlModel::get_acls_for($target_type,$target_id);
+        foreach ($acls_to_remove as $to_remove){
+            if($acl_manager->removeACL($to_remove['acl_id'])){
+                OCAccessControlModel::remove_acl_from_db($to_remove['acl_id']);
+            }
+        }
+
+        $created_acl = $acl_manager->createACL($acl);
+        if ($acl_manager->applyACLto($target_type, $target_id, $created_acl->id)) {
+            foreach ($courses as $course) {
+                OCAccessControlModel::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
+            }
+        }
     }
 }
 
