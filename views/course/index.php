@@ -103,6 +103,22 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <?= $_('Vorlesungsaufzeichnungen') ?>
 </h1>
 
+<?
+
+$current_user_id = $GLOBALS['auth']->auth['uid'];
+$lti_launch_data = OpencastLTI::generate_lti_launch_data(
+        $current_user_id,
+        $course_id,
+        LTIResourceLink::generate_link('series','view complete series for course'),
+        OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
+    );
+
+$frame = OpencastLTI::launch_lti($lti_launch_data);
+var_dump($frame);
+?>
+
+<div><?= $frame ?>'></div>
+
 <? if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div class="oc_flex">
         <div id="episodes" class="oc_flexitem oc_flexepisodelist">

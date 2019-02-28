@@ -95,27 +95,34 @@ class OpencastLTI
         return $result;
     }
 
-    public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $privacy = false)
+    public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $tool, $privacy = false)
     {
         $user = User::find($user_id);
         $course = Course::find($course_id);
 
         $launch_data = [
-            'lti_message_type'                 => 'basic-lti-launch-request',
-            'lti_version'                      => 'LTI-1p0',
-            'resource_link_id'                 => $resource_link->id,
-            'resource_link_title'              => $resource_link->title,
-            'resource_link_description'        => $resource_link->description,
-            'user_id'                          => $user_id,
-            'roles'                            => [],
-            'lis_person_name_full'             => $user->getFullName(),
-            'lis_person_name_given'            => $user->vorname,
-            'lis_person_name_family'           => $user->nachname,
-            'lis_person_contact_email_primary' => $user->email,
-            'context_id'                       => $course_id,
-            'context_type'                     => 'CourseSection',
-            'context_title'                    => $course->name,
-            'contect_label'                    => $course->veranstaltungsnummer
+            'lti_message_type'                       => 'basic-lti-launch-request',
+            'lti_version'                            => 'LTI-1p0',
+            'resource_link_id'                       => $resource_link->id,
+            'resource_link_title'                    => $resource_link->title,
+            'resource_link_description'              => $resource_link->description,
+            'user_id'                                => $user_id,
+            'roles'                                  => '',
+            'lis_person_name_full'                   => $user->getFullName(),
+            'lis_person_name_given'                  => $user->vorname,
+            'lis_person_name_family'                 => $user->nachname,
+            'lis_person_contact_email_primary'       => $user->email,
+            'context_id'                             => $course_id,
+            'context_type'                           => 'CourseSection',
+            'context_title'                          => $course->name,
+            'contect_label'                          => $course->veranstaltungsnummer,
+            'custom_tool'                            => $tool,
+            'tool_consumer_info_product_family_code' => "studip",
+            'tool_consumer_info_version'             => "1.1",
+            'tool_consumer_instance_guid'            => "studip_uos",
+            'tool_consumer_instance_description'     => "Universität Osnabrück",
+            'oauth_callback'                         => 'about:blank',
+            'custom_test'                            => 'true'
         ];
 
         if ($privacy) {
@@ -131,14 +138,32 @@ class OpencastLTI
             }
         }
 
-        foreach ($course->members as $member) {
-            if ($member->user_id == $user_id) {
-                $launch_data['roles'][] = ($member->status == 'dozent' ? 'Instructor' : 'Learner');
-                break;
+        $user = User::find($user_id);
+        if ($user->username == 'root@studip') {
+            $launch_data['roles'] = 'Instructor';
+        } else {
+            foreach ($course->members as $member) {
+                if ($member->user_id == $user_id) {
+                    $launch_data['roles'] = ($member->status == 'dozent' ? 'Instructor' : 'Learner');
+                    break;
+                }
             }
         }
 
         return $launch_data;
+    }
+
+    public static function generate_tool($type, $id = 0)
+    {
+        if ($type == 'all') {
+            return 'engage/ui/';
+        } else if ($type == 'series') {
+            return 'ltitools/series/index.html;series=' . $id;
+        } else if ($type == 'episode') {
+            return 'engage/theodul/ui/core.html;id=' . $id;
+        }
+
+        return '';
     }
 
     public static function role_instructor($course_id)
@@ -222,9 +247,9 @@ class OpencastLTI
     {
         $acl_manager = ACLManagerClient::getInstance();
 
-        $acls_to_remove = OCAccessControlModel::get_acls_for($target_type,$target_id);
-        foreach ($acls_to_remove as $to_remove){
-            if($acl_manager->removeACL($to_remove['acl_id'])){
+        $acls_to_remove = OCAccessControlModel::get_acls_for($target_type, $target_id);
+        foreach ($acls_to_remove as $to_remove) {
+            if ($acl_manager->removeACL($to_remove['acl_id'])) {
                 OCAccessControlModel::remove_acl_from_db($to_remove['acl_id']);
             }
         }
@@ -235,6 +260,35 @@ class OpencastLTI
                 OCAccessControlModel::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
             }
         }
+    }
+
+    public static function launch_lti($lti_data)
+    {
+        $signed_data = OpencastLTI::sign_lti_data($lti_data, 'CONSUMERKEY', 'CONSUMERSECRET');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oc-test.virtuos.uni-osnabrueck.de/lti');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        #curl_setopt($ch, CURLOPT_HEADER, 1);
+        $server_output = curl_exec($ch);
+        curl_close ($ch);
+        return $server_output;
+    }
+
+    private static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')
+    {
+        $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
+        $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
+
+        $endpoint = 'https://oc-test.virtuos.uni-osnabrueck.de/lti';
+        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $endpoint, $lti_data);
+        $acc_req->sign_request($hmac_method, $consumer, $token);
+
+        $last_base_string = $acc_req->get_signature_base_string();
+
+        return $acc_req->get_parameters();
     }
 }
 
