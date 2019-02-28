@@ -113,11 +113,25 @@ $lti_launch_data = OpencastLTI::generate_lti_launch_data(
         OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
     );
 
-$frame = OpencastLTI::launch_lti($lti_launch_data);
-var_dump($frame);
+$b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
+$lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
+$lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
+
+$lti_data = OpencastLTI::sign_lti_data($lti_launch_data,'CONSUMERKEY','CONSUMERSECRET');
 ?>
 
-<div><?= $frame ?>'></div>
+<form action="https://oc-test.virtuos.uni-osnabrueck.de/lti" name="ltiLaunchForm" id="ltiLaunchForm" method="post" target="basicltiLaunchFrame" encType="application/x-www-form-urlencoded">
+    <?
+    foreach ($lti_data as $k => $val ) {
+        echo("<input style=\"display:none\" type=\"hidden\" name=\"".$k."\" value=\"");
+        echo(htmlspecialchars($val));
+        echo("\">");
+    }
+    ?>
+    <input type="submit" value="post">
+</form>
+
+<iframe name="basicltiLaunchFrame" width="100%" height="900" scrolling="auto" frameborder="1" transparency src=""></iframe>
 
 <? if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div class="oc_flex">

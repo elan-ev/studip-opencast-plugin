@@ -264,6 +264,11 @@ class OpencastLTI
 
     public static function launch_lti($lti_data)
     {
+        $b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
+        $lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
+        $lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
+
+
         $signed_data = OpencastLTI::sign_lti_data($lti_data, 'CONSUMERKEY', 'CONSUMERSECRET');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://oc-test.virtuos.uni-osnabrueck.de/lti');
@@ -271,13 +276,13 @@ class OpencastLTI
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        #curl_setopt($ch, CURLOPT_HEADER, 1);
         $server_output = curl_exec($ch);
-        curl_close ($ch);
+        curl_close($ch);
+
         return $server_output;
     }
 
-    private static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')
+    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')
     {
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
