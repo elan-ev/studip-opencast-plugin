@@ -88,7 +88,7 @@ class OCCourseModel
             $series = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);
 
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
-            //$ordered_episodes = [];
+            $ordered_episodes = [];
 
             //check if series' episodes is already stored in studip
             if (!empty($series)) {
