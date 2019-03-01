@@ -121,8 +121,8 @@ class OpencastLTI
             'tool_consumer_info_version'             => "1.1",
             'tool_consumer_instance_guid'            => "studip_uos",
             'tool_consumer_instance_description'     => "Universität Osnabrück",
-            'oauth_callback'                         => 'about:blank',
-            'custom_test'                            => 'true'
+            'oauth_callback'                         => 'about:blank'
+            //'custom_test'                            => 'true'
         ];
 
         if ($privacy) {
@@ -264,9 +264,9 @@ class OpencastLTI
 
     public static function launch_lti($lti_data)
     {
-        $b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
-        $lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
-        $lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
+        //$b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
+        //$lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
+        //$lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
 
 
         $signed_data = OpencastLTI::sign_lti_data($lti_data, 'CONSUMERKEY', 'CONSUMERSECRET');
@@ -276,6 +276,7 @@ class OpencastLTI
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         $server_output = curl_exec($ch);
         curl_close($ch);
 

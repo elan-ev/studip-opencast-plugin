@@ -172,6 +172,7 @@ class OCRestClient
                 $options[CURLOPT_HTTPGET] = 1;
             }
 
+            curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
             curl_setopt_array($this->ochandler, $options);
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);

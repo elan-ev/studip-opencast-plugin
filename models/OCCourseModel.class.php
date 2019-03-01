@@ -67,10 +67,28 @@ class OCCourseModel
     public function getEpisodes($force_reload = false)
     {
         if ($this->getSeriesID()) {
-            $series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
+            //$series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
+            $search_client = SearchClient::getInstance();
+            $current_user = $GLOBALS['auth']->auth['uid'];
+
+            $user = User::find($current_user);
+            $course = Course::find($this->getCourseID());
+            $role = '';
+            if ($user->username == 'root@studip') {
+                $role = 'Instructor';
+            } else {
+                foreach ($course->members as $member) {
+                    if ($member->user_id == $current_user) {
+                        $role = ($member->status == 'dozent' ? 'Instructor' : 'Learner');
+                        break;
+                    }
+                }
+            }
+
+            $series = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);
 
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
-            $ordered_episodes = [];
+            //$ordered_episodes = [];
 
             //check if series' episodes is already stored in studip
             if (!empty($series)) {
