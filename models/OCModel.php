@@ -420,11 +420,22 @@ class OCModel
      */
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
     {
+        # Local
         $stmt = DBManager::get()->prepare("UPDATE
                   oc_seminar_episodes SET visible = ?
                   WHERE seminar_id = ? AND  episode_id = ?");
+        $result = $stmt->execute(array($visibility, $course_id, $episode_id));
 
-        return $stmt->execute(array($visibility, $course_id, $episode_id));
+        # Remote
+        if($result){
+            $series_to_update = OCModel::getSeriesForEpisode($episode_id);
+            var_dump($series_to_update);
+            foreach($series_to_update as $series_id){
+                $mapping = OpencastLTI::generate_acl_mapping_for_series($series_id);
+                $defined_acls = OpencastLTI::mapping_to_defined_acls($mapping);
+                OpencastLTI::apply_defined_acls($defined_acls);
+            }
+        }
     }
 
     /**
@@ -619,5 +630,35 @@ class OCModel
     static function sanatizeContent($content)
     {
         return studip_utf8decode($content);
+    }
+
+    static function getCoursesForEpisode($episode_id){
+        $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_episodes WHERE episode_id = ?");
+        $stmt->execute([$episode_id]);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $return = [];
+
+        foreach ($result as $entry){
+            $return[] = $entry['seminar_id'];
+        }
+
+        return array_unique($return);
+    }
+
+    static function getSeriesForEpisode($episode_id){
+        $courses = static::getCoursesForEpisode($episode_id);
+        $series = [];
+
+        $stmt = DBManager::get()->prepare("SELECT series_id FROM oc_seminar_series WHERE seminar_id = ?");
+        foreach ($courses as $course_id){
+            $stmt->execute([$course_id]);
+            $direct_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach($direct_result as $entry){
+                $series[] = $entry['series_id'];
+            }
+        }
+
+        return array_unique($series);
     }
 }

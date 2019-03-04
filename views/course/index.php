@@ -104,11 +104,14 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 </h1>
 
 <?
-    #$mapping = OpencastLTI::generate_complete_acl_mapping();
+    #var_dump(OCModel::getCoursesForEpisode('02f1011f-6ae6-4754-8151-4d4fddf41ac2'));
+    #var_dump(OCModel::getSeriesForEpisode('02f1011f-6ae6-4754-8151-4d4fddf41ac2'));
+
+    $mapping = OpencastLTI::generate_complete_acl_mapping();
     #print_r($mapping);
-    #$acls = OpencastLTI::mapping_to_defined_acls($mapping);
-    #print_r($acls);
-    #$apply = OpencastLTI::apply_defined_acls($acls);
+    $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+    #var_dump($acls);
+    $apply = OpencastLTI::apply_defined_acls($acls);
     #print_r($apply);
 ?>
 

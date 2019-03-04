@@ -32,7 +32,7 @@ class OpencastLTI
             ];
         }
         foreach ($mapping['e'] as $episode_id => $setting) {
-            $acls[$series_id] = [
+            $acls['e'][$episode_id] = [
                 'courses' => array_keys($setting),
                 'acl'     => static::generate_combined_acls(array_keys($setting), array_values($setting))
             ];
@@ -186,15 +186,16 @@ class OpencastLTI
         $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
         $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
         $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
-        $base_acl->add_ace(new AccessControlEntity($role_l, 'write', false));
+        $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+        $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
         $acl_visible = new AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
         $acl_visible->add_ace(new AccessControlEntity($role_l, 'read', true));
+        $acl_visible->add_ace(new AccessControlEntity($role_l, 'write', false));
 
         $acl_invisible = new AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
-        $acl_invisible->add_ace(new AccessControlEntity($role_l, 'read', false));
 
         return [
             'base'      => $base_acl,

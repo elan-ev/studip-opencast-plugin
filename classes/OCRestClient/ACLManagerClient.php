@@ -43,10 +43,6 @@ class ACLManagerClient extends OCRestClient
             'aclId' => $acl_id
         ];
 
-        if($type == 'series'){
-            $data['override'] = 'true';
-        }
-
         $result = $this->getJSON('/apply/' . $type . '/' . $id, $data, false, true);
 
         return $result[1] == 200;

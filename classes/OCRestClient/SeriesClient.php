@@ -110,21 +110,11 @@ class SeriesClient extends OCRestClient
     {
         $dublinCore = studip_utf8encode(OCSeriesModel::createSeriesDC($course_id));
 
-        $ACLData = array(
-            'ROLE_ADMIN' => array(
-                'read' => 'true',
-                'write' => 'true',
-                'analyze' => 'true'
-            ),
-           'ROLE_ANONYMOUS' => array(
-                'read' => 'true'
-           )
-        );
+        $acl = OpencastLTI::generate_standard_acls($course_id);
 
-        $ACL = OCSeriesModel::createSeriesACL($ACLData);
         $post = array(
             'series' => $dublinCore,
-            'acl'    => $ACL
+            'acl'    => $acl['visible']->as_xml()
         );
 
         $res = $this->getXML('/', $post, false, true);
