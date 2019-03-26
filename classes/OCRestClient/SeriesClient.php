@@ -128,7 +128,7 @@ class SeriesClient extends OCRestClient
             $series_id = $json['identifier'];
             OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1, time());
 
-            self::updateAccescontrolForSeminar($series_id, $ACL);
+            self::updateAccescontrolForSeminar($series_id, $acl['visible']->as_xml());
 
             return true;
         } else {
