@@ -405,13 +405,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     }
 
     public static function activated_in_courses(){
-        $statement = DBManager::get()->prepare('SELECT poiid FROM plugins_activated WHERE pluginid=?');
+        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins_activated WHERE range_id = ?');
         $statement->execute([OpenCast::get_plugin_id()]);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $to_return = [];
         if($result){
             foreach ($result as $entry){
-                $to_return[] = str_replace('sem','',$entry['poiid']);
+                $to_return[] = str_replace('sem','',$entry['pluginid']);
             }
         }
         return $to_return;

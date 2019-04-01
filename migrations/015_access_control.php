@@ -10,12 +10,22 @@ class AccessControl extends Migration
 
     function up()
     {
-        $stmt = DBManager::get()->query("CREATE TABLE `oc_access_control` ( `id` TEXT NOT NULL ,  `type` ENUM('episode','series') NOT NULL ,  `course_id` TEXT NOT NULL ,  `acl_id` INT NOT NULL )");
+        $stmt = DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_access_control` (
+            `id` TEXT NOT NULL ,
+            `type` ENUM('episode','series') NOT NULL ,
+            `course_id` TEXT NOT NULL ,
+            `acl_id` INT NOT NULL
+        )");
+
+        // Expire orm cache, so the change can take effect
+        SimpleORMap::expireTableScheme();
     }
 
     function down()
     {
         $stmt = DBManager::get()->query("DROP TABLE `oc_access_control`");
+
+        SimpleORMap::expireTableScheme();
     }
 
 }
