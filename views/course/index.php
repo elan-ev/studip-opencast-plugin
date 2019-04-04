@@ -103,56 +103,8 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <?= $_('Vorlesungsaufzeichnungen') ?>
 </h1>
 
-<?
-    #var_dump(OCModel::getCoursesForEpisode('02f1011f-6ae6-4754-8151-4d4fddf41ac2'));
-    #var_dump(OCModel::getSeriesForEpisode('02f1011f-6ae6-4754-8151-4d4fddf41ac2'));
-
-    $mapping = OpencastLTI::generate_complete_acl_mapping();
-    #print_r($mapping);
-    $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-    #var_dump($acls);
-    $apply = OpencastLTI::apply_defined_acls($acls);
-    #print_r($apply);
-?>
-
-
-<?/*
-
-https://oc-test.virtuos.uni-osnabrueck.de/search/episode.json?limit=15&offset=0
-
-$current_user_id = $GLOBALS['auth']->auth['uid'];
-$lti_launch_data = OpencastLTI::generate_lti_launch_data(
-        $current_user_id,
-        $course_id,
-        LTIResourceLink::generate_link('series','view complete series for course'),
-        OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
-    );
-
-$b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
-$lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
-$lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
-
-//print_r(OpencastLTI::launch_lti($lti_data))
-
-$lti_data = OpencastLTI::sign_lti_data($lti_launch_data,'CONSUMERKEY','CONSUMERSECRET');
-
-*/
-?>
-
-<!--<form action="https://oc-test.virtuos.uni-osnabrueck.de/lti" name="ltiLaunchForm" id="ltiLaunchForm" method="post" target="basicltiLaunchFrame" encType="application/x-www-form-urlencoded">
-    <?/*
-    foreach ($lti_data as $k => $val ) {
-        echo("<input style=\"display:none\" type=\"hidden\" name=\"".$k."\" value=\"");
-        echo(htmlspecialchars($val));
-        echo("\">");
-    }*/
-    ?>
-    <input type="submit" value="post">
-</form>
-
-<iframe name="basicltiLaunchFrame" width="100%" height="900" scrolling="auto" frameborder="1" transparency src=""></iframe>
--->
-<? if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
+<? 
+if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div class="oc_flex">
         <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">

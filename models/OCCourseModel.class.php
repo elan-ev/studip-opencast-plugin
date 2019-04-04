@@ -67,22 +67,15 @@ class OCCourseModel
     public function getEpisodes($force_reload = false)
     {
         if ($this->getSeriesID()) {
-            //$series = $this->getCachedEntries($this->getSeriesID(), $force_reload);
             $search_client = SearchClient::getInstance();
-            $current_user = $GLOBALS['auth']->auth['uid'];
 
-            $user = User::find($current_user);
             $course = Course::find($this->getCourseID());
             $role = '';
-            if ($user->username == 'root@studip') {
+
+            if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
                 $role = 'Instructor';
-            } else {
-                foreach ($course->members as $member) {
-                    if ($member->user_id == $current_user) {
-                        $role = ($member->status == 'dozent' ? 'Instructor' : 'Learner');
-                        break;
-                    }
-                }
+            } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
+                $role = 'Learner';
             }
 
             $series = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);

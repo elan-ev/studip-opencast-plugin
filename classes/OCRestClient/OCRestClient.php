@@ -3,16 +3,19 @@
  * OCRestClient.php - The administarion of the opencast player
  */
 
-define(DEBUG_CURL, false);
+define(DEBUG_CURL, TRUE);
 
 class OCRestClient
 {
     static $me;
-    protected $base_url;
-    protected $username;
-    protected $password;
-    protected $oc_version;
-    protected $config_id;
+
+    protected $base_url,
+        $username,
+        $password,
+        $oc_version,
+        $config_id,
+        $cookie;
+
     public $serviceName = 'ParentRestClientClass';
 
     static function getInstance($course_id = null)
@@ -36,13 +39,15 @@ class OCRestClient
 
     function __construct($config)
     {
-        $this->base_url = $config['service_url'];
-        $this->username = $config['service_user'];
-        $this->password = $config['service_password'];
+        $this->base_url   = $config['service_url'];
+        $this->username   = $config['service_user'];
+        $this->password   = $config['service_password'];
         $this->oc_version = $config['service_version'];
-        if($config['config_id']==null){
+
+        if ($config['config_id'] == null){
             $config['config_id'] = -1;
         }
+
         $precise_config = Configuration::instance($config['config_id']);
 
         // setting up a curl-handler
@@ -58,7 +63,7 @@ class OCRestClient
         //ssl
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, $precise_config['ssl_verify_peer']);
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, $precise_config['ssl_verify_host']);
-        if($precise_config['ssl_cipher_list']!='none') {
+        if ($precise_config['ssl_cipher_list'] != 'none') {
             curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, $precise_config['ssl_cipher_list']);
         }
 
@@ -152,6 +157,16 @@ class OCRestClient
         return $stmt->execute([$config_id]);
     }
 
+    function setCookie($name, $value)
+    {
+        $this->cookie = $name .'='. $value;
+    }
+
+    function getCookie()
+    {
+        return $this->cookie;
+    }
+
     /**
      *  function getJSON - performs a REST-Call and retrieves response in JSON
      */
@@ -174,6 +189,11 @@ class OCRestClient
 
             curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
             curl_setopt_array($this->ochandler, $options);
+
+            if ($this->getCookie()) {
+                curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: '. $this->getCookie()]);
+            }
+
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
@@ -226,9 +246,17 @@ class OCRestClient
                 $options[CURLOPT_HTTPGET] = 1;
             }
 
+            if ($this->getCookie()) {
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Cookie: '. $this->getCookie()]);
+            }
+
             curl_setopt_array($this->ochandler, $options);
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+            if (DEBUG_CURL) {
+                fclose($this->debug);
+            }
 
             if ($with_res_code) {
                 return [$response, $httpCode];

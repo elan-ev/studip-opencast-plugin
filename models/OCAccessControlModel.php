@@ -18,7 +18,8 @@ class OCAccessControlModel
         return [];
     }
 
-    public static function get_acls_for($type_name,$type_id){
+    public static function get_acls_for($type_name, $type_id)
+    {
         $stmt = DBManager::get()->prepare('SELECT acl_id FROM `oc_access_control` WHERE type = ? AND id = ?');
 
         if ($stmt->execute([$type_name,$type_id])) {

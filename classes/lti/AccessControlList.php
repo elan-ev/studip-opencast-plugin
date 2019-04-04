@@ -40,7 +40,9 @@ class AccessControlList
 
     public function as_xml()
     {
-        return '<acl>' . implode('', $this->entities) . '</acl>';
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<acl xmlns="http://org.opencastproject.security">' 
+            . implode('', $this->entities) . '</acl>';
     }
 
     public function get_entities()

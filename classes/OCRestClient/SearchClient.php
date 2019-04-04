@@ -70,12 +70,15 @@ class SearchClient extends OCRestClient
             $roles_usable[] = 'oc_acl_read:' . $course_id . '_' . $role;
         }
 
-        $special_query = 'dc_is_part_of:'.$series_id.' AND ( ' . implode(' OR ', $roles_usable) . ' )';
+        $cookie = OpencastLTI::launch_lti($GLOBALS['user']->id, $course_id, $series_id);
+
+        $special_query = 'dc_is_part_of:'. $series_id .' AND ( '. implode(' OR ', $roles_usable) .' )';
         $service_url = "/lucene.json?q=$special_query&sort=$sort&limit=20&offset=0&admin=false";
 
         $service_url = str_replace(' ','%20',$service_url);
         $service_url = str_replace(':','%3A',$service_url);
 
+        $this->setCookie('JSESSIONID', $cookie);
         $result = $this->getJSON($service_url);
 
         if ($result) {

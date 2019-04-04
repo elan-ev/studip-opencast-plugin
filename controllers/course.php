@@ -134,10 +134,12 @@ class CourseController extends OpencastController
             $this->flash['messages'] = ['success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.')];
         }
 
-        #print_r(OpencastLTI::apply_defined_acls(OpencastLTI::mapping_to_defined_acls(OpencastLTI::generate_complete_acl_mapping())));
-
         $reload = true;
         $this->states = false;
+
+        $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
+        $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+        OpencastLTI::apply_defined_acls($acls);
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
@@ -212,6 +214,7 @@ class CourseController extends OpencastController
             $oc_course = new OCCourseModel($this->course_id);
             if ($oc_course->getSeriesID()) {
                 $ordered_episode_ids = $oc_course->getEpisodes($reload);
+
                 if (!$GLOBALS['perm']->have_studip_perm($minimum_full_view_perm, $this->course_id)) {
                     $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
                 }

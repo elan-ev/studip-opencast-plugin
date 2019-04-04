@@ -35,7 +35,7 @@ class OCModel
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::i()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
                 AND rop.state = 'on'");
 
        $stmt->execute();
@@ -48,7 +48,7 @@ class OCModel
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
                 LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
-                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::i()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
                 AND rop.state = 'on'");
 
        $stmt->execute();
@@ -429,7 +429,6 @@ class OCModel
         # Remote
         if($result){
             $series_to_update = OCModel::getSeriesForEpisode($episode_id);
-            var_dump($series_to_update);
             foreach($series_to_update as $series_id){
                 $mapping = OpencastLTI::generate_acl_mapping_for_series($series_id);
                 $defined_acls = OpencastLTI::mapping_to_defined_acls($mapping);

@@ -10,12 +10,16 @@ class AddPrefixForCaptureAgents extends Migration
 
     function up()
     {
-        $stmt = DBManager::get()->query("UPDATE `resources_properties` SET `name`= CONCAT('OCCA#', `name`) WHERE `name`='Opencast Capture Agent'");
+        $stmt = DBManager::get()->query("UPDATE `resources_properties`
+            SET `name`= CONCAT('OCCA#', `name`)
+            WHERE `name`='Opencast Capture Agent'");
     }
 
     function down()
     {
-        $stmt = DBManager::get()->query("UPDATE `resources_properties` SET `name`= 'Opencast Capture Agent' WHERE `name`='OCCA#%'");
+        $stmt = DBManager::get()->query("UPDATE `resources_properties`
+            SET `name`= 'Opencast Capture Agent'
+            WHERE `name`='OCCA#%'");
     }
 
 }

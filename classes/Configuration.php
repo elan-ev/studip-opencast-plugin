@@ -10,6 +10,11 @@ define('OC_GLOBAL_CONFIG_ID', -1);
 class Configuration implements ArrayAccess
 {
     private static $instances = [];
+    private
+        $values,
+        $descriptions,
+        $database_ids,
+        $config_id;
 
     /**
      * @param int $config_id
@@ -26,22 +31,6 @@ class Configuration implements ArrayAccess
         return static::$instances[$name];
     }
 
-    /**
-     * Alias for instance()
-     *
-     * @param int $config_id
-     *
-     * @return Configuration
-     */
-    public static function i($config_id = OC_GLOBAL_CONFIG_ID)
-    {
-        return static::instance($config_id);
-    }
-
-    private $values;
-    private $descriptions;
-    private $database_ids;
-    private $config_id;
 
     private function __construct($config_id)
     {
@@ -154,7 +143,11 @@ class Configuration implements ArrayAccess
     {
         $entries = [];
         foreach ($this->values as $name => $value) {
-            $entries[$name] = ['value' => $value, 'type' => $this->determine_value_type($value), 'description' => ($this->descriptions[$name] ? $this->descriptions[$name] : 'Keine Beschreibung...')];
+            $entries[$name] = [
+                'value' => $value,
+                'type'  => $this->determine_value_type($value),
+                'description' => ($this->descriptions[$name] ? $this->descriptions[$name] : 'Keine Beschreibung...')
+            ];
         }
 
         return $entries;

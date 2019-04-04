@@ -62,6 +62,7 @@ class OpencastLTI
             's' => [],
             'e' => []
         ];
+
         foreach ($courses as $course) {
             $acls = static::generate_acl_mapping_for_course($course);
             $result = array_merge_recursive($result, $acls);
@@ -138,16 +139,10 @@ class OpencastLTI
             }
         }
 
-        $user = User::find($user_id);
-        if ($user->username == 'root@studip') {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id, $user_id)) {
             $launch_data['roles'] = 'Instructor';
-        } else {
-            foreach ($course->members as $member) {
-                if ($member->user_id == $user_id) {
-                    $launch_data['roles'] = ($member->status == 'dozent' ? 'Instructor' : 'Learner');
-                    break;
-                }
-            }
+        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id, $user_id)) {
+            $launch_data['roles'] = 'Learner';
         }
 
         return $launch_data;
@@ -186,8 +181,8 @@ class OpencastLTI
         $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
         $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
         $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
-        $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
-        $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
+        // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+        // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
         $acl_visible = new AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
@@ -263,25 +258,46 @@ class OpencastLTI
         }
     }
 
-    public static function launch_lti($lti_data)
+    /**
+     * Returns the cookie for the lti authentication
+     *
+     * @param  [type] $lti_data [description]
+     * @return string           the jessionid
+     */
+    public static function launch_lti($user_id, $course_id, $identifier)
     {
-        //$b64 = base64_encode("CONSUMERKEY:::CONSUMERSECRET");
-        //$lti_data['los_outcome_service_url'] = 'https://oc-test.virtuos.uni-osnabrueck.de/lti?b64=' . htmlentities($b64);
-        //$lti_data["lis_result_sourcedid"] = "feb-123-456-2929::28883";
+        $lti_data = OpencastLTI::generate_lti_launch_data(
+            $user_id,
+            $course_id,
+            LTIResourceLink::generate_link('series', 'view complete series for course'),
+            OpencastLTI::generate_tool('series', $identifier)
+        );
 
+        $config_id = OCRestClient::getConfigIdForCourse($course_id);
 
-        $signed_data = OpencastLTI::sign_lti_data($lti_data, 'CONSUMERKEY', 'CONSUMERSECRET');
+        $config = Configuration::instance($config_id);
+
+        $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://oc-test.virtuos.uni-osnabrueck.de/lti');
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
         $server_output = curl_exec($ch);
         curl_close($ch);
 
-        return $server_output;
+        // get cookie
+        preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);
+        $cookie = $matches[1];
+
+        if ($cookie) {
+            return $cookie;
+        } else {
+            throw new AccessDeniedException('Could not connect to Opencasts LTI Service!');
+        }
+
     }
 
     public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')

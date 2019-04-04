@@ -122,10 +122,10 @@ class AdminController extends OpencastController
             //set precise settings if any
             $precise_config = $config['precise'];
             foreach($precise_config as $name=>$value){
-                if(Configuration::i()[$name] != $value){
-                    Configuration::i($config_id)->set($name,$value,Configuration::i()->get_description_for($name));
+                if(Configuration::instance()[$name] != $value){
+                    Configuration::instance($config_id)->set($name,$value,Configuration::instance()->get_description_for($name));
                 }else{
-                    Configuration::i($config_id)->remove($name);
+                    Configuration::instance($config_id)->remove($name);
                 }
             }
 
@@ -223,6 +223,7 @@ class AdminController extends OpencastController
 
         // after updating the configuration, clear the cached series data
         OCSeriesModel::clearCachedSeriesData();
+        #OpencastLTI::generate_complete_acl_mapping();
 
         $this->redirect('admin/config');
     }
@@ -436,7 +437,7 @@ class AdminController extends OpencastController
     }
 
     function precise_update_action(){
-        foreach (Request::getArray('precise_config') as $database_id=>$config){
+        foreach (Request::getArray('precise_config') as $database_id => $config){
             foreach ($config as $name=>$value){
                 Configuration::instance($database_id)[$name] = $value;
             }

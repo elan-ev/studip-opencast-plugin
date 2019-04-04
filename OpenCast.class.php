@@ -394,24 +394,28 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $change_capture_agent_name->add_as_observer('change.capture_agent_attribute');
     }
 
-    public static function get_plugin_id(){
-        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins WHERE pluginclassname=?');
+    public static function get_plugin_id()
+    {
+        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins WHERE pluginclassname = ?');
         $statement->execute(['OpenCast']);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        if($result && count($result[0])>0){
+        if ($result && count($result[0]) > 0) {
             return $result[0]['pluginid'];
         }
         return -1;
     }
 
-    public static function activated_in_courses(){
-        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins_activated WHERE range_id = ?');
+    public static function activated_in_courses()
+    {
+        $statement = DBManager::get()->prepare("SELECT range_id FROM plugins_activated
+            WHERE range_type = 'sem'
+                AND pluginid = ?");
         $statement->execute([OpenCast::get_plugin_id()]);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $to_return = [];
-        if($result){
-            foreach ($result as $entry){
-                $to_return[] = str_replace('sem','',$entry['pluginid']);
+        if ($result) {
+            foreach ($result as $entry) {
+                $to_return[] = $entry['range_id'];
             }
         }
         return $to_return;
