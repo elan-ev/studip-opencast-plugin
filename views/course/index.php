@@ -103,7 +103,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <?= $_('Vorlesungsaufzeichnungen') ?>
 </h1>
 
-<? 
+<?
 if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div class="oc_flex">
         <div id="episodes" class="oc_flexitem oc_flexepisodelist">
@@ -176,7 +176,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                             <div class="oce_playercontainer">
                                 </span>
                                 <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                <a href="<?= $controller->url_for('course/lti/'. $item['id']) ?>" target="_blank">
                 <span class="previewimage">
                     <img class="previewimage" src="<?= $image ?>">
                     <img class="playbutton" style="bottom:10px"

@@ -226,6 +226,35 @@ class CourseController extends OpencastController
         }
     }
 
+    public function lti_action($video_id)
+    {
+        $user_id = $GLOBALS['user']->id;
+
+        $oc_course = new OCCourseModel($this->course_id);
+
+        if (!$series_id = $oc_course->getSeriesID()) {
+             throw new AccessDeniedException();
+        }
+
+        $search_client = SearchClient::getInstance($this->course_id);
+        $this->video_url = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $video_id;
+
+        $lti_data = OpencastLTI::generate_lti_launch_data(
+            $user_id,
+            $this->course_id,
+            LTIResourceLink::generate_link('series', 'view complete series for course'),
+            OpencastLTI::generate_tool('series', $this->course_id)
+        );
+
+        $config_id = OCRestClient::getConfigIdForCourse($this->course_id);
+
+        $config = Configuration::instance($config_id);
+
+        $this->signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+
+
+    }
+
     function config_action()
     {
         if (isset($this->flash['messages'])) {
