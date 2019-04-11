@@ -266,31 +266,35 @@ class OpencastLTI
      */
     public static function launch_lti($user_id, $course_id, $identifier)
     {
-        $lti_data = OpencastLTI::generate_lti_launch_data(
-            $user_id,
-            $course_id,
-            LTIResourceLink::generate_link('series', 'view complete series for course'),
-            OpencastLTI::generate_tool('series', $identifier)
-        );
+        static $cookie;
 
-        $config_id = OCRestClient::getConfigIdForCourse($course_id);
+        if (!$cookie) {
+            $lti_data = OpencastLTI::generate_lti_launch_data(
+                $user_id,
+                $course_id,
+                LTIResourceLink::generate_link('series', 'view complete series for course'),
+                OpencastLTI::generate_tool('series', $identifier)
+            );
 
-        $config = Configuration::instance($config_id);
+            $config_id = OCRestClient::getConfigIdForCourse($course_id);
+            $config = Configuration::instance($config_id);
+            $config_oc = OCEndpointModel::getBaseServerConf($config_id);
 
-        $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+            $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://oc-test.virtuos.uni-osnabrueck.de/lti');
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        $server_output = curl_exec($ch);
-        curl_close($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, rtrim($config_oc['service_url'] . '/lti', '/ '));
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            $server_output = curl_exec($ch);
+            curl_close($ch);
 
-        // get cookie
-        preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);
-        $cookie = $matches[1];
+            // get cookie
+            preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);
+            $cookie = $matches[1];
+        }
 
         if ($cookie) {
             return $cookie;
@@ -305,7 +309,10 @@ class OpencastLTI
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
 
-        $endpoint = 'https://oc-test.virtuos.uni-osnabrueck.de/lti';
+        $config_id = OCRestClient::getConfigIdForCourse($course_id);
+        $config_oc = OCEndpointModel::getBaseServerConf($config_id);
+
+        $endpoint = rtrim($config_oc['service_url'] . '/lti', '/ ');
         $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $endpoint, $lti_data);
         $acc_req->sign_request($hmac_method, $consumer, $token);
 

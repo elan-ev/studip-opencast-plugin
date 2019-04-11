@@ -17,7 +17,7 @@
 
 <?= $this->render_partial('messages') ?>
 
-<script language="JavaScript">
+<script>
     STUDIP.hasperm = <?=var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id))?>;
     OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
@@ -26,6 +26,30 @@
     <? endif; ?>
 </script>
 
+<?
+$current_user_id = $GLOBALS['auth']->auth['uid'];
+$lti_launch_data = OpencastLTI::generate_lti_launch_data(
+    $current_user_id,
+    $course_id,
+    LTIResourceLink::generate_link('series','view complete series for course'),
+    OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
+);
+
+$lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+?>
+
+<script>
+    // send credentials to opencast lti backend, setting session cookie for oc domain
+    $.ajax({
+        type: "POST",
+        url: "<?= rtrim($config_oc['service_url'], '/') ?>/lti",
+        data:  <?= json_encode($lti_data) ?>,
+        xhrFields: {
+           withCredentials: true
+        },
+        crossDomain: true
+    });
+</script>
 <?
 global $perm;
 $sidebar = Sidebar::get();
@@ -134,7 +158,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                         <?= $_("Videoverarbeitung fehlgeschlagen") ?>
                                     </div>
 
-                                    <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
+                                    <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?>
                                 </div>
                             <? else : ?>
                                 <div class="oce_wip" id="<?= $workflow_id ?>">
@@ -174,14 +198,13 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                 <div></div>
                             </div>
                             <div class="oce_playercontainer">
-                                </span>
                                 <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                                <a href="<?= $controller->url_for('course/lti/'. $item['id']) ?>" target="_blank">
-                <span class="previewimage">
-                    <img class="previewimage" src="<?= $image ?>">
-                    <img class="playbutton" style="bottom:10px"
-                         src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
-                </span>
+                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                <span class="previewimage">
+                                    <img class="previewimage" src="<?= $image ?>">
+                                    <img class="playbutton" style="bottom:10px"
+                                         src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
+                                </span>
                                 </a>
                             </div>
                         </div>

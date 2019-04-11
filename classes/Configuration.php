@@ -122,10 +122,14 @@ class Configuration implements ArrayAccess
 
     public function load()
     {
-        $stmt = DBManager::get()->prepare("SELECT `id`,`name`,`description`,`value` FROM `oc_config_precise` WHERE for_config = ?");
+        $stmt = DBManager::get()->prepare("SELECT `id`,`name`,`description`,`value`
+                FROM `oc_config_precise`
+                WHERE for_config = ?");
         $result = $stmt->execute([$this->config_id]);
+
         if ($result) {
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             foreach ($data as $entry) {
                 $this->set($entry['name'], $entry['value'], $entry['description'], $entry['id']);
             }
