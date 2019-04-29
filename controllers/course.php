@@ -256,12 +256,12 @@ class CourseController extends OpencastController
 
     function edit_action($course_id)
     {
+        $series = json_decode(Request::get('series'), true);
 
-        $series = Request::getArray('series');
-        foreach ($series as $serie) {
-            OCSeriesModel::setSeriesforCourse($course_id, $serie, 'visible', 0, time());
-            StudipLog::log('OC_CONNECT_SERIES', null, $course_id, $serie);
-        }
+        OCSeriesModel::setSeriesforCourse($course_id, $series['config_id'],
+            $series['series_id'], 'visible', 0, time());
+        StudipLog::log('OC_CONNECT_SERIES', null, $course_id, $serie);
+
         $this->flash['messages'] = ['success' => $this->_("Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.")];
 
         $this->redirect('course/index');

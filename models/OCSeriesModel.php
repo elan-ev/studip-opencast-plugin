@@ -160,13 +160,12 @@ class OCSeriesModel
      *
      * @return type
      */
-    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    static function setSeriesforCourse($courseID, $config_id, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
     {
-        $configID = SeriesClient::getConfigIdForCourse($courseID);
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
-        return $stmt->execute(array($configID,$seriesID, $courseID, $visibility, $schedule, $mkdate));
+        return $stmt->execute(array($config_id, $seriesID, $courseID, $visibility, $schedule, $mkdate));
     }
 
     /**

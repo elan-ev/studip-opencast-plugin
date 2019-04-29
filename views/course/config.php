@@ -1,7 +1,7 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 
 <form
-    action="<?= PluginEngine::getLink('opencast/course/edit/' . $course_id .'/'. $config_id) ?>"
+    action="<?= PluginEngine::getLink('opencast/course/edit/' . $course_id) ?>"
     method=post id="select-series" class="default"
     data-unconnected="<?= (empty($connectedSeries) ? 1 : 'false');?>"
 >
@@ -21,7 +21,7 @@
                 <optgroup label="<?= $_(sprintf('%s. Opencast-System', $id)) ?>">
                     <? foreach ($unconnectedSeries as $serie) : ?>
                         <?// if (isset($serie['identifier'])) : ?>
-                            <option value="<?= $serie['identifier'] ?>"><?= studip_utf8decode($serie['title'])?></option>
+                            <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie['identifier'] ?>"}'><?= studip_utf8decode($serie['title'])?></option>
                         <?//endif;?>
                     <?endforeach;?>
                 </optgroup>
