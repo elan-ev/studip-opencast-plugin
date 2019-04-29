@@ -93,10 +93,10 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
         );
 
         $actions->addLink(
-            $_('Vorhandene Series verknüpfen'), '#',
+            $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
             new Icon('group', 'clickable'),
             [
-                'id' => 'oc_config_dialog'
+                'data-dialog' => 'width=400;height=500'
             ]);
     }
 
@@ -260,7 +260,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
 
 <? else: ?>
     <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
-        <? if($this->config_error) : ?>
+        <? if ($this->config_error) : ?>
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
         <? else : ?>
             <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
@@ -275,11 +275,6 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div id="upload_dialog" title="<?= $_("Medienupload") ?>" style="display: none;">
         <?= $this->render_partial("course/_upload", ['course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier']]) ?>
     </div>
-
-    <div id="config_dialog" title="<?= $_("Series verknüpfen") ?>" style="display: none;">
-        <?= $this->render_partial("course/_config", []) ?>
-    </div>
-
 <? endif; ?>
 
 <!--- hidden -->

@@ -30,20 +30,6 @@ OC = {
                         return false;
                     }
                 );
-                // Config Dialog
-                jQuery("#config_dialog").dialog({autoOpen: false, width: 800, dialogClass: 'ocConfig', height: 350});
-                jQuery("#oc_config_dialog").click(
-                    function () {
-                        jQuery("#config_dialog").dialog('open');
-                        return false;
-                    }
-                );
-                jQuery(".chosen-select").chosen({
-                    disable_search_threshold: 10,
-                    max_selected_options: 1,
-                    no_results_text: "Oops, nothing found!",
-                    width: "350px"
-                });
 
                 // toggle visibility
                 OC.toggleVis(cid);

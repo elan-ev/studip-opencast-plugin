@@ -486,7 +486,7 @@ class OCModel
     static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate)
     {
         $stmt = DBManager::get()->prepare("INSERT INTO
-                oc_seminar_workflows (workflow_id,seminar_id, user_id, mkdate)
+                oc_seminar_workflows (workflow_id, seminar_id, user_id, mkdate)
                 VALUES (?, ?, ?, ?)");
         return $stmt->execute(array($workflow_id, $seminar_id, $user_id, $mkdate));
     }
@@ -530,7 +530,7 @@ class OCModel
         $states = [];
 
         foreach ($table_entries as $table_entry){
-            $current_workflow_client = WorkflowClient::getInstance($table_entry['seminar_id']);
+            $current_workflow_client = WorkflowClient::getInstance(OCRestClient::getConfigIdForCourse($table_entry['seminar_id']));
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;

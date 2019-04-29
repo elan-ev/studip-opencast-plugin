@@ -18,12 +18,11 @@ class OCRestClient
 
     public $serviceName = 'ParentRestClientClass';
 
-    static function getInstance($course_id = null)
+    static function getInstance($config_id = null)
     {
-        $config_id = 1;     // use default config if nothing else is given
-
-        if ($course_id) {
-            $config_id = self::getConfigIdForCourse($course_id);
+        // use default config if nothing else is given
+        if (is_null($config_id) || $config_id === false) {
+            $config_id = self::getConfigIdForCourse(Context::getId()) ?: 1;
         }
 
         if (!property_exists(get_called_class(), 'me')) {
@@ -47,6 +46,8 @@ class OCRestClient
         if ($config['config_id'] == null){
             $config['config_id'] = -1;
         }
+
+        $this->config_id = $config['config_id'];
 
         $precise_config = Configuration::instance($config['config_id']);
 
@@ -295,7 +296,7 @@ class OCRestClient
 
         $stmt->execute([$course_id]);
 
-        return $stmt->fetchColumn() ? : 1;
+        return $stmt->fetchColumn();
     }
 
     /**
@@ -314,8 +315,28 @@ class OCRestClient
 
         $stmt->execute([$series_id]);
 
-        return $stmt->fetchColumn() ? : 1;
+        return $stmt->fetchColumn();
     }
+
+    /**
+     * get config-id for passed series
+     *
+     * @param string $series_id
+     *
+     * @return string
+     */
+
+    static function getConfigIdForSeries($series_id)
+    {
+        $stmt = DBManager::get()->prepare("SELECT config_id
+            FROM oc_seminar_series
+            WHERE series_id = ?");
+
+        $stmt->execute([$series_id]);
+
+        return $stmt->fetchColumn() ?: 1;
+    }
+
 
     /**
      * get course-id for passed series
@@ -325,15 +346,15 @@ class OCRestClient
      * @return string
      */
 
-    static function getCourseIdForWorkflow($workflow_id)
+    static function getConfigIdForWorkflow($workflow_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT seminar_id
+        $stmt = DBManager::get()->prepare("SELECT config_id
             FROM oc_seminar_workflows
             WHERE workflow_id = ?");
 
         $stmt->execute([$workflow_id]);
 
-        return $stmt->fetchColumn() ? : 1;
+        return $stmt->fetchColumn();
     }
 
     public function empty_config()

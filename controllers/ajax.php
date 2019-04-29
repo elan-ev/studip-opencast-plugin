@@ -93,7 +93,7 @@ class AjaxController extends OpencastController
     function getepisodes_action($series_id)
     {
 
-        $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($series_id));
+        $search_client = SearchClient::getInstance(OCRestClient::getConfigIdForSeries($series_id));
         $episodes      = $search_client->getEpisodes($series_id);
         $result        = [];
 
@@ -116,7 +116,7 @@ class AjaxController extends OpencastController
      * @throws Trails_DoubleRenderError
      */
     function getWorkflowStatus_action($workflow_id){
-        $this->workflow_client = WorkflowClient::getInstance(OCRestClient::getCourseIdForWorkflow($workflow_id));
+        $this->workflow_client = WorkflowClient::getInstance(OCRestClient::getConfigIdForWorkflow($workflow_id));
         $resp = $this->workflow_client->getWorkflowInstance($workflow_id);
         $this->render_text(json_encode($resp));
 
@@ -125,7 +125,7 @@ class AjaxController extends OpencastController
     function getWorkflowStatusforCourse_action($course_id)
     {
         $workflow_ids = OCModel::getWorkflowIDsforCourse($course_id);
-        $this->workflow_client = WorkflowClient::getInstance($course_id);
+        $this->workflow_client = WorkflowClient::getInstance(OCRestClient::getConfigIdForCourse($course_id));
         if (!empty($workflow_ids)) {
             $states = OCModel::getWorkflowStates($course_id, $workflow_ids);
 
