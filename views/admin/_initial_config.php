@@ -12,7 +12,7 @@
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
         </details>
-        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ',Configuration::registered_base_config_ids()) ?></b>
+        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ', Configuration::registered_base_config_ids()) ?></b>
         <br><?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?> <b>
             <?php
             $counter = 0;

@@ -8,7 +8,12 @@
         <div style="text-align: center;">
             <div style="text-align:left; padding-left:25%;">
             <? if (!empty($unconnectedSeries)) : ?>
-            <select class="series_select chosen-select" multiple name="series[]"  data-placeholder="<?=$_('Wählen Sie eine Series aus.')?>">
+            <select
+                class="series_select chosen-select"
+                multiple name="series[]"
+                data-placeholder="<?=$_('Wählen Sie eine Series aus.')?>"
+            >
+
             <? foreach ($unconnectedSeries as $serie) : ?>
                 <?// if (isset($serie['identifier'])) : ?>
                     <option value="<?= $serie['identifier'] ?>"><?= studip_utf8decode($serie['title'])?></option>

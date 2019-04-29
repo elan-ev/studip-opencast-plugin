@@ -3,7 +3,7 @@
  * OCRestClient.php - The administarion of the opencast player
  */
 
-define(DEBUG_CURL, TRUE);
+define(DEBUG_CURL, FALSE);
 
 class OCRestClient
 {

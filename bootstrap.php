@@ -1,4 +1,7 @@
 <?php
+/* Opencast plugin constants */
+require_once 'constants.php';
+
 /* Stud.IP dependencies*/
 require_once 'lib/models/Institute.class.php';
 require_once 'lib/raumzeit/raumzeit_functions.inc.php';

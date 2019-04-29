@@ -89,7 +89,7 @@ class OCSeriesModel
                 self::$unconnectedSeries = array();
             } else {
                 $connectedIdentifier = array();
-                //get all identifier of connected siries in one array
+                //get all identifier of connected series in one array
                 foreach ($connected as $con) {
                     $connectedIdentifier[] = $con['identifier'];
                 }

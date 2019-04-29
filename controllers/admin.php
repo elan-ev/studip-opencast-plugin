@@ -85,7 +85,7 @@ class AdminController extends OpencastController
         Navigation::activateItem('/admin/config/oc-config');
 
         $this->config = OCEndpointModel::getBaseServerConf();
-        $this->global_config = Configuration::instance(OC_GLOBAL_CONFIG_ID);
+        $this->global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
     }
 
 
@@ -200,15 +200,20 @@ class AdminController extends OpencastController
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
                     foreach($services as $service_url => $service_type) {
-                        OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                        if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false
+                                && strpos($service_url, $service_host) !== false) {
+                            OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                        } else {
+                            unset($services[$service_url]);
+                        }
                     }
 
-                    $success_message = sprintf(
-                        $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration eingetragen."),
-                        count($services)
+                    $success_message[] = sprintf(
+                        $this->_("Es wurden %s Endpoints für die Opencast Installation **%s** gefunden und in der Stud.IP Konfiguration eingetragen."),
+                        count($services), $service_host
                     );
 
-                    $this->flash['messages'] = array('success' => $success_message);
+                    $this->flash['messages'] = array('success' => implode('<br>', $success_message));
                 } else {
                     OCEndpointModel::removeEndpoint($config_id, 'services');
                     $this->flash['messages'] = array(
@@ -233,16 +238,10 @@ class AdminController extends OpencastController
     {
         PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
         Navigation::activateItem('/admin/config/oc-endpoints');
-        // hier kann eine Endpointüberischt angezeigt werden.
-        //$services_client = ServicesClient::getInstance();
+
+        $this->configs = OCEndpointModel::getBaseServerConf();
         $this->endpoints = OCEndpointModel::getEndpoints();
     }
-
-    function update_endpoints_action()
-    {
-        $this->redirect('admin/endpoints');
-    }
-
 
 
     /**

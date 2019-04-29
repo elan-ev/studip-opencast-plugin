@@ -64,7 +64,7 @@ class OCJob
      */
     public function number_of_chunks()
     {
-        return ceil($this->data['file']['size'] / OC_UPLOAD_CHUNK_SIZE);
+        return ceil($this->data['file']['size'] / Opencast\Constants::$UPLOAD_CHUNK_SIZE);
     }
 
     /**
@@ -159,7 +159,7 @@ class OCJob
             $opencast_job_id = $this->upload_client->newJob(
                 $this->data['file']['name'],
                 $this->data['file']['size'],
-                OC_UPLOAD_CHUNK_SIZE,
+                Opencast\Constants::$UPLOAD_CHUNK_SIZE,
                 $this->opencast_info['flavor'],
                 $this->opencast_info['media_package']
             );

@@ -22,7 +22,7 @@
     OC.states = <?=json_encode($states)?>;
     OC.initIndexpage();
     <?  if($series_metadata['schedule'] == '1') : ?>
-    OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
+    OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
     <? endif; ?>
 </script>
 

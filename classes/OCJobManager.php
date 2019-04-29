@@ -80,7 +80,7 @@ class OCJobManager
         $pattern = '/(\d*)-\d*\/\d*/';
         $result = preg_match($pattern, $range, $matches);
         if ($result) {
-            return $matches[1] / OC_UPLOAD_CHUNK_SIZE;
+            return $matches[1] / Opencast\Constants::$UPLOAD_CHUNK_SIZE;
         }
 
         return 0;

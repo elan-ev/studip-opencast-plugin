@@ -5,8 +5,6 @@
 
 include('bootstrap.php');
 
-define('OC_UPLOAD_CHUNK_SIZE', '10000000');
-
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
