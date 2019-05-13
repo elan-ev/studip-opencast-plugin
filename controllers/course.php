@@ -181,7 +181,7 @@ class CourseController extends OpencastController
                     if ($this->theodul) {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
                     } else {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
+                        $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/embed.html?id=";
                     }
                 }
 
@@ -618,7 +618,7 @@ class CourseController extends OpencastController
             if ($this->theodul) {
                 $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
             } else {
-                $video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $active_id;
+                $video_url = $this->search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $active_id;
             }
 
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);

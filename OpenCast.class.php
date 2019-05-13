@@ -270,9 +270,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     static function markupOpencast($markup, $matches, $contents)
     {
         $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($contents));
-        $embed = $search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $contents;
+        $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
 
-        return sprintf('<iframe src="%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $embed);
+        return sprintf('<iframe src="%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="640" height="360" allow="fullscreen"></iframe><br>', $embed);
     }
 
 
