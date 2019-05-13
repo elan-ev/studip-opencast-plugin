@@ -110,6 +110,7 @@ class CourseController extends OpencastController
         NotificationCenter::postNotification($name, $this);
         // change this variable iff theodulplayer is active
         $this->theodul = TRUE;
+        $this->paella = TRUE;
 
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
@@ -180,8 +181,10 @@ class CourseController extends OpencastController
 
                     if ($this->theodul) {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
+                    } elseif ($this->paella) {
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/paella/ui/core.html?id=";
                     } else {
-                        $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/embed.html?id=";
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
                     }
                 }
 
@@ -630,6 +633,7 @@ class CourseController extends OpencastController
                 'active_id'         => $active_id,
                 'course_id'         => $course_id,
                 'theodul'           => $theodul,
+                'paella'            => $paella,
                 'video'             => $video,
                 'perm'              => $perm,
                 'engage_player_url' => $this->search_client->getBaseURL() . "/engage/ui/watch.html?id=" . $active_id,
