@@ -226,7 +226,7 @@ class CourseController extends OpencastController
         }
         Navigation::activateItem('course/opencast/config');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_("Opencast Konfiguration"));
 
@@ -286,7 +286,7 @@ class CourseController extends OpencastController
     {
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_("Opencast Aufzeichnungen planen"));
 
@@ -349,7 +349,7 @@ class CourseController extends OpencastController
                 PersonalNotifications::add(
                     $users, PluginEngine::getLink('opencast/course/index', array('cid' => $this->course_id)),
                     $notification, $this->course_id,
-                    Icon::create($this->plugin->getPluginUrl() . '/images/newocicon.png')
+                    Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
                 );
 
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);

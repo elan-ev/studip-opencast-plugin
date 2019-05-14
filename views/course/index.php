@@ -121,7 +121,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                             <? if (in_array($state->state, ['FAILING', 'FAILED'])) : ?>
                                 <div class="oce_wip">
                                     <div class="oce_wip_preview">
-                                        <img src="<?= $plugin->getPluginURL() . '/images/oc_logo_red.png' ?>">
+                                        <img src="<?= $plugin->getPluginURL() . '/images/opencast-red.svg' ?>">
                                     </div>
                                 </div>
                                 <div class="oce_metadatacontainer oce_failedstate">
@@ -138,7 +138,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                             <? else : ?>
                                 <div class="oce_wip" id="<?= $workflow_id ?>">
                                     <div class="oce_wip_preview">
-                                        <img src="<?= $plugin->getPluginURL() . '/images/oc_logo_black.png' ?>">
+                                        <img src="<?= $plugin->getPluginURL() . '/images/opencast-black.svg' ?>">
                                     </div>
 
                                     <div style="clear: both;"></div>

@@ -186,9 +186,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
 
         if ($ocgetcount > 0) {
-            $navigation->setImage(new Icon($this->image_path .'oc20red.png'), array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'opencast-red.svg'), array('title' => $text));
         } else {
-            $navigation->setImage(new Icon($this->image_path .'oc20grey.png'), array('title' => $text));
+            $navigation->setImage(new Icon($this->image_path .'opencast-black.svg'), array('title' => $text));
         }
 
         return $navigation;
@@ -227,8 +227,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage(new Icon($this->getPluginUrl() . '/images/oc-logo-white.png'));
-        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/oc-logo-black.png'));
+        $main->setImage(new Icon($this->getPluginUrl() . '/images/opencast-white.svg'));
+        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/opencast-black.svg'));
 
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
@@ -358,7 +358,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             PersonalNotifications::add(
                 $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
                 $notification, $data['episode_id'],
-                Assets::image_path("icons/40/blue/file-video.png")
+                Assets::image_path("icons/black/file-video.svg")
             );
         }
 
