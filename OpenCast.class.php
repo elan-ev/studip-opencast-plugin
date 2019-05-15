@@ -186,9 +186,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
 
         if ($ocgetcount > 0) {
-            $navigation->setImage(new Icon($this->image_path .'opencast-red.svg'), array('title' => $text));
+            /*$navigation->setImage(new Icon($this->image_path .'opencast-red.svg'), array('title' => $text));*/
+            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
         } else {
-            $navigation->setImage(new Icon($this->image_path .'opencast-black.svg'), array('title' => $text));
+            /*$navigation->setImage(new Icon($this->image_path .'opencast-grey.svg'), array('title' => $text));*/
+            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-grey.svg', ICON::ROLE_INACTIVE, ["title" => 'Opencast']));
         }
 
         return $navigation;
@@ -227,10 +229,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage(new Icon($this->getPluginUrl() . '/images/opencast-white.svg'));
-        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/opencast-black.svg'));
-
-
+        /*$main->setImage(new Icon($this->getPluginUrl() . '/images/opencast-white.svg'));
+        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/opencast-black.svg'));*/
+        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-black.svg', ICON::ROLE_CLICKABLE, ["title" => 'Opencast']));
+        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL('opencast/course/index'));
 
