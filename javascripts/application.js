@@ -233,7 +233,7 @@ OC = {
                 var player_template = _.template(jQuery('#playerTemplate').html());
                 var player_template_data = {
                     episode: episode,
-                    theodul: data.theodul,
+                    paella: data.paella,
                     dozent: dozent,
                     engage_player_url: data.engage_player_url,
                     video: data.video

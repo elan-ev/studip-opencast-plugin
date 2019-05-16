@@ -108,10 +108,7 @@ class CourseController extends OpencastController
         $klass = substr(get_called_class(), 0, -10);
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
-        // change this variable iff theodulplayer is active
-        $this->theodul = TRUE;
         $this->paella = TRUE;
-
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
@@ -179,9 +176,7 @@ class CourseController extends OpencastController
 
                 if (!empty($this->ordered_episode_ids)) {
 
-                    if ($this->theodul) {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
-                    } elseif ($this->paella) {
+                    if ($this->paella) {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/paella/ui/core.html?id=";
                     } else {
                         $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
@@ -618,10 +613,10 @@ class CourseController extends OpencastController
             $active_id = $episode_id;
             $this->search_client = SearchClient::getInstance($this->course_id);
 
-            if ($this->theodul) {
-                $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
-            } else {
+            if ($this->paella) {
                 $video_url = $this->search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $active_id;
+            } else {
+                $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
             }
 
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
@@ -632,7 +627,6 @@ class CourseController extends OpencastController
             $episode = array(
                 'active_id'         => $active_id,
                 'course_id'         => $course_id,
-                'theodul'           => $theodul,
                 'paella'            => $paella,
                 'video'             => $video,
                 'perm'              => $perm,
