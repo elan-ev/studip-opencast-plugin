@@ -108,7 +108,7 @@ class CourseController extends OpencastController
         $klass = substr(get_called_class(), 0, -10);
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
-        $this->paella = TRUE;
+        $this->paella = FALSE;
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
