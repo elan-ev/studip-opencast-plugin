@@ -177,9 +177,9 @@ class CourseController extends OpencastController
                 if (!empty($this->ordered_episode_ids)) {
 
                     if ($this->paella) {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/paella/ui/core.html?id=";
+                        $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/watch.html?id=";
                     } else {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
                     }
                 }
 
@@ -630,7 +630,6 @@ class CourseController extends OpencastController
                 'paella'            => $paella,
                 'video'             => $video,
                 'perm'              => $perm,
-                'engage_player_url' => $this->search_client->getBaseURL() . "/engage/ui/watch.html?id=" . $active_id,
                 'episode_data'      => $episode
             );
 
