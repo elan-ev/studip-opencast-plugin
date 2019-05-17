@@ -42,7 +42,7 @@ $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerke
     // send credentials to opencast lti backend, setting session cookie for oc domain
     $.ajax({
         type: "POST",
-        url: "<?= rtrim($config_oc['service_url'], '/') ?>/lti",
+        url: "<?= rtrim($config['service_url'], '/') ?>/lti",
         data:  <?= json_encode($lti_data) ?>,
         xhrFields: {
            withCredentials: true

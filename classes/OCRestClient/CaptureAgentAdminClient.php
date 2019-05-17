@@ -8,7 +8,7 @@ class CaptureAgentAdminClient extends OCRestClient
     {
         $this->serviceName = 'CaptureAgentAdminClient';
 
-        if ($config = parent::getConfig('capture-admin', $config_id)) {
+        if ($config = OCConfig::getConfigForService('capture-admin', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception(_("Die Konfiguration wurde nicht korrekt angegeben"));

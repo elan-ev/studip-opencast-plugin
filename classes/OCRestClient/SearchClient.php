@@ -7,7 +7,7 @@ class SearchClient extends OCRestClient
 
     function __construct($config_id = 1)
     {
-        if ($config = parent::getConfig('search', $config_id)) {
+        if ($config = OCConfig::getConfigForService('search', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));

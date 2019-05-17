@@ -10,9 +10,9 @@ class ACLManagerClient extends OCRestClient
     static $me;
     public $serviceName = "ACL-Manager";
 
-    function __construct()
+    function __construct($config_id)
     {
-        if ($config = parent::getConfig('acl-manager')) {
+        if ($config = OCConfig::getConfigForService('acl-manager', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));

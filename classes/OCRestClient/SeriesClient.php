@@ -7,7 +7,7 @@ class SeriesClient extends OCRestClient
 
     function __construct($config_id = 1)
     {
-        if ($config = parent::getConfig('series', $config_id)) {
+        if ($config = OCConfig::getConfigForService('series', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));

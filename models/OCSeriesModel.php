@@ -49,7 +49,7 @@ class OCSeriesModel
     {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
-            $sClient = SeriesClient::getInstance(OCRestClient::getConfigIdForCourse($courseID));
+            $sClient = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID));
             $DBSeries = self::getConnectedSeriesDB($courseID);
             if ($DBSeries) {
                 $res = array();
@@ -200,7 +200,7 @@ class OCSeriesModel
         $ret = array();
 
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance(OCRestClient::getConfigIdForCourse($courseID))->getXML('/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID))->getXML('/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }

@@ -108,7 +108,14 @@ class CourseController extends OpencastController
         $klass = substr(get_called_class(), 0, -10);
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
-        $this->paella = FALSE;
+
+        $config = OCConfig::getConfigForCourse(Context::getId());
+
+        if ($config['service_version'] >= 6) {
+            $this->paella = TRUE;
+        } else {
+            $this->paella = FALSE;
+        }
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
@@ -205,9 +212,7 @@ class CourseController extends OpencastController
             $this->render_action('_error');
         }
 
-        $config_id = OCRestClient::getConfigIdForCourse($course_id);
-        $this->config = Configuration::instance($config_id);
-        $this->config_oc = OCEndpointModel::getBaseServerConf($config_id);
+        $this->config = OCConfig::getConfigForCourse($this->course_id);
         $this->configs = OCEndpointModel::getBaseServerConf();
     }
 
@@ -550,7 +555,7 @@ class CourseController extends OpencastController
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if (!$scheduled) {
-            $scheduler_client = SchedulerClient::getInstance(OCRestClient::getConfigIdForCourse($course_id));
+            $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
             if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
@@ -567,7 +572,7 @@ class CourseController extends OpencastController
 
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if ($scheduled) {
-            $scheduler_client = SchedulerClient::getInstance(OCRestClient::getConfigIdForCourse($course_id));
+            $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
             $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
             StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
         } else {
@@ -579,7 +584,7 @@ class CourseController extends OpencastController
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if ($scheduled) {
-            $scheduler_client = SchedulerClient::getInstance(OCRestClient::getConfigIdForCourse($course_id));
+            $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
             if ($scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
                 StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);

@@ -262,7 +262,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     static function markupOpencast($markup, $matches, $contents)
     {
-        $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($contents));
+        $search_client = SearchClient::getInstance(OCConfig::getCourseIdForSeries($contents));
 
         // TODO: get player type from config
         $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;

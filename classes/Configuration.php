@@ -113,6 +113,24 @@ class Configuration implements ArrayAccess
         return $default;
     }
 
+    public function getValues()
+    {
+        return $this->values;
+    }
+
+    public function toArray()
+    {
+        $config = [];
+
+        $global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
+
+        foreach ($global_config->getValues() as $name => $value) {
+            $config[$name] = $this->get($name);
+        }
+
+        return $config;
+    }
+
     public function get_description_for($name)
     {
         if (isset($this->descriptions[$name])) {

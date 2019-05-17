@@ -530,7 +530,7 @@ class OCModel
         $states = [];
 
         foreach ($table_entries as $table_entry){
-            $current_workflow_client = WorkflowClient::getInstance(OCRestClient::getConfigIdForCourse($table_entry['seminar_id']));
+            $current_workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($table_entry['seminar_id']));
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;

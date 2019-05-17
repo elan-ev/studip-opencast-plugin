@@ -276,14 +276,12 @@ class OpencastLTI
                 OpencastLTI::generate_tool('series', $identifier)
             );
 
-            $config_id = OCRestClient::getConfigIdForCourse($course_id);
-            $config = Configuration::instance($config_id);
-            $config_oc = OCEndpointModel::getBaseServerConf($config_id);
+            $config = OCConfig::getConfigForCourse($course_id);
 
             $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, rtrim($config_oc['service_url'] . '/lti', '/ '));
+            curl_setopt($ch, CURLOPT_URL, rtrim($config['service_url'] . '/lti', '/ '));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -309,10 +307,9 @@ class OpencastLTI
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
 
-        $config_id = OCRestClient::getConfigIdForCourse($course_id);
-        $config_oc = OCEndpointModel::getBaseServerConf($config_id);
+        $config = OCConfig::getConfigForCourse($lti_data['context_id']);
 
-        $endpoint = rtrim($config_oc['service_url'] . '/lti', '/ ');
+        $endpoint = rtrim($config['service_url'] . '/lti', '/ ');
         $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $endpoint, $lti_data);
         $acc_req->sign_request($hmac_method, $consumer, $token);
 

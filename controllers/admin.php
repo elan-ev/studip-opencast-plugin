@@ -132,7 +132,7 @@ class AdminController extends OpencastController
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
             if (!$config['url']) {
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
                 continue;
             }
 
@@ -146,7 +146,7 @@ class AdminController extends OpencastController
                         $config['url']
                     )
                 ];
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
             } else {
                 $service_host =
                     $service_url['scheme'] .'://' .
@@ -155,8 +155,8 @@ class AdminController extends OpencastController
 
                 $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
 
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
-                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
 
                 // check, if the same url has been provided for multiple oc-instances
                 foreach (Request::getArray('config') as $zw_id => $zw_conf) {
