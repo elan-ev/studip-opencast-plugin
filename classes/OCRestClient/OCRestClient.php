@@ -71,8 +71,7 @@ class OCRestClient
         // debugging
         if (DEBUG_CURL) {
             curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
-            $this->debug = fopen('php://output', 'w');
-            curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
+            echo '<pre>';
         }
     }
 
@@ -101,6 +100,11 @@ class OCRestClient
     function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
+            if (DEBUG_CURL) {
+                $this->debug = fopen('php://output', 'w');
+                curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
+            }
+
             $options = [
                 CURLOPT_URL           => $this->base_url . $service_url,
                 CURLOPT_FRESH_CONNECT => 1
@@ -115,8 +119,13 @@ class OCRestClient
                 $options[CURLOPT_HTTPGET] = 1;
             }
 
-            curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
+
+            if (!DEBUG_CURL) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
+                // see: https://bugs.php.net/bug.php?id=65348
+                curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
+            }
             curl_setopt_array($this->ochandler, $options);
+
 
             if ($this->getCookie()) {
                 curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: '. $this->getCookie()]);
@@ -160,6 +169,11 @@ class OCRestClient
     function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
+            if (DEBUG_CURL) {
+                $this->debug = fopen('php://output', 'w');
+                curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
+            }
+
             $options = [
                 CURLOPT_URL           => $this->base_url . $service_url,
                 CURLOPT_FRESH_CONNECT => 1
