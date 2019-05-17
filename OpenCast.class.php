@@ -179,9 +179,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
 
         if ($ocgetcount > 0) {
-            $navigation->setImage(new Icon($this->image_path .'oc20red.png'), array('title' => $text));
+            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
         } else {
-            $navigation->setImage(new Icon($this->image_path .'oc20grey.png'), array('title' => $text));
+            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-grey.svg', ICON::ROLE_INACTIVE, ["title" => 'Opencast']));
         }
 
         return $navigation;
@@ -220,9 +220,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main = new Navigation("Opencast");
         $main->setURL(PluginEngine::getURL('opencast/course'));
-        $main->setImage(new Icon($this->getPluginUrl() . '/images/oc-logo-white.png'));
-        $main->setActiveImage(new Icon($this->getPluginUrl() . '/images/oc-logo-black.png'));
 
+        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-black.svg', ICON::ROLE_CLICKABLE, ["title" => 'Opencast']));
+        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL('opencast/course/index'));
@@ -262,10 +262,22 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     static function markupOpencast($markup, $matches, $contents)
     {
-        $search_client = SearchClient::getInstance(OCRestClient::getConfigForSeries($contents));
-        $embed = $search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $contents;
+        $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($contents));
 
-        return sprintf('<iframe src="%s" style="border:0px #FFFFFF none;" name="Opencast Matterhorn - Media Player" scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" width="540" height="404"></iframe><br>', $embed);
+        // TODO: get player type from config
+        $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
+        #$embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
+
+        return sprintf('<iframe src="%s"
+                style="border:0px #FFFFFF none;"
+                name="Opencast - Media Player"
+                scrolling="no"
+                frameborder="0"
+                marginheight="0px"
+                marginwidth="0px"
+                width="640" height="360"
+                allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"
+            ></iframe><br>', $embed);
     }
 
 
@@ -351,7 +363,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             PersonalNotifications::add(
                 $users, PluginEngine::getLink('opencast/course/index/'. $data['episode_id']),
                 $notification, $data['episode_id'],
-                Assets::image_path("icons/40/blue/file-video.png")
+                Assets::image_path("icons/black/file-video.svg")
             );
         }
 

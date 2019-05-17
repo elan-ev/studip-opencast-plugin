@@ -108,9 +108,7 @@ class CourseController extends OpencastController
         $klass = substr(get_called_class(), 0, -10);
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
-        // change this variable iff theodulplayer is active
-        $this->theodul = true;
-
+        $this->paella = FALSE;
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
@@ -183,10 +181,10 @@ class CourseController extends OpencastController
 
                 if (!empty($this->ordered_episode_ids)) {
 
-                    if ($this->theodul) {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
+                    if ($this->paella) {
+                        $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/watch.html?id=";
                     } else {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=";
+                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
                     }
                 }
 
@@ -242,7 +240,7 @@ class CourseController extends OpencastController
         }
         Navigation::activateItem('course/opencast');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_("Opencast Konfiguration"));
         $this->response->add_header('X-Title', rawurlencode($this->_("Series mit Veranstaltung verknüpfen")));
@@ -301,7 +299,7 @@ class CourseController extends OpencastController
     {
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/oc-logo-black.png'));
+        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_("Opencast Aufzeichnungen planen"));
 
@@ -364,7 +362,7 @@ class CourseController extends OpencastController
                 PersonalNotifications::add(
                     $users, PluginEngine::getLink('opencast/course/index', ['cid' => $this->course_id]),
                     $notification, $this->course_id,
-                    Icon::create($this->plugin->getPluginUrl() . '/images/newocicon.png')
+                    Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
                 );
 
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
@@ -635,10 +633,10 @@ class CourseController extends OpencastController
             $active_id = $episode_id;
             $this->search_client = SearchClient::getInstance();
 
-            if ($this->theodul) {
-                $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
+            if ($this->paella) {
+                $video_url = $this->search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $active_id;
             } else {
-                $video_url = $this->search_client->getBaseURL() . "/engage/ui/embed.html?id=" . $active_id;
+                $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
             }
 
             $perm = $GLOBALS['perm']->have_studip_perm('dozent', $course_id);
@@ -649,10 +647,9 @@ class CourseController extends OpencastController
             $episode = [
                 'active_id'         => $active_id,
                 'course_id'         => $course_id,
-                'theodul'           => $theodul,
+                'paella'            => $paella,
                 'video'             => $video,
                 'perm'              => $perm,
-                'engage_player_url' => $this->search_client->getBaseURL() . "/engage/ui/watch.html?id=" . $active_id,
                 'episode_data'      => $episode
             ];
 
