@@ -237,7 +237,7 @@ class AdminController extends OpencastController
     function endpoints_action()
     {
         PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
-        Navigation::activateItem('/admin/config/oc-endpoints');
+        // Navigation::activateItem('/admin/config/oc-endpoints');
 
         $this->configs = OCEndpointModel::getBaseServerConf();
         $this->endpoints = OCEndpointModel::getEndpoints();
