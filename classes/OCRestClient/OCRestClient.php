@@ -16,6 +16,12 @@ class OCRestClient
         $config_id,
         $cookie;
 
+    public const
+        GET = 1,
+        POST = 2,
+        PUT = 3,
+        DELETE = 4;
+
     public $serviceName = 'ParentRestClientClass';
 
     static function getInstance($config_id = null)
@@ -94,10 +100,34 @@ class OCRestClient
         return $this->cookie;
     }
 
+    function putJSON($service_url, $data = [], $with_res_code = false)
+    {
+        return $this->jsonRequest($service_url, $data, $with_res_code, self::PUT);
+    }
+
+    function postJSON($service_url, $data = [], $with_res_code = false)
+    {
+        return $this->jsonRequest($service_url, $data, $with_res_code, self::POST);
+    }
+
+    function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
+    {
+        if ($is_get) {
+            return $this->jsonRequest($service_url, [], $with_res_code, self::GET);
+        } else {
+            return $this->jsonRequest($service_url, $data, $with_res_code, self::POST);
+        }
+    }
+
+    function deleteJSON($service_url, $with_res_code = false)
+    {
+        return $this->jsonRequest($service_url, [], $with_res_code, self::DELETE);
+    }
+
     /**
      *  function getJSON - performs a REST-Call and retrieves response in JSON
      */
-    function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
+    function jsonRequest($service_url, $data = [], $with_res_code = false, $type)
     {
         if (isset($service_url)) {
             if (DEBUG_CURL) {
@@ -110,13 +140,20 @@ class OCRestClient
                 CURLOPT_FRESH_CONNECT => 1
             ];
 
-            if (!$is_get) {
+            if ($type == self::POST) {
                 $options[CURLOPT_POST] = 1;
                 if (!empty($data)) {
                     $options[CURLOPT_POSTFIELDS] = $data;
                 }
-            } else {
+            } else if ($type == self::GET) {
                 $options[CURLOPT_HTTPGET] = 1;
+            } else if ($type == self::PUT) {
+                $options[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                if (!empty($data)) {
+                    $options[CURLOPT_POSTFIELDS] = $data;
+                }
+            } else if ($type == self::DELETE) {
+                $options[CURLOPT_CUSTOMREQUEST] = 'DELETE';
             }
 
 

@@ -26,13 +26,23 @@ class ACLManagerClient extends OCRestClient
             'acl'  => $acl->as_xml()
         ];
 
-        return $this->getJSON('/acl', $data, false);
+        $response = $this->postJSON('/acl', $data, true);
+
+        if ($response[1] == 409) {
+            // try to recover from this conflict
+            // Solution: delete ACL from Opencast
+            if ($acl = $this->getACLByName($acl->get_name())) {
+                $this->removeACL($acl->id);
+                return $this->postJSON('/acl', $data);
+            }
+        }
+
+        return $response[0];
     }
 
-    function removeACL($acl_id){
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
-        $result = $this->getJSON('/acl/'.$acl_id, [], true, true);
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, null);
+    function removeACL($acl_id)
+    {
+        $result = $this->deleteJSON('/acl/' . $acl_id, true);
 
         return $result[1] == 200 || $result[1] == 204;
     }
@@ -50,7 +60,24 @@ class ACLManagerClient extends OCRestClient
 
     function getAllACLs()
     {
-        return $this->getJSON('/acl/acls.json');
+        static $acls;
+
+        if (!isset($acls)) {
+            $acls = $this->getJSON('/acl/acls.json');
+        }
+
+        return $acls;
+    }
+
+    function getACLByName($name)
+    {
+        foreach ($this->getAllACLs() as $acl) {
+            if ($acl->name == $name) {
+                return $acl;
+            }
+        }
+
+        return false;
     }
 
     function getACL($acl_id)
