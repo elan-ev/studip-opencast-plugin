@@ -183,16 +183,24 @@ OC = {
             e.preventDefault();
             var episode_id = jQuery('#oc-togglevis').data("episode-id");
 
-            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/toggle_visibility/"
+            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP
+                + "plugins.php/opencast/course/toggle_visibility/"
                 + episode_id + "?cid=" + cid);
+
             if (jQuery('#oc-togglevis').hasClass('ocvisible')) {
-
-                jQuery('#oc-togglevis').removeClass('ocvisible').addClass('ocinvisible').text('Aufzeichnung unsichtbar');
-
-
+                jQuery('#oc-togglevis')
+                    .removeClass('ocvisible')
+                    .addClass('ocinvisible')
+                    .text('Sichtbar schalten');
             } else {
-                jQuery('#oc-togglevis').removeClass('ocinvisible').addClass('ocvisible').text('Aufzeichnung sichtbar');
+                jQuery('#oc-togglevis')
+                    .removeClass('ocinvisible')
+                    .addClass('ocvisible')
+                    .text('Unsichtbar schalten');
             }
+
+            $("img.previewimage").removeClass('ocinvisible');
+            $("li.oce_item:has(a.ocinvisible) img.previewimage").addClass('ocinvisible');
         });
 
     },

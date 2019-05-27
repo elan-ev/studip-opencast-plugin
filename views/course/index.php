@@ -201,7 +201,10 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                 <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                                 <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
                                 <span class="previewimage">
-                                    <img class="previewimage" src="<?= $image ?>">
+                                    <img
+                                        class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                        src="<?= $image ?>"
+                                    >
                                     <img class="playbutton" style="bottom:10px"
                                          src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                                 </span>
@@ -244,9 +247,9 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
 
                                     <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
                                         <? if ($item['visibility'] == 'false') : ?>
-                                            <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
+                                            <?= Studip\LinkButton::create($_('Sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
                                         <? else : ?>
-                                            <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
+                                            <?= Studip\LinkButton::create($_('Unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
                                         <? endif; ?>
                                     <? endif; ?>
                                 </div>
