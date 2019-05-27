@@ -209,8 +209,8 @@ class AdminController extends OpencastController
                     }
 
                     $success_message[] = sprintf(
-                        $this->_("Es wurden %s Endpoints für die Opencast Installation **%s** gefunden und in der Stud.IP Konfiguration eingetragen."),
-                        count($services), $service_host
+                        $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
+                        $service_host
                     );
 
                     $this->flash['messages'] = array('success' => implode('<br>', $success_message));

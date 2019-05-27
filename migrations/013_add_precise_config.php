@@ -25,13 +25,12 @@ class AddPreciseConfig extends Migration
             (1, 'upload_chunk_size', 'Größe der Chunks für den Upload in Byte', '10000000', -1),
             (2, 'number_of_configs', 'Maximale Anzahl von sichtbaren Konfigurationen', '1', -1),
             (3, 'time_buffer_overlap', 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern', '60', -1),
-            (4, 'upload_encoding', 'Encoding für den Upload', 'UTF-8', -1),
-            (5, 'ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),
-            (6, 'ssl_verify_host', 'SSL Zertifikat des Hosts prüfen', 'false', -1),
-            (7, 'ssl_cipher_list', 'Zu benutzende SSL Chiffren', 'none', -1),
-            (8, 'capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Opencast Capture Agent', -1),
-            (9, 'lti_consumerkey', 'LTI Consumerkey', 'CONSUMERKEY', -1),
-            (10, 'lti_consumersecret', 'LTI Consumerkey', 'CONSUMERSECRET', -1)
+            (4, 'ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),
+            (5, 'ssl_verify_host', 'SSL Zertifikat des Hosts prüfen', 'false', -1),
+            (6, 'ssl_cipher_list', 'Zu benutzende SSL Chiffren', 'none', -1),
+            (7, 'capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Opencast Capture Agent', -1),
+            (8, 'lti_consumerkey', 'LTI Consumerkey', 'CONSUMERKEY', -1),
+            (9, 'lti_consumersecret', 'LTI Consumerkey', 'CONSUMERSECRET', -1)
         ");
 
         DBManager::get()->query('ALTER TABLE `oc_config_precise` ADD UNIQUE KEY `oc_config_precise_id_uindex`(`id`)');

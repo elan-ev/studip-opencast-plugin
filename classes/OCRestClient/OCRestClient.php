@@ -56,7 +56,7 @@ class OCRestClient
         curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->ochandler, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
         curl_setopt($this->ochandler, CURLOPT_USERPWD, $this->username . ':' . $this->password);
-        curl_setopt($this->ochandler, CURLOPT_ENCODING, $precise_config['upload_encoding']);
+        curl_setopt($this->ochandler, CURLOPT_ENCODING, 'UTF-8');
         curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ["X-Requested-Auth: Digest"]);
 
         curl_setopt($this->ochandler, CURLOPT_FOLLOWLOCATION, 1);
