@@ -15,15 +15,26 @@
     ) ?>
 <? endif ?>
 
+<?
+$visibility_text = [
+    'invisible' => 'Video ist nur für Sie sichtbar',
+    'visible'   => 'Video ist für Teilnehmende sichtbar',
+    'free'      => 'Video ist für jeden sichtbar'
+];
+?>
+
 <?= $this->render_partial('messages') ?>
 
 <script>
-    STUDIP.hasperm = <?=var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id))?>;
-    OC.states = <?=json_encode($states)?>;
+jQuery(function() {
+    STUDIP.hasperm = <?= var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) ?>;
+    OC.states = <?= json_encode($states) ?>;
+    OC.visibility_text = <?= json_encode($visibility_text) ?>;
     OC.initIndexpage();
     <?  if($series_metadata['schedule'] == '1') : ?>
     OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
     <? endif; ?>
+});
 </script>
 
 <?
@@ -247,21 +258,14 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                     <? endif ?>
 
                                     <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                        <? if ($item['visibility'] == 'false') : ?>
-                                            <?= Studip\LinkButton::create($_('Sichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
-                                        <? else : ?>
-                                            <?= Studip\LinkButton::create($_('Unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
-                                        <? endif; ?>
-
-                                        <? if ($item['permission'] == 'forbidden') : ?>
-                                            <?= Studip\LinkButton::create($_('Öffentlich freigeben'),
-                                                PluginEngine::getLink('opencast/course/toggle_permission/' . $item['id']),
-                                                ['class' => 'ocinvisible ocspecial', 'id' => 'oc-toggleperm', 'data-episode-id' => $item['id']]); ?>
-                                        <? else : ?>
-                                            <?= Studip\LinkButton::create($_('Öffentliche Freigabe aufheben'),
-                                                PluginEngine::getLink('opencast/course/toggle_permission/' . $item['id']),
-                                                ['class' => 'ocvisible ocspecial', 'id' => 'oc-toggleperm', 'data-episode-id' => $item['id']]); ?>
-                                        <? endif; ?>
+                                            <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']]),
+                                                '', [
+                                                'class'           => 'ocspecial oc'. $item['visibility'],
+                                                'id'              => 'oc-togglevis',
+                                                'data-episode-id' => $item['id'],
+                                                'data-dialog'     => 'size=auto',
+                                                'data-visibility' => $item['visibility']
+                                            ]); ?>
                                     <? endif; ?>
                                 </div>
                             </div>
@@ -293,3 +297,30 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?= $course_id ?>"></div>
+<div id="visibility_dialog" style="display: none">
+    <form class="default" method="post">
+        <fieldset>
+            <legend>Sichtbarkeit einstellen</legend>
+
+            <label>
+                <input type="radio" name="visibility" value="invisible">
+                Unsichtbar - Dieses Video ist nur für Sie sichtbar
+            </label>
+
+            <label>
+                <input type="radio" name="visibility" value="visible">
+                Sichtbar - Dieses Video ist für Teilnehmende dieser Veranstaltung sichtbar
+            </label>
+
+            <label>
+                <input type="radio" name="visibility" value="free">
+                Freigeben - Dieses Video ist für jeden sichtbar
+            </label>
+        </fieldset>
+
+        <footer data-dialog-button>
+            <?= Studip\LinkButton::createAccept(_('Speichern'), '#', ['onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'))"]) ?>
+            <?= Studip\LinkButton::createCancel(_('Abbrechen'), '#', ['onclick' => "jQuery('#visibility_dialog').dialog('close');"]) ?>
+        </footer>
+    </form>
+</div>

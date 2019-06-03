@@ -86,9 +86,9 @@ class OpencastLTI
                 $course_model = new OCCourseModel($course_id);
                 $episodes = $course_model->getEpisodes();
                 foreach ($episodes as $episode) {
-                    if ($episode['visibility'] == 'false') {
+                    if ($episode['visibility'] == 'invisible') {
                         $result['e'][$episode['id']][$course_id] = 'invisible';
-                    } else if ($episode['permission'] == 'allowed') {
+                    } else if ($episode['visibility'] == 'free') {
                         $result['e'][$episode['id']][$course_id] = 'free';
                     }
                 }

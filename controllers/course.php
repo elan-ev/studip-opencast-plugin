@@ -439,32 +439,15 @@ class CourseController extends OpencastController
         $this->redirect('course/index');
     }
 
-    function toggle_visibility_action($episode_id)
-    {
-        $this->course_id = Request::get('cid');
-        $this->user_id = $GLOBALS['auth']->auth['uid'];
-
-        if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            || OCModel::checkPermForEpisode($episode_id, $this->user_id))
-        {
-            $entry = OCModel::getEntry($this->course_id, $episode_id);
-            if (!$entry->visible || $entry->visible == 'true'){
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'false');
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episode wurde unsichtbar geschaltet ($episode_id)");
-
-            } else{
-                OCModel::setVisibilityForEpisode($this->course_id, $episode_id, 'true');
-                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episode wurde sichtbar geschaltet ($episode_id)");
-            }
-        } else {
-            throw new AccessDeniedException();
-        }
-
-        $this->set_status('201');
-        $this->render_nothing();
-    }
-
-    function toggle_permission_action($episode_id)
+    /**
+     * Set the view permissions for the passed episode
+     *
+     * @param  [type] $episode_id [description]
+     * @param  [type] $permission [description]
+     *
+     * @return [type]             [description]
+     */
+    function permission_action($episode_id, $permission)
     {
         $this->course_id = Request::get('cid');
         $this->user_id = $GLOBALS['auth']->auth['uid'];
@@ -473,27 +456,19 @@ class CourseController extends OpencastController
         if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
             || OCModel::checkPermForEpisode($episode_id, $this->user_id))
         {
-            $entry = OCModel::getEntry($this->course_id, $episode_id);
-            if (!$entry->permission || $entry->permission == 'allowed'){
-                $success = OCModel::setPermissionForEpisode($this->course_id, $episode_id, 'forbidden');
-                StudipLog::log('OC_CHANGE_EPISODE_PERMISSION', null, $this->course_id, "Freigabe für Episode wurde aufgehoben ($episode_id)");
+            if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
+                StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episodensichtbarkeit wurde auf $permission geschaltet ($episode_id)");
+                $this->set_status('201');
             } else {
-                $success = OCModel::setPermissionForEpisode($this->course_id, $episode_id, 'allowed');
-                StudipLog::log('OC_CHANGE_EPISODE_PERMISSION', null, $this->course_id, "Episode wurde freigegeben ($episode_id)");
+                // republishing failed, report error to frontend
+                $this->set_status('409');
             }
+
+            $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
         } else {
             throw new AccessDeniedException();
         }
-
-        if ($success == false) {
-            $this->set_status('409');
-        } else {
-            $this->set_status('201');
-        }
-
-        $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
     }
-
 
     /**
      * @deprecated

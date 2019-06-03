@@ -33,7 +33,6 @@ OC = {
 
                 // toggle visibility
                 OC.toggleVis(cid);
-                OC.togglePerm(cid);
 
             } else {
                 jQuery('.hidden_ocvideodiv').remove();
@@ -180,53 +179,48 @@ OC = {
     },
 
     toggleVis: function (cid) {
-        jQuery('#oc-togglevis').click(function (e) {
+        jQuery(jQuery('#oc-togglevis')).click(function (e) {
+            var episode_id = jQuery(this).data("episode-id");
+            var title      = 'Sichtbarkeit - ' + jQuery('#' + episode_id + ' .oce_list_title').text();
+            var visibility = jQuery(this).attr('data-visibility');
+
             e.preventDefault();
-            var episode_id = jQuery('#oc-togglevis').data("episode-id");
 
-            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP
-                + "plugins.php/opencast/course/toggle_visibility/"
-                + episode_id + "?cid=" + cid);
+            $('#visibility_dialog input[value=' + visibility + ']')
+                .attr('checked', true);
 
-            if (jQuery('#oc-togglevis').hasClass('ocvisible')) {
-                jQuery('#oc-togglevis')
-                    .removeClass('ocvisible')
-                    .addClass('ocinvisible')
-                    .text('Sichtbar schalten');
-            } else {
-                jQuery('#oc-togglevis')
-                    .removeClass('ocinvisible')
-                    .addClass('ocvisible')
-                    .text('Unsichtbar schalten');
-            }
+            $('#visibility_dialog').attr('data-episode_id', episode_id)
 
-            $("img.previewimage").removeClass('ocinvisible');
-            $("li.oce_item:has(a.ocinvisible) img.previewimage").addClass('ocinvisible');
+            $('#visibility_dialog').dialog({
+                modal: true,
+                title: title,
+                size: 'auto',
+                resize: false
+            });
         });
 
     },
 
-    togglePerm: function (cid) {
-        jQuery('#oc-toggleperm').click(function (e) {
-            e.preventDefault();
-            var episode_id = jQuery('#oc-toggleperm').data("episode-id");
+    setVisibility: function(visibility, episode_id) {
+        var cid        = jQuery('#course_id').data('courseid');
+        var $element   = jQuery('a[data-episode-id=' + episode_id + ']');
 
-            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP
-                + "plugins.php/opencast/course/toggle_permission/"
-                + episode_id + "?cid=" + cid);
+        $element.attr('disabled', 'disabled');
 
-            if (jQuery('#oc-toggleperm').hasClass('ocvisible')) {
-                jQuery('#oc-toggleperm')
-                    .removeClass('ocvisible')
-                    .addClass('ocinvisible')
-                    .text('Öffentlich freigeben');
-            } else {
-                jQuery('#oc-toggleperm')
-                    .removeClass('ocinvisible')
-                    .addClass('ocvisible')
-                    .text('Öffentliche Freigabe aufheben');
+        $('#visibility_dialog').dialog('close');
+
+        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP
+                + "plugins.php/opencast/course/permission/"
+                + episode_id + "/" + visibility + "?cid=" + cid,
+            function(response) {
+                console.log(response);
+                $element
+                    .removeClass('ocinvisible ocvisible ocfree')
+                    .addClass('oc' + response.visible)
+                    .text(OC.visibility_text[response.visible])
+                    .attr('disabled', false);
             }
-        });
+        );
     },
 
     episodeListener: function (cid) {
@@ -262,7 +256,6 @@ OC = {
                 jQuery('.oce_playercontainer').removeClass('oc_opaque');
                 jQuery('#oc_balls').hide();
                 OC.toggleVis(cid);
-                OC.togglePerm(cid);
 
             });
 

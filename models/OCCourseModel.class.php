@@ -160,14 +160,12 @@ class OCCourseModel
 
             if ($tmp = $oc_episodes[$stored_episode['episode_id']]) {
                 $tmp['visibility'] = $stored_episode['visible'];
-                $tmp['permission'] = $stored_episode['permission'];
                 $tmp['mkdate']     = $stored_episode['mkdate'];
 
                 OCModel::setEpisode(
                     $stored_episode['episode_id'],
                     $this->getCourseID(),
                     $tmp['visibility'],
-                    $tmp['permission'],
                     $stored_episode['mkdate']
                 );
 
@@ -190,7 +188,7 @@ class OCCourseModel
                 OCModel::setEpisode(
                     $episode['id'],
                     $this->getCourseID(),
-                    'true',
+                    'visible',
                     $timestamp
                 );
 

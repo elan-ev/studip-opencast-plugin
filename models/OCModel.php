@@ -415,61 +415,36 @@ class OCModel
      *
      * @param string $course_id
      * @param string $episode_id
-     * @param tyniint 1 or 0
+     * @param string $visibility   invisible, visible or free
+     *
      * @return bool
      */
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
     {
-        $entry = self::getEntry($course_id, $episode_id);
-
-        # Local
-        $entry->visible = $visibility;
-        $entry->store();
-
-        # Remote
-        $series_to_update = OCModel::getSeriesForEpisode($episode_id);
-        foreach($series_to_update as $series_id){
-            $mapping = OpencastLTI::generate_acl_mapping_for_series($series_id);
-            var_dump($visibility, $mapping);
-            $defined_acls = OpencastLTI::mapping_to_defined_acls($mapping);
-            OpencastLTI::apply_defined_acls($defined_acls);
-        }
-    }
-
-    /**
-     * Set episode visibility
-     *
-     * @param string $course_id
-     * @param string $episode_id
-     * @param tyniint 1 or 0
-     * @return bool
-     */
-    static function setPermissionForEpisode($course_id, $episode_id, $permission)
-    {
         // Local
         $entry = self::getEntry($course_id, $episode_id);
+        $old_visibility = $entry->visible;
+        $entry->visible = $visibility;
 
-        $old_permission = $entry->permission;
-        $entry->permission = $permission;
         $entry->store();
 
         $config_id = OCConfig::getConfigIdForCourse($course_id);
 
         // Remote
-        if ($permission == 'allowed') {
+        if ($visibility == 'visible') {
+            $acl_manager = ACLManagerClient::getInstance($config_id);
+            $acl_manager->applyACLto('episode', $episode_id, 0);
+        } else {
             $mapping = OpencastLTI::generate_acl_mapping_for_course($course_id);
             $acls = OpencastLTI::mapping_to_defined_acls($mapping);
             OpencastLTI::apply_defined_acls($acls);
-        } else {
-            $acl_manager = ACLManagerClient::getInstance($config_id);
-            $acl_manager->applyACLto('episode', $episode_id, 0);
         }
 
         $api = ApiWorkflowsClient::getInstance($config_id);
 
         if (!$api->republish($episode_id)) {
             // if republishing could not take place, reset permissions to previous state
-            $entry->permission = $old_permission;
+            $entry->visible = $old_visibility;
             $entry->store();
             return false;
         }
@@ -592,18 +567,18 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
     }
 
-    static function setEpisode($episode_id, $course_id, $visibility, $permission, $mkdate)
+    static function setEpisode($episode_id, $course_id, $visibility, $mkdate)
     {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `permission`, `mkdate`)
-                VALUES (?, ?, ?, ?, ?)");
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `mkdate`)
+                VALUES (?, ?, ?, ?)");
 
-        return $stmt->execute(array($course_id, $episode_id, $visibility, $permission, $mkdate));
+        return $stmt->execute(array($course_id, $episode_id, $visibility, $mkdate));
     }
 
     static function getCoursePositions($course_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`, `permission`
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`
             FROM oc_seminar_episodes
             WHERE `seminar_id` = ? ORDER BY mkdate DESC");
         $stmt->execute(array($course_id));
