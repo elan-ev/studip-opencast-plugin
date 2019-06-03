@@ -267,7 +267,7 @@ class OCCourseModel
                     }
                     if (($track->type === 'presentation/delivery') && ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video))) {
                         $url = parse_url($track->url);
-                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp' && && $url['scheme'] != 'rtmps') {
+                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp' && $url['scheme'] != 'rtmps') {
                             $quality = $this->calculate_size(
                                 $track->video->bitrate,
                                 $track->duration
