@@ -17,6 +17,9 @@ class AccessControl extends Migration
             `acl_id` INT NOT NULL
         )");
 
+        DBManager::get()->query("ALTER TABLE `oc_seminar_episodes`
+            ADD `permission` ENUM('allowed', 'forbidden') NOT NULL DEFAULT 'forbidden'");
+
         // Expire orm cache, so the change can take effect
         SimpleORMap::expireTableScheme();
     }

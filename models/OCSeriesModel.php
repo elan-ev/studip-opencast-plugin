@@ -209,39 +209,6 @@ class OCSeriesModel
     }
 
     /**
-     * Set episode visibility
-     *
-     * @param string $course_id
-     * @param string $episode_id
-     * @param tyniint 1 or 0
-     * @return bool
-     */
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
-    {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (seminar_id, episode_id, visible)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $visibility));
-    }
-
-    /**
-     * get visibility row
-     *
-     * @param string $course_id
-     * @param string $episode_id
-     * @return array
-     */
-    static function getVisibilityForEpisode($course_id, $episode_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT visible FROM
-                oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
-        $stmt->execute(array($course_id, $episode_id));
-        $episode = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $episode;
-    }
-
-    /**
      * generate xml ACl string
      * $data = array('MATTERHORN_ROLE' => array('permission' => 'value'))
      * matterhorn role is the role defined in matterhorn

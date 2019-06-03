@@ -47,13 +47,17 @@ class ACLManagerClient extends OCRestClient
         return $result[1] == 200 || $result[1] == 204;
     }
 
-    function applyACLto($type, $id, $acl_id)
+    function applyACLto($type, $id, $acl_id = null)
     {
-        $data = [
-            'aclId' => $acl_id
-        ];
+        $data = [];
 
-        $result = $this->getJSON('/apply/' . $type . '/' . $id, $data, false, true);
+        if ($acl_id) {
+            $data = [
+                'aclId' => $acl_id
+            ];
+        }
+
+        $result = $this->postJSON('/apply/' . $type . '/' . $id, $data);
 
         return $result[1] == 200;
     }

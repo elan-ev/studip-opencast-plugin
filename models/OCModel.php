@@ -420,20 +420,61 @@ class OCModel
      */
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
     {
+        $entry = self::getEntry($course_id, $episode_id);
+
         # Local
-        $stmt = DBManager::get()->prepare("UPDATE
-                  oc_seminar_episodes SET visible = ?
-                  WHERE seminar_id = ? AND  episode_id = ?");
-        $result = $stmt->execute(array($visibility, $course_id, $episode_id));
+        $entry->visible = $visibility;
+        $entry->store();
 
         # Remote
-        if($result){
-            $series_to_update = OCModel::getSeriesForEpisode($episode_id);
-            foreach($series_to_update as $series_id){
-                $mapping = OpencastLTI::generate_acl_mapping_for_series($series_id);
-                $defined_acls = OpencastLTI::mapping_to_defined_acls($mapping);
-                OpencastLTI::apply_defined_acls($defined_acls);
-            }
+        $series_to_update = OCModel::getSeriesForEpisode($episode_id);
+        foreach($series_to_update as $series_id){
+            $mapping = OpencastLTI::generate_acl_mapping_for_series($series_id);
+            var_dump($visibility, $mapping);
+            $defined_acls = OpencastLTI::mapping_to_defined_acls($mapping);
+            OpencastLTI::apply_defined_acls($defined_acls);
+        }
+    }
+
+    /**
+     * Set episode visibility
+     *
+     * @param string $course_id
+     * @param string $episode_id
+     * @param tyniint 1 or 0
+     * @return bool
+     */
+    static function setPermissionForEpisode($course_id, $episode_id, $permission)
+    {
+        $entry = self::getEntry($course_id, $episode_id);
+
+        var_dump($permission);
+
+        # Local
+        $entry->permission = $permission;
+        $entry->store();
+
+        # Remote
+        if ($permission == 'allowed') {
+            $role_l = OpencastLTI::role_learner($course_id);
+            $role_i = OpencastLTI::role_instructor($course_id);
+
+            $base_acl = new AccessControlList('episode_'. $episode_id . '_anonymous');
+            $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+            $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
+            $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'read', true));
+            $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
+            $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
+            $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
+            $base_acl->add_ace(new AccessControlEntity($role_l, 'read', true));
+            $base_acl->add_ace(new AccessControlEntity($role_l, 'write', false));
+
+            $acl_manager = ACLManagerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
+            $acl = $acl_manager->createACL($base_acl);
+            $acl_manager->applyACLto('episode', $episode_id, $acl->id);
+        } else {
+            $acl_manager = ACLManagerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
+            $acl_manager->applyACLto('episode', $episode_id, 0);
         }
     }
 
@@ -444,13 +485,12 @@ class OCModel
      * @param string $episode_id
      * @return array
      */
-    static function getVisibilityForEpisode($course_id, $episode_id)
+    static function getEntry($course_id, $episode_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT visible FROM
-                oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
-        $stmt->execute(array($course_id, $episode_id));
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return OCSeminarEpisodes::findOneBySQL(
+            'seminar_id = ? AND episode_id = ?',
+            [$course_id, $episode_id]
+        );
     }
 
     static function getDCTime($timestamp)
@@ -553,18 +593,18 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
     }
 
-    static function setEpisode($episode_id, $course_id, $visibility, $mkdate)
+    static function setEpisode($episode_id, $course_id, $visibility, $permission, $mkdate)
     {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `mkdate`)
-                VALUES (?, ?, ?, ?)");
+                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `permission`, `mkdate`)
+                VALUES (?, ?, ?, ?, ?)");
 
-        return $stmt->execute(array($course_id, $episode_id, $visibility, $mkdate));
+        return $stmt->execute(array($course_id, $episode_id, $visibility, $permission, $mkdate));
     }
 
     static function getCoursePositions($course_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`
+        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`, `permission`
             FROM oc_seminar_episodes
             WHERE `seminar_id` = ? ORDER BY mkdate DESC");
         $stmt->execute(array($course_id));

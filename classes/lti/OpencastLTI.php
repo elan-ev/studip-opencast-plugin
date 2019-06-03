@@ -193,9 +193,9 @@ class OpencastLTI
         $acl_invisible->add_acl($base_acl);
 
         return [
-            'base'      => $base_acl,
-            'visible'   => $acl_visible,
-            'invisible' => $acl_invisible
+            'base'        => $base_acl,
+            'visible'     => $acl_visible,
+            'invisible'   => $acl_invisible
         ];
     }
 
@@ -241,6 +241,7 @@ class OpencastLTI
      */
     public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
     {
+        // TODO: use correct config!!!
         $acl_manager = ACLManagerClient::getInstance();
 
         $acls_to_remove = OCAccessControlModel::get_acls_for($target_type, $target_id);

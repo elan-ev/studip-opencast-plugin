@@ -205,7 +205,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                         class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                         src="<?= $image ?>"
                                     >
-                                    <img class="playbutton" style="bottom:10px"
+                                    <img class="playbutton"
                                          src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                                 </span>
                                 </a>
@@ -231,6 +231,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                     </li>
                                 </ul>
                             </div>
+                        </div>
 
                             <div class="ocplayerlink">
                                 <?if(!empty($item['presenter_download']) || !empty($item['presentation_download']) || !empty($item['audio_download'])){
@@ -251,10 +252,20 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                         <? else : ?>
                                             <?= Studip\LinkButton::create($_('Unsichtbar schalten'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
                                         <? endif; ?>
+
+                                        <? if ($item['permission'] == 'forbidden') : ?>
+                                            <?= Studip\LinkButton::create($_('Öffentlich freigeben'),
+                                                PluginEngine::getLink('opencast/course/toggle_permission/' . $item['id']),
+                                                ['class' => 'ocinvisible ocspecial', 'id' => 'oc-toggleperm', 'data-episode-id' => $item['id']]); ?>
+                                        <? else : ?>
+                                            <?= Studip\LinkButton::create($_('Öffentliche Freigabe aufheben'),
+                                                PluginEngine::getLink('opencast/course/toggle_permission/' . $item['id']),
+                                                ['class' => 'ocvisible ocspecial', 'id' => 'oc-toggleperm', 'data-episode-id' => $item['id']]); ?>
+                                        <? endif; ?>
                                     <? endif; ?>
                                 </div>
                             </div>
-                        </div>
+
                     </li>
                 <? endforeach; ?>
             </ul>

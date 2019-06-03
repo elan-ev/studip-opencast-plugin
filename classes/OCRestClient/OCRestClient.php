@@ -48,13 +48,15 @@ class OCRestClient
         $this->username   = $config['service_user'];
         $this->password   = $config['service_password'];
         $this->oc_version = $config['service_version'];
+    }
 
+    private function initCurl()
+    {
         if ($config['config_id'] == null){
             $config['config_id'] = -1;
         }
 
         $this->config_id = $config['config_id'];
-
         $precise_config = Configuration::instance($config['config_id']);
 
         // setting up a curl-handler
@@ -130,6 +132,8 @@ class OCRestClient
     function jsonRequest($service_url, $data = [], $with_res_code = false, $type)
     {
         if (isset($service_url)) {
+            $this->initCurl();
+
             if (DEBUG_CURL) {
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
@@ -206,6 +210,8 @@ class OCRestClient
     function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
+            $this->initCurl();
+
             if (DEBUG_CURL) {
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
