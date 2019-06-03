@@ -448,31 +448,12 @@ class OCModel
     {
         $entry = self::getEntry($course_id, $episode_id);
 
-        var_dump($permission);
-
         # Local
         $entry->permission = $permission;
         $entry->store();
 
         # Remote
-        if ($permission == 'allowed') {
-            $role_l = OpencastLTI::role_learner($course_id);
-            $role_i = OpencastLTI::role_instructor($course_id);
-
-            $base_acl = new AccessControlList('episode_'. $episode_id . '_anonymous');
-            $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
-            $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
-            $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'read', true));
-            $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
-            $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
-            $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
-            $base_acl->add_ace(new AccessControlEntity($role_l, 'read', true));
-            $base_acl->add_ace(new AccessControlEntity($role_l, 'write', false));
-
-            $acl_manager = ACLManagerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
-            $acl = $acl_manager->createACL($base_acl);
-            $acl_manager->applyACLto('episode', $episode_id, $acl->id);
-        } else {
+        if ($permission == 'forbidden') {
             $acl_manager = ACLManagerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
             $acl_manager->applyACLto('episode', $episode_id, 0);
         }

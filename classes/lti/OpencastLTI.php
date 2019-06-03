@@ -88,6 +88,8 @@ class OpencastLTI
                 foreach ($episodes as $episode) {
                     if ($episode['visibility'] == 'false') {
                         $result['e'][$episode['id']][$course_id] = 'invisible';
+                    } else if ($episode['permission'] == 'allowed') {
+                        $result['e'][$episode['id']][$course_id] = 'free';
                     }
                 }
             }
@@ -192,10 +194,19 @@ class OpencastLTI
         $acl_invisible = new AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
 
+        $acl_free = new AccessControlList(static::generate_acl_name($course_id, 'free'));
+        $acl_free->add_acl($base_acl);
+        $acl_free->add_ace(new AccessControlEntity($role_l, 'read', true));
+        $acl_free->add_ace(new AccessControlEntity($role_l, 'write', false));
+        $acl_free->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+        $acl_free->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
+
+
         return [
             'base'        => $base_acl,
             'visible'     => $acl_visible,
-            'invisible'   => $acl_invisible
+            'invisible'   => $acl_invisible,
+            'free'        => $acl_free
         ];
     }
 
