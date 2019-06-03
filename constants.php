@@ -7,6 +7,7 @@ class Constants {
     static $SERVICES = [
         'acl-manager',
         'archive',
+        'apiworkflows',
         'capture-admin',
         'ingest',
         'recordings',

@@ -446,17 +446,35 @@ class OCModel
      */
     static function setPermissionForEpisode($course_id, $episode_id, $permission)
     {
+        // Local
         $entry = self::getEntry($course_id, $episode_id);
 
-        # Local
+        $old_permission = $entry->permission;
         $entry->permission = $permission;
         $entry->store();
 
-        # Remote
-        if ($permission == 'forbidden') {
-            $acl_manager = ACLManagerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
+        $config_id = OCConfig::getConfigIdForCourse($course_id);
+
+        // Remote
+        if ($permission == 'allowed') {
+            $mapping = OpencastLTI::generate_acl_mapping_for_course($course_id);
+            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+            OpencastLTI::apply_defined_acls($acls);
+        } else {
+            $acl_manager = ACLManagerClient::getInstance($config_id);
             $acl_manager->applyACLto('episode', $episode_id, 0);
         }
+
+        $api = ApiWorkflowsClient::getInstance($config_id);
+
+        if (!$api->republish($episode_id)) {
+            // if republishing could not take place, reset permissions to previous state
+            $entry->permission = $old_permission;
+            $entry->store();
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -479,10 +479,6 @@ class CourseController extends OpencastController
             } else {
                 OCModel::setPermissionForEpisode($this->course_id, $episode_id, 'allowed');
                 StudipLog::log('OC_CHANGE_EPISODE_PERMISSION', null, $this->course_id, "Episode wurde freigegeben ($episode_id)");
-
-                $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
-                $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-                OpencastLTI::apply_defined_acls($acls);
             }
         } else {
             throw new AccessDeniedException();

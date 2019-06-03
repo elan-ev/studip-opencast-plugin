@@ -33,7 +33,9 @@ require_once 'classes/OCJsonFile.php';
 
 require_once 'classes/OCRestClient/OCRestClient.php';
 
+require_once 'classes/OCRestClient/ACLManagerClient.php';
 require_once 'classes/OCRestClient/ArchiveClient.php';
+require_once 'classes/OCRestClient/ApiWorkflowsClient.php';
 require_once 'classes/OCRestClient/CaptureAgentAdminClient.php';
 require_once 'classes/OCRestClient/IngestClient.php';
 require_once 'classes/OCRestClient/OCRestClient.php';
@@ -43,7 +45,7 @@ require_once 'classes/OCRestClient/SeriesClient.php';
 require_once 'classes/OCRestClient/ServicesClient.php';
 require_once 'classes/OCRestClient/UploadClient.php';
 require_once 'classes/OCRestClient/WorkflowClient.php';
-require_once 'classes/OCRestClient/ACLManagerClient.php';
+
 
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
