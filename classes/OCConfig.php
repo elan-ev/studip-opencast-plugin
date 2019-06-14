@@ -51,7 +51,7 @@ class OCConfig
                 return $config;
             } else {
                 return [
-                    $this->empty_config()
+                    self::empty_config()
                 ];
                 #throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
             }
@@ -175,7 +175,7 @@ class OCConfig
         return $stmt->fetchColumn();
     }
 
-    public function empty_config()
+    public static function empty_config()
     {
         return [
             'config_id'        => 'error',
