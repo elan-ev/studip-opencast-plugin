@@ -16,7 +16,7 @@ class OCRestClient
         $config_id,
         $cookie;
 
-    public const
+    const
         GET = 1,
         POST = 2,
         PUT = 3,
