@@ -35,19 +35,18 @@ class RefreshScheduledEvents extends CronJob
 
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                   LEFT JOIN oc_seminar_series USING (seminar_id)
-                  WHERE oc_seminar_series.schedule=1");
+                  WHERE oc_seminar_series.schedule = 1");
         $stmt->execute(array());
+
         $scheduled_events  = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if(!empty($scheduled_events)){
+        if (!empty($scheduled_events)){
             foreach($scheduled_events as $se) {
                 $scheduler_client = SchedulerClient::getInstance();
                 $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
                 $course = Course::find($se['seminar_id']);
                 $date = new SingleDate($se['date_id']);
                 echo sprintf(
-                    studip_utf8decode(
-                        _("Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n ")
-                    ),
+                    _("Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n "),
                     $date->getDatesExport(), $course->name
                 );
             }

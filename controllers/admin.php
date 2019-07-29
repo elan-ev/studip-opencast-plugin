@@ -199,21 +199,35 @@ class AdminController extends OpencastController
                 if ($comp) {
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
-                    foreach($services as $service_url => $service_type) {
-                        if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false
-                                && strpos($service_url, $service_host) !== false) {
-                            OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
-                        } else {
-                            unset($services[$service_url]);
+                    if (empty($services)) {
+                        OCEndpointModel::removeEndpoint($config_id, 'services');
+
+                        $this->flash['messages'] = array(
+                            'error' => sprintf(
+                                $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
+                                    . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
+                                    . 'ob ihre Opencast-Installation https unterstützt.'),
+                                $service_host
+                            )
+                        );
+                    } else {
+
+                        foreach($services as $service_url => $service_type) {
+                            if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false
+                                    && strpos($service_url, $service_host) !== false) {
+                                OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                            } else {
+                                unset($services[$service_url]);
+                            }
                         }
+
+                        $success_message[] = sprintf(
+                            $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
+                            $service_host
+                        );
+
+                        $this->flash['messages'] = array('success' => implode('<br>', $success_message));
                     }
-
-                    $success_message[] = sprintf(
-                        $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
-                        $service_host
-                    );
-
-                    $this->flash['messages'] = array('success' => implode('<br>', $success_message));
                 } else {
                     OCEndpointModel::removeEndpoint($config_id, 'services');
                     $this->flash['messages'] = array(

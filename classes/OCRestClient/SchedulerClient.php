@@ -141,8 +141,7 @@ class SchedulerClient extends OCRestClient
 
     static function createEventMetadata($course_id, $resource_id, $termin_id)
     {
-        $config_id = OCConfig::getConfigIdForCourse($course_id);
-        $config    = OCConfig::getConfig('recordings', $config_id);
+        $config = OCConfig::getConfigForCourse($course_id);
 
         $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id, $config['schedule_time_puffer_seconds']));
 
