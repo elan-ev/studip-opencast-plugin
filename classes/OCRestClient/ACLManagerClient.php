@@ -26,18 +26,12 @@ class ACLManagerClient extends OCRestClient
             'acl'  => $acl->as_xml()
         ];
 
-        $response = $this->postJSON('/acl', $data, true);
+        if ($acl = $this->getACLByName($acl->get_name())) {
+            $this->removeACL($acl->id);
 
-        if ($response[1] == 409) {
-            // try to recover from this conflict
-            // Solution: delete ACL from Opencast
-            if ($acl = $this->getACLByName($acl->get_name())) {
-                $this->removeACL($acl->id);
-                return $this->postJSON('/acl', $data);
-            }
         }
 
-        return $response[0];
+        return $this->postJSON('/acl', $data);
     }
 
     function removeACL($acl_id)
