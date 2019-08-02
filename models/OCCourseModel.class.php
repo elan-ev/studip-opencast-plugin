@@ -20,12 +20,12 @@ class OCCourseModel
 
         $this->setCourseID($course_id);
         // take care of connected series
-        $cseries = OCSeriesModel::getConnectedSeries($this->getCourseID(), true);
+        $cseries = OCModel::getConnectedSeries($this->getCourseID());
 
         if (!empty($cseries)) {
             $current_seriesdata = array_pop($cseries);
             $this->setSeriesMetadata($current_seriesdata);
-            $this->setSeriesID($current_seriesdata['identifier']);
+            $this->setSeriesID($current_seriesdata['series_id']);
         } else {
             $this->setSeriesID(false);
         }
@@ -370,6 +370,19 @@ class OCCourseModel
         else $visibility = 'visible';
 
         return OCSeriesModel::updateVisibility($this->course_id, $visibility);
+
+    }
+
+    /**
+     * Toggle schedule flag for current series
+     *
+     * @return bool true on success, false on failure
+     */
+    public function toggleSeriesSchedule()
+    {
+        $series = $this->getSeriesMetadata();
+
+        return OCSeriesModel::updateSchedule($this->course_id, $series['schedule'] ? 0 : 1);
 
     }
 

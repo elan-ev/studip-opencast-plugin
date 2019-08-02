@@ -101,13 +101,14 @@ class SearchClient extends OCRestClient
      */
     function getAllSeries()
     {
-
         $service_url = "/series.json";
+
         if ($series = $this->getJSON($service_url)) {
-            //$x = "search-results";
-            //$episodes = $search->$x->result;
-            return $series;
-        } else return false;
+            $x = "search-results";
+            return $series->$x->result;
+        } else {
+            return false;
+        }
     }
 
 

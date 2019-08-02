@@ -148,15 +148,14 @@ class CourseController extends OpencastController
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
-            $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id, true);
-            $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-            $this->series_metadata = OCSeriesModel::getConnectedSeriesDB($this->course_id);
-            $series_client = SeriesClient::getInstance();
-            $this->config_error = $series_client->has_config_error();
-            foreach ($this->series_metadata as $metadata) {
-                if ($metadata['schedule'] == 1) {
-                    $this->series_metadata = $metadata;
+            $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
+
+            foreach ($this->connectedSeries as $key => $series) {
+                if ($series['schedule']) {
+                    $this->can_schedule = true;
                 }
+
+                $this->connectedSeries[$key] = array_merge($series, OCSeriesModel::getSeriesFromOpencast($series));
             }
 
             if ($perm->have_perm('root')) {
@@ -236,6 +235,10 @@ class CourseController extends OpencastController
 
     function config_action()
     {
+        if (!$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException();
+        }
+
         if (Request::isXhr()) {
             $this->set_layout(null);
         }
@@ -243,6 +246,7 @@ class CourseController extends OpencastController
         if (isset($this->flash['messages'])) {
             $this->message = $this->flash['messages'];
         }
+
         Navigation::activateItem('course/opencast');
         $navigation = Navigation::getItem('/course/opencast');
         $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
@@ -251,10 +255,14 @@ class CourseController extends OpencastController
         $this->response->add_header('X-Title', rawurlencode($this->_("Series mit Veranstaltung verknüpfen")));
 
 
-        $this->connectedSeries = OCSeriesModel::getConnectedSeries($this->course_id);
-        $this->unconnectedSeries = OCSeriesModel::getUnconnectedSeries($this->course_id, true);
-
         $this->configs = OCEndpointModel::getBaseServerConf();
+
+        $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
+
+        foreach ($this->configs as $id => $config) {
+            $sclient = SearchClient::getInstance($id);
+            $this->all_series[$id] = $sclient->getAllSeries($this->course_id);
+        }
     }
 
     function edit_action($course_id)
@@ -280,9 +288,9 @@ class CourseController extends OpencastController
 
         $course_id = Request::get('course_id');
         $series_id = Request::get('series_id');
-        $delete = Request::get('delete');
-        if ($delete && check_ticket($ticket)) {
+        $delete    = Request::get('delete');
 
+        if ($delete && check_ticket($ticket)) {
             $scheduled_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
 
             OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
@@ -661,6 +669,15 @@ class CourseController extends OpencastController
             $vis = ['visible' => 'sichtbar', 'invisible' => 'ausgeblendet'];
             $this->flash['messages'] = ['success' => sprintf($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."), $vis[$visibility])];
             StudipLog::log('OC_CHANGE_TAB_VISIBILITY', $this->course_id, null, sprintf($this->_("Reiter ist %s."), $vis[$visibility]));
+        }
+        $this->redirect('course/index/false');
+    }
+
+    function toggle_schedule_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+            $occourse = new OCCourseModel($this->course_id);
+            $occourse->toggleSeriesSchedule();
         }
         $this->redirect('course/index/false');
     }

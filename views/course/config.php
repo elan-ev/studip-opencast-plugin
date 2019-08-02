@@ -10,7 +10,7 @@
             <?= $_('Serie mit Veranstaltung verknüpfen') ?>
         </legend>
 
-        <? if (!empty($unconnectedSeries)) : ?>
+        <? if (!empty($all_series)) : ?>
             <label>
                 <select name="series"
                     class="chosen-select"
@@ -19,9 +19,12 @@
 
                 <? foreach ($configs as $id => $config): ?>
                 <optgroup label="<?= $_(sprintf('%s. Opencast-System', $id)) ?>">
-                    <? foreach ($unconnectedSeries as $serie) : ?>
+                    <? foreach ($all_series[$id] as $serie) : ?>
                         <?// if (isset($serie['identifier'])) : ?>
-                            <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie['identifier'] ?>"}'><?= studip_utf8decode($serie['title'])?></option>
+                            <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
+                                    class="nested-item">
+                                <?= studip_utf8decode($serie->dcTitle)?>
+                            </option>
                         <?//endif;?>
                     <?endforeach;?>
                 </optgroup>

@@ -5,7 +5,7 @@
         ),
         [   // approveParams
             'course_id' => $course_id,
-            'series_id' => $this->connectedSeries[0]['identifier'],
+            'series_id' => $this->connectedSeries[0]['series_id'],
             'delete' => true
         ],
         [   // disapproveParams
@@ -31,7 +31,7 @@ jQuery(function() {
     OC.states = <?= json_encode($states) ?>;
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
     OC.initIndexpage();
-    <?  if($series_metadata['schedule'] == '1') : ?>
+    <?  if ($can_schedule) : ?>
     OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
     <? endif; ?>
 });
@@ -43,7 +43,7 @@ $lti_launch_data = OpencastLTI::generate_lti_launch_data(
     $current_user_id,
     $course_id,
     LTIResourceLink::generate_link('series','view complete series for course'),
-    OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
+    OpencastLTI::generate_tool('series', $this->connectedSeries[0]['series_id'])
 );
 
 $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
@@ -65,7 +65,7 @@ $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerke
 global $perm;
 $sidebar = Sidebar::get();
 
-if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
+if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     $actions = new ActionsWidget ();
     $upload = '';
 
@@ -82,7 +82,7 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
             new Icon('refresh', 'clickable')
         );
 
-        if ($series_metadata['schedule'] == '1') {
+        if ($can_schedule) {
             $actions->addLink($_("Medien hochladen"), '#1',
                 new Icon('upload', 'clickable'), [
                     'id' => 'oc_upload_dialog'
@@ -122,6 +122,18 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
             $_("Reiter sichtbar machen"),
             PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
             new Icon('visibility-invisible', 'clickable')
+        );
+    }
+
+    if ($GLOBALS['perm']->have_perm('root')) {
+        $actions->addLink(
+            $can_schedule
+                ? $_("Medienaufzeichnung verbieten")
+                : $_("Medienaufzeichnung erlauben"),
+            PluginEngine::getLink('opencast/course/toggle_schedule/' . get_ticket()),
+            new Icon($can_schedule
+                ? 'video'
+                : 'video+decline', 'clickable')
         );
     }
 

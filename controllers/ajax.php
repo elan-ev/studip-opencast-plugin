@@ -66,36 +66,43 @@ class AjaxController extends OpencastController
     {
         global $perm;
 
-        $allseries = OCSeriesModel::getAllSeries();
-        $user_id = $GLOBALS['auth']->auth['uid'];
+        $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
 
-        if ($perm->have_perm('root')) {
-            $this->render_text(json_encode($allseries));
-        } else {
-            $user_series = OCModel::getUserSeriesIDs($user_id);
-            $u_seriesids = array();
-            $u_series    = array();
+        array_walk($series, function(&$item, $key) {
+            $sem = Course::find($item['seminar_id']);
+            $item['name'] = $sem->getFullname('number-name-semester');
+            $item['endtime'] = $sem->getEnd_Time();
+        });
 
-            foreach ($user_series as $user_serie){
-                $u_seriesids[] = $user_serie['series_id'];
-            }
+        uasort($series, function($a, $b) {
+            return $a['endtime'] == $b['endtime'] ? 0
+                : $a['endtime'] < $b['endtime'] ? -1 : 1;
+        });
 
-            foreach ($allseries as $serie) {
-                if (in_array($serie['identifier'], $u_seriesids)){
-                    $u_series[] = $serie;
-                }
-            }
-
-            $this->render_text(json_encode($u_series));
-        }
+        $this->render_json($series);
     }
 
     function getepisodes_action($series_id)
     {
 
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
-        $episodes      = $search_client->getEpisodes($series_id);
+        //$episodes      = $search_client->getEpisodes($series_id);
         $result        = [];
+
+
+        $course = Course::find($this->getCourseID());
+        $role = '';
+
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
+            $role = 'Instructor';
+        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
+            $role = 'Learner';
+        }
+
+        $episodes = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);
+
+
+
 
         if (!is_array($episodes)) {
             $episodes = [$episodes];

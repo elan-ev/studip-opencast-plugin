@@ -4,28 +4,20 @@ class OCSeriesModel
 
     // saves all series for later requests
     static private $allSeries = null;
-    // saves connected series for later requests
-    static private $connectedSeries = null;
-    // saves unconnected series for later requests
-    static private $unconnectedSeries = null;
+
 
     /**
-     * return connected Siries for $courseID from DB
+     * [getSeriesFromOpencast description]
      *
-     * @param string $courseID
-     * @return array
+     * @param  [type] $series    [description]
+     *
+     * @return [type]            [description]
      */
-    static function getConnectedSeriesDB($courseID)
+    static function getSeriesFromOpencast($series)
     {
-        $stmt = DBManager::get()->prepare("SELECT *
-            FROM oc_seminar_series
-            WHERE seminar_id = ?");
-        $stmt->execute(array($courseID));
+        $sclient = new SeriesClient($series['config_id']);
 
-        if ($series = $stmt->fetchAll(PDO::FETCH_ASSOC))
-            return $series;
-        else
-            return array();
+        return self::transformSeriesJSON($sclient->getOneSeries($series['series_id']));
     }
 
     static function getSeminarAndSeriesData()
@@ -37,100 +29,32 @@ class OCSeriesModel
     }
 
     /**
-     * checks for connected series in db than checks seriesID at REST if
-     * refresh is true result of last call is overwritten otherwise last calls
-     * result is returned without db or REST request
+     * [getSeriesForUser description]
      *
-     * @param string $courseID
-     * @param bool $refresh
-     * @return array
+     * @param  [type] $user_id [description]
+     * @return [type]          [description]
      */
-    static function getConnectedSeries($courseID, $refresh = false)
+    static function getSeriesForUser($user_id)
     {
-        //check if value assignment is needed
-        if (is_null(self::$connectedSeries) || $refresh) {
-            $sClient = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID));
-            $DBSeries = self::getConnectedSeriesDB($courseID);
-            if ($DBSeries) {
-                $res = array();
-                foreach ($DBSeries as $series) {
-                    if ($json = $sClient->getOneSeries($series['series_id'])) {
-                        $res[] = self::transformSeriesJSON($json);
-                    }
-                }
-                self::$connectedSeries = $res;
-            } else {
-                self::$connectedSeries = array();
-            }
+        if ($GLOBALS['perm']->have_perm('root', $user_id)) {
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, series_id FROM seminar_user AS su
+                JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
+                JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
+                WHERE ep.visible != 'invsibile'");
+            $stmt->execute([$user_id]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, series_id FROM seminar_user AS su
+                JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
+                JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
+                WHERE su.user_id = ?
+                    AND ep.visible != 'invsibile'");
+            $stmt->execute([$user_id]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        return self::$connectedSeries;
     }
-
-
-    /**
-     * return unconnected series
-     * if refresh is true result of last call is overwritten otherwise last calls
-     * result is returned
-     *
-     * @param string $courseID
-     * @param bool $refresh
-     * @return array
-     */
-    static function getUnconnectedSeries($courseID, $refresh = false)
-    {
-        //check if value assignment is needed
-        if (is_null(self::$unconnectedSeries) || $refresh) {
-            $connected = self::getConnectedSeries($courseID);
-            $all = self::getAllSeries($refresh);
-
-            if (empty($connected)) {
-                self::$unconnectedSeries = $all;
-            } elseif (empty($all)) {
-                self::$unconnectedSeries = array();
-            } else {
-                $connectedIdentifier = array();
-                //get all identifier of connected series in one array
-                foreach ($connected as $con) {
-                    $connectedIdentifier[] = $con['identifier'];
-                }
-                //compare connected to all and delete connected
-                foreach ($all as $val => $key) {
-                    if (in_array($key['identifier'], $connectedIdentifier)) {
-                        unset($all[$val]);
-                    }
-                }
-                sort($all);
-                self::$unconnectedSeries = $all;
-            }
-        }
-        return self::$unconnectedSeries;
-    }
-
-    /**
-     * return all unconnected series
-     * if refresh is true result of last call is overwritten otherwise last cals
-     * result is returned
-     *
-     * @param bool $refresh
-     * @return array
-     */
-    static function getAllSeries($refresh = false)
-    {
-        //check if value assignment is needed
-        if (is_null(self::$allSeries) || $refresh) {
-            $sClient = SeriesClient::getInstance();
-            $ret = array();
-            if ($json = $sClient->getAllSeries()) {
-
-                foreach ($json as $series) {
-                    $ret[] = self::transformSeriesJSON($series);
-                }
-            }
-            self::$allSeries = $ret;
-        }
-        return self::$allSeries;
-    }
-
 
     /**
      * transforms multidimensional series array into 2 dimensional array
@@ -196,7 +120,7 @@ class OCSeriesModel
      */
     static function getSeriesDCs($courseID)
     {
-        $series = self::getConnectedSeries($courseID);
+        $series = OCModel::getConnectedSeries($courseID);
         $ret = array();
 
         foreach ($series as $ser) {
@@ -357,7 +281,7 @@ class OCSeriesModel
         DBManager::get()->exec("TRUNCATE oc_series_cache");
     }
 
-    static function updateVisibility($seminar_id,$visibility)
+    static function updateVisibility($seminar_id, $visibility)
     {
         $stmt = DBManager::get()->prepare("UPDATE
                 oc_seminar_series SET `visibility` = ?  WHERE `seminar_id` = ?");
@@ -372,6 +296,14 @@ class OCSeriesModel
         $stmt->execute(array($seminar_id));
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    static function updateSchedule($seminar_id, $schedule)
+    {
+        $stmt = DBManager::get()->prepare("UPDATE
+                oc_seminar_series SET `schedule` = ?  WHERE `seminar_id` = ?");
+
+        return $stmt->execute(array($schedule, $seminar_id));
     }
 
     static function getWorkflowForEvent($seminar_id, $termin_id )
