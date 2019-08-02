@@ -15,17 +15,52 @@
     ) ?>
 <? endif ?>
 
+<?
+$visibility_text = [
+    'invisible' => 'Video ist nur für Sie sichtbar',
+    'visible'   => 'Video ist für Teilnehmende sichtbar',
+    'free'      => 'Video ist für jeden sichtbar'
+];
+?>
+
 <?= $this->render_partial('messages') ?>
 
-<script language="JavaScript">
-    STUDIP.hasperm = <?=var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id))?>;
-    OC.states = <?=json_encode($states)?>;
+<script>
+jQuery(function() {
+    STUDIP.hasperm = <?= var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) ?>;
+    OC.states = <?= json_encode($states) ?>;
+    OC.visibility_text = <?= json_encode($visibility_text) ?>;
     OC.initIndexpage();
     <?  if($series_metadata['schedule'] == '1') : ?>
-    OC.initUpload(<?= OC_UPLOAD_CHUNK_SIZE ?>);
+    OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
     <? endif; ?>
+});
 </script>
 
+<?
+$current_user_id = $GLOBALS['auth']->auth['uid'];
+$lti_launch_data = OpencastLTI::generate_lti_launch_data(
+    $current_user_id,
+    $course_id,
+    LTIResourceLink::generate_link('series','view complete series for course'),
+    OpencastLTI::generate_tool('series', $this->connectedSeries[0]['identifier'])
+);
+
+$lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+?>
+
+<script>
+    // send credentials to opencast lti backend, setting session cookie for oc domain
+    $.ajax({
+        type: "POST",
+        url: "<?= rtrim($config['service_url'], '/') ?>/lti",
+        data:  <?= json_encode($lti_data) ?>,
+        xhrFields: {
+           withCredentials: true
+        },
+        crossDomain: true
+    });
+</script>
 <?
 global $perm;
 $sidebar = Sidebar::get();
@@ -69,10 +104,10 @@ if ($GLOBALS ['perm']->have_studip_perm('tutor', $this->course_id)) {
         );
 
         $actions->addLink(
-            $_('Vorhandene Series verknüpfen'), '#',
+            $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
             new Icon('group', 'clickable'),
             [
-                'id' => 'oc_config_dialog'
+                'data-dialog' => 'width=400;height=500'
             ]);
     }
 
@@ -103,7 +138,8 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <?= $_('Vorlesungsaufzeichnungen') ?>
 </h1>
 
-<? if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
+<?
+if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <div class="oc_flex">
         <div id="episodes" class="oc_flexitem oc_flexepisodelist">
         <span class="oce_episode_search">
@@ -133,7 +169,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                                         <?= $_("Videoverarbeitung fehlgeschlagen") ?>
                                     </div>
 
-                                    <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?></span>
+                                    <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?>
                                 </div>
                             <? else : ?>
                                 <div class="oce_wip" id="<?= $workflow_id ?>">
@@ -173,14 +209,16 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                                 <div></div>
                             </div>
                             <div class="oce_playercontainer">
-                                </span>
                                 <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                                 <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
-                <span class="previewimage">
-                    <img class="previewimage" src="<?= $image ?>">
-                    <img class="playbutton" style="bottom:10px"
-                         src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
-                </span>
+                                <span class="previewimage">
+                                    <img
+                                        class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                        src="<?= $image ?>"
+                                    >
+                                    <img class="playbutton"
+                                         src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
+                                </span>
                                 </a>
                             </div>
                         </div>
@@ -204,6 +242,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                                     </li>
                                 </ul>
                             </div>
+                        </div>
 
                             <div class="ocplayerlink">
                                 <?if(!empty($item['presenter_download']) || !empty($item['presentation_download']) || !empty($item['audio_download'])){
@@ -219,15 +258,18 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                                     <? endif ?>
 
                                     <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                        <? if ($item['visibility'] == 'false') : ?>
-                                            <?= Studip\LinkButton::create($_('Aufzeichnung unsichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocinvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
-                                        <? else : ?>
-                                            <?= Studip\LinkButton::create($_('Aufzeichnung sichtbar'), PluginEngine::getLink('opencast/course/toggle_visibility/' . $item['id']), ['class' => 'ocvisible ocspecial', 'id' => 'oc-togglevis', 'data-episode-id' => $item['id']]); ?>
-                                        <? endif; ?>
+                                            <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']]),
+                                                '', [
+                                                'class'           => 'ocspecial oc'. $item['visibility'],
+                                                'id'              => 'oc-togglevis',
+                                                'data-episode-id' => $item['id'],
+                                                'data-dialog'     => 'size=auto',
+                                                'data-visibility' => $item['visibility']
+                                            ]); ?>
                                     <? endif; ?>
                                 </div>
                             </div>
-                        </div>
+
                     </li>
                 <? endforeach; ?>
             </ul>
@@ -236,7 +278,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 
 <? else: ?>
     <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
-        <? if($this->config_error) : ?>
+        <? if ($this->config_error) : ?>
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
         <? else : ?>
             <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
@@ -251,12 +293,34 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <div id="upload_dialog" title="<?= $_("Medienupload") ?>" style="display: none;">
         <?= $this->render_partial("course/_upload", ['course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier']]) ?>
     </div>
-
-    <div id="config_dialog" title="<?= $_("Series verknüpfen") ?>" style="display: none;">
-        <?= $this->render_partial("course/_config", []) ?>
-    </div>
-
 <? endif; ?>
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?= $course_id ?>"></div>
+<div id="visibility_dialog" style="display: none">
+    <form class="default" method="post">
+        <fieldset>
+            <legend>Sichtbarkeit einstellen</legend>
+
+            <label>
+                <input type="radio" name="visibility" value="invisible">
+                Unsichtbar - Dieses Video ist nur für Sie sichtbar
+            </label>
+
+            <label>
+                <input type="radio" name="visibility" value="visible">
+                Sichtbar - Dieses Video ist für Teilnehmende dieser Veranstaltung sichtbar
+            </label>
+
+            <label>
+                <input type="radio" name="visibility" value="free">
+                Freigeben - Dieses Video ist für jeden sichtbar
+            </label>
+        </fieldset>
+
+        <footer data-dialog-button>
+            <?= Studip\LinkButton::createAccept(_('Speichern'), '#', ['onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'))"]) ?>
+            <?= Studip\LinkButton::createCancel(_('Abbrechen'), '#', ['onclick' => "jQuery('#visibility_dialog').dialog('close');"]) ?>
+        </footer>
+    </form>
+</div>

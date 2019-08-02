@@ -10,12 +10,14 @@ class AddSchedulePuffer extends Migration
 
     function up()
     {
-        DBManager::get()->query("ALTER TABLE `oc_config` ADD `schedule_time_puffer_seconds` int DEFAULT 300 NOT NULL;");
+        DBManager::get()->query("ALTER TABLE `oc_config`
+            ADD `schedule_time_puffer_seconds` int DEFAULT 300 NOT NULL;");
     }
 
     function down()
     {
-        DBManager::get()->query("ALTER TABLE `oc_config` DROP COLUMN `schedule_time_puffer_seconds`;");
+        DBManager::get()->query("ALTER TABLE `oc_config`
+            DROP COLUMN `schedule_time_puffer_seconds`;");
     }
 
 }

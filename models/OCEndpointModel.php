@@ -9,7 +9,9 @@ class OCEndpointModel
      */
     static function getEndpoints()
     {
-        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints` WHERE 1");
+        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
+            WHERE 1
+            ORDER BY config_id, service_type");
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

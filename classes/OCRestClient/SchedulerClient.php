@@ -8,7 +8,7 @@ class SchedulerClient extends OCRestClient
     {
         $this->serviceName = 'SchedulerClient';
 
-        if ($config = parent::getConfig('recordings', $config_id)) {
+        if ($config = OCConfig::getConfigForService('recordings', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
@@ -113,7 +113,7 @@ class SchedulerClient extends OCRestClient
      */
     function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id)
     {
-        $config_id = OCRestClient::getConfigIdForCourse($course_id);
+        $config_id = OCConfig::getConfigIdForCourse($course_id);
         $precise_config = Configuration::instance($config_id);
 
         // currently, we only update the start and the end time
@@ -141,8 +141,7 @@ class SchedulerClient extends OCRestClient
 
     static function createEventMetadata($course_id, $resource_id, $termin_id)
     {
-        $config_id = OCRestClient::getConfigIdForCourse($course_id);
-        $config = OCRestClient::getInstance()->getConfig('recordings',$config_id);
+        $config = OCConfig::getConfigForCourse($course_id);
 
         $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id, $config['schedule_time_puffer_seconds']));
 

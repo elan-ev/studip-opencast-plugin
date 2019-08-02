@@ -8,7 +8,7 @@ class IngestClient extends OCRestClient
     {
         $this->serviceName = 'IngestClient';
 
-        if ($config = parent::getConfig('ingest', $config_id)) {
+        if ($config = OCConfig::getConfigForService('ingest', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));

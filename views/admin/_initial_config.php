@@ -4,7 +4,7 @@
         <legend><?= $_('Globale Einstellungen'); ?></legend>
         <details>
             <summary>Einstellungen</summary>
-            <? foreach (Configuration::i()->get_entries_for_display() as $name=>$data){?>
+            <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){?>
                 <label title="Name der Einstellung: <?= $name ?>">
                     <?= $data['description'] ?>
                     <input type="<?= $data['type'] ?>" value="<?= $data['value'] ?>" name="precise_config[-1][<?= $name ?>]">
@@ -12,7 +12,7 @@
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
         </details>
-        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ',Configuration::registered_base_config_ids()) ?></b>
+        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ', Configuration::registered_base_config_ids()) ?></b>
         <br><?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?> <b>
             <?php
             $counter = 0;
@@ -62,8 +62,8 @@
 
         <details>
             <summary>Weitere Einstellungen</summary>
-            <? $special_config = Configuration::i($config_id)->get_entries_for_display(); ?>
-            <? foreach (Configuration::i()->get_entries_for_display() as $name=>$data){
+            <? $special_config = Configuration::instance($config_id)->get_entries_for_display(); ?>
+            <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){
                 if(in_array($name,['number_of_configs','capture_agent_attribute'])){continue;}
                 $special_config_exists = isset($special_config[$name]); ?>
                 <label title="Name der Einstellung: <?= $name ?>">

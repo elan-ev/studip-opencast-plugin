@@ -35,7 +35,7 @@ class OCModel
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::i()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
                 AND rop.state = 'on'");
 
        $stmt->execute();
@@ -48,7 +48,7 @@ class OCModel
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
                 LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
-                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::i()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
                 AND rop.state = 'on'");
 
        $stmt->execute();
@@ -415,16 +415,41 @@ class OCModel
      *
      * @param string $course_id
      * @param string $episode_id
-     * @param tyniint 1 or 0
+     * @param string $visibility   invisible, visible or free
+     *
      * @return bool
      */
     static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
     {
-        $stmt = DBManager::get()->prepare("UPDATE
-                  oc_seminar_episodes SET visible = ?
-                  WHERE seminar_id = ? AND  episode_id = ?");
+        // Local
+        $entry = self::getEntry($course_id, $episode_id);
+        $old_visibility = $entry->visible;
+        $entry->visible = $visibility;
 
-        return $stmt->execute(array($visibility, $course_id, $episode_id));
+        $entry->store();
+
+        $config_id = OCConfig::getConfigIdForCourse($course_id);
+
+        // Remote
+        if ($visibility == 'visible') {
+            $acl_manager = ACLManagerClient::getInstance($config_id);
+            $acl_manager->applyACLto('episode', $episode_id, 0);
+        } else {
+            $mapping = OpencastLTI::generate_acl_mapping_for_course($course_id);
+            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+            OpencastLTI::apply_defined_acls($acls);
+        }
+
+        $api = ApiWorkflowsClient::getInstance($config_id);
+
+        if (!$api->republish($episode_id)) {
+            // if republishing could not take place, reset permissions to previous state
+            $entry->visible = $old_visibility;
+            $entry->store();
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -434,13 +459,12 @@ class OCModel
      * @param string $episode_id
      * @return array
      */
-    static function getVisibilityForEpisode($course_id, $episode_id)
+    static function getEntry($course_id, $episode_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT visible FROM
-                oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
-        $stmt->execute(array($course_id, $episode_id));
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return OCSeminarEpisodes::findOneBySQL(
+            'seminar_id = ? AND episode_id = ?',
+            [$course_id, $episode_id]
+        );
     }
 
     static function getDCTime($timestamp)
@@ -476,7 +500,7 @@ class OCModel
     static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate)
     {
         $stmt = DBManager::get()->prepare("INSERT INTO
-                oc_seminar_workflows (workflow_id,seminar_id, user_id, mkdate)
+                oc_seminar_workflows (workflow_id, seminar_id, user_id, mkdate)
                 VALUES (?, ?, ?, ?)");
         return $stmt->execute(array($workflow_id, $seminar_id, $user_id, $mkdate));
     }
@@ -520,7 +544,7 @@ class OCModel
         $states = [];
 
         foreach ($table_entries as $table_entry){
-            $current_workflow_client = WorkflowClient::getInstance($table_entry['seminar_id']);
+            $current_workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($table_entry['seminar_id']));
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
@@ -619,5 +643,35 @@ class OCModel
     static function sanatizeContent($content)
     {
         return studip_utf8decode($content);
+    }
+
+    static function getCoursesForEpisode($episode_id){
+        $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_episodes WHERE episode_id = ?");
+        $stmt->execute([$episode_id]);
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $return = [];
+
+        foreach ($result as $entry){
+            $return[] = $entry['seminar_id'];
+        }
+
+        return array_unique($return);
+    }
+
+    static function getSeriesForEpisode($episode_id){
+        $courses = static::getCoursesForEpisode($episode_id);
+        $series = [];
+
+        $stmt = DBManager::get()->prepare("SELECT series_id FROM oc_seminar_series WHERE seminar_id = ?");
+        foreach ($courses as $course_id){
+            $stmt->execute([$course_id]);
+            $direct_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach($direct_result as $entry){
+                $series[] = $entry['series_id'];
+            }
+        }
+
+        return array_unique($series);
     }
 }

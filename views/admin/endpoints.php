@@ -15,4 +15,11 @@
 OC.initAdmin();
 </script>
 
-<?= $this->render_partial("admin/_endpointoverview", array('endpoints' => $endpoints)) ?>
+<? foreach ($configs as $id => $config) : ?>
+    <?= $this->render_partial("admin/_endpointoverview", [
+        'endpoints'      => $endpoints,
+        'show_config_id' => $id,
+        'config'         => $config
+    ]) ?>
+    <br><br>
+<? endforeach ?>

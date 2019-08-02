@@ -8,7 +8,7 @@ class WorkflowClient extends OCRestClient
     {
         $this->serviceName = 'WorkflowClient';
 
-        if ($config = parent::getConfig('workflow', $config_id)) {
+        if ($config = OCConfig::getConfigForService('workflow', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));

@@ -7,7 +7,7 @@ class SeriesClient extends OCRestClient
 
     function __construct($config_id = 1)
     {
-        if ($config = parent::getConfig('series', $config_id)) {
+        if ($config = OCConfig::getConfigForService('series', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
@@ -110,21 +110,11 @@ class SeriesClient extends OCRestClient
     {
         $dublinCore = studip_utf8encode(OCSeriesModel::createSeriesDC($course_id));
 
-        $ACLData = array(
-            'ROLE_ADMIN' => array(
-                'read' => 'true',
-                'write' => 'true',
-                'analyze' => 'true'
-            ),
-           'ROLE_ANONYMOUS' => array(
-                'read' => 'true'
-           )
-        );
+        $acl = OpencastLTI::generate_standard_acls($course_id);
 
-        $ACL = OCSeriesModel::createSeriesACL($ACLData);
         $post = array(
             'series' => $dublinCore,
-            'acl'    => $ACL
+            'acl'    => $acl['visible']->as_xml()
         );
 
         $res = $this->getXML('/', $post, false, true);
@@ -136,9 +126,9 @@ class SeriesClient extends OCRestClient
         if ($res[1] == 201) {
             $new_series = json_decode($res[0]);
             $series_id = $json['identifier'];
-            OCSeriesModel::setSeriesforCourse($course_id, $series_id, 'visible', 1, time());
+            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, 'visible', 1, time());
 
-            self::updateAccescontrolForSeminar($series_id, $ACL);
+            self::updateAccescontrolForSeminar($series_id, $acl['visible']->as_xml());
 
             return true;
         } else {

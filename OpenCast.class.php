@@ -5,8 +5,6 @@
 
 include('bootstrap.php');
 
-define('OC_UPLOAD_CHUNK_SIZE', '10000000');
-
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
@@ -51,11 +49,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 Navigation::addItem('/admin/config/oc-resources', $resources);
 
                 if ($perm->have_perm('root')) {
-                    $endpoints = new Navigation('Opencast Endpoints');
-                    $endpoints->setURL(PluginEngine::getURL('opencast/admin/endpoints'));
-                    $main->addSubNavigation('oc-endpoints', $endpoints);
-                    Navigation::addItem('/admin/config/oc-endpoints', $endpoints);
-
                     $mediastatus = new Navigation($this->_('Opencast Medienstatus'));
                     $mediastatus->setURL(PluginEngine::getURL('opencast/admin/mediastatus'));
                     $main->addSubNavigation('oc-mediastatus', $mediastatus);
@@ -269,7 +262,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     static function markupOpencast($markup, $matches, $contents)
     {
-        $search_client = SearchClient::getInstance(OCRestClient::getCourseIdForSeries($contents));
+        $search_client = SearchClient::getInstance(OCConfig::getCourseIdForSeries($contents));
 
         // TODO: get player type from config
         $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
@@ -404,5 +397,32 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         $change_capture_agent_name = new ResourceObjectAttributeChangeAction();
         $change_capture_agent_name->add_as_observer('change.capture_agent_attribute');
+    }
+
+    public static function get_plugin_id()
+    {
+        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins WHERE pluginclassname = ?');
+        $statement->execute(['OpenCast']);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if ($result && count($result[0]) > 0) {
+            return $result[0]['pluginid'];
+        }
+        return -1;
+    }
+
+    public static function activated_in_courses()
+    {
+        $statement = DBManager::get()->prepare("SELECT range_id FROM plugins_activated
+            WHERE range_type = 'sem'
+                AND pluginid = ?");
+        $statement->execute([OpenCast::get_plugin_id()]);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $to_return = [];
+        if ($result) {
+            foreach ($result as $entry) {
+                $to_return[] = $entry['range_id'];
+            }
+        }
+        return $to_return;
     }
 }

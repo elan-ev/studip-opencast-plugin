@@ -49,7 +49,7 @@ class OCSeriesModel
     {
         //check if value assignment is needed
         if (is_null(self::$connectedSeries) || $refresh) {
-            $sClient = SeriesClient::getInstance($courseID);
+            $sClient = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID));
             $DBSeries = self::getConnectedSeriesDB($courseID);
             if ($DBSeries) {
                 $res = array();
@@ -89,7 +89,7 @@ class OCSeriesModel
                 self::$unconnectedSeries = array();
             } else {
                 $connectedIdentifier = array();
-                //get all identifier of connected siries in one array
+                //get all identifier of connected series in one array
                 foreach ($connected as $con) {
                     $connectedIdentifier[] = $con['identifier'];
                 }
@@ -160,13 +160,12 @@ class OCSeriesModel
      *
      * @return type
      */
-    static function setSeriesforCourse($courseID, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    static function setSeriesforCourse($courseID, $config_id, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
     {
-        $configID = SeriesClient::getConfigIdForCourse($courseID);
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
-        return $stmt->execute(array($configID,$seriesID, $courseID, $visibility, $schedule, $mkdate));
+        return $stmt->execute(array($config_id, $seriesID, $courseID, $visibility, $schedule, $mkdate));
     }
 
     /**
@@ -201,45 +200,12 @@ class OCSeriesModel
         $ret = array();
 
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance($courseID)->getXML('/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID))->getXML('/' . $ser['identifier'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
 
         return $ret;
-    }
-
-    /**
-     * Set episode visibility
-     *
-     * @param string $course_id
-     * @param string $episode_id
-     * @param tyniint 1 or 0
-     * @return bool
-     */
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
-    {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (seminar_id, episode_id, visible)
-                VALUES (?, ?, ?)");
-        return $stmt->execute(array($course_id, $episode_id, $visibility));
-    }
-
-    /**
-     * get visibility row
-     *
-     * @param string $course_id
-     * @param string $episode_id
-     * @return array
-     */
-    static function getVisibilityForEpisode($course_id, $episode_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT visible FROM
-                oc_seminar_episodes WHERE seminar_id = ? AND episode_id = ?");
-        $stmt->execute(array($course_id, $episode_id));
-        $episode = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $episode;
     }
 
     /**
@@ -415,5 +381,12 @@ class OCSeriesModel
         $stmt->execute(array($seminar_id, $termin_id));
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    static function getCoursesForSeries($series_id){
+        $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_series WHERE series_id = ?;");
+        $stmt->execute([$series_id]);
+
+        return $stmt->fetchAll();
     }
 }

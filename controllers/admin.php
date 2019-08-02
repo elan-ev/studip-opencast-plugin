@@ -85,7 +85,7 @@ class AdminController extends OpencastController
         Navigation::activateItem('/admin/config/oc-config');
 
         $this->config = OCEndpointModel::getBaseServerConf();
-        $this->global_config = Configuration::instance(OC_GLOBAL_CONFIG_ID);
+        $this->global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
     }
 
 
@@ -122,17 +122,17 @@ class AdminController extends OpencastController
             //set precise settings if any
             $precise_config = $config['precise'];
             foreach($precise_config as $name=>$value){
-                if(Configuration::i()[$name] != $value){
-                    Configuration::i($config_id)->set($name,$value,Configuration::i()->get_description_for($name));
+                if(Configuration::instance()[$name] != $value){
+                    Configuration::instance($config_id)->set($name,$value,Configuration::instance()->get_description_for($name));
                 }else{
-                    Configuration::i($config_id)->remove($name);
+                    Configuration::instance($config_id)->remove($name);
                 }
             }
 
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
             if (!$config['url']) {
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
                 continue;
             }
 
@@ -146,7 +146,7 @@ class AdminController extends OpencastController
                         $config['url']
                     )
                 ];
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
             } else {
                 $service_host =
                     $service_url['scheme'] .'://' .
@@ -155,8 +155,8 @@ class AdminController extends OpencastController
 
                 $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
 
-                OCRestClient::clearConfigAndAssociatedEndpoints($config_id);
-                OCRestClient::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
+                OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
 
                 // check, if the same url has been provided for multiple oc-instances
                 foreach (Request::getArray('config') as $zw_id => $zw_conf) {
@@ -199,16 +199,35 @@ class AdminController extends OpencastController
                 if ($comp) {
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
-                    foreach($services as $service_url => $service_type) {
-                        OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                    if (empty($services)) {
+                        OCEndpointModel::removeEndpoint($config_id, 'services');
+
+                        $this->flash['messages'] = array(
+                            'error' => sprintf(
+                                $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
+                                    . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
+                                    . 'ob ihre Opencast-Installation https unterstützt.'),
+                                $service_host
+                            )
+                        );
+                    } else {
+
+                        foreach($services as $service_url => $service_type) {
+                            if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false
+                                    && strpos($service_url, $service_host) !== false) {
+                                OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
+                            } else {
+                                unset($services[$service_url]);
+                            }
+                        }
+
+                        $success_message[] = sprintf(
+                            $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
+                            $service_host
+                        );
+
+                        $this->flash['messages'] = array('success' => implode('<br>', $success_message));
                     }
-
-                    $success_message = sprintf(
-                        $this->_("Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die angegebene Opencast Installation gefunden und in der Stud.IP Konfiguration eingetragen."),
-                        count($services)
-                    );
-
-                    $this->flash['messages'] = array('success' => $success_message);
                 } else {
                     OCEndpointModel::removeEndpoint($config_id, 'services');
                     $this->flash['messages'] = array(
@@ -223,6 +242,7 @@ class AdminController extends OpencastController
 
         // after updating the configuration, clear the cached series data
         OCSeriesModel::clearCachedSeriesData();
+        #OpencastLTI::generate_complete_acl_mapping();
 
         $this->redirect('admin/config');
     }
@@ -231,17 +251,11 @@ class AdminController extends OpencastController
     function endpoints_action()
     {
         PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
-        Navigation::activateItem('/admin/config/oc-endpoints');
-        // hier kann eine Endpointüberischt angezeigt werden.
-        //$services_client = ServicesClient::getInstance();
+        // Navigation::activateItem('/admin/config/oc-endpoints');
+
+        $this->configs = OCEndpointModel::getBaseServerConf();
         $this->endpoints = OCEndpointModel::getEndpoints();
     }
-
-    function update_endpoints_action()
-    {
-        $this->redirect('admin/endpoints');
-    }
-
 
 
     /**
@@ -436,7 +450,7 @@ class AdminController extends OpencastController
     }
 
     function precise_update_action(){
-        foreach (Request::getArray('precise_config') as $database_id=>$config){
+        foreach (Request::getArray('precise_config') as $database_id => $config){
             foreach ($config as $name=>$value){
                 Configuration::instance($database_id)[$name] = $value;
             }

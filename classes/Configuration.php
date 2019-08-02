@@ -5,19 +5,26 @@
  * @version         1.0 (13:27)
  */
 
-define('OC_GLOBAL_CONFIG_ID', -1);
-
 class Configuration implements ArrayAccess
 {
     private static $instances = [];
+    private
+        $values,
+        $descriptions,
+        $database_ids,
+        $config_id;
 
     /**
      * @param int $config_id
      *
      * @return Configuration
      */
-    public static function instance($config_id = OC_GLOBAL_CONFIG_ID)
+    public static function instance($config_id = null)
     {
+        if (is_null($config_id)) {
+            $config_id = Opencast\Constants::$GLOBAL_CONFIG_ID;
+        }
+
         $name = 'c_(' . $config_id . ')';
         if (!static::$instances[$name]) {
             static::$instances[$name] = new Configuration($config_id);
@@ -26,22 +33,6 @@ class Configuration implements ArrayAccess
         return static::$instances[$name];
     }
 
-    /**
-     * Alias for instance()
-     *
-     * @param int $config_id
-     *
-     * @return Configuration
-     */
-    public static function i($config_id = OC_GLOBAL_CONFIG_ID)
-    {
-        return static::instance($config_id);
-    }
-
-    private $values;
-    private $descriptions;
-    private $database_ids;
-    private $config_id;
 
     private function __construct($config_id)
     {
@@ -115,11 +106,29 @@ class Configuration implements ArrayAccess
         if ($this->has($name)) {
             return $this->values[$name];
         }
-        if ($this->config_id != OC_GLOBAL_CONFIG_ID) {
-            return Configuration::instance(OC_GLOBAL_CONFIG_ID)->get($name, $default);
+        if ($this->config_id != Opencast\Constants::$GLOBAL_CONFIG_ID) {
+            return Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)->get($name, $default);
         }
 
         return $default;
+    }
+
+    public function getValues()
+    {
+        return $this->values;
+    }
+
+    public function toArray()
+    {
+        $config = [];
+
+        $global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
+
+        foreach ($global_config->getValues() as $name => $value) {
+            $config[$name] = $this->get($name);
+        }
+
+        return $config;
     }
 
     public function get_description_for($name)
@@ -133,10 +142,14 @@ class Configuration implements ArrayAccess
 
     public function load()
     {
-        $stmt = DBManager::get()->prepare("SELECT `id`,`name`,`description`,`value` FROM `oc_config_precise` WHERE for_config = ?");
+        $stmt = DBManager::get()->prepare("SELECT `id`,`name`,`description`,`value`
+                FROM `oc_config_precise`
+                WHERE for_config = ?");
         $result = $stmt->execute([$this->config_id]);
+
         if ($result) {
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             foreach ($data as $entry) {
                 $this->set($entry['name'], $entry['value'], $entry['description'], $entry['id']);
             }
@@ -154,7 +167,11 @@ class Configuration implements ArrayAccess
     {
         $entries = [];
         foreach ($this->values as $name => $value) {
-            $entries[$name] = ['value' => $value, 'type' => $this->determine_value_type($value), 'description' => ($this->descriptions[$name] ? $this->descriptions[$name] : 'Keine Beschreibung...')];
+            $entries[$name] = [
+                'value' => $value,
+                'type'  => $this->determine_value_type($value),
+                'description' => ($this->descriptions[$name] ? $this->descriptions[$name] : 'Keine Beschreibung...')
+            ];
         }
 
         return $entries;
@@ -163,11 +180,11 @@ class Configuration implements ArrayAccess
     public function get_names()
     {
         $names_in_current_config = array_keys($this->values);
-        if ($this->config_id == OC_GLOBAL_CONFIG_ID) {
+        if ($this->config_id == Opencast\Constants::$GLOBAL_CONFIG_ID) {
             return $names_in_current_config;
         }
 
-        return array_unique(array_merge(Configuration::instance(OC_GLOBAL_CONFIG_ID)->get_names(), $names_in_current_config));
+        return array_unique(array_merge(Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)->get_names(), $names_in_current_config));
     }
 
     private function determine_value_type($value)
@@ -230,7 +247,7 @@ class Configuration implements ArrayAccess
             if ($stmt->execute()) {
                 foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
                     $id = $entry[$column];
-                    if ($id == OC_GLOBAL_CONFIG_ID) {
+                    if ($id == Opencast\Constants::$GLOBAL_CONFIG_ID) {
                         continue;
                     }
                     if (!$found_ids[$id]) {

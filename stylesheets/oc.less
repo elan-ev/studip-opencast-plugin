@@ -1,3 +1,5 @@
+@import (reference) "assets/stylesheets/less/breakpoints.less";
+
 @item-height: auto;
 @item-width : 25em;
 @item-height-small: auto;
@@ -140,7 +142,7 @@
     background: rgba(255, 255, 255, 0.8);
     background-color: #F3F5F8;
     margin-top: 1em;
-    padding-right: 0.5em;
+    padding-right: 1.5em;
     z-index: 1999;
     height: @item-height;
 
@@ -179,34 +181,7 @@
             max-height: 100px;
             padding-bottom: 40px;
             opacity: 0.6;
-        }
-    }
-    @media only screen and (max-width: 1070px) {
-        width: auto;
-        height: auto;
-    }
-    @media only screen and (max-width: 1024px) {
-        width: auto;
-        height: auto;
-
-        .oc_playerframe {
-            width: 380px;
-            height: 335px;
-        }
-    }
-    @media only screen and (max-width: 900px) {
-        .theodul {
-            height: 250px;
-        }
-    }
-    @media only screen and (max-width: 800px) {
-        .theodul {
-            height: 360px;
-        }
-    }
-    @media only screen and (max-width: 600px) {
-        .theodul {
-            height: 250px;
+            bottom: 10px;
         }
     }
 }
@@ -294,27 +269,12 @@
     margin-left: @item-width;
 }
 
+.ocplayerlink {
+    margin-left: @item-width;
+}
+
 .oce_item {
     height: @item-height;
-}
-@media only screen and (max-width: 1200px) {
-    .oce_wip {
-        width: @item-width-small;
-        height: @item-height-small;
-    }
-
-    .oce_item {
-        height: @item-height-small;
-    }
-
-    .oc_flexplaycontainer {
-        width: @item-width-small;
-        height: @item-height-small;
-    }
-
-    .oce_metadatacontainer {
-        margin-left: @item-width-small;
-    }
 }
 
 .hidden_ocvideo {
@@ -489,9 +449,22 @@ textarea.oc_input:focus {
     .icon('before', 'visibility-invisible', 'info_alt');
 }
 
+.button.ocfree {
+    .icon('before', 'youtube', 'clickable');
+}
+
+.button.ocfree:hover {
+    .icon('before', 'youtube', 'info_alt');
+}
+
+img.ocinvisible {
+    background-color: #FFCCCC;
+    border: 4px solid red;
+}
+
 .oc_flex {
     .button::before {
-        background-position: 0 4px;
+        background-position: 0 3px;
         height: 20px !important;
         padding-left: 5px;
     }
@@ -769,5 +742,41 @@ textarea.oc_input:focus {
 
     95% {
         opacity: 0;
+    }
+}
+
+
+@media only screen and (max-width: @major-breakpoint-large) {
+    .oc_flexplaycontainer {
+        width: 15em;
+    }
+
+    .oce_metadatacontainer {
+        margin-left: 15em;
+    }
+
+    .oce_playercontainer span.previewimage img.playbutton {
+        max-height: 50px;
+        bottom: 0px;
+    }
+
+    .ocplayerlink {
+        clear: both;
+        margin-left: 0px;
+    }
+}
+
+@media only screen and (max-width: @major-breakpoint-medium) {
+    .oc_flexplaycontainer {
+        width: 100%;
+    }
+
+    .oce_metadatacontainer {
+        margin-left: 0;
+    }
+
+    .oce_playercontainer span.previewimage img.playbutton {
+        max-height: 100px;
+        bottom: 0px;
     }
 }

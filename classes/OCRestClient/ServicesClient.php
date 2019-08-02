@@ -8,7 +8,7 @@ class ServicesClient extends OCRestClient
     {
         $this->serviceName = 'ServicesClient';
 
-        if ($config = parent::getConfig('services', $config_id)) {
+        if ($config = OCConfig::getConfigForService('services', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
@@ -24,7 +24,7 @@ class ServicesClient extends OCRestClient
     {
         $service_url = "/services.json";
 
-        if($result = $this->getJSON($service_url)){
+        if ($result = $this->getJSON($service_url)) {
             return $result->services->service;
         } else {
             return false;
