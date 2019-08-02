@@ -279,6 +279,7 @@ class OpencastLTI
     public static function launch_lti($user_id, $course_id, $identifier)
     {
         static $cookie;
+        $debug_curl = false;
 
         if (!$cookie) {
             $lti_data = OpencastLTI::generate_lti_launch_data(
@@ -293,6 +294,17 @@ class OpencastLTI
             $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
 
             $ch = curl_init();
+
+            // debugging
+            if ($debug_curl) {
+                curl_setopt($ch, CURLOPT_VERBOSE, true);
+                echo '<pre>';
+
+                $debug = fopen('php://output', 'w');
+                curl_setopt($ch, CURLOPT_STDERR, $debug);
+
+            }
+
             curl_setopt($ch, CURLOPT_URL, rtrim($config['service_url'] . '/lti', '/ '));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
@@ -300,6 +312,11 @@ class OpencastLTI
             curl_setopt($ch, CURLOPT_HEADER, true);
             $server_output = curl_exec($ch);
             curl_close($ch);
+
+            if ($debug_curl) {
+                fclose($debug);
+                echo '</pre>';
+            }
 
             // get cookie
             preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);

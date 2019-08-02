@@ -135,7 +135,7 @@ OC = {
 
                     var job = response[job_id];
 
-                    if (job.state == 'RUNNING' || job.state == 'INSTANTIATED') {
+                    if (job.state == 'RUNNING' || job.state == 'INSTANTIATED'  || job.state == 'STOPPED') {
 
                         var counter = 1;
                         var current_description = "";
