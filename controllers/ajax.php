@@ -99,10 +99,7 @@ class AjaxController extends OpencastController
             $role = 'Learner';
         }
 
-        $episodes = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);
-
-
-
+        $episodes = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
 
         if (!is_array($episodes)) {
             $episodes = [$episodes];

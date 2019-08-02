@@ -17,7 +17,7 @@ class OCSeriesModel
     {
         $sclient = new SeriesClient($series['config_id']);
 
-        return self::transformSeriesJSON($sclient->getOneSeries($series['series_id']));
+        return self::transformSeriesJSON($sclient->getSeries($series['series_id']));
     }
 
     static function getSeminarAndSeriesData()

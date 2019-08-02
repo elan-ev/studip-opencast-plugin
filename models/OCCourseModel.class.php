@@ -78,7 +78,7 @@ class OCCourseModel
                 $role = 'Learner';
             }
 
-            $series = $search_client->getEpisodesLTI($this->getSeriesID(), $this->getCourseID(), [$role]);
+            $series = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
 
             $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
             $ordered_episodes = [];

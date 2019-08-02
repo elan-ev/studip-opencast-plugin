@@ -15,8 +15,8 @@ class SearchClient extends OCRestClient
     }
 
     /**
-     *  getEpisodes() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn
-     *  Core
+     *  getEpisodes() - retrieves episode metadata for a given series identifier
+     *  from connected Opencast
      *
      * @param string series_id Identifier for a Series
      *
@@ -63,8 +63,21 @@ class SearchClient extends OCRestClient
         } else return false;
     }
 
+    /**
+     * getEpisodesLTI() - retrieves episode metadata for a given series identifier
+     * in the passed course for the passed role[s]. This retrieves the episodes
+     * via LTI not directly by an privileged user
+     *
+     * @param  string $series_id
+     * @param  string $course_id
+     * @param  array  $roles
+     * @param  string $sort
+     *
+     * @return mixed
+     */
     public function getEpisodesLTI($series_id, $course_id, $roles, $sort='DATE_CREATED_DESC')
     {
+        die;
         $roles_usable = [];
         foreach ($roles as $role) {
             $roles_usable[] = 'oc_acl_read:' . $course_id . '_' . $role;
