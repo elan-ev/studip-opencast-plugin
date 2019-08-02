@@ -72,6 +72,7 @@ class AjaxController extends OpencastController
             $sem = Course::find($item['seminar_id']);
             $item['name'] = $sem->getFullname('number-name-semester');
             $item['endtime'] = $sem->getEnd_Time();
+            $item = array_merge($item, OCSeriesModel::getSeriesFromOpencast($item));
         });
 
         uasort($series, function($a, $b) {
@@ -90,7 +91,7 @@ class AjaxController extends OpencastController
         $result        = [];
 
 
-        $course = Course::find($this->getCourseID());
+        $course = Course::find(Context::getId());
         $role = '';
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
@@ -99,7 +100,7 @@ class AjaxController extends OpencastController
             $role = 'Learner';
         }
 
-        $episodes = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
+        $episodes = $search_client->getEpisodes($series_id, Context::getId(), [$role]);
 
         if (!is_array($episodes)) {
             $episodes = [$episodes];
@@ -111,7 +112,7 @@ class AjaxController extends OpencastController
             }
         }
 
-        $this->render_text(json_encode($result));
+        $this->render_json($result);
     }
 
     /**

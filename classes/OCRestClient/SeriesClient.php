@@ -26,7 +26,7 @@ class SeriesClient extends OCRestClient
      */
     function getSeries($series_id)
     {
-        return $this->getJSON('/'.$seriesID. '.json');
+        return $this->getJSON('/'.$series_id. '.json');
     }
 
     /**

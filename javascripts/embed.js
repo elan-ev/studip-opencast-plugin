@@ -33,8 +33,8 @@
     var loadSeries = function() {
         emptyEpisodes();
         $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getseries").done(function(data) {
+            var series = data;
 
-            var series = jQuery.parseJSON(data);
             var series_array = [];
             var series_id_array = [];
 
@@ -105,8 +105,8 @@
 
     var loadEpisodes = function(ser_id, ser_title) {
         $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getepisodes/" + ser_id).done(function(data) {
-            var episode = jQuery.parseJSON(data);
-            console.log('TGEPI', episode);
+            var episode = data;
+
             $('div#episodes_container').append("<p class='embed_episode_title'>Veranstaltung: " + ser_title + "</p>");
             if ($.isEmptyObject(episode) || (Array.isArray(episode) && !episode.length)) {
                 setInfoText("Diese Veranstaltung enth&auml;lt keine Aufzeichnungen, bitte w&auml;hlen Sie eine andere.");
