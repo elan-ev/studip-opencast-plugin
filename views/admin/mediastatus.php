@@ -1,7 +1,7 @@
 <div id="opencast">
-    <h2>
+    <h1>
         <?= $_('Festplattenplatz im Tempverzeichnis') ?>
-    </h2>
+    </h1>
 
     <?= sprintf($_('Belegt: %s von %s'),
         $memory_space['readable']['used'],
