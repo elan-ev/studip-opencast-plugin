@@ -356,7 +356,12 @@ class OCModel
         $room = ResourceObject::Factory($resource_id);
 
         $start_time = $date->getStartTime();
-        $end_time = strtotime("-$puffer seconds ", intval($date->getEndTime()));
+
+        if ($puffer) {
+            $end_time = strtotime("-$puffer seconds ", intval($date->getEndTime()));
+        } else {
+            $end_time = $date->getEndTime();
+        }
 
         $contributor = $inst_data['name'];
         $creator = $instructor['fullname'];

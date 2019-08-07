@@ -44,9 +44,9 @@ class SchedulerClient extends OCRestClient
             $location = parse_url($this->base_url);
             $pttrn = '#Location: http:/.*/recordings/(.+?).xml#Uis';
 
-            foreach($resArray as $resp) {
+            foreach ($resArray as $resp) {
                 // THIS could be changed. Keep an eye on future oc releases...
-                if(preg_match($pttrn, $resp, $matches)) {
+                if (preg_match($pttrn, $resp, $matches)) {
                     $event_id = $matches[1];
                 }
             }
@@ -83,13 +83,7 @@ class SchedulerClient extends OCRestClient
         $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
         $event_id = $event_data[0]['event_id'];
 
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array(
-            'X-Requested-Auth: Digest',
-            'Content-Length: 0'             // in some environments curl incorrectly adds -1
-        ));
-
-        $result = $this->getJSON('/'. $event_id, [], false, true);
+        $result = $this->deleteJSON('/'. $event_id, true);
 
         // remove scheduled event from studip even though it isn't available on opencast
         if (in_array($result[1], array(200, 204, 404))) {
@@ -123,14 +117,12 @@ class SchedulerClient extends OCRestClient
 
         $post = array(
             'start'           => $date->getStartTime() * 1000,
-            'end'             => ($date->getEndTime() - $precise_config['time_buffer_overlap']) * 1000,
+            'end'             => ($date->getEndTime() - $precise_config['time_buffer_overlap'] ?: 0) * 1000,
             'agentparameters' => $metadata['agentparameters'],
             'agent'           => $metadata['agent']
         );
 
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
-
-        $result = $this->getJSON("/$event_id", $post, false, true);
+        $result = $this->putJSON("/$event_id", $post, true);
 
         if (in_array($result[1], array(201, 200))) {
             return true;
@@ -143,7 +135,9 @@ class SchedulerClient extends OCRestClient
     {
         $config = OCConfig::getConfigForCourse($course_id);
 
-        $dublincore = studip_utf8encode(OCModel::createScheduleEventXML($course_id, $resource_id, $termin_id, $config['schedule_time_puffer_seconds']));
+        $dublincore = OCModel::createScheduleEventXML(
+            $course_id, $resource_id, $termin_id, $config['time_buffer_overlap']
+        );
 
         $date = new SingleDate($termin_id);
         $start_time = date('D M d H:i:s e Y', $date->getStartTime());

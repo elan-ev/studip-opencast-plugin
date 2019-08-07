@@ -57,6 +57,6 @@ class OpencastController extends StudipController
     function render_json($data)
     {
         $this->response->add_header('Content-Type', 'application/json');
-        $this->render_text(json_encode(studip_utf8encode($data)));
+        $this->render_text(json_encode($data));
     }
 }

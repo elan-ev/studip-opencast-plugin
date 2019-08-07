@@ -40,8 +40,8 @@ class IngestClient extends OCRestClient
     {
         $service_url = "/addDCCatalog";
         $data = array(
-            'mediaPackage' =>  studip_utf8encode($mediaPackage),
-            'dublinCore' => $dublinCore
+            'mediaPackage' =>  $mediaPackage,
+            'dublinCore'   => $dublinCore
         );
         if($flavor!=null){
             $data['flavor'] = $flavor;
@@ -67,7 +67,7 @@ class IngestClient extends OCRestClient
         $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
 
         $data = array(
-            'mediaPackage' => studip_utf8encode($mediaPackage),
+            'mediaPackage'         => $mediaPackage,
             'workflowDefinitionId' => $workFlowDefinitionID
         );
         if($mediapackage = $this->getXML($service_url, $data, false)){

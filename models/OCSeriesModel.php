@@ -156,10 +156,10 @@ class OCSeriesModel
             }
         }
 
-        $str = studip_utf8encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        $str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
                 . '<acl xmlns="http://org.opencastproject.security">'
                 . implode('', $content)
-                . '</acl>');
+                . '</acl>';
 
         return $str;
     }

@@ -36,7 +36,7 @@ class SeriesClient extends OCRestClient
      */
     function createSeriesForSeminar($course_id)
     {
-        $dublinCore = studip_utf8encode(OCSeriesModel::createSeriesDC($course_id));
+        $dublinCore = OCSeriesModel::createSeriesDC($course_id);
 
         $acl = OpencastLTI::generate_standard_acls($course_id);
 
@@ -67,8 +67,8 @@ class SeriesClient extends OCRestClient
 
     /**
      * updateAccescontrolForSeminar - updates the ACL for a given series in OC Matterhorn
-     * @param string $series_id  - series identifier
-     * @param array  $acl_data   -studip_utf8encoded ACL
+     * @param string $series_id  series identifier
+     * @param array  $acl_data   ACL
      * @return bool success or not
      */
 
