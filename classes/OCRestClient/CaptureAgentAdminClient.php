@@ -46,12 +46,12 @@ class CaptureAgentAdminClient extends OCRestClient
     public function getCaptureAgents()
     {
         $service_url = "/agents.json";
+
         if ($agents = $this->getJSON($service_url)) {
-            $sanitzed_agents = $this->sanitizeAgents($agents);
-            return $sanitzed_agents;
-        } else {
-            return false;
+            return $this->sanitizeAgents($agents);
         }
+
+        return false;
     }
 
     public function getCaptureAgentCapabilities($agent_name)
@@ -68,11 +68,9 @@ class CaptureAgentAdminClient extends OCRestClient
     private function sanitizeAgents($agents)
     {
         if (is_array($agents->agents->agent)) {
-            $sanitized_agents = $agents->agents->agent;
-        } else {
-            $sanitized_agents = $agents->agents;
+            return $agents->agents->agent;
         }
 
-        return $sanitized_agents;
+        return [$agents->agents->agent];
     }
 }

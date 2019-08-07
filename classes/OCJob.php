@@ -317,7 +317,7 @@ class OCJob
     {
         $info = $this->data['info'];
         $ids = $this->data['id_list'];
-        $creatition_time = new DateTime($info['record_date'] . ' ' . $info['start']['h'] . ':' . $info['start']['h']);
+        $creation_time = new DateTime($info['record_date'] . ' ' . $info['start']);
         $dc_values = [];
 
         $dc_values['title'] = $info['title'];
@@ -332,7 +332,7 @@ class OCJob
                                 <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
                                 <dcterms:contributor><![CDATA[' . $dc_values['contributor'] . ']]></dcterms:contributor>
                                 <dcterms:subject><![CDATA[' . $dc_values['subject'] . ']]></dcterms:subject>
-                                <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime($creatition_time->getTimestamp()) . '</dcterms:created>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime($creation_time->getTimestamp()) . '</dcterms:created>
                                 <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
                                 <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
                                 <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>

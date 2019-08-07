@@ -22,15 +22,6 @@ OC = {
             });
 
             if (STUDIP.hasperm) {
-                // Upload Dialog
-                jQuery("#upload_dialog").dialog({autoOpen: false, width: 800, dialogClass: 'ocUpload'});
-                jQuery("#oc_upload_dialog").click(
-                    function () {
-                        jQuery("#upload_dialog").dialog('open');
-                        return false;
-                    }
-                );
-
                 // toggle visibility
                 OC.toggleVis(cid);
 
@@ -98,9 +89,6 @@ OC = {
                 error: function (xhr, data) {
                     console.log('Fehler', data);
                 }
-            });
-            $('#recordDate').datepicker({
-                dateFormat: "yy-mm-dd"
             });
         })
     },

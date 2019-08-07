@@ -31,9 +31,6 @@ jQuery(function() {
     OC.states = <?= json_encode($states) ?>;
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
     OC.initIndexpage();
-    <?  if ($can_schedule) : ?>
-    OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
-    <? endif; ?>
 });
 </script>
 
@@ -83,9 +80,10 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         );
 
         if ($can_schedule) {
-            $actions->addLink($_("Medien hochladen"), '#1',
+            $actions->addLink($_("Medien hochladen"),
+                $controller->url_for('course/upload'),
                 new Icon('upload', 'clickable'), [
-                    'id' => 'oc_upload_dialog'
+                    'data-dialog' => 'size=auto'
                 ]);
             if ($perm->have_perm('root')) {
                 $actions->addLink($_("Kursspezifischen Workflow konfigurieren"),
@@ -298,13 +296,6 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
     <? else: ?>
         <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
     <? endif; ?>
-<? endif; ?>
-
-<? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-
-    <div id="upload_dialog" title="<?= $_("Medienupload") ?>" style="display: none;">
-        <?= $this->render_partial("course/_upload", ['course_id' => $course_id, 'dates' => $dates, 'series_id' => $this->connectedSeries[0]['identifier']]) ?>
-    </div>
 <? endif; ?>
 
 <!--- hidden -->

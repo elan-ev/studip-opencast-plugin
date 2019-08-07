@@ -279,29 +279,33 @@ class AdminController extends OpencastController
         Navigation::activateItem('/admin/config/oc-resources');
 
         $this->resources = OCModel::getOCRessources();
-        if(empty($this->resources)) {
-            $this->flash['messages'] = array('info' => $this->_('Es wurden keine passenden Ressourcen gefunden.'));
-
+        if (empty($this->resources)) {
+            $this->flash['messages'] = [
+                'info' => $this->_('Es wurden keine passenden Ressourcen gefunden.')
+            ];
         }
 
-        $caa_client = CaptureAgentAdminClient::getInstance();
+        $caa_client      = CaptureAgentAdminClient::getInstance();
         $workflow_client = WorkflowClient::getInstance();
 
-        $agents = $caa_client->getCaptureAgents();
-        $this->agents = $caa_client->getCaptureAgents();
+        $agents          = $caa_client->getCaptureAgents();
+        $this->agents    = $agents;
 
 
         foreach ($this->resources as $resource) {
             $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
-            if($assigned_agents){
+
+            if ($assigned_agents) {
                 $existing_agent = false;
-                foreach($agents as $key => $agent) {
-                    if($agent->name ==  $assigned_agents['capture_agent']) {
-                        unset($agents->$key);
+
+                foreach ($agents as $key => $agent) {
+                    if ($agent->name ==  $assigned_agents['capture_agent']) {
+                        unset($agents[$key]);
                         $existing_agent = true;
                     }
-                 }
-                if(!$existing_agent){
+                }
+
+                if (!$existing_agent){
                     OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
                     $this->flash['messages'] = array('info' => sprintf($this->_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
                 }

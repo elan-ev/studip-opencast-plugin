@@ -54,7 +54,7 @@ class OCJobManager
      */
     public static function create_job(
         $job_id, $course_id, $series_id, $flavor,
-        $title, $creator, $record_date, $start_hour, $start_minute, $contributor, $subject, $language, $description,
+        $title, $creator, $record_date, $start, $contributor, $subject, $language, $description,
         $file_size, $file_name, $file_type)
     {
         $location = new OCJobLocation($job_id);
@@ -63,7 +63,18 @@ class OCJobManager
         $opencast_data = new OCJsonFile($location->path() . '/opencast_info.json');
         $job_data['id_list'] = ['job' => $job_id, 'course' => $course_id, 'series' => $series_id];
         $job_data['file'] = ['name' => $file_name, 'size' => $file_size, 'type' => $file_type];
-        $job_data['info'] = ['title' => $title, 'creator' => $creator, 'record_date' => $record_date, 'start' => ['h' => $start_hour, 'm' => $start_minute], 'contributor' => $contributor, 'subject' => $subject, 'language' => $language, 'description' => $description];
+
+        $job_data['info'] = [
+            'title'       => $title,
+            'creator'     => $creator,
+            'record_date' => $record_date,
+            'start'       => $start,
+            'contributor' => $contributor,
+            'subject'     => $subject,
+            'language'    => $language,
+            'description' => $description
+        ];
+
         $job_data['creation_timestamp'] = time();
         $opencast_data['media_package'] = 'NOT GENERATED';
         $opencast_data['opencast_job_id'] = 'NOT GENERATED';
@@ -134,8 +145,7 @@ class OCJobManager
                 Request::get('title'),
                 Request::get('creator'),
                 Request::get('recordDate'),
-                Request::get('startTimeHour'),
-                Request::get('startTimeMin'),
+                Request::get('startTime'),
                 Request::get('contributor'),
                 Request::get('subject'),
                 Request::get('language'),

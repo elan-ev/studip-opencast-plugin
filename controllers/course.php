@@ -483,27 +483,41 @@ class CourseController extends OpencastController
      */
     function upload_action()
     {
-        //TODO this should only work iff an series is connected!
-        $this->date = date('Y-m-d');
-        $this->hour = date('H');
-        $this->minute = date('i');
+        $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
 
-        $scripts = [
-            '/vendor/jquery.fileupload.js',
-            '/vendor/jquery.ui.widget.js'
-        ];
-        Navigation::activateItem('course/opencast/upload');
+        if (!$this->connectedSeries) {
+            throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');
+        }
 
-        try {
-            foreach ($scripts as $path) {
-                $script_attributes = [
-                    'src' => $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast' . $path];
-                PageLayout::addHeadElement('script', $script_attributes, '');
+        $this->set_title($this->_("Opencast Medienupload"));
+
+        $workflow_client = WorkflowClient::getInstance();
+
+        $workflows = array_filter(
+            $workflow_client->getTaggedWorkflowDefinitions(),
+            function ($element) {
+                return (in_array('schedule', $element['tags']) !== false
+                    || in_array('schedule-ng', $element['tags']) !== false)
+                    ? $element
+                    : false;
             }
-            $this->rel_canonical_path = $GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] . 'plugins_packages/elan-ev/OpenCast';
-        } catch (Exception $e) {
-            $this->flash['error'] = $e->getMessage();
-            $this->render_action('_error');
+        );
+
+        $occourse = new OCCourseModel($this->course_id);
+        $this->workflow = $occourse->getWorkflow('upload');
+
+        if ($this->workflow) {
+            foreach ($workflows as $wf) {
+                if ($wf['id'] == $this->workflow['workflow_id']) {
+                    $this->workflow_text = $wf['title'];
+                }
+            }
+        }
+
+        if (Request::isXhr()) {
+            $this->set_layout(null);
+        } else {
+            Navigation::activateItem('course/opencast/overview');
         }
     }
 
@@ -764,5 +778,3 @@ class CourseController extends OpencastController
     }
 
 }
-
-?>
