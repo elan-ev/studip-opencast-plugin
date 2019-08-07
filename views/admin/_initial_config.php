@@ -1,9 +1,8 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 <form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/precise_update/') ?>" method=post>
-    <fieldset class="conf-form-field">
+    <fieldset class="conf-form-field collapsable collapsed">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
-        <details>
-            <summary>Einstellungen</summary>
+
             <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){?>
                 <label title="Name der Einstellung: <?= $name ?>">
                     <?= $data['description'] ?>
@@ -11,17 +10,22 @@
                 </label>
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
-        </details>
-        <br><?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?> <b><?= implode(', ', Configuration::registered_base_config_ids()) ?></b>
-        <br><?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?> <b>
-            <?php
-            $counter = 0;
-            foreach (Configuration::overall_used_config_ids() as $id=>$tables) {
-                echo ($counter==0?'':', ').'<b title="'.implode(', ',$tables).'">'.$id.'</b>';
-                $counter++;
-            }
-            ?>
-        </b>
+
+            <label>
+                <?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?>
+                <b><?= implode(', ', Configuration::registered_base_config_ids()) ?></b>
+            </label>
+
+            <label>
+                <?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?>
+                <?
+                $counter = 0;
+                foreach (Configuration::overall_used_config_ids() as $id=>$tables) :
+                    echo ($counter==0?'':', ').'<b title="'.implode(', ',$tables).'">'.$id.'</b>';
+                    $counter++;
+                endforeach;
+                ?>
+            </label>
     </fieldset>
 </form>
 

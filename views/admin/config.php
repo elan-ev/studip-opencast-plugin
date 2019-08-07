@@ -26,4 +26,6 @@ Optional haben Sie die Möglichkeit, ein zweites Opencast-System im Nur-Lesen-Mo
     OC.initAdmin();
 </script>
 
-<?= $this->render_partial('admin/_initial_config') ?>
+<div id="opencast">
+    <?= $this->render_partial('admin/_initial_config') ?>
+</div>
