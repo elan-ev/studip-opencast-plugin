@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-22 10:34+0200\n"
+"POT-Creation-Date: 2019-08-07 16:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -819,4 +819,96 @@ msgid "In Stud.IP fehlende Chunks"
 msgstr "Chunks missing in Stud.IP"
 
 msgid "Veranstaltung"
+msgstr "Seminar"
+
+msgid "Series mit Veranstaltung verknüpfen"
+msgstr "Connect series to seminar"
+
+msgid "Opencast Medienupload"
+msgstr "Opencast mediaupload"
+
+#, php-format
+msgid ""
+"Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL \"%s\". "
+"Überprüfen Sie bitte die eingebenen Daten."
 msgstr ""
+"Wrong authentication data for Opencast \"%s\". Please check your settings."
+
+#, php-format
+msgid ""
+"Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
+"gefunden. Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch "
+"auf http vs https und ob ihre Opencast-Installation https unterstützt."
+msgstr ""
+"No endpoints for for Opencast \"%s\". Please check your settings and also "
+"mind the difference between http and https and check if your Opencast "
+"installation supports https"
+
+#, php-format
+msgid "Die Opencast Installation \"%s\" wurde erfolgreich konfiguriert."
+msgstr "Opencast \"%s\" has been configured."
+
+msgid "Der Zwischenspeicher wurde geleert."
+msgstr "The cache has been cleared."
+
+msgid ""
+"Opencast: Aktualisiert alle geplanten Aufzeichnungen der in Stud.IP "
+"verbundenen Serien."
+msgstr ""
+"Opencast: Updates all scheduled recordings of series connected in Stud.IP."
+
+msgid "Opencast: Versucht gescheiterte Upload-Jobs nochmal zu wiederholen."
+msgstr "Opencast: Tries to reupload failes upload-jobs"
+
+msgid ""
+"Opencast: Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen "
+"Serien, die aufgezeichnet werden."
+msgstr ""
+"Opencast: Updates the episodes for all series connected to Stud.IP, which "
+"are recorded"
+
+msgid "Globale Einstellungen"
+msgstr "Global settings"
+
+msgid "In der Datenbank eingetragenen Konfigurationen (IDs): "
+msgstr "Available configurations (ids):"
+
+msgid "In der Datenbank verwendete Konfigurationen (IDs): "
+msgstr "Used configurations (ids): "
+
+msgid "Opencast Server Einstellungen"
+msgstr "Opencast server settings"
+
+msgid "Zwischenspeicher leeren"
+msgstr "Clear Cache"
+
+msgid "Kein (weiterer) CA verfügbar"
+msgstr "No (further) capture agent available"
+
+msgid "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!"
+msgstr "Every capture agent can be assigned to at most one room!"
+
+msgid "Standardworkflow"
+msgstr "Default workflow"
+
+msgid "Medienaufzeichnung verbieten"
+msgstr "Disallow media recording"
+
+msgid "Medienaufzeichnung erlauben"
+msgstr "Allowe media recording"
+
+msgid ""
+"Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!"
+msgstr "Wrong configuration for connect series!"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Serie mit Veranstaltung verknüpfen"
+msgstr "Connect series to seminar"
+
+msgid "Eingesteller Workflow"
+msgstr "Current Workflow"
+
+msgid "Datei"
+msgstr "File"
