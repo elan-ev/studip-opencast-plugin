@@ -47,11 +47,14 @@ function zip()
         'vendor',
         'views',
     ), '/^(assets|blocks).*\.less$/');
-    $archive->addFile('README');
+
+    $archive->addFile('bootstrap.php');
+    $archive->addFile('constants.php');
     $archive->addFile('LICENSE');
     $archive->addFile('OpenCast.class.php');
-    $archive->addFile('bootstrap.php');
     $archive->addFile('plugin.manifest');
+    $archive->addFile('README.md');
+
     $archive->close();
 
     printSuccess('created the Stud.IP plugin zip archive');
