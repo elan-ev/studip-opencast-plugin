@@ -40,10 +40,9 @@
 <? else :?>
 <td>
     <input type="hidden" name="action" value="add"/>
-    <select name="<?=$resource['resource_id']?>">
-        <option value="" disabled selected><?=$_("Bitte wählen Sie einen CA.")?></option>
-        <? if($available_agents) : ?>
-
+    <? if (!empty($available_agents)) : ?>
+        <select name="<?=$resource['resource_id']?>">
+            <option value="" disabled selected><?=$_("Bitte wählen Sie einen CA.")?></option>
 
             <? foreach ($available_agents as $agent) : ?>
 
@@ -51,12 +50,14 @@
                     <option value="<?= $agent->name ?>" > <?=$agent->name?></option>
                 <? endif; ?>
             <? endforeach ; ?>
-        <? else: ?>
-            <option disabled selected> <?=$_("Kein CA verfügbar")?> </option>
-        <? endif;?>
-    </select>
+        </select>
+    <? else: ?>
+        <?= $_("Kein (weiterer) CA verfügbar") ?> </option>
+    <? endif;?>
 </td>
+
 <td>
+    <? if (!empty($available_agents)) : ?>
     <select name="workflow">
         <option value="" disabled selected><?=$_("Bitte wählen Sie einen Worflow aus.")?></option>
 
@@ -77,6 +78,10 @@
             <option disabled selected> <?=$_("Kein Workflow verfügbar")?> </option>
         <? endif ?>
     </select>
+
+    <? else : ?>
+        -
+    <? endif ?>
 </td>
 <td></td>
 <td></td>
