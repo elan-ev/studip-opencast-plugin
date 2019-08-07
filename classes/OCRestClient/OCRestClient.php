@@ -136,6 +136,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 echo '<pre>';
+                var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
             }
@@ -216,6 +217,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 echo '<pre>';
+                var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
             }
