@@ -80,7 +80,6 @@ class OCRestClient
         // debugging
         if (DEBUG_CURL) {
             curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
-            echo '<pre>';
         }
     }
 
@@ -136,6 +135,7 @@ class OCRestClient
             $this->initCurl();
 
             if (DEBUG_CURL) {
+                echo '<pre>';
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
             }
@@ -178,6 +178,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 fclose($this->debug);
+                echo '</pre>';
             }
 
             if ($with_res_code) {
@@ -214,6 +215,7 @@ class OCRestClient
             $this->initCurl();
 
             if (DEBUG_CURL) {
+                echo '<pre>';
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
             }
@@ -242,6 +244,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 fclose($this->debug);
+                echo '</pre>';
             }
 
             if ($with_res_code) {
