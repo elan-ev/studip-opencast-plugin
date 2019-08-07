@@ -16,7 +16,7 @@ class RefreshSeries extends CronJob
 
     public static function getDescription()
     {
-        return _('Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
+        return _('Opencast: Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
     }
 
     public function execute($last_result, $parameters = array())

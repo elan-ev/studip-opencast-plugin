@@ -16,7 +16,7 @@ class TryReuploadFailedJobs extends CronJob
 
     public static function getDescription()
     {
-        return _('Versucht gescheiterte Upload-Jobs nochmal zu wiederholen.');
+        return _('Opencast: Versucht gescheiterte Upload-Jobs nochmal zu wiederholen.');
     }
 
     public function execute($last_result, $parameters = [])

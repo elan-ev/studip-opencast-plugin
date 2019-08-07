@@ -18,7 +18,7 @@ class RefreshScheduledEvents extends CronJob
      */
     public static function getDescription()
     {
-        return _('Aktualisiert alle geplanten Aufzeichnungen der in Stud.IP verbundenen Serien.');
+        return _('Opencast: Aktualisiert alle geplanten Aufzeichnungen der in Stud.IP verbundenen Serien.');
     }
 
     /**
