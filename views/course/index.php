@@ -46,7 +46,12 @@ $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerke
         xhrFields: {
            withCredentials: true
         },
-        crossDomain: true
+        crossDomain: true,
+        success: function() {
+            jQuery('img.previewimage').each(function() {
+                this.src = this.dataset.src;
+            });
+        }
     });
 </script>
 <?
