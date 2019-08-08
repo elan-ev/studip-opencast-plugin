@@ -262,13 +262,42 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     static function markupOpencast($markup, $matches, $contents)
     {
-        $search_client = SearchClient::getInstance(OCConfig::getCourseIdForSeries($contents));
+        $current_user_id = $GLOBALS['auth']->auth['uid'];
+        $series_id       = OCModel::getSeriesForEpisode($contents);
+
+        $course_id       = OCConfig::getCourseIdForSeries($series_id);
+
+        $connectedSeries = OCModel::getConnectedSeries($course_id);
+        $config          = OCConfig::getConfigForCourse($course_id);
+
+        $search_client   = SearchClient::getInstance($config['config_id']);
 
         // TODO: get player type from config
         $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
         #$embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
 
-        return sprintf('<iframe src="%s"
+        $lti_launch_data = OpencastLTI::generate_lti_launch_data(
+            $current_user_id,
+            $course_id,
+            LTIResourceLink::generate_link('series','view complete series for course'),
+            OpencastLTI::generate_tool('series', $connectedSeries[0]['series_id'])
+        );
+
+        $lti_data = json_encode(OpencastLTI::sign_lti_data(
+            $lti_launch_data,
+            $config['lti_consumerkey'],
+            $config['lti_consumersecret']
+        ));
+
+        $lti_url = rtrim($config['service_url'], '/') . '/lti';
+        $id = md5(uniqid());
+
+        return "<script>
+        OC.ltiCall('$lti_url', $lti_data, function() {
+            jQuery('#$id').attr('src', '$embed');
+        });
+        </script>"
+        . sprintf('<iframe id="%s"
                 style="border:0px #FFFFFF none;"
                 name="Opencast - Media Player"
                 scrolling="no"
@@ -277,7 +306,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 marginwidth="0px"
                 width="640" height="360"
                 allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"
-            ></iframe><br>', $embed);
+            ></iframe><br>', $id);
     }
 
 

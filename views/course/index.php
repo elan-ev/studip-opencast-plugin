@@ -38,21 +38,11 @@ $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerke
 ?>
 
 <script>
-    // send credentials to opencast lti backend, setting session cookie for oc domain
-    $.ajax({
-        type: "POST",
-        url: "<?= rtrim($config['service_url'], '/') ?>/lti",
-        data:  <?= json_encode($lti_data) ?>,
-        xhrFields: {
-           withCredentials: true
-        },
-        crossDomain: true,
-        success: function() {
-            jQuery('img.previewimage').each(function() {
-                this.src = this.dataset.src;
-            });
-        }
+OC.ltiCall('<?= rtrim($config['service_url'], '/') ?>/lti', <?= json_encode($lti_data) ?>, function() {
+    jQuery('img.previewimage').each(function() {
+        this.src = this.dataset.src;
     });
+});
 </script>
 <?
 global $perm;
