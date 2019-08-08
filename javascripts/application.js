@@ -167,7 +167,7 @@ OC = {
     },
 
     toggleVis: function (cid) {
-        jQuery(jQuery('#oc-togglevis')).click(function (e) {
+        jQuery('.oc-togglevis').bind('click', function (e) {
             var episode_id = jQuery(this).data("episode-id");
             var title      = 'Sichtbarkeit - ' + jQuery('#' + episode_id + ' .oce_list_title').text();
             var visibility = jQuery(this).attr('data-visibility');
@@ -201,7 +201,6 @@ OC = {
                 + "plugins.php/opencast/course/permission/"
                 + episode_id + "/" + visibility + "?cid=" + cid,
             function(response) {
-                console.log(response);
                 $element
                     .removeClass('ocinvisible ocvisible ocfree')
                     .addClass('oc' + response.visible)
@@ -209,45 +208,6 @@ OC = {
                     .attr('disabled', false);
             }
         );
-    },
-
-    episodeListener: function (cid) {
-        // open episode item
-        jQuery('.oce_item').click(function (e) {
-            e.preventDefault();
-
-            var episode_id = jQuery(this).attr('id');
-
-            //todo animation / progessindication
-            /*
-            jQuery('html, body').animate({
-                scrollTop: jQuery('#barTopFont').offset().top
-            }, 1000); */
-            jQuery('#oc_balls').show();
-            jQuery('.oce_playercontainer').addClass('oc_opaque');
-
-            jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/get_player/" + episode_id + "/" + cid).done(function (data) {
-
-                var episode = data.episode_data;
-                var dozent = data.perm;
-                var player_template = _.template(jQuery('#playerTemplate').html());
-                var player_template_data = {
-                    episode: episode,
-                    paella: data.paella,
-                    dozent: dozent,
-                    video: data.video
-                };
-
-                jQuery('.oce_playercontainer').empty();
-                jQuery('.oce_playercontainer').html(player_template(player_template_data));
-                jQuery('#oc-togglevis').attr('href', STUDIP.URLHelper.getURL('plugins.php/opencast/course/toggle_visibility/' + episode_id));
-                jQuery('.oce_playercontainer').removeClass('oc_opaque');
-                jQuery('#oc_balls').hide();
-                OC.toggleVis(cid);
-
-            });
-
-        });
     },
 
     searchEpisodeList: function () {
@@ -270,7 +230,6 @@ OC = {
 
             jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/course/setworkflowforscheduledepisode/" + termin_id + "/" + workflow_id + "/" + resource_id).done(function (data) {
                 if (!jQuery.isEmptyObject(data)) {
-                    console.log(data);
                     //todo trigger success message
                     if (data === 'true') {
                         //console.log('lööpt'); TODO STUD.IP Success Box triggern

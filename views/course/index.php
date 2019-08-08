@@ -270,8 +270,7 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
                                     <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
                                             <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']]),
                                                 '', [
-                                                'class'           => 'ocspecial oc'. $item['visibility'],
-                                                'id'              => 'oc-togglevis',
+                                                'class'           => 'oc-togglevis ocspecial oc'. $item['visibility'],
                                                 'data-episode-id' => $item['id'],
                                                 'data-dialog'     => 'size=auto',
                                                 'data-visibility' => $item['visibility']
@@ -322,8 +321,8 @@ if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
         </fieldset>
 
         <footer data-dialog-button>
-            <?= Studip\LinkButton::createAccept(_('Speichern'), '#', ['onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'))"]) ?>
-            <?= Studip\LinkButton::createCancel(_('Abbrechen'), '#', ['onclick' => "jQuery('#visibility_dialog').dialog('close');"]) ?>
+            <?= Studip\Button::createAccept(_('Speichern'), ['onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'));return false;"]) ?>
+            <?= Studip\Button::createCancel(_('Abbrechen'), ['onclick' => "jQuery('#visibility_dialog').dialog('close');return false;"]) ?>
         </footer>
     </form>
 </div>
