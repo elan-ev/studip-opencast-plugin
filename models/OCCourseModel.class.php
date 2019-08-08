@@ -285,11 +285,11 @@ class OCCourseModel
                 ksort($audio_download);
                 $episodes[$episode->id] = [
                     'id'                    => $episode->id,
-                    'title'                 => OCModel::sanatizeContent($episode->dcTitle),
+                    'title'                 => $episode->dcTitle,
                     'start'                 => $episode->mediapackage->start,
                     'duration'              => $episode->mediapackage->duration,
-                    'description'           => OCModel::sanatizeContent($episode->dcDescription),
-                    'author'                => OCModel::sanatizeContent($episode->dcCreator),
+                    'description'           => $episode->dcDescription,
+                    'author'                => $episode->dcCreator,
                     'preview'               => $preview,
                     'presentation_preview'  => $presentation_preview,
                     'presenter_download'    => $presenter_download,

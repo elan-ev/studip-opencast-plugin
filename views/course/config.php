@@ -23,7 +23,7 @@
                         <?// if (isset($serie['identifier'])) : ?>
                             <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
                                     class="nested-item">
-                                <?= studip_utf8decode($serie->dcTitle)?>
+                                <?= $serie->dcTitle ?>
                             </option>
                         <?//endif;?>
                     <?endforeach;?>

@@ -32,7 +32,7 @@ $visibility_text = [
                             </div>
                             <div class="oce_metadatacontainer oce_failedstate">
                                 <h2 class="oce_list_title">
-                                    <?= htmlready(studip_utf8decode($state->mediapackage->title)) ?>
+                                    <?= htmlready($state->mediapackage->title) ?>
                                 </h2>
 
                                 <div>
@@ -50,7 +50,8 @@ $visibility_text = [
                                 <div style="clear: both;"></div>
                             </div>
                             <div style="margin-left:110px;">
-                                <h3 class="oce_list_title"><?= $_('Video wird verarbeitet: ') ?> <?= htmlready(studip_utf8decode($state->mediapackage->title)) ?></h3>
+                                <h3 class="oce_list_title"><?= $_('Video wird verarbeitet: ') ?>
+                                <?= htmlready($state->mediapackage->title) ?></h3>
                                 <span class="oce_list_date"><?= sprintf($_("Hochgeladen am %s"), date("d.m.Y H:i", strtotime($state->mediapackage->start))) ?></span>
                             </div>
                         <? endif; ?>

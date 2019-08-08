@@ -637,11 +637,6 @@ class OCModel
         return $stmt->execute(array($episode_id, $course_id));
     }
 
-    static function sanatizeContent($content)
-    {
-        return studip_utf8decode($content);
-    }
-
     static function getCoursesForEpisode($episode_id){
         $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_episodes WHERE episode_id = ?");
         $stmt->execute([$episode_id]);

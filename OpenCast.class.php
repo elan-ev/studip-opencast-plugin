@@ -117,7 +117,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return studip_utf8decode($result);
+        return $result;
     }
 
     /**
@@ -148,7 +148,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $result = vsprintf($result, $arguments);
         }
 
-        return studip_utf8decode($result);
+        return $result;
     }
 
     /**
