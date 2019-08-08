@@ -44,7 +44,6 @@ function zip()
         'models',
         'sql',
         'stylesheets',
-        'vendor',
         'views',
     ), '/^(assets|blocks).*\.less$/');
 

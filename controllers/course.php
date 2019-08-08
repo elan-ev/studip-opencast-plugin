@@ -86,12 +86,6 @@ class CourseController extends OpencastController
     {
         $this->flash = Trails_Flash::instance();
 
-        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/jquery.fileupload.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/jquery.simplePagination.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/circle-progress/circle-progress.js');
-        PageLayout::addScript($GLOBALS['ocplugin_path'] . '/vendor/listjs/list.min.js');
-
-
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
