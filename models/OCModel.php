@@ -586,7 +586,7 @@ class OCModel
     static function getConfigurationstate()
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_endpoints");
-        $stmt->execute(array($course_id));
+        $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         if ($rows['0'] > 0) {
