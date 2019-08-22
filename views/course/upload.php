@@ -110,14 +110,14 @@ use Studip\LinkButton;
 
         <div style="max-width: 48em">
             <p>
-                <?= $_("Laden sie nur Medien hoch an denen sie das Copyright besitzen!") ?>
+                <?= $_("Laden Sie nur Medien hoch, an denen Sie das Copyright besitzen!") ?>
             </p>
             <p>
-                <?= $_("Nach §60 UrhG dürfen nur maximal 5 minütige Sequenzen aus Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.") ?>
+                <?= $_("Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.") ?>
                 <a href="https://elan-ev.de/themen_p60.php"><?= $_('§60 UrhG Zusammenfassung') ?></a>
             </p>
             <p>
-                <?= $_("Medien bei denen Urheberrechtsverstöße vorliegen, werde ohne vorherige Ankündigung umgehend gelöscht.") ?>
+                <?= $_("Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht.") ?>
             </p>
         </div>
     </fieldset>
