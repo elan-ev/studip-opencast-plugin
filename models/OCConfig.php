@@ -10,6 +10,12 @@ class OCConfig extends \SimpleORMap
     {
         $config['db_table'] = 'oc_config';
 
+        $config['has_many']['endpoints'] = [
+            'class_name'        => 'Opencast\\Models\\OCEndpoints',
+            'assoc_foreign_key' => 'config_id',
+            'on_delete'         => 'delete'
+        ];
+
         parent::configure($config);
     }
 
@@ -95,11 +101,7 @@ class OCConfig extends \SimpleORMap
 
     static function clearConfigAndAssociatedEndpoints($config_id)
     {
-        $stmt = \DBManager::get()->prepare("DELETE FROM `oc_config` WHERE config_id = ?;");
-        $stmt->execute([$config_id]);
-        $stmt = \DBManager::get()->prepare("DELETE FROM `oc_endpoints` WHERE config_id = ?;");
-
-        return $stmt->execute([$config_id]);
+        return self::deleteBySql('config_id = ?', [$config_id]);
     }
 
     /**
@@ -138,26 +140,6 @@ class OCConfig extends \SimpleORMap
     static function getConfigIdForSeries($series_id)
     {
         return OCSeminarSeries::findOneBySeminar_id($series_id)->config_id ?: 1;
-    }
-
-
-    /**
-     * get course-id for passed series
-     *
-     * @param string $series_id
-     *
-     * @return string
-     */
-
-    static function getConfigIdForWorkflow($workflow_id)
-    {
-        $stmt = \DBManager::get()->prepare("SELECT config_id
-            FROM oc_seminar_workflows
-            WHERE workflow_id = ?");
-
-        $stmt->execute([$workflow_id]);
-
-        return $stmt->fetchColumn();
     }
 
     public static function empty_config()

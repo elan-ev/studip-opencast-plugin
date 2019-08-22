@@ -1,7 +1,7 @@
 # Erledigte Klassen
 
 [✓] OCAccessControl.php  
-[ ] OCConfig.php  
+[✓] OCConfig.php  
 [ ] OCConfigPrecise.php  
 [ ] OCCourseModel.class.php  
 [✓] OCEndpointModel.php  
