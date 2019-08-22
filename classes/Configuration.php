@@ -5,6 +5,9 @@
  * @version         1.0 (13:27)
  */
 
+use Opencast\Models\OCConfig;
+use Opencast\Models\OCConfigPrecise;
+
 class Configuration implements ArrayAccess
 {
     private static $instances = [];
@@ -52,21 +55,29 @@ class Configuration implements ArrayAccess
     {
         $old_value = $this->values[$name];
         $this->values[$name] = $new_value;
+
         if (!empty($description) && $description != '') {
             $this->descriptions[$name] = $description;
         }
         if (!empty($database_id) && $database_id != '') {
             $this->database_ids[$name] = $database_id;
         }
+
         if ($this->has_id($name)) {
-            $stmt = DBManager::get()->prepare("UPDATE `oc_config_precise` SET `name`=?,`value`=?,`description`=? WHERE id=?");
-            $result = $stmt->execute([$name, $new_value, $this->descriptions[$name], $this->database_ids[$name]]);
+            $ocp = OCConfigPrecise::find($this->database_ids[$name]);
         } else {
-            $stmt = DBManager::get()->prepare("INSERT INTO `oc_config_precise` (`name`,`value`,`description`,`for_config`)VALUES(?,?,?,?)");
-            $result = $stmt->execute([$name, $new_value, $this->descriptions[$name], $this->config_id]);
-            $new_id = $stmt->insert_id;
-            $this->database_ids[$name] = $new_id;
+            $ocp = new OCConfigPrecise();
         }
+
+        $ocp->setData([
+            'name'        => $name,
+            'value'       => $new_value,
+            'description' => $this->descriptions[$name],
+            'for_config'  => $this->config_id
+        ]);
+        $ocp->store();
+
+        $this->database_ids[$name] = $ocp->id;
 
         $change_type = $this->determine_change_type($old_value, $new_value);
         $event = "opencast.configuration.$change_type.$name";
@@ -89,12 +100,11 @@ class Configuration implements ArrayAccess
     {
         $result = 'NO SQL NEEDED';
         if ($this->has_id($name)) {
-            $stmt = DBManager::get()->prepare("DELETE FROM `oc_config_precise` WHERE id = ?");
-            $result = $stmt->execute([$this->database_ids[$name]]);
-            if ($result) {
+            if (OCConfigPrecise::find($this->database_ids[$name])->delete()) {
                 unset($this->database_ids[$name]);
             }
         }
+
         unset($this->values[$name]);
         unset($this->descriptions[$name]);
 
@@ -107,7 +117,8 @@ class Configuration implements ArrayAccess
             return $this->values[$name];
         }
         if ($this->config_id != Opencast\Constants::$GLOBAL_CONFIG_ID) {
-            return Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)->get($name, $default);
+            return Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)
+                ->get($name, $default);
         }
 
         return $default;
@@ -142,16 +153,16 @@ class Configuration implements ArrayAccess
 
     public function load()
     {
-        $stmt = DBManager::get()->prepare("SELECT `id`,`name`,`description`,`value`
-                FROM `oc_config_precise`
-                WHERE for_config = ?");
-        $result = $stmt->execute([$this->config_id]);
+        $ocp = OCConfigPrecise::findBySql('for_config = ?', [$this->config_id]);
 
-        if ($result) {
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($data as $entry) {
-                $this->set($entry['name'], $entry['value'], $entry['description'], $entry['id']);
+        if (!empty($ocp)) {
+            foreach ($ocp as $entry) {
+                $this->set(
+                    $entry['name'],
+                    $entry['value'],
+                    $entry['description'],
+                    $entry['id']
+                );
             }
         }
     }
@@ -170,7 +181,10 @@ class Configuration implements ArrayAccess
             $entries[$name] = [
                 'value' => $value,
                 'type'  => $this->determine_value_type($value),
-                'description' => ($this->descriptions[$name] ? $this->descriptions[$name] : 'Keine Beschreibung...')
+                'description' => ($this->descriptions[$name]
+                    ? $this->descriptions[$name]
+                    : 'Keine Beschreibung...'
+                )
             ];
         }
 
@@ -184,7 +198,10 @@ class Configuration implements ArrayAccess
             return $names_in_current_config;
         }
 
-        return array_unique(array_merge(Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)->get_names(), $names_in_current_config));
+        return array_unique(array_merge(
+            Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID)->get_names(),
+            $names_in_current_config
+        ));
     }
 
     private function determine_value_type($value)
@@ -218,17 +235,8 @@ class Configuration implements ArrayAccess
 
     public static function registered_base_config_ids()
     {
-        $stmt = DBManager::get()->prepare('SELECT `config_id` FROM `oc_config`');
-        if ($stmt->execute()) {
-            $to_return = [];
-            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $entry) {
-                $to_return[] = $entry['config_id'];
-            }
-
-            return $to_return;
-        }
-
-        return [];
+        $entries = new \SimpleCollection(OCConfig::findBySql('config_id = 5'));
+        return $entries->pluck('config_id');
     }
 
     public static function overall_used_config_ids()

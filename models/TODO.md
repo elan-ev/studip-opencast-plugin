@@ -2,7 +2,7 @@
 
 [✓] OCAccessControl.php  
 [✓] OCConfig.php  
-[ ] OCConfigPrecise.php  
+[✓] OCConfigPrecise.php  
 [ ] OCCourseModel.class.php  
 [✓] OCEndpointModel.php  
 [✓] OCEndpoints.php  
