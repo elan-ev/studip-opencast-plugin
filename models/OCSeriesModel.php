@@ -1,4 +1,7 @@
 <?php
+
+use Opencast\Models\OCConfig;
+
 class OCSeriesModel
 {
 

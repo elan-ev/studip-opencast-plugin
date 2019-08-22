@@ -5,7 +5,8 @@
  * @version         1.0 (12:33)
  */
 
-use Opencast\Model\OCAccessControl;
+use Opencast\Models\OCAccessControl;
+use Opencast\Models\OCConfig;
 
 class OpencastLTI
 {

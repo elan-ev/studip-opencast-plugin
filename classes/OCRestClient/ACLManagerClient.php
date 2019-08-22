@@ -5,6 +5,8 @@
  * @version         1.0 (12:34)
  */
 
+use Opencast\Models\OCConfig;
+
 class ACLManagerClient extends OCRestClient
 {
     static $me;

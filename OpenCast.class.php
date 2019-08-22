@@ -5,6 +5,8 @@
 
 include('bootstrap.php');
 
+use Opencast\Models\OCConfig;
+
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');

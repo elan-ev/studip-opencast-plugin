@@ -3,6 +3,8 @@
  * OCRestClient.php - The administarion of the opencast player
  */
 
+use Opencast\Models\OCConfig;
+
 define('DEBUG_CURL', FALSE);
 
 class OCRestClient

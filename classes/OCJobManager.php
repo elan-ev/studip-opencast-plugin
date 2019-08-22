@@ -4,6 +4,8 @@
  *
  */
 
+use Opencast\Models\OCConfig;
+
 class OCJobManager
 {
     public static $BASE_PATH = '/opencast';
@@ -116,7 +118,7 @@ class OCJobManager
      */
     public static function matterhorn_service_available()
     {
-        $configuration = OCEndpointModel::getBaseServerConf(1);
+        $configuration = OCConfig::getBaseServerConf(1);
         $service_url = parse_url($configuration['service_url']);
 
         $socket = @fsockopen($service_url['host'], $service_url['port'] ? : 80, $err_number, $err_message, 1);

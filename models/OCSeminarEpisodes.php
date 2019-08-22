@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Model;
+namespace Opencast\Models;
 
 class OCSeminarEpisodes extends \SimpleORMap
 {

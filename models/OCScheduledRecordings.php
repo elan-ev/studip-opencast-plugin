@@ -1,8 +1,8 @@
 <?php
 
-namespace Opencast\Model;
+namespace Opencast\Models;
 
-class OCScheduledRecordings extends SimpleORMap
+class OCScheduledRecordings extends \SimpleORMap
 {
     protected static function configure($config = array())
     {

@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class SeriesClient extends OCRestClient
 {
     static $me;

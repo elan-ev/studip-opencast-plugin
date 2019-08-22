@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class CaptureAgentAdminClient extends OCRestClient
 {
     public static $me;

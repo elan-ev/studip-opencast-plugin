@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class SchedulerClient extends OCRestClient
 {
     static $me;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Opencast\Model;
+namespace Opencast\Models;
 
-class OCConfigPrecise extends SimpleORMap
+class OCConfigPrecise extends \SimpleORMap
 {
     protected static function configure($config = array())
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Opencast\Model;
+namespace Opencast\Models;
 
-class OCSeminarWorkflowConfiguration extends SimpleORMap
+class OCSeminarWorkflowConfiguration extends \SimpleORMap
 {
     protected static function configure($config = array())
     {

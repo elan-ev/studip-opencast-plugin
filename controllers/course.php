@@ -3,6 +3,8 @@
  * course.php - course controller
  */
 
+use Opencast\Models\OCConfig;
+
 class CourseController extends OpencastController
 {
     /**
@@ -139,7 +141,7 @@ class CourseController extends OpencastController
         $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
 
         if ($this->connectedSeries) {
-            \Opencast\Model\OCAccessControl::get_acls_for_course($this->course_id);
+            \Opencast\Models\OCAccessControl::get_acls_for_course($this->course_id);
             $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
             $acls = OpencastLTI::mapping_to_defined_acls($mapping);
             OpencastLTI::apply_defined_acls($acls);
@@ -223,7 +225,7 @@ class CourseController extends OpencastController
         }
 
         $this->config = OCConfig::getConfigForCourse($this->course_id);
-        $this->configs = OCEndpointModel::getBaseServerConf();
+        $this->configs = OCConfig::getBaseServerConf();
     }
 
     private function get_ordered_episode_ids($reload, $minimum_full_view_perm = 'tutor')
@@ -266,7 +268,7 @@ class CourseController extends OpencastController
         $this->response->add_header('X-Title', rawurlencode($this->_("Series mit Veranstaltung verknüpfen")));
 
 
-        $this->configs = OCEndpointModel::getBaseServerConf();
+        $this->configs = OCConfig::getBaseServerConf();
 
         $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
 

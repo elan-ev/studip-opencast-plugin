@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class ArchiveClient extends OCRestClient
 {
     static $me;
