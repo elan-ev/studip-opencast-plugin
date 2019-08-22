@@ -156,34 +156,33 @@ class AdminController extends OpencastController
                     $service_url['host'] .
                     (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
-                $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
-
-                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
-                OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
-
-                // check, if the same url has been provided for multiple oc-instances
-                foreach (Request::getArray('config') as $zw_id => $zw_conf) {
-                    if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
-                        $this->flash['messages'] = array(
-                            'error' => sprintf(
-                                $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
-                                    Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
-                                 $config['url']
-                            )
-                        );
-
-                        continue 2;
-                    }
-                }
-
-
-                OCEndpoints::setEndpoint($config_id, $service_host .'/services', 'services');
-
-                $services_client = new ServicesClient($config_id);
-
-                $comp = null;
-
                 try {
+                    $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
+
+                    OCConfig::clearConfigAndAssociatedEndpoints($config_id);
+                    OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+
+                    // check, if the same url has been provided for multiple oc-instances
+                    foreach (Request::getArray('config') as $zw_id => $zw_conf) {
+                        if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
+                            $this->flash['messages'] = array(
+                                'error' => sprintf(
+                                    $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
+                                        Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
+                                     $config['url']
+                                )
+                            );
+
+                            continue 2;
+                        }
+                    }
+
+
+                    OCEndpoints::setEndpoint($config_id, $service_host .'/services', 'services');
+
+                    $services_client = new ServicesClient($config_id);
+
+                    $comp = null;
                     $comp = $services_client->getRESTComponents();
                 } catch (AccessDeniedException $e) {
                     OCEndpoints::removeEndpoint($config_id, 'services');

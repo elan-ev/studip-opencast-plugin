@@ -48,23 +48,17 @@ class OCConfig extends \SimpleORMap
     static function getConfigForService($service_type, $config_id = 1)
     {
         if (isset($service_type)) {
-            $stmt = \DBManager::get()->prepare("SELECT * FROM `oc_endpoints`
-                WHERE service_type = ? AND config_id = ?");
-            $stmt->execute([$service_type, $config_id]);
-            $config = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $config = OCEndpoints::findOneBySQL(
+                'service_type = ? AND config_id = ?' ,
+                [$service_type, $config_id]
+            )->toArray();
 
             if ($config) {
-                $stmt = \DBManager::get()->prepare("SELECT * FROM `oc_config`
-                    WHERE config_id = ?");
-                $stmt->execute([$config_id]);
-                $config = $config + $stmt->fetch(\PDO::FETCH_ASSOC);
-
-                return $config;
+                return $config + self::find($config_id)->toArray();
             } else {
                 return [
                     self::empty_config()
                 ];
-                #throw new Exception(sprintf(_("Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."), $service_type));
             }
 
         } else {
@@ -85,20 +79,18 @@ class OCConfig extends \SimpleORMap
     static function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
     {
         if (isset($service_url, $service_user, $service_password, $version)) {
+            if (!$config = self::find($config_id)) {
+                $config = new self();
+            }
 
-            $stmt = \DBManager::get()->prepare('REPLACE INTO `oc_config`
-                (config_id, service_url, service_user, service_password, service_version)
-                VALUES (?, ?, ?, ?, ?)'
-            );
+            $version = (int)$version;
 
-            return $stmt->execute([
-                $config_id, $service_url, $service_user,
-                $service_password, (int)$version
-            ]);
+            $config->setData(compact('config_id', 'service_url',
+                'service_user', 'service_password', 'version'));
+            return $config->store();
         } else {
             throw new \Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
         }
-
     }
 
     static function clearConfigAndAssociatedEndpoints($config_id)

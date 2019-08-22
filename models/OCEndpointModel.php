@@ -1,6 +1,0 @@
-<?PHP
-
-class OCEndpointModel
-{
-    
-}
