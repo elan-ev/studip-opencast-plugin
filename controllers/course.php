@@ -742,18 +742,11 @@ class CourseController extends OpencastController
             $occcourse = new OCCourseModel($this->course_id);
 
             if ($course_workflow = Request::get('oc_course_workflow')) {
-                if ($occcourse->getWorkflow('schedule')) {
-                    $occcourse->updateWorkflow($course_workflow, 'schedule');
-                } else {
-                    $occcourse->setWorkflow($course_workflow, 'schedule');
-                }
+                $occcourse->setWorkflow($course_workflow, 'schedule');
             }
+
             if ($course_uploadworkflow = Request::get('oc_course_uploadworkflow')) {
-                if (OCCourseModel::getWorkflowWithCustomCourseID($this->course_id, 'upload')) {
-                    $occcourse->updateWorkflow($course_uploadworkflow, 'upload');
-                } else {
-                    $occcourse->setWorkflow($course_uploadworkflow, 'upload');
-                }
+                $occcourse->setWorkflow($course_uploadworkflow, 'upload');
             }
 
         }

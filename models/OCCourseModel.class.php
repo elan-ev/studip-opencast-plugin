@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCSeminarWorkflowConfiguration;
+
 class OCCourseModel
 {
 
@@ -333,7 +335,6 @@ class OCCourseModel
             $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
         }
 
-
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
             WHERE seminar_id = :seminar_id AND mkdate > :lastvisit");
 
@@ -351,6 +352,7 @@ class OCCourseModel
         $rest_episodes = [];
         $is_dozent = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
         $episodes = $this->getEpisodes();
+
         foreach ($episodes as $episode) {
             if ($episode['visibility'] == 'true') {
                 $rest_episodes[] = $episode;
@@ -366,11 +368,13 @@ class OCCourseModel
 
     public function toggleSeriesVisibility()
     {
-        if ($this->getSeriesVisibility() == 'visible') $visibility = 'invisible';
-        else $visibility = 'visible';
+        if ($this->getSeriesVisibility() == 'visible') {
+            $visibility = 'invisible';
+        } else {
+            $visibility = 'visible';
+        }
 
         return OCSeriesModel::updateVisibility($this->course_id, $visibility);
-
     }
 
     /**
@@ -382,8 +386,9 @@ class OCCourseModel
     {
         $series = $this->getSeriesMetadata();
 
-        return OCSeriesModel::updateSchedule($this->course_id, $series['schedule'] ? 0 : 1);
-
+        return OCSeriesModel::updateSchedule(
+            $this->course_id, $series['schedule'] ? 0 : 1
+        );
     }
 
     public function getSeriesVisibility()
@@ -391,7 +396,6 @@ class OCCourseModel
         $visibility = OCSeriesModel::getVisibility($this->course_id);
 
         return $visibility['visibility'];
-
     }
 
     /**
@@ -403,7 +407,6 @@ class OCCourseModel
      */
     public function refineEpisodesForStudents($ordered_episodes)
     {
-
         $episodes = [];
         foreach ($ordered_episodes as $episode) {
             if ($episode['visibility'] != 'invisible') {
@@ -426,54 +429,43 @@ class OCCourseModel
 
     public static function getWorkflowWithCustomCourseID($course_id, $target)
     {
-        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflow_configuration
-            WHERE seminar_id = ? AND target = ?");
-
-        $stmt->execute([$course_id, $target]);
-        $workflow = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (empty($workflow)) {
-            return false;
-        } else return array_pop($workflow);
+        return OCSeminarWorkflowConfiguration::findOneBySql(
+            'seminar_id = ? AND target = ?',
+            [$course_id, $target]
+        );
     }
 
     public function setWorkflow($workflow_id, $target)
     {
-        return static::setWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
+        return static::setWorkflowWithCustomCourseID(
+            $this->getCourseID(), $workflow_id, $target
+        );
     }
 
     public static function setWorkflowWithCustomCourseID($course_id, $workflow_id, $target)
     {
+        if (!$ocw = OCSeminarWorkflowConfiguration::findOneBySql(
+            'seminar_id = ? AND target = ?',
+            [$course_id, $target]
+        )) {
+            $ocw = new OCSeminarWorkflowConfiguration();
+        }
 
-        $stmt = DBManager::get()->prepare("INSERT INTO
-                oc_seminar_workflow_configuration (seminar_id, workflow_id, target, mkdate, chdate)
-                VALUES (?, ?, ?, ?, ?)");
+        $ocw->setData([
+            'seminar_id'  => $course_id,
+            'workflow_id' => $workflow_id,
+            'target'      => $target
+        ]);
 
-        return $stmt->execute([$course_id, $workflow_id, $target, time(), time()]);
-    }
-
-    public function updateWorkflow($workflow_id, $target)
-    {
-
-        return static::updateWorkflowWithCustomCourseID($this->getCourseID(), $workflow_id, $target);
-    }
-
-    public static function updateWorkflowWithCustomCourseID($course_id, $workflow_id, $target)
-    {
-
-        $stmt = DBManager::get()->prepare("UPDATE
-                oc_seminar_workflow_configuration SET workflow_id = ?, chdate = ?
-                WHERE seminar_id = ? AND target = ?");
-
-        return $stmt->execute([$workflow_id, time(), $course_id, $target]);
+        return $ocw->store();
     }
 
     public static function removeWorkflowsWithoutCustomCourseID($course_id, $target)
     {
-        $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_workflow_configuration
-            WHERE NOT seminar_id = ? AND target = ?");
-
-        return $stmt->execute([$course_id, $target]);
+        return OCSeminarWorkflowConfiguration::deleteBySql(
+            'seminar_id = ? AND target = ?',
+            [$course_id, $target]
+        );
     }
 
     public function setWorkflowForDate($termin_id, $workflow_id)
