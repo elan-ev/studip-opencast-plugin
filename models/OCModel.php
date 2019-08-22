@@ -19,19 +19,6 @@ class OCModel
         }
     }
 
-    static function removeSeriesforCourse($course_id, $series_id)
-    {
-       $stmt = DBManager::get()->prepare("UPDATE
-                oc_series SET seminars = seminars-1
-                WHERE series_id =?");
-       $stmt->execute(array($course_id));
-       $stmt = DBManager::get()->prepare("DELETE FROM
-                oc_seminar_series
-                WHERE series_id = ? AND seminar_id = ?");
-        return $stmt->execute(array($series_id, $course_id));
-    }
-
-
     static function getOCRessources()
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro

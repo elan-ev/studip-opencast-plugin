@@ -136,34 +136,51 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
-        $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-        OpencastLTI::apply_defined_acls($acls);
+        $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-            // Config-Dialog
-            $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
+        if ($this->connectedSeries) {
+            \Opencast\Model\OCAccessControl::get_acls_for_course($this->course_id);
+            $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
+            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+            OpencastLTI::apply_defined_acls($acls);
 
-            foreach ($this->connectedSeries as $key => $series) {
-                if ($series['schedule']) {
-                    $this->can_schedule = true;
+            if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+                // Config-Dialog
+
+                foreach ($this->connectedSeries as $key => $series) {
+
+                    if ($series['schedule']) {
+                        $this->can_schedule = true;
+                    }
+
+                    $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
+
+                    if (!empty($oc_series)) {
+                        $this->connectedSeries[$key] = array_merge($series, $oc_series);
+                    } else {
+                        PageLayout::postError(sprintf($this->_(
+                            'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
+                            'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
+                            'wenden Sie sich an einen Systemadministrator.'
+                        ), $series['series_id']));
+
+                        unset($this->connectedSeries[$key]);
+                    }
                 }
 
-                $this->connectedSeries[$key] = array_merge($series, OCSeriesModel::getSeriesFromOpencast($series));
-            }
+                if ($perm->have_perm('root')) {
+                    $this->workflow_client = WorkflowClient::getInstance();
+                    $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                    if (!empty($workflow_ids)) {
+                        $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
+                    }
+                    //workflow
+                    $occourse = new OCCourseModel($this->course_id);
+                    $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
-            if ($perm->have_perm('root')) {
-                $this->workflow_client = WorkflowClient::getInstance();
-                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-                if (!empty($workflow_ids)) {
-                    $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
+                    $this->schedulewf = $occourse->getWorkflow('schedule');
+                    $this->uploadwf = $occourse->getWorkflow('upload');
                 }
-                //workflow
-                $occourse = new OCCourseModel($this->course_id);
-                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-
-                $this->schedulewf = $occourse->getWorkflow('schedule');
-                $this->uploadwf = $occourse->getWorkflow('upload');
             }
         }
 
@@ -280,18 +297,18 @@ class CourseController extends OpencastController
             return;
         }
 
-        $course_id = Request::get('course_id');
-        $series_id = Request::get('series_id');
-        $delete    = Request::get('delete');
+        OCPerm::check('tutor');
 
-        if ($delete && check_ticket($ticket)) {
+        $course_id = Context::getId();
+
+        if (Request::submitted('delete') && check_ticket($ticket)) {
             $scheduled_episodes = OCSeriesModel::getScheduledEpisodes($course_id);
 
-            OCSeriesModel::removeSeriesforCourse($course_id, $series_id);
+            OCSeriesModel::removeSeriesforCourse($course_id);
 
             $this->flash['messages'] = ['success' => $this->_("Die Zuordnung wurde entfernt")];
 
-            StudipLog::log('OC_REMOVE_CONNECTED_SERIES', null, $course_id, $series_id);
+            StudipLog::log('OC_REMOVE_CONNECTED_SERIES', null, $course_id, '');
         } else {
             $this->flash['messages']['error'] = $this->_("Die Zuordnung konnte nicht entfernt werden.");
         }

@@ -5,6 +5,8 @@
  * @version         1.0 (12:33)
  */
 
+use Opencast\Model\OCAccessControl;
+
 class OpencastLTI
 {
 
@@ -255,17 +257,17 @@ class OpencastLTI
         // TODO: use correct config!!!
         $acl_manager = ACLManagerClient::getInstance();
 
-        $acls_to_remove = OCAccessControlModel::get_acls_for($target_type, $target_id);
+        $acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
         foreach ($acls_to_remove as $to_remove) {
             if ($acl_manager->removeACL($to_remove['acl_id'])) {
-                OCAccessControlModel::remove_acl_from_db($to_remove['acl_id']);
+                OCAccessControl::remove_acl_from_db($to_remove['acl_id']);
             }
         }
 
         $created_acl = $acl_manager->createACL($acl);
         if ($acl_manager->applyACLto($target_type, $target_id, $created_acl->id)) {
             foreach ($courses as $course) {
-                OCAccessControlModel::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
+                OCAccessControl::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
             }
         }
     }

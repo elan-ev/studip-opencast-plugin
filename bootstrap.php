@@ -15,7 +15,7 @@ require_once 'classes/config_actions/ResourceObjectAttributeChangeAction.php';
 require_once 'classes/lti/OAuth.php';
 require_once 'classes/lti/AccessControlList.php';
 require_once 'classes/lti/OpencastLTI.php';
-require_once 'models/OCAccessControlModel.php';
+require_once 'models/OCAccessControl.php';
 
 require_once 'controllers/opencast_controller.php';
 
@@ -30,6 +30,7 @@ require_once 'classes/OCJobManager.php';
 require_once 'classes/OCJob.php';
 require_once 'classes/OCJobLocation.php';
 require_once 'classes/OCJsonFile.php';
+require_once 'classes/OCPerm.php';
 
 require_once 'classes/OCRestClient/OCRestClient.php';
 

@@ -64,12 +64,17 @@ class OCSeriesModel
      */
     static private function transformSeriesJSON($data)
     {
+        if (empty($data)) {
+            return false;
+        }
+
         $res = array();
         $var_name = 'http://purl.org/dc/terms/';
 
         foreach (get_object_vars($data->$var_name) as $key => $val) {
             $res[$key] = $val[0]->value;
         }
+
         return $res;
     }
 
@@ -99,17 +104,17 @@ class OCSeriesModel
      * @param string $series_id
      * @return bool
      */
-    static function removeSeriesforCourse($courseID, $seriesID)
+    static function removeSeriesforCourse($course_id)
     {
-        $qepisodes =  DBManager::get()->prepare("DELETE FROM oc_seminar_episodes WHERE seminar_id = ?");
-        if ($qepisodes->execute(array($courseID))) {
-            $stmt = DBManager::get()->prepare("DELETE FROM
-                oc_seminar_series
-                WHERE series_id = ? AND seminar_id = ?");
-            return $stmt->execute(array($seriesID, $courseID));
-        }
+        $qepisodes =  DBManager::get()->prepare("DELETE FROM oc_seminar_episodes
+            WHERE seminar_id = ?");
 
-        return false;
+        $qepisodes->execute([$course_id]);
+
+        $stmt = DBManager::get()->prepare("DELETE FROM
+            oc_seminar_series
+            WHERE seminar_id = ?");
+        return $stmt->execute(array($course_id));
     }
 
     /**

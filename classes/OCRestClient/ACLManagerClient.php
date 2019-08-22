@@ -51,7 +51,7 @@ class ACLManagerClient extends OCRestClient
             ];
         }
 
-        $result = $this->postJSON('/apply/' . $type . '/' . $id, $data);
+        $result = $this->postJSON('/apply/' . $type . '/' . $id, $data, true);
 
         return $result[1] == 200;
     }
