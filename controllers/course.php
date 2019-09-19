@@ -142,11 +142,16 @@ class CourseController extends OpencastController
 
         if ($this->connectedSeries) {
             \Opencast\Models\OCAccessControl::get_acls_for_course($this->course_id);
-            $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
-            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-            OpencastLTI::apply_defined_acls($acls);
 
-            if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+            if ($mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id)) {
+                $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+                OpencastLTI::apply_defined_acls($acls);
+            }
+
+            if (
+                $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+                && !empty($this->connectedSeries)
+            ) {
                 // Config-Dialog
 
                 foreach ($this->connectedSeries as $key => $series) {
