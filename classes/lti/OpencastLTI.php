@@ -74,6 +74,11 @@ class OpencastLTI
     public static function generate_acl_mapping_for_course($course_id)
     {
         $series_list = OCModel::getConnectedSeries($course_id);
+
+        if (!$series_list) {
+            return false;
+        }
+
         $result = [
             's' => [],
             'e' => []

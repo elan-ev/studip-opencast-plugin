@@ -136,34 +136,37 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        $mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id);
-        $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-        OpencastLTI::apply_defined_acls($acls);
+        if ($mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id)) {
+            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
+            OpencastLTI::apply_defined_acls($acls);
+        }
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
             $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
 
-            foreach ($this->connectedSeries as $key => $series) {
-                if ($series['schedule']) {
-                    $this->can_schedule = true;
+            if (!empty($this->connectedSeries)) {
+                foreach ($this->connectedSeries as $key => $series) {
+                    if ($series['schedule']) {
+                        $this->can_schedule = true;
+                    }
+
+                    $this->connectedSeries[$key] = array_merge($series, OCSeriesModel::getSeriesFromOpencast($series));
                 }
 
-                $this->connectedSeries[$key] = array_merge($series, OCSeriesModel::getSeriesFromOpencast($series));
-            }
+                if ($perm->have_perm('root')) {
+                    $this->workflow_client = WorkflowClient::getInstance();
+                    $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                    if (!empty($workflow_ids)) {
+                        $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
+                    }
+                    //workflow
+                    $occourse = new OCCourseModel($this->course_id);
+                    $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
-            if ($perm->have_perm('root')) {
-                $this->workflow_client = WorkflowClient::getInstance();
-                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-                if (!empty($workflow_ids)) {
-                    $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
+                    $this->schedulewf = $occourse->getWorkflow('schedule');
+                    $this->uploadwf = $occourse->getWorkflow('upload');
                 }
-                //workflow
-                $occourse = new OCCourseModel($this->course_id);
-                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-
-                $this->schedulewf = $occourse->getWorkflow('schedule');
-                $this->uploadwf = $occourse->getWorkflow('upload');
             }
         }
 
