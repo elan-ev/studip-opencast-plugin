@@ -1,5 +1,7 @@
 <?PHP
 
+use Opencast\LTI\OpencastLTI;
+
 class OCModel
 {
     static function getConnectedSeries($course_id)

@@ -3,6 +3,8 @@
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
  */
 
+use Opencast\LTI\OpencastLTI;
+
 include('bootstrap.php');
 
 //Rest.IP
