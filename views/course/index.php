@@ -96,7 +96,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
             new Icon('group', 'clickable'),
             [
-                'data-dialog' => 'width=400;height=500'
+                'data-dialog' => 'width=550;height=500'
             ]);
     }
 
