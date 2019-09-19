@@ -1,7 +1,7 @@
 <? if ($flash['delete']) : ?>
     <?= createQuestion2(sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
-            utf8_decode($this->connectedSeries[0]['title'])
+            $this->connectedSeries[0]['title']
         ),
         [   // approveParams
             'course_id' => $course_id,
