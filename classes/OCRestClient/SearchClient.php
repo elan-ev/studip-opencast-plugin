@@ -66,47 +66,6 @@ class SearchClient extends OCRestClient
     }
 
     /**
-     * getEpisodesLTI() - retrieves episode metadata for a given series identifier
-     * in the passed course for the passed role[s]. This retrieves the episodes
-     * via LTI not directly by an privileged user
-     *
-     * @param  string $series_id
-     * @param  string $course_id
-     * @param  array  $roles
-     * @param  string $sort
-     *
-     * @return mixed
-     */
-    public function getEpisodesLTI($series_id, $course_id, $roles, $sort='DATE_CREATED_DESC')
-    {
-        die;
-        $roles_usable = [];
-        foreach ($roles as $role) {
-            $roles_usable[] = 'oc_acl_read:' . $course_id . '_' . $role;
-        }
-
-        $cookie = OpencastLTI::launch_lti($GLOBALS['user']->id, $course_id, $series_id);
-
-        $special_query = 'dc_is_part_of:'. $series_id .' AND ( '. implode(' OR ', $roles_usable) .' )';
-        $service_url = "/lucene.json?q=$special_query&sort=$sort&limit=20&offset=0&admin=false";
-
-        $service_url = str_replace(' ','%20',$service_url);
-        $service_url = str_replace(':','%3A',$service_url);
-
-        $this->setCookie('JSESSIONID', $cookie);
-        $result = $this->getJSON($service_url);
-
-        if ($result) {
-            $x = "search-results";
-            $episodes = $result->$x->result;
-
-            return $episodes;
-        }
-
-        return [];
-    }
-
-    /**
      *  getAllSeries() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn
      *  Core
      *

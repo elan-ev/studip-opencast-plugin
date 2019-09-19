@@ -282,27 +282,19 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             OpencastLTI::generate_tool('series', $connectedSeries[0]['series_id'])
         );
 
+        $lti_url = OpencastLTI::getSearchUrl($course_id);
+
         $lti_data = json_encode(OpencastLTI::sign_lti_data(
             $lti_launch_data,
             $config['lti_consumerkey'],
-            $config['lti_consumersecret']
+            $config['lti_consumersecret'],
+            $lti_url
         ));
 
-        $lti_url = rtrim($search_config['service_url'], '/') . '/lti';
         $id = md5(uniqid());
 
-        $search_config = OCConfig::getConfigForService('search',
-            OCConfig::getConfigIdForCourse(course_id)
-        );
-
-        $search_call = strpos($search_config['service_url'], $config['service_url']) === false;
-
-
-        return "<script>" .
-            ($search_call ? "OC.ltiCall('$lti_url', $lti_data, function() {
-                jQuery('#$id').attr('src', '$embed');
-            });" : '') .
-        " OC.ltiCall('$lti_url', $lti_data, function() {
+        return "<script>
+        OC.ltiCall('$lti_url', $lti_data, function() {
             jQuery('#$id').attr('src', '$embed');
         });
         </script>"

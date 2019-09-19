@@ -284,80 +284,40 @@ class OpencastLTI
     }
 
     /**
-     * Returns the cookie for the lti authentication
+     * [sign_lti_data description]
      *
-     * @param  [type] $lti_data [description]
-     * @return string           the jessionid
+     * @param  [type] $lti_data              [description]
+     * @param  [type] $oauth_consumer_key    [description]
+     * @param  [type] $oauth_consumer_secret [description]
+     * @param  [type] $url                   [description]
+     * @param  string $token                 [description]
+     * @return [type]                        [description]
      */
-    public static function launch_lti($user_id, $course_id, $identifier)
-    {
-        static $cookie;
-        $debug_curl = false;
-
-        if (!$cookie) {
-            $lti_data = OpencastLTI::generate_lti_launch_data(
-                $user_id,
-                $course_id,
-                LTIResourceLink::generate_link('series', 'view complete series for course'),
-                OpencastLTI::generate_tool('series', $identifier)
-            );
-
-            $config = \OCConfig::getConfigForCourse($course_id);
-
-            $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
-
-            $ch = curl_init();
-
-            // debugging
-            if ($debug_curl) {
-                curl_setopt($ch, CURLOPT_VERBOSE, true);
-                echo '<pre>';
-
-                $debug = fopen('php://output', 'w');
-                curl_setopt($ch, CURLOPT_STDERR, $debug);
-
-            }
-
-            curl_setopt($ch, CURLOPT_URL, rtrim($config['service_url'] . '/lti', '/ '));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            $server_output = curl_exec($ch);
-            curl_close($ch);
-
-            if ($debug_curl) {
-                fclose($debug);
-                echo '</pre>';
-            }
-
-            // get cookie
-            preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);
-            $cookie = $matches[1];
-        }
-
-        if ($cookie) {
-            return $cookie;
-        } else {
-            throw new \AccessDeniedException('Could not connect to Opencasts LTI Service!');
-        }
-
-    }
-
-    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')
+    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $url, $token = '')
     {
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
 
         $config = \OCConfig::getConfigForCourse($lti_data['context_id']);
 
-        $endpoint = rtrim($config['service_url'] . '/lti', '/ ');
-        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $endpoint, $lti_data);
+        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $lti_data);
         $acc_req->sign_request($hmac_method, $consumer, $token);
 
         $last_base_string = $acc_req->get_signature_base_string();
 
         return $acc_req->get_parameters();
+    }
+
+    public static function getSearchUrl($course_id)
+    {
+        $config_id     = \OCConfig::getConfigIdForCourse($course_id);
+        $search_config = \OCConfig::getConfigForService('search', $config_id);
+        $config        = \OCConfig::getConfigForCourse($course_id);
+
+        $url = parse_url($search_config['service_url']);
+
+        return $url['scheme'] . '://'. $url['host']
+            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
     }
 }
 
