@@ -4,6 +4,7 @@
  */
 
 use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
 
 include('bootstrap.php');
 
@@ -287,11 +288,21 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $config['lti_consumersecret']
         ));
 
-        $lti_url = rtrim($config['service_url'], '/') . '/lti';
+        $lti_url = rtrim($search_config['service_url'], '/') . '/lti';
         $id = md5(uniqid());
 
-        return "<script>
-        OC.ltiCall('$lti_url', $lti_data, function() {
+        $search_config = OCConfig::getConfigForService('search',
+            OCConfig::getConfigIdForCourse(course_id)
+        );
+
+        $search_call = strpos($search_config['service_url'], $config['service_url']) === false;
+
+
+        return "<script>" .
+            ($search_call ? "OC.ltiCall('$lti_url', $lti_data, function() {
+                jQuery('#$id').attr('src', '$embed');
+            });" : '') .
+        " OC.ltiCall('$lti_url', $lti_data, function() {
             jQuery('#$id').attr('src', '$embed');
         });
         </script>"

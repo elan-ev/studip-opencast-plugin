@@ -40,9 +40,19 @@ $lti_launch_data = OpencastLTI::generate_lti_launch_data(
 );
 
 $lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+$search_config = OCConfig::getConfigForService('search', OCConfig::getConfigIdForCourse($this->course_id));
 ?>
 
 <script>
+<? if (strpos($search_config['service_url'], $config['service_url']) === false) { ?>
+    console.log('Using search endpointurl to authenticate via LTI as well.');
+OC.ltiCall('<?= rtrim($search_config['service_url'], '/') ?>/lti', <?= json_encode($lti_data) ?>, function() {
+    jQuery('img.previewimage').each(function() {
+        this.src = this.dataset.src;
+    });
+});
+<? } ?>
+
 OC.ltiCall('<?= rtrim($config['service_url'], '/') ?>/lti', <?= json_encode($lti_data) ?>, function() {
     jQuery('img.previewimage').each(function() {
         this.src = this.dataset.src;

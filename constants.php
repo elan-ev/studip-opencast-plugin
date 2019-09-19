@@ -5,13 +5,13 @@ class Constants {
     static $UPLOAD_CHUNK_SIZE = '10000000';
 
     static $SERVICES = [
-        'acl-manager',
+        'acl-manager',          // alles admin-node
         'archive',
         'apiworkflows',
         'capture-admin',
         'ingest',
         'recordings',
-        'search',
+        'search',               // ausser hier: engage-node
         'series',
         'services',
         'upload',
