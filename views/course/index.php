@@ -1,3 +1,8 @@
+<?
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
+?>
+
 <? if ($flash['delete']) : ?>
     <?= createQuestion2(sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),

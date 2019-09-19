@@ -1,13 +1,15 @@
 <?php
 // vim: foldmethod=marker
 
+namespace Opencast\LTI;
+
 $OAuth_last_computed_signature = false;
 
 
 if (!class_exists('OAuthException')) {
 /* Generic exception class
  */
-class OAuthException extends Exception {
+class OAuthException extends \Exception {
   // pass
 }
 }
@@ -271,7 +273,7 @@ class OAuthRequest {
       $qparms = OAuthUtil::parse_parameters($parts['query']);
       $parameters = array_merge($qparms, $parameters);
     }
-     
+
 
     return new OAuthRequest($http_method, $http_url, $parameters);
   }
@@ -675,7 +677,7 @@ class OAuthDataStore {
 class OAuthUtil {
   public static function urlencode_rfc3986($input) {
   if (is_array($input)) {
-    return array_map(array('OAuthUtil', 'urlencode_rfc3986'), $input);
+    return array_map(array('Opencast\LTI\OAuthUtil', 'urlencode_rfc3986'), $input);
   } else if (is_scalar($input)) {
     return str_replace(
       '+',

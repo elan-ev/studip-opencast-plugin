@@ -3,6 +3,9 @@
  * course.php - course controller
  */
 
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
+
 class CourseController extends OpencastController
 {
     /**
