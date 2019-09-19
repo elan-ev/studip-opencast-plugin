@@ -44,7 +44,7 @@ class OCSeriesModel
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
                 JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
                 WHERE ep.visible != 'invisible'");
-            $stmt->execute([$user_id]);
+            $stmt->execute();
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
