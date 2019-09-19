@@ -272,8 +272,6 @@ class CourseController extends OpencastController
 
         $this->configs = OCEndpointModel::getBaseServerConf();
 
-        $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
-
         foreach ($this->configs as $id => $config) {
             $sclient = SearchClient::getInstance($id);
             $this->all_series[$id] = $sclient->getAllSeries($this->course_id);
