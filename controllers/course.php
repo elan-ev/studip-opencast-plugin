@@ -4,6 +4,7 @@
  */
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\OCSeminarSeries;
 
 class CourseController extends OpencastController
 {
@@ -138,7 +139,7 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
+        $this->connectedSeries = OCSeminarSeries::findBySeminar_id($this->course_id);
 
         if ($this->connectedSeries) {
             \Opencast\Models\OCAccessControl::get_acls_for_course($this->course_id);
@@ -163,7 +164,7 @@ class CourseController extends OpencastController
                     $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
 
                     if (!empty($oc_series)) {
-                        $this->connectedSeries[$key] = array_merge($series, $oc_series);
+                        $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
                     } else {
                         PageLayout::postError(sprintf($this->_(
                             'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
@@ -334,7 +335,7 @@ class CourseController extends OpencastController
 
         $this->set_title($this->_("Opencast Aufzeichnungen planen"));
 
-        $this->cseries = OCModel::getConnectedSeries($this->course_id);
+        $this->cseries = OCSeminarSeries::findBySeminar_id($this->course_id);
 
         $course = new Seminar($this->course_id);
 
@@ -501,7 +502,7 @@ class CourseController extends OpencastController
      */
     function upload_action()
     {
-        $this->connectedSeries = OCModel::getConnectedSeries($this->course_id);
+        $this->connectedSeries = OCSeminarSeries::findBySeminar_id($this->course_id);
 
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');

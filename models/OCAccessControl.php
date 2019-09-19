@@ -30,7 +30,7 @@ class OCAccessControl extends \SimpleORMap
     {
         //var_dump(func_get_args());die;
 
-        $acl = self::findBySql(
+        $acl = self::findOneBySql(
             'id = ? AND type = ? AND course_id = ?',
             [$id, $type, $course_id]
         );

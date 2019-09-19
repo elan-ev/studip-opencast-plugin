@@ -7,6 +7,7 @@
 
 use Opencast\Models\OCAccessControl;
 use Opencast\Models\OCConfig;
+use Opencast\Models\OCSeminarSeries;
 
 class OpencastLTI
 {
@@ -76,7 +77,7 @@ class OpencastLTI
 
     public static function generate_acl_mapping_for_course($course_id)
     {
-        $series_list = OCModel::getConnectedSeries($course_id);
+        $series_list = OCSeminarSeries::findBySeminar_id($course_id);
 
         if (!$series_list) {
             return false;

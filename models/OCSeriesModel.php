@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\OCSeminarSeries;
 
 class OCSeriesModel
 {
@@ -131,7 +132,7 @@ class OCSeriesModel
      */
     static function getSeriesDCs($courseID)
     {
-        $series = OCModel::getConnectedSeries($courseID);
+        $series = OCSeminarSeries::findBySeminar_id($courseID);
         $ret = array();
 
         foreach ($series as $ser) {

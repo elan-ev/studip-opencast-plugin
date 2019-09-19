@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCSeminarWorkflowConfiguration;
+use Opencast\Models\OCSeminarSeries;
 
 class OCCourseModel
 {
@@ -22,7 +23,7 @@ class OCCourseModel
 
         $this->setCourseID($course_id);
         // take care of connected series
-        $cseries = OCModel::getConnectedSeries($this->getCourseID());
+        $cseries = OCSeminarSeries::findBySeminar_id($this->getCourseID());
 
         if (!empty($cseries)) {
             $current_seriesdata = array_pop($cseries);
