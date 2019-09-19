@@ -16,8 +16,11 @@ class OCSeriesModel
     static function getSeriesFromOpencast($series)
     {
         $sclient = new SeriesClient($series['config_id']);
+        if ($oc_series = $sclient->getSeries($series['series_id'])) {
+            return self::transformSeriesJSON($oc_series);
+        }
 
-        return self::transformSeriesJSON($sclient->getSeries($series['series_id']));
+        return false;
     }
 
     static function getSeminarAndSeriesData()

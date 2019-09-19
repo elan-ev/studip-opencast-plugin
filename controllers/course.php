@@ -151,7 +151,22 @@ class CourseController extends OpencastController
                         $this->can_schedule = true;
                     }
 
-                    $this->connectedSeries[$key] = array_merge($series, OCSeriesModel::getSeriesFromOpencast($series));
+                    $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
+
+                    if (!empty($oc_series)) {
+                        $this->connectedSeries[$key] = array_merge(
+                            $series,
+                            $oc_series
+                        );
+                    } else {
+                        PageLayout::postMessage(MessageBox::error(
+                            $this->_(
+                                'Die verknüpfte Serie konnte nicht in Opencast gefunden werden! ' .
+                                'Bitte stellen Sie sicher, dass die Verbindung zu Opencast funktioniert oder verknüpfen Sie eine andere Serie.'
+                            )
+                        ));
+                        unset($this->connectedSeries[$key]);
+                    }
                 }
 
                 if ($perm->have_perm('root')) {
