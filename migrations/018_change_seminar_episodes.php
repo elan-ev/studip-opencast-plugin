@@ -12,8 +12,8 @@ class ChangeSeminarEpisodes extends Migration
         $db = DBManager::get();
 
         $db->query("INSERT IGNORE INTO `oc_config_precise`
-            (`id`, `name`, `description`, `value`, `for_config`) VALUES
-            (11, 'paella', 'Soll der Paella Player verwendet werden statt Theodul?', '0', -1)
+            (`name`, `description`, `value`, `for_config`) VALUES
+            ('paella', 'Soll der Paella Player verwendet werden statt Theodul?', '0', -1)
         ");
 
         // Find all invisible episodes and make sure they stay invisible
