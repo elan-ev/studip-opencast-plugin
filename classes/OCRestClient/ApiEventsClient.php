@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class ApiEventsClient extends OCRestClient
 {
     static $me;

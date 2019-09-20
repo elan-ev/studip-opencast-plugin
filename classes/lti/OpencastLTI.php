@@ -11,6 +11,7 @@ namespace Opencast\LTI;
 use Opencast\Models\OCAccessControl;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
 
 class OpencastLTI
 {
@@ -22,11 +23,11 @@ class OpencastLTI
     public static function setAcls($course_id)
     {
         // check currently set ACLs to update status in Stud.IP if necessary
-        $series        = reset(\OCModel::getConnectedSeries($course_id));
+        $series        = reset(OCSeminarSeries::findBySeminar_id($course_id));
         $search_client = \SearchClient::create($course_id);
         $api_client    = \ApiEventsClient::create($course_id);
 
-        $episodes       = \OCSeminarEpisode::findBySeries_id($series['series_id'])->pluck('');
+        //$episodes       = OCSeminarEpisodes::findBySeries_id($series['series_id'])->pluck('');
         //var_dump($episodes);die;
 
         foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
@@ -322,7 +323,7 @@ class OpencastLTI
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
 
-        $config = \OCConfig::getConfigForCourse($lti_data['context_id']);
+        $config = OCConfig::getConfigForCourse($lti_data['context_id']);
 
         $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $lti_data);
         $acc_req->sign_request($hmac_method, $consumer, $token);
@@ -334,9 +335,9 @@ class OpencastLTI
 
     public static function getSearchUrl($course_id)
     {
-        $config_id     = \OCConfig::getConfigIdForCourse($course_id);
-        $search_config = \OCConfig::getConfigForService('search', $config_id);
-        $config        = \OCConfig::getConfigForCourse($course_id);
+        $config_id     = OCConfig::getConfigIdForCourse($course_id);
+        $search_config = OCConfig::getConfigForService('search', $config_id);
+        $config        = OCConfig::getConfigForCourse($course_id);
 
         $url = parse_url($search_config['service_url']);
 
