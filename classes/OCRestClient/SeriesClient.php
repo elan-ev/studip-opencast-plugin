@@ -1,5 +1,6 @@
 <?php
 
+use Opencast\Models\OCConfig;
 use Opencast\LTI\OpencastLTI;
 
 class SeriesClient extends OCRestClient

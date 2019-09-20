@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class ServicesClient extends OCRestClient
 {
     static $me;

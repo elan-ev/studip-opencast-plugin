@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class UploadClient extends OCRestClient {
     static $me;
     public $serviceName = 'Upload';

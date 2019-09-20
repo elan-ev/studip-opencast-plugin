@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class ApiWorkflowsClient extends OCRestClient
 {
     static $me;

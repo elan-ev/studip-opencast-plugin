@@ -5,6 +5,8 @@
  * @version         1.0 (12:34)
  */
 
+use Opencast\Models\OCConfig;
+
 class ACLManagerClient extends OCRestClient
 {
     static $me;
@@ -51,7 +53,7 @@ class ACLManagerClient extends OCRestClient
             ];
         }
 
-        $result = $this->postJSON('/apply/' . $type . '/' . $id, $data);
+        $result = $this->postJSON('/apply/' . $type . '/' . $id, $data, true);
 
         return $result[1] == 200;
     }

@@ -3,6 +3,9 @@
  * admin.php - admin plugin controller
  */
 
+use Opencast\Models\OCConfig;
+use Opencast\Models\OCEndpoints;
+
 class AdminController extends OpencastController
 {
     /**
@@ -84,7 +87,7 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Administration"));
         Navigation::activateItem('/admin/config/oc-config');
 
-        $this->config = OCEndpointModel::getBaseServerConf();
+        $this->config = OCConfig::getBaseServerConf();
         $this->global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
     }
 
@@ -153,37 +156,36 @@ class AdminController extends OpencastController
                     $service_url['host'] .
                     (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
-                $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
-
-                OCConfig::clearConfigAndAssociatedEndpoints($config_id);
-                OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
-
-                // check, if the same url has been provided for multiple oc-instances
-                foreach (Request::getArray('config') as $zw_id => $zw_conf) {
-                    if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
-                        $this->flash['messages'] = array(
-                            'error' => sprintf(
-                                $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
-                                    Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
-                                 $config['url']
-                            )
-                        );
-
-                        continue 2;
-                    }
-                }
-
-
-                OCEndpointModel::setEndpoint($config_id, $service_host .'/services', 'services');
-
-                $services_client = new ServicesClient($config_id);
-
-                $comp = null;
-
                 try {
+                    $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
+
+                    OCConfig::clearConfigAndAssociatedEndpoints($config_id);
+                    OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+
+                    // check, if the same url has been provided for multiple oc-instances
+                    foreach (Request::getArray('config') as $zw_id => $zw_conf) {
+                        if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
+                            $this->flash['messages'] = array(
+                                'error' => sprintf(
+                                    $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
+                                        Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
+                                     $config['url']
+                                )
+                            );
+
+                            continue 2;
+                        }
+                    }
+
+
+                    OCEndpoints::setEndpoint($config_id, $service_host .'/services', 'services');
+
+                    $services_client = new ServicesClient($config_id);
+
+                    $comp = null;
                     $comp = $services_client->getRESTComponents();
                 } catch (AccessDeniedException $e) {
-                    OCEndpointModel::removeEndpoint($config_id, 'services');
+                    OCEndpoints::removeEndpoint($config_id, 'services');
 
                     $this->flash['messages'] = array(
                         'error' => sprintf(
@@ -200,7 +202,7 @@ class AdminController extends OpencastController
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
 
                     if (empty($services)) {
-                        OCEndpointModel::removeEndpoint($config_id, 'services');
+                        OCEndpoints::removeEndpoint($config_id, 'services');
 
                         $this->flash['messages'] = array(
                             'error' => sprintf(
@@ -229,7 +231,7 @@ class AdminController extends OpencastController
                         $this->flash['messages'] = array('success' => implode('<br>', $success_message));
                     }
                 } else {
-                    OCEndpointModel::removeEndpoint($config_id, 'services');
+                    OCEndpoints::removeEndpoint($config_id, 'services');
                     $this->flash['messages'] = array(
                         'error' => sprintf(
                             $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
@@ -253,8 +255,8 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
         // Navigation::activateItem('/admin/config/oc-endpoints');
 
-        $this->configs = OCEndpointModel::getBaseServerConf();
-        $this->endpoints = OCEndpointModel::getEndpoints();
+        $this->configs = OCConfig::getBaseServerConf();
+        $this->endpoints = OCEndpoints::getEndpoints();
     }
 
 
@@ -349,25 +351,17 @@ class AdminController extends OpencastController
         }
 
         $workflow = Request::get('oc_course_uploadworkflow');
-        if (!OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload')) {
-            $workflow_success = OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
-        } else {
-            $workflow_success = OCCourseModel::updateWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
-        }
+        OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
 
-        if ($workflow_success) {
-            $messages['success'][] = $this->_("Standardworkflow eingestellt.");
-            $override = Request::option('override_other_workflows','off'); // on / off
-            if($override == 'on'){
-                $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow','upload');
-                if($override_success){
-                    $messages['success'][] = $this->_("Andere Workflow Einstellungen wurden entfernt.");
-                }else{
-                    $messages['error'][] = $this->_('Andere Workflows konnten nicht entfernt werden.');
-                }
+        $messages['success'][] = $this->_("Standardworkflow eingestellt.");
+        $override = Request::option('override_other_workflows','off'); // on / off
+        if($override == 'on'){
+            $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow','upload');
+            if($override_success){
+                $messages['success'][] = $this->_("Andere Workflow Einstellungen wurden entfernt.");
+            }else{
+                $messages['error'][] = $this->_('Andere Workflows konnten nicht entfernt werden.');
             }
-        }else{
-            $messages['error'][] = $this->_("Standardworkflow konnte nicht eingestellt werden.");
         }
 
         foreach ($messages as $type=>$collection){

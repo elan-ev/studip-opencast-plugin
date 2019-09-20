@@ -8,6 +8,9 @@ use Opencast\LTI\LTIResourceLink;
 
 include('bootstrap.php');
 
+use Opencast\Models\OCConfig;
+use Opencast\Models\OCSeminarSeries;
+
 //Rest.IP
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
 NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
@@ -233,7 +236,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
 
         if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
-            $series_metadata = OCModel::getConnectedSeries($course_id);
+            $series_metadata = OCSeminarSeries::findBySeminar_id($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
@@ -266,7 +269,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $course_id       = OCConfig::getCourseIdForSeries($series_id);
 
-        $connectedSeries = OCModel::getConnectedSeries($course_id);
+        $connectedSeries = OCSeminarSeries::findBySeminar_id($course_id);
         $config          = OCConfig::getConfigForCourse($course_id);
 
         $search_client   = SearchClient::getInstance($config['config_id']);

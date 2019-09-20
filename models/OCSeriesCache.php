@@ -2,11 +2,12 @@
 
 namespace Opencast\Models;
 
-class OCSeminarEpisodes extends \SimpleORMap
+class OCSeriesCache extends \SimpleORMap
 {
     protected static function configure($config = array())
     {
-        $config['db_table'] = 'oc_seminar_episodes';
+        $config['db_table'] = 'oc_series_cache';
+
         parent::configure($config);
     }
 }

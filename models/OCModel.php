@@ -1,39 +1,12 @@
-<?PHP
+<?php
+
+use Opencast\Models\OCConfig;
+use Opencast\Models\OCSeminarSeries;
 
 use Opencast\LTI\OpencastLTI;
 
 class OCModel
 {
-    static function getConnectedSeries($course_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT *
-            FROM oc_seminar_series
-            WHERE seminar_id = ?
-            ORDER BY schedule DESC");
-
-        $stmt->execute([$course_id]);
-        $series = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (empty($series)) {
-            return false;
-        } else {
-            return $series;
-        }
-    }
-
-    static function removeSeriesforCourse($course_id, $series_id)
-    {
-       $stmt = DBManager::get()->prepare("UPDATE
-                oc_series SET seminars = seminars-1
-                WHERE series_id =?");
-       $stmt->execute(array($course_id));
-       $stmt = DBManager::get()->prepare("DELETE FROM
-                oc_seminar_series
-                WHERE series_id = ? AND seminar_id = ?");
-        return $stmt->execute(array($series_id, $course_id));
-    }
-
-
     static function getOCRessources()
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
@@ -163,7 +136,7 @@ class OCModel
     static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
     {
         // 1st: retrieve series_id
-        $series = self::getConnectedSeries($course_id);
+        $series = OCSeminarSeries::findBySeminar_id($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -199,7 +172,7 @@ class OCModel
 
     static function checkScheduledRecording($course_id, $resource_id, $date_id)
     {
-        $series = self::getConnectedSeries($course_id);
+        $series = OCSeminarSeries::findBySeminar_id($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -344,7 +317,7 @@ class OCModel
          }
 
 
-        $series = self::getConnectedSeries($course_id);
+        $series = OCSeminarSeries::findBySeminar_id($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
