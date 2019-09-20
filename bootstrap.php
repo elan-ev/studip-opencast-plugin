@@ -24,6 +24,7 @@ require_once 'models/OCCourseModel.class.php';
 require_once 'models/OCSeriesModel.php';
 require_once 'models/OCEndpointModel.php';
 require_once 'models/OCSeminarEpisodes.php';
+require_once 'models/OCSeminarSeries.php';
 
 require_once 'classes/OCConfig.php';
 require_once 'classes/OCJobManager.php';

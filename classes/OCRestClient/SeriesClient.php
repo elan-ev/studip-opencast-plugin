@@ -58,7 +58,7 @@ class SeriesClient extends OCRestClient
             $series_id = $json['identifier'];
             OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, 'visible', 1, time());
 
-            self::updateAccescontrolForSeminar($series_id, $acl['visible']->as_xml());
+            self::updateAccesscontrolForSeminar($series_id, $acl['visible']->as_xml());
 
             return true;
         } else {
@@ -68,13 +68,13 @@ class SeriesClient extends OCRestClient
 
 
     /**
-     * updateAccescontrolForSeminar - updates the ACL for a given series in OC Matterhorn
+     * updateAccesscontrolForSeminar - updates the ACL for a given series in OC Matterhorn
      * @param string $series_id  series identifier
      * @param array  $acl_data   ACL
      * @return bool success or not
      */
 
-    function updateAccescontrolForSeminar($series_id, $acl_data) {
+    function updateAccesscontrolForSeminar($series_id, $acl_data) {
 
         $post =  array('acl' => $acl_data);
         $res = $this->getXML('/'.$series_id.'/accesscontrol', $post, false, true);

@@ -10,6 +10,31 @@ namespace Opencast\LTI;
 class OpencastLTI
 {
 
+    /**
+     * Set the correct ACLs for the series and episodes in the passed course
+     * @param [type] $course_id [description]
+     */
+    public static function setAcls($course_id)
+    {
+        // check currently set ACLs to update status in Stud.IP if necessary
+        $series        = reset(\OCModel::getConnectedSeries($course_id));
+        $search_client = \SearchClient::create($course_id);
+        $api_client    = \ApiEventsClient::create($course_id);
+
+        $episodes       = \OCSeminarEpisode::findBySeries_id($series['series_id'])->pluck('');
+        var_dump($episodes);die;
+
+        foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
+            $api_client->getVisibilityForEpisode($series_id, $episode->id);
+        }
+
+        // write the new ACLs to Opencast
+        if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
+            $acls = self::mapping_to_defined_acls($mapping);
+            self::apply_defined_acls($acls);
+        }
+    }
+
     public static function apply_defined_acls($defined_acls)
     {
         foreach ($defined_acls['s'] as $series_id => $setting) {

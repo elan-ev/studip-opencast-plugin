@@ -139,10 +139,7 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        if ($mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id)) {
-            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-            OpencastLTI::apply_defined_acls($acls);
-        }
+        OpencastLTI::setAcls($this->course_id);
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             // Config-Dialog
