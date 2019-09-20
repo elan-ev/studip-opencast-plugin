@@ -28,8 +28,6 @@ class OCAccessControl extends \SimpleORMap
 
     public static function set_acl_for_course($id, $type, $course_id, $acl_id)
     {
-        //var_dump(func_get_args());die;
-
         $acl = self::findOneBySql(
             'id = ? AND type = ? AND course_id = ?',
             [$id, $type, $course_id]
@@ -39,9 +37,12 @@ class OCAccessControl extends \SimpleORMap
             $acl = new self();
         }
 
-        $acl->setData(compact('id', 'type', 'acl_id', 'course_id'));
+        if (!is_null($acl->acl_id) && $acl->acl_id != $acl_id) {
+            $acl->setData(compact('id', 'type', 'acl_id', 'course_id'));
+            return $acl->store();
+        }
 
-        return $acl->store();
+        return true;
     }
 
     public static function remove_acls_for_course($course_id)

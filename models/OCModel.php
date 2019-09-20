@@ -2,6 +2,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
 
 use Opencast\LTI\OpencastLTI;
 
@@ -442,9 +443,11 @@ class OCModel
      */
     static function getEntry($course_id, $episode_id)
     {
+        $series = reset(OCSeminarSeries::findBySeminar_id($course_id));
+
         return OCSeminarEpisodes::findOneBySQL(
-            'seminar_id = ? AND episode_id = ?',
-            [$course_id, $episode_id]
+            'series_id = ? AND episode_id = ?',
+            [$series['series_id'], $episode_id]
         );
     }
 

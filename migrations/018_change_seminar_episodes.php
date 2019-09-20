@@ -55,6 +55,8 @@ class ChangeSeminarEpisodes extends Migration
         $db->query("UPDATE oc_seminar_episodes
             SET visible = 'invisible'
             WHERE episode_id IN ('". implode("','", $inv_episodes) ."')");
+
+        SimpleOrMap::expireTableScheme();
     }
 
     function down()
