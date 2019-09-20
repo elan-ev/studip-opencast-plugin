@@ -6,12 +6,6 @@
  */
 
 namespace Opencast\LTI;
-/*
-use Opencast\LTI\OAuthSignatureMethod_HMAC_SHA1;
-use Opencast\LTI\OAuthConsumer;
-use Opencast\LTI\OAuthRequest;
-use Opencast\LTI\OAuthUtil;
-*/
 
 class OpencastLTI
 {
