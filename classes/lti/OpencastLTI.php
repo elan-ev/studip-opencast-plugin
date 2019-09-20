@@ -22,22 +22,32 @@ class OpencastLTI
      */
     public static function setAcls($course_id)
     {
+        // write the new ACLs to Opencast
+        if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
+            $acls = self::mapping_to_defined_acls($mapping);
+            self::apply_defined_acls($acls);
+        }
+    }
+
+    public function updateEpisodeVisibility($course_id)
+    {
         // check currently set ACLs to update status in Stud.IP if necessary
         $series        = reset(OCSeminarSeries::findBySeminar_id($course_id));
         $search_client = \SearchClient::create($course_id);
         $api_client    = \ApiEventsClient::create($course_id);
 
-        //$episodes       = OCSeminarEpisodes::findBySeries_id($series['series_id'])->pluck('');
-        //var_dump($episodes);die;
-
+        // check the opencast visibility for episodes and update Stud.IP settings
         foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
-            $api_client->getVisibilityForEpisode($series_id, $episode->id);
-        }
+            $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id);
+            $entry = OCSeminarEpisodes::findOneBySQL(
+                'series_id = ? AND episode_id = ?',
+                [$series['series_id'], $episode->id]
+            );
 
-        // write the new ACLs to Opencast
-        if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
-            $acls = self::mapping_to_defined_acls($mapping);
-            self::apply_defined_acls($acls);
+            if ($entry && $entry->visible != $vis) {
+                $entry->visible = $vis;
+                $entry->store();
+            }
         }
     }
 

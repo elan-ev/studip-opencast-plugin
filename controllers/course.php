@@ -143,6 +143,7 @@ class CourseController extends OpencastController
             $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
             && !empty($this->connectedSeries)
         ) {
+            OpencastLTI::updateEpisodeVisibility($this->course_id);
             OpencastLTI::setAcls($this->course_id);
 
             // Config-Dialog

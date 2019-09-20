@@ -417,9 +417,7 @@ class OCModel
             $acl_manager = ACLManagerClient::getInstance($config_id);
             $acl_manager->applyACLto('episode', $episode_id, 0);
         } else {
-            $mapping = OpencastLTI::generate_acl_mapping_for_course($course_id);
-            $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-            OpencastLTI::apply_defined_acls($acls);
+            OpencastLTI::setAcls($course_id);
         }
 
         $api = ApiWorkflowsClient::getInstance($config_id);
