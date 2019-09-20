@@ -1,7 +1,5 @@
 <?php
 
-use Opencast\LTI\OpencastLTI;
-
 class SearchClient extends OCRestClient
 {
     static $me;
