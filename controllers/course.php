@@ -110,11 +110,7 @@ class CourseController extends OpencastController
 
         $config = OCConfig::getConfigForCourse(Context::getId());
 
-        if ($config['service_version'] >= 6) {
-            $this->paella = TRUE;
-        } else {
-            $this->paella = FALSE;
-        }
+        $this->paella = $config['paella'] == '0' ? false : true;
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([

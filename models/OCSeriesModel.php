@@ -46,7 +46,7 @@ class OCSeriesModel
         if ($GLOBALS['perm']->have_perm('root', $user_id)) {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, series_id FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
-                JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
+                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE ep.visible != 'invisible'");
             $stmt->execute();
 
@@ -54,7 +54,7 @@ class OCSeriesModel
         } else {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, series_id FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
-                JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
+                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE su.user_id = ?
                     AND ep.visible != 'invisible'");
             $stmt->execute([$user_id]);

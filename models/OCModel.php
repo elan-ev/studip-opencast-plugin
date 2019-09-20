@@ -539,20 +539,22 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
     }
 
-    static function setEpisode($episode_id, $course_id, $visibility, $mkdate)
+    static function setEpisode($episode_id, $series_id, $visibility, $mkdate)
     {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`seminar_id`,`episode_id`, `visible`, `mkdate`)
+                oc_seminar_episodes (`series_id`,`episode_id`, `visible`, `mkdate`)
                 VALUES (?, ?, ?, ?)");
 
-        return $stmt->execute(array($course_id, $episode_id, $visibility, $mkdate));
+        return $stmt->execute(array($series_id, $episode_id, $visibility, $mkdate));
     }
 
     static function getCoursePositions($course_id)
     {
-        $stmt = DBManager::get()->prepare("SELECT `episode_id`, `visible`, `mkdate`
-            FROM oc_seminar_episodes
-            WHERE `seminar_id` = ? ORDER BY mkdate DESC");
+        $stmt = DBManager::get()->prepare("SELECT series_id, episode_id,
+            `visible`, oc_seminar_episodes.mkdate
+            FROM oc_seminar_series
+            JOIN oc_seminar_episodes USING (series_id)
+            WHERE `seminar_id` = ? ORDER BY oc_seminar_episodes.mkdate DESC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -604,16 +606,19 @@ class OCModel
         return $results;
     }
 
-    static function removeStoredEpisode($episode_id, $course_id)
+    static function removeStoredEpisode($episode_id)
     {
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_seminar_episodes`
-            WHERE `episode_id` = ? AND `seminar_id` = ?");
+            WHERE `episode_id` = ?");
 
-        return $stmt->execute(array($episode_id, $course_id));
+        return $stmt->execute([$episode_id]);
     }
 
     static function getCoursesForEpisode($episode_id){
-        $stmt = DBManager::get()->prepare("SELECT seminar_id FROM oc_seminar_episodes WHERE episode_id = ?");
+        $stmt = DBManager::get()->prepare("SELECT seminar_id
+            FROM oc_seminar_episodes
+            JOIN oc_seminar_series USING (series_id)
+            WHERE episode_id = ?");
         $stmt->execute([$episode_id]);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

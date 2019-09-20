@@ -126,7 +126,7 @@ class OCConfig extends \SimpleORMap
 
     static function getCourseIdForSeries($series_id)
     {
-        return OCSeminarSeries::findOneBySeries_id($series_id)->course_id;
+        return OCSeminarSeries::findOneBySeries_id($series_id)->seminar_id;
     }
 
     /**

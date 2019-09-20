@@ -167,7 +167,7 @@ class OCCourseModel
 
                 OCModel::setEpisode(
                     $stored_episode['episode_id'],
-                    $this->getCourseID(),
+                    $stored_episode['series_id'],
                     $tmp['visibility'],
                     $stored_episode['mkdate']
                 );
@@ -190,7 +190,7 @@ class OCCourseModel
 
                 OCModel::setEpisode(
                     $episode['id'],
-                    $this->getCourseID(),
+                    $episode['series_id'],
                     'visible',
                     $timestamp
                 );
@@ -210,8 +210,7 @@ class OCCourseModel
             foreach ($stored_episodes as $orphaned_episode) {
                 // todo log event for this action
                 OCModel::removeStoredEpisode(
-                    $orphaned_episode['episode_id'],
-                    $this->getCourseID()
+                    $orphaned_episode['episode_id']
                 );
             }
         }
@@ -288,6 +287,7 @@ class OCCourseModel
                 ksort($audio_download);
                 $episodes[$episode->id] = [
                     'id'                    => $episode->id,
+                    'series_id'             => $episode->dcIsPartOf,
                     'title'                 => $episode->dcTitle,
                     'start'                 => $episode->mediapackage->start,
                     'duration'              => $episode->mediapackage->duration,
@@ -336,9 +336,9 @@ class OCCourseModel
             $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
         }
 
-        $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
-            WHERE seminar_id = :seminar_id AND mkdate > :lastvisit");
-
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_series
+            JOIN oc_seminar_episodes USING(series_id)
+            WHERE seminar_id = :seminar_id AND oc_seminar_episodes.mkdate > :lastvisit");
 
         $stmt->bindParam(':seminar_id', $this->getCourseID());
         $stmt->bindParam(':lastvisit', $visitdate);
@@ -476,14 +476,6 @@ class OCCourseModel
                 WHERE seminar_id = ? AND date_id = ?");
 
         return $stmt->execute([$workflow_id, $this->getCourseID(), $termin_id]);
-    }
-
-    public function clearSeminarEpisodes()
-    {
-        $stmt = DBManager::get()->prepare("DELETE FROM oc_seminar_episodes
-            WHERE seminar_id = ?");
-
-        return $stmt->execute([$this->getCourseID()]);
     }
 
     private function calculate_size($bitrate, $duration)
