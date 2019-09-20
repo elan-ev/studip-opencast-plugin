@@ -232,7 +232,11 @@ OC = {
                     .text(OC.visibility_text[response.visible])
                     .attr('disabled', false);
             }
-        );
+        ).fail(function(response) {
+            alert('Warten Sie mindestens 2 Minuten, bevor Sie die Sichtbarkeit für diese Video erneut ändern! Opencast muss die vorherige Sichtbarkeitsänderung erst anwenden.');
+            $element
+                .attr('disabled', false);
+        });
     },
 
     // schedule setting
