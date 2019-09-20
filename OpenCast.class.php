@@ -3,6 +3,9 @@
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
  */
 
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
+
 include('bootstrap.php');
 
 use Opencast\Models\OCConfig;
@@ -282,13 +285,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             OpencastLTI::generate_tool('series', $connectedSeries[0]['series_id'])
         );
 
+        $lti_url = OpencastLTI::getSearchUrl($course_id);
+
         $lti_data = json_encode(OpencastLTI::sign_lti_data(
             $lti_launch_data,
             $config['lti_consumerkey'],
-            $config['lti_consumersecret']
+            $config['lti_consumersecret'],
+            $lti_url
         ));
 
-        $lti_url = rtrim($config['service_url'], '/') . '/lti';
         $id = md5(uniqid());
 
         return "<script>

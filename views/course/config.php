@@ -13,8 +13,9 @@
         <? if (!empty($all_series)) : ?>
             <label>
                 <select name="series"
-                    class="chosen-select"
+                    id="series-select"
                     data-placeholder="<?=$_('Wählen Sie eine Series aus.')?>"
+                    style="max-width: 500px"
                 >
 
                 <? foreach ($configs as $id => $config): ?>
@@ -43,10 +44,10 @@
 </form>
 
 <script type="text/javascript">
-    jQuery(".chosen-select").chosen({
-        disable_search_threshold: 10,
+    jQuery("#series-select").select2({
+        disable_search_threshold: 2,
         max_selected_options: 1,
         no_results_text: "Oops, nothing found!",
-        width: "350px"
+        width: "500px"
     });
 </script>

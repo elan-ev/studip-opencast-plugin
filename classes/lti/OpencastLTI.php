@@ -5,12 +5,40 @@
  * @version         1.0 (12:33)
  */
 
+
+namespace Opencast\LTI;
+
 use Opencast\Models\OCAccessControl;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
 class OpencastLTI
 {
+
+    /**
+     * Set the correct ACLs for the series and episodes in the passed course
+     * @param [type] $course_id [description]
+     */
+    public static function setAcls($course_id)
+    {
+        // check currently set ACLs to update status in Stud.IP if necessary
+        $series        = reset(\OCModel::getConnectedSeries($course_id));
+        $search_client = \SearchClient::create($course_id);
+        $api_client    = \ApiEventsClient::create($course_id);
+
+        $episodes       = \OCSeminarEpisode::findBySeries_id($series['series_id'])->pluck('');
+        //var_dump($episodes);die;
+
+        foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
+            $api_client->getVisibilityForEpisode($series_id, $episode->id);
+        }
+
+        // write the new ACLs to Opencast
+        if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
+            $acls = self::mapping_to_defined_acls($mapping);
+            self::apply_defined_acls($acls);
+        }
+    }
 
     public static function apply_defined_acls($defined_acls)
     {
@@ -92,7 +120,7 @@ class OpencastLTI
             $result['s'][$series['series_id']][$course_id] = $series['visibility'];
 
             if ($series['visibility'] == 'visible') {
-                $course_model = new OCCourseModel($course_id);
+                $course_model = new \OCCourseModel($course_id);
                 $episodes = $course_model->getEpisodes();
                 foreach ($episodes as $episode) {
                     if ($episode['visibility'] == 'invisible') {
@@ -109,8 +137,8 @@ class OpencastLTI
 
     public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $tool, $privacy = false)
     {
-        $user = User::find($user_id);
-        $course = Course::find($course_id);
+        $user = \User::find($user_id);
+        $course = \Course::find($course_id);
 
         $launch_data = [
             'lti_message_type'                       => 'basic-lti-launch-request',
@@ -127,7 +155,7 @@ class OpencastLTI
             'context_id'                             => $course_id,
             'context_type'                           => 'CourseSection',
             'context_title'                          => $course->name,
-            'contect_label'                          => $course->veranstaltungsnummer,
+            'context_label'                          => $course->veranstaltungsnummer,
             'custom_tool'                            => $tool,
             'tool_consumer_info_product_family_code' => "studip",
             'tool_consumer_info_version'             => "1.1",
@@ -187,28 +215,28 @@ class OpencastLTI
         $role_l = static::role_learner($course_id);
         $role_i = static::role_instructor($course_id);
 
-        $base_acl = new AccessControlList('base');
-        $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'read', true));
-        $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
-        $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
-        $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
+        $base_acl = new \AccessControlList('base');
+        $base_acl->add_ace(new \AccessControlEntity('ROLE_ADMIN', 'read', true));
+        $base_acl->add_ace(new \AccessControlEntity('ROLE_ADMIN', 'write', true));
+        $base_acl->add_ace(new \AccessControlEntity($role_i, 'read', true));
+        $base_acl->add_ace(new \AccessControlEntity($role_i, 'write', true));
         // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
         // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
-        $acl_visible = new AccessControlList(static::generate_acl_name($course_id, 'visible'));
+        $acl_visible = new \AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
-        $acl_visible->add_ace(new AccessControlEntity($role_l, 'read', true));
-        $acl_visible->add_ace(new AccessControlEntity($role_l, 'write', false));
+        $acl_visible->add_ace(new \AccessControlEntity($role_l, 'read', true));
+        $acl_visible->add_ace(new \AccessControlEntity($role_l, 'write', false));
 
-        $acl_invisible = new AccessControlList(static::generate_acl_name($course_id, 'invisible'));
+        $acl_invisible = new \AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
 
-        $acl_free = new AccessControlList(static::generate_acl_name($course_id, 'free'));
+        $acl_free = new \AccessControlList(static::generate_acl_name($course_id, 'free'));
         $acl_free->add_acl($base_acl);
-        $acl_free->add_ace(new AccessControlEntity($role_l, 'read', true));
-        $acl_free->add_ace(new AccessControlEntity($role_l, 'write', false));
-        $acl_free->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
-        $acl_free->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
+        $acl_free->add_ace(new \AccessControlEntity($role_l, 'read', true));
+        $acl_free->add_ace(new \AccessControlEntity($role_l, 'write', false));
+        $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+        $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
 
         return [
@@ -225,7 +253,7 @@ class OpencastLTI
         if (count($course_ids) == 1) {
             $name = static::generate_acl_name($course_ids[0], $modes[0], 'course');
         }
-        $resulting_acl = new AccessControlList($name);
+        $resulting_acl = new \AccessControlList($name);
         for ($index = 0; $index < count($course_ids); $index++) {
             $course_id = $course_ids[$index];
             $mode = $modes[$index];
@@ -262,7 +290,7 @@ class OpencastLTI
     public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
     {
         // TODO: use correct config!!!
-        $acl_manager = ACLManagerClient::getInstance();
+        $acl_manager = \ACLManagerClient::getInstance();
 
         $acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
         foreach ($acls_to_remove as $to_remove) {
@@ -280,80 +308,40 @@ class OpencastLTI
     }
 
     /**
-     * Returns the cookie for the lti authentication
+     * [sign_lti_data description]
      *
-     * @param  [type] $lti_data [description]
-     * @return string           the jessionid
+     * @param  [type] $lti_data              [description]
+     * @param  [type] $oauth_consumer_key    [description]
+     * @param  [type] $oauth_consumer_secret [description]
+     * @param  [type] $url                   [description]
+     * @param  string $token                 [description]
+     * @return [type]                        [description]
      */
-    public static function launch_lti($user_id, $course_id, $identifier)
-    {
-        static $cookie;
-        $debug_curl = false;
-
-        if (!$cookie) {
-            $lti_data = OpencastLTI::generate_lti_launch_data(
-                $user_id,
-                $course_id,
-                LTIResourceLink::generate_link('series', 'view complete series for course'),
-                OpencastLTI::generate_tool('series', $identifier)
-            );
-
-            $config = OCConfig::getConfigForCourse($course_id);
-
-            $signed_data = OpencastLTI::sign_lti_data($lti_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
-
-            $ch = curl_init();
-
-            // debugging
-            if ($debug_curl) {
-                curl_setopt($ch, CURLOPT_VERBOSE, true);
-                echo '<pre>';
-
-                $debug = fopen('php://output', 'w');
-                curl_setopt($ch, CURLOPT_STDERR, $debug);
-
-            }
-
-            curl_setopt($ch, CURLOPT_URL, rtrim($config['service_url'] . '/lti', '/ '));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($signed_data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            $server_output = curl_exec($ch);
-            curl_close($ch);
-
-            if ($debug_curl) {
-                fclose($debug);
-                echo '</pre>';
-            }
-
-            // get cookie
-            preg_match('#Set-Cookie: JSESSIONID=(.*);Path=/#', $server_output, $matches);
-            $cookie = $matches[1];
-        }
-
-        if ($cookie) {
-            return $cookie;
-        } else {
-            throw new AccessDeniedException('Could not connect to Opencasts LTI Service!');
-        }
-
-    }
-
-    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $token = '')
+    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $url, $token = '')
     {
         $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
         $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
 
-        $config = OCConfig::getConfigForCourse($lti_data['context_id']);
+        $config = \OCConfig::getConfigForCourse($lti_data['context_id']);
 
-        $endpoint = rtrim($config['service_url'] . '/lti', '/ ');
-        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $endpoint, $lti_data);
+        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $lti_data);
         $acc_req->sign_request($hmac_method, $consumer, $token);
 
         $last_base_string = $acc_req->get_signature_base_string();
 
         return $acc_req->get_parameters();
+    }
+
+    public static function getSearchUrl($course_id)
+    {
+        $config_id     = \OCConfig::getConfigIdForCourse($course_id);
+        $search_config = \OCConfig::getConfigForService('search', $config_id);
+        $config        = \OCConfig::getConfigForCourse($course_id);
+
+        $url = parse_url($search_config['service_url']);
+
+        return $url['scheme'] . '://'. $url['host']
+            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
     }
 }
 

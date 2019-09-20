@@ -5,6 +5,8 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
 
 class CourseController extends OpencastController
 {
@@ -141,56 +143,50 @@ class CourseController extends OpencastController
 
         $this->connectedSeries = OCSeminarSeries::findBySeminar_id($this->course_id);
 
-        if ($this->connectedSeries) {
-            \Opencast\Models\OCAccessControl::get_acls_for_course($this->course_id);
+        if (
+            $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+            && !empty($this->connectedSeries)
+        ) {
+            OpencastLTI::setAcls($this->course_id);
 
-            if ($mapping = OpencastLTI::generate_acl_mapping_for_course($this->course_id)) {
-                $acls = OpencastLTI::mapping_to_defined_acls($mapping);
-                OpencastLTI::apply_defined_acls($acls);
+            // Config-Dialog
+
+            foreach ($this->connectedSeries as $key => $series) {
+
+                if ($series['schedule']) {
+                    $this->can_schedule = true;
+                }
+
+                $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
+
+                if (!empty($oc_series)) {
+                    $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
+                } else {
+                    PageLayout::postError(sprintf($this->_(
+                        'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
+                        'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
+                        'wenden Sie sich an einen Systemadministrator.'
+                    ), $series['series_id']));
+
+                    unset($this->connectedSeries[$key]);
+                }
             }
 
-            if (
-                $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
-                && !empty($this->connectedSeries)
-            ) {
-                // Config-Dialog
-
-                foreach ($this->connectedSeries as $key => $series) {
-
-                    if ($series['schedule']) {
-                        $this->can_schedule = true;
-                    }
-
-                    $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
-
-                    if (!empty($oc_series)) {
-                        $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                    } else {
-                        PageLayout::postError(sprintf($this->_(
-                            'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
-                            'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
-                            'wenden Sie sich an einen Systemadministrator.'
-                        ), $series['series_id']));
-
-                        unset($this->connectedSeries[$key]);
-                    }
+            if ($perm->have_perm('root')) {
+                $this->workflow_client = WorkflowClient::getInstance();
+                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                if (!empty($workflow_ids)) {
+                    $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
                 }
+                //workflow
+                $occourse = new OCCourseModel($this->course_id);
+                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
-                if ($perm->have_perm('root')) {
-                    $this->workflow_client = WorkflowClient::getInstance();
-                    $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-                    if (!empty($workflow_ids)) {
-                        $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
-                    }
-                    //workflow
-                    $occourse = new OCCourseModel($this->course_id);
-                    $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-
-                    $this->schedulewf = $occourse->getWorkflow('schedule');
-                    $this->uploadwf = $occourse->getWorkflow('upload');
-                }
+                $this->schedulewf = $occourse->getWorkflow('schedule');
+                $this->uploadwf = $occourse->getWorkflow('upload');
             }
         }
+
 
         Navigation::activateItem('course/opencast/overview');
         try {
@@ -275,8 +271,6 @@ class CourseController extends OpencastController
 
 
         $this->configs = OCConfig::getBaseServerConf();
-
-        $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
 
         foreach ($this->configs as $id => $config) {
             $sclient = SearchClient::getInstance($id);

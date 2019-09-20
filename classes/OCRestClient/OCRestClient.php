@@ -44,6 +44,17 @@ class OCRestClient
         return static::$me[$config_id];
     }
 
+    static function create($course_id = null)
+    {
+        if (is_null($course_id)) {
+            $course_id = Context::getId();
+        }
+
+        $config_id = OCConfig::getConfigIdForCourse($course_id) ?: 1;
+
+        return self::getInstance($config_id);
+    }
+
     function __construct($config)
     {
         $this->base_url   = $config['service_url'];

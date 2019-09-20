@@ -1,3 +1,8 @@
+<?
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LTIResourceLink;
+?>
+
 <? if ($flash['delete']) : ?>
     <?= createQuestion2(sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
@@ -34,11 +39,16 @@ $lti_launch_data = OpencastLTI::generate_lti_launch_data(
     OpencastLTI::generate_tool('series', $this->connectedSeries[0]['series_id'])
 );
 
-$lti_data = OpencastLTI::sign_lti_data($lti_launch_data, $config['lti_consumerkey'], $config['lti_consumersecret']);
+$lti_data = OpencastLTI::sign_lti_data(
+    $lti_launch_data,
+    $config['lti_consumerkey'],
+    $config['lti_consumersecret'],
+    OpencastLTI::getSearchUrl($this->course_id)
+);
 ?>
 
 <script>
-OC.ltiCall('<?= rtrim($config['service_url'], '/') ?>/lti', <?= json_encode($lti_data) ?>, function() {
+OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode($lti_data) ?>, function() {
     jQuery('img.previewimage').each(function() {
         this.src = this.dataset.src;
     });
@@ -91,7 +101,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
             new Icon('group', 'clickable'),
             [
-                'data-dialog' => 'width=400;height=500'
+                'data-dialog' => 'width=550;height=500'
             ]);
     }
 

@@ -3,6 +3,8 @@
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
+use Opencast\LTI\OpencastLTI;
+
 class OCModel
 {
     static function getOCRessources()

@@ -47,8 +47,8 @@ class OCSeriesModel
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, series_id FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
                 JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
-                WHERE ep.visible != 'invsibile'");
-            $stmt->execute([$user_id]);
+                WHERE ep.visible != 'invisible'");
+            $stmt->execute();
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
@@ -56,7 +56,7 @@ class OCSeriesModel
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
                 JOIN oc_seminar_episodes AS ep ON (se.seminar_id = ep.seminar_id)
                 WHERE su.user_id = ?
-                    AND ep.visible != 'invsibile'");
+                    AND ep.visible != 'invisible'");
             $stmt->execute([$user_id]);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

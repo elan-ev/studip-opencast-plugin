@@ -25,7 +25,7 @@ OC = {
                    withCredentials: true
                 },
                 crossDomain: true,
-                success: function() {
+                complete: function() {
                     OC.lti_done = 2;
                     success_callback();
                 }

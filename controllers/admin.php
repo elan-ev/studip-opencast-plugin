@@ -216,8 +216,8 @@ class AdminController extends OpencastController
 
                         foreach($services as $service_url => $service_type) {
                             if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false
-                                    && strpos($service_url, $service_host) !== false) {
-                                OCEndpoints::setEndpoint($config_id, $service_url, $service_type);
+                        /* && strpos($service_url, $service_host) !== false */) {
+                                OCEndpointModel::setEndpoint($config_id, $service_url, $service_type);
                             } else {
                                 unset($services[$service_url]);
                             }
