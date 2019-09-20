@@ -11,11 +11,6 @@ include('bootstrap.php');
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
-//Rest.IP
-NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses.get');
-NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-course_id.get');
-NotificationCenter::addObserver('OpenCast', 'getAPIDataForCourseRecordings', 'restip.courses-semester-semester_id.get');
-
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
@@ -313,74 +308,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             ></iframe><br>', $id);
     }
 
-
-    /**
-     * getAPIDataForCourseRecordings - Event handler for modifying course data
-     */
-    public function getAPIDataForCourseRecordings()
-    {
-
-        $router = RestIP\Router::getInstance(null);
-        $router->hook('restip.before.render', function () use ($router, $addon) {
-
-            $result = $router->getRouteResult();
-
-
-            if (key($result) === 'course') {
-                if (empty($result['course']['course_id'])) {
-                    return;
-                }
-                $pm = PluginManager::getInstance();
-                $pinfo = $pm->getPluginInfo('OpenCast');
-                $pid = $pinfo['id'];
-                $ocmodel = new OCCourseModel($result['course']['course_id']);
-                if($ocmodel->getSeriesVisibility() == 'visible') {
-                    $result['course'] = OpenCast::extendCourseRoute($result['course'], $pm->isPluginActivated($pid, $result['course']['course_id']), true);
-                }
-            } elseif (key($result) === 'courses') {
-                foreach ($result['courses'] as $index => $course) {
-                    if (empty($course['course_id'])) {
-                        continue;
-                    }
-                    $pm = PluginManager::getInstance();
-                    $pinfo = $pm->getPluginInfo('OpenCast');
-                    $pid = $pinfo['id'];
-                    $ocmodel = new OCCourseModel($course['course_id']);
-                    if($ocmodel->getSeriesVisibility() == 'visible') {
-                        $result['courses'][$index] = OpenCast::extendCourseRoute($course, $pm->isPluginActivated($pid, $course['course_id']), false);
-                    }
-                }
-            }
-
-            $router->setRouteResult($result);
-        });
-    }
-
-    public function extendCourseRoute($course, $activation = false, $additional_data = false)
-    {
-        if ($course['modules']['oc_matterhorn'] = $activation) {
-            if ($additional_data) {
-                if (!isset($course['additonal_data'])) {
-                    $course['additional_data'] = array();
-                }
-                $course['additional_data']['oc_recordings'] = OpenCast::getRecordings($course['course_id']);
-            }
-        }
-        return $course;
-
-    }
-
-
-    public function getRecordings($course_id)
-    {
-
-        $ocmodel = new OCCourseModel($course_id);
-        $episodes = $ocmodel->getEpisodesforREST();
-
-        return $episodes;
-
-    }
-
     public function NotifyUserOnNewEpisode($x, $data){
         $ocmodel = new OCCourseModel($data['course_id']);
         if($ocmodel->getSeriesVisibility() == 'visible') {
@@ -434,7 +361,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     public static function get_plugin_id()
     {
-        $statement = DBManager::get()->prepare('SELECT pluginid FROM plugins WHERE pluginclassname = ?');
+        $statement = DBManager::get()->prepare('SELECT pluginid
+            FROM plugins WHERE pluginclassname = ?');
         $statement->execute(['OpenCast']);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         if ($result && count($result[0]) > 0) {

@@ -29,8 +29,6 @@ class ApiEventsClient extends OCRestClient
                 )
             ];
 
-            // var_dump('/events?' . http_build_query($params),  OCConfig::getConfigForService('api', 1));
-
             $data = $this->getJSON('?' . http_build_query($params));
 
             if (is_array($data)) foreach ($data as $episode) {
