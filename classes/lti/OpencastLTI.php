@@ -22,7 +22,7 @@ class OpencastLTI
         $api_client    = \ApiEventsClient::create($course_id);
 
         $episodes       = \OCSeminarEpisode::findBySeries_id($series['series_id'])->pluck('');
-        var_dump($episodes);die;
+        //var_dump($episodes);die;
 
         foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
             $api_client->getVisibilityForEpisode($series_id, $episode->id);
