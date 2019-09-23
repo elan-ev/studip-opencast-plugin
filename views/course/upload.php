@@ -3,7 +3,6 @@
 use Studip\Button;
 use Studip\LinkButton;
 
-// ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier']]
 ?>
 <form id="upload_fom"
     action="<?= PluginEngine::getLink('opencast/upload/upload_file/', ['uuid' => md5(uniqid())]) ?>"

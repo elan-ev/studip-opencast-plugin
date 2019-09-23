@@ -21,12 +21,10 @@
                 <? foreach ($configs as $id => $config): ?>
                 <optgroup label="<?= $_(sprintf('%s. Opencast-System', $id)) ?>">
                     <? foreach ($all_series[$id] as $serie) : ?>
-                        <?// if (isset($serie['identifier'])) : ?>
-                            <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
-                                    class="nested-item">
-                                <?= $serie->dcTitle ?>
-                            </option>
-                        <?//endif;?>
+                        <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
+                                class="nested-item">
+                            <?= $serie->dcTitle ?>
+                        </option>
                     <?endforeach;?>
                 </optgroup>
                 <? endforeach ?>
