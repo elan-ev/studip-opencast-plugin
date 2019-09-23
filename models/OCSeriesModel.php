@@ -136,7 +136,7 @@ class OCSeriesModel
         $ret = array();
 
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID))->getXML('/' . $ser['identifier'] . '.xml')) {
+            if ($xml = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID))->getXML('/' . $ser['series_id'] . '.xml')) {
                 $ret[] = $xml;
             }
         }
