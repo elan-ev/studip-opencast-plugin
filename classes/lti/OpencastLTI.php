@@ -29,7 +29,7 @@ class OpencastLTI
         }
     }
 
-    public function updateEpisodeVisibility($course_id)
+    public static function updateEpisodeVisibility($course_id)
     {
         // check currently set ACLs to update status in Stud.IP if necessary
         $series        = reset(OCSeminarSeries::findBySeminar_id($course_id));
