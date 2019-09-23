@@ -146,7 +146,7 @@ class OpencastLTI
         return $result;
     }
 
-    public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $tool, $privacy = false)
+    public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $tool = null, $privacy = false)
     {
         $user = \User::find($user_id);
         $course = \Course::find($course_id);
