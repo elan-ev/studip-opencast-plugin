@@ -120,7 +120,7 @@ $visibility_text = [
                                 echo \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]);
                             } ?>
                             <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
-                                <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['identifier'], 'episode'=> $item]) ?>
+                                <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
                             </div>
                             <div class="button-group">
                                 <? echo $download_options[$item['id']]; ?>

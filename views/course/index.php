@@ -31,6 +31,7 @@ jQuery(function() {
 </script>
 
 <?
+if ($this->connectedSeries[0]['series_id']) :
 $current_user_id = $GLOBALS['auth']->auth['uid'];
 $lti_launch_data = OpencastLTI::generate_lti_launch_data(
     $current_user_id,
@@ -55,6 +56,8 @@ OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode
 });
 </script>
 <?
+endif;
+
 global $perm;
 $sidebar = Sidebar::get();
 
