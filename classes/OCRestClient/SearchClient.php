@@ -113,7 +113,6 @@ class SearchClient extends OCRestClient
     {
         $base = $this->base_url;
         $url = preg_replace('/\/search/', '', $base);
-        $url = str_replace('http://', 'https://', $url);
 
         return $url;
     }
