@@ -6,11 +6,11 @@ class AccessControl extends Migration
     function up()
     {
         DBManager::get()->exec("CREATE TABLE IF NOT EXISTS `oc_access_control` (
-            `id` TEXT NOT NULL ,
+            `id` VARCHAR(64) NOT NULL ,
             `type` ENUM('episode','series') NOT NULL ,
             `course_id` VARCHAR(32) NOT NULL ,
             `acl_id` INT NOT NULL,
-            PRIMARY KEY `acl_id` (`acl_id`)
+            PRIMARY KEY `PRIMARY` (`id`)
         )");
 
         $result = DBManager::get()->query("SELECT seminar_id, episode_id FROM `oc_seminar_episodes`
