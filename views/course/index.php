@@ -93,6 +93,31 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
         }
 
+        if ($coursevis == 'visible') {
+            $actions->addLink(
+                $_("Reiter verbergen"),
+                PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
+                new Icon('visibility-visible', 'clickable')
+            );
+        } else {
+            $actions->addLink(
+                $_("Reiter sichtbar machen"),
+                PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
+                new Icon('visibility-invisible', 'clickable')
+            );
+        }
+
+        if ($perm->have_perm('root')) {
+            $actions->addLink(
+                $can_schedule
+                    ? $_("Medienaufzeichnung verbieten")
+                    : $_("Medienaufzeichnung erlauben"),
+                PluginEngine::getLink('opencast/course/toggle_schedule/' . get_ticket()),
+                new Icon($can_schedule
+                    ? 'video'
+                    : 'video+decline', 'clickable')
+            );
+        }
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
@@ -100,38 +125,14 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             new Icon('tools', 'clickable')
         );
 
-        $actions->addLink(
-            $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
-            new Icon('group', 'clickable'),
-            [
-                'data-dialog' => 'width=550;height=500'
-            ]);
-    }
-
-    if ($coursevis == 'visible') {
-        $actions->addLink(
-            $_("Reiter verbergen"),
-            PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
-            new Icon('visibility-visible', 'clickable')
-        );
-    } else {
-        $actions->addLink(
-            $_("Reiter sichtbar machen"),
-            PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
-            new Icon('visibility-invisible', 'clickable')
-        );
-    }
-
-    if ($GLOBALS['perm']->have_perm('root')) {
-        $actions->addLink(
-            $can_schedule
-                ? $_("Medienaufzeichnung verbieten")
-                : $_("Medienaufzeichnung erlauben"),
-            PluginEngine::getLink('opencast/course/toggle_schedule/' . get_ticket()),
-            new Icon($can_schedule
-                ? 'video'
-                : 'video+decline', 'clickable')
-        );
+        if ($perm->have_perm('root')) {
+            $actions->addLink(
+                $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
+                new Icon('group', 'clickable'),
+                [
+                    'data-dialog' => 'width=550;height=500'
+                ]);
+        }
     }
 
     $sidebar->addWidget($actions);

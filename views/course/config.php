@@ -30,6 +30,8 @@
                 <? endforeach ?>
                 </select>
             </label>
+        <? else: ?>
+            <?= MessageBox::info($_('Es wurden in Opencast keine Serien gefunden.')) ?>
         <? endif;?>
     </fieldset>
 
