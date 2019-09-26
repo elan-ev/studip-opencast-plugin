@@ -12,10 +12,10 @@ class OCModel
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                WHERE rop.property_id IN (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id = ?
                 AND rop.state = 'on'");
 
-       $stmt->execute();
+       $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $resources;
     }
@@ -25,10 +25,10 @@ class OCModel
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
                 LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
-                WHERE rop.property_id = (SELECT property_id FROM resources_properties WHERE name = 'OCCA#".Configuration::instance()->get('capture_agent_attribute')."' )
+                WHERE rop.property_id = ?
                 AND rop.state = 'on'");
 
-       $stmt->execute();
+       $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $resources;
     }

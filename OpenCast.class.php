@@ -88,8 +88,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
-
-        $this->add_observers();
     }
 
     /**
@@ -351,12 +349,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
        return $metadata;
-    }
-
-    private function add_observers()
-    {
-        $change_capture_agent_name = new ResourceObjectAttributeChangeAction();
-        $change_capture_agent_name->add_as_observer('change.capture_agent_attribute');
     }
 
     public static function get_plugin_id()

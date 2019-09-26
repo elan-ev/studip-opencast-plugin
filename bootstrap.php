@@ -10,7 +10,6 @@ require_once 'vendor/trails/trails.php';
 /* OC plugin dependencies*/
 require_once 'classes/Configuration.php';
 require_once 'classes/ConfigurationAction.php';
-require_once 'classes/config_actions/ResourceObjectAttributeChangeAction.php';
 
 require_once 'classes/lti/OAuth.php';
 require_once 'classes/lti/AccessControlList.php';
