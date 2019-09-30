@@ -42,6 +42,7 @@ class RefreshScheduledEvents extends CronJob
         $stmt->execute(array());
 
         $scheduled_events  = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo 'Zu aktualisierende Events: ' . sizeof($scheduled_events) . "\n";
         if (!empty($scheduled_events)){
             foreach($scheduled_events as $se) {
                 $scheduler_client = SchedulerClient::getInstance();
