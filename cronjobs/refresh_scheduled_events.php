@@ -33,9 +33,12 @@ class RefreshScheduledEvents extends CronJob
     {
         require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
 
-        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
-                  LEFT JOIN oc_seminar_series USING (seminar_id)
-                  WHERE oc_seminar_series.schedule = 1");
+        $stmt = DBManager::get()->prepare("SELECT oc.*, oss.seminar_id
+            FROM oc_scheduled_recordings oc
+            LEFT JOIN oc_seminar_series oss USING (seminar_id)
+            JOIN termine t ON (termin_id = date_id)
+            WHERE oss.schedule = 1
+                AND t.date >= UNIX_TIMESTAMP()");
         $stmt->execute(array());
 
         $scheduled_events  = $stmt->fetchAll(PDO::FETCH_ASSOC);
