@@ -57,6 +57,7 @@ class OCRestClient
 
     function __construct($config)
     {
+        $this->config_id  = $config['config_id'];
         $this->base_url   = $config['service_url'];
         $this->username   = $config['service_user'];
         $this->password   = $config['service_password'];
@@ -65,12 +66,7 @@ class OCRestClient
 
     private function initCurl()
     {
-        if ($config['config_id'] == null){
-            $config['config_id'] = -1;
-        }
-
-        $this->config_id = $config['config_id'];
-        $precise_config = Configuration::instance($config['config_id']);
+        $precise_config = Configuration::instance($this->config_id);
 
         // setting up a curl-handler
         $this->ochandler = curl_init();

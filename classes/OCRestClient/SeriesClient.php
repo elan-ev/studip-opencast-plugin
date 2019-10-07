@@ -17,9 +17,6 @@ class SeriesClient extends OCRestClient
         }
     }
 
-
-
-
     /**
      *  getSeries() - retrieves seriesmetadata for a given series identifier from conntected Opencast-Matterhorn Core
      *

@@ -69,8 +69,8 @@ class OCCourseModel
 
     public function getEpisodes($force_reload = false)
     {
-        if ($this->getSeriesID()) {
-            $search_client = SearchClient::getInstance();
+        if ($this->getSeriesID()) {;
+            $search_client = SearchClient::create($this->getCourseID());
 
             $course = Course::find($this->getCourseID());
             $role = '';

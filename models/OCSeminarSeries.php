@@ -10,13 +10,28 @@ class OCSeminarSeries extends \SimpleORMap
         parent::configure($config);
     }
 
-    public static function getMissingSeries($course_id)
+    private static function checkSeries($course_id, $series_id)
     {
+        static $series = [];
+
         $series_client = \SeriesClient::create($course_id);
 
+        if (!isset($series[$series_id])) {
+
+            $series[$series_id] =
+                $series_client->getSeries($series_id)
+                ? true : false;
+        }
+
+        return $series[$series_id];
+    }
+
+    public static function getMissingSeries($course_id)
+    {
         $return = [];
+
         foreach(self::findBySeminar_id($course_id) as $series) {
-            if (!$series_client->getSeries($series['series_id'])) {
+            if (!self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }
         }
@@ -26,11 +41,10 @@ class OCSeminarSeries extends \SimpleORMap
 
     public static function getSeries($course_id)
     {
-        $series_client = \SeriesClient::create($course_id);
-
         $return = [];
+
         foreach(self::findBySeminar_id($course_id) as $series) {
-            if ($series_client->getSeries($series['series_id'])) {
+            if (self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }
         }

@@ -19,7 +19,7 @@ class OCSeriesModel
      */
     static function getSeriesFromOpencast($series)
     {
-        $sclient = new SeriesClient($series['config_id']);
+        $sclient = SeriesClient::create($series['seminar_id']);
         if ($oc_series = $sclient->getSeries($series['series_id'])) {
             return self::transformSeriesJSON($oc_series);
         }
@@ -128,13 +128,15 @@ class OCSeriesModel
      * @param string $courseID
      * @return array
      */
-    static function getSeriesDCs($courseID)
+    static function getSeriesDCs($course_id)
     {
-        $series = OCSeminarSeries::getSeries($courseID);
+        $series = OCSeminarSeries::getSeries($course_id);
         $ret = array();
 
         foreach ($series as $ser) {
-            if ($xml = SeriesClient::getInstance(OCConfig::getConfigIdForCourse($courseID))->getXML('/' . $ser['series_id'] . '.xml')) {
+            if ($xml = SeriesClient::create($course_id)
+                ->getXML('/' . $ser['series_id'] . '.xml')
+            ) {
                 $ret[] = $xml;
             }
         }

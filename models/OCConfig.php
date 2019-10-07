@@ -89,10 +89,10 @@ class OCConfig extends \SimpleORMap
                 $config = new self();
             }
 
-            $version = (int)$version;
+            $service_version = (int)$version;
 
             $config->setData(compact('config_id', 'service_url',
-                'service_user', 'service_password', 'version'));
+                'service_user', 'service_password', 'service_version'));
             return $config->store();
         } else {
             throw new \Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));

@@ -70,7 +70,7 @@ class ACLManagerClient extends OCRestClient
             $acls = $this->getJSON('/acl/acls.json');
         }
 
-        return $acls;
+        return $acls ?: [];
     }
 
     function getACLByName($name)

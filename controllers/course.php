@@ -444,7 +444,7 @@ class CourseController extends OpencastController
     function create_series_action()
     {
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-            $this->series_client = SeriesClient::getInstance();
+            $this->series_client = SeriesClient::create($this->course_id);
             if ($this->series_client->createSeriesForSeminar($this->course_id)) {
                 $this->flash['messages']['success'] = $this->_("Series wurde angelegt");
                 StudipLog::log('OC_CREATE_SERIES', $this->course_id);
