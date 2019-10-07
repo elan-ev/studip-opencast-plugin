@@ -9,8 +9,7 @@ class AccessControl extends Migration
             `id` VARCHAR(64) NOT NULL ,
             `type` ENUM('episode','series') NOT NULL ,
             `course_id` VARCHAR(32) NOT NULL ,
-            `acl_id` INT NOT NULL,
-            PRIMARY KEY `PRIMARY` (`id`)
+            `acl_id` INT NOT NULL
         )");
 
         $result = DBManager::get()->query("SELECT seminar_id, episode_id FROM `oc_seminar_episodes`

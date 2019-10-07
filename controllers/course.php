@@ -137,15 +137,21 @@ class CourseController extends OpencastController
         $reload = true;
         $this->states = false;
 
-        $this->connectedSeries = OCSeminarSeries::findBySeminar_id($this->course_id);
+
+        foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
+            PageLayout::postError(sprintf($this->_(
+                'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
+                'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
+                'wenden Sie sich an einen Systemadministrator.'
+            ), $series['series_id']));
+        }
+
+        $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
 
         if (
             $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
             && !empty($this->connectedSeries)
         ) {
-            OpencastLTI::updateEpisodeVisibility($this->course_id);
-            OpencastLTI::setAcls($this->course_id);
-
             // Config-Dialog
 
             foreach ($this->connectedSeries as $key => $series) {
@@ -155,18 +161,7 @@ class CourseController extends OpencastController
                 }
 
                 $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
-
-                if (!empty($oc_series)) {
-                    $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                } else {
-                    PageLayout::postError(sprintf($this->_(
-                        'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
-                        'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
-                        'wenden Sie sich an einen Systemadministrator.'
-                    ), $series['series_id']));
-
-                    unset($this->connectedSeries[$key]);
-                }
+                $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
             }
 
             if ($perm->have_perm('root')) {
@@ -184,6 +179,10 @@ class CourseController extends OpencastController
             }
         }
 
+        if (!empty($this->connectedSeries)) {
+            OpencastLTI::updateEpisodeVisibility($this->course_id);
+            OpencastLTI::setAcls($this->course_id);
+        }
 
         Navigation::activateItem('course/opencast/overview');
         try {
@@ -328,7 +327,7 @@ class CourseController extends OpencastController
 
         $this->set_title($this->_("Opencast Aufzeichnungen planen"));
 
-        $this->cseries = OCSeminarSeries::findBySeminar_id($this->course_id);
+        $this->cseries = OCSeminarSeries::getSeries($this->course_id);
 
         $course = new Seminar($this->course_id);
 
@@ -495,7 +494,7 @@ class CourseController extends OpencastController
      */
     function upload_action()
     {
-        $this->connectedSeries = OCSeminarSeries::findBySeminar_id($this->course_id);
+        $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
 
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');

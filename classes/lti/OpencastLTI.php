@@ -32,7 +32,7 @@ class OpencastLTI
     public static function updateEpisodeVisibility($course_id)
     {
         // check currently set ACLs to update status in Stud.IP if necessary
-        $series        = reset(OCSeminarSeries::findBySeminar_id($course_id));
+        $series        = reset(OCSeminarSeries::getSeries($course_id));
         $search_client = \SearchClient::create($course_id);
         $api_client    = \ApiEventsClient::create($course_id);
 
@@ -116,7 +116,7 @@ class OpencastLTI
 
     public static function generate_acl_mapping_for_course($course_id)
     {
-        $series_list = OCSeminarSeries::findBySeminar_id($course_id);
+        $series_list = OCSeminarSeries::getSeries($course_id);
 
         if (!$series_list) {
             return false;
@@ -303,7 +303,7 @@ class OpencastLTI
         // TODO: use correct config!!!
         $acl_manager = \ACLManagerClient::getInstance();
 
-        $acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
+        //$acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
         /*foreach ($acls_to_remove as $to_remove) {
             if ($acl_manager->removeACL($to_remove['acl_id'])) {
                 OCAccessControl::remove_acl_from_db($to_remove['acl_id']);

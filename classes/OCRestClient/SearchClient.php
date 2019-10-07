@@ -34,14 +34,16 @@ class SearchClient extends OCRestClient
 
         if ($refresh || $episodes === false || $perm->have_perm('dozent')) {
             $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
+            $x = "search-results";
 
-            if ($search = $this->getJSON($service_url)) {
-                $x = "search-results";
-                $episodes = $search->$x->result;
+            if ($search = $this->getJSON($service_url)
+                && $episodes = $search->$x->result
+            ) {
                 $cache->write($cache_key, serialize($episodes), 7200);
-
                 return $episodes;
-            } else return [];
+            } else {
+                return [];
+            }
         } else {
             return unserialize($episodes);
         }

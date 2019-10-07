@@ -96,12 +96,14 @@ class OCSeriesModel
      *
      * @return type
      */
-    static function setSeriesforCourse($courseID, $config_id, $seriesID, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    static function setSeriesforCourse($course_id, $config_id, $series_id, $visibility = 'visible', $schedule = 0, $mkdate = 0)
     {
+        self::removeSeriesforCourse($course_id);
+
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
-        return $stmt->execute(array($config_id, $seriesID, $courseID, $visibility, $schedule, $mkdate));
+        return $stmt->execute(array($config_id, $series_id, $course_id, $visibility, $schedule, $mkdate));
     }
 
     /**
@@ -113,14 +115,10 @@ class OCSeriesModel
      */
     static function removeSeriesforCourse($course_id)
     {
-        $qepisodes =  DBManager::get()->prepare("DELETE FROM oc_seminar_episodes
-            WHERE seminar_id = ?");
-
-        $qepisodes->execute([$course_id]);
-
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
             WHERE seminar_id = ?");
+
         return $stmt->execute(array($course_id));
     }
 
@@ -132,7 +130,7 @@ class OCSeriesModel
      */
     static function getSeriesDCs($courseID)
     {
-        $series = OCSeminarSeries::findBySeminar_id($courseID);
+        $series = OCSeminarSeries::getSeries($courseID);
         $ret = array();
 
         foreach ($series as $ser) {

@@ -137,7 +137,7 @@ class OCModel
     static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
     {
         // 1st: retrieve series_id
-        $series = OCSeminarSeries::findBySeminar_id($course_id);
+        $series = OCSeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -173,7 +173,7 @@ class OCModel
 
     static function checkScheduledRecording($course_id, $resource_id, $date_id)
     {
-        $series = OCSeminarSeries::findBySeminar_id($course_id);
+        $series = OCSeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -318,7 +318,7 @@ class OCModel
          }
 
 
-        $series = OCSeminarSeries::findBySeminar_id($course_id);
+        $series = OCSeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -441,7 +441,7 @@ class OCModel
      */
     static function getEntry($course_id, $episode_id)
     {
-        $series = reset(OCSeminarSeries::findBySeminar_id($course_id));
+        $series = reset(OCSeminarSeries::getSeries($course_id));
 
         return OCSeminarEpisodes::findOneBySQL(
             'series_id = ? AND episode_id = ?',

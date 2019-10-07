@@ -41,7 +41,7 @@ class AccessControlList
     public function as_xml()
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            . '<acl xmlns="http://org.opencastproject.security">' 
+            . '<acl xmlns="http://org.opencastproject.security">'
             . implode('', $this->entities) . '</acl>';
     }
 
@@ -89,7 +89,11 @@ class AccessControlEntity
 
     public function as_xml()
     {
-        return '<ace><role>' . $this->role . '</role><action>' . $this->action . '</action><allow>' . $this->allow() . '</allow></ace>';
+        if ($this->allow) {
+            return '<ace><role>' . $this->role . '</role><action>' . $this->action . '</action><allow>' . $this->allow() . '</allow></ace>';
+        }
+
+        return '';
     }
 
     public function __toString()

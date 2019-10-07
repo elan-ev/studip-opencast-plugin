@@ -23,7 +23,7 @@ class OCCourseModel
 
         $this->setCourseID($course_id);
         // take care of connected series
-        $cseries = OCSeminarSeries::findBySeminar_id($this->getCourseID());
+        $cseries = OCSeminarSeries::getSeries($this->getCourseID());
 
         if (!empty($cseries)) {
             $current_seriesdata = array_pop($cseries);

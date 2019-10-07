@@ -29,8 +29,8 @@ class ACLManagerClient extends OCRestClient
         ];
 
         if ($acl = $this->getACLByName($acl->get_name())) {
-            return $acl;
-            // $this->removeACL($acl->id);
+            // return $acl;
+            $this->removeACL($acl->id);
         }
 
         return $this->postJSON('/acl', $data);
