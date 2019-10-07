@@ -36,6 +36,7 @@ require_once 'classes/OCRestClient/OCRestClient.php';
 require_once 'classes/OCRestClient/ACLManagerClient.php';
 require_once 'classes/OCRestClient/ArchiveClient.php';
 require_once 'classes/OCRestClient/ApiEventsClient.php';
+require_once 'classes/OCRestClient/ApiSeriesClient.php';
 require_once 'classes/OCRestClient/ApiWorkflowsClient.php';
 require_once 'classes/OCRestClient/CaptureAgentAdminClient.php';
 require_once 'classes/OCRestClient/IngestClient.php';

@@ -8,6 +8,7 @@ class Constants {
         'acl-manager',          // alles admin-node
         'archive',
         'apievents',
+        'apiseries',
         'apiworkflows',
         'capture-admin',
         'ingest',

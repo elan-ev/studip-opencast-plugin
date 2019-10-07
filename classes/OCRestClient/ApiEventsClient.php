@@ -5,7 +5,7 @@ use Opencast\Models\OCConfig;
 class ApiEventsClient extends OCRestClient
 {
     static $me;
-    public $serviceName = "Api";
+    public $serviceName = "ApiEvents";
 
     function __construct($config_id = 1)
     {
