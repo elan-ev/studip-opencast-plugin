@@ -126,7 +126,7 @@ class AdminController extends OpencastController
             echo '<b>' . $ser->title . '</b><br/>';
             var_dump($apiseries->putJSON('/'. $series_id .'/acl', [
                 'acl'      => $acl,
-                'override' => 1
+                'override' => 'true'
             ]));
         }
 
