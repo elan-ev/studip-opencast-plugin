@@ -45,9 +45,8 @@
 
 <script type="text/javascript">
     jQuery("#series-select").select2({
-        disable_search_threshold: 2,
         max_selected_options: 1,
-        no_results_text: "Oops, nothing found!",
-        width: "500px"
+        width: "500px",
+        dropdownParent: $('#select-series')
     });
 </script>
