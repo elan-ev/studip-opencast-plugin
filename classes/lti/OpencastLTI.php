@@ -231,13 +231,11 @@ class OpencastLTI
         $base_acl->add_ace(new \AccessControlEntity('ROLE_ADMIN', 'write', true));
         $base_acl->add_ace(new \AccessControlEntity($role_i, 'read', true));
         $base_acl->add_ace(new \AccessControlEntity($role_i, 'write', true));
-        // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
-        // $base_acl->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
         $acl_visible = new \AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
         $acl_visible->add_ace(new \AccessControlEntity($role_l, 'read', true));
-        $acl_visible->add_ace(new \AccessControlEntity($role_l, 'write', false));
+        // $acl_visible->add_ace(new \AccessControlEntity($role_l, 'write', false));
 
         $acl_invisible = new \AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
@@ -245,9 +243,9 @@ class OpencastLTI
         $acl_free = new \AccessControlList(static::generate_acl_name($course_id, 'free'));
         $acl_free->add_acl($base_acl);
         $acl_free->add_ace(new \AccessControlEntity($role_l, 'read', true));
-        $acl_free->add_ace(new \AccessControlEntity($role_l, 'write', false));
+        // $acl_free->add_ace(new \AccessControlEntity($role_l, 'write', false));
         $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
-        $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
+        // $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
 
         return [

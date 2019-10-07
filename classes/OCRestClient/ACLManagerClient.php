@@ -28,9 +28,13 @@ class ACLManagerClient extends OCRestClient
             'acl'  => $acl->as_xml()
         ];
 
-        if ($acl = $this->getACLByName($acl->get_name())) {
-            // return $acl;
-            $this->removeACL($acl->id);
+        if ($oc_acl = $this->getACLByName($acl->get_name())) {
+            // check, if acls differ and only then remove the acl and set a new one
+            if (sizeof($oc_acl->acl->ace) != sizeof($acl->get_entities())) {
+                $this->removeACL($oc_acl->id);
+            } else {
+                return $oc_acl;
+            }
         }
 
         return $this->postJSON('/acl', $data);

@@ -28,7 +28,11 @@ class AccessControlList
                 return true;
             }
         }
-        $this->entities[] = $to_add;
+
+        // skip entities with allowed = false
+        if ($to_add->get_allow()) {
+            $this->entities[] = $to_add;
+        }
     }
 
     public function add_acl(AccessControlList $to_add)
