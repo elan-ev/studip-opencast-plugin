@@ -6,7 +6,13 @@
             <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){?>
                 <label title="Name der Einstellung: <?= $name ?>">
                     <?= $data['description'] ?>
-                    <input type="<?= $data['type'] ?>" value="<?= $data['value'] ?>" name="precise_config[-1][<?= $name ?>]">
+                    <? if ($name == 'tos') :  ?>
+                        <textarea class="wysiwyg" name="precise_config[-1][<?= $name ?>]"
+                            rows="8" cols="80"
+                        ><?= $data['value'] ?></textarea>
+                    <? else : ?>
+                        <input type="<?= $data['type'] ?>" value="<?= $data['value'] ?>" name="precise_config[-1][<?= $name ?>]">
+                    <? endif ?>
                 </label>
             <? } ?>
             <?= Button::createAccept($_('Übernehmen')) ?>
@@ -68,11 +74,21 @@
             <summary>Weitere Einstellungen</summary>
             <? $special_config = Configuration::instance($config_id)->get_entries_for_display(); ?>
             <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){
-                if(in_array($name,['number_of_configs'])){continue;}
+                if (in_array($name,['number_of_configs'])) continue;
                 $special_config_exists = isset($special_config[$name]); ?>
                 <label title="Name der Einstellung: <?= $name ?>">
-                    <?= ($special_config_exists?$special_config[$name]['description']:$data['description']) ?>
-                    <input type="<?= ($special_config_exists?$special_config[$name]['type']:$data['type']) ?>" value="<?= ($special_config_exists?$special_config[$name]['value']:$data['value']) ?>" name="config[<?= $config_id ?>][precise][<?= $name ?>]">
+                    <?= ($special_config_exists ? $special_config[$name]['description'] : $data['description']) ?>
+
+                    <? if ($name == 'tos') :  ?>
+                        <textarea class="wysiwyg" name="config[<?= $config_id ?>][precise][<?= $name ?>]"
+                            rows="8" cols="80"
+                        ><?= ($special_config_exists ? $special_config[$name]['value'] : $data['value']) ?></textarea>
+                    <? else : ?>
+                        <input type="<?= ($special_config_exists ? $special_config[$name]['type'] : $data['type']) ?>"
+                            value="<?= ($special_config_exists ? $special_config[$name]['value'] : $data['value']) ?>"
+                            name="config[<?= $config_id ?>][precise][<?= $name ?>]"
+                        >
+                    <? endif ?>
                 </label>
             <? } ?>
         </details>
