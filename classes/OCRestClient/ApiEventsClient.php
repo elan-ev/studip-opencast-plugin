@@ -82,6 +82,8 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        return 'visible';
+        return Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
     }
 }
