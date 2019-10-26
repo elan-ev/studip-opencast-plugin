@@ -29,7 +29,7 @@ class AddEpisodeVisibilityConfig extends Migration
     function down()
     {
         //remove config
-        DBManager::get()->query("DELETE FROM config WHRE field = 'OPENCAST_HIDE_EPISODES'");
+        DBManager::get()->query("DELETE FROM config WHERE field = 'OPENCAST_HIDE_EPISODES'");
     }
 
 }
