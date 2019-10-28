@@ -16,6 +16,8 @@ class OCConfig extends \SimpleORMap
             'on_delete'         => 'delete'
         ];
 
+        $config['i18n_fields']['tos'] = true;
+
         parent::configure($config);
     }
 

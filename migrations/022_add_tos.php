@@ -6,10 +6,6 @@ class AddTos extends Migration
     {
         $db = DBManager::get();
 
-        DBManager::get()->query("INSERT INTO `oc_config_precise`(`name`, `description`, `value`, `for_config`) VALUES
-            ('tos', 'Datenschutztext', '', -1)
-        ");
-
         $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
                               VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
         $stmt->execute([
@@ -20,6 +16,8 @@ class AddTos extends Migration
             'type'        => 'boolean',
             'value'       => false
         ]);
+
+        $db->exec("ALTER TABLE oc_config ADD tos TEXT NULL");
 
         $db->exec("CREATE TABLE IF NOT EXISTS `oc_tos` (
             `seminar_id` varchar(32) NOT NULL,
@@ -32,10 +30,11 @@ class AddTos extends Migration
 
     function down()
     {
-        //remove precise config
-        DBManager::get()->query("DELETE FROM oc_config_precise WHERE name='tos'");
-        DBManager::get()->query("DELETE FROM config WHERE field = 'OPENCAST_SHOW_TOS'");
-        DBManager::get()->query('DROP TABLE IF EXISTS `oc_tos`');
+        $db = DBManager::get();
+
+        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_SHOW_TOS'");
+        $db->exec('DROP TABLE IF EXISTS `oc_tos`');
+        $db->exec('ALTER TABLE oc_config DROP IF EXISTS tos');
     }
 
 }
