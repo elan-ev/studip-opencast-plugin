@@ -323,7 +323,7 @@ class CourseController extends OpencastController
             return $this->redirect('course/index');
         }
 
-        $this->set_title($this->_("Opencast -Zugriff verweigert"));
+        $this->set_title($this->_("Opencast - Zugriff verweigert"));
         Navigation::activateItem('course/opencast');
     }
 
