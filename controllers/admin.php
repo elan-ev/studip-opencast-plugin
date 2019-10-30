@@ -497,14 +497,17 @@ class AdminController extends OpencastController
 
     function precise_update_action()
     {
-        $config = reset(OCConfig::findByConfig_id(1));
-        $config->tos = Request::i18n('tos');
-        $config->store();
-
         foreach (Request::getArray('precise_config') as $database_id => $config) {
             foreach ($config as $name => $value){
                 Configuration::instance($database_id)[$name] = $value;
             }
+        }
+
+        $config = reset(OCConfig::findByConfig_id(1));
+
+        if ($config) {
+            $config->tos = Request::i18n('tos');
+            $config->store();
         }
 
         $this->redirect('admin/config/');
