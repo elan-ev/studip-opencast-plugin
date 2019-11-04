@@ -201,7 +201,6 @@ class CourseController extends OpencastController
 
         if (!empty($this->connectedSeries)) {
             OpencastLTI::updateEpisodeVisibility($this->course_id);
-            OpencastLTI::setAcls($this->course_id);
         }
 
         Navigation::activateItem('course/opencast/overview');

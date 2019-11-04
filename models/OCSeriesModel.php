@@ -103,7 +103,9 @@ class OCSeriesModel
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
-        return $stmt->execute(array($config_id, $series_id, $course_id, $visibility, $schedule, $mkdate));
+        $stmt->execute(array($config_id, $series_id, $course_id, $visibility, $schedule, $mkdate));
+
+        OpencastLTI::setAcls($this->course_id);
     }
 
     /**
