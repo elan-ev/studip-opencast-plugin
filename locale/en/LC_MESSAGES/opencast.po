@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-07 16:44+0200\n"
+"POT-Creation-Date: 2019-10-28 14:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -912,3 +912,61 @@ msgstr "Current Workflow"
 
 msgid "Datei"
 msgstr "File"
+
+#, php-format
+msgid ""
+"Die verknüpfte Serie mit der ID \"%s\" konnte nicht in Opencast gefunden "
+"werden! Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder "
+"wenden Sie sich an einen Systemadministrator."
+msgstr ""
+
+msgid "Opencast - Datenschutzrichtlinien"
+msgstr "Opencast - Privacy policy"
+
+msgid "Opencast - Zugriff verweigert"
+msgstr "Opencast - Access denied"
+
+#, php-format
+msgid ""
+"Sie haben mehr als einmal dieselbe URL für eine Opencast Installation "
+"angegeben.\n"
+"                                        Dies ist jedoch nicht gestattet. "
+"Bitte korrigieren Sie Ihre Eingaben. URL: \"%s\""
+msgstr ""
+"You have entered the same URL for Opencast more than once, this is not "
+"allowed.\n"
+"Please correct your settings. URL: \"%s\""
+
+msgid ""
+"Der Zugriff auf die Videos dieser Veranstaltung wurde noch nicht freigegeben."
+msgstr "Access to this seminars videos has not yet been granted."
+
+msgid "Datenschutzeinwilligung zurückziehen"
+msgstr "Withdraw privacy consent"
+
+msgid "Datenschutzrichtlinien"
+msgstr "Privacy policy"
+
+msgid "Datenschutzrichtlinien akzeptieren"
+msgstr "Accept privacy policy"
+
+msgid "Laden Sie nur Medien hoch, an denen Sie das Copyright besitzen!"
+msgstr "Only upload media where you are the holder of all copyrights!"
+
+msgid ""
+"Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich "
+"geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese "
+"einen geringen Umfang des Gesamtwerkes ausmachen."
+msgstr ""
+"According to §60 UrhG, at most 5 minute long sequences from copyright  "
+"protected movies or music are allowed to be uploaded, if they are only  a "
+"small part of the complete work."
+
+msgid ""
+"Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige "
+"Ankündigung umgehend gelöscht."
+msgstr ""
+"Any media with copyright infringements are deleted without further notice."
+
+msgid "Es wurden in Opencast keine Serien gefunden."
+msgstr "No series have been found in Opencast."

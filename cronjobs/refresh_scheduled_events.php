@@ -33,7 +33,7 @@ class RefreshScheduledEvents extends CronJob
     {
         require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
 
-        $stmt = DBManager::get()->prepare("SELECT oc.*, oss.seminar_id
+        $stmt = DBManager::get()->prepare("SELECT oc.*, oss.seminar_id, oss.series_id
             FROM oc_scheduled_recordings oc
             LEFT JOIN oc_seminar_series oss USING (seminar_id)
             JOIN termine t ON (termin_id = date_id)
@@ -43,10 +43,19 @@ class RefreshScheduledEvents extends CronJob
 
         $scheduled_events  = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo 'Zu aktualisierende Events: ' . sizeof($scheduled_events) . "\n";
-        if (!empty($scheduled_events)){
-            foreach($scheduled_events as $se) {
-                $scheduler_client = SchedulerClient::getInstance();
+
+        // TODO: consider multiple opencast installations
+        $api_client = ApiEventsClient::getInstance(1);
+        $events = $api_client->getAllScheduledEvents($se['series_id']);
+        print_r($events);
+
+        if (!empty($scheduled_events)) {
+            foreach ($scheduled_events as $se) {
+                $scheduler_client = SchedulerClient::create($se['seminar_id']);
                 $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
+
+                unset($events[$se['event_id']]);
+
                 $course = Course::find($se['seminar_id']);
                 $date = new SingleDate($se['date_id']);
                 echo sprintf(
@@ -54,6 +63,12 @@ class RefreshScheduledEvents extends CronJob
                     $date->getDatesExport(), $course->name
                 );
             }
+        }
+
+        // the remaining events have no association in Stud.IP and need to be deleted
+        foreach ($events as $event) {
+            $scheduler_client = SchedulerClient::getInstance(1);
+            $scheduler_client->deleteEvent($event->identifier);
         }
 
         return true;

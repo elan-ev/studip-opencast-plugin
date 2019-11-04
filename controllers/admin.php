@@ -201,10 +201,11 @@ class AdminController extends OpencastController
         foreach (Request::getArray('config') as $config_id => $config) {
             //set precise settings if any
             $precise_config = $config['precise'];
-            foreach($precise_config as $name=>$value){
-                if(Configuration::instance()[$name] != $value){
-                    Configuration::instance($config_id)->set($name,$value,Configuration::instance()->get_description_for($name));
-                }else{
+
+            foreach($precise_config as $name => $value){
+                if (Configuration::instance()[$name] != $value){
+                    Configuration::instance($config_id)->set($name, $value, Configuration::instance()->get_description_for($name));
+                } else {
                     Configuration::instance($config_id)->remove($name);
                 }
             }
@@ -523,11 +524,19 @@ class AdminController extends OpencastController
         $this->memory_space = OCJobManager::save_dir_size();
     }
 
-    function precise_update_action(){
-        foreach (Request::getArray('precise_config') as $database_id => $config){
-            foreach ($config as $name=>$value){
+    function precise_update_action()
+    {
+        foreach (Request::getArray('precise_config') as $database_id => $config) {
+            foreach ($config as $name => $value){
                 Configuration::instance($database_id)[$name] = $value;
             }
+        }
+
+        $config = reset(OCConfig::findByConfig_id(1));
+
+        if ($config) {
+            $config->tos = Request::i18n('tos');
+            $config->store();
         }
 
         $this->redirect('admin/config/');

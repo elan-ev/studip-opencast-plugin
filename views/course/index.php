@@ -107,6 +107,12 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
+        $actions->addLink(
+            $_("Datenschutzeinwilligung zurückziehen"),
+            PluginEngine::getLink('opencast/course/withdraw_tos/' . get_ticket()),
+            new Icon('decline', 'clickable')
+        );
+
         if ($perm->have_perm('root')) {
             $actions->addLink(
                 $can_schedule

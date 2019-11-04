@@ -85,7 +85,7 @@ class SchedulerClient extends OCRestClient
         $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
         $event_id = $event_data[0]['event_id'];
 
-        $result = $this->deleteJSON('/'. $event_id, true);
+        $result = $this->deleteEvent($event_id);
 
         // remove scheduled event from studip even though it isn't available on opencast
         if (in_array($result[1], array(200, 204, 404))) {
@@ -95,6 +95,11 @@ class SchedulerClient extends OCRestClient
         } else {
             return false;
         }
+    }
+
+    public function deleteEvent($event_id)
+    {
+         return $this->deleteJSON('/'. $event_id, true);
     }
 
     /**

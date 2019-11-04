@@ -39,6 +39,25 @@ class ApiEventsClient extends OCRestClient
         return $acl[$series_id][$episode_id];
     }
 
+    public function getAllScheduledEvents()
+    {
+        static $events;
+
+        if (!$events) {
+            $params = [
+                'filter'  => 'status:EVENTS.EVENTS.STATUS.SCHEDULED',
+            ];
+
+            $data = $this->getJSON('?' . http_build_query($params));
+
+            if (is_array($data)) foreach ($data as $event) {
+                $events[$event->identifier] = $event;
+            }
+        }
+
+        return $events;
+    }
+
     public function getVisibilityForEpisode($series_id, $episode_id, $course_id = null)
     {
         if (is_null($course_id)) {
@@ -82,6 +101,8 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        return 'visible';
+        return Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
     }
 }

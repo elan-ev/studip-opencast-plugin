@@ -3,12 +3,21 @@
     <fieldset class="conf-form-field collapsable collapsed">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
 
-            <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){?>
+            <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data) : ?>
                 <label title="Name der Einstellung: <?= $name ?>">
                     <?= $data['description'] ?>
                     <input type="<?= $data['type'] ?>" value="<?= $data['value'] ?>" name="precise_config[-1][<?= $name ?>]">
                 </label>
-            <? } ?>
+            <? endforeach ?>
+
+            <? if (Config::get()->OPENCAST_SHOW_TOS) : ?>
+            <?= I18N::textarea("tos", new I18NString($config[1]['tos'], null, [
+                    'object_id' => 1,
+                    'table' => 'oc_config',
+                    'field' => 'tos'
+                ]), ['class' => '']) ?>
+            <? endif ?>
+
             <?= Button::createAccept($_('Übernehmen')) ?>
 
             <label>
@@ -67,12 +76,16 @@
         <details>
             <summary>Weitere Einstellungen</summary>
             <? $special_config = Configuration::instance($config_id)->get_entries_for_display(); ?>
-            <? foreach (Configuration::instance()->get_entries_for_display() as $name=>$data){
-                if(in_array($name,['number_of_configs'])){continue;}
+            <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data){
+                if (in_array($name, ['number_of_configs'])) continue;
                 $special_config_exists = isset($special_config[$name]); ?>
                 <label title="Name der Einstellung: <?= $name ?>">
-                    <?= ($special_config_exists?$special_config[$name]['description']:$data['description']) ?>
-                    <input type="<?= ($special_config_exists?$special_config[$name]['type']:$data['type']) ?>" value="<?= ($special_config_exists?$special_config[$name]['value']:$data['value']) ?>" name="config[<?= $config_id ?>][precise][<?= $name ?>]">
+                    <?= ($special_config_exists ? $special_config[$name]['description'] : $data['description']) ?>
+
+                    <input type="<?= ($special_config_exists ? $special_config[$name]['type'] : $data['type']) ?>"
+                        value="<?= ($special_config_exists ? $special_config[$name]['value'] : $data['value']) ?>"
+                        name="config[<?= $config_id ?>][precise][<?= $name ?>]"
+                    >
                 </label>
             <? } ?>
         </details>

@@ -5,6 +5,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCTos;
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LTIResourceLink;
 
@@ -119,6 +120,25 @@ class CourseController extends OpencastController
                 'verify_peer_name' => false,
             ],
         ]);
+
+        // check, if current user is lecturer, force tos if so
+        if (Config::get()->OPENCAST_SHOW_TOS
+            && !$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+            && $action != 'tos' && $action != 'access_denied' && $action != 'accept_tos') {
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+                if (empty(OCTos::findBySQL('user_id = ? AND seminar_id = ?', [
+                    $GLOBALS['user']->id, $this->course_id
+                ]))) {
+                    $this->redirect('course/tos');
+                }
+            } else {
+                if (empty(OCTos::findBySQL('seminar_id = ?', [
+                    $this->course_id
+                ]))) {
+                    $this->redirect('course/access_denied');
+                }
+            }
+        }
     }
 
     /**
@@ -242,6 +262,69 @@ class CourseController extends OpencastController
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    function tos_action()
+    {
+        if (!Config::get()->OPENCAST_SHOW_TOS
+            || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            return $this->redirect('course/index');
+        }
+
+        $this->set_title($this->_("Opencast - Datenschutzrichtlinien"));
+        Navigation::activateItem('course/opencast');
+
+        $this->config = OCConfig::find(1);
+    }
+
+    function accept_tos_action()
+    {
+        if (!Config::get()->OPENCAST_SHOW_TOS
+            || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            return $this->redirect('course/index');
+        }
+
+        if (empty(OCTos::findBySQL('user_id = ? AND seminar_id = ?', [
+            $GLOBALS['user']->id, $this->course_id
+        ]))) {
+            $tos = new OCTos();
+
+            $tos->setData([
+                'user_id'    => $GLOBALS['user']->id,
+                'seminar_id' => $this->course_id
+            ]);
+
+            $tos->store();
+        }
+
+        $this->redirect('course/index');
+    }
+
+    function withdraw_tos_action()
+    {
+        if (!Config::get()->OPENCAST_SHOW_TOS
+            || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            return $this->redirect('course/index');
+        }
+
+        OCTos::deleteBySQL('seminar_id = ?', [
+            $this->course_id
+        ]);
+
+        $this->redirect('course/index');
+    }
+
+    function access_denied_action()
+    {
+        if (!Config::get()->OPENCAST_SHOW_TOS) {
+            return $this->redirect('course/index');
+        }
+
+        $this->set_title($this->_("Opencast - Zugriff verweigert"));
+        Navigation::activateItem('course/opencast');
     }
 
     function config_action()
