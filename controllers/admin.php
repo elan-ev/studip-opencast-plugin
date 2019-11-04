@@ -95,6 +95,8 @@ class AdminController extends OpencastController
 
     public function clear_series_action()
     {
+        return;
+
         set_time_limit(7200);
 
         if (!$GLOBALS['perm']->have_perm('root')) {
@@ -137,6 +139,33 @@ class AdminController extends OpencastController
             var_dump($seminar_id);
             var_dump(OpencastLTI::setAcls($seminar_id));
         }
+        die;
+    }
+
+    public function world_series_action()
+    {
+        return;
+
+        set_time_limit(7200);
+
+        if (!$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException();
+        }
+
+        $api         = ApiWorkflowsClient::getInstance(1);
+        $api_events  = ApiEventsClient::getInstance(1);
+
+        $fd = fopen($filename = __DIR__ . '/episodes.txt', 'r');
+
+        while ($episode_id = fgets($fd)) {
+            $episode_id = str_replace("\n", '', $episode_id);
+            echo 'Verarbeite ' . $episode_id ."...\n";
+            $api_events->postJson('/'. $episode_id . '/acl/read', ['role' => 'ROLE_ANONYMOUS']);
+            $api->republish($episode_id);
+        }
+
+        fclose($fd);
+
         die;
     }
 
