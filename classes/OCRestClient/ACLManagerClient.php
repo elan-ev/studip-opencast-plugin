@@ -51,11 +51,9 @@ class ACLManagerClient extends OCRestClient
     {
         $data = [];
 
-        if ($acl_id) {
-            $data = [
-                'aclId' => $acl_id
-            ];
-        }
+        $data = [
+            'aclId' => $acl_id
+        ];
 
         $result = $this->postJSON('/apply/' . $type . '/' . $id, $data, true);
 

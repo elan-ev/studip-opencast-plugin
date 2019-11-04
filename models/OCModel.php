@@ -415,7 +415,7 @@ class OCModel
         // Remote
         if ($visibility == 'visible') {
             $acl_manager = ACLManagerClient::getInstance($config_id);
-            $acl_manager->applyACLto('episode', $episode_id);
+            $acl_manager->applyACLto('episode', $episode_id, '');
         } else {
             OpencastLTI::setAcls($course_id);
         }
