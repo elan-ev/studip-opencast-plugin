@@ -31,6 +31,11 @@ class RefreshScheduledEvents extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
+        // only run this cronjob, if the TOS-system is activated
+        if (!Config::get()->OPENCAST_SHOW_TOS) {
+            return;
+        }
+
         require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
 
         $stmt = DBManager::get()->prepare("SELECT oc.*, oss.seminar_id, oss.series_id
@@ -47,7 +52,6 @@ class RefreshScheduledEvents extends CronJob
         // TODO: consider multiple opencast installations
         $api_client = ApiEventsClient::getInstance(1);
         $events = $api_client->getAllScheduledEvents($se['series_id']);
-        print_r($events);
 
         if (!empty($scheduled_events)) {
             foreach ($scheduled_events as $se) {
