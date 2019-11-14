@@ -3,7 +3,7 @@
         <legend><?= $_('Datenschutzrichtlinien') ?></legend>
 
         <p>
-            <?= htmlReady($config->tos) ?>
+            <?= formatReady($config->tos) ?>
         </p>
     </fieldset>
     <footer>

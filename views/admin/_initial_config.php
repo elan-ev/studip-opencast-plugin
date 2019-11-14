@@ -15,7 +15,7 @@
                     'object_id' => 1,
                     'table' => 'oc_config',
                     'field' => 'tos'
-                ]), ['class' => '']) ?>
+                ]), ['class' => 'add_toolbar wysiwyg']) ?>
             <? endif ?>
 
             <?= Button::createAccept($_('Übernehmen')) ?>

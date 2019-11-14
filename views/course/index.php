@@ -107,11 +107,13 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
-        $actions->addLink(
-            $_("Datenschutzeinwilligung zurückziehen"),
-            PluginEngine::getLink('opencast/course/withdraw_tos/' . get_ticket()),
-            new Icon('decline', 'clickable')
-        );
+        if (Config::get()->OPENCAST_SHOW_TOS && !$perm->have_perm('root')) {
+            $actions->addLink(
+                $_("Datenschutzeinwilligung zurückziehen"),
+                PluginEngine::getLink('opencast/course/withdraw_tos/' . get_ticket()),
+                new Icon('decline', 'clickable')
+            );
+        }
 
         if ($perm->have_perm('root')) {
             $actions->addLink(
