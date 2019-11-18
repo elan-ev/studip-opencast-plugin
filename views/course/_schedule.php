@@ -14,7 +14,11 @@
     <tr>
         <th></th>
         <th><?= $_('Termin') ?></th>
+
+        <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
         <th><?= $_('Aufzeichnungszeitraum') ?></th>
+        <? endif ?>
+
         <th><?= $_('Titel') ?></th>
         <th><?= $_('Status') ?></th>
         <th><?= $_('Aktionen') ?></th>
@@ -37,22 +41,24 @@
             <?= $date->getDatesHTML() ?>
         </td>
 
-        <? if ($scheduled) : ?>
-        <td class="oc-schedule-slider"
-            data-range-start="<?= (date('G', $date->date) * 60 + date('i', $date->date)) ?>"
-            data-range-end="<?= (date('G', $date->end_time) * 60 + date('i', $date->end_time)) ?>"
-            data-start="<?= (date('G', $scheduled['start']) * 60 + date('i', $scheduled['start'])) ?>"
-            data-end="<?= (date('G', $scheduled['end']) * 60 + date('i', $scheduled['end'])) ?>"
-            data-event_id="<?= $scheduled['event_id'] ?>"
-        >
+        <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
+            <? if ($scheduled) : ?>
+            <td class="oc-schedule-slider"
+                data-range-start="<?= (date('G', $date->date) * 60 + date('i', $date->date)) ?>"
+                data-range-end="<?= (date('G', $date->end_time) * 60 + date('i', $date->end_time)) ?>"
+                data-start="<?= (date('G', $scheduled['start']) * 60 + date('i', $scheduled['start'])) ?>"
+                data-end="<?= (date('G', $scheduled['end']) * 60 + date('i', $scheduled['end'])) ?>"
+                data-event_id="<?= $scheduled['event_id'] ?>"
+            >
 
-        </td>
-        <? else : ?>
-        <td>
-            <span style="color: lightgray">
-                <?= $_('keine Aufzeichnung geplant') ?>
-            </span>
-        </td>
+            </td>
+            <? else : ?>
+            <td>
+                <span style="color: lightgray">
+                    <?= $_('keine Aufzeichnung geplant') ?>
+                </span>
+            </td>
+            <? endif ?>
         <? endif ?>
 
         <? $issues = $date->getIssueIDs(); ?>
@@ -163,6 +169,7 @@
     <?= MessageBox::info($_('Es gibt keine passenden Termine'));?>
 <? endif;?>
 
+<? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
 <script type="text/javascript">
 $(function() {
     $(".oc-schedule-slider").each(function () {
@@ -227,3 +234,4 @@ $(function() {
     });
 });
 </script>
+<? endif ?>
