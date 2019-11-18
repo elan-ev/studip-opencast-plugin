@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\OCScheduledRecordings;
 
 class SchedulerClient extends OCRestClient
 {
@@ -31,7 +32,7 @@ class SchedulerClient extends OCRestClient
     {
         $ingest_client = new IngestClient();
         $media_package = $ingest_client->createMediaPackage();
-        $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id);
+        $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id, NULL);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
         $event_id      = null;
@@ -118,36 +119,46 @@ class SchedulerClient extends OCRestClient
         $precise_config = Configuration::instance($config_id);
 
         // currently, we only update the start and the end time
-        $date = new SingleDate($termin_id);
+        $event = OCScheduledRecordings::find($event_id);
+        $date  = CourseDate::find($termin_id);
 
-        $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id);
+        if ($date->date > $event->start) {
+            $event->start = $date->date;
+            $event->store();
+        }
+
+        if ($date->end_time < $event->end) {
+            $event->end = $date->end_time;
+            $event->store();
+        }
+
+        $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id, $event_id);
 
         $post = array(
-            'start'           => $date->getStartTime() * 1000,
-            'end'             => ($date->getEndTime() - $precise_config['time_buffer_overlap'] ?: 0) * 1000,
+            'start'           => $event->start * 1000,
+            'end'             => ($event->end - $precise_config['time_buffer_overlap'] ?: 0) * 1000,
             'agentparameters' => $metadata['agentparameters'],
             'agent'           => $metadata['agent']
         );
 
         $result = $this->putJSON("/$event_id", $post, true);
-
         if (in_array($result[1], array(201, 200))) {
             return true;
         } else {
+
             return false;
         }
     }
 
-    static function createEventMetadata($course_id, $resource_id, $termin_id)
+    static function createEventMetadata($course_id, $resource_id, $termin_id, $event_id)
     {
         $config = OCConfig::getConfigForCourse($course_id);
 
         $dublincore = OCModel::createScheduleEventXML(
-            $course_id, $resource_id, $termin_id, $config['time_buffer_overlap']
+            $course_id, $resource_id, $termin_id, $event_id, $config['time_buffer_overlap']
         );
 
         $date = new SingleDate($termin_id);
-        $start_time = date('D M d H:i:s e Y', $date->getStartTime());
 
         $issue_titles = array();
         $issues = $date->getIssueIDs();

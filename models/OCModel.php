@@ -3,6 +3,7 @@
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
+use OpenCast\Models\OCScheduledRecordings;
 
 use Opencast\LTI\OpencastLTI;
 
@@ -143,21 +144,24 @@ class OCModel
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
 
+        $date = CourseDate::find($date_id);
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_scheduled_recordings (seminar_id, series_id, date_id,
-                    resource_id, capture_agent, event_id, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    resource_id, start, end, capture_agent, event_id, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $success = $stmt->execute(array(
+        $success = $stmt->execute($data = [
             $course_id,
             $serie['series_id'],
             $date_id,
             $resource_id,
+            $date->date,
+            $date->end_time,
             $ca['capture_agent'],
             $event_id,
             'scheduled'
-        ));
+        ]);
 
         return $success;
     }
@@ -296,12 +300,18 @@ class OCModel
      * @param string $termin_id
      * @return string xml - the xml representation of the string
      */
-     function createScheduleEventXML($course_id, $resource_id, $termin_id, $puffer)
+     function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $puffer)
      {
         date_default_timezone_set("Europe/Berlin");
 
         $course = new Seminar($course_id);
         $date = new SingleDate($termin_id);
+
+        // if event_id is null, there is not yet an event which could have other start or end-times
+        if ($event_id) {
+            $event = OCScheduledRecordings::find($event_id);
+        }
+
         $issues = $date->getIssueIDs();
 
          $issue_titles = array();
@@ -331,12 +341,12 @@ class OCModel
 
         $room = ResourceObject::Factory($resource_id);
 
-        $start_time = $date->getStartTime();
+        $start_time = $event_id ? $event->start : $date->getStartTime();
 
         if ($puffer) {
-            $end_time = strtotime("-$puffer seconds ", intval($date->getEndTime()));
+            $end_time = strtotime("-$puffer seconds ", intval($event_id ? $event->end : $date->getEndTime()));
         } else {
-            $end_time = $date->getEndTime();
+            $end_time = $event_id ? $event->end : $date->getEndTime();
         }
 
         $contributor = $inst_data['name'];
@@ -347,7 +357,7 @@ class OCModel
         $language = "de";
         $seriesId = $serie['series_id'];
 
-       if(!$issue->title) {
+       if (!$issue->title) {
            $course = new Seminar($course_id);
            $name = $course->getName();
            $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());

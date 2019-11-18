@@ -6,6 +6,7 @@
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCTos;
+use Opencast\Models\OCScheduledRecordings;
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LTIResourceLink;
 
@@ -500,13 +501,55 @@ class CourseController extends OpencastController
         $this->redirect('course/scheduler');
     }
 
+    function schedule_update_action()
+    {
+        $event_id = Request::get('event_id');
+        $start    = Request::get('start');
+        $end      = Request::get('end');
+
+        $event = OCScheduledRecordings::find($event_id);
+
+        //var_dump($event->date);
+        if ($event && $GLOBALS['perm']->have_studip_perm('tutor', $event->seminar_id)) {
+            $date = $event->date->date;
+
+            $new_start = mktime(
+                floor($start / 60),
+                $start - floor($start / 60) * 60,
+                0,
+                date('n', $date),
+                date('j', $date),
+                date('Y', $date)
+            );
+
+            $new_end = mktime(
+                floor($end / 60),
+                $end - floor($end / 60) * 60,
+                0,
+                date('n', $date),
+                date('j', $date),
+                date('Y', $date)
+            );
+
+            $event->start = $new_start;
+            $event->end   = $new_end;
+            $event->store();
+
+            // update event in opencast
+            $scheduler_client = SchedulerClient::create($event->seminar_id);
+            $scheduler_client->updateEventForSeminar($event->seminar_id, $event->resource_id, $event->date_id, $event->event_id);
+        }
+
+        $this->render_nothing();
+    }
+
 
     function update_action($resource_id, $termin_id)
     {
 
         $course_id = Request::get('cid');
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
-            $scheduler_client = SchedulerClient::getInstance();
+            $scheduler_client = SchedulerClient::create($course_id);
             $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
             if ($scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {

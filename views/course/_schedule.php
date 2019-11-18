@@ -3,9 +3,18 @@
 <? if(!empty($dates)) :?>
 <form action="<?= PluginEngine::getLink('opencast/course/bulkschedule/') ?>" method=post>
 <table class="default">
+    <colgroup>
+        <col width="2%">
+        <col width="30%">
+        <col width="30%">
+        <col width="30%">
+        <col width="4%">
+        <col width="4%">
+    </colgroup>
     <tr>
         <th></th>
         <th><?= $_('Termin') ?></th>
+        <th><?= $_('Aufzeichnungszeitraum') ?></th>
         <th><?= $_('Titel') ?></th>
         <th><?= $_('Status') ?></th>
         <th><?= $_('Aktionen') ?></th>
@@ -13,16 +22,39 @@
 
     <? foreach($dates as $d) : ?>
     <tr>
-        <? $date = new SingleDate($d['termin_id']); ?>
-        <? $resource = $date->getResourceID(); ?>
+        <? $date      = new SingleDate($d['termin_id']); ?>
+        <? $resource  = $date->getResourceID(); ?>
+        <? $scheduled = reset(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) ?>
         <td>
-            <? if(isset($resource) && OCModel::checkResource($resource) && (date($d['date']) > time())) :?>
-                <input name="dates[<?=$date->termin_id?>]" type="checkbox" value="<?=$resource?>"></input>
+            <? if (isset($resource) && OCModel::checkResource($resource) && (date($d['date']) > time())) :?>
+                <input name="dates[<?= $date->termin_id ?>]" type="checkbox" value="<?= $resource ?>"></input>
             <? else: ?>
                 <input type="checkbox" disabled></input>
             <? endif;?>
         </td>
-        <td> <?=$date->getDatesHTML()?> </td>
+
+        <td>
+            <?= $date->getDatesHTML() ?>
+        </td>
+
+        <? if ($scheduled) : ?>
+        <td class="oc-schedule-slider"
+            data-range-start="<?= (date('G', $date->date) * 60 + date('i', $date->date)) ?>"
+            data-range-end="<?= (date('G', $date->end_time) * 60 + date('i', $date->end_time)) ?>"
+            data-start="<?= (date('G', $scheduled['start']) * 60 + date('i', $scheduled['start'])) ?>"
+            data-end="<?= (date('G', $scheduled['end']) * 60 + date('i', $scheduled['end'])) ?>"
+            data-event_id="<?= $scheduled['event_id'] ?>"
+        >
+
+        </td>
+        <? else : ?>
+        <td>
+            <span style="color: lightgray">
+                <?= $_('keine Aufzeichnung geplant') ?>
+            </span>
+        </td>
+        <? endif ?>
+
         <? $issues = $date->getIssueIDs(); ?>
         <? if(is_array($issues)) : ?>
             <? if(sizeof($issues) > 1) :?>
@@ -45,8 +77,8 @@
         <td> <?=$_("Kein Titel eingetragen")?></td>
         <? endif; ?>
         <td>
-            <? if(isset($resource) && OCModel::checkResource($resource)) :?>
-            <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) :?>
+            <? if (isset($resource) && OCModel::checkResource($resource)) : ?>
+            <? if ($scheduled) : ?>
                     <?= new Icon('video', 'info', array(
                         'title' => $_("Aufzeichnung ist bereits geplant.")
                     )) ?>
@@ -67,11 +99,11 @@
                     )) ?>
             <? endif; ?>
         </td>
-    
+
         <td>
             <? $resource = $date->getResourceID(); ?>
-            <? if(isset($resource) && OCModel::checkResource($resource)) :?>
-                <? if(OCModel::checkScheduled($course_id, $resource, $date->termin_id) && (int)date($d['date']) > time()) :?>
+            <? if (isset($resource) && OCModel::checkResource($resource)) : ?>
+                <? if ($scheduled && (int)date($d['date']) > time()) :?>
                     <a href="<?=PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id )?>">
                         <?= new Icon('refresh' ,'clickable', array(
                             'title' =>  $_("Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren oder entsprechende Metadaten aktualisieren.")
@@ -130,3 +162,68 @@
 <? else: ?>
     <?= MessageBox::info($_('Es gibt keine passenden Termine'));?>
 <? endif;?>
+
+<script type="text/javascript">
+$(function() {
+    $(".oc-schedule-slider").each(function () {
+        // initialize data and dom objects for range slider
+        let $event_id = $(this).attr('data-event_id');
+        let $start    = parseInt($(this).attr('data-start'));
+        let $end      = parseInt($(this).attr('data-end'));
+        let $rstart    = parseInt($(this).attr('data-range-start'));
+        let $rend      = parseInt($(this).attr('data-range-end'));
+        let $slider_text  = $('<div class="slider-text"></div>');
+        let $slider_range = $('<div class="slider-range"></div>');
+        let $slide_start  = $('<input type="hidden" name="start[' + $event_id + '][start]">');
+        let $slide_end    = $('<input type="hidden" name="start[' + $event_id + '][start]">');
+
+        // add ui elements and input data to DOM
+        $(this).append($slider_text);
+        $(this).append($slider_range);
+        $(this).append($slide_start);
+        $(this).append($slide_end);
+
+        $slider_text.html(
+            Math.floor($start / 60).toString().padStart(2, '0')
+            + ':' + ($start - Math.floor($start / 60) * 60).toString().padStart(2, '0')
+            + ' - ' + Math.floor($end / 60).toString().padStart(2, '0')
+            + ':' +  ($end - Math.floor($end / 60) * 60).toString().padStart(2, '0')
+        );
+
+        // mount the slider
+        $slider_range.slider({
+            range: true,
+            min: $rstart,
+            max: $rend,
+            step: 5,
+            values: [$start, $end],
+            slide: function(event, ui) {
+                $slide_start.val(ui.values[0]);
+                $slide_end.val(ui.values[1]);
+
+                var start_hours  = Math.floor(ui.values[0] / 60);
+                var start_minutes = ui.values[0] - (start_hours * 60);
+
+                var end_hours  = Math.floor(ui.values[1] / 60);
+                var end_minutes = ui.values[1] - (end_hours * 60);
+
+                // show some text for the User
+                $slider_text.html(
+                    start_hours.toString().padStart(2, '0')
+                    + ':' + start_minutes.toString().padStart(2, '0')
+                    + ' - ' + end_hours.toString().padStart(2, '0')
+                    + ':' + end_minutes.toString().padStart(2, '0')
+                );
+            },
+            stop: function(event, ui) {
+                // store values when user is done with sliding
+                $.post('<?= $controller->url_for('course/schedule_update') ?>', {
+                    event_id: $event_id,
+                    start: ui.values[0],
+                    end: ui.values[1]
+                });
+            }
+        });
+    });
+});
+</script>
