@@ -42,7 +42,7 @@
         </td>
 
         <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
-            <? if ($scheduled) : ?>
+            <? if ($scheduled && date($d['date']) > time()) : ?>
             <td class="oc-schedule-slider"
                 data-range-start="<?= (date('G', $date->date) * 60 + date('i', $date->date)) ?>"
                 data-range-end="<?= (date('G', $date->end_time) * 60 + date('i', $date->end_time)) ?>"

@@ -300,7 +300,7 @@ class OCModel
      * @param string $termin_id
      * @return string xml - the xml representation of the string
      */
-     function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $puffer)
+     public static function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $puffer)
      {
         date_default_timezone_set("Europe/Berlin");
 
