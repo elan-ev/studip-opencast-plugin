@@ -40,12 +40,12 @@ class SearchClient extends OCRestClient
                 $episodes = $search->$x->result;
 
                 $cache->write($cache_key, serialize($episodes), 7200);
-                return $episodes;
+                return $episodes ?: [];
             } else {
                 return [];
             }
         } else {
-            return unserialize($episodes);
+            return unserialize($episodes) ?: [];
         }
     }
 
