@@ -587,7 +587,8 @@ class OCModel
     static function checkPermForEpisode($episode_id, $user_id)
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce
-            LEFT JOIN seminar_user su ON (oce.seminar_id = su.Seminar_id)
+            JOIN oc_seminar_series oss USING (series_id)
+            JOIN seminar_user su ON (oss.seminar_id = su.Seminar_id)
             WHERE oce.episode_id = ? AND su.status = 'dozent' AND su.user_id = ?");
 
         $stmt->execute(array($episode_id, $user_id));
