@@ -22,12 +22,23 @@ class AddAlternateScheduleTimes extends Migration
             SET start = ?, end = ?
             WHERE event_id = ?');
 
+        $stmt_delete = $db->prepare('DELETE
+            FROM oc_scheduled_recordings
+            WHERE event_id = ?');
+
         while ($data = $results->fetch(PDO::FETCH_ASSOC)) {
-            $stmt->execute([
-                $data['date'],
-                $data['end_time'],
-                $data['event_id']
-            ]);
+            if (!$data['date']) {
+                // if there is no associated date, delete the event from the database
+                $stmt_delete->execute([
+                    $data['event_id']
+                ]);
+            } else {
+                $stmt->execute([
+                    $data['date'],
+                    $data['end_time'],
+                    $data['event_id']
+                ]);
+            }
         }
 
         SimpleOrMap::expireTableScheme();
