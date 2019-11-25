@@ -2,6 +2,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\LTI\OpencastLTI;
 
 class OCSeriesModel
 {
@@ -105,7 +106,7 @@ class OCSeriesModel
                 VALUES (?, ?, ?, ?, ?, ? )");
         $stmt->execute(array($config_id, $series_id, $course_id, $visibility, $schedule, $mkdate));
 
-        OpencastLTI::setAcls($this->course_id);
+        OpencastLTI::setAcls($course_id);
     }
 
     /**
