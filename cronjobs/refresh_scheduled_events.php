@@ -2,6 +2,8 @@
 
 require_once __DIR__.'/../bootstrap.php';
 
+use  Opencast\Models\OCScheduledRecordings;
+
 class RefreshScheduledEvents extends CronJob
 {
 
@@ -55,22 +57,37 @@ class RefreshScheduledEvents extends CronJob
 
         if (!empty($scheduled_events)) {
             foreach ($scheduled_events as $se) {
-                $scheduler_client = SchedulerClient::create($se['seminar_id']);
-                $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
-
-                unset($events[$se['event_id']]);
-
+                $cd = CourseDate::find($se['date_id']);
                 $course = Course::find($se['seminar_id']);
-                $date = new SingleDate($se['date_id']);
-                echo sprintf(
-                    _("Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den Kurs %s\n "),
-                    $date->getDatesExport(), $course->name
-                );
+
+                if ($cd->room_assignment->resource_id == $se['resource_id']) {
+                    $scheduler_client = SchedulerClient::create($se['seminar_id']);
+                    $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
+
+                    unset($events[$se['event_id']]);
+
+                    echo sprintf(
+                        _("Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n "),
+                        $cd->toString(), $course->name
+                    );
+                } else {
+                    echo sprintf(
+                        _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n "),
+                        $cd->toString(), $course->name
+                    );
+
+                    $scheduler_client = SchedulerClient::getInstance(1);
+                    $scheduler_client->deleteEvent($se['event_id']);
+
+                    OCScheduledRecordings::deleteBySql('event_id = ?', [$se['event_id']]);
+
+                    unset($events[$se['event_id']]);
+                }
             }
         }
 
         // the remaining events have no association in Stud.IP and need to be deleted
-        foreach ($events as $event) {
+        if (is_array($events)) foreach ($events as $event) {
             $scheduler_client = SchedulerClient::getInstance(1);
             $scheduler_client->deleteEvent($event->identifier);
         }
