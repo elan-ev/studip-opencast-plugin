@@ -2,8 +2,6 @@
 namespace Opencast;
 
 class Constants {
-    static $UPLOAD_CHUNK_SIZE = '10000000';
-
     static $SERVICES = [
         'acl-manager',          // alles admin-node
         'archive',

@@ -4,6 +4,8 @@
  *
  */
 
+use Opencast\Models\OCConfig;
+
 class OCJob
 {
     private $id;                // local id
@@ -64,7 +66,8 @@ class OCJob
      */
     public function number_of_chunks()
     {
-        return ceil($this->data['file']['size'] / Opencast\Constants::$UPLOAD_CHUNK_SIZE);
+        $config = OCConfig::getConfigForCourse(Context::getId());
+        return ceil($this->data['file']['size'] / $config['upload_chunk_size']);
     }
 
     /**
@@ -155,11 +158,13 @@ class OCJob
      */
     public function load_opencast_job_id()
     {
+        $config = OCConfig::getConfigForCourse(Context::getId());
+
         if (!$this->opencast_unloaded('media_package') && $this->opencast_unloaded('opencast_job_id')) {
             $opencast_job_id = $this->upload_client->newJob(
                 $this->data['file']['name'],
                 $this->data['file']['size'],
-                Opencast\Constants::$UPLOAD_CHUNK_SIZE,
+                $config['upload_chunk_size'],
                 $this->opencast_info['flavor'],
                 $this->opencast_info['media_package']
             );

@@ -90,10 +90,12 @@ class OCJobManager
      */
     public static function calculate_chunk_number_from_range($range)
     {
+        $config = OCConfig::getConfigForCourse(Context::getId());
+
         $pattern = '/(\d*)-\d*\/\d*/';
         $result = preg_match($pattern, $range, $matches);
         if ($result) {
-            return $matches[1] / Opencast\Constants::$UPLOAD_CHUNK_SIZE;
+            return $matches[1] / $config['upload_chunk_size'];
         }
 
         return 0;

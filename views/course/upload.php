@@ -69,8 +69,11 @@ use Studip\LinkButton;
             <textarea class="oc_input" cols="50" rows="5" id="description" name="description"></textarea>
         </label>
 
+        <section class="hgroup">
+
+
         <label>
-            <?= $_('Eingesteller Workflow') ?>
+            <?= $_('Eingestellter Workflow') ?>
 
             <? if (!$workflow) : ?>
                 <p style="color:red; max-width: 48em;">
@@ -80,6 +83,12 @@ use Studip\LinkButton;
                 <p><?= $workflow_text ?: $workflow['workflow_id'] ?></p>
             <? endif ?>
         </label>
+
+        <label>
+            <?= $_('Chunk-Größe für Uploads') ?>
+            <p><?= round($config['upload_chunk_size'] / 1024 / 1024, 2) ?> MB</p>
+        </label>
+    </section>
 
         <label for="video_upload">
             <span class="required">
@@ -132,6 +141,6 @@ use Studip\LinkButton;
 
 <script type="text/javascript">
 jQuery(function() {
-    OC.initUpload(<?= Opencast\Constants::$UPLOAD_CHUNK_SIZE ?>);
+    OC.initUpload(<?= $config['upload_chunk_size'] ?>);
 });
 </script>

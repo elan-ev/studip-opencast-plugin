@@ -110,9 +110,9 @@ class CourseController extends OpencastController
         $name = sprintf('oc_course.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
 
-        $config = OCConfig::getConfigForCourse(Context::getId());
+        $this->config = OCConfig::getConfigForCourse($this->course_id);
 
-        $this->paella = $config['paella'] == '0' ? false : true;
+        $this->paella = $this->config['paella'] == '0' ? false : true;
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
@@ -242,7 +242,6 @@ class CourseController extends OpencastController
             $this->render_action('_error');
         }
 
-        $this->config = OCConfig::getConfigForCourse($this->course_id);
         $this->configs = OCConfig::getBaseServerConf();
     }
 
