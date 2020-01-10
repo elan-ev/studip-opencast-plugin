@@ -49,7 +49,7 @@
 
             <td>
                 <?= $job->data()['info']['record_date'] ?>,
-                <?= $job->data()['info']['start']['h'] ?>:<?= $job->data()['info']['start']['m'] ?>
+                <?= @$job->data()['info']['start']['h'] ?>:<?= @$job->data()['info']['start']['m'] ?>
             </td>
 
             <td>
