@@ -31,6 +31,7 @@ class OCJsonFile implements ArrayAccess
     public function save()
     {
         file_put_contents($this->path, json_encode($this->content));
+        chmod($this->path, 0775);
     }
 
     public function offsetExists($offset)

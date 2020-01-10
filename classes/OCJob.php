@@ -79,6 +79,8 @@ class OCJob
     public function upload_local($tmp_path, $chunk_number)
     {
         if (move_uploaded_file($tmp_path, OCJobManager::chunk_path($this->id, $chunk_number))) {
+            chmod(OCJobManager::chunk_path($this->id, $chunk_number), 0775);
+
             $this->local_chunk_info['chunk_' . $chunk_number] = [
                 'number'            => $chunk_number,
                 'local_upload_time' => time()
