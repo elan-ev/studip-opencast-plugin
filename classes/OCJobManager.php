@@ -187,7 +187,7 @@ class OCJobManager
     public static function existent_jobs()
     {
         if (!is_dir(self::path())) {
-            mkdir(self::path(), 0750, true);
+            mkdir(self::path(), 0775, true);
 
             return [];
         }
