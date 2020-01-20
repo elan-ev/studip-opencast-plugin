@@ -413,39 +413,27 @@ class CourseController extends OpencastController
 
         $course = new Seminar($this->course_id);
 
-        $start_semester = $course->getStartSemester();
-        $end_semester = $course->getEndSemester();
-
-        if ($start_semester > time() || $end_semester == 0) {
-            $semester = Semester::findByTimestamp($start_semester);
-        } else if ($end_semester < time() && $end_semester > 0) {
-            $semester = Semester::findByTimestamp($end_semester);
-        } else {
-            $semester = Semester::findCurrent();
-        }
-        $this->dates = OCModel::getDatesForSemester($this->course_id, $semester);
-
-        $all_semester = SemesterData::GetSemesterArray();
-
-        $this->course_semester = [];
-
-        foreach ($all_semester as $cur_semester) {
-
-            //fix for unbegrenzte kurse add marker for current_semester
-            if ($cur_semester['beginn'] == $course->getStartSemester() || $cur_semester['beginn'] == $course->getEndSemester()) {
-                $this->course_semester[] = $cur_semester;
-            }
-
+        $selectable_semesters = new SimpleCollection(Semester::getAll());
+        $start                = $course->start_time;
+        $end                  = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
+        $selectable_semesters = $selectable_semesters->findBy('beginn', [$start, $end], '>=<=')->toArray();
+        if (count($selectable_semesters) > 1 || (count($selectable_semesters) == 1 && $course->hasDatesOutOfDuration())) {
+            $selectable_semesters[] = ['name' => _('Alle Semester'), 'semester_id' => 'all'];
         }
 
+        $this->selectable_semesters = array_reverse($selectable_semesters);
 
-        $this->caa_client = CaptureAgentAdminClient::getInstance();
+        $current_semester = Semester::findCurrent();
+        $this->semester_filter  = Request::option('semester_filter', $current_semester->id);
 
+        $this->dates = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);
 
-        $search_client = SearchClient::getInstance();
+        $this->all_semester = Semester::getAll();
+
+        $this->caa_client      = CaptureAgentAdminClient::getInstance();
 
         $this->workflow_client = WorkflowClient::getInstance();
-        $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+        $this->tagged_wfs      = $this->workflow_client->getTaggedWorkflowDefinitions();
     }
 
 

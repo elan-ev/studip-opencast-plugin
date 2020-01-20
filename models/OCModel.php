@@ -90,17 +90,31 @@ class OCModel
        return $dates;
     }
 
-    static function getDatesForSemester($seminar_id, $semester = false)
+    static function getDatesForSemester($seminar_id, $semester_id = null)
     {
-        if(!$semester) {
-            $semester = Semester::findCurrent();
+        if ($semester_id == 'all') {
+            // get all dates
+            $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
+                WHERE `range_id` = ?
+                ORDER BY `date` ASC");
+            $stmt->execute([$seminar_id]);
+        } else {
+            // get dates for selected semester only (or current, if none is set)
+            if (is_null($semester_id)) {
+                $semester = Semester::findCurrent();
+            } else {
+                $semester = Semester::find($semester_id);
+            }
+
+            $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
+                WHERE `range_id` = ?
+                    AND `date` >= ?
+                    AND `date` < ?
+                ORDER BY `date` ASC");
+            $stmt->execute([$seminar_id, $semester->beginn, $semester->ende]);
         }
 
-        $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ? AND `date` >= ? AND `date` < ? ORDER BY `date` ASC");
-
-        $stmt->execute(array($seminar_id, $semester->beginn, $semester->ende));
-        $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $dates;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
