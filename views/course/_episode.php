@@ -96,6 +96,14 @@ $visibility_text = [
                     <div class="oce_metadatacontainer">
                         <div>
                             <h2 class="oce_metadata oce_list_title">
+                                <? if ($item['visibility'] == 'free') : ?>
+                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank" >
+                                    <?= Icon::create('group', 'clickable', [
+                                        'style' => 'vertical-align: middle; margin-right: 3px;',
+                                        'title' => 'Direktlink, Rechtskick -> Link-Adresse kopieren'
+                                    ]) ?>
+                                </a>
+                                <? endif ?>
                                 <?= $item['title'] ?>
                             </h2>
                             <ul class="oce_contetlist">
