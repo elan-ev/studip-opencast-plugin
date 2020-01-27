@@ -425,6 +425,7 @@ class CourseController extends OpencastController
 
         $current_semester = Semester::findCurrent();
         $this->semester_filter  = Request::option('semester_filter', $current_semester->id);
+        UrlHelper::bindLinkParam('semester_filter', $this->semester_filter);
 
         $this->dates = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);
 
@@ -466,7 +467,7 @@ class CourseController extends OpencastController
         } else {
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
-        $this->redirect('course/scheduler');
+        $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
     function unschedule_action($resource_id, $termin_id)
@@ -485,7 +486,7 @@ class CourseController extends OpencastController
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
 
-        $this->redirect('course/scheduler');
+        $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
     function schedule_update_action()
@@ -552,7 +553,7 @@ class CourseController extends OpencastController
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
 
-        $this->redirect('course/scheduler');
+        $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
 
@@ -671,7 +672,7 @@ class CourseController extends OpencastController
             throw new Exception($this->_("Sie haben leider keine Berechtigungen um diese Aktion durchzuführen"));
         }
 
-        $this->redirect('course/scheduler');
+        $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
     static function schedule($resource_id, $termin_id, $course_id)

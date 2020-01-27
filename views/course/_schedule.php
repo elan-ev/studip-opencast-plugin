@@ -2,6 +2,7 @@
 
 <? if(!empty($dates)) :?>
 <form action="<?= PluginEngine::getLink('opencast/course/bulkschedule/') ?>" method=post>
+    <input type="hidden" name="semester_filter" value="<?= $semester_filter ?>">
 <table class="default">
     <colgroup>
         <col width="2%">
