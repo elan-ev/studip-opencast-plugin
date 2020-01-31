@@ -347,9 +347,16 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-        $instructors = $course->getMembers('dozent');
 
-        $instructor = array_shift($instructors);
+        $creator = 'unknown';
+
+        if ($GLOBALS['perm']->have_perm('admin')) {
+            $instructors = $course->getMembers('dozent');
+            $instructor = array_shift($instructors);
+            $creator    = $instructor['fullname'];
+        } else {
+            $creator    = get_fullname();
+        }
 
         $inst_data = Institute::find($course->institut_id);
 
@@ -364,7 +371,6 @@ class OCModel
         }
 
         $contributor = $inst_data['name'];
-        $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
 
