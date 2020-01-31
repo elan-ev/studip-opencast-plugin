@@ -490,14 +490,15 @@ class CourseController extends OpencastController
 
     function schedule_update_action()
     {
-        if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE
+        $event_id = Request::get('event_id');
+        $event    = OCScheduledRecordings::find($event_id);
+
+        if ($event && Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE
             && $GLOBALS['perm']->have_studip_perm('tutor', $event->seminar_id)
         ) {
-            $event_id = Request::get('event_id');
-            $start    = Request::get('start');
-            $end      = Request::get('end');
 
-            $event = OCScheduledRecordings::find($event_id);
+            $start = Request::get('start');
+            $end   = Request::get('end');
 
             if ($event) {
                 $date = $event->date->date;
