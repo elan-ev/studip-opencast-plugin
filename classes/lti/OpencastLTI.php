@@ -146,71 +146,6 @@ class OpencastLTI
         return $result;
     }
 
-    public static function generate_lti_launch_data($user_id, $course_id, LTIResourceLink $resource_link, $tool = null, $privacy = false)
-    {
-        $user = \User::find($user_id);
-        $course = \Course::find($course_id);
-
-        $launch_data = [
-            'lti_message_type'                       => 'basic-lti-launch-request',
-            'lti_version'                            => 'LTI-1p0',
-            'resource_link_id'                       => $resource_link->id,
-            'resource_link_title'                    => $resource_link->title,
-            'resource_link_description'              => $resource_link->description,
-            'user_id'                                => $user_id,
-            'roles'                                  => '',
-            'lis_person_name_full'                   => $user->getFullName(),
-            'lis_person_name_given'                  => $user->vorname,
-            'lis_person_name_family'                 => $user->nachname,
-            'lis_person_contact_email_primary'       => $user->email,
-            'context_id'                             => $course_id,
-            'context_type'                           => 'CourseSection',
-            'context_title'                          => $course->name,
-            'context_label'                          => $course->veranstaltungsnummer,
-            'custom_tool'                            => $tool,
-            'tool_consumer_info_product_family_code' => "studip",
-            'tool_consumer_info_version'             => "1.1",
-            'tool_consumer_instance_guid'            => "studip_uos",
-            'tool_consumer_instance_description'     => "Universität Osnabrück",
-            'oauth_callback'                         => 'about:blank'
-            //'custom_test'                            => 'true'
-        ];
-
-        if ($privacy) {
-            $private_text = 'private';
-            $privatize = [
-                'lis_person_name_full',
-                'lis_person_name_given',
-                'lis_person_name_family',
-                'lis_person_contact_email_primary'
-            ];
-            foreach ($privatize as $key) {
-                $launch_data[$key] = $private_text;
-            }
-        }
-
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id, $user_id)) {
-            $launch_data['roles'] = 'Instructor';
-        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id, $user_id)) {
-            $launch_data['roles'] = 'Learner';
-        }
-
-        return $launch_data;
-    }
-
-    public static function generate_tool($type, $id = 0)
-    {
-        if ($type == 'all') {
-            return 'engage/ui/';
-        } else if ($type == 'series') {
-            return 'ltitools/series/index.html;series=' . $id;
-        } else if ($type == 'episode') {
-            return 'engage/theodul/ui/core.html;id=' . $id;
-        }
-
-        return '';
-    }
-
     public static function role_instructor($course_id)
     {
         return $course_id . '_Instructor';
@@ -316,31 +251,6 @@ class OpencastLTI
         }
     }
 
-    /**
-     * [sign_lti_data description]
-     *
-     * @param  [type] $lti_data              [description]
-     * @param  [type] $oauth_consumer_key    [description]
-     * @param  [type] $oauth_consumer_secret [description]
-     * @param  [type] $url                   [description]
-     * @param  string $token                 [description]
-     * @return [type]                        [description]
-     */
-    public static function sign_lti_data($lti_data, $oauth_consumer_key, $oauth_consumer_secret, $url, $token = '')
-    {
-        $hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
-        $consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, null);
-
-        $config = OCConfig::getConfigForCourse($lti_data['context_id']);
-
-        $acc_req = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $lti_data);
-        $acc_req->sign_request($hmac_method, $consumer, $token);
-
-        $last_base_string = $acc_req->get_signature_base_string();
-
-        return $acc_req->get_parameters();
-    }
-
     public static function getSearchUrl($course_id)
     {
         $config_id     = OCConfig::getConfigIdForCourse($course_id);
@@ -352,24 +262,4 @@ class OpencastLTI
         return $url['scheme'] . '://'. $url['host']
             . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
     }
-}
-
-class LTIResourceLink
-{
-    public $id;
-    public $title;
-    public $description;
-
-    public function __construct($id, $title, $description)
-    {
-        $this->id = $id;
-        $this->title = $title;
-        $this->description = $description;
-    }
-
-    public static function generate_link($title, $description)
-    {
-        return new LTIResourceLink(uniqid('ocplugin'), $title, $description);
-    }
-
 }

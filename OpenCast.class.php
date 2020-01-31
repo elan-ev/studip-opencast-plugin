@@ -4,7 +4,6 @@
  */
 
 use Opencast\LTI\OpencastLTI;
-use Opencast\LTI\LTIResourceLink;
 
 include('bootstrap.php');
 
@@ -273,21 +272,35 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
         #$embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
 
-        $lti_launch_data = OpencastLTI::generate_lti_launch_data(
-            $current_user_id,
-            $course_id,
-            LTIResourceLink::generate_link('series','view complete series for course'),
-            OpencastLTI::generate_tool('series', $connectedSeries[0]['series_id'])
+        $current_user_id = $GLOBALS['auth']->auth['uid'];
+
+        $lti_link = new LtiLink(
+            OpencastLTI::getSearchUrl($course_id),
+            $config['lti_consumerkey'],
+            $config['lti_consumersecret']
         );
 
-        $lti_url = OpencastLTI::getSearchUrl($course_id);
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)) {
+            $role = 'Instructor';
+        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+            $role = 'Learner';
+        }
 
-        $lti_data = json_encode(OpencastLTI::sign_lti_data(
-            $lti_launch_data,
-            $config['lti_consumerkey'],
-            $config['lti_consumersecret'],
-            $lti_url
-        ));
+        $lti_link->setUser($current_user_id, $role);
+        $lti_link->setCourse($course_id);
+        $lti_link->setResource(
+            $connectedSeries,
+            'series',
+            'view complete series for course'
+        );
+
+        $launch_data = $lti_link->getBasicLaunchData();
+        $signature   = $lti_link->getLaunchSignature($launch_data);
+
+        $launch_data['oauth_signature'] = $signature;
+
+        $lti_data = json_encode($launch_data);
+        $lti_url  = $lti_link->getLaunchURL();
 
         $id = md5(uniqid());
 

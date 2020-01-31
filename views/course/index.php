@@ -1,6 +1,6 @@
 <?
 use Opencast\LTI\OpencastLTI;
-use Opencast\LTI\LTIResourceLink;
+use Opencast\LTI\LtiLink;
 ?>
 
 <? if ($flash['delete']) : ?>
@@ -32,20 +32,44 @@ jQuery(function() {
 
 <?
 if ($this->connectedSeries[0]['series_id']) :
-$current_user_id = $GLOBALS['auth']->auth['uid'];
-$lti_launch_data = OpencastLTI::generate_lti_launch_data(
-    $current_user_id,
-    $course_id,
-    LTIResourceLink::generate_link('series','view complete series for course'),
-    OpencastLTI::generate_tool('series', $this->connectedSeries[0]['series_id'])
-);
+    $current_user_id = $GLOBALS['auth']->auth['uid'];
 
-$lti_data = OpencastLTI::sign_lti_data(
-    $lti_launch_data,
-    $config['lti_consumerkey'],
-    $config['lti_consumersecret'],
-    OpencastLTI::getSearchUrl($this->course_id)
-);
+    $lti_link = new LtiLink(
+        OpencastLTI::getSearchUrl($this->course_id),
+        $config['lti_consumerkey'],
+        $config['lti_consumersecret']
+    );
+
+    if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)) {
+        $role = 'Instructor';
+    } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+        $role = 'Learner';
+    }
+
+    $lti_link->setUser($current_user_id, $role);
+    $lti_link->setCourse($course_id);
+    $lti_link->setResource(
+        $this->connectedSeries[0]['series_id'],
+        'series',
+        'view complete series for course'
+    );
+
+    $launch_data = $lti_link->getBasicLaunchData();
+    $signature   = $lti_link->getLaunchSignature($launch_data);
+
+    $launch_data['oauth_signature'] = $signature;
+
+?>
+
+<script>
+OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function() {
+    jQuery('img.previewimage').each(function() {
+        this.src = this.dataset.src;
+    });
+});
+</script>
+<?
+/*
 ?>
 
 <script>
@@ -56,6 +80,7 @@ OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode
 });
 </script>
 <?
+*/
 endif;
 
 global $perm;

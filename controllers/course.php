@@ -8,7 +8,6 @@ use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\LTI\OpencastLTI;
-use Opencast\LTI\LTIResourceLink;
 
 class CourseController extends OpencastController
 {
