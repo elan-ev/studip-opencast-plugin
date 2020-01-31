@@ -65,9 +65,13 @@ class ApiEventsClient extends OCRestClient
         }
 
         $acls = self::getAclForEpisode($series_id, $episode_id);
+        $default = Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
 
         if (empty($acls)) {
-            return 'visible';
+            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+            return $default;
         }
 
         // check, if the video is free for all
@@ -101,8 +105,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        return Config::get()->OPENCAST_HIDE_EPISODES
-            ? 'invisible'
-            : 'visible';
+        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+        return $default;
     }
 }
