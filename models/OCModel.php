@@ -446,9 +446,9 @@ class OCModel
         if ($visibility == 'visible') {
             $acl_manager = ACLManagerClient::getInstance($config_id);
             $acl_manager->applyACLto('episode', $episode_id, '');
-        } else {
-            OpencastLTI::setAcls($course_id);
         }
+
+        OpencastLTI::setAcls($course_id);
 
         $api = ApiWorkflowsClient::getInstance($config_id);
 
