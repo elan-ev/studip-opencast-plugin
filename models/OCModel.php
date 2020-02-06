@@ -435,31 +435,36 @@ class OCModel
     {
         // Local
         $entry = self::getEntry($course_id, $episode_id);
-        $old_visibility = $entry->visible;
-        $entry->visible = $visibility;
 
-        $entry->store();
+        if ($entry) {
+            $old_visibility = $entry->visible;
+            $entry->visible = $visibility;
 
-        $config_id = OCConfig::getConfigIdForCourse($course_id);
-
-        // Remote
-        if ($visibility == 'visible') {
-            $acl_manager = ACLManagerClient::getInstance($config_id);
-            $acl_manager->applyACLto('episode', $episode_id, '');
-        }
-
-        OpencastLTI::setAcls($course_id);
-
-        $api = ApiWorkflowsClient::getInstance($config_id);
-
-        if (!$api->republish($episode_id)) {
-            // if republishing could not take place, reset permissions to previous state
-            $entry->visible = $old_visibility;
             $entry->store();
-            return false;
+
+            $config_id = OCConfig::getConfigIdForCourse($course_id);
+
+            // Remote
+            if ($visibility == 'visible') {
+                $acl_manager = ACLManagerClient::getInstance($config_id);
+                $acl_manager->applyACLto('episode', $episode_id, '');
+            }
+
+            OpencastLTI::setAcls($course_id);
+
+            $api = ApiWorkflowsClient::getInstance($config_id);
+
+            if (!$api->republish($episode_id)) {
+                // if republishing could not take place, reset permissions to previous state
+                $entry->visible = $old_visibility;
+                $entry->store();
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
