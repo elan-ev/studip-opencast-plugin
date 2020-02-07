@@ -353,7 +353,7 @@ class OCCourseModel
     public function getEpisodesforREST()
     {
         $rest_episodes = [];
-        $is_dozent = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
+        $is_dozent = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
         $episodes = $this->getEpisodes();
 
         foreach ($episodes as $episode) {
