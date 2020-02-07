@@ -137,12 +137,12 @@ $visibility_text = [
                                 <? endif ?>
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                        <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']]),
+                                        <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: 'Unbekannte Sichtbarkeit'),
                                             '', [
-                                            'class'           => 'oc-togglevis ocspecial oc'. $item['visibility'],
+                                            'class'           => 'oc-togglevis ocspecial oc'. ($item['visibility'] ?: 'free'),
                                             'data-episode-id' => $item['id'],
                                             'data-dialog'     => 'size=auto',
-                                            'data-visibility' => $item['visibility']
+                                            'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
                                 <? endif; ?>
                             </div>
