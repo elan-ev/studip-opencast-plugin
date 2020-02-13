@@ -40,9 +40,13 @@ class SeriesClient extends OCRestClient
 
         $acl = OpencastLTI::generate_standard_acls($course_id);
 
+        $vis = Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
+
         $post = array(
             'series' => $dublinCore,
-            'acl'    => $acl['visible']->as_xml()
+            'acl'    => $acl[$vis]->as_xml()
         );
 
         $res = $this->getXML('/', $post, false, true);
@@ -54,9 +58,9 @@ class SeriesClient extends OCRestClient
         if ($res[1] == 201) {
             $new_series = json_decode($res[0]);
             $series_id = $json['identifier'];
-            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, 'visible', 1, time());
+            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, $vis, 1, time());
 
-            self::updateAccesscontrolForSeminar($series_id, $acl['visible']->as_xml());
+            self::updateAccesscontrolForSeminar($series_id, $acl[$vis]->as_xml());
 
             return true;
         } else {

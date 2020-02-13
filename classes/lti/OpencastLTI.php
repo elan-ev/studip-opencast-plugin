@@ -127,19 +127,17 @@ class OpencastLTI
             'e' => []
         ];
 
-        foreach ($series_list as $series) {
-            $result['s'][$series['series_id']][$course_id] = $series['visibility'];
+        $vis = \Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
 
-            if ($series['visibility'] == 'visible') {
-                $course_model = new \OCCourseModel($course_id);
-                $episodes = $course_model->getEpisodes();
-                foreach ($episodes as $episode) {
-                    if ($episode['visibility'] == 'invisible') {
-                        $result['e'][$episode['id']][$course_id] = 'invisible';
-                    } else if ($episode['visibility'] == 'free') {
-                        $result['e'][$episode['id']][$course_id] = 'free';
-                    }
-                }
+        foreach ($series_list as $series) {
+            $result['s'][$series['series_id']][$course_id] = $vis;
+
+            $course_model = new \OCCourseModel($course_id);
+            $episodes = $course_model->getEpisodes();
+            foreach ($episodes as $episode) {
+                $result['e'][$episode['id']][$course_id] = $episode['visibility'];
             }
         }
 
