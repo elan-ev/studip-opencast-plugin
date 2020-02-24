@@ -425,8 +425,8 @@ class CourseController extends OpencastController
 
         $this->selectable_semesters = array_reverse($selectable_semesters);
 
-        $current_semester = Semester::findCurrent();
-        $this->semester_filter  = Request::option('semester_filter', $current_semester->id);
+        $current_semester = reset($this->selectable_semesters);
+        $this->semester_filter  = Request::option('semester_filter') ?: $current_semester['semester_id'];
         UrlHelper::bindLinkParam('semester_filter', $this->semester_filter);
 
         $this->dates = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);

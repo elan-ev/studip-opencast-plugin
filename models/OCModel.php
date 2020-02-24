@@ -92,19 +92,15 @@ class OCModel
 
     static function getDatesForSemester($seminar_id, $semester_id = null)
     {
-        if ($semester_id == 'all') {
+        if ($semester_id == 'all' || is_null($semester_id)) {
             // get all dates
             $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
                 WHERE `range_id` = ?
                 ORDER BY `date` ASC");
             $stmt->execute([$seminar_id]);
         } else {
-            // get dates for selected semester only (or current, if none is set)
-            if (is_null($semester_id)) {
-                $semester = Semester::findCurrent();
-            } else {
-                $semester = Semester::find($semester_id);
-            }
+            // get dates for selected semester only
+            $semester = Semester::find($semester_id);
 
             $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
                 WHERE `range_id` = ?
