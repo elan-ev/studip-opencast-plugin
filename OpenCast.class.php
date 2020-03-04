@@ -229,13 +229,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $main->addSubNavigation('overview', $overview);
 
 
-        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $series_metadata = OCSeminarSeries::getSeries($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
-        if($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('dozent', $course_id)){
+        if($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)){
             return array('opencast' => $main);
         } else return array();
 
