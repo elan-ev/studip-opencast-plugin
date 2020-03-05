@@ -8,7 +8,7 @@ Plugin-Version: 1.2/98
 Kompatibel zu Stud.IP Versionen: 4.0 - 4.6  
 Kompatibel zu Opencast Versionen: 5.x, 6.x, 7.x, 8.x
 
-*Beachten Sie die INSTALL.md, diese Plugin version benötigt Konfigurationseinstellungen in Opencast!*
+**Beachten Sie die INSTALL.md, diese Pluginversion benötigt Konfigurationseinstellungen in Opencast!**
 
 Mit dem Opencast-Plugin kann eine Verbindung zwischen einer
 Opencast-Installation und dem Lernmanagementsystem Stud.IP hergestellt werden.
