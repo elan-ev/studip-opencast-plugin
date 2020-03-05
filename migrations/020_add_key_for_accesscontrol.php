@@ -11,6 +11,9 @@ class AddKeyForAccesscontrol extends Migration
     {
         $db = DBManager::get();
         $db->exec("ALTER TABLE `oc_access_control`
+            DROP INDEX IF EXISTS `PRIMARY`");
+
+        $db->exec("ALTER TABLE `oc_access_control`
             ADD PRIMARY KEY `id_course_id` (`id`(64), `course_id`(32))");
 
         SimpleOrMap::expireTableScheme();
