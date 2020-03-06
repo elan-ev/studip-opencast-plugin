@@ -66,8 +66,12 @@ class OCJob
      */
     public function number_of_chunks()
     {
-        $config = OCConfig::getConfigForCourse(Context::getId());
-        return ceil($this->data['file']['size'] / $config['upload_chunk_size']);
+        $config = OCConfig::getConfigForCourse($this->data['id_list']['course']);
+
+        $chunks = ceil($this->data['file']['size'] / $config['upload_chunk_size']);
+
+        // prevent counting to infinity, might take to long
+        return !is_infinite($chunks) ?: 0;
     }
 
     /**
@@ -160,7 +164,7 @@ class OCJob
      */
     public function load_opencast_job_id()
     {
-        $config = OCConfig::getConfigForCourse(Context::getId());
+        $config = OCConfig::getConfigForCourse($this->data['id_list']['course']);
 
         if (!$this->opencast_unloaded('media_package') && $this->opencast_unloaded('opencast_job_id')) {
             $opencast_job_id = $this->upload_client->newJob(
