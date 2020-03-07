@@ -22,6 +22,10 @@ oauth.consumer.secret.1=CONSUMERSECRET
 
 After that, restart Opencast.
 
+## Opencast Workflows
+
+This plugin assumes your republish workflow [has the ID `republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196).
+
 ## Credentials for Opencast
 
 This plugin now needs a frontend user to connect to opencast, create one or us an existing one. 
