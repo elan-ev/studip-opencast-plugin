@@ -37,6 +37,9 @@ This plugin assumes your republish workflow [has the ID `republish-metadata`](ht
 This plugin requires a front end user account to connect to Opencast; create one or use an existing one. 
 `matterhorn_system_account` and `opencast_system_account` ceased working!
 
+The frontend user needs to following roles:
+`ROLE_ADMIN`, `ROLE_ADMIN_UI` 
+
 ## Configure Stud.IP
 
 Install the most recent version of this plugin, make sure that all migrations worked properly.
