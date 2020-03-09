@@ -5,7 +5,7 @@ Stud.IP-Opencast-Plugin
 the LMS [Stud.IP](http://studip.de/).*
 
 Plugin-Version: 1.2.100  
-Kompatibel zu Stud.IP Versionen: 4.0 - 4.6  
+Kompatibel zu Stud.IP Versionen: 4.0 - 4.5  
 Kompatibel zu Opencast Versionen: 5.x, 6.x, 7.x, 8.x
 
 **Beachten Sie die [INSTALL.md](INSTALL.md), diese Pluginversion benötigt Konfigurationseinstellungen in Opencast!**
