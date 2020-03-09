@@ -22,6 +22,12 @@ oauth.consumer.secret.1=CONSUMERSECRET
 
 After that, restart Opencast.
 
+## Opencast - CORS
+
+If your Stud.IP system resides on a different domain than your Opencast, you need to configure Opencasts Nginx to allow CORS requests. For an explanation why this is necessary and examples how to achieve this, take a look at:
+* https://gist.github.com/Stanback/7145487
+* https://developer.mozilla.org/de/docs/Web/HTTP/CORS
+
 ## Opencast Workflows
 
 This plugin assumes your republish workflow [has the ID `republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196).
