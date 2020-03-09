@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-28 14:57+0100\n"
+"POT-Creation-Date: 2020-03-09 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -970,3 +970,48 @@ msgstr ""
 
 msgid "Es wurden in Opencast keine Serien gefunden."
 msgstr "No series have been found in Opencast."
+
+msgid "Alle Semester"
+msgstr "All semesters"
+
+#, php-format
+msgid ""
+"Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n"
+"Updating scheduled recordings at %s for %s\n"
+msgstr ""
+
+#, php-format
+msgid ""
+"Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"
+"Changed room, deleting scheduled recording at %s for %s\n"
+msgstr ""
+
+msgid "Semesterfilter"
+msgstr ""
+
+msgid "Eingestellter Workflow"
+msgstr "Workflow"
+
+msgid "Chunk-Größe für Uploads"
+msgstr "Chunksize for uploads"
+
+msgid "Unbekannte Sichtbarkeit"
+msgstr "Unknown visibility"
+
+msgid "Aufzeichnungszeitraum"
+msgstr "Recording range"
+
+msgid "keine Aufzeichnung geplant"
+msgstr "no recording planned"
+
+#, php-format
+msgid ""
+"Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n"
+" "
+msgstr ""
+
+#, php-format
+msgid ""
+"Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"
+" "
+msgstr ""

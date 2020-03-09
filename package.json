@@ -1,6 +1,6 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "1.2.102",
+  "version": "1.2.103",
   "description": "Stud.IP plugin for Opencast",
   "dependencies": {
     "blueimp-file-upload": "^10.8.0"
@@ -10,7 +10,7 @@
     "pretranslate": "find * \\( -iname \"*.php\" -o -iname \"*.ihtml\" \\) | xargs xgettext --from-code=UTF-8 -j --add-location=never --package-name=Opencast --language=PHP -o \"locale/en/LC_MESSAGES/opencast.po\"",
     "translate": "msgfmt \"locale/en/LC_MESSAGES/opencast.po\" --output-file=\"locale/en/LC_MESSAGES/opencast.mo\"",
     "prezip": "npm install",
-    "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs images locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php Opencast.class.php plugin.manifest"
+    "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs images javascripts locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
   "repository": {
     "type": "git",
