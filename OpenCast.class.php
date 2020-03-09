@@ -66,6 +66,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
 
+            if (StudipVersion::olderThan('4.2') && !Studip\Markup::editorEnabled()) {
+                PageLayout::addScript($this->getPluginUrl() . '/node_modules/blueimp-file-upload/js/jquery.fileupload.js');
+            }
+
             if (class_exists('Context')) {
                 $id = Context::getId();
             } else {

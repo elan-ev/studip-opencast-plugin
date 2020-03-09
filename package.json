@@ -1,0 +1,25 @@
+{
+  "name": "studip-opencast-plugin",
+  "version": "1.2.99",
+  "description": "Stud.IP plugin for Opencast",
+  "dependencies": {
+    "blueimp-file-upload": "^10.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "pretranslate": "find * \\( -iname \"*.php\" -o -iname \"*.ihtml\" \\) | xargs xgettext --from-code=UTF-8 -j --add-location=never --package-name=Opencast --language=PHP -o \"locale/en/LC_MESSAGES/opencast.po\"",
+    "translate": "msgfmt \"locale/en/LC_MESSAGES/opencast.po\" --output-file=\"locale/en/LC_MESSAGES/opencast.mo\"",
+    "prezip": "npm install",
+    "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs images locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php Opencast.class.php plugin.manifest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elan-ev/studip-opencast-plugin.git"
+  },
+  "author": "Till Glöggler <tgloeggl@uos.de>",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/elan-ev/studip-opencast-plugin/issues"
+  },
+  "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme"
+}

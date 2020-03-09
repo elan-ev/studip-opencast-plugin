@@ -200,7 +200,9 @@ class OpencastLTI
             $course_id = $course_ids[$index];
             $mode = $modes[$index];
 
-            $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
+            if ($mode) {
+                $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
+            }
         }
 
         return $resulting_acl;
