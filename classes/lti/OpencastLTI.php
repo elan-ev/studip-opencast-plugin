@@ -137,7 +137,7 @@ class OpencastLTI
             $course_model = new \OCCourseModel($course_id);
             $episodes = $course_model->getEpisodes();
             foreach ($episodes as $episode) {
-                $result['e'][$episode['id']][$course_id] = $episode['visibility'];
+                $result['e'][$episode['id']][$course_id] = $episode['visibility'] ?: $vis;
             }
         }
 
@@ -200,9 +200,7 @@ class OpencastLTI
             $course_id = $course_ids[$index];
             $mode = $modes[$index];
 
-            if ($mode) {
-                $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
-            }
+            $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
         }
 
         return $resulting_acl;
