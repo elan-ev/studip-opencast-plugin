@@ -81,7 +81,12 @@ class SearchClient extends OCRestClient
 
         if ($series = $this->getJSON($service_url)) {
             $x = "search-results";
-            return $series->$x->result;
+
+            if (is_array($series->$x->result)) {
+                return $series->$x->result;
+            } else {
+                return [$series->$x->result];
+            }
         } else {
             return false;
         }
