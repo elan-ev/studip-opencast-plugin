@@ -159,6 +159,10 @@ class OCCourseModel
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
 
+        $vis = \Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
+
         foreach ($stored_episodes as $key => $stored_episode) {
 
             if ($tmp = $oc_episodes[$stored_episode['episode_id']]) {
@@ -185,13 +189,13 @@ class OCCourseModel
             foreach ($oc_episodes as $episode) {
                 $lastpos++;
                 $timestamp = time();
-                $episode['visibility'] = 'true';
+                $episode['visibility'] = $vis;
                 $episode['mkdate'] = $timestamp;
 
                 OCModel::setEpisode(
                     $episode['id'],
                     $episode['series_id'],
-                    'visible',
+                    $vis,
                     $timestamp
                 );
 
