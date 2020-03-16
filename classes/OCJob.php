@@ -71,7 +71,7 @@ class OCJob
         $chunks = ceil($this->data['file']['size'] / $config['upload_chunk_size']);
 
         // prevent counting to infinity, might take to long
-        return !is_infinite($chunks) ?: 0;
+        return !is_infinite($chunks) ? $chunks : 0;
     }
 
     /**
