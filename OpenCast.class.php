@@ -4,6 +4,7 @@
  */
 
 use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LtiLink;
 
 include('bootstrap.php');
 
