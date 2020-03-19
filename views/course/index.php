@@ -114,7 +114,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 URLHelper::getLink($config['service_url'] . '/studio/index.html', [
                     'cid' => null,
                     'upload.seriesId'   => $connectedSeries[0]['series_id'],
-                    'upload.workflowId' => $uploadwf
+                    'upload.workflowId' => $uploadwf->workflow_id
                 ]),
                 new Icon('video2', 'clickable'), [
                     'target' => '_blank'
