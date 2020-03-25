@@ -262,7 +262,7 @@ class OCCourseModel
                                 'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
-                        if (in_array($track->mimetype, ['audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg']) && !empty($track->audio)) {
+                        if (in_array($track->mimetype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus']) && !empty($track->audio)) {
                             $quality = $this->calculate_size(
                                 $track->audio->bitrate,
                                 $track->duration
