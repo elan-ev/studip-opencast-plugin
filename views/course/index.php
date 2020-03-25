@@ -109,6 +109,19 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 new Icon('upload', 'clickable'), [
                     'data-dialog' => 'size=auto'
                 ]);
+
+            $actions->addLink($_("Video aufnehmen"),
+                URLHelper::getLink($config['service_url'] . '/studio/index.html', [
+                    'cid' => null,
+                    'upload.seriesId'   => $connectedSeries[0]['series_id'],
+                    'upload.workflowId' => $uploadwf->workflow_id
+                ]),
+                new Icon('video2', 'clickable'), [
+                    'target' => '_blank'
+                ]
+            );
+
+            // TODO: Schnittool einbinden - Passender Workflow kucken
             if ($perm->have_perm('root')) {
                 $actions->addLink($_("Kursspezifischen Workflow konfigurieren"),
                     $controller->url_for('course/workflow'),
