@@ -59,10 +59,10 @@ class OCConfig extends \SimpleORMap
             $config = OCEndpoints::findOneBySQL(
                 'service_type = ? AND config_id = ?' ,
                 [$service_type, $config_id]
-            )->toArray();
+            );
 
             if ($config) {
-                return $config + self::find($config_id)->toArray();
+                return $config->toArray() + self::find($config_id)->toArray();
             } else {
                 return [
                     self::empty_config()
