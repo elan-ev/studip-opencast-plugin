@@ -251,13 +251,19 @@ class OpencastLTI
 
     public static function getSearchUrl($course_id)
     {
+        // check if config id is retrieved successful
         $config_id     = OCConfig::getConfigIdForCourse($course_id);
-        $search_config = OCConfig::getConfigForService('search', $config_id);
-        $config        = OCConfig::getConfigForCourse($course_id);
 
-        $url = parse_url($search_config['service_url']);
+        if ($config_id) {
+            $search_config = OCConfig::getConfigForService('search', $config_id);
+            $config        = OCConfig::getConfigForCourse($course_id);
 
-        return $url['scheme'] . '://'. $url['host']
-            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+            $url = parse_url($search_config['service_url']);
+
+            return $url['scheme'] . '://'. $url['host']
+                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+        } else {
+            return '';
+        }
     }
 }

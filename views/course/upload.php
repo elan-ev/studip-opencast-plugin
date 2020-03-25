@@ -100,7 +100,7 @@ use Studip\LinkButton;
                     'id'      => 'video-chooser',
                     'onClick' => "$('input[type=file]').trigger('click');return false;"
                 ]); ?>
-                <input name="video" type="file" id="video_upload">
+                <input name="video" type="file" id="video_upload" accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
             </div>
         </label>
         <div id="upload_info">

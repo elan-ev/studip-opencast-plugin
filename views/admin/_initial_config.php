@@ -11,12 +11,15 @@
             <? endforeach ?>
 
             <? if (Config::get()->OPENCAST_SHOW_TOS) : ?>
-            <?= I18N::textarea("tos", new I18NString($config[1]['tos'], null, [
-                    'object_id' => 1,
-                    'table' => 'oc_config',
-                    'field' => 'tos'
-                ]), ['class' => 'add_toolbar wysiwyg']) ?>
-            <? endif ?>
+            <label>
+                <?= $_('Terms of service') ?>
+                <?= I18N::textarea("tos", new I18NString($config[1]['tos'], null, [
+                        'object_id' => 1,
+                        'table' => 'oc_config',
+                        'field' => 'tos'
+                    ]), ['class' => 'add_toolbar wysiwyg']) ?>
+                <? endif ?>
+            </label>
 
             <?= Button::createAccept($_('Übernehmen')) ?>
 

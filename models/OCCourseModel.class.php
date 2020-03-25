@@ -262,14 +262,14 @@ class OCCourseModel
                                 'info' => $this->add_px_to_resolution($track->video->resolution)
                             ];
                         }
-                        if ($track->mimetype === 'audio/mp3' || $track->mimetype === 'audio/mpeg' || $track->mimetype === 'audio/m4a' && !empty($track->audio)) {
+                        if (in_array($track->mimetype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus']) && !empty($track->audio)) {
                             $quality = $this->calculate_size(
                                 $track->audio->bitrate,
                                 $track->duration
                             );
                             $audio_download[$quality] = [
                                 'url'  => $track->url,
-                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s'
+                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mimetype)[1]
                             ];
                         }
                     }
