@@ -82,7 +82,7 @@ class AjaxController extends OpencastController
                 : $a['endtime'] < $b['endtime'] ? -1 : 1;
         });
 
-        $this->render_json($series);
+        $this->render_json(array_values($series));
     }
 
     function getepisodes_action($series_id)
@@ -114,7 +114,7 @@ class AjaxController extends OpencastController
             }
         }
 
-        $this->render_json($result);
+        $this->render_json(array_values($result));
     }
 
     /**
