@@ -1,5 +1,5 @@
 <?php
-class AddConfigForAlternateSchedule extends Migration
+class AddConfigForMediadownload extends Migration
 {
 
     function up()
