@@ -59,7 +59,9 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $launch_data['oauth_signature'] = $signature;
 
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+        && \Config::get()->OPENCAST_ALLOW_STUDIO
+    ) {
         $studio_lti_link = new LtiLink(
             $config['service_url'] . '/lti',
             $config['lti_consumerkey'],
@@ -86,7 +88,7 @@ OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>,
         this.src = this.dataset.src;
     });
 
-<? if ($studio_lti_link): ?>
+<? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO): ?>
     OC.lti_done = 0;
     OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function() {});
 <? endif ?>
@@ -134,18 +136,21 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                     'data-dialog' => 'size=auto'
                 ]);
 
-            $actions->addLink($_("Video aufnehmen"),
-                URLHelper::getLink($config['service_url'] . '/studio/index.html', [
-                    'cid' => null,
-                    'upload.seriesId'   => $connectedSeries[0]['series_id'],
-                    'upload.workflowId' => $uploadwf->workflow_id
-                ]),
-                new Icon('video2', 'clickable'), [
-                    'target' => '_blank'
-                ]
-            );
+            if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+                $actions->addLink($_("Video aufnehmen"),
+                    URLHelper::getLink($config['service_url'] . '/studio/index.html', [
+                        'cid' => null,
+                        'upload.seriesId'   => $connectedSeries[0]['series_id'],
+                        'upload.workflowId' => $uploadwf->workflow_id
+                    ]),
+                    new Icon('video2', 'clickable'), [
+                        'target' => '_blank'
+                    ]
+                );
+            }
 
             // TODO: Schnittool einbinden - Passender Workflow kucken
+
             if ($perm->have_perm('root')) {
                 $actions->addLink($_("Kursspezifischen Workflow konfigurieren"),
                     $controller->url_for('course/workflow'),
