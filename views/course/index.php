@@ -59,6 +59,25 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $launch_data['oauth_signature'] = $signature;
 
+    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        $studio_lti_link = new LtiLink(
+            $config['service_url'] . '/lti',
+            $config['lti_consumerkey'],
+            $config['lti_consumersecret']
+        );
+
+        $studio_lti_link->setUser($current_user_id, 'Instructor');
+        $studio_lti_link->setCourse($course_id);
+        $studio_lti_link->setResource(
+            $this->connectedSeries[0]['series_id'],
+            'series'
+        );
+
+        $studio_launch_data = $studio_lti_link->getBasicLaunchData();
+        $studio_signature   = $studio_lti_link->getLaunchSignature($studio_launch_data);
+
+        $studio_launch_data['oauth_signature'] = $studio_signature;
+    }
 ?>
 
 <script>
@@ -66,6 +85,11 @@ OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>,
     jQuery('img.previewimage').each(function() {
         this.src = this.dataset.src;
     });
+
+<? if ($studio_lti_link): ?>
+    OC.lti_done = 0;
+    OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function() {});
+<? endif ?>
 });
 </script>
 <?
