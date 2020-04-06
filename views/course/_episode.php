@@ -124,14 +124,18 @@ $visibility_text = [
                     </div>
 
                         <div class="ocplayerlink">
-                            <?if(!empty($item['presenter_download']) || !empty($item['presentation_download']) || !empty($item['audio_download'])){
-                                echo \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]);
-                            } ?>
-                            <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
-                                <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
-                            </div>
+                            <? if (\Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD) : ?>
+                                <? if (!empty($item['presenter_download'])
+                                        || !empty($item['presentation_download'])
+                                        || !empty($item['audio_download'])
+                                    ) : ?>
+                                    <?= \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
+                                <? endif ?>
+                                <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
+                                    <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
+                                </div>
+                            <? endif ?>
                             <div class="button-group">
-                                <? echo $download_options[$item['id']]; ?>
                                 <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
                                     <?= Studip\LinkButton::create($_('Feedback'), 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id'])); ?>
                                 <? endif ?>
