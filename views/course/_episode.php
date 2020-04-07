@@ -134,6 +134,16 @@ $visibility_text = [
                                 <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
                                     <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
                                 </div>
+                            <? elseif ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
+                                <? if (!empty($item['presenter_download'])
+                                        || !empty($item['presentation_download'])
+                                        || !empty($item['audio_download'])
+                                    ) : ?>
+                                    <?= \Studip\LinkButton::create('Mediendownload (nur für Lehrende)','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
+                                <? endif ?>
+                                <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
+                                    <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
+                                </div>
                             <? endif ?>
                             <div class="button-group">
                                 <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
