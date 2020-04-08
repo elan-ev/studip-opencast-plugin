@@ -148,7 +148,9 @@ $visibility_text = [
                                             'data-dialog'     => 'size=auto',
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
-                                        <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
+                                        <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                          <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
+                                       <? endif ?>
                                 <? endif; ?>
                             </div>
                         </div>

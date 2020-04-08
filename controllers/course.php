@@ -233,6 +233,9 @@ class CourseController extends OpencastController
                 if ($this->flash['cand_delete']) {
                     $this->flash['delete'] = true;
                 }
+
+                $eventsClient = ApiEventsClient::getInstance(1);
+                $this->events = $eventsClient->getBySeries($occourse->getSeriesID());
             } else {
 
             }

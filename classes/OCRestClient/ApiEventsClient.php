@@ -39,6 +39,23 @@ class ApiEventsClient extends OCRestClient
         return $acl[$series_id][$episode_id];
     }
 
+    public function getBySeries($series_id)
+    {
+        $params = [
+            'filter'  => sprintf(
+                'is_part_of:%s,status:EVENTS.EVENTS.STATUS.PROCESSED',
+                $series_id
+            ),
+        ];
+
+        $events = $this->getJSON('', $params);
+
+        return array_reduce($events, function ($events, $event) {
+            $events[$event->identifier] = $event;
+            return $events;
+        }, []);
+    }
+
     public function getAllScheduledEvents()
     {
         static $events;
