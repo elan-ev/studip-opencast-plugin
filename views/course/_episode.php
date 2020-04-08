@@ -53,6 +53,29 @@ $visibility_text = [
                                 <h3 class="oce_list_title"><?= $_('Video wird verarbeitet: ') ?>
                                 <?= htmlready($state->mediapackage->title) ?></h3>
                                 <span class="oce_list_date"><?= sprintf($_("Hochgeladen am %s"), date("d.m.Y H:i", strtotime($state->mediapackage->start))) ?></span>
+
+                                <?
+                                $operations = array_reverse(
+                                    array_map(
+                                        function($operation) {
+                                            return $operation->state;
+                                        },
+                                        $state->operations->operation
+                                    )
+                                );
+                                $progress = count($operations) - array_search('SUCCEEDED', $operations);
+                                ?>
+                                <div class="oce_list_progress">
+                                    <label for="oc-progress-<?= $workflow_id?>">
+                                        <?= $_("Bearbeitungsstatus:") ?>
+                                    </label>
+                                    <progress id="oc-progress-<?= $workflow_id?>"
+                                              value="<?= $progress ?>"
+                                              max="<?= count($operations) ?>"
+                                              title="<?= sprintf($_("%d von %d Bearbeitungsschritten"), $progress, count($operations)) ?>">
+                                        <?= (int) (100 * $progress / count($operations)) ?>%
+                                    </progress>
+                                </div>
                             </div>
                         <? endif; ?>
                     </li>
