@@ -4,7 +4,7 @@ use Studip\Button;
 use Studip\LinkButton;
 
 ?>
-<form id="upload_fom"
+<form id="upload_form"
     action="<?= PluginEngine::getLink('opencast/upload/upload_file/', ['uuid' => md5(uniqid())]) ?>"
     enctype="multipart/form-data"
     method="post" class="default"
