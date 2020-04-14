@@ -2,6 +2,7 @@
 /*
  * upload.php - upload controller
  */
+use Opencast\Models\OCSeminarSeries;
 
 class UploadController extends OpencastController
 {
