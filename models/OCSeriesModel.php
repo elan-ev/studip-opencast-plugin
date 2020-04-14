@@ -45,15 +45,16 @@ class OCSeriesModel
     static function getSeriesForUser($user_id)
     {
         if ($GLOBALS['perm']->have_perm('root', $user_id)) {
-            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, series_id FROM seminar_user AS su
-                JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, se.series_id
+                FROM oc_seminar_series AS se
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE ep.visible != 'invisible'");
             $stmt->execute();
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, series_id FROM seminar_user AS su
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, se.series_id
+                FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE su.user_id = ?
