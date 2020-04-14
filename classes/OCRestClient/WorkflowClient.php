@@ -69,18 +69,10 @@ class WorkflowClient extends OCRestClient
 
     function removeInstanceComplete($id)
     {
-        $service_url = sprintf( '/remove/'.$id);
-        $options = array(
-            CURLOPT_URL => $this->base_url.$service_url,
-            CURLOPT_FRESH_CONNECT => 1,
-            CURLOPT_CUSTOMREQUEST => 'DELETE'
-        );
+        $service_url = '/remove/' . $id;
+        $result = $this->deleteJSON($service_url, true);
 
-        curl_setopt_array($this->ochandler, $options);
-        $response = curl_exec($this->ochandler);
-        $http = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-        if (in_array($http,array(204,404))) {
+        if (in_array($result[1], array(204,404))) {
             return true;
         }
 
