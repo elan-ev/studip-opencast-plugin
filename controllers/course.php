@@ -883,6 +883,50 @@ class CourseController extends OpencastController
 
     }
 
+    function allow_download_action($ticket)
+    {
+        if (
+            check_ticket($ticket)
+            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'yes');
+            $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun Aufzeichnungen herunterladen.")];
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    function disallow_download_action($ticket)
+    {
+        if (
+            check_ticket($ticket)
+            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'no');
+            $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen.")];
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    public function isDownloadAllowed()
+    {
+        $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
+        switch ($courseConfig) {
+            case 'yes':
+                return true;
+
+            case 'no':
+                return false;
+
+            case 'inherit':
+                $globalConfig = Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD;
+                return $globalConfig;
+        }
+
+        throw new RuntimeException("The course's configuration of OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE contains an unknown value.");
+    }
+
     public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
     {
         $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
