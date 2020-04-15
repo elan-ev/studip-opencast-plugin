@@ -583,7 +583,7 @@ class OCModel
     static function getCoursePositions($course_id)
     {
         $stmt = DBManager::get()->prepare("SELECT series_id, episode_id,
-            `visible`, oc_seminar_episodes.mkdate
+            `visible`, `is_retracting`, oc_seminar_episodes.mkdate
             FROM oc_seminar_series
             JOIN oc_seminar_episodes USING (series_id)
             WHERE `seminar_id` = ? ORDER BY oc_seminar_episodes.mkdate DESC");

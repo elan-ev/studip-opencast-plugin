@@ -81,16 +81,26 @@ $visibility_text = [
                         </div>
                         <div class="oce_playercontainer">
                             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                            <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
-                            <span class="previewimage">
-                                <img
-                                    class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                    data-src="<?= $image ?>" height="200"
-                                >
-                                <img class="playbutton"
+                            <? if ($item['is_retracting']) { ?>
+                                <span class="previewimage">
+                                    <img
+                                        class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                        data-src="<?= $image ?>" height="200"
+                                        style="filter: grayscale(100%);"
+                                    >
+                                </span>
+                            <? } else {  ?>
+                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                    <span class="previewimage">
+                                        <img
+                                            class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                            data-src="<?= $image ?>" height="200"
+                                        >
+                                        <img class="playbutton"
                                      src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
-                            </span>
-                            </a>
+                                    </span>
+                                </a>
+                            <? } ?>
                         </div>
                     </div>
                     <div class="oce_metadatacontainer">
@@ -123,6 +133,7 @@ $visibility_text = [
                         </div>
                     </div>
 
+                        <? if (!$item['is_retracting']) { ?>
                         <div class="ocplayerlink">
                             <? if ($controller->isDownloadAllowed()) : ?>
                                 <? if (!empty($item['presenter_download'])
@@ -158,10 +169,15 @@ $visibility_text = [
                                             'data-dialog'     => 'size=auto',
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
+                                        <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), []); ?>
                                 <? endif; ?>
                             </div>
                         </div>
-
+                        <? } else { ?>
+                            <div class="ocplayerlink" style="margin-top: 1em;">
+                                <?= MessageBox::info($_("Die Aufzeichnung wird gerade gelöscht.")) ?>
+                            </div>
+                        <? } ?>
                 </li>
             <? endforeach; ?>
         </ul>
