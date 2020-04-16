@@ -45,8 +45,8 @@ class SeriesClient extends OCRestClient
             : 'visible';
 
         $post = array(
-            'series' => $dublinCore,
-            'acl'    => $acl[$vis]->as_xml()
+            'series' => urlencode($dublinCore),
+            'acl'    => urlencode($acl[$vis]->as_xml())
         );
 
         $res = $this->getXML('/', $post, false, true);
