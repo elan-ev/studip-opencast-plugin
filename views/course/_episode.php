@@ -124,7 +124,7 @@ $visibility_text = [
                     </div>
 
                         <div class="ocplayerlink">
-                            <? if (\Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD) : ?>
+                            <? if ($controller->isDownloadAllowed()) : ?>
                                 <? if (!empty($item['presenter_download'])
                                         || !empty($item['presentation_download'])
                                         || !empty($item['audio_download'])

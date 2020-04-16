@@ -193,6 +193,21 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                     : 'video+decline', 'clickable')
             );
         }
+
+        if ($controller->isDownloadAllowed()) {
+            $actions->addLink(
+                $_("Downloads verhindern"),
+                PluginEngine::getLink('opencast/course/disallow_download/' . get_ticket()),
+                new Icon('download+decline', 'clickable')
+            );
+        } else {
+            $actions->addLink(
+                $_("Downloads erlauben"),
+                PluginEngine::getLink('opencast/course/allow_download/' . get_ticket()),
+                new Icon('download+accept', 'clickable')
+            );
+        }
+
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
