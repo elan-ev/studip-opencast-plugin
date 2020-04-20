@@ -995,6 +995,7 @@ class CourseController extends OpencastController
             'seriesId' => empty($connectedSeries) ? null : $connectedSeries[0]['series_id'],
             'uploadWorkflowId' => $workflow
         ];
+    }
 
     private function getEpisode($episodeId)
     {
