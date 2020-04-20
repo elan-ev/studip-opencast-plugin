@@ -169,6 +169,11 @@ $visibility_text = [
                                             'data-dialog'     => 'size=auto',
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
+
+                                        <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                          <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
+                                       <? endif ?>
+
                                         <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), []); ?>
                                 <? endif; ?>
                             </div>
