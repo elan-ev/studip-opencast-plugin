@@ -41,6 +41,12 @@ class CourseController extends OpencastController
         };
 
         PageLayout::setHelpKeyword('Opencast');
+
+        PageLayout::addHeadElement(
+            'script',
+            [],
+            'OC.parameters = '.json_encode($this->getOCParameters(), JSON_FORCE_OBJECT)
+        );
     }
 
     /**
@@ -150,8 +156,10 @@ class CourseController extends OpencastController
 
         $this->set_title($this->_("Opencast Player"));
 
-        if ($upload_message == 'true') {
+        if ($upload_message === 'true') {
             $this->flash['messages'] = ['success' => $this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.')];
+        } else if ($upload_message === 'false') {
+            $this->flash['messages'] = ['error' => $this->_('Die Datei konnte nicht erfolgreich hochgeladen werden.')];
         }
 
         $reload = true;
@@ -969,6 +977,24 @@ class CourseController extends OpencastController
 
         return $size;
     }
+
+    private function getOCParameters()
+    {
+        $cid = \Context::getId();
+        $connectedSeries = OCSeminarSeries::getSeries($cid);
+        $occourse = new OCCourseModel($cid);
+        $uploadwf = $occourse->getWorkflow('upload');
+        if ($uploadwf) {
+            $workflow = $uploadwf['workflow_id'];
+        } else {
+            $workflow = get_config('OPENCAST_WORKFLOW_ID');
+        }
+
+
+        return [
+            'seriesId' => empty($connectedSeries) ? null : $connectedSeries[0]['series_id'],
+            'uploadWorkflowId' => $workflow
+        ];
 
     private function getEpisode($episodeId)
     {

@@ -130,11 +130,12 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         );
 
         if ($can_schedule) {
-            $actions->addLink($_("Medien hochladen"),
+            $actions->addLink(
+                $_("Medien hochladen"),
                 $controller->url_for('course/upload'),
-                new Icon('upload', 'clickable'), [
-                    'data-dialog' => 'size=auto'
-                ]);
+                new Icon('upload', 'clickable'),
+                []
+            );
 
             if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
                 $actions->addLink($_("Video aufnehmen"),

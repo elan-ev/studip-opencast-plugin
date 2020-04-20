@@ -5,7 +5,7 @@ use Studip\LinkButton;
 
 ?>
 <form id="upload_form"
-    action="<?= PluginEngine::getLink('opencast/upload/upload_file/', ['uuid' => md5(uniqid())]) ?>"
+    action="#"
     enctype="multipart/form-data"
     method="post" class="default"
 >
@@ -35,16 +35,10 @@ use Studip\LinkButton;
 
         <label>
             <span class="required">
-                <?= $_('Aufnahmedatum') ?>
+                <?= $_('Aufnahmezeitpunkt') ?>
             </span>
 
-            <input class="oc_input" type="date" name="recordDate"
-                value="<?= date('Y-m-d') ?>" id="recordDate" size="10" required>
-        </label>
-
-        <label>
-            <?= $_('Startzeit') ?>
-            <input type="time" name="startTime">
+            <input class="oc_input" type="text" name="recordDate" value="<?= date('d.m.Y H:i') ?>" id="recordDate" maxlength="10" required data-datetime-picker>
         </label>
 
         <label>
@@ -105,14 +99,6 @@ use Studip\LinkButton;
         </label>
         <div id="upload_info">
         </div>
-        <div id="progressbarholder">
-            <div id="progressbar">
-                <div id='progressbar-label'></div>
-            </div>
-        </div>
-
-        <input type="hidden" value="" name="total_file_size" id="total_file_size"/>
-        <input type="hidden" value="" name="file_name" id="file_name"/>
 
         <hr>
 
@@ -139,8 +125,31 @@ use Studip\LinkButton;
     </footer>
 </form>
 
+<div id="oc-media-upload-dialog" style="display: none;">
+    <div class="oc-media-upload-dialog-content">
+        <h1 class="hide-in-dialog"><?= $_("Medien-Upload") ?></h1>
+        <p><?= $_("Ihre Medien werden gerade hochgeladen.") ?></p>
+        <div>
+            <span class="file"></span>
+            <div class="oc-media-upload-progress"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.oc-media-upload-dialog-content p {
+    font-size: 1.25em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.oc-media-upload-progress {
+    margin-top: .5em;
+}
+</style>
+
 <script type="text/javascript">
 jQuery(function() {
-    OC.initUpload(<?= $config['upload_chunk_size'] ?>);
+    OC.initUpload(<?= json_encode($config['service_url']) ?>);
 });
 </script>

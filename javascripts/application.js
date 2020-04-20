@@ -22,7 +22,7 @@ OC = {
                 url: lti_url,
                 data:  lti_data,
                 xhrFields: {
-                   withCredentials: true
+                    withCredentials: true
                 },
                 crossDomain: true,
                 complete: function() {
@@ -65,55 +65,213 @@ OC = {
 
     },
 
-    initUpload: function (maxChunk) {
-        jQuery(document).ready(function () {
-            $('#btn_accept').click(function () {
-                OC.formData.submit();
-                return false;
+    initUpload: function (serviceUrl) {
+        function getMediaPackage() {
+            return $.ajax({
+                url: serviceUrl + "/ingest/createMediaPackage",
+                xhrFields: { withCredentials: true },
+            })
+        }
+
+        function createDCCCatalog(terms) {
+            var escapeString = function (string) {
+                return new XMLSerializer().serializeToString(new Text(string));
+            };
+
+            return '<?xml version="1.0" encoding="UTF-8"?>' +
+                '<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/"' +
+                '            xmlns:dcterms="http://purl.org/dc/terms/"' +
+                '            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+
+            '<dcterms:creator>' + escapeString(terms.creator) + '</dcterms:creator>' +
+                '<dcterms:contributor>' + escapeString(terms.contributor) + ' </dcterms:contributor>' +
+                '<dcterms:subject>' + escapeString(terms.subject) + '</dcterms:subject>' +
+                '<dcterms:created xsi:type="dcterms:W3CDTF">' + escapeString(terms.created) + '</dcterms:created>' +
+                '<dcterms:description>' + escapeString(terms.description) + '</dcterms:description>' +
+                '<dcterms:language><![CDATA[' + escapeString(terms.language) + ']]></dcterms:language>' +
+                '<dcterms:title>'+ escapeString(terms.title) + '</dcterms:title>' +
+                '<dcterms:isPartOf>'+ escapeString(terms.seriesId) + '</dcterms:isPartOf>' +
+                '</dublincore>';
+        }
+
+        function addDCCCatalog(mediaPackage, terms) {
+            // Prepare meta data
+            var episodeDC = createDCCCatalog(terms);
+
+            return $.ajax({
+                url: serviceUrl + "/ingest/addDCCatalog",
+                method: "POST",
+                data: {
+                    mediaPackage: mediaPackage,
+                    dublinCore: episodeDC,
+                    flavor: 'dublincore/episode'
+                },
+                xhrFields: { withCredentials: true },
+            })
+        }
+
+        function uploadMedia(mediaPackage, media, onProgress) {
+            var data = new FormData();
+            data.append('mediaPackage', mediaPackage);
+            data.append('flavor', "presentation/source");
+            data.append('tags', '');
+            data.append('BODY', media, media.name);
+
+            return $.ajax({
+                xhr: createProgressAwareXhr(onProgress),
+                url: serviceUrl + "/ingest/addTrack",
+                method: "POST",
+                data: data,
+                processData: false,
+                contentType: false,
+                xhrFields: { withCredentials: true },
+            })
+        }
+
+        function createProgressAwareXhr(onProgress) {
+            return function () {
+                var xhr = new window.XMLHttpRequest();
+                // TODO: xhr.upload.addEventListener("progress", onProgress, false);
+                xhr.withCredentials = true;
+                return xhr;
+            }
+        }
+
+        function finishIngest(mediaPackage, workflowId = "upload") {
+            return $.ajax({
+                url: serviceUrl + "/ingest/ingest",
+                method: "POST",
+                data: {
+                    mediaPackage: mediaPackage,
+                    workflowDefinitionId: workflowId
+                },
+                xhrFields: { withCredentials: true },
+            })
+        }
+
+        function upload(media, terms, workflowId, onProgress) {
+            return getMediaPackage()
+                .then(function (_mediaPackage, _status, resp) {
+                    return addDCCCatalog(resp.responseText, terms)
+                })
+                .then(function (_mediaPackage, _status, resp) {
+                    return uploadMedia(resp.responseText, media, onProgress)
+                })
+                .then(function (_mediaPackage, _status, resp) {
+                    return finishIngest(resp.responseText, workflowId)
+                })
+        }
+
+        function onFileChange(event) {
+            var target = event.target
+            if (!target.files || target.files.length !== 1) {
+                return;
+            }
+            var file = target.files[0];
+
+            $('#upload_info').html('<p>Name: '
+                                   + file.name
+                                   + ' Gr&ouml;&szlig;e: '
+                                   + OC.getFileSize(file.size)
+                                   + '</p>');
+            $('#upload_info').val(file.name);
+        }
+
+        function redirectAfterUpload(status) {
+            window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/"+(status ? 'true' : 'false')), '_self');
+        }
+
+        function showUploadProgress(file) {
+            var force = false;
+            var uploadDialog = $("#oc-media-upload-dialog").html()
+            var origin = $("<div></div>")
+            origin.on("dialog-open", function(_event, options) {
+
+                // prevent accidentally closing the dialog
+                var dialog = options.dialog;
+                $(dialog).on("dialogbeforeclose", function () {
+                    return force || confirm("Wollen Sie den Medien-Upload wirklich abbrechen?")
+                });
+
+                // fill the filename line
+                var fileSpan = _.template('<%= name %> (<%= size %>)')
+                $("span.file", dialog).html(fileSpan({ name: file.name, size: OC.getFileSize(file.size) }))
+
+                // start the progress bar
+                $(".oc-media-upload-progress", dialog).progressbar({ value: false });
             });
 
-            $('#video_upload').fileupload({
-                limitMultiFileUploads: 1,
-                autoupload: false,
-                maxChunkSize: maxChunk,
-                add: function (e, data) {
-                    var file = data.files[0];
-                    $('#total_file_size').attr('value', file.size);
-                    $('#file_name').attr('value', file.name);
-                    $('#upload_info').html('<p>Name: '
-                        + file.name
-                        + ' Gr&ouml;&szlig;e: '
-                        + OC.getFileSize(file.size)
-                        + '</p>');
-                    $('#upload_info').val(file.name);
-                    OC.formData = data;
-                    return false;
-                },
-                submit: function (e, data) {
-                    $("#btn_accept").attr('disabled', true);
-                    $("#progressbar").progressbar({
-                        value: 0
-                    }).addClass('oc_mediaupload_progressbar').show().css({'background': '#d0d7e4'});
-                },
-                progressall: function (e, data) {
-                    if (data.bitrate / 8 > 1048576) {
-                        var speed = parseInt(data.bitrate / 8 / 1024 / 1024) + " Mb/s";
-                    } else {
-                        var speed = parseInt(data.bitrate / 8 / 1024) + " kb/s";
-                    }
+            var options = {
+                buttons: false,
+                origin: origin,
+                size: 'auto',
+                title: $("#oc-media-upload-dialog h1").text()
+            };
+            STUDIP.Dialog.show(uploadDialog, options)
 
-                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                    jQuery("#progressbar").progressbar("value", progress);
-                    jQuery("#progressbar-label").text(progress + " % / " + speed);
-                },
-                done: function (e, data) {
-                    jQuery("#progressbar").progressbar('destroy');
-                    jQuery("#upload_dialog").dialog("close");
-                    window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/true"), '_self');
-                },
-                error: function (xhr, data) {
-                    console.log('Fehler', data);
+            return function () {
+                force = true;
+                STUDIP.Dialog.close(options)
+            };
+        }
+
+        jQuery(document).ready(function ($) {
+            var seriesId = window.OC.parameters.seriesId;
+            var workflowId = window.OC.parameters.uploadWorkflowId;
+
+            $(document).on('change', $('#video_upload'), onFileChange)
+
+            $('#upload_form').submit(function () {
+                if (this.dataset.isUploading && this.dataset.isUploading) {
+                    return false;
                 }
+                this.dataset.isUploading = true
+
+                var $form = $(this)
+                var formFields = $form.serializeArray().reduce(
+                    function (fields, field) {
+                        fields[field.name] = field.value;
+                        return fields;
+                    },
+                    {}
+                );
+
+                // workaround: if datetimepicker field was not
+                // focused, it may not have been initialized yet
+                STUDIP.UI.DateTimepicker.init();
+
+                var terms = {
+                    creator: formFields.creator,
+                    contributor: formFields.contributor,
+                    subject: formFields.subject,
+                    created: $(this.recordDate).datepicker("getDate").toISOString(),
+                    description: formFields.description,
+                    language: formFields.language,
+                    title: formFields.title,
+                    seriesId: seriesId
+                }
+
+                var file = this.video.files[0];
+
+                var closeProgressDialog = showUploadProgress(file);
+
+                var onProgress = function () { console.log("upload progress", arguments); };
+                var onSuccess = (function () {
+                    this.dataset.isUploading = false
+                    redirectAfterUpload(true);
+                    // TODO: redirecting takes that much time that closing the dialog feels wrong
+                    // closeProgressDialog();
+                }).bind(this);
+                var onError = function (error) {
+                    console.error(error);
+                    redirectAfterUpload(false);
+                };
+
+                upload(file, terms, workflowId, onProgress)
+                    .then(onSuccess)
+                    .catch(onError)
+
+                return false;
             });
         })
     },
@@ -158,7 +316,7 @@ OC = {
 
                             if (job.operations.operation[operation].state == 'RUNNING'
                                 || job.operations.operation[operation].state == 'INSTANTIATED'
-                            ) {
+                               ) {
                                 current_description = job.operations.operation[operation].description;
                                 break;
                             }
@@ -223,20 +381,20 @@ OC = {
         $('#visibility_dialog').dialog('close');
 
         jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP
-                + "plugins.php/opencast/course/permission/"
-                + episode_id + "/" + visibility + "?cid=" + cid,
-            function(response) {
-                $element
-                    .removeClass('ocinvisible ocvisible ocfree')
-                    .addClass('oc' + response.visible)
-                    .text(OC.visibility_text[response.visible])
-                    .attr('disabled', false);
-            }
-        ).fail(function(response) {
-            alert('Warten Sie mindestens 2 Minuten, bevor Sie die Sichtbarkeit für diese Video erneut ändern! Opencast muss die vorherige Sichtbarkeitsänderung erst anwenden.');
-            $element
-                .attr('disabled', false);
-        });
+                   + "plugins.php/opencast/course/permission/"
+                   + episode_id + "/" + visibility + "?cid=" + cid,
+                   function(response) {
+                       $element
+                           .removeClass('ocinvisible ocvisible ocfree')
+                           .addClass('oc' + response.visible)
+                           .text(OC.visibility_text[response.visible])
+                           .attr('disabled', false);
+                   }
+                  ).fail(function(response) {
+                      alert('Warten Sie mindestens 2 Minuten, bevor Sie die Sichtbarkeit für diese Video erneut ändern! Opencast muss die vorherige Sichtbarkeitsänderung erst anwenden.');
+                      $element
+                          .attr('disabled', false);
+                  });
     },
 
     // schedule setting
