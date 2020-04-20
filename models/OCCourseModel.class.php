@@ -166,14 +166,16 @@ class OCCourseModel
         foreach ($stored_episodes as $key => $stored_episode) {
 
             if ($tmp = $oc_episodes[$stored_episode['episode_id']]) {
-                $tmp['visibility'] = $stored_episode['visible'];
-                $tmp['mkdate']     = $stored_episode['mkdate'];
+                $tmp['visibility']    = $stored_episode['visible'];
+                $tmp['is_retracting'] = $stored_episode['is_retracting'];
+                $tmp['mkdate']        = $stored_episode['mkdate'];
 
                 OCModel::setEpisode(
                     $stored_episode['episode_id'],
                     $stored_episode['series_id'],
                     $tmp['visibility'],
-                    $stored_episode['mkdate']
+                    $stored_episode['mkdate'],
+                    $tmp['is_retracting']
                 );
 
                 $episodes[] = $tmp;
