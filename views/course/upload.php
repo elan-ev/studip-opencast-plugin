@@ -4,7 +4,7 @@ use Studip\Button;
 use Studip\LinkButton;
 
 ?>
-<form id="upload_fom"
+<form id="upload_form"
     action="<?= PluginEngine::getLink('opencast/upload/upload_file/', ['uuid' => md5(uniqid())]) ?>"
     enctype="multipart/form-data"
     method="post" class="default"
@@ -100,7 +100,7 @@ use Studip\LinkButton;
                     'id'      => 'video-chooser',
                     'onClick' => "$('input[type=file]').trigger('click');return false;"
                 ]); ?>
-                <input name="video" type="file" id="video_upload" accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                <input name="video" type="file" id="video_upload" accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*" required>
             </div>
         </label>
         <div id="upload_info">

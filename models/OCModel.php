@@ -571,19 +571,19 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
     }
 
-    static function setEpisode($episode_id, $series_id, $visibility, $mkdate)
+    static function setEpisode($episode_id, $series_id, $visibility, $mkdate, $is_retracting)
     {
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`series_id`,`episode_id`, `visible`, `mkdate`)
-                VALUES (?, ?, ?, ?)");
+                oc_seminar_episodes (`series_id`,`episode_id`, `visible`, `mkdate`, `is_retracting`)
+                VALUES (?, ?, ?, ?, ?)");
 
-        return $stmt->execute(array($series_id, $episode_id, $visibility, $mkdate));
+        return $stmt->execute(array($series_id, $episode_id, $visibility, $mkdate, $is_retracting));
     }
 
     static function getCoursePositions($course_id)
     {
         $stmt = DBManager::get()->prepare("SELECT series_id, episode_id,
-            `visible`, oc_seminar_episodes.mkdate
+            `visible`, `is_retracting`, oc_seminar_episodes.mkdate
             FROM oc_seminar_series
             JOIN oc_seminar_episodes USING (series_id)
             WHERE `seminar_id` = ? ORDER BY oc_seminar_episodes.mkdate DESC");

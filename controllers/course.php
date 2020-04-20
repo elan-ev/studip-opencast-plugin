@@ -886,6 +886,76 @@ class CourseController extends OpencastController
 
     }
 
+    function allow_download_action($ticket)
+    {
+        if (
+            check_ticket($ticket)
+            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'yes');
+            $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun Aufzeichnungen herunterladen.")];
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    function disallow_download_action($ticket)
+    {
+        if (
+            check_ticket($ticket)
+            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+        ) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'no');
+            $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen.")];
+        }
+
+        $this->redirect('course/index/false');
+    }
+
+    public function isDownloadAllowed()
+    {
+        $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
+        switch ($courseConfig) {
+            case 'yes':
+                return true;
+
+            case 'no':
+                return false;
+
+            case 'inherit':
+                $globalConfig = Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD;
+                return $globalConfig;
+        }
+
+        throw new RuntimeException("The course's configuration of OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE contains an unknown value.");
+    }
+
+    function remove_episode_action($ticket, $episodeId)
+    {
+        if (
+            check_ticket($ticket) &&
+            $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+        ) {
+            if ($episode = $this->getEpisode($episodeId)) {
+                if ($this->retractEpisode($episode)) {
+                    $this->flash['messages'] = [
+                        'success' => $this->_(
+                            "Die Episode wurde zum entfernen markiert."
+                        )
+                    ];
+                } else {
+                    $this->flash['messages'] = [
+                        'error' => $this->_(
+                            "Die Episode konnte nicht zum entfernen markiert werden."
+                        )
+                    ];
+                }
+            }
+        }
+
+        $this->redirect('course/index/false');
+    }
+
     public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
     {
         $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
@@ -900,4 +970,30 @@ class CourseController extends OpencastController
         return $size;
     }
 
+    private function getEpisode($episodeId)
+    {
+        $series = OCSeminarSeries::getSeries($this->course_id);
+        if (empty($series)) {
+            return null;
+        }
+
+        $seriesId = $series[0]->series_id;
+        return \Opencast\Models\OCSeminarEpisodes::find([
+            $seriesId,
+            $episodeId
+        ]);
+    }
+
+    private function retractEpisode($episode)
+    {
+        $workflowClient = ApiWorkflowsClient::getInstance();
+        $result = $workflowClient->retract($episode->episode_id);
+        if (!$result) {
+            return false;
+        }
+
+        $episode->is_retracting = true;
+        $episode->store();
+        return true;
+    }
 }

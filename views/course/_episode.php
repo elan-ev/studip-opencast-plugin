@@ -81,16 +81,26 @@ $visibility_text = [
                         </div>
                         <div class="oce_playercontainer">
                             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
-                            <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
-                            <span class="previewimage">
-                                <img
-                                    class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                    data-src="<?= $image ?>" height="200"
-                                >
-                                <img class="playbutton"
+                            <? if ($item['is_retracting']) { ?>
+                                <span class="previewimage">
+                                    <img
+                                        class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                        data-src="<?= $image ?>" height="200"
+                                        style="filter: grayscale(100%);"
+                                    >
+                                </span>
+                            <? } else {  ?>
+                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                    <span class="previewimage">
+                                        <img
+                                            class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                            data-src="<?= $image ?>" height="200"
+                                        >
+                                        <img class="playbutton"
                                      src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
-                            </span>
-                            </a>
+                                    </span>
+                                </a>
+                            <? } ?>
                         </div>
                     </div>
                     <div class="oce_metadatacontainer">
@@ -123,13 +133,24 @@ $visibility_text = [
                         </div>
                     </div>
 
+                        <? if (!$item['is_retracting']) { ?>
                         <div class="ocplayerlink">
-                            <? if (\Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD) : ?>
+                            <? if ($controller->isDownloadAllowed()) : ?>
                                 <? if (!empty($item['presenter_download'])
                                         || !empty($item['presentation_download'])
                                         || !empty($item['audio_download'])
                                     ) : ?>
                                     <?= \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
+                                <? endif ?>
+                                <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
+                                    <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
+                                </div>
+                            <? elseif ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
+                                <? if (!empty($item['presenter_download'])
+                                        || !empty($item['presentation_download'])
+                                        || !empty($item['audio_download'])
+                                    ) : ?>
+                                    <?= \Studip\LinkButton::create('Mediendownload (nur für Lehrende)','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
                                 <? endif ?>
                                 <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
                                     <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
@@ -148,13 +169,20 @@ $visibility_text = [
                                             'data-dialog'     => 'size=auto',
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
+
                                         <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
                                           <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
                                        <? endif ?>
+
+                                        <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), []); ?>
                                 <? endif; ?>
                             </div>
                         </div>
-
+                        <? } else { ?>
+                            <div class="ocplayerlink" style="margin-top: 1em;">
+                                <?= MessageBox::info($_("Die Aufzeichnung wird gerade gelöscht.")) ?>
+                            </div>
+                        <? } ?>
                 </li>
             <? endforeach; ?>
         </ul>
