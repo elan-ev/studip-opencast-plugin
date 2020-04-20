@@ -157,6 +157,7 @@
     }
 
     span.previewimage {
+        display: block;
         position: relative;
         left: 0;
         top: 0;
@@ -172,6 +173,9 @@
             left: 0;
             top: 0;
             width: 100%;
+            height: auto;
+            max-height: 240px;
+            object-fit: contain;
         }
 
         img.playbutton {
@@ -179,9 +183,10 @@
             width: 50%;
             left: 25%;
             max-height: 100px;
-            padding-bottom: 40px;
             opacity: 0.6;
-            bottom: 10px;
+            padding-bottom: 0;
+            bottom: 50%;
+            transform: translateY(50%);
         }
     }
 }
@@ -775,7 +780,6 @@ img.ocinvisible {
 
     .oce_playercontainer span.previewimage img.playbutton {
         max-height: 50px;
-        bottom: 0px;
     }
 
     .ocplayerlink {
@@ -795,6 +799,5 @@ img.ocinvisible {
 
     .oce_playercontainer span.previewimage img.playbutton {
         max-height: 100px;
-        bottom: 0px;
     }
 }
