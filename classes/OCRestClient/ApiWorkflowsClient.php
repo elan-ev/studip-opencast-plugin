@@ -16,6 +16,22 @@ class ApiWorkflowsClient extends OCRestClient
         }
     }
 
+    function retract($episode_id)
+    {
+        $service_url = '/';
+        $data = [
+            'event_identifier' => $episode_id,
+            'workflow_definition_identifier' => 'retract',
+        ];
+        list(, $code) = $this->postJSON($service_url, $data, true);
+
+        if ($code == 201) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Republish the passed episode / event
      *
