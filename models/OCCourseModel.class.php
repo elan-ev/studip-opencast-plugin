@@ -174,7 +174,8 @@ class OCCourseModel
                     $stored_episode['episode_id'],
                     $stored_episode['series_id'],
                     $tmp['visibility'],
-                    $stored_episode['mkdate']
+                    $stored_episode['mkdate'],
+                    $tmp['is_retracting']
                 );
 
                 $episodes[] = $tmp;
