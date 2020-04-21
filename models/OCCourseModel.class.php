@@ -196,7 +196,8 @@ class OCCourseModel
                     $episode['id'],
                     $episode['series_id'],
                     $vis,
-                    $timestamp
+                    $timestamp,
+                    false
                 );
 
                 $episodes[] = $episode;
