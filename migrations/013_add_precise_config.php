@@ -37,7 +37,7 @@ class AddPreciseConfig extends Migration
         DBManager::get()->query('ALTER TABLE `oc_config_precise` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9');
 
         //remove column from old config
-        DBManager::get()->query("ALTER TABLE `oc_config` DROP COLUMN IF EXISTS `schedule_time_puffer_seconds`;");
+        DBManager::get()->query("ALTER TABLE `oc_config` DROP COLUMN `schedule_time_puffer_seconds`;");
     }
 
     function down()
