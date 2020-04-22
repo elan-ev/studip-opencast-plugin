@@ -403,4 +403,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
         return $to_return;
     }
+
+    /**
+     * Return the name of this plugin.
+     */
+    public function getPluginName()
+    {
+        return 'Opencast';
+    }
 }
