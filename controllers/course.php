@@ -162,6 +162,11 @@ class CourseController extends OpencastController
             $this->flash['messages'] = ['error' => $this->_('Die Datei konnte nicht erfolgreich hochgeladen werden.')];
         }
 
+        $this->mayWatchEpisodes = $perm->have_studip_perm('autor', $this->course_id);
+        if (!$this->mayWatchEpisodes) {
+            PageLayout::postInfo($this->_('Sie sind in dieser Veranstaltung nur Leser*in. Sie können die Aufzeichnungen leider nicht ansehen. Wenden Sie sich eventuell an die Lehrenden dieser Veranstaltung!'));
+        }
+
         $reload = true;
         $this->states = false;
 
