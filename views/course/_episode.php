@@ -89,7 +89,7 @@ $visibility_text = [
                                         style="filter: grayscale(100%);"
                                     >
                                 </span>
-                            <? } else {  ?>
+                            <? } else if ($mayWatchEpisodes) { ?>
                                 <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
                                     <span class="previewimage">
                                         <img
@@ -100,6 +100,10 @@ $visibility_text = [
                                      src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                                     </span>
                                 </a>
+                            <? } else { ?>
+                                <span class="previewimage">
+                                    <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>" data-src="<?= $image ?>" height="200">
+                                </span>
                             <? } ?>
                         </div>
                     </div>
