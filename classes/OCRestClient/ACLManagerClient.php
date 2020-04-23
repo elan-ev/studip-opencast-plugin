@@ -36,8 +36,15 @@ class ACLManagerClient extends OCRestClient
                 return $oc_acl;
             }
         }
+        list($result, $code) = $this->postJSON('/acl', $data, true);
 
-        return $this->postJSON('/acl', $data);
+        if ($code === 200) {
+            return $result;
+        } else if ($code === 409) {
+            return null;
+        }
+
+        throw new Exception(_("Es ist ein Fehler beim Anlegen der ACL aufgetreten."));
     }
 
     function removeACL($acl_id)
