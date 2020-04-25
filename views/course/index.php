@@ -261,17 +261,17 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 
             <label>
                 <input type="radio" name="visibility" value="invisible">
-                Unsichtbar - Dieses Video ist nur für Sie sichtbar
+                <?= $_("Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar") ?>
             </label>
 
             <label>
                 <input type="radio" name="visibility" value="visible">
-                Sichtbar - Dieses Video ist für Teilnehmende dieser Veranstaltung sichtbar
+                <?= $_("Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar") ?>
             </label>
 
             <label>
                 <input type="radio" name="visibility" value="free">
-                Freigeben - Dieses Video ist für jeden sichtbar
+                <?= $_("Freigeben - Dieses Video ist für jeden sichtbar") ?>
             </label>
         </fieldset>
 
