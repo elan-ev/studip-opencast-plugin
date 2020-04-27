@@ -1,6 +1,6 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "1.2.112",
+  "version": "1.2.115",
   "description": "Stud.IP plugin for Opencast",
   "dependencies": {
     "blueimp-file-upload": "^10.8.0"
