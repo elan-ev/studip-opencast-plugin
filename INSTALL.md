@@ -28,6 +28,43 @@ If your Stud.IP system resides on a different domain than your Opencast, you nee
 * https://gist.github.com/iki/1247cd182acd1aa3ee4876acb7263def#file-nginx-cors-proxy-conf
 * https://developer.mozilla.org/de/docs/Web/HTTP/CORS
 
+Example (nginx):
+
+http context:
+```
+# CORS preparations: Allow CORS requests from some hosts (1)
+# for plugin integration.
+map $http_origin $cors_ok {
+    default                              0;
+    https://dev.studip.example.com       1;
+    https://studip.example.com           1;
+    https://ilias.example.com            1;
+}
+
+map $cors_ok $cors_origin {
+    default                              '';
+    1                                    $http_origin;
+}
+
+map $cors_ok $cors_credentials {
+    default                              '';
+    1                                    true;
+}
+```
+
+location context:
+```
+# CAUTION: There could be several add_header directives.
+# These directives are inherited from the previous level
+# if and only if there are no add_header directives defined
+# on the current level.
+# -------------------------
+# Allow some CORS access
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+add_header Access-Control-Allow-Origin       '$cors_origin';
+add_header Access-Control-Allow-Credentials  '$cors_credentials';
+```
+
 ## Opencast Workflows
 
 This plugin assumes your republish workflow [has the ID `republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196).
