@@ -20,7 +20,17 @@ oauth.consumer.key.1=CONSUMERKEY
 oauth.consumer.secret.1=CONSUMERSECRET
 ```
 
+3. Edit `etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg ``
+enable:
+```
+lti.create_jpa_user_reference=true
+lti.custom_role_name=Instructor
+#lti.custom_roles=ROLE_ADMIN_UI,ROLE_API_EVENTS_METADATA_DELETE,ROLE_API_EVENTS_METADATA_EDIT,ROLE_API_EVENTS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_STUDIO
+```
+
 After that, restart Opencast.
+
+
 
 ## Opencast - CORS
 
@@ -71,16 +81,16 @@ This plugin assumes your republish workflow [has the ID `republish-metadata`](ht
 
 ## Credentials for Opencast
 
-This plugin requires a front end user account to connect to Opencast; create one or use an existing one. 
+This plugin requires a front end user account to connect to Opencast; create one or use an existing one.
 `matterhorn_system_account` and `opencast_system_account` ceased working!
 
 The frontend user needs to following roles:
-`ROLE_ADMIN`, `ROLE_ADMIN_UI` 
+`ROLE_ADMIN`, `ROLE_ADMIN_UI`
 
 ## Configure Stud.IP
 
 Install the most recent version of this plugin, make sure that all migrations worked properly.
 
-After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL and credentials for the Opencast system. 
+After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL and credentials for the Opencast system.
 Make sure you enter the LTI credentials under "Additional settings".
 If everything worked you can now start using the plugin in seminars.
