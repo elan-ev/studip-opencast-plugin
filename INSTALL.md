@@ -77,7 +77,10 @@ add_header Access-Control-Allow-Credentials  '$cors_credentials';
 
 ## Opencast Workflows
 
-This plugin assumes your republish workflow [has the ID `republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196).
+This plugin assumes your
+
+* republish workflow's ID is [`republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196)
+* retract workflow's ID is `retract`
 
 ## Credentials for Opencast
 
