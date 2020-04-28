@@ -3,14 +3,24 @@
   "version": "1.2.115",
   "description": "Stud.IP plugin for Opencast",
   "dependencies": {
-    "blueimp-file-upload": "^10.8.0"
+    "blueimp-file-upload": "^10.8.0",
+    "core-js": "^3.6.5",
+    "regenerator-runtime": "^0.13.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
   "scripts": {
+    "prebuild": "npm install",
+    "build": "webpack --mode production",
     "pretranslate": "find * \\( -iname \"*.php\" -o -iname \"*.ihtml\" \\) | xargs xgettext --from-code=UTF-8 -j --add-location=never --package-name=Opencast --language=PHP -o \"locale/en/LC_MESSAGES/opencast.po\"",
     "translate": "msgfmt \"locale/en/LC_MESSAGES/opencast.po\" --output-file=\"locale/en/LC_MESSAGES/opencast.mo\"",
-    "prezip": "npm install",
-    "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs images javascripts locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
+    "prezip": "npm run build",
+    "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs dist images javascripts locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
   "repository": {
     "type": "git",
@@ -21,5 +31,6 @@
   "bugs": {
     "url": "https://github.com/elan-ev/studip-opencast-plugin/issues"
   },
-  "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme"
+  "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme",
+  "browserslist": "> 0.25%, not dead, not IE 11"
 }
