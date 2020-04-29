@@ -903,7 +903,7 @@ class CourseController extends OpencastController
     {
         if (
             check_ticket($ticket)
-            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+            && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
         ) {
             CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'yes');
             $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun Aufzeichnungen herunterladen.")];
@@ -916,7 +916,7 @@ class CourseController extends OpencastController
     {
         if (
             check_ticket($ticket)
-            && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)
+            && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
         ) {
             CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'no');
             $this->flash['messages'] = ['info' => _("Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen.")];
