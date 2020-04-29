@@ -65,7 +65,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             $this->addStylesheet('stylesheets/oc.less');
 
-            PageLayout::addScript($this->getPluginUrl() . '/javascripts/application.js');
+            PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
 
             if (StudipVersion::olderThan('4.2') && !Studip\Markup::editorEnabled()) {
                 PageLayout::addScript($this->getPluginUrl() . '/node_modules/blueimp-file-upload/js/jquery.fileupload.js');
@@ -80,7 +80,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $id = Request::get('sem_id', $id);
 
             if ($perm->have_perm('tutor') && OCModel::getConfigurationstate()) {
-                PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
+                PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             }
 

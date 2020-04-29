@@ -1,4 +1,4 @@
-OC = {
+const OC = {
     lti_done: 0,
     formData: {},
     initAdmin: function () {
@@ -423,3 +423,5 @@ OC = {
         })
     }
 };
+
+window.OC = OC

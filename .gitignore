@@ -21,3 +21,4 @@ opencast.zip
 opencast-theodul.zip
 
 node_modules
+/dist/
