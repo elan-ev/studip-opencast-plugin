@@ -201,6 +201,10 @@ class CourseController extends OpencastController
                 $this->instances             = array_merge($this->workflow_client->getRunningInstances($series['series_id']), $this->instances);
             }
 
+            $this->wip_episodes = array_filter($this->wip_episodes, function($element) {
+                return ($element->processing_state == 'FAILED' || $element->processing_state=='RUNNING');
+            });
+
 
             /*
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
