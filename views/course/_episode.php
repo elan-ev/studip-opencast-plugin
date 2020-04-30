@@ -84,7 +84,7 @@ $visibility_text = [
                                     ]) ?>
                                 </a>
                                 <? endif ?>
-                                <?= $item['title'] ?>
+                                <?= htmlReady($item['title']) ?>
                             </h2>
                             <ul class="oce_contetlist">
                                 <li class="oce_list_date">
