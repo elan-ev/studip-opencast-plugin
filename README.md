@@ -6,7 +6,9 @@ the LMS [Stud.IP](http://studip.de/).*
 
 Plugin-Version: 1.2.x  
 Kompatibel zu Stud.IP Versionen: 4.0 - 4.5  
-Kompatibel zu Opencast Versionen: 5.x, 6.x, 7.x, 8.x
+Kompatibel zu Opencast Versionen:
+- Bis einschließlich Plugin-Version 1.2.113: 5.x, 6.x, 7.x, 8.x
+- Nach Plugin-Version 1.2.113: 8.3+ (für einen Direktupload nach LTI-Anmeldung)
 
 **Beachten Sie die [INSTALL.md](INSTALL.md), diese Pluginversion benötigt Konfigurationseinstellungen in Opencast!**
 
