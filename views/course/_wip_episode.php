@@ -24,7 +24,9 @@
                             <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?>
                         </div>
                     <? elseif ($episode->processing_state == 'RUNNING'): ?>
-                        <div class="oce_wip" id="<?= $workflow_id ?>">
+                        <div class="oce_wip" id="<?= $workflow_id ?>" title="<?= $_('Aktueller Arbeitsschritt:')
+                            .' '. $instances[$episode->identifier]->operations->operation->description ?>"
+                        >
                             <div class="oce_wip_preview">
                                 <img src="<?= $plugin->getPluginURL() . '/images/opencast-black.svg' ?>">
                             </div>
@@ -34,6 +36,7 @@
                         <div class="oce_metadatacontainer">
                             <h2 class="oce_list_title">
                                 <?= htmlready($episode->title) ?>
+                                <?= tooltipIcon($_('Aktueller Arbeitsschritt:') .' '. $instances[$episode->identifier]->operations->operation->description) ?>
                             </h2>
 
                             <ul class="oce_contetlist">
@@ -48,6 +51,8 @@
                                 <li>
                                     <?= $_('Beschreibung:') ?>
                                     <?= $item['description'] ? htmlReady($episode->description) : 'Keine Beschreibung vorhanden' ?>
+                                </li>
+                                <li>
                                 </li>
                             </ul>
                         </div>
