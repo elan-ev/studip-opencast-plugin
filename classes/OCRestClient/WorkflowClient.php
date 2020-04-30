@@ -39,13 +39,20 @@ class WorkflowClient extends OCRestClient
      *
      *  @return array Workflow Instances
      */
-    function getInstances($seriesID)
+    function getRunningInstances($seriesID)
     {
         $service_url = sprintf( "/instances.json?state=&q=&seriesId=%s&seriesTitle=&creator=&contributor=&fromdate=&todate=&language="
                      . "&license=&title=&subject=&workflowdefinition=&mp=&op=&sort=&startPage=0&count=1000&compact=true", $seriesID);
 
+        $ret = [];
         if ($instances = $this->getJSON($service_url)) {
-            return $instances;
+            foreach ($instances->workflows->workflow as $wf) {
+                if ($wf->state == 'RUNNING') {
+                    $ret[$wf->mediapackage->id] = $wf;
+                }
+            }
+
+            return $ret;
         }
 
         return false;
