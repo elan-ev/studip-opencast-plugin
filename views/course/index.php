@@ -40,6 +40,8 @@ if ($this->connectedSeries[0]['series_id']) :
         $config['lti_consumersecret']
     );
 
+    $lti_link->addCustomParameter('tool', '/ltitools');
+
     if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)) {
         $role = 'Instructor';
     } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
@@ -67,6 +69,8 @@ if ($this->connectedSeries[0]['series_id']) :
             $config['lti_consumerkey'],
             $config['lti_consumersecret']
         );
+
+        $studio_lti_link->addCustomParameter('tool', '/ltitools');
 
         $studio_lti_link->setUser($current_user_id, 'Instructor');
         $studio_lti_link->setCourse($course_id);
