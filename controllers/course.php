@@ -202,7 +202,7 @@ class CourseController extends OpencastController
             }
 
             $this->wip_episodes = array_filter($this->wip_episodes, function($element) {
-                return ($element->processing_state == 'FAILED' || $element->processing_state=='RUNNING');
+                return ($element->processing_state=='RUNNING');
             });
 
 
