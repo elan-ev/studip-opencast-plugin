@@ -205,6 +205,9 @@ const OC = {
                     fileTemplate({ name: item.file.name, size: OC.getFileSize(item.file.size) })
                 );
                 li.appendTo(".oc-media-upload-info").find("select").val(item.flavor);
+
+                $(".oc-media-upload-add[data-flavor='"+item.flavor+"']").hide();
+
                 li.on("change", "select", function () {
                     item.flavor = $(this).val()
                 })
@@ -289,7 +292,6 @@ const OC = {
                 event.preventDefault();
                 var $button = $(this);
                 var $input = $(this).next('input');
-                $button.hide();
                 $input.trigger('click');
                 $input.one("reset-button", function () {
                     $button.show();

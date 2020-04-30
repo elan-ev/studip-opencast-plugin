@@ -100,10 +100,10 @@ use Studip\LinkButton;
     </ul>
 
     <div>
-        <?= LinkButton::createAdd($_('Aufzeichnung des/der Vortragende*n hinzufügen'), null, [ 'class' => 'oc-media-upload-add' ]) ?>
+        <?= LinkButton::createAdd($_('Aufzeichnung des/der Vortragende*n hinzufügen'), null, [ 'class' => 'oc-media-upload-add', 'data-flavor' => 'presenter/source']) ?>
         <input type="file" class="video_upload" data-flavor="presenter/source" accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
 
-        <?= LinkButton::createAdd($_('Aufzeichnung der Folien hinzufügen'), null, [ 'class' => 'oc-media-upload-add' ]) ?>
+        <?= LinkButton::createAdd($_('Aufzeichnung der Folien hinzufügen'), null, [ 'class' => 'oc-media-upload-add', 'data-flavor' => 'presentation/source']) ?>
         <input type="file" class="video_upload" data-flavor="presentation/source" accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
     </div>
 
