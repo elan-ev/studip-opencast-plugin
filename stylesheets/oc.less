@@ -340,6 +340,11 @@ label > h4 {
     border: 1px solid #a6c9e2;
 }
 
+#upload_form p.help {
+    font-size: .9em;
+    margin-top: .25em;
+}
+
 input[type=date].oc_input,
 input[type=email].oc_input,
 input[type=password].oc_input,
@@ -488,7 +493,7 @@ img.ocinvisible {
     }
 }
 
-#opencast {
+#opencast, ul.files {
     progress {
         text-align: center;
         height: 1.5em;
@@ -565,14 +570,14 @@ img.ocinvisible {
     margin-top: 5px;
 }
 
-#video_upload {
+.video_upload {
     display: block;
     height: 0;
     width: 0;
 }
 
-#upload_info {
-    display: inline-block;
+.upload_info {
+    display: block;
 }
 
 #oc_balls {
@@ -800,4 +805,73 @@ img.ocinvisible {
     .oce_playercontainer span.previewimage img.playbutton {
         max-height: 100px;
     }
+}
+
+.oc-media-upload-dialog-content p {
+    font-size: 1.25em;
+    margin-top: 1.5em;
+    margin-bottom: .5em;
+}
+
+.oc-media-upload-dialog-content ul.files {
+    list-style: none;
+    padding-left: 0;
+}
+
+.oc-media-upload-dialog-content ul.files li {
+    display: flex;
+    margin-bottom: .5em;
+
+    span:nth-child(1) {
+        flex-grow: 1;
+    }
+
+    progress {
+        margin-left: .5em;
+        margin-right: .5em;
+    }
+
+    span:nth-child(3) {
+        flex-basis: 4em;
+    }
+}
+
+
+#upload_form .messagebox {
+    margin-top: 2em;
+}
+
+#upload_form footer {
+    margin-top: 2em;
+}
+
+.oc-media-upload-info {
+    list-style: none;
+}
+
+.oc-media-upload-info li {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    width: 45em;
+    margin-top: 2em;
+}
+
+.oc-media-upload-info li select {
+    width: 10em;
+}
+
+.oc-media-upload-info li span {
+    margin-right: 1em;
+    white-space: nowrap;
+}
+
+.oc-media-upload-info li span:nth-child(1) {
+    flex-basis: 100%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.oc-media-upload-info li span:nth-child(2) {
+    flex-grow: 2;
 }
