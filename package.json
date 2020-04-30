@@ -3,11 +3,11 @@
   "version": "1.2.115",
   "description": "Stud.IP plugin for Opencast",
   "dependencies": {
-    "blueimp-file-upload": "^10.8.0",
-    "core-js": "^3.6.5",
-    "regenerator-runtime": "^0.13.5"
+    "blueimp-file-upload": "^10.8.0"
   },
   "devDependencies": {
+    "core-js": "^3.6.5",
+    "regenerator-runtime": "^0.13.5",
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "babel-loader": "^8.1.0",
@@ -19,7 +19,7 @@
     "build": "webpack --mode production",
     "pretranslate": "find * \\( -iname \"*.php\" -o -iname \"*.ihtml\" \\) | xargs xgettext --from-code=UTF-8 -j --add-location=never --package-name=Opencast --language=PHP -o \"locale/en/LC_MESSAGES/opencast.po\"",
     "translate": "msgfmt \"locale/en/LC_MESSAGES/opencast.po\" --output-file=\"locale/en/LC_MESSAGES/opencast.mo\"",
-    "prezip": "npm run build",
+    "prezip": "npm run build && npm prune --production",
     "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs dist images javascripts locale migrations models node_modules stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
   "repository": {
