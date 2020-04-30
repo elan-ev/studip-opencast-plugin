@@ -108,12 +108,12 @@ use Studip\LinkButton;
     </div>
 
     <?= MessageBox::info(
-        $_("Laden Sie nur Medien hoch, an denen Sie das Copyright besitzen!"),
+        $_("Laden Sie nur Medien hoch, an denen Sie das  Nutzungsrecht besitzen!"),
         [
             $_(
                 "Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen."
             ),
-            '<a href="https://elan-ev.de/themen_p60.php">' .
+            '<a href="https://elan-ev.de/themen_p60.php" target="_blank">' .
             $_('§60 UrhG Zusammenfassung') .
             '</a>',
             $_(
