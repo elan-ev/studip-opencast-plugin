@@ -110,28 +110,51 @@ const OC = {
             })
         }
 
-        function uploadMedia(mediaPackage, media, onProgress) {
+        function uploadTracks(mediaPackage, files, onProgress) {
+            return files.reduce(function(promise, file) {
+                return promise.then(function (mediaPackage) {
+                    return addTrack(mediaPackage, file, onProgress);
+                });
+            }, Promise.resolve(mediaPackage))
+        }
+
+        function addTrack(mediaPackage, track, onProgress) {
+            var media = track.file;
             var data = new FormData();
             data.append('mediaPackage', mediaPackage);
-            data.append('flavor', "presentation/source");
+            data.append('flavor', track.flavor);
             data.append('tags', '');
             data.append('BODY', media, media.name);
 
-            return $.ajax({
-                xhr: createProgressAwareXhr(onProgress),
-                url: serviceUrl + "/ingest/addTrack",
-                method: "POST",
-                data: data,
-                processData: false,
-                contentType: false,
-                xhrFields: { withCredentials: true },
-            })
+            var fnOnProgress = function (event) {
+                onProgress(track, event.loaded, event.total);
+            };
+
+            return new Promise(
+                function (resolve, reject) {
+                    var xhr = $.ajax({
+                        xhr: createProgressAwareXhr(fnOnProgress),
+                        url: serviceUrl + "/ingest/addTrack",
+                        method: "POST",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        xhrFields: { withCredentials: true },
+                    });
+                    xhr.done(function (_data, _status, xhr) {
+                        resolve(xhr.responseText);
+                    })
+                    xhr.fail(function (xhr, status, error) {
+                        reject([xhr, status, error]);
+                    });
+                }
+            );
         }
 
         function createProgressAwareXhr(onProgress) {
             return function () {
                 var xhr = new window.XMLHttpRequest();
-                // TODO: xhr.upload.addEventListener("progress", onProgress, false);
+                xhr.upload.addEventListener("progress", onProgress, false);
                 xhr.withCredentials = true;
                 return xhr;
             }
@@ -149,17 +172,48 @@ const OC = {
             })
         }
 
-        function upload(media, terms, workflowId, onProgress) {
+        function upload(files, terms, workflowId, onProgress) {
             return getMediaPackage()
                 .then(function (_mediaPackage, _status, resp) {
                     return addDCCCatalog(resp.responseText, terms)
                 })
                 .then(function (_mediaPackage, _status, resp) {
-                    return uploadMedia(resp.responseText, media, onProgress)
+                    return uploadTracks(resp.responseText, files, onProgress)
                 })
-                .then(function (_mediaPackage, _status, resp) {
-                    return finishIngest(resp.responseText, workflowId)
+                .then(function (mediaPackage) {
+                    return finishIngest(mediaPackage, workflowId)
                 })
+        }
+
+        var uploadMedia = []
+
+        var fileTemplate = _.template(
+            "<span><b>Name:</b> <%- name %></span>"+
+            "<span><b>Gr&ouml;&szlig;e:</b> <%- size %></span>"+
+            "<span><select disabled>"+
+              "<option value='presenter/source'>Vortragende*r</option>"+
+              "<option value='presentation/source'>Folien</option>"+
+            "</select></span>"+
+            "<span><button class='button cancel' type=button>Entfernen</button></span>"
+        );
+
+        function renderFiles() {
+            $(".oc-media-upload-info").empty()
+
+            uploadMedia.forEach(function (item, index) {
+                var li = $("<li></li>").html(
+                    fileTemplate({ name: item.file.name, size: OC.getFileSize(item.file.size) })
+                );
+                li.appendTo(".oc-media-upload-info").find("select").val(item.flavor);
+                li.on("change", "select", function () {
+                    item.flavor = $(this).val()
+                })
+                li.on("click", "button", function () {
+                    uploadMedia = [...uploadMedia.slice(0, index), ...uploadMedia.slice(index + 1)];
+                    renderFiles();
+                    $(".video_upload[data-flavor='"+item.flavor+"']").trigger("reset-button");
+                })
+            })
         }
 
         function onFileChange(event) {
@@ -168,60 +222,89 @@ const OC = {
                 return;
             }
             var file = target.files[0];
+            var flavor  = $(target).data("flavor");
 
-            $('#upload_info').html('<p>Name: '
-                                   + file.name
-                                   + ' Gr&ouml;&szlig;e: '
-                                   + OC.getFileSize(file.size)
-                                   + '</p>');
-            $('#upload_info').val(file.name);
+            uploadMedia.push({ file: file, flavor: flavor, progress: { loaded: 0, total: file.size }});
+            renderFiles();
         }
 
         function redirectAfterUpload(status) {
             window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/"+(status ? 'true' : 'false')), '_self');
         }
 
-        function showUploadProgress(file) {
+        function showUploadProgress(media) {
             var force = false;
             var uploadDialog = $("#oc-media-upload-dialog").html()
             var origin = $("<div></div>")
             origin.on("dialog-open", function(_event, options) {
-
-                // prevent accidentally closing the dialog
                 var dialog = options.dialog;
+                var throttledRender = _.throttle(renderProgress, 200);
                 $(dialog).on("dialogbeforeclose", function () {
                     return force || confirm("Wollen Sie den Medien-Upload wirklich abbrechen?")
                 });
+                throttledRender();
+                origin.on("upload-progress", throttledRender);
 
-                // fill the filename line
-                var fileSpan = _.template('<%= name %> (<%= size %>)')
-                $("span.file", dialog).html(fileSpan({ name: file.name, size: OC.getFileSize(file.size) }))
+                function renderProgress() {
+                    const liTemplate = _.template(`
+                      <span><%- name %>: </span>
+                      <progress title="<%- loaded %>/<%- total %>"
+                                value="<%- loaded %>" max="<%- total %>">
+                      </progress>
+                      <span><%= percent %>%</span`);
 
-                // start the progress bar
-                $(".oc-media-upload-progress", dialog).progressbar({ value: false });
+                    const $ul = $("ul.files", dialog);
+                    $ul.empty();
+                    media.forEach(function (item) {
+                        const fileLi = $("<li></li>").html(liTemplate(
+                            {
+                                name: item.file.name,
+                                size: OC.getFileSize(item.file.size),
+                                ...item.progress,
+                                percent: Math.round(100 * item.progress.loaded / item.progress.total)
+                            }));
+                        fileLi.appendTo($ul);
+                    });
+                }
             });
 
             var options = {
                 buttons: false,
-                origin: origin,
+                origin,
                 size: 'auto',
                 title: $("#oc-media-upload-dialog h1").text()
             };
-            STUDIP.Dialog.show(uploadDialog, options)
+            STUDIP.Dialog.show(uploadDialog, options);
 
-            return function () {
-                force = true;
-                STUDIP.Dialog.close(options)
-            };
+            return origin
         }
 
         jQuery(document).ready(function ($) {
             var seriesId = window.OC.parameters.seriesId;
             var workflowId = window.OC.parameters.uploadWorkflowId;
 
-            $(document).on('change', $('#video_upload'), onFileChange)
+            $(document).on('change', '.video_upload', onFileChange)
+
+            $(document).on('click', '.oc-media-upload-add', function (event) {
+                event.preventDefault();
+                var $button = $(this);
+                var $input = $(this).next('input');
+                $button.hide();
+                $input.trigger('click');
+                $input.one("reset-button", function () {
+                    $button.show();
+                });
+            });
 
             $('#upload_form').submit(function () {
+                if (!uploadMedia.length) {
+                    STUDIP.Dialog.show("Sie müssen mindestens ein Video auswählen.", {
+                        title: 'Fehler',
+                        size: 'small'
+                    });
+                    return false;
+                }
+
                 if (this.dataset.isUploading && this.dataset.isUploading) {
                     return false;
                 }
@@ -251,23 +334,22 @@ const OC = {
                     seriesId: seriesId
                 }
 
-                var file = this.video.files[0];
+                const dialog = showUploadProgress(uploadMedia);
 
-                var closeProgressDialog = showUploadProgress(file);
-
-                var onProgress = function () { console.log("upload progress", arguments); };
-                var onSuccess = (function () {
+                var onProgress = function (file, loaded, total) {
+                    file.progress = { loaded, total };
+                    dialog.trigger("upload-progress");
+                };
+                var onSuccess = () => {
                     this.dataset.isUploading = false
                     redirectAfterUpload(true);
-                    // TODO: redirecting takes that much time that closing the dialog feels wrong
-                    // closeProgressDialog();
-                }).bind(this);
+                };
                 var onError = function (error) {
                     console.error(error);
                     redirectAfterUpload(false);
                 };
 
-                upload(file, terms, workflowId, onProgress)
+                upload(uploadMedia, terms, workflowId, onProgress)
                     .then(onSuccess)
                     .catch(onError)
 
