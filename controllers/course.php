@@ -168,8 +168,6 @@ class CourseController extends OpencastController
         }
 
         $reload = true;
-        $this->states = false;
-
 
         foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
             PageLayout::postError(sprintf($this->_(
@@ -181,26 +179,34 @@ class CourseController extends OpencastController
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
 
+        $this->wip_episodes = [];
+
         if (
             $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
             && !empty($this->connectedSeries)
         ) {
             foreach ($this->connectedSeries as $key => $series) {
-
                 if ($series['schedule']) {
                     $this->can_schedule = true;
                 }
 
+                $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series['series_id']));
+
                 $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
                 $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
+                $this->wip_episodes          = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
             }
 
-
             $this->workflow_client = WorkflowClient::getInstance();
+
+            /*
             $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+
             if (!empty($workflow_ids)) {
                 $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
             }
+            */
+
             //workflow
             $occourse = new OCCourseModel($this->course_id);
             $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();

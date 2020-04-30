@@ -23,6 +23,41 @@ class ApiEventsClient extends OCRestClient
         return [$code, $data];
     }
 
+    /**
+     *  getEpisodes() - retrieves episode metadata for a given series identifier
+     *  from connected Opencast
+     *
+     * @param string series_id Identifier for a Series
+     *
+     * @return array response of episodes
+     */
+    function getEpisodes($series_id, $refresh = false)
+    {
+        global $perm;
+
+        $cache = StudipCacheFactory::getCache();
+        $cache_key = 'oc_episodesforseries/' . $series_id;
+        $episodes = $cache->read($cache_key);
+
+        if ($refresh || $episodes === false || $perm->have_perm('dozent')) {
+            $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
+            $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
+                . $series_id . '&sort=&limit=0&offset=0';
+
+            if ($episodes = $this->getJSON($service_url)) {
+                foreach ($episodes as $key => $val) {
+                    $episodes[$key]->id = $val->identifier;
+                }
+
+                $cache->write($cache_key, serialize($episodes), 7200);
+                return $episodes ?: [];
+            } else {
+                return [];
+            }
+        } else {
+            return unserialize($episodes) ?: [];
+        }
+    }
 
     public function getAclForEpisode($series_id, $episode_id)
     {

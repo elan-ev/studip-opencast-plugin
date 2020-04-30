@@ -10,54 +10,20 @@ $visibility_text = [
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
 </script>
 
+<h1><?= $_('Vorlesungsaufzeichnungen') ?></h1>
+
 <div class="oc_flex">
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
-    <span class="oce_episode_search">
+    <!--<span class="oce_episode_search">
         <input class="search" placeholder="<?= $_('Nach Aufzeichnung suchen') ?>" size="30"/>
         <?= Icon::create('search', 'clickable', [
             'class'     => 'sort',
             'data-sort' => 'name'
         ]) ?>
+    -->
     </span>
         <ul class="oce_list list"
             <?= ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : '' ?>>
-            <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) && !empty($states)) : ?>
-                <? foreach ($states as $workflow_id => $state) : ?>
-                    <li class="uploaded oce_item">
-                        <? if (in_array($state->state, ['FAILING', 'FAILED'])) : ?>
-                            <div class="oce_wip">
-                                <div class="oce_wip_preview">
-                                    <img src="<?= $plugin->getPluginURL() . '/images/opencast-red.svg' ?>">
-                                </div>
-                            </div>
-                            <div class="oce_metadatacontainer oce_failedstate">
-                                <h2 class="oce_list_title">
-                                    <?= htmlready($state->mediapackage->title) ?>
-                                </h2>
-
-                                <div>
-                                    <?= $_("Videoverarbeitung fehlgeschlagen") ?>
-                                </div>
-
-                                <?= Studip\LinkButton::create($_('Daten vom Server entfernen'), PluginEngine::getLink('opencast/course/remove_failed/' . $state->id)); ?>
-                            </div>
-                        <? else : ?>
-                            <div class="oce_wip" id="<?= $workflow_id ?>">
-                                <div class="oce_wip_preview">
-                                    <img src="<?= $plugin->getPluginURL() . '/images/opencast-black.svg' ?>">
-                                </div>
-
-                                <div style="clear: both;"></div>
-                            </div>
-                            <div style="margin-left:110px;">
-                                <h3 class="oce_list_title"><?= $_('Video wird verarbeitet: ') ?>
-                                <?= htmlready($state->mediapackage->title) ?></h3>
-                                <span class="oce_list_date"><?= sprintf($_("Hochgeladen am %s"), date("d.m.Y H:i", strtotime($state->mediapackage->start))) ?></span>
-                            </div>
-                        <? endif; ?>
-                    </li>
-                <? endforeach; ?>
-            <? endif; ?>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
                 <?
                 $image = $item['presentation_preview'];
@@ -130,7 +96,7 @@ $visibility_text = [
                                     <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                                 </li>
                                 <li>
-                                    <?= $_('Beschreibung') ?>:
+                                    <?= $_('Beschreibung:') ?>
                                     <?= $item['description'] ? htmlReady($item['description']) : 'Keine Beschreibung vorhanden' ?>
                                 </li>
                             </ul>
