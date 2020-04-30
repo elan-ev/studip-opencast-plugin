@@ -966,13 +966,13 @@ class CourseController extends OpencastController
                 if ($this->retractEpisode($episode)) {
                     $this->flash['messages'] = [
                         'success' => $this->_(
-                            "Die Episode wurde zum entfernen markiert."
+                            "Die Episode wurde zum Entfernen markiert."
                         )
                     ];
                 } else {
                     $this->flash['messages'] = [
                         'error' => $this->_(
-                            "Die Episode konnte nicht zum entfernen markiert werden."
+                            "Die Episode konnte nicht zum Entfernen markiert werden."
                         )
                     ];
                 }
