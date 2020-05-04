@@ -505,6 +505,15 @@ const OC = {
 
 
         })
+    },
+
+    askForConfirmation: function(text) {
+        if (!confirm((text))) {
+            event.preventDefault();
+            return false;
+        }
+
+        return true;
     }
 };
 

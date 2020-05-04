@@ -144,7 +144,9 @@ $visibility_text = [
                                           <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
                                        <? endif ?>
 
-                                        <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), []); ?>
+                                        <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
+                                            'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')"
+                                        ]); ?>
                                 <? endif; ?>
                             </div>
                         </div>
