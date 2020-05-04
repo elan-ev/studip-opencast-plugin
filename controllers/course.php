@@ -680,6 +680,9 @@ class CourseController extends OpencastController
 
     function bulkschedule_action()
     {
+        // try to set higher time limit to prevent breaking the bulk update in the middle of it
+        set_time_limit(1800);
+
         $course_id = Context::getId();
         $action = Request::get('action');
         if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
