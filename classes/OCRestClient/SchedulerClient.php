@@ -35,34 +35,14 @@ class SchedulerClient extends OCRestClient
         $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id, NULL);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-        $event_id      = null;
-
-        if ($this->oc_version == 3) {
-            curl_setopt($this->ochandler, CURLOPT_HEADER, true);
-
-            $result = $this->getJSON('/', $metadata, false, true);
-
-            $resArray = explode("\n", $result[0]);
-
-            $location = parse_url($this->base_url);
-            $pttrn = '#Location: http:/.*/recordings/(.+?).xml#Uis';
-
-            foreach ($resArray as $resp) {
-                // THIS could be changed. Keep an eye on future oc releases...
-                if (preg_match($pttrn, $resp, $matches)) {
-                    $event_id = $matches[1];
-                }
-            }
-        } else {
-            $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
-        }
+        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
 
         if ($result
             && $result[1] != 400
             && $result[1] != 409) {
 
             $xml = simplexml_load_string($media_package);
-            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $event_id ?: (string)$xml['id']);
+            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, (string)$xml['id']);
 
             return true;
         } else {
