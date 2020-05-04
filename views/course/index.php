@@ -238,12 +238,14 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback');
 ?>
 
-<? if (!(empty($ordered_episode_ids)) || !(empty($states))) : ?>
+<? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
     <? if ($perm->have_studip_perm('tutor', Context::getId())) : ?>
         <?= $this->render_partial('course/_wip_episode') ?>
     <? endif ?>
 
-    <?= $this->render_partial('course/_episode') ?>
+    <? if (!(empty($ordered_episode_ids))) : ?>
+        <?= $this->render_partial('course/_episode') ?>
+    <? endif ?>
 <? else: ?>
     <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
         <? if ($this->config_error) : ?>
