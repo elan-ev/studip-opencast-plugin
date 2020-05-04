@@ -274,7 +274,7 @@ const OC = {
             var options = {
                 buttons: false,
                 origin,
-                size: 'auto',
+                size: '500x350',
                 title: $("#oc-media-upload-dialog h1").text()
             };
             STUDIP.Dialog.show(uploadDialog, options);
