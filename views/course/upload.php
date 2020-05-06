@@ -8,6 +8,64 @@ use Studip\LinkButton;
 
     <input type="hidden" name="series_id" value="<?= $series_id ?>">
 
+<?
+$oc_acl='';
+if($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)){
+  $oc_acl='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Policy PolicyId="mediapackage-1"
+  RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides"
+  Version="2.0"
+  xmlns="urn:oasis:names:tc:xacml:2.0:policy:schema:os">
+  <Rule RuleId="user_read_Permit" Effect="Permit">
+    <Target>
+      <Actions>
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+              DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </ActionMatch>
+        </Action>
+      </Actions>
+    </Target>
+    <Condition>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ROLE_USER_LTI</AttributeValue>
+        <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role"
+          DataType="http://www.w3.org/2001/XMLSchema#string"/>
+      </Apply>
+    </Condition>
+  </Rule>
+  <Rule RuleId="user_write_Permit" Effect="Permit">
+    <Target>
+      <Actions>
+        <Action>
+          <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">write</AttributeValue>
+            <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+              DataType="http://www.w3.org/2001/XMLSchema#string"/>
+          </ActionMatch>
+        </Action>
+      </Actions>
+    </Target>
+    <Condition>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ROLE_USER_LTI</AttributeValue>
+        <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role"
+          DataType="http://www.w3.org/2001/XMLSchema#string"/>
+      </Apply>
+    </Condition>
+  </Rule>
+</Policy>
+';
+$instructor_role = $this->course_id.'_Instructor';
+$oc_acl=str_replace('ROLE_USER_LTI',$instructor_role,$oc_acl);
+$oc_acl=str_replace(array("\r", "\n"), '', $oc_acl);
+$oc_acl=urlencode($oc_acl);
+}
+?>
+    <input type="hidden" name="oc_acl" value="<?= $oc_acl ?>">
+
     <label>
         <span class="required">
             <?= $_('Titel') ?>
