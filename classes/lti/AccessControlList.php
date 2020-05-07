@@ -59,6 +59,17 @@ class AccessControlList
         return $this->name;
     }
 
+    public function toArray()
+    {
+        $ret = [];
+
+        foreach ($this->entities as $entity) {
+            $ret[] = $entity->toArray();
+        }
+
+        return $ret;
+    }
+
 }
 
 class AccessControlEntity
@@ -103,6 +114,15 @@ class AccessControlEntity
     public function __toString()
     {
         return $this->as_xml();
+    }
+
+    public function toArray()
+    {
+        return [
+            'allow'  => $this->allow,
+            'role'   => $this->role,
+            'action' => $this->action
+        ];
     }
 
     public function get_role()

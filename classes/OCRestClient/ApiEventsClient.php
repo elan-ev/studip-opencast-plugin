@@ -82,6 +82,12 @@ class ApiEventsClient extends OCRestClient
         return $acl[$series_id][$episode_id];
     }
 
+
+    public function getACL($episode_id)
+    {
+        return json_decode(json_encode($this->getJSON('/'.$episode_id. '/acl')), true);
+    }
+
     public function getBySeries($series_id)
     {
         $params = [
