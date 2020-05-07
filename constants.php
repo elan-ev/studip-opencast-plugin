@@ -14,7 +14,6 @@ class Constants {
         'search',               // ausser hier: engage-node
         'series',
         'services',
-        'upload',
         'workflow'
     ];
 

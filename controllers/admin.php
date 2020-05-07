@@ -336,22 +336,6 @@ class AdminController extends OpencastController
         $this->endpoints = OCEndpoints::getEndpoints();
     }
 
-
-    /**
-     * brings REST URL in one format before writing in db
-     */
-    function cleanClientURLs()
-    {
-        $urls = array('series', 'search', 'scheduling', 'ingest', 'captureadmin'
-            , 'upload', 'mediapackage');
-
-        foreach($urls as $pre) {
-            $var = $pre.'_url';
-            $this->$var = rtrim($this->$var,"/");
-        }
-
-    }
-
     function resources_action()
     {
         PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
@@ -502,26 +486,6 @@ class AdminController extends OpencastController
         }
 
         $this->redirect('admin/config/');
-    }
-
-    function mediastatus_action()
-    {
-        PageLayout::setTitle($this->_("Opencast Medienstatus"));
-        Navigation::activateItem('/admin/config/oc-mediastatus');
-
-        // OPENCAST TMP-DIRECTORY CONTENT
-        $undeleted_jobs = OCJobManager::existent_jobs();
-        $this->upload_jobs = [
-            'successful'=>[],
-            'unfinished'=>[]
-        ];
-
-        foreach ($undeleted_jobs as $undeleted_job_id){
-            $job = new OCJob($undeleted_job_id);
-            $this->upload_jobs[($job->both_uploads_succeeded() ? 'successful' : 'unfinished')][] = $job;
-        }
-
-        $this->memory_space = OCJobManager::save_dir_size();
     }
 
     function precise_update_action()
