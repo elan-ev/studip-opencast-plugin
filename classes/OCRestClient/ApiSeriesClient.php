@@ -15,4 +15,9 @@ class ApiSeriesClient extends OCRestClient
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
         }
     }
+
+    public function getACL($series_id)
+    {
+        return json_decode(json_encode($this->getJSON('/'.$series_id. '/acl')), true);
+    }
 }
