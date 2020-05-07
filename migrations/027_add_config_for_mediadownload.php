@@ -14,7 +14,7 @@ class AddConfigForMediadownload extends Migration
             'description' => 'Wird Nutzern angeboten, Aufzeichnungen herunterzuladen?',
             'range'       => 'global',
             'type'        => 'boolean',
-            'value'       => true
+            'value'       => false 
         ]);
 
         SimpleOrMap::expireTableScheme();

@@ -115,7 +115,7 @@ $visibility_text = [
                                 <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
                                     <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
                                 </div>
-                            <? elseif ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
+                            <? elseif (false &&  $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
                                 <? if (!empty($item['presenter_download'])
                                         || !empty($item['presentation_download'])
                                         || !empty($item['audio_download'])
@@ -128,7 +128,7 @@ $visibility_text = [
                             <? endif ?>
                             <div class="button-group">
                                 <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
-                                    <?= Studip\LinkButton::create($_('Feedback'), 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id'])); ?>
+                                    <?= Studip\LinkButton::create($_('Feedback'), 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . 'https://elearning.uni-bremen.de/'.PluginEngine::getLink('opencast/course/index/' . $item['id'])); ?>
                                 <? endif ?>
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
