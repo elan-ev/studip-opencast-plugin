@@ -446,48 +446,6 @@ class AdminController extends OpencastController
         $this->agents  = $caa_client->getCaptureAgents();
     }
 
-    function refresh_cache_action($ticket)
-    {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_perm('root')) {
-            // expire Stud.IP Cache
-            StudipCacheFactory::getCache()->expire('oc_allseries');
-
-            $this->flash['messages'] = [
-                'success' => $this->_("Der Zwischenspeicher wurde geleert.")
-            ];
-        }
-
-        $this->redirect('admin/config/');
-    }
-
-    function refresh_episodes_action($ticket)
-    {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_perm('root')) {
-            // refresh database entries
-            $stmt = DBManager::get()->prepare("SELECT
-                DISTINCT ocs.seminar_id, ocs.series_id
-                FROM oc_seminar_series AS ocs
-                WHERE 1");
-            $stmt->execute(array());
-            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (is_array($courses)) {
-                foreach ($courses as $course) {
-
-                    $ocmodel = new OCCourseModel($course['seminar_id']);
-                    $ocmodel->getEpisodes(true);
-                    unset($ocmodel);
-                }
-
-                $this->flash['messages'] = [
-                    'success' => $this->_("Die Episodenliste aller Series  wurde aktualisiert.")
-                ];
-            }
-        }
-
-        $this->redirect('admin/config/');
-    }
-
     function precise_update_action()
     {
         foreach (Request::getArray('precise_config') as $database_id => $config) {
