@@ -501,7 +501,7 @@ const OC = {
                            .attr('disabled', false);
                    }
                   ).fail(function(response) {
-                      alert('Warten Sie mindestens 2 Minuten, bevor Sie die Sichtbarkeit für diese Video erneut ändern! Opencast muss die vorherige Sichtbarkeitsänderung erst anwenden.');
+                      alert('Die Sichtbarkeit kann momentan nicht geändert werden! Opencast arbeitet momentan an diesem Video.');
                       $element
                           .attr('disabled', false);
                   });
