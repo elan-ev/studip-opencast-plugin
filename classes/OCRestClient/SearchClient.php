@@ -39,6 +39,10 @@ class SearchClient extends OCRestClient
             if ($search = $this->getJSON($service_url)) {
                 $episodes = $search->$x->result;
 
+                if (!is_array($episodes)) {
+                    $episodes = [$episodes];
+                }
+
                 $cache->write($cache_key, serialize($episodes), 7200);
                 return $episodes ?: [];
             } else {

@@ -173,8 +173,8 @@ class OCCourseModel
                 OCModel::setEpisode(
                     $stored_episode['episode_id'],
                     $stored_episode['series_id'],
+                    $this->getCourseID(),
                     $tmp['visibility'],
-                    $stored_episode['mkdate'],
                     $tmp['is_retracting']
                 );
 
@@ -190,15 +190,14 @@ class OCCourseModel
         if (!empty($oc_episodes)) {
             foreach ($oc_episodes as $episode) {
                 $lastpos++;
-                $timestamp = time();
                 $episode['visibility'] = $vis;
                 $episode['mkdate'] = $timestamp;
 
                 OCModel::setEpisode(
                     $episode['id'],
                     $episode['series_id'],
+                    $this->getCourseID(),
                     $vis,
-                    $timestamp,
                     false
                 );
 
@@ -345,8 +344,7 @@ class OCCourseModel
             $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
         }
 
-        $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_series
-            JOIN oc_seminar_episodes USING(series_id)
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
             WHERE seminar_id = :seminar_id AND oc_seminar_episodes.mkdate > :lastvisit");
 
         $stmt->bindParam(':seminar_id', $this->getCourseID());
