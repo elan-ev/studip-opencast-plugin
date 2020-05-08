@@ -136,7 +136,6 @@ $visibility_text = [
                                             '', [
                                             'class'           => 'oc-togglevis ocspecial oc'. ($item['visibility'] ?: 'free'),
                                             'data-episode-id' => $item['id'],
-                                            'data-dialog'     => 'size=auto',
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
 

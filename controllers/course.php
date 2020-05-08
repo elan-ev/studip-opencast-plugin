@@ -179,8 +179,9 @@ class CourseController extends OpencastController
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
 
-        $this->wip_episodes = [];
-        $this->instances    = [];
+        $this->wip_episodes   = [];
+        $this->instances      = [];
+        $this->multiconnected = false;
 
         if (
             $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
@@ -199,20 +200,16 @@ class CourseController extends OpencastController
                 $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
                 $this->wip_episodes          = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
                 $this->instances             = array_merge($this->workflow_client->getRunningInstances($series['series_id']), $this->instances);
+
+                // is this series connected to more than one seminar?
+                if (sizeof(OCSeminarSeries::findBySeries_id($series['series_id'])) > 1) {
+                    $this->multiconnected = true;
+                }
             }
 
             $this->wip_episodes = array_filter($this->wip_episodes, function($element) {
                 return ($element->processing_state=='RUNNING');
             });
-
-
-            /*
-            $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
-
-            if (!empty($workflow_ids)) {
-                $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
-            }
-            */
 
             //workflow
             $occourse = new OCCourseModel($this->course_id);
