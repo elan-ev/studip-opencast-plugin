@@ -192,7 +192,6 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
-/*
         if ($controller->isDownloadAllowed()) {
             $actions->addLink(
                 $_("Downloads verhindern"),
@@ -206,7 +205,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 new Icon('download+accept', 'clickable')
             );
         }
-*/
+
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
@@ -270,12 +269,10 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                 <?= $_("Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar") ?>
             </label>
 
-<? if($perm->have_perm('root')){ ?>
             <label>
                 <input type="radio" name="visibility" value="free">
                 <?= $_("Freigeben - Dieses Video ist für jeden sichtbar") ?>
             </label>
-<? } ?>
         </fieldset>
 
         <footer data-dialog-button>
