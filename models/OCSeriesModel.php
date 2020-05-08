@@ -123,7 +123,11 @@ class OCSeriesModel
             oc_seminar_series
             WHERE seminar_id = ?");
 
-        return $stmt->execute(array($course_id));
+        $stmt_episodes = DBManager::get()->prepare("DELETE FROM
+            oc_seminar_episodes
+            WHERE seminar_id = ?");
+
+        return $stmt->execute(array($course_id)) && $stmt_episodes->execute(array($course_id));
     }
 
     /**

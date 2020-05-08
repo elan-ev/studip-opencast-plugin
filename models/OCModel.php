@@ -432,6 +432,10 @@ class OCModel
         // Local
         $entry = self::getEntry($course_id, $episode_id);
 
+        $default = Config::get()->OPENCAST_HIDE_EPISODES
+            ? 'invisible'
+            : 'visible';
+
         if ($entry) {
             $old_visibility = $entry->visible;
             $entry->visible = $visibility;
@@ -439,6 +443,12 @@ class OCModel
             $entry->store();
 
             $config_id = OCConfig::getConfigIdForCourse($course_id);
+
+            // Remote
+            if ($visibility == $default) {
+                $acl_manager = ACLManagerClient::getInstance($config_id);
+                $acl_manager->applyACLto('episode', $episode_id, '');
+            }
 
             OpencastLTI::setAcls($course_id);
 
