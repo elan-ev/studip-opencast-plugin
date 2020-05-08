@@ -440,12 +440,6 @@ class OCModel
 
             $config_id = OCConfig::getConfigIdForCourse($course_id);
 
-            // Remote
-            if ($visibility == 'visible') {
-                $acl_manager = ACLManagerClient::getInstance($config_id);
-                $acl_manager->applyACLto('episode', $episode_id, '');
-            }
-
             OpencastLTI::setAcls($course_id);
 
             $api = ApiWorkflowsClient::getInstance($config_id);
@@ -456,6 +450,9 @@ class OCModel
                 $entry->store();
                 return false;
             }
+
+            $entry->chdate = time();
+            $entry->store();
 
             return true;
         }
@@ -475,8 +472,8 @@ class OCModel
         $series = reset(OCSeminarSeries::getSeries($course_id));
 
         return OCSeminarEpisodes::findOneBySQL(
-            'series_id = ? AND episode_id = ?',
-            [$series['series_id'], $episode_id]
+            'series_id = ? AND episode_id = ? AND seminar_id = ?',
+            [$series['series_id'], $episode_id, $course_id]
         );
     }
 
@@ -571,22 +568,48 @@ class OCModel
          return $stmt->execute(array($seminar_id, $workflow_id));
     }
 
-    static function setEpisode($episode_id, $series_id, $visibility, $mkdate, $is_retracting)
+    /**
+     * Update or create episode with passed data
+     *
+     * @param [type]  $episode_id    [description]
+     * @param [type]  $series_id     [description]
+     * @param [type]  $seminar_id    [description]
+     * @param [type]  $visibility    [description]
+     * @param [type]  $mkdate        [description]
+     *
+     * @param boolean $is_retracting [description]
+     */
+    static function setEpisode($episode_id, $series_id, $seminar_id, $visibility, $is_retracting)
     {
-        $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_episodes (`series_id`,`episode_id`, `visible`, `mkdate`, `is_retracting`)
-                VALUES (?, ?, ?, ?, ?)");
+        // check, if entry already ; update if so, otherwise create entry
+        $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ?
+            AND series_id = ? AND seminar_id = ?',
+            [$episode_id, $series_id, $seminar_id]
+        );
 
-        return $stmt->execute(array($series_id, $episode_id, $visibility, $mkdate, $is_retracting));
+        if (!$episode) {
+            $episode = new OCSeminarEpisodes();
+
+            $episode->episode_id = $episode_id;
+            $episode->series_id  = $series_id;
+            $episode->seminar_id = $seminar_id;
+            $episode->mkdate     = time();
+
+        }
+
+        $episode->visible       = $visibility;
+        $episode->is_retracting = $is_retracting;
+
+        $episode->store();
     }
 
     static function getCoursePositions($course_id)
     {
         $stmt = DBManager::get()->prepare("SELECT series_id, episode_id,
-            `visible`, `is_retracting`, oc_seminar_episodes.mkdate
-            FROM oc_seminar_series
-            JOIN oc_seminar_episodes USING (series_id)
-            WHERE `seminar_id` = ? ORDER BY oc_seminar_episodes.mkdate DESC");
+            `visible`, `is_retracting`, mkdate
+            FROM oc_seminar_episodes
+            WHERE seminar_id = ?
+            ORDER BY oc_seminar_episodes.mkdate DESC");
         $stmt->execute(array($course_id));
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -650,8 +673,7 @@ class OCModel
     static function getCoursesForEpisode($episode_id){
         $stmt = DBManager::get()->prepare("SELECT seminar_id
             FROM oc_seminar_episodes
-            JOIN oc_seminar_series USING (series_id)
-            WHERE episode_id = ?");
+            WHERE series_id = ? AND episode_id = ?");
         $stmt->execute([$episode_id]);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
