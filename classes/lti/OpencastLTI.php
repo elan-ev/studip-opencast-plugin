@@ -38,11 +38,10 @@ class OpencastLTI
 
         // check the opencast visibility for episodes and update Stud.IP settings
         foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
-            $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id, $course_id);
-
+            $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id);
             $entry = OCSeminarEpisodes::findOneBySQL(
-                'series_id = ? AND episode_id = ? AND seminar_id = ?',
-                [$series['series_id'], $episode->id, $course_id]
+                'series_id = ? AND episode_id = ?',
+                [$series['series_id'], $episode->id]
             );
 
             if ($entry && $entry->visible != $vis) {
@@ -224,39 +223,16 @@ class OpencastLTI
     }
 
     /**
-     * [apply_acl_to_courses description]
+     * @param $acl_manager
+     * @param $acl
+     * @param $series_id
      *
-     * @param  [type] $acl         [description]
-     * @param  [type] $courses     [description]
-     * @param  [type] $target_id   [description]
-     * @param  [type] $target_type [description]
-     *
-     * @return [type]              [description]
+     * @return array
      */
     public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
     {
-        if ($target_type == 'series') {
-            $client = \ApiSeriesClient::create($courses[0]);
-        } else if ($target_type == 'episode') {
-            $client = \ApiEventsClient::create($courses[0]);
-
-            // check, if the target episode has a running workflow or the visibility has been changed less than 2 minutes ago
-            $workflow = $client->getEpisode($target_id)[1]->processing_state;
-
-            if ($workflow != 'SUCCEEDED') {
-                // do not change ACLs if there is a running workflow!
-                return false;
-            }
-
-            // check, if the episode entry has been changed just recently
-            foreach ($courses as $course_id) {
-                $episode = OCSeminarEpisodes::findBySQL('episode_id = ? AND seminar_id = ?', [$episode_id, $course_id]);
-
-                if ($episode->chdate > (time() - 120)) {
-                    return false;
-                }
-            }
-        }
+        // TODO: use correct config!!!
+        $acl_manager = \ACLManagerClient::getInstance();
 
         //$acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
         /*foreach ($acls_to_remove as $to_remove) {
