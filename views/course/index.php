@@ -261,18 +261,33 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 
             <label>
                 <input type="radio" name="visibility" value="invisible">
-                <?= $_("Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar") ?>
+                <span>
+                    <?= $_("Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar") ?>
+                </span>
             </label>
 
             <label>
                 <input type="radio" name="visibility" value="visible">
-                <?= $_("Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar") ?>
+                <span>
+                    <?= $_("Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar") ?>
+                </span>
             </label>
 
-            <label>
-                <input type="radio" name="visibility" value="free">
-                <?= $_("Freigeben - Dieses Video ist für jeden sichtbar") ?>
-            </label>
+            <? if ($multiconnected) : ?>
+                <label class="oc_muted">
+                    <input type="radio" name="visibility" value="visible" disabled="disabled" style="float: left">
+                    <span>
+                        <?= $_("Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher nicht freigegeben werden.") ?>
+                    </span>
+                </label>
+            <? else : ?>
+                <label>
+                    <input type="radio" name="visibility" value="free">
+                    <span>
+                        <?= $_("Freigeben - Dieses Video ist für jeden sichtbar") ?>
+                    </span>
+                </label>
+            <? endif ?>
         </fieldset>
 
         <footer data-dialog-button>
