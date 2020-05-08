@@ -336,6 +336,22 @@ class AdminController extends OpencastController
         $this->endpoints = OCEndpoints::getEndpoints();
     }
 
+
+    /**
+     * brings REST URL in one format before writing in db
+     */
+    function cleanClientURLs()
+    {
+        $urls = array('series', 'search', 'scheduling', 'ingest', 'captureadmin'
+            , 'upload', 'mediapackage');
+
+        foreach($urls as $pre) {
+            $var = $pre.'_url';
+            $this->$var = rtrim($this->$var,"/");
+        }
+
+    }
+
     function resources_action()
     {
         PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
@@ -444,6 +460,68 @@ class AdminController extends OpencastController
     {
         $caa_client    = CaptureAgentAdminClient::getInstance();
         $this->agents  = $caa_client->getCaptureAgents();
+    }
+
+    function refresh_cache_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_perm('root')) {
+            // expire Stud.IP Cache
+            StudipCacheFactory::getCache()->expire('oc_allseries');
+
+            $this->flash['messages'] = [
+                'success' => $this->_("Der Zwischenspeicher wurde geleert.")
+            ];
+        }
+
+        $this->redirect('admin/config/');
+    }
+
+    function refresh_episodes_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_perm('root')) {
+            // refresh database entries
+            $stmt = DBManager::get()->prepare("SELECT
+                DISTINCT ocs.seminar_id, ocs.series_id
+                FROM oc_seminar_series AS ocs
+                WHERE 1");
+            $stmt->execute(array());
+            $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (is_array($courses)) {
+                foreach ($courses as $course) {
+
+                    $ocmodel = new OCCourseModel($course['seminar_id']);
+                    $ocmodel->getEpisodes(true);
+                    unset($ocmodel);
+                }
+
+                $this->flash['messages'] = [
+                    'success' => $this->_("Die Episodenliste aller Series  wurde aktualisiert.")
+                ];
+            }
+        }
+
+        $this->redirect('admin/config/');
+    }
+
+    function mediastatus_action()
+    {
+        PageLayout::setTitle($this->_("Opencast Medienstatus"));
+        Navigation::activateItem('/admin/config/oc-mediastatus');
+
+        // OPENCAST TMP-DIRECTORY CONTENT
+        $undeleted_jobs = OCJobManager::existent_jobs();
+        $this->upload_jobs = [
+            'successful'=>[],
+            'unfinished'=>[]
+        ];
+
+        foreach ($undeleted_jobs as $undeleted_job_id){
+            $job = new OCJob($undeleted_job_id);
+            $this->upload_jobs[($job->both_uploads_succeeded() ? 'successful' : 'unfinished')][] = $job;
+        }
+
+        $this->memory_space = OCJobManager::save_dir_size();
     }
 
     function precise_update_action()

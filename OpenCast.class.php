@@ -50,6 +50,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
                 Navigation::addItem('/admin/config/oc-resources', $resources);
+
+                if ($perm->have_perm('root')) {
+                    $mediastatus = new Navigation($this->_('Opencast Medienstatus'));
+                    $mediastatus->setURL(PluginEngine::getURL('opencast/admin/mediastatus'));
+                    $main->addSubNavigation('oc-mediastatus', $mediastatus);
+                    Navigation::addItem('/admin/config/oc-mediastatus', $mediastatus);
+                }
             }
         }
 
@@ -59,6 +66,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $this->addStylesheet('stylesheets/oc.less');
 
             PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
+
+            if (StudipVersion::olderThan('4.2') && !Studip\Markup::editorEnabled()) {
+                PageLayout::addScript($this->getPluginUrl() . '/node_modules/blueimp-file-upload/js/jquery.fileupload.js');
+            }
 
             if (class_exists('Context')) {
                 $id = Context::getId();

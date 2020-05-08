@@ -223,7 +223,9 @@ class CourseController extends OpencastController
         }
 
         if (!empty($this->connectedSeries)) {
-            OpencastLTI::setAcls($this->course_id);
+            if (Config::get()->OPENCAST_HIDE_EPISODES) {
+                OpencastLTI::setAcls($this->course_id);
+            }
             OpencastLTI::updateEpisodeVisibility($this->course_id);
         }
 
@@ -816,6 +818,19 @@ class CourseController extends OpencastController
         } else {
             $this->redirect(PluginEngine::getLink('opencast/course/index/' . $episode_id));
         }
+    }
+
+    function refresh_episodes_action($ticket)
+    {
+
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+            $occourse2 = new OCCourseModel($this->course_id);
+            $occourse2->getEpisodes(true);
+
+            $this->flash['messages'] = ['success' => $this->_("Die Episodenliste wurde aktualisiert.")];
+        }
+
+        $this->redirect('course/index/false');
     }
 
     function toggle_tab_visibility_action($ticket)

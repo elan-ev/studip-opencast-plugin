@@ -114,13 +114,6 @@ class OpencastLTI
         return $result;
     }
 
-    /**
-     * Return mapping for which acls shall be set for the series and the episodes.
-     * Returns false if no change is needed for the passed course.
-     *
-     * @param  string $course_id
-     * @return mixed             array, if setting of the acls is needed, false otherwise
-     */
     public static function generate_acl_mapping_for_course($course_id)
     {
         $series_list = OCSeminarSeries::getSeries($course_id);
@@ -138,19 +131,13 @@ class OpencastLTI
             ? 'invisible'
             : 'visible';
 
-        // iterate over all series for this course
         foreach ($series_list as $series) {
-            // get all courses connected to this series and iterate over them
-            $entries = OCSeminarSeries::findBySeries_id($series['series_id']);
+            $result['s'][$series['series_id']][$course_id] = $vis;
 
-            foreach ($entries as $entry) {
-                $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
-
-                $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes = $course_model->getEpisodes();
-                foreach ($episodes as $episode) {
-                    $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
-                }
+            $course_model = new \OCCourseModel($course_id);
+            $episodes = $course_model->getEpisodes();
+            foreach ($episodes as $episode) {
+                $result['e'][$episode['id']][$course_id] = $episode['visibility'] ?: $vis;
             }
         }
 
@@ -244,24 +231,21 @@ class OpencastLTI
      */
     public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
     {
-        if ($target_type == 'series') {
-            $client = \ApiSeriesClient::create($courses[0]);
-        } else if ($target_type == 'episode') {
-            $client = \ApiEventsClient::create($courses[0]);
-        }
+        // TODO: use correct config!!!
+        $acl_manager = \ACLManagerClient::getInstance();
 
-        $oc_acl = $client->getACL($target_id);
+        //$acls_to_remove = OCAccessControl::get_acls_for($target_type, $target_id);
+        /*foreach ($acls_to_remove as $to_remove) {
+            if ($acl_manager->removeACL($to_remove['acl_id'])) {
+                OCAccessControl::remove_acl_from_db($to_remove['acl_id']);
+            }
+        }*/
 
-        // check, if the calculated and actual acls differ and update if so
-        if ($oc_acl <> $acl->toArray()) {
-            $acl_manager = \ACLManagerClient::create($courses[0]);
-
-            $created_acl = $acl_manager->createACL($acl);
-            if ($created_acl) {
-                if ($acl_manager->applyACLto($target_type, $target_id, $created_acl->id)) {
-                    foreach ($courses as $course) {
-                        OCAccessControl::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
-                    }
+        $created_acl = $acl_manager->createACL($acl);
+        if ($created_acl) {
+            if ($acl_manager->applyACLto($target_type, $target_id, $created_acl->id)) {
+                foreach ($courses as $course) {
+                    OCAccessControl::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
                 }
             }
         }

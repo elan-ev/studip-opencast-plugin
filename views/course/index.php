@@ -127,6 +127,12 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             new Icon('trash', 'clickable')
         );
 
+        $actions->addLink(
+            $_("Episodenliste aktualisieren"),
+            PluginEngine::getLink('opencast/course/refresh_episodes/' . get_ticket()),
+            new Icon('refresh', 'clickable')
+        );
+
         if ($can_schedule) {
             $actions->addLink(
                 $_("Medien hochladen"),
