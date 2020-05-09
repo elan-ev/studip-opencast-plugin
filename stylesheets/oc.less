@@ -276,6 +276,8 @@
 
 .ocplayerlink {
     margin-left: @item-width;
+    display: inline-flex;
+    flex-wrap: wrap;
 }
 
 .oce_item {
@@ -382,9 +384,13 @@ textarea.oc_input:focus {
     white-space: normal;
 }
 
-.button.download:before,
-.button.ocextern:before,
-.button.ocspecial:before {
+.button.download::before,
+.button.ocextern::before,
+.button.oc_editor::before,
+.button.oc_delete::before,
+.button.oc_feedback::before,
+.button.oc_download_dialog::before,
+.button.ocspecial::before {
     content: " ";
     float: left;
     height: 16px;
@@ -478,6 +484,38 @@ textarea.oc_input:focus {
 
 .button.ocfree:hover {
     .icon('before', 'youtube', 'info_alt');
+}
+
+.button.oc_editor {
+    .icon('before', 'edit', 'clickable');
+}
+
+.button.oc_editor:hover {
+    .icon('before', 'edit', 'info_alt');
+}
+
+.button.oc_delete {
+    .icon('before', 'remove-circle', 'clickable');
+}
+
+.button.oc_delete:hover {
+    .icon('before', 'remove-circle', 'info_alt');
+}
+
+.button.oc_download_dialog {
+    .icon('before', 'download', 'clickable');
+}
+
+.button.oc_download_dialog:hover {
+    .icon('before', 'download', 'info_alt');
+}
+
+.button.oc_feedback {
+    .icon('before', 'chat', 'clickable');
+}
+
+.button.oc_feedback:hover {
+    .icon('before', 'chat', 'info_alt');
 }
 
 img.ocinvisible {
@@ -804,6 +842,13 @@ img.ocinvisible {
 
     .oce_playercontainer span.previewimage img.playbutton {
         max-height: 100px;
+    }
+
+    .ocplayerlink .button {
+        text-indent: -9999px;
+        min-width: 40px;
+        white-space: nowrap;
+        padding-right: 6px;
     }
 }
 
