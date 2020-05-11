@@ -33,11 +33,6 @@ class RefreshScheduledEvents extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        // only run this cronjob, if the TOS-system is activated
-        if (!Config::get()->OPENCAST_SHOW_TOS) {
-            return;
-        }
-
         require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
 
         $stmt = DBManager::get()->prepare("SELECT oc.*, oss.seminar_id, oss.series_id
@@ -87,9 +82,16 @@ class RefreshScheduledEvents extends CronJob
         }
 
         // the remaining events have no association in Stud.IP and need to be deleted
+        echo 'Folgende Events sind zum löschen vorgesehen:' . "\n";
+
         if (is_array($events)) foreach ($events as $event) {
-            $scheduler_client = SchedulerClient::getInstance(1);
-            $scheduler_client->deleteEvent($event->identifier);
+            // only delete events, if the TOS-system is activated
+            if (!Config::get()->OPENCAST_SHOW_TOS) {
+                echo $event->identifier . "\n";
+            } else {
+                $scheduler_client = SchedulerClient::getInstance(1);
+                $scheduler_client->deleteEvent($event->identifier);
+            }
         }
 
         return true;
