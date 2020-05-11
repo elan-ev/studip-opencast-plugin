@@ -63,6 +63,7 @@ if ($this->connectedSeries[0]['series_id']) :
 
     if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
         && \Config::get()->OPENCAST_ALLOW_STUDIO
+        && $config['service_url'] . '/lti' != OpencastLTI::getSearchUrl($this->course_id)
     ) {
         $studio_lti_link = new LtiLink(
             $config['service_url'] . '/lti',
