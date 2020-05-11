@@ -319,6 +319,7 @@ const OC = {
                 var $input = $(this).next('input');
                 $input.trigger('click');
                 $input.one("reset-button", function () {
+                    $input.val('');
                     $button.show();
                 });
             });
