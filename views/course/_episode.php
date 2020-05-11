@@ -20,8 +20,8 @@ $visibility_text = [
             'class'     => 'sort',
             'data-sort' => 'name'
         ]) ?>
-    -->
     </span>
+    -->
         <ul class="oce_list list"
             <?= ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
@@ -136,37 +136,36 @@ $visibility_text = [
                                 ); ?>
                             <? endif ?>
 
-                                <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                        <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: 'Unbekannte Sichtbarkeit'),
-                                            '', [
-                                            'class'           => 'oc-togglevis ocspecial oc'. ($item['visibility'] ?: 'free'),
-                                            'data-episode-id' => $item['id'],
-                                            'data-visibility' => $item['visibility'] ?: 'invisible'
-                                        ]); ?>
+                            <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
+                                    <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: 'Unbekannte Sichtbarkeit'),
+                                        '', [
+                                        'class'           => 'oc-togglevis ocspecial oc'. ($item['visibility'] ?: 'free'),
+                                        'data-episode-id' => $item['id'],
+                                        'data-visibility' => $item['visibility'] ?: 'invisible'
+                                    ]); ?>
 
-                                    <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
-                                      <?= Studip\LinkButton::create(
-                                          $_('Schnitteditor öffnen'),
-                                          $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor',
-                                          [
-                                              'target' => '_blank',
-                                              'class' => 'oc_editor'
-                                          ]
-                                      ); ?>
-                                   <? endif ?>
+                                <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                  <?= Studip\LinkButton::create(
+                                      $_('Schnitteditor öffnen'),
+                                      $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor',
+                                      [
+                                          'target' => '_blank',
+                                          'class' => 'oc_editor'
+                                      ]
+                                  ); ?>
+                               <? endif ?>
 
-                                        <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
-                                            'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')",
-                                            'class' => 'oc_delete'
-                                        ]); ?>
-                                <? endif; ?>
-                            </div>
+                                    <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
+                                        'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')",
+                                        'class' => 'oc_delete'
+                                    ]); ?>
+                            <? endif; ?>
                         </div>
-                        <? } else { ?>
-                            <div class="ocplayerlink" style="margin-top: 1em;">
-                                <?= MessageBox::info($_("Die Aufzeichnung wird gerade gelöscht.")) ?>
-                            </div>
-                        <? } ?>
+                    <? } else { ?>
+                        <div class="ocplayerlink" style="margin-top: 1em;">
+                            <?= MessageBox::info($_("Die Aufzeichnung wird gerade gelöscht.")) ?>
+                        </div>
+                    <? } ?>
                 </li>
             <? endforeach; ?>
         </ul>

@@ -4,6 +4,7 @@
 @item-width : 25em;
 @item-height-small: auto;
 @item-width-small : 16em;
+@episode-background: #EEEEEE;
 
 .conf-form {
     padding-bottom: 19px;
@@ -127,10 +128,7 @@
 }
 
 .oc_flexepisodelist {
-    background: rgb(255, 255, 255) transparent;
-    background: rgba(255, 255, 255, 0.8);
     padding: 5ex;
-    background-color: #F3F5F8;
     margin-top: 1em;
     padding: 0.5em;
     height: auto;
@@ -138,9 +136,7 @@
 }
 
 .oce_playercontainer {
-    background: rgb(255, 255, 255) transparent;
-    background: rgba(255, 255, 255, 0.8);
-    background-color: #F3F5F8;
+    background: @episode-background;
     margin-top: 1em;
     padding-right: 1.5em;
     z-index: 1999;
@@ -202,6 +198,20 @@
     list-style: none;
     overflow: auto;
     height: auto;
+
+    > li {
+        background: @episode-background;
+        border-right-width: 1px;
+        border-left-width: 1px;
+        border-width: 1px 0 0;
+        margin-bottom: 1em;
+        padding: 0 1em 0.5em 1em;
+        display: block;
+        position: relative;
+        overflow: hidden;
+        border-color: #ddd;
+        vertical-align: center;
+    }
 }
 
 .oce_wip {
@@ -235,18 +245,6 @@
     background-color: #F3F5F4;
 }
 
-.oce_list li {
-    border-right-width: 1px;
-    border-left-width: 1px;
-    border-width: 1px 0 0;
-    margin: 0;
-    display: block;
-    position: relative;
-    overflow: hidden;
-    border-color: #ddd;
-    vertical-align: center;
-}
-
 .oce_preview_container {
     position: relative;
 }
@@ -275,7 +273,6 @@
 }
 
 .ocplayerlink {
-    margin-left: @item-width;
     display: inline-flex;
     flex-wrap: wrap;
 }
@@ -495,11 +492,11 @@ textarea.oc_input:focus {
 }
 
 .button.oc_delete {
-    .icon('before', 'remove-circle', 'clickable');
+    .icon('before', 'trash', 'clickable');
 }
 
 .button.oc_delete:hover {
-    .icon('before', 'remove-circle', 'info_alt');
+    .icon('before', 'trash', 'info_alt');
 }
 
 .button.oc_download_dialog {
