@@ -290,6 +290,10 @@ class OpencastLTI
 
     public static function getSearchUrl($course_id)
     {
+        if (!$course_id) {
+            return '';
+        }
+
         // check if config id is retrieved successful
         $config_id     = OCConfig::getConfigIdForCourse($course_id);
 
