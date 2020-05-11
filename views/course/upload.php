@@ -166,7 +166,7 @@ $oc_acl=urlencode($oc_acl);
     </div>
 
     <?= MessageBox::info(
-        $_("Laden Sie nur Medien hoch, an denen Sie das  Nutzungsrecht besitzen!"),
+        $_("Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!"),
         [
             $_(
                 "Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen."
