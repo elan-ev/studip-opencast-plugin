@@ -21,7 +21,7 @@
                             <?= tooltipIcon($_('Aktueller Arbeitsschritt:') .' '. $instances[$episode->identifier]->operations->operation->description) ?>
                         </h2>
 
-                        <ul class="oce_contetlist">
+                        <ul class="oce_contentlist">
                             <li>
                                 <?= $_('Video wird verarbeitet...') ?>
                             </li>
