@@ -126,10 +126,15 @@ $visibility_text = [
                                     <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
                                 </div>
                             <? endif ?>
-                            <div class="button-group">
-                                <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
-                                    <?= Studip\LinkButton::create($_('Feedback'), 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id'])); ?>
-                                <? endif ?>
+                            <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
+                                <?= Studip\LinkButton::create(
+                                    $_('Feedback'),
+                                    'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id']),
+                                    [
+                                        'class' => 'oc_feedback'
+                                    ]
+                                ); ?>
+                            <? endif ?>
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
                                         <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: 'Unbekannte Sichtbarkeit'),
@@ -139,12 +144,20 @@ $visibility_text = [
                                             'data-visibility' => $item['visibility'] ?: 'invisible'
                                         ]); ?>
 
-                                        <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
-                                          <?= Studip\LinkButton::create($_('Schnitteditor öffnen'), $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor', ['target' => '_blank']); ?>
-                                       <? endif ?>
+                                    <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                      <?= Studip\LinkButton::create(
+                                          $_('Schnitteditor öffnen'),
+                                          $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor',
+                                          [
+                                              'target' => '_blank',
+                                              'class' => 'oc_editor'
+                                          ]
+                                      ); ?>
+                                   <? endif ?>
 
                                         <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
-                                            'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')"
+                                            'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')",
+                                            'class' => 'oc_delete'
                                         ]); ?>
                                 <? endif; ?>
                             </div>
