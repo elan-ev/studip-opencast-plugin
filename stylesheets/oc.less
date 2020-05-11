@@ -812,7 +812,6 @@ img.ocinvisible {
     }
 }
 
-
 @media only screen and (max-width: @major-breakpoint-large) {
     .oc_flexplaycontainer {
         width: 15em;
@@ -829,10 +828,17 @@ img.ocinvisible {
     .ocplayerlink {
         clear: both;
         margin-left: 0px;
+
+        .button {
+            text-indent: -9999px;
+            min-width: 40px;
+            white-space: nowrap;
+            padding-right: 6px;
+        }
     }
 }
 
-@media only screen and (max-width: @major-breakpoint-medium) {
+@media only screen and (max-width: @major-breakpoint-large) {
     .oc_flexplaycontainer {
         width: 100%;
     }

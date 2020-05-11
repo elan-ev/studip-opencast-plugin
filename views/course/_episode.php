@@ -119,7 +119,8 @@ $visibility_text = [
                                         '', [
                                         'class'           => 'oc-togglevis ocspecial oc'. ($item['visibility'] ?: 'free'),
                                         'data-episode-id' => $item['id'],
-                                        'data-visibility' => $item['visibility'] ?: 'invisible'
+                                        'data-visibility' => $item['visibility'] ?: 'invisible',
+                                        'title'           => $_('Sichtbarkeit für dieses Video ändern')
                                     ]); ?>
 
                                     <? if (isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
@@ -128,7 +129,8 @@ $visibility_text = [
                                           $config['service_url'].'/admin-ng/index.html#!/events/events/'.$item['id'].'/tools/editor',
                                           [
                                               'target' => '_blank',
-                                              'class' => 'oc_editor'
+                                              'class'  => 'oc_editor',
+                                              'title'  => $_('Schnitteditor öffnen')
                                           ]
                                       ); ?>
                                    <? endif ?>
@@ -140,7 +142,11 @@ $visibility_text = [
                                             || !empty($item['presentation_download'])
                                             || !empty($item['audio_download'])
                                         ) : ?>
-                                        <?= \Studip\LinkButton::create('Mediendownload','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
+                                        <?= \Studip\LinkButton::create($_('Mediendownload'), '#', [
+                                            'class'           => 'oc_download_dialog',
+                                            'data-episode_id' => $item['id'],
+                                            'title'           => $_('Mediendownload')
+                                        ]); ?>
                                     <? endif ?>
                                     <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
                                         <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
@@ -150,7 +156,11 @@ $visibility_text = [
                                             || !empty($item['presentation_download'])
                                             || !empty($item['audio_download'])
                                         ) : ?>
-                                        <?= \Studip\LinkButton::create('Mediendownload (nur für Lehrende)','#',['class'=>'oc_download_dialog','data-episode_id'=>$item['id']]); ?>
+                                        <?= \Studip\LinkButton::create($_('Mediendownload (nur für Lehrende)'), '#', [
+                                                'class'           => 'oc_download_dialog',
+                                                'data-episode_id' => $item['id'],
+                                                'title'           => $_('Mediendownload (nur für Lehrende)')
+                                        ]); ?>
                                     <? endif ?>
                                     <div id="download_dialog-<?= $item['id']?>" title="<?= $_("Mediendownload") ?>" style="display: none;">
                                         <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode'=> $item]) ?>
@@ -159,9 +169,10 @@ $visibility_text = [
 
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                    <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
+                                    <?= Studip\LinkButton::create($_('Entfernen'), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
                                         'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie dieses Video löschen möchten?') . "')",
-                                        'class' => 'oc_delete'
+                                        'class'   => 'oc_delete',
+                                        'title'   => $_('Dieses Video löschen')
                                     ]); ?>
                                 <? endif ?>
                             </div>
