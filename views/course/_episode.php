@@ -156,7 +156,7 @@ $visibility_text = [
                                <? endif ?>
 
                                     <?= Studip\LinkButton::create($_("Entfernen"), PluginEngine::getLink('opencast/course/remove_episode/' . get_ticket().'/'.$item['id']), [
-                                        'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie diese Video löschen möchten?') . "')",
+                                        'onClick' => "return OC.askForConfirmation('" . $_('Sind sie sicher, dass sie dieses Video löschen möchten?') . "')",
                                         'class' => 'oc_delete'
                                     ]); ?>
                             <? endif; ?>
