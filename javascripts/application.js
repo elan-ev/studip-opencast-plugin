@@ -110,6 +110,27 @@ const OC = {
             })
         }
 
+	function addACL(mediaPackage,acl) {
+
+
+
+	    var acldata = new FormData();
+	    acldata.append('mediaPackage', mediaPackage);
+            acldata.append('flavor', 'security/xacml+episode');
+            acldata.append('BODY', new Blob([acl]), 'acl.xml');
+
+            return $.ajax({
+                url: serviceUrl + "/ingest/addAttachment",
+                method: "POST",
+                data: acldata,
+                processData: false,
+                contentType: false,
+                xhrFields: { withCredentials: true },
+            })
+
+
+        }
+
         function uploadTracks(mediaPackage, files, onProgress) {
             return files.reduce(function(promise, file) {
                 return promise.then(function (mediaPackage) {
@@ -176,6 +197,10 @@ const OC = {
             return getMediaPackage()
                 .then(function (_mediaPackage, _status, resp) {
                     return addDCCCatalog(resp.responseText, terms)
+                })
+		.then(function (_mediaPackage, _status, resp) {
+		    var acl = terms.oc_acl;
+		    return addACL(resp.responseText, acl)
                 })
                 .then(function (_mediaPackage, _status, resp) {
                     return uploadTracks(resp.responseText, files, onProgress)
@@ -333,7 +358,8 @@ const OC = {
                     description: formFields.description,
                     language: formFields.language,
                     title: formFields.title,
-                    seriesId: seriesId
+                    seriesId: seriesId,
+                    oc_acl: decodeURIComponent(formFields.oc_acl).replace(/\+/g," ")
                 }
 
                 const dialog = showUploadProgress(uploadMedia);
