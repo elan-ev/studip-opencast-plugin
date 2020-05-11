@@ -941,13 +941,16 @@ class CourseController extends OpencastController
         throw new RuntimeException("The course's configuration of OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE contains an unknown value.");
     }
 
-    function remove_episode_action($ticket, $episodeId)
+    function remove_episode_action($ticket, $episode_id)
     {
         if (
             check_ticket($ticket) &&
             $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
         ) {
-            if ($episode = $this->getEpisode($episodeId)) {
+            if ($episode = \Opencast\Models\OCSeminarEpisodes::findOneBySQL(
+                'seminar_id = ? AND episode_id = ?',
+                [$this->course_id, $episode_id]
+            )) {
                 if ($this->retractEpisode($episode)) {
                     $this->flash['messages'] = [
                         'success' => $this->_(
@@ -998,20 +1001,6 @@ class CourseController extends OpencastController
             'seriesId' => empty($connectedSeries) ? null : $connectedSeries[0]['series_id'],
             'uploadWorkflowId' => $workflow
         ];
-    }
-
-    private function getEpisode($episodeId)
-    {
-        $series = OCSeminarSeries::getSeries($this->course_id);
-        if (empty($series)) {
-            return null;
-        }
-
-        $seriesId = $series[0]->series_id;
-        return \Opencast\Models\OCSeminarEpisodes::find([
-            $seriesId,
-            $episodeId
-        ]);
     }
 
     private function retractEpisode($episode)
