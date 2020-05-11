@@ -32,7 +32,7 @@
                             </li>
                             <li>
                                 <?= $_('Beschreibung:') ?>
-                                <?= $item['description'] ? htmlReady($episode->description) : 'Keine Beschreibung vorhanden' ?>
+                                <?= $episode->description ? htmlReady($episode->description) : 'Keine Beschreibung vorhanden' ?>
                             </li>
                             <li>
                             </li>
