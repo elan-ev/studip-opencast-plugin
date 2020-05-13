@@ -1,10 +1,8 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 
-<form
-        action="<?= PluginEngine::getLink('opencast/course/edit/' . $course_id) ?>"
-        method=post id="select-series" class="default"
-        data-unconnected="<?= (empty($connectedSeries) ? 1 : 'false'); ?>"
->
+<form action="<?= $controller->url_for('course/edit/' . $course_id) ?>"
+      method=post id="select-series" class="default"
+      data-unconnected="<?= (empty($connectedSeries) ? 1 : 'false'); ?>">
     <fieldset>
         <legend>
             <?= $_('Serie mit Veranstaltung verknüpfen') ?>
@@ -37,8 +35,8 @@
 
 
     <footer data-dialog-button>
-        <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/course/index')); ?>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('course/index')); ?>
     </footer>
 </form>
 

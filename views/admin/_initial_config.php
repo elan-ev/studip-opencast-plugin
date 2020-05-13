@@ -1,5 +1,5 @@
 <? use Studip\Button, Studip\LinkButton; ?>
-<form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/precise_update/') ?>" method=post>
+<form class="conf-form default" action="<?= $controller->url_for('admin/precise_update/') ?>" method=post>
     <fieldset class="conf-form-field collapsable collapsed">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
 
@@ -41,7 +41,7 @@
     </fieldset>
 </form>
 
-<form class="conf-form default" action="<?= PluginEngine::getLink('opencast/admin/update/') ?>" method=post>
+<form class="conf-form default" action="<?= $controller->url_for('admin/update') ?>" method=post>
     <?= CSRFProtection::tokenTag() ?>
     <?php
         $config_ids = [];

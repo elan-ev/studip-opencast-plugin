@@ -38,7 +38,7 @@ class AjaxController extends OpencastController
      * calls to _ and _n.
      *
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      * @return mixed
      * @throws RuntimeException when method is not found
      */
@@ -51,33 +51,31 @@ class AjaxController extends OpencastController
         throw new RuntimeException("Method {$method} does not exist");
     }
 
-    function before()
+    public function before()
     {
         // notify on trails action
         $klass = substr(get_called_class(), 0, -10);
-        $name = sprintf('oc_embed.performed.%s_%s', $klass, $action);
+        $name  = sprintf('oc_embed.performed.%s_%s', $klass, $action);
         NotificationCenter::postNotification($name, $this);
     }
 
-    function index_action()
+    public function index_action()
     {
-        $this->render_text($this->_("Ups.."));
+        $this->render_text($this->_('Ups..'));
     }
 
-    function getseries_action()
+    public function getseries_action()
     {
-        global $perm;
-
         $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id);
 
-        array_walk($series, function(&$item, $key) {
-            $sem = Course::find($item['seminar_id']);
-            $item['name'] = $sem->getFullname('number-name-semester');
+        array_walk($series, function (&$item, $key) {
+            $sem             = Course::find($item['seminar_id']);
+            $item['name']    = $sem->getFullname('number-name-semester');
             $item['endtime'] = $sem->getEnd_Time();
-            $item = array_merge($item, OCSeriesModel::getSeriesFromOpencast($item));
+            $item            = array_merge($item, OCSeriesModel::getSeriesFromOpencast($item));
         });
 
-        uasort($series, function($a, $b) {
+        uasort($series, function ($a, $b) {
             return $a['endtime'] == $b['endtime'] ? 0
                 : $a['endtime'] < $b['endtime'] ? -1 : 1;
         });
@@ -85,16 +83,13 @@ class AjaxController extends OpencastController
         $this->render_json(array_values($series));
     }
 
-    function getepisodes_action($series_id)
+    public function getepisodes_action($series_id)
     {
-
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         //$episodes      = $search_client->getEpisodes($series_id);
-        $result        = [];
-
-
+        $result = [];
         $course = Course::find(Context::getId());
-        $role = '';
+        $role   = '';
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
             $role = 'Instructor';
@@ -109,7 +104,7 @@ class AjaxController extends OpencastController
         }
 
         foreach ($episodes as $episode) {
-            if (key_exists('mediapackage', $episode)){
+            if (key_exists('mediapackage', $episode)) {
                 $result[] = $episode;
             }
         }
@@ -122,11 +117,11 @@ class AjaxController extends OpencastController
      * @throws Exception
      * @throws Trails_DoubleRenderError
      */
-    function getWorkflowStatus_action($workflow_id)
+    public function getWorkflowStatus_action($workflow_id)
     {
         if ($workflow = OCSeminarWorkflows::find($workflow_id)) {
             $this->workflow_client = WorkflowClient::getInstance($workflow->config_id);
-            $resp = $this->workflow_client->getWorkflowInstance($workflow_id);
+            $resp                  = $this->workflow_client->getWorkflowInstance($workflow_id);
             $this->render_text(json_encode($resp));
             return;
         }
@@ -134,9 +129,9 @@ class AjaxController extends OpencastController
         $this->render_nothing();
     }
 
-    function getWorkflowStatusforCourse_action($course_id)
+    public function getWorkflowStatusforCourse_action($course_id)
     {
-        $workflow_ids = OCModel::getWorkflowIDsforCourse($course_id);
+        $workflow_ids          = OCModel::getWorkflowIDsforCourse($course_id);
         $this->workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
         if (!empty($workflow_ids)) {
             $states = OCModel::getWorkflowStates($course_id, $workflow_ids);
@@ -146,5 +141,4 @@ class AjaxController extends OpencastController
             $this->render_nothing();
         }
     }
-
 }

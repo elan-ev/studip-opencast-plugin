@@ -99,7 +99,7 @@ $visibility_text = [
                                 <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
                                     <?= Studip\LinkButton::create(
                                         $_('Feedback'),
-                                        'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . PluginEngine::getLink('opencast/course/index/' . $item['id']),
+                                        'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . $controller->link_for('course/index/' . $item['id']),
                                         [
                                             'class' => 'oc_feedback'
                                         ]

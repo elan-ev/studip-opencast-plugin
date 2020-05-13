@@ -6,7 +6,7 @@
 
 class OpencastController extends StudipController
 {
-    function before_filter(&$action, &$args)
+    public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
 

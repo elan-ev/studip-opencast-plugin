@@ -189,7 +189,7 @@ $oc_acl=urlencode($oc_acl);
 
         <?= LinkButton::createCancel(
             $_('Abbrechen'),
-            PluginEngine::getLink('opencast/course/index')
+            $controller->url_for('course/index')
         ) ?>
     </footer>
 </form>

@@ -81,7 +81,7 @@ Helpbar::get()->addPlainText(
     <? endif ?>
 
     <footer>
-        <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('admin/resources')); ?>
     </footer>
 </form>

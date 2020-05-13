@@ -18,7 +18,7 @@ use Opencast\LTI\LtiLink;
         [   // disapproveParams
             'cancel' => true
         ],
-        PluginEngine::getLink('opencast/course/remove_series/' . get_ticket())  // baseUrl
+        $controller->url_for('course/remove_series/' . get_ticket())  // baseUrl
     ) ?>
 <? endif ?>
 
