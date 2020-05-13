@@ -1,17 +1,19 @@
 <?
+
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
+
 ?>
 
 <? if ($flash['delete']) : ?>
     <?= createQuestion2(sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
-            $this->connectedSeries[0]['title']
-        ),
+        $this->connectedSeries[0]['title']
+    ),
         [   // approveParams
             'course_id' => $course_id,
             'series_id' => $this->connectedSeries[0]['series_id'],
-            'delete' => true
+            'delete'    => true
         ],
         [   // disapproveParams
             'cancel' => true
@@ -23,11 +25,11 @@ use Opencast\LTI\LtiLink;
 
 <?= $this->render_partial('messages') ?>
 <script>
-jQuery(function() {
-    STUDIP.hasperm = <?= var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) ?>;
-    OC.states = <?= json_encode($states) ?>;
-    OC.initIndexpage();
-});
+    jQuery(function () {
+        STUDIP.hasperm = <?= var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) ?>;
+        OC.states = <?= json_encode($states) ?>;
+        OC.initIndexpage();
+    });
 </script>
 
 <?
@@ -85,33 +87,34 @@ if ($this->connectedSeries[0]['series_id']) :
 
         $studio_launch_data['oauth_signature'] = $studio_signature;
     }
-?>
+    ?>
 
-<script>
-OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function() {
-    jQuery('img.previewimage').each(function() {
-        this.src = this.dataset.src;
-    });
+    <script>
+        OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function () {
+            jQuery('img.previewimage').each(function () {
+                this.src = this.dataset.src;
+            });
 
-<? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO): ?>
-    OC.lti_done = 0;
-    OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function() {});
-<? endif ?>
-});
-</script>
+            <? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO): ?>
+            OC.lti_done = 0;
+            OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function () {
+            });
+            <? endif ?>
+        });
+    </script>
 <?
-/*
-?>
+    /*
+    ?>
 
-<script>
-OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode($lti_data) ?>, function() {
-    jQuery('img.previewimage').each(function() {
-        this.src = this.dataset.src;
+    <script>
+    OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode($lti_data) ?>, function() {
+        jQuery('img.previewimage').each(function() {
+            this.src = this.dataset.src;
+        });
     });
-});
-</script>
-<?
-*/
+    </script>
+    <?
+    */
 endif;
 
 global $perm;
@@ -119,83 +122,89 @@ $sidebar = Sidebar::get();
 
 if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     $actions = new ActionsWidget ();
-    $upload = '';
+    $upload  = '';
 
     if (!empty($connectedSeries)) {
         $actions->addLink(
-            $_("Verknüpfung aufheben"),
-            PluginEngine::getLink('opencast/course/remove_series/' . get_ticket()),
-            new Icon('trash', 'clickable')
+            $_('Verknüpfung aufheben'),
+            $controller->url_for('course/remove_series/' . get_ticket()),
+            Icon::create('trash')
         );
 
         if ($can_schedule) {
             $actions->addLink(
-                $_("Medien hochladen"),
+                $_('Medien hochladen'),
                 $controller->url_for('course/upload'),
-                new Icon('upload', 'clickable'),
+                Icon::create('upload'),
                 []
             );
 
             if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
-                $actions->addLink($_("Video aufnehmen"),
-                    URLHelper::getLink($config['service_url'] . '/studio/index.html', [
-                        'cid' => null,
-                        'upload.seriesId' => $connectedSeries[0]['series_id']
-                    ]),
-                    new Icon('video2', 'clickable'), [
-                        'target' => '_blank'
-                    ]
+                $actions->addLink(
+                    $_('Video aufnehmen'),
+                    URLHelper::getLink(
+                        $config['service_url'] . '/studio/index.html',
+                        [
+                            'cid'             => null,
+                            'upload.seriesId' => $connectedSeries[0]['series_id']
+                        ]
+                    ),
+                    Icon::create('video2'),
+                    ['target' => '_blank']
                 );
             }
 
             // TODO: Schnittool einbinden - Passender Workflow kucken
 
             if ($perm->have_perm('root')) {
-                $actions->addLink($_("Kursspezifischen Workflow konfigurieren"),
+                $actions->addLink(
+                    $_('Kursspezifischen Workflow konfigurieren'),
                     $controller->url_for('course/workflow'),
-                    new Icon('admin', 'clickable'), [
-                        'data-dialog' => 'size=auto'
-                    ]);
+                    Icon::create('admin'),
+                    ['data-dialog' => 'size=auto']
+                );
             }
         }
 
         if ($coursevis == 'visible') {
             $actions->addLink(
-                $_("Reiter verbergen"),
-                PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
-                new Icon('visibility-visible', 'clickable')
+                $_('Reiter verbergen'),
+                $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
+                Icon::create('visibility-visible')
             );
         } else {
             $actions->addLink(
-                $_("Reiter sichtbar machen"),
-                PluginEngine::getLink('opencast/course/toggle_tab_visibility/' . get_ticket()),
-                new Icon('visibility-invisible', 'clickable')
+                $_('Reiter sichtbar machen'),
+                $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
+                Icon::create('visibility-invisible')
             );
         }
 
         if (Config::get()->OPENCAST_SHOW_TOS && !$perm->have_perm('root')) {
             $actions->addLink(
-                $_("Datenschutzeinwilligung zurückziehen"),
-                PluginEngine::getLink('opencast/course/withdraw_tos/' . get_ticket()),
-                new Icon('decline', 'clickable')
+                $_('Datenschutzeinwilligung zurückziehen'),
+                $controller->url_for('course/withdraw_tos/' . get_ticket()),
+                Icon::create('decline')
             );
         }
 
         if ($perm->have_perm('root')) {
             if ($can_schedule) {
                 $actions->addLink(
-                    $_("Medienaufzeichnung verbieten"),
-                    PluginEngine::getLink('opencast/course/toggle_schedule/' . get_ticket()),
-                    new Icon('video+accept', 'clickable'), [
-                        title => $_('Die Medienaufzeichnung ist momentan erlaubt.')
+                    $_('Medienaufzeichnung verbieten'),
+                    $controller->url_for('course/toggle_schedule/' . get_ticket()),
+                    Icon::create('video+accept'),
+                    [
+                        'title' => $_('Die Medienaufzeichnung ist momentan erlaubt.')
                     ]
                 );
             } else {
                 $actions->addLink(
-                    $_("Medienaufzeichnung erlauben"),
-                    PluginEngine::getLink('opencast/course/toggle_schedule/' . get_ticket()),
-                    new Icon('video+decline', 'clickable'), [
-                        title => $_('Die Medienaufzeichnung ist momentan verboten.')
+                    $_('Medienaufzeichnung erlauben'),
+                    $controller->url_for('course/toggle_schedule/' . get_ticket()),
+                    Icon::create('video+decline'),
+                    [
+                        'title' => $_('Die Medienaufzeichnung ist momentan verboten.')
                     ]
                 );
             }
@@ -203,18 +212,20 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 
         if ($controller->isDownloadAllowed()) {
             $actions->addLink(
-                $_("Downloads verbieten"),
-                PluginEngine::getLink('opencast/course/disallow_download/' . get_ticket()),
-                new Icon('download+accept', 'clickable'), [
-                    title => $_('Downloads sind momentan erlaubt.')
+                $_('Downloads verbieten'),
+                $controller->url_for('course/disallow_download/' . get_ticket()),
+                Icon::create('download+accept'),
+                [
+                    'title' => $_('Downloads sind momentan erlaubt.')
                 ]
             );
         } else {
             $actions->addLink(
-                $_("Downloads erlauben"),
-                PluginEngine::getLink('opencast/course/allow_download/' . get_ticket()),
-                new Icon('download+decline', 'clickable'), [
-                    title => $_('Downloads sind momentan verboten.')
+                $_('Downloads erlauben'),
+                $controller->url_for('course/allow_download/' . get_ticket()),
+                Icon::create('download+decline'),
+                [
+                    'title' => $_('Downloads sind momentan verboten.')
                 ]
             );
         }
@@ -222,24 +233,29 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
-            PluginEngine::getLink('opencast/course/create_series/'),
-            new Icon('tools', 'clickable')
+            $controller->url_for('course/create_series'),
+            Icon::create('tools')
         );
 
         if ($perm->have_perm('root')) {
             $actions->addLink(
-                $_('Vorhandene Series verknüpfen'), PluginEngine::getLink('opencast/course/config/'),
-                new Icon('group', 'clickable'),
+                $_('Vorhandene Series verknüpfen'),
+                $controller->url_for('course/config'),
+                Icon::create('group'),
                 [
                     'data-dialog' => 'width=550;height=500'
-                ]);
+                ]
+            );
         }
     }
 
     $sidebar->addWidget($actions);
-    Helpbar::get()->addPlainText('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern."));
+    Helpbar::get()->addPlainText(
+        '',
+        $_('Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern.')
+    );
 } else {
-    Helpbar::get()->addPlainText('', $_("Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."));
+    Helpbar::get()->addPlainText('', $_('Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen.'));
 }
 
 Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback');
@@ -258,7 +274,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
         <? if ($this->config_error) : ?>
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
         <? else : ?>
-            <?= MessageBox::info($_("Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.")) ?>
+            <?= MessageBox::info($_('Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.')) ?>
         <? endif; ?>
     <? else: ?>
         <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
@@ -270,19 +286,19 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 <div id="visibility_dialog" style="display: none">
     <form class="default" method="post">
         <fieldset>
-            <legend>Sichtbarkeit einstellen</legend>
+            <legend><?= _('Sichtbarkeit einstellen')?></legend>
 
             <label>
                 <input type="radio" name="visibility" value="invisible">
                 <span>
-                    <?= $_("Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar") ?>
+                    <?= $_('Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar') ?>
                 </span>
             </label>
 
             <label>
                 <input type="radio" name="visibility" value="visible">
                 <span>
-                    <?= $_("Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar") ?>
+                    <?= $_('Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar') ?>
                 </span>
             </label>
 
@@ -290,22 +306,30 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
                 <label class="oc_muted">
                     <input type="radio" name="visibility" value="visible" disabled="disabled" style="float: left">
                     <span>
-                        <?= $_("Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher nicht freigegeben werden.") ?>
+                        <?= $_('Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher nicht freigegeben werden.') ?>
                     </span>
                 </label>
             <? else : ?>
                 <label>
                     <input type="radio" name="visibility" value="free">
                     <span>
-                        <?= $_("Freigeben - Dieses Video ist für jeden sichtbar") ?>
+                        <?= $_('Freigeben - Dieses Video ist für jeden sichtbar') ?>
                     </span>
                 </label>
             <? endif ?>
         </fieldset>
 
         <footer data-dialog-button>
-            <?= Studip\Button::createAccept(_('Speichern'), ['onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'));return false;"]) ?>
-            <?= Studip\Button::createCancel(_('Abbrechen'), ['onclick' => "jQuery('#visibility_dialog').dialog('close');return false;"]) ?>
+            <?= Studip\Button::createAccept(
+                _('Speichern'),
+                [
+                    'onclick' => "OC.setVisibility(jQuery('#visibility_dialog input[name=visibility]:checked').val(), jQuery('#visibility_dialog').attr('data-episode_id'));return false;"
+                ]
+            ) ?>
+            <?= Studip\Button::createCancel(
+                _('Abbrechen'),
+                ['onclick' => "jQuery('#visibility_dialog').dialog('close');return false;"]
+            ) ?>
         </footer>
     </form>
 </div>
