@@ -36,10 +36,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             //.. now the subnavi
             $main = new Navigation($this->_("Opencast Administration"));
             // TODO think about an index page.. for the moment the config page is in charge..
-            $main->setURL(PluginEngine::getURL($this, [], 'opencast/admin/config'));
+            $main->setURL(PluginEngine::getURL($this, [], 'admin/config'));
 
             $config = new Navigation($this->_('Opencast Einstellungen'));
-            $config->setURL(PluginEngine::getURL($this, [], 'opencast/admin/config'));
+            $config->setURL(PluginEngine::getURL($this, [], 'admin/config'));
             $main->addSubNavigation('oc-config', $config);
 
             Navigation::addItem('/start/opencast', $main);
@@ -47,7 +47,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             if (OCModel::getConfigurationstate()) {
                 $resources = new Navigation($this->_('Opencast Ressourcen'));
-                $resources->setURL(PluginEngine::getURL($this, [], 'opencast/admin/resources'));
+                $resources->setURL(PluginEngine::getURL($this, [], 'admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
                 Navigation::addItem('/admin/config/oc-resources', $resources);
             }
@@ -196,14 +196,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $ocmodel = new OCCourseModel($course_id);
         $main    = new Navigation('Opencast');
-        $main->setURL(PluginEngine::getURL($this, [], 'opencast/course'));
+        $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
         $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-black.svg', ICON::ROLE_CLICKABLE, ["title" => 'Opencast']));
         $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
-        $overview->setURL(PluginEngine::getURL($this, [], 'opencast/course/index'));
+        $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
         $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
-        $scheduler->setURL(PluginEngine::getURL($this, [], 'opencast/course/scheduler'));
+        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
         $main->addSubNavigation('overview', $overview);
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $series_metadata = OCSeminarSeries::getSeries($course_id);
@@ -306,7 +306,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             $notification = sprintf($this->_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
             PersonalNotifications::add(
-                $users, PluginEngine::getLink($this, [], 'opencast/course/index/' . $data['episode_id']),
+                $users, PluginEngine::getLink($this, [], 'course/index/' . $data['episode_id']),
                 $notification, $data['episode_id'],
                 Assets::image_path("icons/black/file-video.svg")
             );
