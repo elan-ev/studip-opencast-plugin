@@ -94,7 +94,7 @@ class CourseController extends OpencastController
     /**
      * Common code for all actions: set default layout and page title.
      */
-    function before_filter(&$action, &$args)
+    public function before_filter(&$action, &$args)
     {
         $this->flash = Trails_Flash::instance();
 
@@ -150,7 +150,7 @@ class CourseController extends OpencastController
     /**
      * This is the default action of this controller.
      */
-    function index_action($active_id = 'false', $upload_message = false)
+    public function index_action($active_id = 'false', $upload_message = false)
     {
         global $perm;
 
@@ -237,7 +237,7 @@ class CourseController extends OpencastController
                 $this->ordered_episode_ids = $this->get_ordered_episode_ids($reload);
 
                 if (!empty($this->ordered_episode_ids)) {
-
+                    PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Vorlesungsaufzeichnungen'));
                     if ($this->paella) {
                         $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/watch.html?id=";
                     } else {

@@ -52,37 +52,37 @@
     <? foreach ($config_ids as $config_id): ?>
     <fieldset class="conf-form-field">
         <legend>
-            <?= $_("Opencast Server Einstellungen")." (ID:$config_id)" ?>
+            <?= $_('Opencast Server Einstellungen')." (ID:$config_id)" ?>
         </legend>
 
         <label>
-            <?=$_("Basis URL zur Opencast Installation")?>
+            <?=$_('Basis URL zur Opencast Installation')?>
             <input type="text" name="config[<?= $config_id ?>][url]"
                 value="<?= $config[$config_id]['service_url'] ?>"
                 placeholder="http://opencast.url">
         </label>
 
         <label>
-            <?=$_("Nutzerkennung")?>
+            <?=$_('Nutzerkennung')?>
             <input type="text" name="config[<?= $config_id ?>][user]"
                 value="<?= $config[$config_id]['service_user'] ?>"
                 placeholder="ENDPOINT_USER">
         </label>
 
         <label>
-            <?= $_("Passwort") ?>
+            <?= $_('Passwort') ?>
             <input type="password" name="config[<?= $config_id ?>][password]"
                 value="<?= $config[$config_id]['service_password'] ?>"
                 placeholder="ENDPOINT_USER_PASSWORD">
         </label>
 
         <details>
-            <summary>Weitere Einstellungen</summary>
+            <summary><?= $_('Weitere Einstellungen')?></summary>
             <? $special_config = Configuration::instance($config_id)->get_entries_for_display(); ?>
             <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data){
                 if (in_array($name, ['number_of_configs'])) continue;
                 $special_config_exists = isset($special_config[$name]); ?>
-                <label title="Name der Einstellung: <?= $name ?>">
+                <label title="<?= $_('Name der Einstellung')?>: <?= $name ?>">
                     <?= ($special_config_exists ? $special_config[$name]['description'] : $data['description']) ?>
 
                     <input type="<?= ($special_config_exists ? $special_config[$name]['type'] : $data['type']) ?>"
@@ -105,6 +105,6 @@
 
     <footer>
         <?= Button::createAccept($_('Übernehmen')) ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/config/')) ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('admin/config/')) ?>
     </footer>
 </form>

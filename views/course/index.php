@@ -117,9 +117,7 @@ if ($this->connectedSeries[0]['series_id']) :
     */
 endif;
 
-global $perm;
 $sidebar = Sidebar::get();
-
 if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     $actions = new ActionsWidget ();
     $upload  = '';
@@ -156,7 +154,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 
             // TODO: Schnittool einbinden - Passender Workflow kucken
 
-            if ($perm->have_perm('root')) {
+            if ($GLOBALS['perm']->have_perm('root')) {
                 $actions->addLink(
                     $_('Kursspezifischen Workflow konfigurieren'),
                     $controller->url_for('course/workflow'),
@@ -180,7 +178,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
-        if (Config::get()->OPENCAST_SHOW_TOS && !$perm->have_perm('root')) {
+        if (Config::get()->OPENCAST_SHOW_TOS && !$GLOBALS['perm']->have_perm('root')) {
             $actions->addLink(
                 $_('Datenschutzeinwilligung zurückziehen'),
                 $controller->url_for('course/withdraw_tos/' . get_ticket()),
@@ -188,7 +186,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
-        if ($perm->have_perm('root')) {
+        if ($GLOBALS['perm']->have_perm('root')) {
             if ($can_schedule) {
                 $actions->addLink(
                     $_('Medienaufzeichnung verbieten'),
@@ -237,7 +235,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             Icon::create('tools')
         );
 
-        if ($perm->have_perm('root')) {
+        if ($GLOBALS['perm']->have_perm('root')) {
             $actions->addLink(
                 $_('Vorhandene Series verknüpfen'),
                 $controller->url_for('course/config'),
@@ -262,7 +260,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 ?>
 
 <? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
-    <? if ($perm->have_studip_perm('tutor', Context::getId())) : ?>
+    <? if ($GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) : ?>
         <?= $this->render_partial('course/_wip_episode') ?>
     <? endif ?>
 
@@ -286,7 +284,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 <div id="visibility_dialog" style="display: none">
     <form class="default" method="post">
         <fieldset>
-            <legend><?= _('Sichtbarkeit einstellen')?></legend>
+            <legend><?= _('Sichtbarkeit einstellen') ?></legend>
 
             <label>
                 <input type="radio" name="visibility" value="invisible">
