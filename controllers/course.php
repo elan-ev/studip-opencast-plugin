@@ -94,13 +94,13 @@ class CourseController extends OpencastController
      */
     public function before_filter(&$action, &$args)
     {
+        parent::before_filter($action, $args);
         $this->flash = Trails_Flash::instance();
 
         // set default layout
         $layout = $GLOBALS['template_factory']->open('layouts/base');
         $this->set_layout($layout);
         $this->pluginpath = $this->dispatcher->trails_root;
-
 
         if (class_exists('Context')) {
             $this->course_id = Context::getId();
