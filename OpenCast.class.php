@@ -11,8 +11,6 @@ include('bootstrap.php');
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
-NotificationCenter::addObserver('OpenCast', 'handleChangedSchedule', 'CourseDidChangeSchedule');
-
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
@@ -313,12 +311,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
     }
-
-    public function handleChangedSchedule($x, $data)
-    {
-        // TODO: update / delete scheduled events
-    }
-
 
     /**
      * @inherits
