@@ -181,7 +181,10 @@ class CourseController extends OpencastController
         $this->instances      = [];
         $this->multiconnected = false;
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !empty($this->connectedSeries)) {
+        if (
+            $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+            && !empty($this->connectedSeries)
+        ) {
             $this->workflow_client = WorkflowClient::getInstance();
 
             foreach ($this->connectedSeries as $key => $series) {
