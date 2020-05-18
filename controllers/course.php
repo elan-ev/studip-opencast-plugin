@@ -460,7 +460,7 @@ class CourseController extends OpencastController
 
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
             } else {
-                $this->flash['messages'] = ['error' => $this->_('Aufzeichnung konnte nicht geplant werden.')];
+                PageLayout::postError($this->_('Aufzeichnung konnte nicht geplant werden.'));
             }
         } else {
             throw new Exception($this->_('Sie haben leider keine Berechtigungen um diese Aktion durchzuführen'));
