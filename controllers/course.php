@@ -22,6 +22,8 @@ class CourseController extends OpencastController
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
+        
+        $this->plugin = $dispatcher->current_plugin;
 
         // Localization
         $this->_ = function ($string) use ($dispatcher) {
