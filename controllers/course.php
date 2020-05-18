@@ -889,7 +889,10 @@ class CourseController extends OpencastController
 
     public function remove_episode_action($ticket, $episode_id)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        if (
+            check_ticket($ticket) 
+            && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+        ) {
             $episode = \Opencast\Models\OCSeminarEpisodes::findOneBySQL(
                 'seminar_id = ? AND episode_id = ?',
                 [$this->course_id, $episode_id]
