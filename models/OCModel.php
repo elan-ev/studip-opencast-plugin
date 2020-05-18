@@ -439,18 +439,32 @@ class OCModel
         if ($entry) {
             $old_visibility = $entry->visible;
             $entry->visible = $visibility;
+            // set a new chdate -- otherwise SimpleORMap::store() will
+            // set the current timestamp which in turn will trigger the
+            // safeguard in OpencastLTI::apply_acl_to_courses() and
+            // changes aren't possible
+            $entry->chdate += 1;
 
             $entry->store();
 
             $config_id = OCConfig::getConfigIdForCourse($course_id);
 
-            // Remote
-            if ($visibility == $default) {
-                $acl_manager = ACLManagerClient::getInstance($config_id);
-                $acl_manager->applyACLto('episode', $episode_id, '');
-            }
+            // Remote: Try delete ACLs from Event if current visibility equals
+            // default visibility
+            // There is no point in changing ACLs prior to checking whether they
+            // should be changed and then changing them, if they should!?
+            //if ($visibility == $default) {
+            //    $acl_manager = ACLManagerClient::getInstance($config_id);
+            //    $acl_manager->applyACLto('episode', $episode_id, '');
+            //}
 
-            OpencastLTI::setAcls($course_id);
+            // This function is named "setVisibilityForEpisode" so
+            // only set Episode visibility
+            // Do not continue starting a workflow if changing ACLs did not
+            // work!
+            if (OpencastLTI::setAcls($course_id, $episode_id) === false) {
+                return false;
+            }
 
             $api = ApiWorkflowsClient::getInstance($config_id);
 
@@ -591,6 +605,8 @@ class OCModel
      */
     static function setEpisode($episode_id, $series_id, $seminar_id, $visibility, $is_retracting)
     {
+        $is_new = false;
+
         // check, if entry already ; update if so, otherwise create entry
         $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ?
             AND series_id = ? AND seminar_id = ?',
@@ -603,6 +619,8 @@ class OCModel
             $episode->episode_id = $episode_id;
             $episode->series_id  = $series_id;
             $episode->seminar_id = $seminar_id;
+            // allow ACL changes right now
+            $episode->chdate     = 1;
             $episode->mkdate     = time();
 
         }
@@ -611,6 +629,10 @@ class OCModel
         $episode->is_retracting = $is_retracting;
 
         $episode->store();
+        if ($is_new) {
+          // apply correct ACLs to new Episode right now
+          static::setVisibilityForEpisode($seminar_id, $episode_id, $visibility);
+        }
     }
 
     static function getCoursePositions($course_id)
@@ -681,9 +703,9 @@ class OCModel
     }
 
     static function getCoursesForEpisode($episode_id){
-        $stmt = DBManager::get()->prepare("SELECT seminar_id
+        $stmt = DBManager::get()->prepare("SELECT DISTINCT seminar_id
             FROM oc_seminar_episodes
-            WHERE series_id = ? AND episode_id = ?");
+            WHERE episode_id = ?");
         $stmt->execute([$episode_id]);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -693,7 +715,7 @@ class OCModel
             $return[] = $entry['seminar_id'];
         }
 
-        return array_unique($return);
+        return $return;
     }
 
     static function getSeriesForEpisode($episode_id){

@@ -19,14 +19,16 @@ class OpencastLTI
     /**
      * Set the correct ACLs for the series and episodes in the passed course
      * @param [type] $course_id [description]
+     * @return bool Whether the operation was completed
      */
-    public static function setAcls($course_id)
+    public static function setAcls($course_id, $episode_id = null)
     {
         // write the new ACLs to Opencast
         if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
             $acls = self::mapping_to_defined_acls($mapping);
-            self::apply_defined_acls($acls);
+            return self::apply_defined_acls($acls, $episode_id);
         }
+        return true;
     }
 
     public static function updateEpisodeVisibility($course_id)
@@ -52,14 +54,26 @@ class OpencastLTI
         }
     }
 
-    public static function apply_defined_acls($defined_acls)
+    public static function apply_defined_acls($defined_acls, $episode_only_id = null)
     {
+        $return_value = true;
+
         foreach ($defined_acls['s'] as $series_id => $setting) {
-            self::apply_acl_to_courses($setting['acl'], $setting['courses'], $series_id, 'series');
+            // You may want to check here for $episode_only_id, too and
+            // skip series updates if the Episode ACls should be changed
+            $returnValue =
+                self::apply_acl_to_courses($setting['acl'], $setting['courses'], $series_id, 'series')
+                && $returnValue;
         }
         foreach ($defined_acls['e'] as $episode_id => $setting) {
-            self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode');
+            if ($episode_only_id && $episode_id !== $episode_only_id) {
+                continue;
+            }
+            $returnValue =
+                self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode')
+                && $returnValue;
         }
+        return $return_value;
     }
 
     public static function mapping_to_defined_acls($mapping)
@@ -256,14 +270,17 @@ class OpencastLTI
             // check, if the target episode has a running workflow or the visibility has been changed less than 2 minutes ago
             $workflow = $client->getEpisode($target_id)[1]->processing_state;
 
-            if ($workflow != 'SUCCEEDED') {
+            // Older episodes have their workflows removed and their processing
+            // state is ''. Failed and stopped WFs should not prevent StudIP
+            // from chaning ACLs
+            if (!in_array($workflow, ['SUCCEEDED', 'FAILED', 'STOPPED', ''])) {
                 // do not change ACLs if there is a running workflow!
                 return false;
             }
 
             // check, if the episode entry has been changed just recently
             foreach ($courses as $course_id) {
-                $episode = OCSeminarEpisodes::findBySQL('episode_id = ? AND seminar_id = ?', [$episode_id, $course_id]);
+                $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ? AND seminar_id = ?', [$target_id, $course_id]);
 
                 if ($episode->chdate > (time() - 120)) {
                     return false;
