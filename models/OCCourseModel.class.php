@@ -70,7 +70,6 @@ class OCCourseModel
     public function getEpisodes($force_reload = false)
     {
         if ($this->getSeriesID()) {
-            ;
             $search_client = SearchClient::create($this->getCourseID());
 
             $course = Course::find($this->getCourseID());
@@ -256,7 +255,7 @@ class OCCourseModel
                     if ($track->type === 'presenter/delivery') {
                         $parsed_url = parse_url($track->url);
                         if ($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi' && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
-                            $quality                      = $this->calculate_size(
+                            $quality = $this->calculate_size(
                                 $track->video->bitrate,
                                 $track->duration
                             );
@@ -266,7 +265,7 @@ class OCCourseModel
                             ];
                         }
                         if (in_array($track->mimetype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus']) && !empty($track->audio)) {
-                            $quality                  = $this->calculate_size(
+                            $quality = $this->calculate_size(
                                 $track->audio->bitrate,
                                 $track->duration
                             );

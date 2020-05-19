@@ -1,7 +1,7 @@
 <?
 Helpbar::get()->addPlainText(
     '',
-    $_('Hier finden Sie eine Auflistung aller gefundenen Services der angebundenen Opencast-Systeme..')
+    $_('Hier finden Sie eine Auflistung aller gefundenen Services der angebundenen Opencast-Systeme.')
 ) ?>
 <?= $this->render_partial('messages') ?>
 <script language="JavaScript">

@@ -22,6 +22,8 @@ class CourseController extends OpencastController
     public function __construct($dispatcher)
     {
         parent::__construct($dispatcher);
+        
+        $this->plugin = $dispatcher->current_plugin;
 
         // Localization
         $this->_ = function ($string) use ($dispatcher) {
@@ -179,7 +181,10 @@ class CourseController extends OpencastController
         $this->instances      = [];
         $this->multiconnected = false;
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !empty($this->connectedSeries)) {
+        if (
+            $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+            && !empty($this->connectedSeries)
+        ) {
             $this->workflow_client = WorkflowClient::getInstance();
 
             foreach ($this->connectedSeries as $key => $series) {
@@ -455,7 +460,7 @@ class CourseController extends OpencastController
 
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
             } else {
-                $this->flash['messages'] = ['error' => $this->_('Aufzeichnung konnte nicht geplant werden.')];
+                PageLayout::postError($this->_('Aufzeichnung konnte nicht geplant werden.'));
             }
         } else {
             throw new Exception($this->_('Sie haben leider keine Berechtigungen um diese Aktion durchzuführen'));
@@ -884,7 +889,10 @@ class CourseController extends OpencastController
 
     public function remove_episode_action($ticket, $episode_id)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        if (
+            check_ticket($ticket) 
+            && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+        ) {
             $episode = \Opencast\Models\OCSeminarEpisodes::findOneBySQL(
                 'seminar_id = ? AND episode_id = ?',
                 [$this->course_id, $episode_id]
