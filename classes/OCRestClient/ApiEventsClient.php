@@ -95,14 +95,8 @@ class ApiEventsClient extends OCRestClient
 
     public function getBySeries($series_id)
     {
-        $params = [
-            'filter'  => sprintf(
-                'is_part_of:%s,status:EVENTS.EVENTS.STATUS.PROCESSED',
-                $series_id
-            ),
-        ];
-
-        $events = $this->getJSON('', $params);
+        $events = $this->getJSON('/?filter=is_part_of:'. 
+            $series_id .',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
 
         return array_reduce($events, function ($events, $event) {
             $events[$event->identifier] = $event;
