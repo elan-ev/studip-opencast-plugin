@@ -683,7 +683,7 @@ class OCModel
     static function getCoursesForEpisode($episode_id){
         $stmt = DBManager::get()->prepare("SELECT seminar_id
             FROM oc_seminar_episodes
-            WHERE series_id = ? AND episode_id = ?");
+            WHERE episode_id = ?");
         $stmt->execute([$episode_id]);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
