@@ -1,80 +1,12 @@
 <?php
-/*
- * admin.php - admin plugin controller
- */
-
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCEndpoints;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\LTI\OpencastLTI;
+use Opencast\Constants;
 
 class AdminController extends OpencastController
 {
-    /**
-     * Constructs the controller and provide translations methods.
-     *
-     * @param object $dispatcher
-     * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
-     *      the constructor of the controller
-     */
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-
-        $this->plugin = $dispatcher->current_plugin;
-
-        // Localization
-        $this->_ = function ($string) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_'],
-                func_get_args()
-            );
-        };
-
-        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_n'],
-                func_get_args()
-            );
-        };
-    }
-
-    /**
-     * Intercepts all non-resolvable method calls in order to correctly handle
-     * calls to _ and _n.
-     *
-     * @param string $method
-     * @param array $arguments
-     * @return mixed
-     * @throws RuntimeException when method is not found
-     */
-    public function __call($method, $arguments)
-    {
-        $variables = get_object_vars($this);
-        if (isset($variables[$method]) && is_callable($variables[$method])) {
-            return call_user_func_array($variables[$method], $arguments);
-        }
-        throw new RuntimeException("Method {$method} does not exist");
-    }
-
-    /**
-     * Common code for all actions: set default layout and page title.
-     */
-    public function before_filter(&$action, &$args)
-    {
-        $this->flash = Trails_Flash::instance();
-
-        // set default layout
-        $layout = $GLOBALS['template_factory']->open('layouts/base');
-        $this->set_layout($layout);
-
-        // notify on trails action
-        $klass = substr(get_called_class(), 0, -10);
-        $name  = sprintf('oc_admin.performed.%s_%s', $klass, $action);
-        NotificationCenter::postNotification($name, $this);
-
-    }
-
     /**
      * This is the default action of this controller.
      */
@@ -85,11 +17,11 @@ class AdminController extends OpencastController
 
     public function config_action()
     {
-        PageLayout::setTitle($this->_("Opencast Administration"));
+        PageLayout::setTitle($this->_('Opencast Administration'));
         Navigation::activateItem('/admin/config/oc-config');
 
         $this->config        = OCConfig::getBaseServerConf();
-        $this->global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
+        $this->global_config = Configuration::instance(Constants::$GLOBAL_CONFIG_ID);
     }
 
     public function clear_series_action()
@@ -265,12 +197,12 @@ class AdminController extends OpencastController
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
                     if (empty($services)) {
                         OCEndpoints::removeEndpoint($config_id, 'services');
-                        PageLayout::sprintf(
+                        PageLayout::postError(sprintf(
                             $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. 
                                 Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und 
                                 ob ihre Opencast-Installation https unterstützt.'),
                             htmlReady($service_host)
-                        );
+                        ));
                     } else {
                         foreach ($services as $service_url => $service_type) {
                             if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false) {
@@ -303,7 +235,7 @@ class AdminController extends OpencastController
 
     public function endpoints_action()
     {
-        PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
+        PageLayout::setTitle($this->_('Opencast Endpoint Verwaltung'));
         // Navigation::activateItem('/admin/config/oc-endpoints');
 
         $this->configs   = OCConfig::getBaseServerConf();
@@ -312,7 +244,7 @@ class AdminController extends OpencastController
 
     public function resources_action()
     {
-        PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
+        PageLayout::setTitle($this->_('Opencast Capture Agent Verwaltung'));
         Navigation::activateItem('/admin/config/oc-resources');
 
         $this->resources = OCModel::getOCRessources();

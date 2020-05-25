@@ -12,8 +12,9 @@ abstract class ConfigurationAction
     /**
      * @param        $special_event
      */
-    public function add_as_observer($special_event){
+    public function add_as_observer($special_event)
+    {
         $event = "opencast.configuration.$special_event";
-        NotificationCenter::addObserver($this,'trigger',$event);
+        NotificationCenter::addObserver($this, 'trigger', $event);
     }
 }

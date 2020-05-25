@@ -1,6 +1,6 @@
 <? use Studip\Button, Studip\LinkButton; ?>
-<form class="conf-form default" action="<?= $controller->url_for('admin/precise_update/') ?>" method=post>
-    <fieldset class="conf-form-field collapsable collapsed">
+<form class="default" action="<?= $controller->url_for('admin/precise_update/') ?>" method=post>
+    <fieldset class="collapsable collapsed">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
 
             <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data) : ?>
@@ -13,7 +13,7 @@
             <? if (Config::get()->OPENCAST_SHOW_TOS) : ?>
             <label>
                 <?= $_('Terms of service') ?>
-                <?= I18N::textarea("tos", new I18NString($config[1]['tos'], null, [
+                <?= I18N::textarea('tos', new I18NString($config[1]['tos'], null, [
                         'object_id' => 1,
                         'table' => 'oc_config',
                         'field' => 'tos'
@@ -41,7 +41,7 @@
     </fieldset>
 </form>
 
-<form class="conf-form default" action="<?= $controller->url_for('admin/update') ?>" method=post>
+<form class="default" action="<?= $controller->url_for('admin/update') ?>" method=post>
     <?= CSRFProtection::tokenTag() ?>
     <?php
         $config_ids = [];
@@ -50,7 +50,7 @@
         }
     ?>
     <? foreach ($config_ids as $config_id): ?>
-    <fieldset class="conf-form-field">
+    <fieldset>
         <legend>
             <?= $_('Opencast Server Einstellungen')." (ID:$config_id)" ?>
         </legend>

@@ -4,107 +4,12 @@
 @item-width : 25em;
 @item-height-small: auto;
 @item-width-small : 16em;
-@episode-background: #EEEEEE;
+@episode-background: @light-gray-color-20;
 
 .conf-form {
     padding-bottom: 19px;
 }
 
-.conf-form-field {
-    padding: 0;
-    margin: 0;
-    border: 0;
-}
-
-.conf-form-field legend {
-    display: block;
-    width: 100%;
-    padding: 0;
-    margin-bottom: 20px;
-    font-size: 21px;
-    line-height: 40px;
-    border: 0;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.conf-form-field label p {
-    display: block;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-}
-
-.conf-form-field input {
-    display: inline-block;
-    padding: 4px 6px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    line-height: 20px;
-    color: #555555;
-    vertical-align: middle;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-}
-
-.form_list {
-    margin: 1em;
-    list-style-type: none !important;
-}
-
-.form_item {
-    margin-bottom: 4px;
-    padding: 3px;
-}
-
-.form_label {
-    float: left;
-    margin-right: 5px;
-    text-align: right;
-    width: 40%;
-}
-
-.form_submit {
-    text-align: center;
-}
-/* resources */
-.resources {
-    padding-left: 35%;
-    text-align: center;
-}
-
-.resource {
-    width: 50%;
-}
-
-.rcontent {
-    padding-bottom: 5px;
-}
-
-.series_select {
-    width: 50%;
-    display: inline;
-}
-
-.serieslist {
-    border-left: 1px dashed #bbbbbb;
-    padding-left: 20px;
-}
-
-.ocphead {
-    background-color: #F3F5F8;
-    border-bottom: 1px solid #EAEAEA;
-}
-
-.ocphead a {
-    color: #222;
-    text-decoration: none;
-}
-
-.occontet {
-    border-bottom: 1px solid #EAEAEA;
-    text-align: left;
-}
 /**
  * Flex-Episodelist
  */
@@ -234,41 +139,10 @@
     }
 }
 
-.oce_emetadata {
-    font-size: 80%;
-    margin-left: 0.5em;
-}
-
 .oce_episode_search {
     float: left;
     margin-right: 0.5em;
     padding-bottom: 5px;
-}
-
-.oce_active_li {
-    background-color: #F3F5F4;
-}
-
-.oce_preview_container {
-    position: relative;
-}
-
-.oce_preview_container p {
-    position: absolute;
-    width: 125px;
-    text-align: center;
-    font-weight: bold;
-    vertical-align: middle;
-    margin: -1% 0 0;
-}
-
-.oce_preview {
-    padding-left: 5px;
-    position: absolute;
-    left: 0;
-    top: 8px;
-    max-height: 96px;
-    max-width: 120px;
 }
 
 .oce_metadatacontainer {
@@ -289,15 +163,6 @@
     opacity: 0.5;
 }
 
-a.disabled {
-    pointer-events: none;
-    cursor: default;
-}
-
-.oce_failedstate {
-    color: #cc0000;
-}
-
 .oce_list_title {
     margin-top: 10px;
 }
@@ -315,25 +180,6 @@ td.oc-schedule-slider {
     }
 }
 /** upload dialog **/
-.ocConfig > .ui-widget-header,
-.ocUpload > .ui-widget-header,
-.ocWorkflow > .ui-widget-header {
-    background: #1e3e70;
-    border: 0;
-    font-size: 1.3em;
-    font-weight: normal;
-}
-
-.oc_config_infotext {
-    text-align: left;
-    padding: 1em;
-    display: block;
-}
-
-label > h4 {
-    margin: 0;
-    padding: 5px 0;
-}
 
 #upload_form input[type="date"], #upload_form input[type="time"] {
     max-width: 10em;

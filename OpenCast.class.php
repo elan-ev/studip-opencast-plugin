@@ -1,15 +1,14 @@
 <?php
-/*
+/**
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
  */
+require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
-
-include('bootstrap.php');
-
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
@@ -18,18 +17,16 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     /**
      * Initialize a new instance of the plugin.
      */
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
 
-        global $SessSemName, $perm;
         $GLOBALS['ocplugin_path'] = $this->getPluginURL();
 
-        if ($perm->have_perm('root')) {
-
+        if ($GLOBALS['perm']->have_perm('root')) {
             //check if we already have an connection to an opencast matterhorn
             //.. now the subnavi
             $main = new Navigation($this->_("Opencast Administration"));
@@ -54,20 +51,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         if (!$GLOBALS['opencast_already_loaded']) {
             $this->addStylesheet('stylesheets/oc.less');
             PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
-            if (class_exists('Context')) {
-                $id = Context::getId();
-            } else {
-                $id = $GLOBALS['SessionSeminar'];
-            }
-            $id = Request::get('sem_id', $id);
-            if ($perm->have_perm('tutor') && OCModel::getConfigurationstate()) {
+            if ($GLOBALS['perm']->have_perm('tutor') && OCModel::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             }
             if (OCModel::getConfigurationstate()) {
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
             }
-            NotificationCenter::addObserver($this, "NotifyUserOnNewEpisode", "NewEpisodeForCourse");
+            NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
@@ -145,7 +136,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $this->image_path = $this->getPluginURL() . '/images/';
         if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
             $ocgetcount = $ocmodel->getCount($last_visit);
-            $text       = sprintf($this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'), $ocgetcount);
+            $text       = sprintf(
+                $this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'),
+                $ocgetcount
+            );
         } else {
             $num_entries = 0;
             $text        = $this->_('Opencast Aufzeichnungen');
@@ -158,9 +152,17 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $navigation->setBadgeNumber($num_entries);
         $navigation->setDescription($text);
         if ($ocgetcount > 0) {
-            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
+            $navigation->setImage(
+                Icon::create($this->getPluginURL() . '/images/opencast-red.svg',
+                    Icon::ROLE_ATTENTION,
+                    ['title' => 'Opencast']
+                ));
         } else {
-            $navigation->setImage(Icon::create($this->getPluginURL() . '/images/opencast-grey.svg', ICON::ROLE_INACTIVE, ["title" => 'Opencast']));
+            $navigation->setImage(
+                Icon::create($this->getPluginURL() . '/images/opencast-grey.svg',
+                    Icon::ROLE_INACTIVE,
+                    ['title' => 'Opencast']
+                ));
         }
 
         return $navigation;
@@ -195,8 +197,16 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $ocmodel = new OCCourseModel($course_id);
         $main    = new Navigation('Opencast');
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
-        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-black.svg', ICON::ROLE_CLICKABLE, ["title" => 'Opencast']));
-        $main->setImage(Icon::create($this->getPluginURL() . '/images/opencast-red.svg', ICON::ROLE_ATTENTION, ["title" => 'Opencast']));
+        $main->setImage(Icon::create(
+            $this->getPluginURL() . '/images/opencast-black.svg',
+            Icon::ROLE_CLICKABLE,
+            ['title' => 'Opencast']
+        ));
+        $main->setImage(Icon::create(
+            $this->getPluginURL() . '/images/opencast-red.svg',
+            Icon::ROLE_ATTENTION,
+            ['title' => 'Opencast']
+        ));
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
@@ -211,7 +221,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
         if ($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             return ['opencast' => $main];
-        } else return [];
+        }
+        return [];
     }
 
     /**
@@ -306,7 +317,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             PersonalNotifications::add(
                 $users, PluginEngine::getLink($this, [], 'course/index/' . $data['episode_id']),
                 $notification, $data['episode_id'],
-                Assets::image_path("icons/black/file-video.svg")
+                Assets::image_path('icons/black/file-video.svg')
             );
         }
 

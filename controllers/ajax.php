@@ -4,61 +4,6 @@ use Opencast\Models\OCConfig;
 
 class AjaxController extends OpencastController
 {
-    /**
-     * Constructs the controller and provide translations methods.
-     *
-     * @param object $dispatcher
-     * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
-     *      the constructor of the controller
-     */
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-
-        $this->plugin = $dispatcher->current_plugin;
-
-        // Localization
-        $this->_ = function ($string) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_'],
-                func_get_args()
-            );
-        };
-
-        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_n'],
-                func_get_args()
-            );
-        };
-    }
-
-    /**
-     * Intercepts all non-resolvable method calls in order to correctly handle
-     * calls to _ and _n.
-     *
-     * @param string $method
-     * @param array $arguments
-     * @return mixed
-     * @throws RuntimeException when method is not found
-     */
-    public function __call($method, $arguments)
-    {
-        $variables = get_object_vars($this);
-        if (isset($variables[$method]) && is_callable($variables[$method])) {
-            return call_user_func_array($variables[$method], $arguments);
-        }
-        throw new RuntimeException("Method {$method} does not exist");
-    }
-
-    public function before()
-    {
-        // notify on trails action
-        $klass = substr(get_called_class(), 0, -10);
-        $name  = sprintf('oc_embed.performed.%s_%s', $klass, $action);
-        NotificationCenter::postNotification($name, $this);
-    }
-
     public function index_action()
     {
         $this->render_text($this->_('Ups..'));
@@ -135,7 +80,6 @@ class AjaxController extends OpencastController
         $this->workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
         if (!empty($workflow_ids)) {
             $states = OCModel::getWorkflowStates($course_id, $workflow_ids);
-
             $this->render_text(json_encode($states));
         } else {
             $this->render_nothing();

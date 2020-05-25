@@ -111,9 +111,6 @@ const OC = {
         }
 
 	function addACL(mediaPackage,acl) {
-
-
-
 	    var acldata = new FormData();
 	    acldata.append('mediaPackage', mediaPackage);
             acldata.append('flavor', 'security/xacml+episode');
@@ -182,6 +179,7 @@ const OC = {
         }
 
         function finishIngest(mediaPackage, workflowId = "upload") {
+            console.log(mediaPackage);
             return $.ajax({
                 url: serviceUrl + "/ingest/ingest",
                 method: "POST",
