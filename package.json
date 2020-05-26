@@ -1,6 +1,6 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "1.3.1",
+  "version": "1.5.0",
   "description": "Stud.IP plugin for Opencast",
   "devDependencies": {
     "core-js": "^3.6.5",
