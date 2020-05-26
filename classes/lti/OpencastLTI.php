@@ -264,7 +264,7 @@ class OpencastLTI
 
             // check, if the episode entry has been changed just recently
             foreach ($courses as $course_id) {
-                $episode = OCSeminarEpisodes::findBySQL('episode_id = ? AND seminar_id = ?', [$episode_id, $course_id]);
+                $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ? AND seminar_id = ?', [$target_id, $course_id]);
 
                 if ($episode->chdate > (time() - 120)) {
                     return false;
