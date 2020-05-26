@@ -284,7 +284,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 <div id="visibility_dialog" style="display: none">
     <form class="default" method="post">
         <fieldset>
-            <legend><?= _('Sichtbarkeit einstellen') ?></legend>
+            <legend><?= $_('Sichtbarkeit einstellen') ?></legend>
 
             <label>
                 <input type="radio" name="visibility" value="invisible">

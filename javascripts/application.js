@@ -461,7 +461,7 @@ const OC = {
     toggleVis: function (cid) {
         jQuery('.oc-togglevis').bind('click', function (e) {
             var episode_id = jQuery(this).data("episode-id");
-            var title      = 'Sichtbarkeit - ' + jQuery('#' + episode_id + ' .oce_list_title').text();
+            var title      = jQuery('#' + episode_id + ' .oce_list_title').text();
             var visibility = jQuery(this).attr('data-visibility');
 
             e.preventDefault();

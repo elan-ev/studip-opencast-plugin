@@ -1,8 +1,8 @@
 <?
 $visibility_text = [
-    'invisible' => 'Video ist nur für Sie sichtbar',
-    'visible'   => 'Video ist für Teilnehmende sichtbar',
-    'free'      => 'Video ist für jeden sichtbar'
+    'invisible' => $_('Video ist nur für Sie sichtbar'),
+    'visible'   => $_('Video ist für Teilnehmende sichtbar'),
+    'free'      => $_('Video ist für jeden sichtbar')
 ];
 ?>
 
@@ -107,7 +107,7 @@ $visibility_text = [
                                 <? endif ?>
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-                                    <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: 'Unbekannte Sichtbarkeit'),
+                                    <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
                                         '', [
                                             'class'           => 'oc-togglevis ocspecial oc' . ($item['visibility'] ?: 'free'),
                                             'data-episode-id' => $item['id'],

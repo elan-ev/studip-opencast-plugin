@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-26 12:05+0200\n"
-"PO-Revision-Date: 2020-05-26 12:22+0200\n"
+"POT-Creation-Date: 2020-05-26 12:35+0200\n"
+"PO-Revision-Date: 2020-05-26 12:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -581,6 +581,18 @@ msgstr "Please select a workflow."
 #: views/admin/_ca-selection.php:69
 msgid "Kein Workflow verfügbar"
 msgstr "No workflow available"
+
+#: views/course/_episode.php:3
+msgid "Video ist nur für Sie sichtbar"
+msgstr "Visible for you only"
+
+#: views/course/_episode.php:4
+msgid "Video ist für Teilnehmende sichtbar"
+msgstr "Visible for participants"
+
+#: views/course/_episode.php:5
+msgid "Video ist für jeden sichtbar"
+msgstr "Visible for everyone"
 
 #: views/course/_episode.php:16
 msgid "Nach Aufzeichnung suchen"
