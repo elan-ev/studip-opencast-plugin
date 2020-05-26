@@ -4,7 +4,7 @@ use Opencast\Models\OCConfig;
 
 class ApiWorkflowsClient extends OCRestClient
 {
-    static $me;
+    public static $me;
     public $serviceName = "ApiWorkflows";
 
     function __construct($config_id = 1)
@@ -12,11 +12,11 @@ class ApiWorkflowsClient extends OCRestClient
         if ($config = OCConfig::getConfigForService('apiworkflows', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
-    function retract($episode_id)
+    public function retract($episode_id)
     {
         $service_url = '/';
         $data = [
@@ -40,7 +40,7 @@ class ApiWorkflowsClient extends OCRestClient
      * @return int   true, if the workflow could be started, false if an error occured
      *               or a workflow was already in process
      */
-    function republish($episode_id)
+    public function republish($episode_id)
     {
         $service_url = "/";
 

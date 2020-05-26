@@ -1,6 +1,6 @@
 <?php
 /* Opencast plugin constants */
-require_once 'constants.php';
+require_once __DIR__ .'/constants.php';
 
 /* Stud.IP dependencies*/
 require_once 'lib/models/Institute.class.php';
@@ -8,19 +8,23 @@ require_once 'lib/raumzeit/raumzeit_functions.inc.php';
 require_once 'vendor/trails/trails.php';
 
 /* OC plugin dependencies*/
-require_once 'classes/Configuration.php';
-require_once 'classes/ConfigurationAction.php';
+require_once __DIR__ .'/classes/Configuration.php';
+require_once __DIR__ .'/classes/ConfigurationAction.php';
 
-require_once 'classes/lti/OAuth.php';
-require_once 'classes/lti/AccessControlList.php';
-require_once 'classes/lti/OpencastLTI.php';
-require_once 'classes/lti/LtiLink.php';
-require_once 'models/OCAccessControl.php';
+require_once __DIR__ .'/classes/lti/OAuth.php';
 
-require_once 'controllers/opencast_controller.php';
-
-// StudipAutoloader::addAutoloadPath(__DIR__ . '/classes');
-StudipAutoloader::addAutoloadPath(__DIR__ . '/models', 'Opencast\\Models');
+$namespaces = [
+    'Opencast',
+    'Opencast\\Models',
+    'Opencast\\LTI',
+];
+$paths = ['models', 'classes', 'classes/lti', 'classes/OCRestClient'];
+foreach($namespaces as $namespace) {
+    foreach($paths as $path) {
+        StudipAutoloader::addAutoloadPath(__DIR__ . '/' . $path);
+        StudipAutoloader::addAutoloadPath(__DIR__ . '/' . $path, $namespace);
+    }
+}
 
 require_once 'models/OCModel.php';
 require_once 'models/OCCourseModel.class.php';

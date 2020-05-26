@@ -87,8 +87,6 @@ class Configuration implements ArrayAccess
         } catch (NotificationVetoException $e) {
             error_log("Vetoed Notification: $event");
         }
-
-        return $result;
     }
 
     private function has_id($name)

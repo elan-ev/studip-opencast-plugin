@@ -12,12 +12,17 @@ class ConnectEpisodeToSeminar extends Migration
         $db = DBManager::get();
 
         // drop old seminar_id
-        $db->exec("ALTER TABLE `oc_seminar_episodes`
-            ADD COLUMN `seminar_id` VARCHAR(32) NOT NULL AFTER `episode_id`,
-            ADD COLUMN `chdate` INT(11) NOT NULL DEFAULT 0 AFTER `is_retracting`");
+        try {
+            $db->exec("ALTER TABLE `oc_seminar_episodes`
+                ADD COLUMN `seminar_id` VARCHAR(32) NOT NULL AFTER `episode_id`,
+                ADD COLUMN `chdate` INT(11) NOT NULL DEFAULT 0 AFTER `is_retracting`");
+        } catch (PDOException $e) {}
 
-        $db->exec("ALTER TABLE `oc_seminar_episodes`
-            DROP INDEX `PRIMARY`;");
+        try {
+            $db->exec("ALTER TABLE `oc_seminar_episodes`
+                DROP INDEX `PRIMARY`;");
+        } catch (PDOException $e) {}
+
 
         // set seminar_id for all entries, update only the first connected course
         $update = $db->prepare("UPDATE oc_seminar_episodes
@@ -32,9 +37,11 @@ class ConnectEpisodeToSeminar extends Migration
             $update->execute([$entry['seminar_id'], $entry['series_id']]);
         }
 
-        // set series_id and episode_id as new primary key
-        $db->exec("ALTER TABLE `oc_seminar_episodes`
-            ADD PRIMARY KEY `series_id_episode_id_seminar_id` (`series_id`, `episode_id`, `seminar_id`)");
+        try {
+            // set series_id and episode_id as new primary key
+            $db->exec("ALTER TABLE `oc_seminar_episodes`
+                ADD PRIMARY KEY `series_id_episode_id_seminar_id` (`series_id`, `episode_id`, `seminar_id`)");
+        } catch (PDOException $e) {}
 
 
         // clean out all entries without connection to a seminar

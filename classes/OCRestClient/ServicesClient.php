@@ -4,16 +4,16 @@ use Opencast\Models\OCConfig;
 
 class ServicesClient extends OCRestClient
 {
-    static $me;
+    public static $me;
 
-    function __construct($config_id = 1)
+    public function __construct($config_id = 1)
     {
         $this->serviceName = 'ServicesClient';
 
         if ($config = OCConfig::getConfigForService('services', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
@@ -22,10 +22,9 @@ class ServicesClient extends OCRestClient
      *
      *  @return array response of components
      */
-    function getRESTComponents()
+    public function getRESTComponents()
     {
         $service_url = "/services.json";
-
         if ($result = $this->getJSON($service_url)) {
             return $result->services->service;
         } else {

@@ -4,15 +4,15 @@ use Opencast\Models\OCConfig;
 
 class ApiEventsClient extends OCRestClient
 {
-    static $me;
-    public $serviceName = "ApiEvents";
+    public static $me;
+    public        $serviceName = 'ApiEvents';
 
-    function __construct($config_id = 1)
+    public function __construct($config_id = 1)
     {
         if ($config = OCConfig::getConfigForService('apievents', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
@@ -23,7 +23,7 @@ class ApiEventsClient extends OCRestClient
      */
     public function getEpisode($episode_id)
     {
-        list($data, $code) = $this->getJSON('/' . $episode_id, [], true, true);
+        [$data, $code] = $this->getJSON('/' . $episode_id, [], true, true);
 
         return [$code, $data];
     }
@@ -36,15 +36,13 @@ class ApiEventsClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    function getEpisodes($series_id, $refresh = false)
+    public function getEpisodes($series_id, $refresh = false)
     {
-        global $perm;
-
-        $cache = StudipCacheFactory::getCache();
+        $cache     = StudipCacheFactory::getCache();
         $cache_key = 'oc_episodesforseries/' . $series_id;
-        $episodes = $cache->read($cache_key);
+        $episodes  = $cache->read($cache_key);
 
-        if ($refresh || $episodes === false || $perm->have_perm('dozent')) {
+        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
             $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
             $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
                 . $series_id . '&sort=&limit=0&offset=0';
@@ -90,19 +88,13 @@ class ApiEventsClient extends OCRestClient
 
     public function getACL($episode_id)
     {
-        return json_decode(json_encode($this->getJSON('/'.$episode_id. '/acl')), true);
+        return json_decode(json_encode($this->getJSON('/' . $episode_id . '/acl')), true);
     }
 
     public function getBySeries($series_id)
     {
-        $params = [
-            'filter'  => sprintf(
-                'is_part_of:%s,status:EVENTS.EVENTS.STATUS.PROCESSED',
-                $series_id
-            ),
-        ];
-
-        $events = $this->getJSON('', $params);
+        $events = $this->getJSON('/?filter=is_part_of:' .
+            $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
 
         return array_reduce($events, function ($events, $event) {
             $events[$event->identifier] = $event;
@@ -116,7 +108,7 @@ class ApiEventsClient extends OCRestClient
 
         if (!$events) {
             $params = [
-                'filter'  => 'status:EVENTS.EVENTS.STATUS.SCHEDULED',
+                'filter' => 'status:EVENTS.EVENTS.STATUS.SCHEDULED',
             ];
 
             $data = $this->getJSON('?' . http_build_query($params));
@@ -135,7 +127,7 @@ class ApiEventsClient extends OCRestClient
             $course_id = Context::getId();
         }
 
-        $acls = self::getAclForEpisode($series_id, $episode_id);
+        $acls    = self::getAclForEpisode($series_id, $episode_id);
         $default = Config::get()->OPENCAST_HIDE_EPISODES
             ? 'invisible'
             : 'visible';

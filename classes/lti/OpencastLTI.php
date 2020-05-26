@@ -34,7 +34,8 @@ class OpencastLTI
     public static function updateEpisodeVisibility($course_id)
     {
         // check currently set ACLs to update status in Stud.IP if necessary
-        $series        = reset(OCSeminarSeries::getSeries($course_id));
+        $series        = OCSeminarSeries::getSeries($course_id);
+        $series        = reset($series);
         $search_client = \SearchClient::create($course_id);
         $api_client    = \ApiEventsClient::create($course_id);
 
@@ -122,7 +123,7 @@ class OpencastLTI
         ];
 
         foreach ($courses as $course) {
-            $acls = static::generate_acl_mapping_for_course($course);
+            $acls   = static::generate_acl_mapping_for_course($course);
             $result = array_merge_recursive($result, $acls);
         }
 
@@ -133,7 +134,7 @@ class OpencastLTI
      * Return mapping for which acls shall be set for the series and the episodes.
      * Returns false if no change is needed for the passed course.
      *
-     * @param  string $course_id
+     * @param string $course_id
      * @return mixed             array, if setting of the acls is needed, false otherwise
      */
     public static function generate_acl_mapping_for_course($course_id)
@@ -162,7 +163,7 @@ class OpencastLTI
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
                 $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes = $course_model->getEpisodes();
+                $episodes     = $course_model->getEpisodes();
                 foreach ($episodes as $episode) {
                     $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
                 }
@@ -210,10 +211,10 @@ class OpencastLTI
 
 
         return [
-            'base'        => $base_acl,
-            'visible'     => $acl_visible,
-            'invisible'   => $acl_invisible,
-            'free'        => $acl_free
+            'base'      => $base_acl,
+            'visible'   => $acl_visible,
+            'invisible' => $acl_invisible,
+            'free'      => $acl_free
         ];
     }
 
@@ -226,7 +227,7 @@ class OpencastLTI
         $resulting_acl = new \AccessControlList($name);
         for ($index = 0; $index < count($course_ids); $index++) {
             $course_id = $course_ids[$index];
-            $mode = $modes[$index];
+            $mode      = $modes[$index];
 
             $resulting_acl->add_acl(static::generate_standard_acls($course_id)[$mode]);
         }
@@ -312,7 +313,7 @@ class OpencastLTI
         }
 
         // check if config id is retrieved successful
-        $config_id     = OCConfig::getConfigIdForCourse($course_id);
+        $config_id = OCConfig::getConfigIdForCourse($course_id);
 
         if ($config_id) {
             $search_config = OCConfig::getConfigForService('search', $config_id);
@@ -320,7 +321,7 @@ class OpencastLTI
 
             $url = parse_url($search_config['service_url']);
 
-            return $url['scheme'] . '://'. $url['host']
+            return $url['scheme'] . '://' . $url['host']
                 . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
         } else {
             return '';
