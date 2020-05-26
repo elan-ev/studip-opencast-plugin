@@ -4,7 +4,7 @@ use Opencast\Models\OCConfig;
 
 class ApiSeriesClient extends OCRestClient
 {
-    static $me;
+    public static $me;
     public $serviceName = "ApiSeries";
 
     function __construct($config_id = 1)

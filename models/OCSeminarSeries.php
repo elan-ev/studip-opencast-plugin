@@ -4,7 +4,7 @@ namespace Opencast\Models;
 
 class OCSeminarSeries extends \SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_seminar_series';
         parent::configure($config);
@@ -20,7 +20,7 @@ class OCSeminarSeries extends \SimpleORMap
 
             $series[$series_id] =
                 $series_client->getSeries($series_id)
-                ? true : false;
+                    ? true : false;
         }
 
         return $series[$series_id];
@@ -30,7 +30,7 @@ class OCSeminarSeries extends \SimpleORMap
     {
         $return = [];
 
-        foreach(self::findBySeminar_id($course_id) as $series) {
+        foreach (self::findBySeminar_id($course_id) as $series) {
             if (!self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }
@@ -43,7 +43,7 @@ class OCSeminarSeries extends \SimpleORMap
     {
         $return = [];
 
-        foreach(self::findBySeminar_id($course_id) as $series) {
+        foreach (self::findBySeminar_id($course_id) as $series) {
             if (self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }

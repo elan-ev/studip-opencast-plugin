@@ -1,102 +1,32 @@
 <?php
-/*
- * admin.php - admin plugin controller
- */
-
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCEndpoints;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\LTI\OpencastLTI;
+use Opencast\Constants;
 
 class AdminController extends OpencastController
 {
     /**
-     * Constructs the controller and provide translations methods.
-     *
-     * @param object $dispatcher
-     * @see https://stackoverflow.com/a/12583603/982902 if you need to overwrite
-     *      the constructor of the controller
-     */
-    public function __construct($dispatcher)
-    {
-        parent::__construct($dispatcher);
-
-        $this->plugin = $dispatcher->current_plugin;
-
-        // Localization
-        $this->_ = function ($string) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_'],
-                func_get_args()
-            );
-        };
-
-        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_n'],
-                func_get_args()
-            );
-        };
-    }
-
-    /**
-     * Intercepts all non-resolvable method calls in order to correctly handle
-     * calls to _ and _n.
-     *
-     * @param string $method
-     * @param array  $arguments
-     * @return mixed
-     * @throws RuntimeException when method is not found
-     */
-    public function __call($method, $arguments)
-    {
-        $variables = get_object_vars($this);
-        if (isset($variables[$method]) && is_callable($variables[$method])) {
-            return call_user_func_array($variables[$method], $arguments);
-        }
-        throw new RuntimeException("Method {$method} does not exist");
-    }
-
-    /**
-     * Common code for all actions: set default layout and page title.
-     */
-    function before_filter(&$action, &$args)
-    {
-
-        $this->flash = Trails_Flash::instance();
-
-        // set default layout
-        $layout = $GLOBALS['template_factory']->open('layouts/base');
-        $this->set_layout($layout);
-
-        // notify on trails action
-        $klass = substr(get_called_class(), 0, -10);
-        $name = sprintf('oc_admin.performed.%s_%s', $klass, $action);
-        NotificationCenter::postNotification($name, $this);
-
-    }
-
-    /**
      * This is the default action of this controller.
      */
-    function index_action()
+    public function index_action()
     {
         $this->redirect('admin/config');
     }
 
-    function config_action()
+    public function config_action()
     {
-        PageLayout::setTitle($this->_("Opencast Administration"));
+        PageLayout::setTitle($this->_('Opencast Administration'));
         Navigation::activateItem('/admin/config/oc-config');
 
-        $this->config = OCConfig::getBaseServerConf();
-        $this->global_config = Configuration::instance(Opencast\Constants::$GLOBAL_CONFIG_ID);
+        $this->config        = OCConfig::getBaseServerConf();
+        $this->global_config = Configuration::instance(Constants::$GLOBAL_CONFIG_ID);
     }
 
     public function clear_series_action()
     {
         return;
-
         set_time_limit(7200);
 
         if (!$GLOBALS['perm']->have_perm('root')) {
@@ -126,7 +56,7 @@ class AdminController extends OpencastController
             $series_id = $ser->identifier;
 
             echo '<b>' . $ser->title . '</b><br/>';
-            var_dump($apiseries->putJSON('/'. $series_id .'/acl', [
+            var_dump($apiseries->putJSON('/' . $series_id . '/acl', [
                 'acl'      => $acl,
                 'override' => 'true'
             ]));
@@ -152,15 +82,15 @@ class AdminController extends OpencastController
             throw new AccessDeniedException();
         }
 
-        $api         = ApiWorkflowsClient::getInstance(1);
-        $api_events  = ApiEventsClient::getInstance(1);
+        $api        = ApiWorkflowsClient::getInstance(1);
+        $api_events = ApiEventsClient::getInstance(1);
 
         $fd = fopen($filename = __DIR__ . '/episodes.txt', 'r');
 
         while ($episode_id = fgets($fd)) {
             $episode_id = str_replace("\n", '', $episode_id);
-            echo 'Verarbeite ' . $episode_id ."...\n";
-            $api_events->postJson('/'. $episode_id . '/acl/read', ['role' => 'ROLE_ANONYMOUS']);
+            echo 'Verarbeite ' . $episode_id . "...\n";
+            $api_events->postJson('/' . $episode_id . '/acl/read', ['role' => 'ROLE_ANONYMOUS']);
             $api->republish($episode_id);
         }
 
@@ -181,7 +111,7 @@ class AdminController extends OpencastController
         $data = $oc->getJSON('/sysinfo/bundles/version?prefix=matterhorn');
 
         // for versions > 4 (name was changed to opencast after that)
-        if(!$data){
+        if (!$data) {
             $data = $oc->getJSON('/sysinfo/bundles/version?prefix=opencast');
         }
 
@@ -193,7 +123,7 @@ class AdminController extends OpencastController
         return (int)substr($data->version, 0, 1);
     }
 
-    function update_action()
+    public function update_action()
     {
         // invalidate series-cache when editing configuration
         StudipCacheFactory::getCache()->expire('oc_allseries');
@@ -202,8 +132,8 @@ class AdminController extends OpencastController
             //set precise settings if any
             $precise_config = $config['precise'];
 
-            foreach($precise_config as $name => $value){
-                if (Configuration::instance()[$name] != $value){
+            foreach ($precise_config as $name => $value) {
+                if (Configuration::instance()[$name] != $value) {
                     Configuration::instance($config_id)->set($name, $value, Configuration::instance()->get_description_for($name));
                 } else {
                     Configuration::instance($config_id)->remove($name);
@@ -217,20 +147,18 @@ class AdminController extends OpencastController
                 continue;
             }
 
-            $service_url =  parse_url($config['url']);
+            $service_url = parse_url($config['url']);
 
             // check the selected url for validity
             if (!array_key_exists('scheme', $service_url)) {
-                $this->flash['messages'] = [
-                    'error' => sprintf(
-                        $this->_('Ungültiges URL-Schema: "%s"'),
-                        $config['url']
-                    )
-                ];
+                PageLayout::postError(sprintf(
+                    $this->_('Ungültiges URL-Schema: "%s"'),
+                    htmlReady($config['url'])
+                ));
                 OCConfig::clearConfigAndAssociatedEndpoints($config_id);
             } else {
                 $service_host =
-                    $service_url['scheme'] .'://' .
+                    $service_url['scheme'] . '://' .
                     $service_url['host'] .
                     (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
@@ -243,78 +171,57 @@ class AdminController extends OpencastController
                     // check, if the same url has been provided for multiple oc-instances
                     foreach (Request::getArray('config') as $zw_id => $zw_conf) {
                         if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
-                            $this->flash['messages'] = array(
-                                'error' => sprintf(
-                                    $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
+                            PageLayout::postError(sprintf(
+                                $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
                                         Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
-                                     $config['url']
-                                )
-                            );
-
+                                htmlReady($config['url'])
+                            ));
                             continue 2;
                         }
                     }
-
-
-                    OCEndpoints::setEndpoint($config_id, $service_host .'/services', 'services');
-
+                    OCEndpoints::setEndpoint($config_id, $service_host . '/services', 'services');
                     $services_client = new ServicesClient($config_id);
-
-                    $comp = null;
-                    $comp = $services_client->getRESTComponents();
+                    $comp            = null;
+                    $comp            = $services_client->getRESTComponents();
                 } catch (AccessDeniedException $e) {
                     OCEndpoints::removeEndpoint($config_id, 'services');
-
-                    $this->flash['messages'] = array(
-                        'error' => sprintf(
-                            $this->_('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
-                            $service_host
-                        )
-                    );
-
+                    PageLayout::postError(sprintf(
+                        $this->_('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
+                        htmlReady($service_host)
+                    ));
                     $this->redirect('admin/config');
                     return;
                 }
 
                 if ($comp) {
                     $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
-
                     if (empty($services)) {
                         OCEndpoints::removeEndpoint($config_id, 'services');
-
-                        $this->flash['messages'] = array(
-                            'error' => sprintf(
-                                $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
-                                    . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
-                                    . 'ob ihre Opencast-Installation https unterstützt.'),
-                                $service_host
-                            )
-                        );
+                        PageLayout::postError(sprintf(
+                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. 
+                                Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und 
+                                ob ihre Opencast-Installation https unterstützt.'),
+                            htmlReady($service_host)
+                        ));
                     } else {
-
-                        foreach($services as $service_url => $service_type) {
+                        foreach ($services as $service_url => $service_type) {
                             if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false) {
                                 OCEndpoints::setEndpoint($config_id, $service_url, $service_type);
                             } else {
                                 unset($services[$service_url]);
                             }
                         }
-
-                        $success_message[] = sprintf(
+                        PageLayout::postSuccess(sprintf(
                             $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
-                            $service_host
-                        );
-
-                        $this->flash['messages'] = array('success' => implode('<br>', $success_message));
+                            htmlReady($service_host)
+                        ));
                     }
                 } else {
                     OCEndpoints::removeEndpoint($config_id, 'services');
-                    $this->flash['messages'] = array(
-                        'error' => sprintf(
-                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
-                            $service_host
-                        )
-                    );
+                    PageLayout::postError(sprintf(
+                        $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
+                        htmlReady($service_host)
+                    ));
                 }
             }
         }
@@ -326,34 +233,29 @@ class AdminController extends OpencastController
         $this->redirect('admin/config');
     }
 
-
-    function endpoints_action()
+    public function endpoints_action()
     {
-        PageLayout::setTitle($this->_("Opencast Endpoint Verwaltung"));
+        PageLayout::setTitle($this->_('Opencast Endpoint Verwaltung'));
         // Navigation::activateItem('/admin/config/oc-endpoints');
 
-        $this->configs = OCConfig::getBaseServerConf();
+        $this->configs   = OCConfig::getBaseServerConf();
         $this->endpoints = OCEndpoints::getEndpoints();
     }
 
-    function resources_action()
+    public function resources_action()
     {
-        PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
+        PageLayout::setTitle($this->_('Opencast Capture Agent Verwaltung'));
         Navigation::activateItem('/admin/config/oc-resources');
 
         $this->resources = OCModel::getOCRessources();
         if (empty($this->resources)) {
-            $this->flash['messages'] = [
-                'info' => $this->_('Es wurden keine passenden Ressourcen gefunden.')
-            ];
+            PageLayout::postInfo($this->_('Es wurden keine passenden Ressourcen gefunden.'));
         }
 
         $caa_client      = CaptureAgentAdminClient::getInstance();
         $workflow_client = WorkflowClient::getInstance();
-
         $agents          = $caa_client->getCaptureAgents();
         $this->agents    = $agents;
-
 
         foreach ($this->resources as $resource) {
             $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
@@ -362,25 +264,26 @@ class AdminController extends OpencastController
                 $existing_agent = false;
 
                 foreach ($agents as $key => $agent) {
-                    if ($agent->name ==  $assigned_agents['capture_agent']) {
+                    if ($agent->name == $assigned_agents['capture_agent']) {
                         unset($agents[$key]);
                         $existing_agent = true;
                     }
                 }
 
-                if (!$existing_agent){
+                if (!$existing_agent) {
                     OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
-                    $this->flash['messages'] = array('info' => sprintf($this->_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
+                    PageLayout::postInfo(sprintf(
+                        $this->_('Der Capture Agent %s existiert nicht mehr und wurde entfernt.'),
+                        htmlReady($assigned_agents['capture_agent'])
+                    ));
                 }
             }
         }
 
         $this->available_agents = $agents;
-        $this->definitions = $workflow_client->getDefinitions();
-
-        $this->assigned_cas = OCModel::getAssignedCAS();
-
-        $this->workflows = array_filter(
+        $this->definitions      = $workflow_client->getDefinitions();
+        $this->assigned_cas     = OCModel::getAssignedCAS();
+        $this->workflows        = array_filter(
             $workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
                 return (in_array('schedule', $element['tags']) !== false
@@ -390,11 +293,10 @@ class AdminController extends OpencastController
             }
         );
 
-        $this->current_workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow','upload');
+        $this->current_workflow = OCCourseModel::getWorkflowWithCustomCourseID('default_workflow', 'upload');
     }
 
-
-    function update_resource_action()
+    public function update_resource_action()
     {
         $this->resources = OCModel::getOCRessources();
         foreach ($this->resources as $resource) {
@@ -404,73 +306,61 @@ class AdminController extends OpencastController
                 }
             }
         }
-
-        $messages = [];
-
         if ($success) {
-            $messages['success'][] = $this->_("Capture Agents wurden zugewiesen.");
+            PageLayout::postSuccess($this->_('Capture Agents wurden zugewiesen.'));
         }
 
         $workflow = Request::get('oc_course_uploadworkflow');
         OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
 
-        $messages['success'][] = $this->_("Standardworkflow eingestellt.");
-        $override = Request::option('override_other_workflows','off'); // on / off
-        if($override == 'on'){
-            $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow','upload');
-            if($override_success){
-                $messages['success'][] = $this->_("Andere Workflow Einstellungen wurden entfernt.");
-            }else{
-                $messages['error'][] = $this->_('Andere Workflows konnten nicht entfernt werden.');
+        PageLayout::postSuccess($this->_('Standardworkflow eingestellt.'));
+        if (Request::option('override_other_workflows', 'off') == 'on') {
+            $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow', 'upload');
+            if ($override_success) {
+                PageLayout::postSuccess($this->_('Andere Workflow Einstellungen wurden entfernt.'));
+            } else {
+                PageLayout::postError($this->_('Andere Workflows konnten nicht entfernt werden.'));
             }
         }
-
-        foreach ($messages as $type=>$collection){
-            $messages[$type] = implode(' ',$collection);
-        }
-        $this->flash['messages'] = $messages;
-
         $this->redirect('admin/resources');
     }
 
-    function remove_ca_action($resource_id, $capture_agent)
+    public function remove_ca_action($resource_id, $capture_agent)
     {
         OCModel::removeCAforResource($resource_id, $capture_agent);
         $this->redirect('admin/resources');
     }
 
     // client status
-    function client_action()
+    public function client_action()
     {
-        $caa_client    = CaptureAgentAdminClient::getInstance();
-        $this->agents  = $caa_client->getCaptureAgents();
+        $caa_client   = CaptureAgentAdminClient::getInstance();
+        $this->agents = $caa_client->getCaptureAgents();
     }
 
-    function precise_update_action()
+    public function precise_update_action()
     {
         foreach (Request::getArray('precise_config') as $database_id => $config) {
-            foreach ($config as $name => $value){
+            foreach ($config as $name => $value) {
                 Configuration::instance($database_id)[$name] = $value;
             }
         }
 
         $config = reset(OCConfig::findByConfig_id(1));
-
         if ($config) {
             $config->tos = Request::i18n('tos');
             $config->store();
         }
-
         $this->redirect('admin/config/');
     }
 
-    function precise_add_action(){
-
+    public function precise_add_action()
+    {
         $this->redirect('admin/config/');
     }
 
-    function precise_remove_action(){
-
+    public function precise_remove_action()
+    {
         $this->redirect('admin/config/');
     }
 }

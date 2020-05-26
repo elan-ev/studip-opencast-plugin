@@ -9,7 +9,7 @@ define('DEBUG_CURL', FALSE);
 
 class OCRestClient
 {
-    static $me;
+    public static $me;
 
     protected $base_url,
         $username,
@@ -26,7 +26,7 @@ class OCRestClient
 
     public $serviceName = 'ParentRestClientClass';
 
-    static function getInstance($config_id = null)
+    public static function getInstance($config_id = null)
     {
         // use default config if nothing else is given
         if (is_null($config_id) || $config_id === false) {
@@ -44,7 +44,7 @@ class OCRestClient
         return static::$me[$config_id];
     }
 
-    static function create($course_id = null)
+    public static function create($course_id = null)
     {
         if (is_null($course_id)) {
             $course_id = Context::getId();
@@ -55,7 +55,7 @@ class OCRestClient
         return self::getInstance($config_id);
     }
 
-    function __construct($config)
+    public function __construct($config)
     {
         $this->config_id  = $config['config_id'];
         $this->base_url   = $config['service_url'];
@@ -101,27 +101,27 @@ class OCRestClient
             ($this->base_url == 'error' || $this->base_url == null);
     }
 
-    function setCookie($name, $value)
+    public function setCookie($name, $value)
     {
         $this->cookie = $name .'='. $value;
     }
 
-    function getCookie()
+    public function getCookie()
     {
         return $this->cookie;
     }
 
-    function putJSON($service_url, $data = [], $with_res_code = false)
+    public function putJSON($service_url, $data = [], $with_res_code = false)
     {
         return $this->jsonRequest($service_url, $data, $with_res_code, self::PUT);
     }
 
-    function postJSON($service_url, $data = [], $with_res_code = false)
+    public function postJSON($service_url, $data = [], $with_res_code = false)
     {
         return $this->jsonRequest($service_url, $data, $with_res_code, self::POST);
     }
 
-    function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
+    public function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if ($is_get) {
             return $this->jsonRequest($service_url, [], $with_res_code, self::GET);
@@ -130,7 +130,7 @@ class OCRestClient
         }
     }
 
-    function deleteJSON($service_url, $with_res_code = false)
+    public function deleteJSON($service_url, $with_res_code = false)
     {
         return $this->jsonRequest($service_url, [], $with_res_code, self::DELETE);
     }
@@ -138,7 +138,7 @@ class OCRestClient
     /**
      *  function getJSON - performs a REST-Call and retrieves response in JSON
      */
-    function jsonRequest($service_url, $data = [], $with_res_code = false, $type)
+    public function jsonRequest($service_url, $data = [], $with_res_code = false, $type)
     {
         if (isset($service_url)) {
             $this->initCurl();
@@ -219,7 +219,7 @@ class OCRestClient
     /**
      * function getXML - performs a REST-Call and retrieves response in XML
      */
-    function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
+    public function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
             $this->initCurl();

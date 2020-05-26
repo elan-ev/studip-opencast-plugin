@@ -4,26 +4,11 @@ namespace Opencast\Models;
 
 class OCAccessControl extends \SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_access_control';
 
         parent::configure($config);
-    }
-
-    public static function get_acls_for_course($course_id)
-    {
-        return \SimpleCollection::createFromArray(
-            self::findByCourse_id($course_id)
-        )->toArray();
-    }
-
-    public static function get_acls_for($type_name, $type_id)
-    {
-        return \SimpleCollection::createFromArray(
-            self::findBySql('type = ? AND id = ?', [$type_name,$type_id])
-        )->toArray();
-
     }
 
     public static function set_acl_for_course($id, $type, $course_id, $acl_id)
@@ -43,15 +28,5 @@ class OCAccessControl extends \SimpleORMap
         }
 
         return true;
-    }
-
-    public static function remove_acls_for_course($course_id)
-    {
-        return self::deleteBySql('course_id = ?', [$course_id]);
-    }
-
-    public static function remove_acl_from_db($acl_id)
-    {
-        return self::deleteBySql('acl_id = ?', [$acl_id]);
     }
 }

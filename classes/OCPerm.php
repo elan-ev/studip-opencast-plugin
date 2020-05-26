@@ -3,7 +3,7 @@
 class OCPerm
 {
 
-    static function check($requiredPerm, $context_id = null)
+    public static function check($requiredPerm, $context_id = null)
     {
         if (is_null($context_id)) {
             $context_id = Context::getId();
