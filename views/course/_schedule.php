@@ -143,7 +143,7 @@
                                             'video',
                                             Icon::ROLE_CLICKABLE,
                                             [
-                                                'title' => $_('Aufzeichnung planen.')
+                                                'title' => $_('Aufzeichnung planen')
                                             ]
                                         ) ?>
                                     </a>
