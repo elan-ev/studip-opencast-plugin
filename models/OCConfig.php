@@ -2,8 +2,6 @@
 
 namespace Opencast\Models;
 
-use Opencast\Models\OCSeminarSeries;
-
 class OCConfig extends \SimpleORMap
 {
     protected static function configure($config = [])

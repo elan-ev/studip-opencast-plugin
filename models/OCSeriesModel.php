@@ -1,16 +1,10 @@
 <?php
 
-use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\LTI\OpencastLTI;
 
 class OCSeriesModel
 {
-
-    // saves all series for later requests
-    private static $allSeries = null;
-
-
     /**
      * [getSeriesFromOpencast description]
      *

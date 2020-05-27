@@ -228,73 +228,7 @@ class OCModel
         $stmt->execute([$course_id, $date_id, $resource_id, 'scheduled']);
         $success = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $success;
-    }
-
-    /**
-     * createSeriesXML - creates an xml representation for a new OC-Series
-     * @param string $course_id
-     * @return string xml - the xml representation of the string
-     */
-    public static function creatSeriesXML($course_id)
-    {
-        $course = new Seminar($course_id);
-
-        $name         = $course->getName();
-        $license      = "All Rights Reserved";
-        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
-
-
-        $inst      = Institute::find($course->institut_id);
-        $inst_data = $inst->getData();
-        $publisher = $inst_data['name'];
-
-        //$start = $course->getStartSemester();
-        //$end = $course->getEndSemesterVorlesEnde();
-        $audience = "General Public";
-
-        $instructors = $course->getMembers('dozent');
-        $instructor  = array_shift($instructors);
-        $contributor = $instructor['fullname'];
-        $creator     = $inst_data['name'];
-
-        $language = 'de';
-
-
-        $xml = '<?xml version="1.0"?>
-                <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance/"
-                    xsi:schemaLocation="http://www.opencastproject.org http://www.opencastproject.org/schema.xsd" xmlns:dc="http://purl.org/dc/elements/1.1/"
-                    xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn">
-
-                    <dcterms:title xml:lang="en">
-                        ' . $name . '
-                    </dcterms:title>
-                    <dcterms:subject>
-                        ' . $course->description . '
-                    </dcterms:subject>
-                    <dcterms:description xml:lang="en">
-                        ' . $course->description . '
-                    </dcterms:description>
-                    <dcterms:creator>' . $publisher . '</dcterms:creator>
-                    <dcterms:contributor>' . $contributor . '</dcterms:contributor>
-                    <dcterms:publisher>
-                        ' . $publisher . '
-                    </dcterms:publisher>
-                    <dcterms:identifier>
-                        ' . $course_id . '
-                    </dcterms:identifier>
-                    <dcterms:modified xsi:type="dcterms:W3CDTF">
-                        ' . date('Y-m-d', $course->metadate->seminarStartTime) . '
-                    </dcterms:modified>
-                    <dcterms:format xsi:type="dcterms:IMT">
-                        video/x-dv
-                    </dcterms:format>
-                    <oc:promoted>
-                        true
-                    </oc:promoted>
-                </dublincore>';
-
-        return $xml;
-    }
+    }    
 
     /**
      * createScheduleEventXML - creates an xml representation for a new OC-Series
