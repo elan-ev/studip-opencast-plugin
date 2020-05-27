@@ -201,6 +201,7 @@ class OCSeriesModel
         $creator     = $instructor['fullname'];
         $language    = 'de';
         $description = '';
+
         if (mb_strlen($course->description) > 1000) {
             $description .= mb_substr($course->description, 0, 1000);
             $description .= "... ";
@@ -219,20 +220,32 @@ class OCSeriesModel
             'publisher'   => $publisher
         ];
 
+        // create safe xml using XMLWriter
+        $xw = new XMLWriter();
+        $xw->openMemory();
+        $xw->startDocument('1.0', 'UTF-8');
+        $xw->startElement("dublincore");
+        $xw->startAttribute('xmlns');
+        $xw->text('http://www.opencastproject.org/xsd/1.0/dublincore/');
+        $xw->endAttribute();
 
-        $content = [];
+        $xw->startAttribute('xmlns:dcterms');
+        $xw->text('http://purl.org/dc/terms/');
+        $xw->endAttribute();
+
+        $xw->startAttribute('xmlns:oc');
+        $xw->text('http://www.opencastproject.org/matterhorn/');
+        $xw->endAttribute();
 
         foreach ($data as $key => $val) {
-            $content[] = '<dcterms:' . $key . '><![CDATA[' . $val . ']]></dcterms:' . $key . '>';
+            $xw->startElement('dcterms:' . $key);
+            $xw->text($val);
+            $xw->endElement();
         }
 
-        $str = '<?xml version="1.0" encoding="UTF-8"?>'
-            . '<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" '
-            . 'xmlns:dcterms="http://purl.org/dc/terms/" xmlns:oc="http://www.opencastproject.org/matterhorn/">'
-            . implode('', $content)
-            . '</dublincore>';
-
-        return $str;
+        $xw->endElement();
+        $xw->endDocument();
+        return $xw->outputMemory();
     }
 
     /**
