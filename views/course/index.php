@@ -302,7 +302,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
 
             <? if ($multiconnected) : ?>
                 <label class="oc_muted">
-                    <input type="radio" name="visibility" value="visible" disabled="disabled" style="float: left">
+                    <input type="radio" name="visibility" value="free" disabled="disabled" style="float: left">
                     <span>
                         <?= $_('Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher nicht freigegeben werden.') ?>
                     </span>

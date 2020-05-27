@@ -467,7 +467,7 @@ const OC = {
             e.preventDefault();
 
             $('#visibility_dialog input[value=' + visibility + ']')
-                .attr('checked', true);
+                .prop('checked', true);
 
             $('#visibility_dialog').attr('data-episode_id', episode_id)
 
@@ -497,7 +497,8 @@ const OC = {
                            .removeClass('ocinvisible ocvisible ocfree')
                            .addClass('oc' + response.visible)
                            .text(OC.visibility_text[response.visible])
-                           .attr('disabled', false);
+                           .attr('disabled', false)
+                           .attr('data-visibility', response.visible);
                    }
                   ).fail(function(response) {
                       alert('Die Sichtbarkeit kann momentan nicht geändert werden! Opencast arbeitet momentan an diesem Video.');
