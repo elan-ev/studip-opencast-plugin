@@ -491,13 +491,15 @@ class CourseController extends OpencastController
     public function create_series_action()
     {
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-            $this->series_client = SeriesClient::create($this->course_id);
-            if ($this->series_client->createSeriesForSeminar($this->course_id)) {
-                PageLayout::postSuccess($this->_('Series wurde angelegt'));
-                StudipLog::log('OC_CREATE_SERIES', $this->course_id);
-                StudipCacheFactory::getCache()->expire('oc_allseries');
-            } else {
-                throw new Exception($this->_('Verbindung zum Series-Service konnte nicht hergestellt werden.'));
+            if (empty(OCSeminarSeries::getSeries($this->course_id))) {
+                $this->series_client = SeriesClient::create($this->course_id);
+                if ($this->series_client->createSeriesForSeminar($this->course_id)) {
+                    PageLayout::postSuccess($this->_('Series wurde angelegt'));
+                    StudipLog::log('OC_CREATE_SERIES', $this->course_id);
+                    StudipCacheFactory::getCache()->expire('oc_allseries');
+                } else {
+                    throw new Exception($this->_('Verbindung zum Series-Service konnte nicht hergestellt werden.'));
+                }
             }
         } else {
             throw new Exception($this->_('Sie haben leider keine Berechtigungen um diese Aktion durchzuführen'));
