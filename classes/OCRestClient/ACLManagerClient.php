@@ -36,7 +36,7 @@ class ACLManagerClient extends OCRestClient
                 return $oc_acl;
             }
         }
-        [$result, $code] = $this->postJSON('/acl', $data, true);
+        list($result, $code) = $this->postJSON('/acl', $data, true);
 
         if ((int)$code === 200) {
             return $result;
