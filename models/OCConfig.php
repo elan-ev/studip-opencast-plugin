@@ -2,11 +2,9 @@
 
 namespace Opencast\Models;
 
-use Opencast\Models\OCSeminarSeries;
-
 class OCConfig extends \SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_config';
 
@@ -24,11 +22,11 @@ class OCConfig extends \SimpleORMap
     /**
      * Return the complete configuration for the passed course
      *
-     * @param  string $course_id
+     * @param string $course_id
      *
      * @return mixed  the configuration data for the passed course
      */
-    static function getConfigForCourse($course_id)
+    public static function getConfigForCourse($course_id)
     {
         static $config;
 
@@ -53,11 +51,11 @@ class OCConfig extends \SimpleORMap
      * @return array configuration for corresponding client
      *
      */
-    static function getConfigForService($service_type, $config_id = 1)
+    public static function getConfigForService($service_type, $config_id = 1)
     {
         if (isset($service_type)) {
             $config = OCEndpoints::findOneBySQL(
-                'service_type = ? AND config_id = ?' ,
+                'service_type = ? AND config_id = ?',
                 [$service_type, $config_id]
             );
 
@@ -77,14 +75,16 @@ class OCConfig extends \SimpleORMap
     /**
      *  function setConfig - sets config into DB for given REST-Service-Client
      *
+     * @param int $config_id
      * @param string $service_url
      * @param string $service_user
      * @param string $service_password
+     * @param string $version
      *
      * @return
      * @throws Exception
      */
-    static function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
+    public static function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
     {
         if (isset($service_url, $service_user, $service_password, $version)) {
             if (!$config = self::find($config_id)) {
@@ -101,7 +101,7 @@ class OCConfig extends \SimpleORMap
         }
     }
 
-    static function clearConfigAndAssociatedEndpoints($config_id)
+    public static function clearConfigAndAssociatedEndpoints($config_id)
     {
         return self::deleteBySql('config_id = ?', [$config_id]);
     }
@@ -113,7 +113,7 @@ class OCConfig extends \SimpleORMap
      *
      * @return int
      */
-    static function getConfigIdForCourse($course_id)
+    public static function getConfigIdForCourse($course_id)
     {
         return OCSeminarSeries::findOneBySeminar_id($course_id)->config_id;
     }
@@ -126,7 +126,7 @@ class OCConfig extends \SimpleORMap
      * @return string
      */
 
-    static function getCourseIdForSeries($series_id)
+    public static function getCourseIdForSeries($series_id)
     {
         return OCSeminarSeries::findOneBySeries_id($series_id)->seminar_id;
     }
@@ -139,7 +139,7 @@ class OCConfig extends \SimpleORMap
      * @return string
      */
 
-    static function getConfigIdForSeries($series_id)
+    public static function getConfigIdForSeries($series_id)
     {
         return OCSeminarSeries::findOneBySeminar_id($series_id)->config_id ?: 1;
     }
@@ -161,7 +161,7 @@ class OCConfig extends \SimpleORMap
      * @param  [type] $config_id [description]
      * @return [type]            [description]
      */
-    static function getBaseServerConf($config_id = null)
+    public static function getBaseServerConf($config_id = null)
     {
         if (is_null($config_id)) {
             return \SimpleCollection::createFromArray(

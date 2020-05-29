@@ -9,19 +9,19 @@ use Opencast\Models\OCConfig;
 
 class ACLManagerClient extends OCRestClient
 {
-    static $me;
-    public $serviceName = "ACL-Manager";
+    public static $me;
+    public        $serviceName = "ACL-Manager";
 
-    function __construct($config_id)
+    public function __construct($config_id)
     {
         if ($config = OCConfig::getConfigForService('acl-manager', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
-    function createACL(AccessControlList $acl)
+    public function createACL(AccessControlList $acl)
     {
         $data = [
             'name' => $acl->get_name(),
@@ -30,7 +30,7 @@ class ACLManagerClient extends OCRestClient
 
         if ($oc_acl = $this->getACLByName($acl->get_name())) {
             // check, if acls differ and only then remove the acl and set a new one
-            if (sizeof($oc_acl->acl->ace) != sizeof($acl->get_entities())) {
+            if (count($oc_acl->acl->ace) != count($acl->get_entities())) {
                 $this->removeACL($oc_acl->id);
             } else {
                 return $oc_acl;
@@ -38,23 +38,23 @@ class ACLManagerClient extends OCRestClient
         }
         list($result, $code) = $this->postJSON('/acl', $data, true);
 
-        if ($code === 200) {
+        if ((int)$code === 200) {
             return $result;
-        } else if ($code === 409) {
+        } else if ((int)$code === 409) {
             return null;
         }
 
-        throw new Exception(_("Es ist ein Fehler beim Anlegen der ACL aufgetreten."));
+        throw new Exception(_('Es ist ein Fehler beim Anlegen der ACL aufgetreten.'));
     }
 
-    function removeACL($acl_id)
+    public function removeACL($acl_id)
     {
         $result = $this->deleteJSON('/acl/' . $acl_id, true);
 
-        return $result[1] == 200 || $result[1] == 204;
+        return (int)$result[1] === 200 || (int)$result[1] === 204;
     }
 
-    function applyACLto($type, $id, $acl_id = null)
+    public function applyACLto($type, $id, $acl_id = null)
     {
         $data = [];
 
@@ -67,7 +67,7 @@ class ACLManagerClient extends OCRestClient
         return $result[1] == 200;
     }
 
-    function getAllACLs()
+    public function getAllACLs()
     {
         static $acls;
 
@@ -78,7 +78,7 @@ class ACLManagerClient extends OCRestClient
         return $acls ?: [];
     }
 
-    function getACLByName($name)
+    public function getACLByName($name)
     {
         foreach ($this->getAllACLs() as $acl) {
             if ($acl->name == $name) {
@@ -89,9 +89,8 @@ class ACLManagerClient extends OCRestClient
         return false;
     }
 
-    function getACL($acl_id)
+    public function getACL($acl_id)
     {
         return $this->getJSON('/acl/' . $acl_id);
     }
-
 }

@@ -4,15 +4,15 @@ use Opencast\Models\OCConfig;
 
 class SearchClient extends OCRestClient
 {
-    static $me;
+    public static $me;
     public $serviceName = 'Search';
 
-    function __construct($config_id = 1)
+    public function __construct($config_id = 1)
     {
         if ($config = OCConfig::getConfigForService('search', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
@@ -24,15 +24,13 @@ class SearchClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    function getEpisodes($series_id, $refresh = false)
+    public function getEpisodes($series_id, $refresh = false)
     {
-        global $perm;
-
         $cache = StudipCacheFactory::getCache();
         $cache_key = 'oc_episodesforseries/' . $series_id;
         $episodes = $cache->read($cache_key);
 
-        if ($refresh || $episodes === false || $perm->have_perm('dozent')) {
+        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
             $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
             $x = "search-results";
 
@@ -60,15 +58,14 @@ class SearchClient extends OCRestClient
      *
      * @return array response of series
      */
-    function getSeries($series_id)
+    public function getSeries($series_id)
     {
-
-        $service_url = "/series.json?id=" . $series_id . "&episodes=true&series=true";
+        $service_url = "/series.json?id={$series_id}&episodes=true&series=true";
         if ($search = $this->getJSON($service_url)) {
             //$x = "search-results";
             //$episodes = $search->$x->result;
             return $search;
-        } else return false;
+        }
     }
 
     /**
@@ -79,7 +76,7 @@ class SearchClient extends OCRestClient
      *
      * @return array response of series
      */
-    function getAllSeries()
+    public function getAllSeries()
     {
         $service_url = "/series.json";
 
@@ -108,25 +105,21 @@ class SearchClient extends OCRestClient
      *
      * @return int number of episodes
      */
-    function getEpisodeCount($series_id)
+    public function getEpisodeCount($series_id)
     {
         if ($series = $this->getSeries($series_id)) {
             $x = "search-results";
             $count = $series->$x->total;
 
             return intval($count);
-        } else return false;
-
+        }
     }
 
-
-    function getBaseURL()
+    public function getBaseURL()
     {
         $base = $this->base_url;
         $url = preg_replace('/\/search/', '', $base);
 
         return $url;
     }
-
-
 }

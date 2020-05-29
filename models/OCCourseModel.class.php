@@ -15,7 +15,7 @@ class OCCourseModel
     /**
      * @param $course_id
      */
-    function __construct($course_id)
+    public function __construct($course_id)
     {
         if (!$course_id) {
             throw new Exception('Missing course-id!');
@@ -69,11 +69,11 @@ class OCCourseModel
 
     public function getEpisodes($force_reload = false)
     {
-        if ($this->getSeriesID()) {;
+        if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
 
             $course = Course::find($this->getCourseID());
-            $role = '';
+            $role   = '';
 
             if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
                 $role = 'Instructor';
@@ -83,7 +83,7 @@ class OCCourseModel
 
             $series = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
 
-            $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
+            $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
             $ordered_episodes = [];
 
             //check if series' episodes is already stored in studip
@@ -121,8 +121,8 @@ class OCCourseModel
         $ordered = [];
 
         //Get the current settings for this episode group
-        $key = array_shift($keys);
-        $current_reversed = array_shift($reversed);
+        $key                = array_shift($keys);
+        $current_reversed   = array_shift($reversed);
         $current_sort_flags = array_shift($sort_flags);
 
         //Regroup the current episodes bv the key field
@@ -155,7 +155,7 @@ class OCCourseModel
 
     private function episodeComparison($stored_episodes, $remote_episodes)
     {
-        $episodes = [];
+        $episodes    = [];
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
 
@@ -191,7 +191,7 @@ class OCCourseModel
             foreach ($oc_episodes as $episode) {
                 $lastpos++;
                 $episode['visibility'] = $vis;
-                $episode['mkdate'] = $timestamp;
+                $episode['mkdate']     = $timestamp;
 
                 OCModel::setEpisode(
                     $episode['id'],
@@ -234,10 +234,10 @@ class OCCourseModel
 
         if (is_array($oc_episodes)) foreach ($oc_episodes as $episode) {
             if (is_object($episode->mediapackage)) {
-                $presentation_preview = false;
-                $presenter_download = [];
+                $presentation_preview  = false;
+                $presenter_download    = [];
                 $presentation_download = [];
-                $audio_download = [];
+                $audio_download        = [];
                 foreach ($episode->mediapackage->attachments->attachment as $attachment) {
                     if ($attachment->type === "presenter/search+preview") {
                         $preview = $attachment->url;
@@ -313,24 +313,6 @@ class OCCourseModel
         return $episodes;
     }
 
-    private function getCachedEntries($series_id, $forced_reload)
-    {
-        $cached_series = OCSeriesModel::getCachedSeriesData($series_id);
-
-        if (!$cached_series || $forced_reload) {
-            $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
-            $series = $search_client->getEpisodes($series_id, true);
-
-            if ($forced_reload && $cached_series) {
-                OCSeriesModel::updateCachedSeriesData($series_id, serialize($series));
-            } else {
-                OCSeriesModel::setCachedSeriesData($series_id, serialize($series));
-            }
-        }
-
-        return $cached_series;
-    }
-
     /**
      * return number of new episodes since last visit up to 3 month ago
      *
@@ -358,8 +340,8 @@ class OCCourseModel
     public function getEpisodesforREST()
     {
         $rest_episodes = [];
-        $is_dozent = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
-        $episodes = $this->getEpisodes();
+        $is_dozent     = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
+        $episodes      = $this->getEpisodes();
 
         foreach ($episodes as $episode) {
             if ($episode['visibility'] == 'true') {

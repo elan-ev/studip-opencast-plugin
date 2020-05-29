@@ -111,9 +111,6 @@ const OC = {
         }
 
 	function addACL(mediaPackage,acl) {
-
-
-
 	    var acldata = new FormData();
 	    acldata.append('mediaPackage', mediaPackage);
             acldata.append('flavor', 'security/xacml+episode');
@@ -182,6 +179,7 @@ const OC = {
         }
 
         function finishIngest(mediaPackage, workflowId = "upload") {
+            console.log(mediaPackage);
             return $.ajax({
                 url: serviceUrl + "/ingest/ingest",
                 method: "POST",
@@ -463,13 +461,13 @@ const OC = {
     toggleVis: function (cid) {
         jQuery('.oc-togglevis').bind('click', function (e) {
             var episode_id = jQuery(this).data("episode-id");
-            var title      = 'Sichtbarkeit - ' + jQuery('#' + episode_id + ' .oce_list_title').text();
+            var title      = jQuery('#' + episode_id + ' .oce_list_title').text();
             var visibility = jQuery(this).attr('data-visibility');
 
             e.preventDefault();
 
             $('#visibility_dialog input[value=' + visibility + ']')
-                .attr('checked', true);
+                .prop('checked', true);
 
             $('#visibility_dialog').attr('data-episode_id', episode_id)
 
@@ -499,7 +497,8 @@ const OC = {
                            .removeClass('ocinvisible ocvisible ocfree')
                            .addClass('oc' + response.visible)
                            .text(OC.visibility_text[response.visible])
-                           .attr('disabled', false);
+                           .attr('disabled', false)
+                           .attr('data-visibility', response.visible);
                    }
                   ).fail(function(response) {
                       alert('Die Sichtbarkeit kann momentan nicht geändert werden! Opencast arbeitet momentan an diesem Video.');

@@ -3,9 +3,11 @@
 use Studip\Button;
 use Studip\LinkButton;
 
-global $perm;
 
-Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen."));
+Helpbar::get()->addPlainText(
+    '',
+    $_('Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents aus dem Opencast System verknüpfen.')
+);
 ?>
 <script language="JavaScript">
     OC.initAdmin();
@@ -14,14 +16,14 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
 <?= $this->render_partial('messages') ?>
 
 <!-- New Table-->
-<form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>" method="post" class="default">
+<form action="<?= $controller->url_for('admin/update_resource') ?>" method="post" class="default">
     <fieldset class="conf-form-field">
         <legend>
-            <?= $_("Zuweisung der Capture Agents") ?>
+            <?= $_('Zuweisung der Capture Agents') ?>
         </legend>
 
         <?= MessageBox::info($_('Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!')) ?>
-    
+
         <table id="oc_resourcestab" class="default">
             <tr>
                 <th><?= $_('Raum') ?></th>
@@ -34,7 +36,7 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
             <? foreach ($resources as $resource) : ?>
                 <tr>
                     <?= $this->render_partial("admin/_ca-selection", [
-                        'resource'         => $resource
+                        'resource' => $resource
                         //'agents'           => $agents,
                         //'available_agents' => $available_agents
                     ]) ?>
@@ -43,10 +45,10 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
         </table>
     </fieldset>
 
-    <? if ($perm->have_perm('root')) : ?>
+    <? if ($GLOBALS['perm']->have_perm('root')) : ?>
         <fieldset>
             <legend>
-                <?= $_("Standardworkflow") ?>
+                <?= $_('Standardworkflow') ?>
             </legend>
 
             <label>
@@ -59,16 +61,15 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
                         </option>
                     <? endforeach; ?>
                     <?
-                    if (!$current_workflow) {
-                        echo '<option selected>' . $_('Undefiniert') . '</option>';
-                    }
-                    ?>
+                    if (!$current_workflow) :?>
+                        <option selected><?= $_('Undefiniert') ?></option>
+                    <? endif ?>
                 </select>
             </label>
 
             <label>
                 <input name="override_other_workflows" type="checkbox">
-                <?=$_('Alle anderen Workflows überschreiben');?>
+                <?= $_('Alle anderen Workflows überschreiben'); ?>
             </label>
 
             <? if (!$current_workflow) : ?>
@@ -80,7 +81,7 @@ Helpbar::get()->addPlainText('', $_("Hier können Sie die entsprechenden Stud.IP
     <? endif ?>
 
     <footer>
-        <?= Button::createAccept($_('Übernehmen'), ['title' => $_("Änderungen übernehmen")]); ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), PluginEngine::getLink('opencast/admin/resources/')); ?>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('admin/resources')); ?>
     </footer>
 </form>
