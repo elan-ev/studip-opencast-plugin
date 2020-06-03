@@ -4,8 +4,7 @@ class FixCronjobs extends Migration
 {
     const FILENAMES = [
         'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_scheduled_events.php',
-        'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_series.php',
-        'public/plugins_packages/elan-ev/OpenCast/cronjobs/try_reupload_failed_jobs.php'
+        'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_series.php'
     ];
 
     public function description()
