@@ -101,7 +101,7 @@ use Studip\LinkButton;
           <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">write</AttributeValue>
             <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-i         </ActionMatch>
+          </ActionMatch>
         </Action>
       </Actions>
     </Target>
