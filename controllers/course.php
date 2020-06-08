@@ -309,7 +309,7 @@ class CourseController extends OpencastController
             0,
             time()
         );
-        StudipLog::log('OC_CONNECT_SERIES', null, $course_id, $series);
+        StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
         PageLayout::postSuccess(
             $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.')
         );
