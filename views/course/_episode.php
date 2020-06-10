@@ -96,15 +96,17 @@ $visibility_text = [
 
                         <? if (!$item['is_retracting']) : ?>
                             <div class="ocplayerlink">
-                                <? if ($GLOBALS['perm']->get_studip_perm($course_id) == 'autor') : ?>
-                                    <?= Studip\LinkButton::create(
+
+                                <?= Studip\LinkButton::create(
                                         $_('Feedback'),
-                                        'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALink zum betroffenen Video:%0D%0A' . $controller->link_for('course/index/' . $item['id']),
+                                        'mailto:' . $GLOBALS['UNI_CONTACT']
+                                            . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALinks zum betroffenen Video:%0D%0A'
+                                            . $controller->link_for('course/index/' . $item['id']) ."%0D%0A"
+                                            . $video_url . $item['id'],
                                         [
                                             'class' => 'oc_feedback'
                                         ]
-                                    ); ?>
-                                <? endif ?>
+                                ); ?>
 
                                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
                                     <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
