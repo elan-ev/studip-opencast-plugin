@@ -35,8 +35,11 @@ use Studip\LinkButton;
           DataType="http://www.w3.org/2001/XMLSchema#string"/>
       </Apply>
     </Condition>
-  </Rule>
-  <Rule RuleId="user_read_Permit" Effect="Permit">
+  </Rule>';
+
+if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
+
+  $oc_acl.='<Rule RuleId="user_read_Permit" Effect="Permit">
     <Target>
       <Actions>
         <Action>
@@ -55,7 +58,9 @@ use Studip\LinkButton;
           DataType="http://www.w3.org/2001/XMLSchema#string"/>
       </Apply>
     </Condition>
-  </Rule>
+  </Rule>';
+}
+  $oc_acl.='
   <Rule RuleId="user_write_Permit" Effect="Permit">
     <Target>
       <Actions>
@@ -117,7 +122,9 @@ use Studip\LinkButton;
         $instructor_role = $this->course_id . '_Instructor';
         $learner_role = $this->course_id . '_Learner';
         $oc_acl          = str_replace('ROLE_USER_LTI_Instructor', $instructor_role, $oc_acl);
-        $oc_acl          = str_replace('ROLE_USER_LTI_Learner', $learner_role, $oc_acl);
+	if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
+          $oc_acl          = str_replace('ROLE_USER_LTI_Learner', $learner_role, $oc_acl);
+        }
         $oc_acl          = str_replace(["\r", "\n"], '', $oc_acl);
         $oc_acl          = urlencode($oc_acl);
     }
