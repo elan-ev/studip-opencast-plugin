@@ -55,7 +55,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if (!$GLOBALS['opencast_already_loaded']) {
             $this->addStylesheet('stylesheets/oc.less');
-            PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
+            PageLayout::addScript($this->getPluginUrl() . '/static/bundle.js');
             if ($GLOBALS['perm']->have_perm('tutor') && OCModel::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');

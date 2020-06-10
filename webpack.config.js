@@ -7,7 +7,12 @@ const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 
 
 module.exports = {
-    entry: ['./vueapp/app.js', './stylesheets/main.scss'], // the entry point
+    entry: [
+        './vueapp/app.js',
+        './stylesheets/main.scss',
+        './javascripts/application.js',
+        './javascripts/embed.js'
+    ], // the entry point
     output: {
         filename: 'bundle.js', // the output filename
         path: path.resolve(__dirname, 'static') // fully qualified path
