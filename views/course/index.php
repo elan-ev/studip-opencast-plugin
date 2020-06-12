@@ -144,7 +144,8 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                         $config['service_url'] . '/studio/index.html',
                         [
                             'cid'             => null,
-                            'upload.seriesId' => $connectedSeries[0]['series_id']
+                            'upload.seriesId' => $connectedSeries[0]['series_id'],
+                            'upload.acl'      => false
                         ]
                     ),
                     Icon::create('video2'),
