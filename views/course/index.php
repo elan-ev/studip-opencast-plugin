@@ -123,7 +123,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     $upload  = '';
 
     if (!empty($connectedSeries)) {
-        $actions->add(
+        $actions->addLink(
             $_('Verknüpfung aufheben'),
             $controller->url_for('course/remove_series/' . get_ticket()),
             Icon::create('trash')
