@@ -17,7 +17,7 @@ Helpbar::get()->addPlainText('', $_("Hier kÃ¶nnen Sie einzelne Aufzeichnungen fÃ
 
 ?>
 <div class="oc_schedule">
-    <?= $this->render_partial("course/_schedule", ['course_id' => $course_id, 'dates' => $dates]) ?>
+    <?= $this->render_partial('course/_schedule', ['course_id' => $course_id, 'dates' => $dates]) ?>
 </div>
 
 <script language="JavaScript">

@@ -5,12 +5,16 @@
         <input type="hidden" name="semester_filter" value="<?= $semester_filter ?>">
         <table class="default">
             <colgroup>
-                <col width="2%">
-                <col width="30%">
-                <col width="30%">
-                <col width="30%">
-                <col width="4%">
-                <col width="4%">
+                <col style="width: 2%">
+                <col style="width: 30%">
+                <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
+                    <col style="width: 30%">
+                    <col style="width: 30%">
+                <? else : ?>
+                    <col style="width: 60%">
+                <? endif?>
+                <col style="width: 4%">
+                <col style="width: 4%">
             </colgroup>
             <tr>
                 <th></th>
