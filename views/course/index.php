@@ -231,6 +231,25 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
+        if ($controller->isStudentUploadEnabled()) {
+            $actions->addLink(
+                $_('Upload durch Studierende verbieten'),
+                $controller->url_for('course/disallow_students_upload/' . get_ticket()),
+                Icon::create('upload+decline'),
+                [
+                    'title' => $_('Uploads durch Studierende sind momentan erlaubt.')
+                ]
+            );
+        } else {
+            $actions->addLink(
+                $_('Upload durch Studierende erlauben'),
+                $controller->url_for('course/allow_students_upload/' . get_ticket()),
+                Icon::create('upload'),
+                [
+                    'title' => $_('Uploads durch Studierende sind momentan verboten.')
+                ]
+            );
+        }
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
