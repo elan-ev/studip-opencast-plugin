@@ -219,6 +219,23 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
+
+        $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        if (!empty($studyGroupId)) {
+            $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
+            $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $studyGroupId], 'course/index'));
+            $main->addSubNavigation('studygroup', $studyGroup);
+        }
+
+        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
+        if (!empty($linkedCourseId)) {
+            $linkedCourse = new Navigation($this->_('Zur verknüpfen Veranstaltung'));
+            $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
+            $main->addSubNavigation('linkedcourse', $linkedCourse);
+        }
+
+
+
         if ($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             return ['opencast' => $main];
         }
