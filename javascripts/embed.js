@@ -139,11 +139,15 @@
 
                 if ('attachments' in episode[i].mediapackage) {
                     var attachments = episode[i].mediapackage.attachments;
+                    var presenter_preview = false;
                     $(attachments.attachment).each(function(index, val) {
                         if (val.type == 'presenter/search+preview' && val.mimetype == 'image/jpeg') {
                             img_url = val.url;
+                            presenter_preview = true;
                         }
-
+                        if (!presenter_preview && val.type == 'presentation/search+preview' && val.mimetype == 'image/jpeg'){
+	                     img_url = val.url;
+                        }
                     });
                 }
 
