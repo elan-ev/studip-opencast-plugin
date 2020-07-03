@@ -272,9 +272,10 @@ class OpencastLTI
             $workflow = $client->getEpisode($target_id)[1]->processing_state;
 
             // Older episodes have their workflows removed and their processing
-            // state is ''. Failed and stopped WFs should not prevent StudIP
-            // from chaning ACLs
-            if (!in_array($workflow, ['SUCCEEDED', 'FAILED', 'STOPPED', ''])) {
+            // state is ''.
+            // Do not continue on failed or stopped WFs! They MUST prevent StudIP
+            // from changing ACLs
+            if (!in_array($workflow, ['SUCCEEDED', ''])) {
                 // do not change ACLs if there is a running workflow!
                 return false;
             }
