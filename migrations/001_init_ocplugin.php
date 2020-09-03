@@ -25,7 +25,7 @@ class InitOcplugin extends Migration {
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
                 );");
 
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             DBManager::get()->query("INSERT INTO `resource_property_definitions`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
@@ -72,7 +72,7 @@ class InitOcplugin extends Migration {
 
     function down() {
         DBManager::get()->query("DROP TABLE IF EXISTS `oc_series`,`oc_config`,`oc_endpoints`, `oc_seminar_series`, `oc_resources`, `oc_seminar_episodes`, `oc_scheduled_recordings`;");
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             DBManager::get()->query("DELETE FROM  resource_properties
         WHERE property_id IN(SELECT property_id FROM resource_property_definitions WHERE name = 'Opencast Capture Agent' );");

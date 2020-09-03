@@ -10,7 +10,7 @@ class AddPrefixForCaptureAgents extends Migration
 
     function up()
     {
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             $stmt = DBManager::get()->query("UPDATE `resource_property_definitions`
             SET `name`= CONCAT('OCCA#', `name`)
@@ -26,7 +26,7 @@ class AddPrefixForCaptureAgents extends Migration
 
     function down()
     {
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             $stmt = DBManager::get()->query("UPDATE `resource_property_definitions`
             SET `name`= 'Opencast Capture Agent'

@@ -11,7 +11,7 @@ class OCModel
 {
     public static function getOCRessources()
     {
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
                 LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)
@@ -33,7 +33,7 @@ class OCModel
 
     public static function getAssignedOCRessources()
     {
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
                 LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)

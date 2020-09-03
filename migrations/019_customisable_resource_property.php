@@ -10,7 +10,7 @@ class CustomisableResourceProperty extends Migration
     public function up()
     {
         $db = DBManager::get();
-        if ( htmlReady($GLOBALS['SOFTWARE_VERSION']) >= 4.5 )
+        if (StudipVersion::newerThan('4.4'))
         {
             $property_id = DBManager::get()->query("SELECT property_id FROM `resource_property_definitions`
             WHERE `name` LIKE 'OCCA#%'
