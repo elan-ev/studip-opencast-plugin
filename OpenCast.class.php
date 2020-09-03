@@ -229,7 +229,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($linkedCourseId)) {
-            $linkedCourse = new Navigation($this->_('Zur verknüpfen Veranstaltung'));
+            $linkedCourse = new Navigation($this->_('Zur verknüpften Veranstaltung'));
             $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
             $main->addSubNavigation('linkedcourse', $linkedCourse);
         }
