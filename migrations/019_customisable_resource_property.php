@@ -11,7 +11,7 @@ class CustomisableResourceProperty extends Migration
     {
         $db = DBManager::get();
 
-        $property_id = DBManager::get()->query("SELECT property_id FROM `resources_properties`
+        $property_id = DBManager::get()->query("SELECT property_id FROM `resource_property_definitions`
             WHERE `name` LIKE 'OCCA#%'
                 OR `name`='Opencast Capture Agent'")->fetchColumn();
 

@@ -11,10 +11,10 @@ class OCModel
 {
     public static function getOCRessources()
     {
-        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
-                LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
+        $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
+                LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)
                 WHERE rop.property_id = ?
-                AND rop.state = 'on'");
+                AND rop.state = '1'");
 
         $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
         $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,9 +23,9 @@ class OCModel
 
     public static function getAssignedOCRessources()
     {
-        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
-                LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
+        $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
+                LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)
+                LEFT JOIN oc_resources ocr ON (ro.id = ocr.resource_id)
                 WHERE rop.property_id = ?
                 AND rop.state = 'on'");
 
