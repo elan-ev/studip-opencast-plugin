@@ -368,11 +368,11 @@ class CourseController extends OpencastController
     }
 
 
-    public function schedule_action($resource_id, $termin_id)
+    public function schedule_action($resource_id, $publishLive, $termin_id)
     {
         if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance();
-            if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
                 PageLayout::postSuccess($this->_('Aufzeichnung wurde geplant.'));
                 $course  = Course::find($this->course_id);
                 $members = $course->members;
@@ -590,7 +590,10 @@ class CourseController extends OpencastController
             foreach ($dates as $termin_id => $resource_id) {
                 switch ($action) {
                     case 'create':
-                        self::schedule($resource_id, $termin_id, $this->course_id);
+                        self::schedule($resource_id, false, $termin_id, $this->course_id);
+                        break;
+                    case 'live':
+                        self::schedule($resource_id, true, $termin_id, $this->course_id);
                         break;
                     case 'update':
                         self::updateschedule($resource_id, $termin_id, $this->course_id);
@@ -606,13 +609,13 @@ class CourseController extends OpencastController
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
-    public static function schedule($resource_id, $termin_id, $course_id)
+    public static function schedule($resource_id, $publishLive, $termin_id, $course_id)
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if (!$scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
-            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $publishLive, $termin_id)) {
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
                 return true;
             } else {
