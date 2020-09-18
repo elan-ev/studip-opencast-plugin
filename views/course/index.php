@@ -44,7 +44,8 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $lti_link->addCustomParameter('tool', '/ltitools');
 
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)) {
+    if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)
+        && (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated() || !$controller->isStudyGroup()))) {
         $role = 'Instructor';
     } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
         $role = 'Learner';
@@ -75,7 +76,14 @@ if ($this->connectedSeries[0]['series_id']) :
 
         $studio_lti_link->addCustomParameter('tool', '/ltitools');
 
-        $studio_lti_link->setUser($current_user_id, 'Instructor');
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)
+            && (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated() || !$controller->isStudyGroup()))) {
+            $role = 'Instructor';
+        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+            $role = 'Learner';
+        }
+
+        $studio_lti_link->setUser($current_user_id, $role);
         $studio_lti_link->setCourse($course_id);
         $studio_lti_link->setResource(
             $this->connectedSeries[0]['series_id'],
@@ -130,29 +138,29 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         );
 
         if ($can_schedule) {
-            $actions->addLink(
-                $_('Medien hochladen'),
-                $controller->url_for('course/upload'),
-                Icon::create('upload'),
-                []
-            );
-
-            if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+            if (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated()) || !$controller->isStudyGroup()) {
                 $actions->addLink(
-                    $_('Video aufnehmen'),
-                    URLHelper::getLink(
-                        $config['service_url'] . '/studio/index.html',
-                        [
-                            'cid'             => null,
-                            'upload.seriesId' => $connectedSeries[0]['series_id'],
-                            'upload.acl'      => false,
-                            'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
-                            'return.label'    => 'Zurückkehren zu Stud.IP'
-                        ]
-                    ),
-                    Icon::create('video2'),
-                    ['target' => '_blank']
+                    $_('Medien hochladen'),
+                    $controller->url_for('course/upload'),
+                    Icon::create('upload'),
+                    []
                 );
+
+                if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+                    $actions->addLink(
+                        $_('Video aufnehmen'),
+                        URLHelper::getLink(
+                            $config['service_url'] . '/studio/index.html',
+                            [
+                                'cid'             => null,
+                                'upload.seriesId' => $connectedSeries[0]['series_id'],
+                                'upload.acl'      => false
+                            ]
+                        ),
+                        Icon::create('video2'),
+                        ['target' => '_blank']
+                    );
+                }
             }
 
             // TODO: Schnittool einbinden - Passender Workflow kucken
@@ -231,25 +239,28 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             );
         }
 
-        if ($controller->isStudentUploadEnabled()) {
-            $actions->addLink(
-                $_('Upload durch Studierende verbieten'),
-                $controller->url_for('course/disallow_students_upload/' . get_ticket()),
-                Icon::create('upload+decline'),
-                [
-                    'title' => $_('Uploads durch Studierende sind momentan erlaubt.')
-                ]
-            );
-        } else {
-            $actions->addLink(
-                $_('Upload durch Studierende erlauben'),
-                $controller->url_for('course/allow_students_upload/' . get_ticket()),
-                Icon::create('upload'),
-                [
-                    'title' => $_('Uploads durch Studierende sind momentan verboten.')
-                ]
-            );
+        if (!$controller->isStudyGroup()) {
+            if ($controller->isStudentUploadEnabled()) {
+                $actions->addLink(
+                    $_('Upload durch Studierende verbieten'),
+                    $controller->url_for('course/disallow_students_upload/' . get_ticket()),
+                    Icon::create('upload+accept'),
+                    [
+                        'title' => $_('Uploads durch Studierende sind momentan erlaubt.')
+                    ]
+                );
+            } else {
+                $actions->addLink(
+                    $_('Upload durch Studierende erlauben'),
+                    $controller->url_for('course/allow_students_upload/' . get_ticket()),
+                    Icon::create('upload'),
+                    [
+                        'title' => $_('Uploads durch Studierende sind momentan verboten.')
+                    ]
+                );
+            }
         }
+
     } else {
         $actions->addLink(
             $_('Neue Series anlegen'),
