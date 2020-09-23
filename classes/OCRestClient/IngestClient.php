@@ -98,7 +98,7 @@ class IngestClient extends OCRestClient
         }
     }
 
-    public function schedule($media_package, $capabilities, $worklow_definition = null)
+    public function schedule($media_package, $capabilities,  $publishLive, $worklow_definition = null)
     {
         $uri = '/schedule';
 
@@ -107,7 +107,8 @@ class IngestClient extends OCRestClient
         }
         $res = $this->getXML($uri, http_build_query([
             'mediaPackage'         => $media_package,
-            'capture.device.names' => $capabilities
+            'capture.device.names' => $capabilities,
+            'publishLive'          => $publishLive
         ]), false, true, true);
         if ($res) {
             return $res;

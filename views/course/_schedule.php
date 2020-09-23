@@ -142,12 +142,21 @@
                                 </a>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
-                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . $date->termin_id) ?>">
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 0 . '/' . $date->termin_id) ?>">
                                         <?= Icon::create(
                                             'video',
                                             Icon::ROLE_CLICKABLE,
                                             [
                                                 'title' => $_('Aufzeichnung planen')
+                                            ]
+                                        ) ?>
+                                    </a>
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>">
+                                        <?= Icon::create(
+                                            'question',
+                                            Icon::ROLE_CLICKABLE,
+                                            [
+                                                'title' => $_('Aufzeichnung live planen')
                                             ]
                                         ) ?>
                                     </a>
@@ -182,6 +191,7 @@
                             <option value="create"><?= $_('Aufzeichnungen planen') ?></option>
                             <option value="update"><?= $_('Aufzeichnungen aktualisieren') ?></option>
                             <option value="delete"><?= $_('Aufzeichnungen stornieren') ?></option>
+                            <option value="live"><?= $_('Aufzeichnungen live planen') ?></option>
                         </select>
                     </td>
                     <td></td>
