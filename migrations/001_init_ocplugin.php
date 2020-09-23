@@ -25,10 +25,18 @@ class InitOcplugin extends Migration {
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
                 );");
 
-        DBManager::get()->query("INSERT INTO `resources_properties`
+        if (StudipVersion::newerThan('4.4'))
+        {
+            DBManager::get()->query("INSERT INTO `resource_property_definitions`
+                (`property_id`, `name`, `description`, `type`, `options`, `system`)
+                VALUES (MD5('" . uniqid() . "'), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+        }
+        else
+        {
+            DBManager::get()->query("INSERT INTO `resources_properties`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
                 VALUES (MD5('".uniqid()."'), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
-
+        }
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_episodes` (
                 `seminar_id` VARCHAR( 32 ) NOT NULL ,
@@ -64,9 +72,17 @@ class InitOcplugin extends Migration {
 
     function down() {
         DBManager::get()->query("DROP TABLE IF EXISTS `oc_series`,`oc_config`,`oc_endpoints`, `oc_seminar_series`, `oc_resources`, `oc_seminar_episodes`, `oc_scheduled_recordings`;");
-        DBManager::get()->query("DELETE FROM  resources_objects_properties
+        if (StudipVersion::newerThan('4.4'))
+        {
+            DBManager::get()->query("DELETE FROM  resource_properties
+        WHERE property_id IN(SELECT property_id FROM resource_property_definitions WHERE name = 'Opencast Capture Agent' );");
+            DBManager::get()->query("DELETE FROM resource_property_definitions WHERE name = 'Opencast Capture Agent';");
+        }
+        else {
+            DBManager::get()->query("DELETE FROM  resources_objects_properties
         WHERE property_id IN(SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' );");
-        DBManager::get()->query("DELETE FROM resources_properties WHERE name = 'Opencast Capture Agent';");
+            DBManager::get()->query("DELETE FROM resources_properties WHERE name = 'Opencast Capture Agent';");
+        }
     }
 
 }
