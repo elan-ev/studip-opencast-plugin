@@ -105,11 +105,17 @@ class IngestClient extends OCRestClient
         if ($worklow_definition != null) {
             $uri .= '/' . $worklow_definition;
         }
-        $res = $this->getXML($uri, http_build_query([
+
+        $query = [
             'mediaPackage'         => $media_package,
             'capture.device.names' => $capabilities,
-            'publishLive'          => $publishLive
-        ]), false, true, true);
+        ];
+
+        if ($publishLive) {
+            $query['publishLive'] = 'true';
+        }
+
+        $res = $this->getXML($uri, http_build_query($query), false, true, true);
         if ($res) {
             return $res;
         } else {

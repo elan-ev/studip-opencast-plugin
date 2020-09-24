@@ -8,13 +8,13 @@
                 <col style="width: 2%">
                 <col style="width: 30%">
                 <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
-                    <col style="width: 30%">
-                    <col style="width: 30%">
+                    <col style="width: 28%">
+                    <col style="width: 28%">
                 <? else : ?>
-                    <col style="width: 60%">
+                    <col style="width: 56%">
                 <? endif?>
                 <col style="width: 4%">
-                <col style="width: 4%">
+                <col style="width: 8%">
             </colgroup>
             <tr>
                 <th></th>
@@ -89,6 +89,10 @@
                                         'title' => $_('Aufzeichnung ist bereits geplant.')
                                     ]
                                 ) ?>
+
+                                <? if ($scheduled && $events[$scheduled['event_id']]->publication_status[0] == 'engage-live') : ?>
+                                    <span style="font-weight: bold; color: red">LIVE</span>
+                                <? endif ?>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
                                     <?= Icon::create(
@@ -151,14 +155,13 @@
                                             ]
                                         ) ?>
                                     </a>
-                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>">
-                                        <?= Icon::create(
-                                            'question',
-                                            Icon::ROLE_CLICKABLE,
-                                            [
-                                                'title' => $_('Aufzeichnung live planen')
-                                            ]
-                                        ) ?>
+
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>"
+                                        style="margin-left: 1em;"
+                                    >
+                                        <span style="font-weight: bold" title="<?= $_('Livestream planen') ?>">
+                                            LIVE
+                                        </span>
                                     </a>
                                 <? else : ?>
                                     <?= Icon::create(
@@ -191,7 +194,7 @@
                             <option value="create"><?= $_('Aufzeichnungen planen') ?></option>
                             <option value="update"><?= $_('Aufzeichnungen aktualisieren') ?></option>
                             <option value="delete"><?= $_('Aufzeichnungen stornieren') ?></option>
-                            <option value="live"><?= $_('Aufzeichnungen live planen') ?></option>
+                            <option value="live"><?= $_('Livestream planen') ?></option>
                         </select>
                     </td>
                     <td></td>

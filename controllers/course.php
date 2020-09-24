@@ -365,6 +365,14 @@ class CourseController extends OpencastController
         $this->caa_client      = CaptureAgentAdminClient::getInstance();
         $this->workflow_client = WorkflowClient::getInstance();
         $this->tagged_wfs      = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+
+        $events_client   = ApiEventsClient::getInstance();
+        $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
+
+        foreach ($events as $event) {
+            $this->events[$event->identifier] = $event;
+        }
     }
 
 
@@ -373,7 +381,10 @@ class CourseController extends OpencastController
         if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance();
             if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
-                PageLayout::postSuccess($this->_('Aufzeichnung wurde geplant.'));
+                PageLayout::postSuccess($publishLive
+                    ? $this->_('Livestream wurde geplant.')
+                    : $this->_('Aufzeichnung wurde geplant.')
+                );
                 $course  = Course::find($this->course_id);
                 $members = $course->members;
                 $users   = [];
