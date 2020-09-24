@@ -22,6 +22,7 @@ $visibility_text = [
     -->
         <ul class="oce_list list" <?= ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
+                <? $live = time() < strtotime($item['start']) ?>
                 <? $image = $item['presentation_preview']; ?>
                 <? if (empty($image)) : ?>
                     <? $image = ($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png'; ?>
@@ -53,8 +54,14 @@ $visibility_text = [
                                     <span class="previewimage">
                                         <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                              data-src="<?= $image ?>" height="200">
-                                        <img class="playbutton"
-                                             src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
+
+                                        <? if ($live) : ?>
+                                            <img class="livebutton"
+                                                 src="<?= $plugin->getPluginURL() . '/images/live.svg' ?>">
+                                        <? else: ?>
+                                            <img class="playbutton"
+                                                 src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
+                                        <? endif ?>
                                     </span>
                                 </a>
                             <? else : ?>
@@ -80,8 +87,16 @@ $visibility_text = [
                             </h2>
                             <ul class="oce_contentlist">
                                 <li class="oce_list_date">
-                                    <?= $_('Aufzeichnungsdatum') ?>:
-                                    <?= date("d.m.Y H:i", strtotime($item['start'])) ?> <?= $_("Uhr") ?>
+                                    <? if ($live) : ?>
+                                        <h3>
+                                        <?= sprintf($_('Dies ist ein Livestream! Geplanter Start: %s'),
+                                            date("d.m.Y H:i", strtotime($item['start']))
+                                        ) ?> <?= $_("Uhr") ?>
+                                    </h3>
+                                    <? else : ?>
+                                        <?= $_('Aufzeichnungsdatum') ?>:
+                                        <?= date("d.m.Y H:i", strtotime($item['start'])) ?> <?= $_("Uhr") ?>
+                                    <? endif ?>
                                 </li>
                                 <li>
                                     <?= $_('Autor') ?>:
