@@ -112,7 +112,7 @@ class IngestClient extends OCRestClient
         ];
 
         if ($publishLive) {
-            $query['publishLive'] = 'true';
+            $query['publishLive'] = 'True';
         }
 
         $res = $this->getXML($uri, http_build_query($query), false, true, true);
