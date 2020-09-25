@@ -22,7 +22,7 @@ $visibility_text = [
     -->
         <ul class="oce_list list" <?= ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
-                <? $live = time() < strtotime($item['start']) ?>
+                <? $live = time() < (strtotime($item['start']) + ($item['duration'] / 1000)) ?>
                 <? $image = $item['presentation_preview']; ?>
                 <? if (empty($image)) : ?>
                     <? $image = ($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png'; ?>

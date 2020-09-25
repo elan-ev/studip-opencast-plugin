@@ -382,7 +382,7 @@ class CourseController extends OpencastController
             $scheduler_client = SchedulerClient::getInstance();
             if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
                 PageLayout::postSuccess($publishLive
-                    ? $this->_('Livestream wurde geplant.')
+                    ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
                     : $this->_('Aufzeichnung wurde geplant.')
                 );
                 $course  = Course::find($this->course_id);

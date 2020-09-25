@@ -159,7 +159,7 @@
                                     <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>"
                                         style="margin-left: 1em;"
                                     >
-                                        <span style="font-weight: bold" title="<?= $_('Livestream planen') ?>">
+                                        <span style="font-weight: bold" title="<?= $_('Livestream+Aufzeichnung planen') ?>">
                                             LIVE
                                         </span>
                                     </a>
@@ -194,7 +194,7 @@
                             <option value="create"><?= $_('Aufzeichnungen planen') ?></option>
                             <option value="update"><?= $_('Aufzeichnungen aktualisieren') ?></option>
                             <option value="delete"><?= $_('Aufzeichnungen stornieren') ?></option>
-                            <option value="live"><?= $_('Livestream planen') ?></option>
+                            <option value="live"><?= $_('Livestream+Aufzeichnung planen') ?></option>
                         </select>
                     </td>
                     <td></td>
