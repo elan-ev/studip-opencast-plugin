@@ -89,9 +89,10 @@ $visibility_text = [
                                 <li class="oce_list_date">
                                     <? if ($live) : ?>
                                         <h3>
-                                        <?= sprintf($_('Dies ist ein Livestream! Geplanter Start: %s'),
-                                            date("d.m.Y H:i", strtotime($item['start']))
-                                        ) ?> <?= $_("Uhr") ?>
+                                        <?= sprintf($_('Dies ist ein Livestream! Geplant: %s - %s Uhr'),
+                                            date("d.m.Y H:i", strtotime($item['start'])),
+                                            date('H:i', strtotime($item['start']) + ($item['duration'] / 1000))
+                                        ) ?>
                                     </h3>
                                     <? else : ?>
                                         <?= $_('Aufzeichnungsdatum') ?>:
