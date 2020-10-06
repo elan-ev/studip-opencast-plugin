@@ -146,7 +146,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                             'cid'             => null,
                             'upload.seriesId' => $connectedSeries[0]['series_id'],
                             'upload.acl'      => false,
-                            'return.target'   => 'http://' . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"],
+                            'return.target'   => $controller->link_for('course/index', ['cid' => $course_id]),
 			    'return.label'    => 'Zurückkehren zu StudIP'
                         ]
                     ),
