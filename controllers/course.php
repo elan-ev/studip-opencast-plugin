@@ -530,24 +530,30 @@ class CourseController extends OpencastController
     public function permission_action($episode_id, $permission)
     {
         $this->user_id = $GLOBALS['user']->id;
-        if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            || OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
-            if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
-                StudipLog::log(
-                    'OC_CHANGE_EPISODE_VISIBILITY',
-                    null,
-                    $this->course_id, "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
-                );
-                $this->set_status('201');
-            } else {
-                // republishing failed, report error to frontend
-                $this->set_status('409');
-            }
 
-            $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
-        } else {
+        // permissions of live streams cannot be changed
+        if ($this->isLive($episode_id)) {
             throw new AccessDeniedException();
         }
+
+        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+            && !OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
+            throw new AccessDeniedException();
+        }
+
+        if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
+            StudipLog::log(
+                'OC_CHANGE_EPISODE_VISIBILITY',
+                null,
+                $this->course_id, "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
+            );
+            $this->set_status('201');
+        } else {
+            // republishing failed, report error to frontend
+            $this->set_status('409');
+        }
+
+        $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
     }
 
     /**
@@ -840,12 +846,17 @@ class CourseController extends OpencastController
 
     public function remove_episode_action($ticket, $episode_id)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        if (/*check_ticket($ticket) && */$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $episode = \Opencast\Models\OCSeminarEpisodes::findOneBySQL(
                 'seminar_id = ? AND episode_id = ?',
                 [$this->course_id, $episode_id]
             );
             if ($episode) {
+                // live streams cannot be removed
+                if ($this->isLive($episode_id)) {
+                    throw new AccessDeniedException();
+                }
+
                 if ($this->retractEpisode($episode)) {
                     PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
                 } else {
@@ -899,5 +910,27 @@ class CourseController extends OpencastController
         $episode->is_retracting = true;
         $episode->store();
         return true;
+    }
+
+    private function getEpisode($episode_id)
+    {
+
+        $oc_course = new OCCourseModel($this->course_id);
+        $episodes = $oc_course->getEpisodes();
+
+        foreach ($episodes as $episode) {
+            if ($episode['id'] === $episode_id) {
+                return $episode;
+            }
+        }
+
+        return null;
+    }
+
+    private function isLive($episode_id)
+    {
+        $episode = $this->getEpisode($episode_id);
+
+        return $episode && time() < (strtotime($episode['start']) + ($episode['duration'] / 1000));
     }
 }
