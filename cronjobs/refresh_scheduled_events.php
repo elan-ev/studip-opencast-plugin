@@ -91,6 +91,7 @@ class RefreshScheduledEvents extends CronJob
             } else {
                 $scheduler_client = SchedulerClient::getInstance(1);
                 $scheduler_client->deleteEvent($event->identifier);
+		OCScheduledRecordings::deleteBySql('event_id = ?', [$event->identifier]);
             }
         }
 
