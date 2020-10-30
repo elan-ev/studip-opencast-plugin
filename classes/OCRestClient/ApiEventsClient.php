@@ -43,7 +43,6 @@ class ApiEventsClient extends OCRestClient
         $episodes  = $cache->read($cache_key);
 
         if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
-            $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
             $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
                 . $series_id . '&sort=&limit=0&offset=0';
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-26 12:35+0200\n"
-"PO-Revision-Date: 2020-05-26 12:35+0200\n"
+"PO-Revision-Date: 2020-09-29 13:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 
 #: classes/OCRestClient/CaptureAgentAdminClient.php:16
 #: classes/OCRestClient/ApiWorkflowsClient.php:15
@@ -216,7 +216,7 @@ msgstr "Participants are now allowed to download recordings."
 
 #: controllers/course.php:802
 msgid "Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen."
-msgstr "Participants are not allowed anymore to download recordings."
+msgstr "Participants are no longer allowed to download recordings."
 
 #: controllers/course.php:833
 msgid "Die Episode wurde zum Entfernen markiert."
@@ -243,7 +243,7 @@ msgid ""
 "                                        Dies ist jedoch nicht gestattet. "
 "Bitte korrigieren Sie Ihre Eingaben. URL: \"%s\""
 msgstr ""
-"You have entered the same URL for Opencast more than once, this is not "
+"You have entered the same URL for Opencast more than once; this is not "
 "allowed.\n"
 "Please correct your settings. URL: \"%s\""
 
@@ -321,6 +321,7 @@ msgid "Ups.."
 msgstr "Oops..."
 
 #: cronjobs/refresh_scheduled_events.php:15
+#, fuzzy
 msgid "Opencast - \"Scheduled-Events-Refresh\""
 msgstr "Opencast ?Scheduled events refresh?"
 
@@ -383,7 +384,7 @@ msgstr "Opencast settings"
 
 #: OpenCast.class.php:44
 msgid "Opencast Ressourcen"
-msgstr "Opencast ressources"
+msgstr "Opencast resources"
 
 #: OpenCast.class.php:140
 #, php-format
@@ -423,11 +424,11 @@ msgstr "Accept"
 
 #: views/admin/_initial_config.php:27
 msgid "In der Datenbank eingetragenen Konfigurationen (IDs): "
-msgstr "Available configurations (ids): "
+msgstr "Available configurations (IDs): "
 
 #: views/admin/_initial_config.php:32
 msgid "In der Datenbank verwendete Konfigurationen (IDs): "
-msgstr "Used configurations (ids): "
+msgstr "Used configurations (IDs): "
 
 #: views/admin/_initial_config.php:55
 msgid "Opencast Server Einstellungen"
@@ -468,7 +469,7 @@ msgstr "Cancel"
 msgid ""
 "Hier können Sie die entsprechenden Stud.IP Ressourcen mit den Capture Agents "
 "aus dem Opencast System verknüpfen."
-msgstr "Connect Stud.IP ressources with Opencast capture agents."
+msgstr "Connect Stud.IP resources with Opencast capture agents."
 
 #: views/admin/resources.php:22
 msgid "Zuweisung der Capture Agents"
@@ -476,7 +477,7 @@ msgstr "Assignment of capture agents"
 
 #: views/admin/resources.php:25
 msgid "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!"
-msgstr "Every capture agent can be assigned to at most one room!"
+msgstr "Every capture agent can only be assigned to one room maximum!"
 
 #: views/admin/resources.php:29
 msgid "Raum"
@@ -645,7 +646,7 @@ msgstr "Remove"
 
 #: views/course/_episode.php:178
 msgid "Sind sie sicher, dass sie dieses Video löschen möchten?"
-msgstr "Are you sure, you want to delete this video?"
+msgstr "Are you sure you want to delete this video?"
 
 #: views/course/_episode.php:180
 msgid "Dieses Video löschen"
@@ -653,7 +654,7 @@ msgstr "Delete this video"
 
 #: views/course/_episode.php:187
 msgid "Die Aufzeichnung wird gerade gelöscht."
-msgstr "Recording is beeing deleted."
+msgstr "Recording is being deleted."
 
 #: views/course/_error.php:10
 msgid "Es wurde keine Fehlermeldung gesetzt."
@@ -662,7 +663,7 @@ msgstr "An error message has not been configured."
 #: views/course/access_denied.php:1
 msgid ""
 "Der Zugriff auf die Videos dieser Veranstaltung wurde noch nicht freigegeben."
-msgstr "Access to this seminars videos has not yet been granted."
+msgstr "Access to this seminar's videos has not yet been granted."
 
 #: views/course/index.php:10
 #, php-format
@@ -715,7 +716,7 @@ msgstr "Media recording is forbidden."
 
 #: views/course/index.php:213
 msgid "Downloads verbieten"
-msgstr "Disallow downloads"
+msgstr "Prohibit downloads"
 
 #: views/course/index.php:217
 msgid "Downloads sind momentan erlaubt."
@@ -727,7 +728,7 @@ msgstr "Allow downloads"
 
 #: views/course/index.php:226
 msgid "Downloads sind momentan verboten."
-msgstr "Downloads are forbidden."
+msgstr "Downloads are currently prohibited."
 
 #: views/course/index.php:233
 msgid "Neue Series anlegen"
@@ -757,9 +758,10 @@ msgid "Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."
 msgstr "Here you can see an overview of your lecture recordings."
 
 #: views/course/index.php:273
+#, fuzzy
 msgid ""
 "Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!"
-msgstr "Wrong configuration for connect series!"
+msgstr "Wrong configuration for connected series!"
 
 #: views/course/index.php:275
 msgid ""
@@ -792,7 +794,7 @@ msgid ""
 "Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher "
 "nicht freigegeben werden."
 msgstr ""
-"Series is connected with multiple seminars, therefore, the video cannot be "
+"Series is connected with multiple seminars; therefore, the video cannot be "
 "shared."
 
 #: views/course/index.php:314
@@ -981,7 +983,7 @@ msgstr "At least one video is required."
 
 #: views/course/upload.php:217
 msgid "Aufzeichnung des/der Vortragende*n hinzufügen"
-msgstr "Add recordording of the lecturer(s)"
+msgstr "Add recording of the lecturer(s)"
 
 #: views/course/upload.php:221
 msgid "Aufzeichnung der Folien hinzufügen"

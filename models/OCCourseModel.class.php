@@ -238,7 +238,7 @@ class OCCourseModel
                 $presenter_download    = [];
                 $presentation_download = [];
                 $audio_download        = [];
-                foreach ($episode->mediapackage->attachments->attachment as $attachment) {
+                foreach ((array) $episode->mediapackage->attachments->attachment as $attachment) {
                     if ($attachment->type === "presenter/search+preview") {
                         $preview = $attachment->url;
                     }

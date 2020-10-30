@@ -365,15 +365,26 @@ class CourseController extends OpencastController
         $this->caa_client      = CaptureAgentAdminClient::getInstance();
         $this->workflow_client = WorkflowClient::getInstance();
         $this->tagged_wfs      = $this->workflow_client->getTaggedWorkflowDefinitions();
+
+
+        $events_client   = ApiEventsClient::getInstance();
+        $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
+
+        foreach ($events as $event) {
+            $this->events[$event->identifier] = $event;
+        }
     }
 
 
-    public function schedule_action($resource_id, $termin_id)
+    public function schedule_action($resource_id, $publishLive, $termin_id)
     {
         if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $scheduler_client = SchedulerClient::getInstance();
-            if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-                PageLayout::postSuccess($this->_('Aufzeichnung wurde geplant.'));
+            if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
+                PageLayout::postSuccess($publishLive
+                    ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
+                    : $this->_('Aufzeichnung wurde geplant.')
+                );
                 $course  = Course::find($this->course_id);
                 $members = $course->members;
                 $users   = [];
@@ -519,24 +530,30 @@ class CourseController extends OpencastController
     public function permission_action($episode_id, $permission)
     {
         $this->user_id = $GLOBALS['user']->id;
-        if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            || OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
-            if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
-                StudipLog::log(
-                    'OC_CHANGE_EPISODE_VISIBILITY',
-                    null,
-                    $this->course_id, "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
-                );
-                $this->set_status('201');
-            } else {
-                // republishing failed, report error to frontend
-                $this->set_status('409');
-            }
 
-            $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
-        } else {
+        // permissions of live streams cannot be changed
+        if ($this->isLive($episode_id)) {
             throw new AccessDeniedException();
         }
+
+        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+            && !OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
+            throw new AccessDeniedException();
+        }
+
+        if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
+            StudipLog::log(
+                'OC_CHANGE_EPISODE_VISIBILITY',
+                null,
+                $this->course_id, "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
+            );
+            $this->set_status('201');
+        } else {
+            // republishing failed, report error to frontend
+            $this->set_status('409');
+        }
+
+        $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
     }
 
     /**
@@ -590,7 +607,10 @@ class CourseController extends OpencastController
             foreach ($dates as $termin_id => $resource_id) {
                 switch ($action) {
                     case 'create':
-                        self::schedule($resource_id, $termin_id, $this->course_id);
+                        self::schedule($resource_id, false, $termin_id, $this->course_id);
+                        break;
+                    case 'live':
+                        self::schedule($resource_id, true, $termin_id, $this->course_id);
                         break;
                     case 'update':
                         self::updateschedule($resource_id, $termin_id, $this->course_id);
@@ -606,13 +626,13 @@ class CourseController extends OpencastController
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
-    public static function schedule($resource_id, $termin_id, $course_id)
+    public static function schedule($resource_id, $publishLive, $termin_id, $course_id)
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if (!$scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
-            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $publishLive, $termin_id)) {
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
                 return true;
             } else {
@@ -832,6 +852,11 @@ class CourseController extends OpencastController
                 [$this->course_id, $episode_id]
             );
             if ($episode) {
+                // live streams cannot be removed
+                if ($this->isLive($episode_id)) {
+                    throw new AccessDeniedException();
+                }
+
                 if ($this->retractEpisode($episode)) {
                     PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
                 } else {
@@ -885,5 +910,27 @@ class CourseController extends OpencastController
         $episode->is_retracting = true;
         $episode->store();
         return true;
+    }
+
+    private function getEpisode($episode_id)
+    {
+
+        $oc_course = new OCCourseModel($this->course_id);
+        $episodes = $oc_course->getEpisodes();
+
+        foreach ($episodes as $episode) {
+            if ($episode['id'] === $episode_id) {
+                return $episode;
+            }
+        }
+
+        return null;
+    }
+
+    private function isLive($episode_id)
+    {
+        $episode = $this->getEpisode($episode_id);
+
+        return $episode && time() < (strtotime($episode['start']) + ($episode['duration'] / 1000));
     }
 }

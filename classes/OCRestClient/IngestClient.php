@@ -98,17 +98,24 @@ class IngestClient extends OCRestClient
         }
     }
 
-    public function schedule($media_package, $capabilities, $worklow_definition = null)
+    public function schedule($media_package, $capabilities,  $publishLive, $worklow_definition = null)
     {
         $uri = '/schedule';
 
         if ($worklow_definition != null) {
             $uri .= '/' . $worklow_definition;
         }
-        $res = $this->getXML($uri, http_build_query([
+
+        $query = [
             'mediaPackage'         => $media_package,
-            'capture.device.names' => $capabilities
-        ]), false, true, true);
+            'capture.device.names' => $capabilities,
+        ];
+
+        if ($publishLive) {
+            $query['publishLive'] = 'True';
+        }
+
+        $res = $this->getXML($uri, http_build_query($query), false, true, true);
         if ($res) {
             return $res;
         } else {
