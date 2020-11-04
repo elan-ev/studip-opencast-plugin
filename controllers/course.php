@@ -916,10 +916,15 @@ class CourseController extends OpencastController
     {
 
         $oc_course = new OCCourseModel($this->course_id);
+        $oc_events = ApiEventsClient::create($this->course_id);
         $episodes = $oc_course->getEpisodes();
+        $events = $oc_events->getEpisodes($oc_course->getSeriesID());
 
         foreach ($episodes as $episode) {
             if ($episode['id'] === $episode_id) {
+            	if ($events[$episode_id]->publication_status[0] == 'engage-live') {
+            	    $episode['isLive'] = true;
+            	}
                 return $episode;
             }
         }
@@ -931,6 +936,6 @@ class CourseController extends OpencastController
     {
         $episode = $this->getEpisode($episode_id);
 
-        return $episode && time() < (strtotime($episode['start']) + ($episode['duration'] / 1000));
+        return $episode && $episode['isLive'];
     }
 }
