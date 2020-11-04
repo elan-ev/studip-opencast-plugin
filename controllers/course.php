@@ -912,30 +912,11 @@ class CourseController extends OpencastController
         return true;
     }
 
-    private function getEpisode($episode_id)
-    {
-
-        $oc_course = new OCCourseModel($this->course_id);
-        $oc_events = ApiEventsClient::create($this->course_id);
-        $episodes = $oc_course->getEpisodes();
-        $events = $oc_events->getEpisodes($oc_course->getSeriesID());
-
-        foreach ($episodes as $episode) {
-            if ($episode['id'] === $episode_id) {
-            	if ($events[$episode_id]->publication_status[0] == 'engage-live') {
-            	    $episode['isLive'] = true;
-            	}
-                return $episode;
-            }
-        }
-
-        return null;
-    }
-
     private function isLive($episode_id)
     {
-        $episode = $this->getEpisode($episode_id);
+        $oc_events = ApiEventsClient::create($this->course_id);
+        $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
 
-        return $episode && $episode['isLive'];
+        return $events[$episode_id] && $events[$episode_id]->publication_status[0] == 'engage-live';
     }
 }
