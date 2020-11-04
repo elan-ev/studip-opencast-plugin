@@ -147,7 +147,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                             'upload.seriesId' => $connectedSeries[0]['series_id'],
                             'upload.acl'      => false,
                             'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
-			    'return.label'    => 'Zurückkehren zu StudIP'
+                            'return.label'    => 'Zurückkehren zu Stud.IP'
                         ]
                     ),
                     Icon::create('video2'),
