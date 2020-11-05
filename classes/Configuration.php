@@ -26,7 +26,7 @@ class Configuration implements \ArrayAccess
     public static function instance($config_id)
     {
         $name = 'c_(' . $config_id . ')';
-        if (true || !static::$instances[$name]) {
+        if (!static::$instances[$name]) {
             static::$instances[$name] = new Configuration($config_id);
         }
 
