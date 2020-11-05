@@ -4,6 +4,7 @@
  */
 
 use Opencast\Models\OCConfig;
+use Opencast\Configuration;
 
 define('DEBUG_CURL', FALSE);
 

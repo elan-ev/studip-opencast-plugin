@@ -11,7 +11,7 @@ class AddTos extends Migration
         $stmt->execute([
             'name'        => 'OPENCAST_SHOW_TOS',
             'section'     => 'opencast',
-            'description' => 'Müssen Lehrende eine, Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?',
+            'description' => 'Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?',
             'range'       => 'global',
             'type'        => 'boolean',
             'value'       => false
