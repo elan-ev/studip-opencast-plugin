@@ -95,6 +95,8 @@ class Configuration implements \ArrayAccess
         if (!empty($config)) {
             $this->values = json_decode($config->settings->__toString(), true);
         }
+
+        $this->values['livestream'] = false;
     }
 
     public function store()
