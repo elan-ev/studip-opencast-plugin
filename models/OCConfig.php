@@ -2,6 +2,8 @@
 
 namespace Opencast\Models;
 
+use Opencast\Configuration;
+
 class OCConfig extends \SimpleORMap
 {
     protected static function configure($config = [])
@@ -14,7 +16,7 @@ class OCConfig extends \SimpleORMap
             'on_delete'         => 'delete'
         ];
 
-        $config['i18n_fields']['tos'] = true;
+        $config['serialized_fields']['settings'] = 'JSONArrayObject';
 
         parent::configure($config);
     }
@@ -33,7 +35,7 @@ class OCConfig extends \SimpleORMap
         if (!$config[$course_id]) {
             $config_id = self::getConfigIdForCourse($course_id);
             if ($config_id) {
-                $settings  = \Configuration::instance($config_id);
+                $settings  = Configuration::instance($config_id);
                 $oc_config = self::getBaseServerConf($config_id);
 
                 $config[$course_id] = array_merge($oc_config, $settings->toArray());
@@ -84,16 +86,16 @@ class OCConfig extends \SimpleORMap
      * @return
      * @throws Exception
      */
-    public static function setConfig($config_id = 1, $service_url, $service_user, $service_password, $version)
+    public static function setConfig($id = 1, $service_url, $service_user, $service_password, $version)
     {
         if (isset($service_url, $service_user, $service_password, $version)) {
-            if (!$config = self::find($config_id)) {
+            if (!$config = self::find($id)) {
                 $config = new self();
             }
 
             $service_version = (int)$version;
 
-            $config->setData(compact('config_id', 'service_url',
+            $config->setData(compact('id', 'service_url',
                 'service_user', 'service_password', 'service_version'));
             return $config->store();
         } else {
@@ -103,7 +105,7 @@ class OCConfig extends \SimpleORMap
 
     public static function clearConfigAndAssociatedEndpoints($config_id)
     {
-        return self::deleteBySql('config_id = ?', [$config_id]);
+        return self::deleteBySql('id = ?', [$config_id]);
     }
 
     /**
@@ -147,7 +149,7 @@ class OCConfig extends \SimpleORMap
     public static function empty_config()
     {
         return [
-            'config_id'        => 'error',
+            'id'        => 'error',
             'service_url'      => 'error',
             'service_user'     => 'error',
             'service_password' => 'error',
@@ -165,8 +167,8 @@ class OCConfig extends \SimpleORMap
     {
         if (is_null($config_id)) {
             return \SimpleCollection::createFromArray(
-                self::findBySql('1 ORDER BY config_id ASC')
-            )->toGroupedArray('config_id');
+                self::findBySql('1 ORDER BY id ASC')
+            )->toGroupedArray('id');
         }
 
         return self::find($config_id)->toArray();

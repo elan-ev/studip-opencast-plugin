@@ -1,32 +1,29 @@
-<? use Studip\Button, Studip\LinkButton; ?>
-<form class="default" action="<?= $controller->url_for('admin/precise_update/') ?>" method=post>
-    <fieldset class="collapsable collapsed">
+<? use Studip\Button,
+    Studip\LinkButton,
+    Opencast\Configuration,
+    Opencast\Constants;
+?>
+<form class="default" action="<?= $controller->url_for('admin/update/') ?>" method=post>
+    <fieldset class="collapsable">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
 
-            <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data) : ?>
-                <label title="Name der Einstellung: <?= $name ?>">
-                    <?= $data['description'] ?>
-                    <input type="<?= $data['type'] ?>" value="<?= $data['value'] ?>" name="precise_config[-1][<?= $name ?>]">
-                </label>
+            <? foreach (Configuration::getGlobalConfig() as $data) : ?>
+                <?= $this->render_partial('admin/_config_' . $data['type'], [
+                    'config'    => $data,
+                    'config_id' => 'global'
+                ]); ?>
             <? endforeach ?>
 
             <? if (Config::get()->OPENCAST_SHOW_TOS) : ?>
             <label>
                 <?= $_('Terms of service') ?>
-                <?= I18N::textarea('tos', new I18NString($config[1]['tos'], null, [
+                <?= I18N::textarea('tos', new I18NString(\Config::get()->OPENCAST_TOS, null, [
                         'object_id' => 1,
                         'table' => 'oc_config',
                         'field' => 'tos'
                     ]), ['class' => 'add_toolbar wysiwyg']) ?>
-                <? endif ?>
             </label>
-
-            <?= Button::createAccept($_('Übernehmen')) ?>
-
-            <label>
-                <?= $_('In der Datenbank eingetragenen Konfigurationen (IDs): ') ?>
-                <b><?= implode(', ', Configuration::registered_base_config_ids()) ?></b>
-            </label>
+            <? endif ?>
 
             <label>
                 <?= $_('In der Datenbank verwendete Konfigurationen (IDs): ') ?>
@@ -39,72 +36,60 @@
                 ?>
             </label>
     </fieldset>
-</form>
 
-<form class="default" action="<?= $controller->url_for('admin/update') ?>" method=post>
-    <?= CSRFProtection::tokenTag() ?>
-    <?php
-        $config_ids = [];
-        if($global_config['number_of_configs']>0){
-            $config_ids = range(1,$global_config['number_of_configs']);
-        }
-    ?>
-    <? foreach ($config_ids as $config_id): ?>
-    <fieldset>
+    <? foreach ($config as $config_data): ?>
+        <? $config_id = $config_data['id'] ?>
+    <fieldset class="collapsable">
         <legend>
-            <?= $_('Opencast Server Einstellungen')." (ID:$config_id)" ?>
+            <?= $_('Opencast Server Einstellungen')." (ID: $config_id) - "
+                . $_('OC Version') . ": ". $config[$config_id]['service_version'] .".x" ?>
         </legend>
 
         <label>
-            <?=$_('Basis URL zur Opencast Installation')?>
+            <span class="required">
+                <?=$_('Basis URL zur Opencast Installation')?>
+            </span>
+
             <input type="text" name="config[<?= $config_id ?>][url]"
                 value="<?= $config[$config_id]['service_url'] ?>"
                 placeholder="http://opencast.url">
         </label>
 
         <label>
-            <?=$_('Nutzerkennung')?>
+            <span class="required">
+                <?=$_('Nutzerkennung')?>
+            </span>
+
             <input type="text" name="config[<?= $config_id ?>][user]"
                 value="<?= $config[$config_id]['service_user'] ?>"
                 placeholder="ENDPOINT_USER">
         </label>
 
         <label>
-            <?= $_('Passwort') ?>
+            <span class="required">
+                <?= $_('Passwort') ?>
+            </span>
+
             <input type="password" name="config[<?= $config_id ?>][password]"
                 value="<?= $config[$config_id]['service_password'] ?>"
                 placeholder="ENDPOINT_USER_PASSWORD">
         </label>
 
-        <details>
-            <summary><?= $_('Weitere Einstellungen')?></summary>
-            <? $special_config = Configuration::instance($config_id)->get_entries_for_display(); ?>
-            <? foreach (Configuration::instance()->get_entries_for_display() as $name => $data){
-                if (in_array($name, ['number_of_configs'])) continue;
-                $special_config_exists = isset($special_config[$name]); ?>
-                <label title="<?= $_('Name der Einstellung')?>: <?= $name ?>">
-                    <?= ($special_config_exists ? $special_config[$name]['description'] : $data['description']) ?>
-
-                    <input type="<?= ($special_config_exists ? $special_config[$name]['type'] : $data['type']) ?>"
-                        value="<?= ($special_config_exists ? $special_config[$name]['value'] : $data['value']) ?>"
-                        name="config[<?= $config_id ?>][precise][<?= $name ?>]"
-                    >
-                </label>
-            <? } ?>
-        </details>
-
-        <? if ($config[$config_id]['service_version']) : ?>
-        <label>
-            <?= $_('Opencast Basisversion') ?><br>
-            <?= $config[$config_id]['service_version']  ?>
-        </label>
-        <? endif ?>
-
+        <? foreach (Constants::$DEFAULT_CONFIG as $data) {
+            if ($data['name'] == 'livestream') continue; # this option is currently not save to be used
+            $instance_config = Configuration::instance($config_id);
+            $data['value'] = $instance_config[$data['name']];
+        ?>
+                <?= $this->render_partial('admin/_config_' . $data['type'], [
+                    'config'    => $data,
+                    'config_id' => $config_id
+                ]); ?>
+        <? } ?>
     </fieldset>
     <? endforeach ?>
 
     <footer>
         <?= Button::createAccept($_('Übernehmen')) ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('admin/config/')) ?>
+        <?= LinkButton::createCancel($_('Neuen Opencast-Server hinzufügen'), $controller->url_for('admin/add_server/')) ?>
     </footer>
 </form>
