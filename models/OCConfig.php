@@ -117,7 +117,7 @@ class OCConfig extends \SimpleORMap
      */
     public static function getConfigIdForCourse($course_id)
     {
-        return OCSeminarSeries::findOneBySeminar_id($course_id)->id;
+        return OCSeminarSeries::findOneBySeminar_id($course_id)->config_id;
     }
 
     /**

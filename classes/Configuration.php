@@ -132,6 +132,11 @@ class Configuration implements \ArrayAccess
         return $this->remove($offset);
     }
 
+    public function toArray()
+    {
+        return $this->values;
+    }
+
     public static function overall_used_config_ids()
     {
         $tables_to_look_at = [

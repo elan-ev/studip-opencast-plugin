@@ -76,7 +76,10 @@
         </label>
 
         <? foreach (Constants::$DEFAULT_CONFIG as $data) {
-            $instance_config = Configuration::instance($config_id); ?>
+            if ($data['name'] == 'livestream') continue; # this option is currently not save to be used
+            $instance_config = Configuration::instance($config_id);
+            $data['value'] = $instance_config[$data['name']];
+        ?>
                 <?= $this->render_partial('admin/_config_' . $data['type'], [
                     'config'    => $data,
                     'config_id' => $config_id
