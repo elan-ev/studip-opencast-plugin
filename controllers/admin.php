@@ -323,18 +323,17 @@ class AdminController extends OpencastController
             PageLayout::postSuccess($this->_('Capture Agents wurden zugewiesen.'));
         }
 
+        if (Request::option('override_other_workflows', 'off') == 'on') {
+            OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow', 'upload');
+            PageLayout::postSuccess($this->_('Alle von Nutzern angepassten Workfloweinstellungen wurden entfernt.'));
+        }
+
+        // set default workflow, this needs to be done after the removal
         $workflow = Request::get('oc_course_uploadworkflow');
         OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
 
         PageLayout::postSuccess($this->_('Standardworkflow eingestellt.'));
-        if (Request::option('override_other_workflows', 'off') == 'on') {
-            $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow', 'upload');
-            if ($override_success) {
-                PageLayout::postSuccess($this->_('Andere Workflow Einstellungen wurden entfernt.'));
-            } else {
-                PageLayout::postError($this->_('Andere Workflows konnten nicht entfernt werden.'));
-            }
-        }
+
         $this->redirect('admin/resources');
     }
 
