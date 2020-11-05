@@ -45,7 +45,7 @@ class ImproveConfig extends Migration
         }
 
         try {
-            // $db->exec("DROP TABLE oc_config_precise");
+            $db->exec("DROP TABLE oc_config_precise");
         } catch (PDOException $e) {}
 
         SimpleOrMap::expireTableScheme();
