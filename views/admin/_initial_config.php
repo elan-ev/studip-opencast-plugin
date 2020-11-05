@@ -69,7 +69,7 @@
             <span class="required">
                 <?= $_('Passwort') ?>
             </span>
-            
+
             <input type="password" name="config[<?= $config_id ?>][password]"
                 value="<?= $config[$config_id]['service_password'] ?>"
                 placeholder="ENDPOINT_USER_PASSWORD">
@@ -87,6 +87,6 @@
 
     <footer>
         <?= Button::createAccept($_('Übernehmen')) ?>
-        <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('admin/config/')) ?>
+        <?= LinkButton::createCancel($_('Neuen Opencast-Server hinzufügen'), $controller->url_for('admin/add_server/')) ?>
     </footer>
 </form>

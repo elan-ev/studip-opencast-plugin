@@ -350,4 +350,12 @@ class AdminController extends OpencastController
         $caa_client   = CaptureAgentAdminClient::getInstance();
         $this->agents = $caa_client->getCaptureAgents();
     }
+
+    public function add_server_action()
+    {
+        $config = new OCConfig();
+        $config->store();
+
+        $this->redirect('admin/config');
+    }
 }
