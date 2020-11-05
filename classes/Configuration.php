@@ -190,14 +190,6 @@ class Configuration implements \ArrayAccess
 
     public static function setGlobalConfig($option, $value)
     {
-        /*$data = \Config::get()->getMetadata($option);
-
-        if ($data['type'] == 'boolean') {
-            $value = $value ? 'true' : 'false';
-        }*/
-
-        var_dump($data, 'setting '. $option .' to '. $value);
         \Config::get()->store($option, $value);
-
     }
 }
