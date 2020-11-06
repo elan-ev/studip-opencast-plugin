@@ -2,6 +2,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCScheduledRecordings;
+use Opencast\Configuration;
 
 class SchedulerClient extends OCRestClient
 {
