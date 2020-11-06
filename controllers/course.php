@@ -916,7 +916,13 @@ class CourseController extends OpencastController
     {
         $oc_events = ApiEventsClient::create($this->course_id);
         $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
-
-        return $events[$episode_id] && $events[$episode_id]->publication_status[0] == 'engage-live';
+        
+        foreach ($event as $events) {
+            if ($event['id'] === $episode_id) {
+                return $event->publication_status[0] == 'engage-live';
+            }
+        }
+        
+        return false;
     }
 }
