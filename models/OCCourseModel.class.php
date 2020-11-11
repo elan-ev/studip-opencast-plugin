@@ -67,7 +67,7 @@ class OCCourseModel
 
     /*  */
 
-    public function getEpisodes($force_reload = false, $detect_live = false)
+    public function getEpisodes($force_reload = false, $unset_live = false)
     {
         if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
@@ -92,12 +92,15 @@ class OCCourseModel
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
             
-            if ($detect_live) {
+            if ($unset_live) {
                 $oc_events = ApiEventsClient::create($this->getCourseID());
                 $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID());
                 
                 foreach $ordered_episodes as $episode {
-                    $ordered_episodes[$episode]['live'] = $events[$episode]->publication_status[0] == 'engage-live';
+                    if ($events[$episode]->publication_status[0] == 'engage-live')
+                    {
+                        unset($ordered_episodes[$episode])
+                    }
                 }
             }
 
