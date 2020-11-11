@@ -222,9 +222,9 @@ class CourseController extends OpencastController
         if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             return $this->redirect('course/index');
         }
+
         $this->set_title($this->_('Opencast - Datenschutzrichtlinien'));
         Navigation::activateItem('course/opencast');
-        $this->config = OCConfig::find(1);
     }
 
     public function accept_tos_action()
@@ -916,13 +916,13 @@ class CourseController extends OpencastController
     {
         $oc_events = ApiEventsClient::create($this->course_id);
         $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
-        
+
         foreach ($event as $events) {
             if ($event['id'] === $episode_id) {
                 return $event->publication_status[0] == 'engage-live';
             }
         }
-        
+
         return false;
     }
 }

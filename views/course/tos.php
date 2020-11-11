@@ -2,7 +2,7 @@
     <fieldset>
         <legend><?= $_('Datenschutzrichtlinien') ?></legend>
         <p>
-            <?= formatReady($config->tos) ?>
+            <?= formatReady(Config::get()->OPENCAST_TOS) ?>
         </p>
     </fieldset>
     <footer>
