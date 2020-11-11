@@ -222,9 +222,9 @@ class CourseController extends OpencastController
         if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             return $this->redirect('course/index');
         }
+
         $this->set_title($this->_('Opencast - Datenschutzrichtlinien'));
         Navigation::activateItem('course/opencast');
-        $this->config = OCConfig::find(1);
     }
 
     public function accept_tos_action()
@@ -561,6 +561,11 @@ class CourseController extends OpencastController
      */
     public function upload_action()
     {
+        if ($this->isStudyGroup() && !$this->isStudentUploadForStudyGroupActivated()) {
+            PageLayout::postError(_('Uploads durch Studierende sind momentan verboten.'));
+            $this->redirect('course/index/false');
+        }
+
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');
@@ -844,6 +849,30 @@ class CourseController extends OpencastController
         throw new RuntimeException("The course's configuration of OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE contains an unknown value.");
     }
 
+    public function allow_students_upload_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !$this->isStudyGroup()) {
+            $studyGroup = $this->createStudyGroup($this->course_id);
+            PageLayout::postInfo($this->_('Teilnehmer dürfen nun Aufzeichnungen hochladen.'));
+        }
+        $this->redirect('course/index/false');
+    }
+
+    public function disallow_students_upload_action($ticket)
+    {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !$this->isStudyGroup()) {
+            $this->unlinkStudyGroupAndCourse($this->course_id);
+            PageLayout::postInfo($this->_('Teilnehmer dürfen nun keine Aufzeichnungen mehr hochladen.'));
+        }
+        $this->redirect('course/index/false');
+    }
+
+    public function isStudentUploadEnabled()
+    {
+        $studyGroupId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        return !empty($studyGroupId);
+    }
+
     public function remove_episode_action($ticket, $episode_id)
     {
         if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
@@ -916,6 +945,7 @@ class CourseController extends OpencastController
     {
         $oc_events = ApiEventsClient::create($this->course_id);
         $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
+<<<<<<< HEAD
         
         foreach ($event as $events) {
             if ($event['id'] === $episode_id) {
@@ -924,5 +954,136 @@ class CourseController extends OpencastController
         }
         
         return false;
+=======
+
+        foreach ($event as $events) {
+            if ($event['id'] === $episode_id) {
+                return $event->publication_status[0] == 'engage-live';
+            }
+        }
+
+        return false;
+    }
+
+    private function createStudyGroup($courseId)
+    {
+        if (!empty(CourseConfig::get($courseId)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP)) {
+            return false;
+        }
+        $course = Course::find($courseId);
+
+        $studyGroup = $this->createStudyGroupObject($course);
+        $this->copyAvatarToStudyGroup($course, $studyGroup);
+        $this->addAllMembersToStudyGroup($course, $studyGroup);
+        $this->setupOpencastInStudyGroup($studyGroup);
+        $this->linkStudyGroupAndCourse($course, $studyGroup);
+
+        return $studyGroup;
+    }
+
+    private function createStudyGroupObject($course)
+    {
+        $studyGroup_name = $this->_("Studiengruppe:") . " " . $course['name'];
+        $current_studyGroup = Course::findOneBySQL('name = :name AND status IN (:studygroup_mode)', [
+            ':name'    => $studyGroup_name,
+            ':studygroup_mode' => \studygroup_sem_types(),
+        ]);
+        if (!$current_studyGroup) {
+            $studyGroup = new Course();
+            $studyGroup['name'] = $studyGroup_name;
+            $studyGroup['status'] = array_shift(studygroup_sem_types());
+            $studyGroup['start_time'] = $course['start_time'];
+            $studyGroup->store();
+        } else {
+            $studyGroup = $current_studyGroup;
+        }
+
+        return $studyGroup;
+    }
+
+    private function copyAvatarToStudyGroup($course, $studyGroup)
+    {
+        $oldAvatar = Avatar::getAvatar($course->getId());
+        if ($oldAvatar->is_customized()) {
+            $path = $oldAvatar->getCustomAvatarPath(Avatar::ORIGINAL);
+            $studyGroupAvatar = Avatar::getAvatar($studyGroup->getId());
+            $studyGroupAvatar->createFrom($path);
+        }
+    }
+
+    private function addAllMembersToStudyGroup($course, $studyGroup)
+    {
+        foreach ($course->members as $member) {
+            if ($studyGroup->members->findOneBy('user_id', $member->user_id)) {
+                $currentStudyGroupMember = CourseMember::find([$studyGroup->getId(), $member->user_id]);
+                $currentStudyGroupMember['status'] = 'dozent';
+                $currentStudyGroupMember->store();
+                continue;
+            }
+            $studyGroupMember = new CourseMember();
+            $studyGroupMember['user_id'] = $member->user_id;
+            $studyGroupMember['seminar_id'] = $studyGroup->getId();
+            $studyGroupMember['status'] = 'dozent';
+            $studyGroupMember->store();
+        }
+    }
+
+    private function setupOpencastInStudyGroup($studyGroup)
+    {
+        PluginManager::getInstance()->setPluginActivated(
+            $this->plugin->getPluginId(),
+            $studyGroup->getId(),
+            true
+        );
+
+        if (empty(OCSeminarSeries::getSeries($studyGroup->getId()))) {
+            $this->series_client = SeriesClient::create($studyGroup->getId());
+            if ($this->series_client->createSeriesForSeminar($studyGroup->getId())) {
+                StudipLog::log('OC_CREATE_SERIES', $studyGroup->getId());
+                StudipCacheFactory::getCache()->expire('oc_allseries');
+            }
+        }
+    }
+
+    private function linkStudyGroupAndCourse($course, $studyGroup)
+    {
+        CourseConfig::get($course->getId())->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', $studyGroup->getId());
+        CourseConfig::get($studyGroup->getId())->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', $course->getId());
+    }
+
+    private function unlinkStudyGroupAndCourse($courseId)
+    {
+        $studyGroupId = CourseConfig::get($courseId)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        if (!empty($studyGroupId)) {
+            CourseConfig::get($courseId)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', '');
+            CourseConfig::get($studyGroupId)->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', '');
+            $studyGroup = Course::find($studyGroupId);
+            $course = Course::find($courseId);
+            $course_dozenten = $course->members->filter(
+                function ($member) {
+                    return $member['status'] === "dozent";
+                }
+            )->pluck('user_id');
+            foreach ($studyGroup->members as $member) {
+                if ( !in_array($member->user_id, array_values($course_dozenten)) ) {
+                    $studyGroupMember = CourseMember::find([$studyGroupId, $member->user_id]);
+                    $studyGroupMember['status'] = 'tutor';
+                    $studyGroupMember->store();
+                }
+            }
+        }
+    }
+
+    public function isStudyGroup()
+    {
+        $course = Seminar::GetInstance($this->course_id);
+        return $course->isStudygroup();
+    }
+
+    public function isStudentUploadForStudyGroupActivated()
+    {
+        $linkedCourseId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
+        return !empty($linkedCourseId);
+>>>>>>> master
     }
 }
