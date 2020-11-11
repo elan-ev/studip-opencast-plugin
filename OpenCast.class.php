@@ -129,7 +129,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
         $ocmodel = new OCCourseModel($course_id);
-        if (!$this->isActivated($course_id) || $ocmodel->getSeriesVisibility() != 'visible') {
+        if (!$this->isActivated($course_id)) {
             return;
         }
 
@@ -210,15 +210,36 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
-        $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
-        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
         $main->addSubNavigation('overview', $overview);
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
+
+        $course = Seminar::getInstance($course_id);
+
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)
+            && !$course->isStudygroup()) {
+            $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
+            $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
+
             $series_metadata = OCSeminarSeries::getSeries($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
+
+        $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+
+        if (!empty($studyGroupId)) {
+            $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
+            $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $studyGroupId], 'course/index'));
+            $main->addSubNavigation('studygroup', $studyGroup);
+        }
+
+        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
+        if (!empty($linkedCourseId)) {
+            $linkedCourse = new Navigation($this->_('Zur verknüpften Veranstaltung'));
+            $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
+            $main->addSubNavigation('linkedcourse', $linkedCourse);
+        }
+
         if ($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             return ['opencast' => $main];
         }
