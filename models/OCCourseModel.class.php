@@ -67,7 +67,7 @@ class OCCourseModel
 
     /*  */
 
-    public function getEpisodes($force_reload = false)
+    public function getEpisodes($force_reload = false, $detect_live = false)
     {
         if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
@@ -90,6 +90,15 @@ class OCCourseModel
             if (!empty($series)) {
                 // add additional episode metadata from opencast
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+            }
+            
+            if ($detect_live) {
+                $oc_events = ApiEventsClient::create($this->getCourseID());
+                $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID());
+                
+                foreach $ordered_episodes as $episode {
+                    $ordered_episodes[$episode]['live'] = $events[$episode]->publication_status[0] == 'engage-live';
+                }
             }
 
             return $this->order_episodes_by(
