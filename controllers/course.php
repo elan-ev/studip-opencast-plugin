@@ -577,8 +577,7 @@ class CourseController extends OpencastController
         $workflows = array_filter(
             $workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
-                return (in_array('schedule', $element['tags']) !== false
-                    || in_array('schedule-ng', $element['tags']) !== false)
+                return (in_array('upload', $element['tags']) !== false)
                     ? $element
                     : false;
             }
@@ -776,8 +775,7 @@ class CourseController extends OpencastController
         $this->workflows       = array_filter(
             $this->workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
-                return (in_array('schedule', $element['tags']) !== false
-                    || in_array('schedule-ng', $element['tags']) !== false)
+                return (in_array('upload', $element['tags']) !== false)
                     ? $element
                     : false;
             }

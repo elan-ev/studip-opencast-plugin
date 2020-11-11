@@ -57,7 +57,7 @@ Helpbar::get()->addPlainText(
                     <? foreach ($workflows as $workflow) : ?>
                         <option value="<?= $workflow['id'] ?>" title="<?= $workflow['description'] ?>"
                             <?= ($current_workflow['workflow_id'] == $workflow['id']) ? 'selected' : '' ?>>
-                            <?= $workflow['title'] ?>
+                            <?= $workflow['title'] ?> (<?= $workflow['id'] ?>)
                         </option>
                     <? endforeach; ?>
                     <?

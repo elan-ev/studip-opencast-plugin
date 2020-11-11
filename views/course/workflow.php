@@ -26,7 +26,7 @@ use Studip\Button,
                 <? foreach ($workflows as $workflow) : ?>
                     <option value="<?= $workflow['id'] ?>" title="<?= $workflow['description'] ?>"
                         <?= ($uploadwf['workflow_id'] == $workflow['id']) ? 'selected' : '' ?>>
-                        <?= $workflow['title'] ?>
+                        <?= $workflow['title'] ?> (<?= $workflow['id'] ?>)
                     </option>
                 <? endforeach; ?>
             </select>

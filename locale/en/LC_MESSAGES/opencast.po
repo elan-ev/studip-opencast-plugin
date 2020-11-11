@@ -576,7 +576,7 @@ msgid "Kein (weiterer) CA verfügbar"
 msgstr "No (further) capture agent available"
 
 #: views/admin/_ca-selection.php:54
-msgid "Bitte wählen Sie einen Worflow aus."
+msgid "Bitte wählen Sie einen Workflow aus."
 msgstr "Please select a workflow."
 
 #: views/admin/_ca-selection.php:69
