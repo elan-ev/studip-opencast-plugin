@@ -561,10 +561,11 @@ class CourseController extends OpencastController
      */
     public function upload_action()
     {
-        if (!($this->isStudyGroup() && $this->isStudentUploadForStudyGroupActivated())) {
+        if ($this->isStudyGroup() && !$this->isStudentUploadForStudyGroupActivated()) {
             PageLayout::postError(_('Uploads durch Studierende sind momentan verboten.'));
             $this->redirect('course/index/false');
         }
+
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');
