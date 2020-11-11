@@ -131,11 +131,13 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
     $upload  = '';
 
     if (!empty($connectedSeries)) {
-        $actions->addLink(
-            $_('Verknüpfung aufheben'),
-            $controller->url_for('course/remove_series/' . get_ticket()),
-            Icon::create('trash')
-        );
+        if (!$controller->isStudyGroup()) {
+            $actions->addLink(
+                $_('Verknüpfung aufheben'),
+                $controller->url_for('course/remove_series/' . get_ticket()),
+                Icon::create('trash')
+            );
+        }
 
         if ($can_schedule) {
             if (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated()) || !$controller->isStudyGroup()) {
@@ -177,18 +179,20 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
         }
 
-        if ($coursevis == 'visible') {
-            $actions->addLink(
-                $_('Reiter verbergen'),
-                $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
-                Icon::create('visibility-visible')
-            );
-        } else {
-            $actions->addLink(
-                $_('Reiter sichtbar machen'),
-                $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
-                Icon::create('visibility-invisible')
-            );
+        if (!$controller->isStudyGroup()) {
+            if ($coursevis == 'visible') {
+                $actions->addLink(
+                    $_('Reiter verbergen'),
+                    $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
+                    Icon::create('visibility-visible')
+                );
+            } else {
+                $actions->addLink(
+                    $_('Reiter sichtbar machen'),
+                    $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
+                    Icon::create('visibility-invisible')
+                );
+            }
         }
 
         if (Config::get()->OPENCAST_SHOW_TOS && !$GLOBALS['perm']->have_perm('root')) {
@@ -221,27 +225,27 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
         }
 
-        if ($controller->isDownloadAllowed()) {
-            $actions->addLink(
-                $_('Downloads verbieten'),
-                $controller->url_for('course/disallow_download/' . get_ticket()),
-                Icon::create('download+accept'),
-                [
-                    'title' => $_('Downloads sind momentan erlaubt.')
-                ]
-            );
-        } else {
-            $actions->addLink(
-                $_('Downloads erlauben'),
-                $controller->url_for('course/allow_download/' . get_ticket()),
-                Icon::create('download+decline'),
-                [
-                    'title' => $_('Downloads sind momentan verboten.')
-                ]
-            );
-        }
-
         if (!$controller->isStudyGroup()) {
+            if ($controller->isDownloadAllowed()) {
+                $actions->addLink(
+                    $_('Downloads verbieten'),
+                    $controller->url_for('course/disallow_download/' . get_ticket()),
+                    Icon::create('download+accept'),
+                    [
+                        'title' => $_('Downloads sind momentan erlaubt.')
+                    ]
+                );
+            } else {
+                $actions->addLink(
+                    $_('Downloads erlauben'),
+                    $controller->url_for('course/allow_download/' . get_ticket()),
+                    Icon::create('download+decline'),
+                    [
+                        'title' => $_('Downloads sind momentan verboten.')
+                    ]
+                );
+            }
+
             if ($controller->isStudentUploadEnabled()) {
                 $actions->addLink(
                     $_('Upload durch Studierende verbieten'),
@@ -264,21 +268,23 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         }
 
     } else {
-        $actions->addLink(
-            $_('Neue Series anlegen'),
-            $controller->url_for('course/create_series'),
-            Icon::create('tools')
-        );
-
-        if ($GLOBALS['perm']->have_perm('root')) {
+        if (!$controller->isStudyGroup()) {
             $actions->addLink(
-                $_('Vorhandene Series verknüpfen'),
-                $controller->url_for('course/config'),
-                Icon::create('group'),
-                [
-                    'data-dialog' => 'width=550;height=500'
-                ]
+                $_('Neue Series anlegen'),
+                $controller->url_for('course/create_series'),
+                Icon::create('tools')
             );
+
+            if ($GLOBALS['perm']->have_perm('root')) {
+                $actions->addLink(
+                    $_('Vorhandene Series verknüpfen'),
+                    $controller->url_for('course/config'),
+                    Icon::create('group'),
+                    [
+                        'data-dialog' => 'width=550;height=500'
+                    ]
+                );
+            }
         }
     }
 

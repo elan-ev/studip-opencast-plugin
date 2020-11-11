@@ -210,10 +210,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
-        $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
-        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
         $main->addSubNavigation('overview', $overview);
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
+
+        $course = Seminar::getInstance($course_id);
+
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)
+            && !$course->isStudygroup()) {
+            $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
+            $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
+
             $series_metadata = OCSeminarSeries::getSeries($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
@@ -221,6 +226,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+
         if (!empty($studyGroupId)) {
             $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
             $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $studyGroupId], 'course/index'));
@@ -233,8 +239,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
             $main->addSubNavigation('linkedcourse', $linkedCourse);
         }
-
-
 
         if ($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             return ['opencast' => $main];
