@@ -94,12 +94,12 @@ class OCCourseModel
             
             if ($unset_live) {
                 $oc_events = ApiEventsClient::create($this->getCourseID());
-                $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID());
+                $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID()));
                 
-                foreach $ordered_episodes as $episode {
+                foreach ($ordered_episodes as $episode) {
                     if ($events[$episode]->publication_status[0] == 'engage-live')
                     {
-                        unset($ordered_episodes[$episode])
+                        unset($ordered_episodes[$episode]);
                     }
                 }
             }
