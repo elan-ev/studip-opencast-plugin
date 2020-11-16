@@ -535,9 +535,11 @@ class CourseController extends OpencastController
         if ($this->isLive($episode_id)) {
             throw new AccessDeniedException();
         }
-
-        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            && !OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
+        
+        $checkPerm = OCModel::checkPermForEpisode($episode_id, $this->user_id, 'dozent') 
+                    || (OCModel::checkPermForEpisode($episode_id, $this->user_id, 'tutor') 
+                    && Config::get()->OPENCAST_TUTOR_EPISODE_PERM);
+        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id) && !$checkPerm) {
             throw new AccessDeniedException();
         }
 
