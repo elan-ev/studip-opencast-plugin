@@ -21,6 +21,10 @@ class ImproveConfig extends Migration
         } catch (PDOException $e) {}
 
         // set seminar_id for all entries, update only the first connected course
+        $defaults = $db->query("SELECT name, value
+            FROM oc_config_precise
+            WHERE for_config = -1")->fetchAll(PDO::FETCH_KEY_PAIR);
+
         $results = $db->query("SELECT * FROM oc_config_precise");
 
         $configs = [];
@@ -39,8 +43,8 @@ class ImproveConfig extends Migration
             SET settings = ?
             WHERE id = ?');
 
-
         foreach ($configs as $id => $config) {
+            $config = array_merge($defaults, $config);
             $update_stmt->execute([json_encode($config), $id]);
         }
 
