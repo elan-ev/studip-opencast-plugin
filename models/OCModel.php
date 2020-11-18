@@ -613,7 +613,7 @@ class OCModel
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce
             JOIN oc_seminar_series oss USING (series_id)
             JOIN seminar_user su ON (oss.seminar_id = su.Seminar_id)
-            WHERE oce.episode_id = ? AND su.status = ? AND su.user_id = ?");
+            WHERE oce.episode_id = ? AND su.status IN (?) AND su.user_id = ?");
 
         $stmt->execute([$episode_id, $user_status, $user_id]);
         $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
