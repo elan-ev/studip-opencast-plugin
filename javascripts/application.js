@@ -330,6 +330,23 @@ const OC = {
                     });
                     return false;
                 }
+                
+                var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov'];
+                var wrongFormat = false;
+                uploadMedia.forEach(function (item, index) {
+                    var extension = item.file.name.split('.').pop();
+                    
+                    if (validExtension.indexOf(extension) == -1) {
+                        wrongFormat = true;
+                    }
+                });
+                if (wrongFormat) {
+                    STUDIP.Dialog.show("Mindestens ein Video hat ein falsches Format.", {
+                        title: 'Fehler',
+                        size: 'small'
+                    });
+                    return false;
+                }
 
                 if (this.dataset.isUploading && this.dataset.isUploading) {
                     return false;
