@@ -331,6 +331,20 @@ const OC = {
                     return false;
                 }
 
+                var lengthErr = false;
+                uploadMedia.forEach(function (item, index) {
+                    if (item.file.name.length > 128) {
+                        lengthErr = true;
+                    }
+                });
+                if (lengthErr) {
+                    STUDIP.Dialog.show("Dateinamen dürfen nicht mehr als 128 Zeichen enthalten.", {
+                        title: 'Fehler',
+                        size: 'small'
+                    });
+                    return false;
+                }
+
                 if (this.dataset.isUploading && this.dataset.isUploading) {
                     return false;
                 }
