@@ -213,7 +213,7 @@ if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
             <?= $_('Datei(en)') ?>
         </span>
         <p class="help">
-            <?= $_("Mindestens ein Video wird benötigt.") ?>
+            <?= $_("Mindestens ein Video wird benötigt. Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm und .mov.") ?>
         </p>
     </label>
 
