@@ -69,6 +69,7 @@ class OCCourseModel
 
     public function getEpisodes($force_reload = false, $unset_live = false)
     {
+    	error_log("There is something wrong!", 0);
         if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
 
@@ -97,15 +98,9 @@ class OCCourseModel
                 $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID()));
                 
                 foreach ($ordered_episodes as $episode) {
-                    foreach ($events as $event) {
-                        if ($episode->id == $event->id)
-                        {
-                            if ($event->publication_status[0] == 'engage-live')
-                            {
-                                unset($ordered_episodes[$episode]);
-                            }
-                            continue;
-                        }
+                    if ($events[$episode['id']]->publication_status[0] == 'engage-live')
+                    {
+                        unset($ordered_episodes[$episode['id']]);
                     }
                 }
             }
