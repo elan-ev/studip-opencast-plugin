@@ -163,7 +163,7 @@ class OpencastLTI
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
                 $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes     = $course_model->getEpisodes();
+                $episodes     = $course_model->getEpisodes(false, true);
                 foreach ($episodes as $episode) {
                     $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
                 }

@@ -51,7 +51,7 @@ $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
     <td>
         <? if (!empty($available_agents)) : ?>
             <select name="workflow">
-                <option value="" disabled selected><?= $_('Bitte wählen Sie einen Worflow aus.') ?></option>
+                <option value="" disabled selected><?= $_('Bitte wählen Sie einen Workflow aus.') ?></option>
                 <? if ($definitions): ?>
                     <? foreach ($definitions->definitions->definition as $definition) : ?>
                         <? if (is_object($definition->tags)) : ?>
@@ -59,9 +59,13 @@ $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
                                 (in_array('schedule', $definition->tags->tag) ||
                                     in_array('schedule-ng', $definition->tags->tag))
                             ) : ?>
-                                <option value="<?= $definition->id ?>"><?= $definition->id ?></option>
+                                <option value="<?= $definition->id ?>">
+                                    <?= $definition->title ?> (<?= $definition->id ?>)
+                                </option>
                             <? elseif ($definition->tags->tag == 'schedule' || $definition->tags->tag == 'schedule-ng') : ?>
-                                <option value="<?= $definition->id ?>"><?= $definition->id ?></option>
+                                <option value="<?= $definition->id ?>">
+                                    <?= $definition->title ?> (<?= $definition->id ?>)
+                                </option>
                             <? endif; ?>
                         <? endif; ?>
                     <? endforeach ?>

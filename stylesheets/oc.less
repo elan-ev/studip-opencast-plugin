@@ -64,7 +64,7 @@
         top: 0;
 
         &:hover {
-            img.playbutton {
+            img.playbutton, img.livebutton:not(.disabled) {
                 opacity: 0.9;
             }
         }
@@ -87,6 +87,17 @@
             opacity: 0.6;
             padding-bottom: 0;
             bottom: 50%;
+            transform: translateY(50%);
+        }
+
+        img.livebutton {
+            position: absolute;
+            width: 75%;
+            left: 10%;
+            max-height: 300px;
+            opacity: 0.6;
+            padding-bottom: 0;
+            bottom: 0%;
             transform: translateY(50%);
         }
     }
@@ -671,6 +682,10 @@ img.ocinvisible {
         max-height: 50px;
     }
 
+    .oce_playercontainer span.previewimage img.livebutton {
+        max-height: 300px;
+    }
+
     .ocplayerlink {
         clear: both;
         margin-left: 0px;
@@ -695,6 +710,10 @@ img.ocinvisible {
 
     .oce_playercontainer span.previewimage img.playbutton {
         max-height: 100px;
+    }
+
+    .oce_playercontainer span.previewimage img.livebutton {
+        max-height: 300px;
     }
 
     .ocplayerlink .button {

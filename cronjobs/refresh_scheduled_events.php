@@ -55,28 +55,30 @@ class RefreshScheduledEvents extends CronJob
                 $cd = CourseDate::find($se['date_id']);
                 $course = Course::find($se['seminar_id']);
 
-                if ($cd->room_assignment->resource_id == $se['resource_id']) {
-                    $scheduler_client = SchedulerClient::create($se['seminar_id']);
-                    $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
+                if ($cd) {
+                    if ($cd->room_assignment->resource_id == $se['resource_id']) {
+                        $scheduler_client = SchedulerClient::create($se['seminar_id']);
+                        $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
 
-                    unset($events[$se['event_id']]);
+                        unset($events[$se['event_id']]);
 
-                    echo sprintf(
-                        _("Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n "),
-                        $cd->toString(), $course->name
-                    );
-                } else {
-                    echo sprintf(
-                        _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n "),
-                        $cd->toString(), $course->name
-                    );
+                        echo sprintf(
+                            _("Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n "),
+                            $cd->toString(), $course->name
+                        );
+                    } else {
+                        echo sprintf(
+                            _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n "),
+                            $cd->toString(), $course->name
+                        );
 
-                    $scheduler_client = SchedulerClient::getInstance(1);
-                    $scheduler_client->deleteEvent($se['event_id']);
+                        $scheduler_client = SchedulerClient::getInstance(1);
+                        $scheduler_client->deleteEvent($se['event_id']);
 
-                    OCScheduledRecordings::deleteBySql('event_id = ?', [$se['event_id']]);
+                        OCScheduledRecordings::deleteBySql('event_id = ?', [$se['event_id']]);
 
-                    unset($events[$se['event_id']]);
+                        unset($events[$se['event_id']]);
+                    }
                 }
             }
         }
@@ -91,6 +93,7 @@ class RefreshScheduledEvents extends CronJob
             } else {
                 $scheduler_client = SchedulerClient::getInstance(1);
                 $scheduler_client->deleteEvent($event->identifier);
+                OCScheduledRecordings::deleteBySql('event_id = ?', [$event->identifier]);
             }
         }
 

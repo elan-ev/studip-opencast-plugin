@@ -4,6 +4,7 @@ use Opencast\Models\OCEndpoints;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\LTI\OpencastLTI;
 use Opencast\Constants;
+use Opencast\Configuration;
 
 class AdminController extends OpencastController
 {
@@ -20,8 +21,7 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_('Opencast Administration'));
         Navigation::activateItem('/admin/config/oc-config');
 
-        $this->config        = OCConfig::getBaseServerConf();
-        $this->global_config = Configuration::instance(Constants::$GLOBAL_CONFIG_ID);
+        $this->config = OCConfig::getBaseServerConf();
     }
 
     public function clear_series_action()
@@ -128,17 +128,29 @@ class AdminController extends OpencastController
         // invalidate series-cache when editing configuration
         StudipCacheFactory::getCache()->expire('oc_allseries');
 
-        foreach (Request::getArray('config') as $config_id => $config) {
-            //set precise settings if any
-            $precise_config = $config['precise'];
+        // update global config
+        $request = Request::getArray('config');
 
-            foreach ($precise_config as $name => $value) {
-                if (Configuration::instance()[$name] != $value) {
-                    Configuration::instance($config_id)->set($name, $value, Configuration::instance()->get_description_for($name));
-                } else {
-                    Configuration::instance($config_id)->remove($name);
-                }
+        // set global config options
+        foreach ($request['global'] as $option => $value) {
+            Configuration::setGlobalConfig($option, $value);
+        }
+        unset($request['global']);
+
+        // set tos (if any)
+        if (Request::get('tos')) {
+            Configuration::setGlobalConfig(OPENCAST_TOS, Request::get('tos'));
+        }
+
+        foreach ($request as $config_id => $config) {
+            $configuration = Configuration::instance($config_id);
+
+            foreach ($config as $name => $value) {
+                if (in_array($name, ['url', 'user', 'password']) === true) continue;
+                $configuration[$name] = $value;
             }
+
+            $configuration->store();
 
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
@@ -167,6 +179,7 @@ class AdminController extends OpencastController
 
                     OCConfig::clearConfigAndAssociatedEndpoints($config_id);
                     OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+                    $configuration->store();
 
                     // check, if the same url has been provided for multiple oc-instances
                     foreach (Request::getArray('config') as $zw_id => $zw_conf) {
@@ -198,8 +211,8 @@ class AdminController extends OpencastController
                     if (empty($services)) {
                         OCEndpoints::removeEndpoint($config_id, 'services');
                         PageLayout::postError(sprintf(
-                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. 
-                                Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und 
+                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden.
+                                Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und
                                 ob ihre Opencast-Installation https unterstützt.'),
                             htmlReady($service_host)
                         ));
@@ -286,8 +299,7 @@ class AdminController extends OpencastController
         $this->workflows        = array_filter(
             $workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
-                return (in_array('schedule', $element['tags']) !== false
-                    || in_array('schedule-ng', $element['tags']) !== false)
+                return (in_array('upload', $element['tags']) !== false)
                     ? $element
                     : false;
             }
@@ -310,18 +322,17 @@ class AdminController extends OpencastController
             PageLayout::postSuccess($this->_('Capture Agents wurden zugewiesen.'));
         }
 
+        if (Request::option('override_other_workflows', 'off') == 'on') {
+            OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow', 'upload');
+            PageLayout::postSuccess($this->_('Alle von Nutzern angepassten Workfloweinstellungen wurden entfernt.'));
+        }
+
+        // set default workflow, this needs to be done after the removal
         $workflow = Request::get('oc_course_uploadworkflow');
         OCCourseModel::setWorkflowWithCustomCourseID('default_workflow', $workflow, 'upload');
 
         PageLayout::postSuccess($this->_('Standardworkflow eingestellt.'));
-        if (Request::option('override_other_workflows', 'off') == 'on') {
-            $override_success = OCCourseModel::removeWorkflowsWithoutCustomCourseID('default_workflow', 'upload');
-            if ($override_success) {
-                PageLayout::postSuccess($this->_('Andere Workflow Einstellungen wurden entfernt.'));
-            } else {
-                PageLayout::postError($this->_('Andere Workflows konnten nicht entfernt werden.'));
-            }
-        }
+
         $this->redirect('admin/resources');
     }
 
@@ -338,29 +349,11 @@ class AdminController extends OpencastController
         $this->agents = $caa_client->getCaptureAgents();
     }
 
-    public function precise_update_action()
+    public function add_server_action()
     {
-        foreach (Request::getArray('precise_config') as $database_id => $config) {
-            foreach ($config as $name => $value) {
-                Configuration::instance($database_id)[$name] = $value;
-            }
-        }
+        $config = new OCConfig();
+        $config->store();
 
-        $config = reset(OCConfig::findByConfig_id(1));
-        if ($config) {
-            $config->tos = Request::i18n('tos');
-            $config->store();
-        }
-        $this->redirect('admin/config/');
-    }
-
-    public function precise_add_action()
-    {
-        $this->redirect('admin/config/');
-    }
-
-    public function precise_remove_action()
-    {
-        $this->redirect('admin/config/');
+        $this->redirect('admin/config');
     }
 }

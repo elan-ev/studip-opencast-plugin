@@ -38,7 +38,7 @@ class OCSeriesModel
      */
     public static function getSeriesForUser($user_id)
     {
-        if ($GLOBALS['perm']->have_perm('root', $user_id)) {
+        if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, se.series_id
                 FROM oc_seminar_series AS se
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)

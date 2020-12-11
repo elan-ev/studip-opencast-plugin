@@ -1,4 +1,8 @@
-<? use Studip\Button, Studip\LinkButton; ?>
+<? use
+    Studip\Button,
+    Studip\LinkButton,
+    Opencast\Configuration;
+?>
 
 <? if (!empty($dates)) : ?>
     <form action="<?= $controller->url_for('course/bulkschedule') ?>" method=post>
@@ -8,13 +12,13 @@
                 <col style="width: 2%">
                 <col style="width: 30%">
                 <? if (Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) : ?>
-                    <col style="width: 30%">
-                    <col style="width: 30%">
+                    <col style="width: 28%">
+                    <col style="width: 28%">
                 <? else : ?>
-                    <col style="width: 60%">
+                    <col style="width: 56%">
                 <? endif?>
                 <col style="width: 4%">
-                <col style="width: 4%">
+                <col style="width: 8%">
             </colgroup>
             <tr>
                 <th></th>
@@ -89,6 +93,10 @@
                                         'title' => $_('Aufzeichnung ist bereits geplant.')
                                     ]
                                 ) ?>
+
+                                <? if ($scheduled && $events[$scheduled['event_id']]->publication_status[0] == 'engage-live') : ?>
+                                    <span style="font-weight: bold; color: red">LIVE</span>
+                                <? endif ?>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
                                     <?= Icon::create(
@@ -142,7 +150,7 @@
                                 </a>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
-                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . $date->termin_id) ?>">
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 0 . '/' . $date->termin_id) ?>">
                                         <?= Icon::create(
                                             'video',
                                             Icon::ROLE_CLICKABLE,
@@ -151,6 +159,17 @@
                                             ]
                                         ) ?>
                                     </a>
+
+                				    <? if (Configuration::instance($config['id'])->get('livestream')) : ?>
+                                        <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>"
+                                            style="margin-left: 1em;"
+                                        >
+                                            <span style="font-weight: bold" title="<?= $_('Livestream+Aufzeichnung planen') ?>">
+                                                LIVE
+                                            </span>
+                                        </a>
+                                    <? endif ?>
+
                                 <? else : ?>
                                     <?= Icon::create(
                                         'video',
@@ -182,6 +201,10 @@
                             <option value="create"><?= $_('Aufzeichnungen planen') ?></option>
                             <option value="update"><?= $_('Aufzeichnungen aktualisieren') ?></option>
                             <option value="delete"><?= $_('Aufzeichnungen stornieren') ?></option>
+
+                            <? if (Configuration::instance($config['id'])->get('livestream')) : ?>
+                                <option value="live"><?= $_('Livestream+Aufzeichnung planen') ?></option>
+                            <? endif ?>
                         </select>
                     </td>
                     <td></td>

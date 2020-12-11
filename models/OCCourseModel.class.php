@@ -67,7 +67,7 @@ class OCCourseModel
 
     /*  */
 
-    public function getEpisodes($force_reload = false)
+    public function getEpisodes($force_reload = false, $unset_live = false)
     {
         if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
@@ -90,6 +90,18 @@ class OCCourseModel
             if (!empty($series)) {
                 // add additional episode metadata from opencast
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+            }
+            
+            if ($unset_live) {
+                $oc_events = ApiEventsClient::create($this->getCourseID());
+                $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID()));
+                
+                foreach ($ordered_episodes as $episode) {
+                    if ($events[$episode]->publication_status[0] == 'engage-live')
+                    {
+                        unset($ordered_episodes[$episode]);
+                    }
+                }
             }
 
             return $this->order_episodes_by(
@@ -238,7 +250,7 @@ class OCCourseModel
                 $presenter_download    = [];
                 $presentation_download = [];
                 $audio_download        = [];
-                foreach ($episode->mediapackage->attachments->attachment as $attachment) {
+                foreach ((array) $episode->mediapackage->attachments->attachment as $attachment) {
                     if ($attachment->type === "presenter/search+preview") {
                         $preview = $attachment->url;
                     }

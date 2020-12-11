@@ -4,6 +4,7 @@
  */
 
 use Opencast\Models\OCConfig;
+use Opencast\Configuration;
 
 define('DEBUG_CURL', FALSE);
 
@@ -145,6 +146,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 echo '<pre>';
+                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
@@ -226,6 +228,7 @@ class OCRestClient
 
             if (DEBUG_CURL) {
                 echo '<pre>';
+                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
