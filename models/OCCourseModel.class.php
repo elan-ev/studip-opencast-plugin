@@ -69,7 +69,6 @@ class OCCourseModel
 
     public function getEpisodes($force_reload = false, $unset_live = false)
     {
-    	error_log("There is something wrong!", 0);
         if ($this->getSeriesID()) {
             $search_client = SearchClient::create($this->getCourseID());
 
