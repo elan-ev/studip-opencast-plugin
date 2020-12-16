@@ -97,9 +97,9 @@ class OCCourseModel
                 $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID()));
                 
                 foreach ($ordered_episodes as $episode) {
-                    if ($events[$episode]->publication_status[0] == 'engage-live')
+                    if ($events[$episode['id']]->publication_status[0] == 'engage-live')
                     {
-                        unset($ordered_episodes[$episode]);
+                        unset($ordered_episodes[$episode['id']]);
                     }
                 }
             }
