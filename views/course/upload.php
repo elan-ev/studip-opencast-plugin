@@ -224,10 +224,26 @@ if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
         <?= LinkButton::createAdd($_('Aufzeichnung des/der Vortragende*n hinzufügen'), null, ['class' => 'oc-media-upload-add', 'data-flavor' => 'presenter/source']) ?>
         <input type="file" class="video_upload" data-flavor="presenter/source"
                accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+        <div style="display:none" class="invalid_media_type_warning">
+          <?= MessageBox::error(
+              $_('Die gewählte Datei kann von Opencast nicht verarbeitet werden.'),
+              [
+                  $_('Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2.')
+              ]
+          ) ?>
+        </div>
 
         <?= LinkButton::createAdd($_('Aufzeichnung der Folien hinzufügen'), null, ['class' => 'oc-media-upload-add', 'data-flavor' => 'presentation/source']) ?>
         <input type="file" class="video_upload" data-flavor="presentation/source"
                accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+        <div style="display:none" class="invalid_media_type_warning">
+          <?= MessageBox::error(
+              $_('Die gewählte Datei kann von Opencast nicht verarbeitet werden.'),
+              [
+                  $_('Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2.')
+              ]
+           ) ?>
+         </div>
     </div>
 
     <?= MessageBox::info(

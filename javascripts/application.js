@@ -278,12 +278,54 @@ const OC = {
         }
 
         function onFileChange(event) {
-            var target = event.target
+            var target = event.target;
+            var hideTypeError = function() {
+                $(target).next('.invalid_media_type_warning').hide();
+            };
+            var showTypeError = function() {
+                var $messagebox = $(target).next('.invalid_media_type_warning');
+                $messagebox.slideDown();
+                $messagebox.attr('role', 'alert');
+                $messagebox.find('.close').off().one('click', function() {
+                    hideTypeError();
+                    return false;
+                });
+            };
+            var wrongType = function() {
+                // Throw an error at the user
+                showTypeError();
+                // Clear the file input
+                $(target).val('');
+                // Do not tell anybody else listening about this change
+                return false;
+            };
+
+            hideTypeError();
+
             if (!target.files || target.files.length !== 1) {
                 return;
             }
             var file = target.files[0];
             var flavor  = $(target).data("flavor");
+            var validMimeTypes = /^(?:audio|video)\//i;
+            var validExtension = /\.(?:mkv|avi|mp4|mpeg|mpg|webm|mov|ogv|ogg|flv|f4v|wmv|asf|ts|3gp|3g2)$/i;
+
+            // Check for Opencast compliant MIME type if available
+            // https://caniuse.com/mdn-api_file_type
+            if (file.type) {
+                if (!validMimeTypes.test(file.type)) {
+                    // Wrong MIME type, discard file and show warining
+                    return wrongType();
+                }
+            } else if (!file.name) {
+                // Can't read the MIME type, nor the name: Reject!
+                return wrongType();
+            } else {
+                // Fall back to use list of valid extensions
+                if (!validExtension.test(file.name)) {
+                    return wrongType();
+                }
+            }
 
             uploadMedia.push({ file: file, flavor: flavor, progress: { loaded: 0, total: file.size }});
             renderFiles();
@@ -360,29 +402,6 @@ const OC = {
             $('#upload_form').submit(function () {
                 if (!uploadMedia.length) {
                     STUDIP.Dialog.show("Sie müssen mindestens ein Video auswählen.", {
-                        title: 'Fehler',
-                        size: 'small'
-                    });
-                    return false;
-                }
-                
-                var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov', 'ogv', 'ogg', 'flv', 'f4v', 'wmv', 'asf', 'mpg', 'mpeg', 'ts', '3gp', '3g2'];
-                var maxLength = 128;
-
-                var wrongFormat = false;
-                uploadMedia.forEach(function (item, index) {
-                    var extension = item.file.name.split('.').pop();
-                    
-                    if (validExtension.indexOf(extension) == -1) {
-                        wrongFormat = true;
-                        return;
-                    }
-                    if (item.file.name.length > 128) {
-                    	item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
-                    }
-                });
-                if (wrongFormat) {
-                    STUDIP.Dialog.show("Mindestens ein Video hat ein falsches Format.", {
                         title: 'Fehler',
                         size: 'small'
                     });
