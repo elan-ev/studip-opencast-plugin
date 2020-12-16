@@ -304,7 +304,11 @@ class OCModel
 
         $inst_data = Institute::find($course->institut_id);
 
-        $room = ResourceObject::Factory($resource_id);
+        if (StudipVersion::newerThan('4.4')) {
+        	$room = new Resource($resource_id);
+        } else {
+        	$room = ResourceObject::Factory($resource_id);
+        }
 
         $start_time = $event_id ? $event->start : $date->getStartTime();
 
