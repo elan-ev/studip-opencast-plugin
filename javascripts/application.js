@@ -367,12 +367,17 @@ const OC = {
                 }
                 
                 var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov'];
+                var maxLength = 128;
                 var wrongFormat = false;
                 uploadMedia.forEach(function (item, index) {
                     var extension = item.file.name.split('.').pop();
                     
                     if (validExtension.indexOf(extension) == -1) {
                         wrongFormat = true;
+                        return;
+                    }
+                    if (item.file.name.length > 128) {
+                    	item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
                     }
                 });
                 if (wrongFormat) {
