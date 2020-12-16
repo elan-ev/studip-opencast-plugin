@@ -366,8 +366,9 @@ const OC = {
                     return false;
                 }
                 
-                var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov'];
+                var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov', 'ogv', 'ogg', 'flv', 'f4v', 'wmv', 'asf', 'mpg', 'mpeg', 'ts', '3gp', '3g2'];
                 var maxLength = 128;
+
                 var wrongFormat = false;
                 uploadMedia.forEach(function (item, index) {
                     var extension = item.file.name.split('.').pop();
