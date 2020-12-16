@@ -570,7 +570,7 @@ class OCModel
             // allow ACL changes right now
             $episode->chdate     = 1;
             $episode->mkdate     = time();
-
+            $is_new = true;
         }
 
         $episode->visible       = $visibility;
