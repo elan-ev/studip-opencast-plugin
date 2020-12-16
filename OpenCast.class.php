@@ -356,13 +356,19 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         $metadata = parent::getMetadata();
 
-        if (version_compare($GLOBALS['SOFTWARE_VERSION'], '4', '<=')) {
-            foreach ($metadata as $key => $value) {
-                if (is_string($value)) {
-                    $metadata[$key] = utf8_decode($value);
-                }
-            }
-        }
+        $metadata['pluginname'] = _("OpenCast");
+        $metadata['displayname'] = _("OpenCast");
+
+        $metadata['descriptionlong'] = _("Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
+            . "(Opencast) mit einer Stud.IP-Veranstaltung verknüpft werden. Die Aufzeichnungen werden in "
+            . "einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit "
+            . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
+            . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
+            . "gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
+            . "Bedarf nachträglich über die Upload-Funktion zur verknüpften Serie hinzugefügt werden."
+        );
+
+        $metadata['summary'] = _("Vorlesungsaufzeichnung");
 
         return $metadata;
     }
@@ -401,13 +407,5 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getPluginName()
     {
         return 'Opencast';
-    }
-    function getMetadata() {
-        $metadata = parent::getMetadata();
-        $metadata['pluginname'] = _("OpenCast");
-        $metadata['displayname'] = _("OpenCast");
-        $metadata['descriptionlong'] = _("Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem (Opencast) mit einer Stud.IP-Veranstaltung verknüpft werden. Die Aufzeichnungen werden in einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei Bedarf nachträglich über die Upload-Funktion zur verknüpften Serie hinzugefügt werden.");
-        $metadata['summary'] = _("Vorlesungsaufzeichnung");
-        return $metadata;
     }
 }
