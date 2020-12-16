@@ -839,15 +839,15 @@ class CourseController extends OpencastController
     	}
         	
         $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
-       	switch ($courseConfig) {
-        	case 'yes':
+        switch ($courseConfig) {
+            case 'yes':
                 return true;
-       	    case 'no':
-       	        return false;
-       	    case 'inherit':
-       	        $globalConfig = Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD;
-       	        return $globalConfig;
-       	}
+            case 'no':
+                return false;
+            case 'inherit':
+                $globalConfig = Config::get()->OPENCAST_ALLOW_MEDIADOWNLOAD;
+                return $globalConfig;
+        }
 
         throw new RuntimeException("The course's configuration of OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE contains an unknown value.");
     }
