@@ -156,7 +156,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                             [
                                 'cid'             => null,
                                 'upload.seriesId' => $connectedSeries[0]['series_id'],
-                                'upload.acl'      => false,
+                                'upload.acl'      => 'false',
                                 'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
                                 'return.label'    => 'Zurückkehren zu Stud.IP'
                             ]
