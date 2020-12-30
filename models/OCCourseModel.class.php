@@ -103,11 +103,23 @@ class OCCourseModel
                     }
                 }
             }
-
+            
+            // Get the Sort order title = TITLE, start = DATE_PUBLISHED, mkdata = DATE_CREATED (?)
+            if ($_SESSION['opencast']['sort_order']) {
+                $sort_str = $_SESSION['opencast']['sort_order'];
+            }
+            else if (CourseConfig::get($this->getCourseID())->COURSE_SORT_ORDER) {
+                $sort_str = CourseConfig::get($this->getCourseID())->COURSE_SORT_ORDER;
+            }
+            else {
+                $sort_str = 'mkdate1';
+            }
+            $sort = substr($sort_str, 0, -1);
+            $reversed = boolval(substr($sort_str, -1));
             return $this->order_episodes_by(
-                ['start', 'title'],
-                [SORT_NATURAL, SORT_NATURAL],
-                [true, false],
+                [$sort],
+                [SORT_NATURAL],
+                [$reversed],
                 $ordered_episodes
             );
         } else {
