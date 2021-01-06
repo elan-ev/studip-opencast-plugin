@@ -407,6 +407,16 @@ const OC = {
                     });
                     return false;
                 }
+               
+                var maxLength = 128;
+      
+                uploadMedia.forEach(function (item, index) {
+                    var extension = item.file.name.split('.').pop();
+
+                    if (item.file.name.length > 128) {
+                    	  item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
+                    }
+                });
 
                 if (this.dataset.isUploading && this.dataset.isUploading) {
                     return false;
