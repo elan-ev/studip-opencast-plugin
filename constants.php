@@ -14,7 +14,8 @@ class Constants {
         'search',               // ausser hier: engage-node
         'series',
         'services',
-        'workflow'
+        'workflow',
+        'admin-ng'
     ];
 
     static $GLOBAL_CONFIG_OPTIONS = [
