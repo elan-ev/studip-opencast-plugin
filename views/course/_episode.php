@@ -1,10 +1,35 @@
+<? use
+    Studip\Button,
+    Studip\LinkButton
+?>
+
 <?
 $visibility_text = [
     'invisible' => $_('Video ist nur für Sie sichtbar'),
     'visible'   => $_('Video ist für Teilnehmende sichtbar'),
     'free'      => $_('Video ist für jeden sichtbar')
 ];
+$sort_orders = [
+    'mkdate0'    => $_('Datum erstellt: Aufsteigend'),
+    'mkdate1'    => $_('Datum erstellt: Absteigend'), 
+    'start0'     => $_('Datum publiziert: Aufsteigend'),
+    'start1'     => $_('Datum publiziert: Absteigend'), 
+    'title0'     => $_('Title: Aufsteigend'),
+    'title1'     => $_('Title: Absteigend'),
+];
 ?>
+
+<form action="<?= $controller->url_for('course/sort_order') ?>" method=post>
+    <select name="order">
+        <option selected disabled><?= $_('- Sortierung auswählen') ?></option>
+        <? foreach ($sort_orders as $key => $sort_order) : ?>
+            <option value="<?= $key ?>"><?= $sort_order ?></option>
+        <? endforeach; ?>
+    </select>
+    <div>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+    </div>
+</form>
 
 <script type="text/javascript">
     OC.visibility_text = <?= json_encode($visibility_text) ?>;

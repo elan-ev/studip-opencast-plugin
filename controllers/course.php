@@ -1078,4 +1078,17 @@ class CourseController extends OpencastController
         $linkedCourseId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         return !empty($linkedCourseId);
     }
+      
+    public function sort_order_action()
+    {
+        if ($new_order = Request::get('order')) {
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+                CourseConfig::get($this->course_id)->store('COURSE_SORT_ORDER', $new_order);
+            }
+            else {
+                $_SESSION['opencast']['sort_order'] = $new_order;
+            }
+        }
+        $this->redirect('course/index/false');
+    }
 }
