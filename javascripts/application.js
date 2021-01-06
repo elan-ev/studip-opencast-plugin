@@ -73,9 +73,44 @@ const OC = {
             })
         }
 
+        /**
+         * Removes invalid XML characters from a string
+         * source: https://gist.github.com/john-doherty/b9195065884cdbfd2017a4756e6409cc
+         * author: John Doherty, license: MIT
+         * @param {string} str - a string containing potentially invalid XML characters (non-UTF8 characters, STX, EOX etc)
+         * @param {boolean} removeDiscouragedChars - should it remove discouraged but valid XML characters
+         * @return {string} a sanitized string stripped of invalid XML characters
+         */
+        function removeXMLInvalidChars(str, removeDiscouragedChars) {
+
+            // remove everything forbidden by XML 1.0 specifications, plus the unicode replacement character U+FFFD
+            var regex = /((?:[\0-\x08\x0B\f\x0E-\x1F\uFFFD\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))/g;
+
+            // ensure we have a string
+            str = String(str || '').replace(regex, '');
+
+            if (removeDiscouragedChars) {
+
+                // remove everything discouraged by XML 1.0 specifications
+                regex = new RegExp(
+                    '([\\x7F-\\x84]|[\\x86-\\x9F]|[\\uFDD0-\\uFDEF]|(?:\\uD83F[\\uDFFE\\uDFFF])|(?:\\uD87F[\\uDF' +
+                    'FE\\uDFFF])|(?:\\uD8BF[\\uDFFE\\uDFFF])|(?:\\uD8FF[\\uDFFE\\uDFFF])|(?:\\uD93F[\\uDFFE\\uD' +
+                    'FFF])|(?:\\uD97F[\\uDFFE\\uDFFF])|(?:\\uD9BF[\\uDFFE\\uDFFF])|(?:\\uD9FF[\\uDFFE\\uDFFF])' +
+                    '|(?:\\uDA3F[\\uDFFE\\uDFFF])|(?:\\uDA7F[\\uDFFE\\uDFFF])|(?:\\uDABF[\\uDFFE\\uDFFF])|(?:\\' +
+                    'uDAFF[\\uDFFE\\uDFFF])|(?:\\uDB3F[\\uDFFE\\uDFFF])|(?:\\uDB7F[\\uDFFE\\uDFFF])|(?:\\uDBBF' +
+                    '[\\uDFFE\\uDFFF])|(?:\\uDBFF[\\uDFFE\\uDFFF])(?:[\\0-\\t\\x0B\\f\\x0E-\\u2027\\u202A-\\uD7FF\\' +
+                    'uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|' +
+                    '(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF]))', 'g');
+
+                str = str.replace(regex, '');
+            }
+
+            return str;
+        }
+
         function createDCCCatalog(terms) {
             var escapeString = function (string) {
-                return new XMLSerializer().serializeToString(new Text(string));
+                return new XMLSerializer().serializeToString(new Text(removeXMLInvalidChars(string, true)));
             };
 
             return '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -243,12 +278,54 @@ const OC = {
         }
 
         function onFileChange(event) {
-            var target = event.target
+            var target = event.target;
+            var hideTypeError = function() {
+                $(target).next('.invalid_media_type_warning').hide();
+            };
+            var showTypeError = function() {
+                var $messagebox = $(target).next('.invalid_media_type_warning');
+                $messagebox.slideDown();
+                $messagebox.attr('role', 'alert');
+                $messagebox.find('.close').off().one('click', function() {
+                    hideTypeError();
+                    return false;
+                });
+            };
+            var wrongType = function() {
+                // Throw an error at the user
+                showTypeError();
+                // Clear the file input
+                $(target).val('');
+                // Do not tell anybody else listening about this change
+                return false;
+            };
+
+            hideTypeError();
+
             if (!target.files || target.files.length !== 1) {
                 return;
             }
             var file = target.files[0];
             var flavor  = $(target).data("flavor");
+            var validMimeTypes = /^(?:audio|video)\//i;
+            var validExtension = /\.(?:mkv|avi|mp4|mpeg|mpg|webm|mov|ogv|ogg|flv|f4v|wmv|asf|ts|3gp|3g2)$/i;
+
+            // Check for Opencast compliant MIME type if available
+            // https://caniuse.com/mdn-api_file_type
+            if (file.type) {
+                if (!validMimeTypes.test(file.type)) {
+                    // Wrong MIME type, discard file and show warining
+                    return wrongType();
+                }
+            } else if (!file.name) {
+                // Can't read the MIME type, nor the name: Reject!
+                return wrongType();
+            } else {
+                // Fall back to use list of valid extensions
+                if (!validExtension.test(file.name)) {
+                    return wrongType();
+                }
+            }
 
             uploadMedia.push({ file: file, flavor: flavor, progress: { loaded: 0, total: file.size }});
             renderFiles();
@@ -330,28 +407,16 @@ const OC = {
                     });
                     return false;
                 }
-                
-                var validExtension = ['mkv', 'avi', 'mp4', 'mpeg', 'webm', 'mov'];
+               
                 var maxLength = 128;
-                var wrongFormat = false;
+      
                 uploadMedia.forEach(function (item, index) {
                     var extension = item.file.name.split('.').pop();
-                    
-                    if (validExtension.indexOf(extension) == -1) {
-                        wrongFormat = true;
-                        return;
-                    }
+
                     if (item.file.name.length > 128) {
-                    	item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
+                    	  item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
                     }
                 });
-                if (wrongFormat) {
-                    STUDIP.Dialog.show("Mindestens ein Video hat ein falsches Format.", {
-                        title: 'Fehler',
-                        size: 'small'
-                    });
-                    return false;
-                }
 
                 if (this.dataset.isUploading && this.dataset.isUploading) {
                     return false;

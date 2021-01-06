@@ -304,7 +304,11 @@ class OCModel
 
         $inst_data = Institute::find($course->institut_id);
 
-        $room = ResourceObject::Factory($resource_id);
+        if (StudipVersion::newerThan('4.4')) {
+        	$room = new Resource($resource_id);
+        } else {
+        	$room = ResourceObject::Factory($resource_id);
+        }
 
         $start_time = $event_id ? $event->start : $date->getStartTime();
 
@@ -570,7 +574,7 @@ class OCModel
             // allow ACL changes right now
             $episode->chdate     = 1;
             $episode->mkdate     = time();
-
+            $is_new = true;
         }
 
         $episode->visible       = $visibility;
@@ -608,14 +612,14 @@ class OCModel
         return false;
     }
 
-    static function checkPermForEpisode($episode_id, $user_id)
+    static function checkPermForEpisode($episode_id, $user_id, $user_status)
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce
             JOIN oc_seminar_series oss USING (series_id)
             JOIN seminar_user su ON (oss.seminar_id = su.Seminar_id)
-            WHERE oce.episode_id = ? AND su.status = 'dozent' AND su.user_id = ?");
+            WHERE oce.episode_id = ? AND su.status IN (?) AND su.user_id = ?");
 
-        $stmt->execute([$episode_id, $user_id]);
+        $stmt->execute([$episode_id, $user_status, $user_id]);
         $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         if ($rows['0'] > 0) {

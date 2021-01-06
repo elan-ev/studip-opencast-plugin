@@ -535,9 +535,10 @@ class CourseController extends OpencastController
         if ($this->isLive($episode_id)) {
             throw new AccessDeniedException();
         }
-
-        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            && !OCModel::checkPermForEpisode($episode_id, $this->user_id)) {
+        
+        $check_perm_for = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? ['tutor', 'dozent'] : 'dozent';
+        
+        if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id) && !OCModel::checkPermForEpisode($episode_id, $this->user_id, $check_perm_for)) {
             throw new AccessDeniedException();
         }
 
@@ -833,6 +834,10 @@ class CourseController extends OpencastController
 
     public function isDownloadAllowed()
     {
+    	if (!$GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) {
+    		return false;
+    	}
+        	
         $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
         switch ($courseConfig) {
             case 'yes':
@@ -1072,5 +1077,18 @@ class CourseController extends OpencastController
     {
         $linkedCourseId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         return !empty($linkedCourseId);
+    }
+      
+    public function sort_order_action()
+    {
+        if ($new_order = Request::get('order')) {
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+                CourseConfig::get($this->course_id)->store('COURSE_SORT_ORDER', $new_order);
+            }
+            else {
+                $_SESSION['opencast']['sort_order'] = $new_order;
+            }
+        }
+        $this->redirect('course/index/false');
     }
 }

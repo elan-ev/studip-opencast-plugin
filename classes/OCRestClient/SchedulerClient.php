@@ -168,7 +168,11 @@ class SchedulerClient extends OCRestClient
             $title = $issue_titles;
         }
 
-        $room = ResourceObject::Factory($resource_id);
+		if (StudipVersion::newerThan('4.4')) {
+        	$room = new Resource($resource_id);
+        } else {
+        	$room = ResourceObject::Factory($resource_id);
+        }
         $cas  = OCModel::checkResource($resource_id);
         $ca   = $cas[0];
 
