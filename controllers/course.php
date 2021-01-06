@@ -834,6 +834,10 @@ class CourseController extends OpencastController
 
     public function isDownloadAllowed()
     {
+    	if (!$GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) {
+    		return false;
+    	}
+        	
         $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
         switch ($courseConfig) {
             case 'yes':
