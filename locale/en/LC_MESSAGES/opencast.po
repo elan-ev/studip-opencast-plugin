@@ -76,7 +76,13 @@ msgid ""
 "Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
 "Bedarf nachträglich über die Upload-Funktion zur verknüpften Serie "
 "hinzugefügt werden."
-msgstr ""
+msgstr "With this tool, videos from the lecture recording system "
+"(Opencast) can be linked to a Stud.IP course. The "
+" recordings are made available in an embedded player in Stud.IP."
+" In addition, with this integration it is possible to schedule the entire recording for a course."
+" The prerequisite for this are the corresponding entries in the schedule and a booked "
+" resource with an Opencast capture agent. Existing media can be "
+" can be added to the linked series via the upload function to the linked series."
 
 #: OpenCast.class.php:410
 #, fuzzy
