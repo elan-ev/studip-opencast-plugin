@@ -265,6 +265,31 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                     ]
                 );
             }
+            
+            if (!$controller->isStudyGroup()) {
+                $vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
+                    ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
+                    : \Config::get()->OPENCAST_HIDE_EPISODES;
+                if ($vis) {
+                    $actions->addLink(
+                        $_('Videos standardmäßig für alle sichtbar machen'),
+                        $controller->url_for('course/episode_visibility/' . get_ticket() . '/' . !$vis),
+                        Icon::create('upload'),
+                        [
+                            'title' => $_('Neue Uploads sind momentan standardmäßig nur für Lehrende sichtbar.')
+                        ]
+                    );
+                } else {
+                    $actions->addLink(
+                        $_('Videos standardmäßig nur für Lehrende sichtbar machen'),
+                        $controller->url_for('course/episode_visibility/' . get_ticket() . '/' . !$vis),
+                        Icon::create('upload'),
+                        [
+                            'title' => $_('Neue Uploads sind momentan standardmäßig für alle Teilnehmer der Veranstaltung sichtbar.')
+                        ]
+                    );
+                }
+            }
         }
 
     } else {

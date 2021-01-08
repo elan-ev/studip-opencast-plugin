@@ -4,6 +4,13 @@ use Studip\Button;
 use Studip\LinkButton;
 
 ?>
+
+<?
+$vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
+    ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
+    : \Config::get()->OPENCAST_HIDE_EPISODES;
+?>
+
 <form id="upload_form" action="#" enctype="multipart/form-data" method="post" class="default">
 
     <input type="hidden" name="series_id" value="<?= $series_id ?>">
@@ -37,7 +44,7 @@ use Studip\LinkButton;
     </Condition>
   </Rule>';
 
-if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
+if($vis == false){
 
   $oc_acl.='<Rule RuleId="user_read_Permit" Effect="Permit">
     <Target>
@@ -122,7 +129,7 @@ if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
         $instructor_role = $this->course_id . '_Instructor';
         $learner_role = $this->course_id . '_Learner';
         $oc_acl          = str_replace('ROLE_USER_LTI_Instructor', $instructor_role, $oc_acl);
-	if(\Config::get()->OPENCAST_HIDE_EPISODES == false){
+	if($vis == false){
           $oc_acl          = str_replace('ROLE_USER_LTI_Learner', $learner_role, $oc_acl);
         }
         $oc_acl          = str_replace(["\r", "\n"], '', $oc_acl);

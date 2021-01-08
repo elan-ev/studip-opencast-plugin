@@ -150,6 +150,9 @@ class OpencastLTI
             'e' => []
         ];
 
+        //$vis_conf = CourseConfig::get($course_id)->COURSE_HIDE_EPISODES
+        //    ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
+        //    : \Config::get()->OPENCAST_HIDE_EPISODES;
         $vis = \Config::get()->OPENCAST_HIDE_EPISODES
             ? 'invisible'
             : 'visible';
