@@ -26,7 +26,7 @@ class AdminNgClient extends OCRestClient
      */
     public function deleteEpisode($episode_id)
     {
-        $result = $this->deleteJSON('/event/' . $episode_id, true);
+        $result = $this->deleteJSON('/' . $episode_id, true);
         trigger_error($result[1], E_USER_ERROR);
         
         if (in_array($result[1], [200, 202])) {
