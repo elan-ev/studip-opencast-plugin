@@ -45,7 +45,6 @@ $vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
   </Rule>';
 
 if($vis == false){
-
   $oc_acl.='<Rule RuleId="user_read_Permit" Effect="Permit">
     <Target>
       <Actions>
