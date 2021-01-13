@@ -1091,4 +1091,11 @@ class CourseController extends OpencastController
         }
         $this->redirect('course/index/false');
     }
+    
+    public function course_visibility_action($ticket, $visibility) {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+            CourseConfig::get($this->course_id)->store('COURSE_HIDE_EPISODES', $visibility);
+        }
+        $this->redirect('course/index/false');
+    }
 }

@@ -182,8 +182,11 @@ class OCCourseModel
         $episodes    = [];
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
-
-        $vis = \Config::get()->OPENCAST_HIDE_EPISODES
+        
+        $vis_conf = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
+            ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
+            : \Config::get()->OPENCAST_HIDE_EPISODES;
+        $vis = $vis_conf
             ? 'invisible'
             : 'visible';
 
