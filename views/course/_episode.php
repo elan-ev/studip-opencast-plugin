@@ -11,9 +11,9 @@ $visibility_text = [
 ];
 $sort_orders = [
     'mkdate0'    => $_('Datum erstellt: Aufsteigend'),
-    'mkdate1'    => $_('Datum erstellt: Absteigend'), 
+    'mkdate1'    => $_('Datum erstellt: Absteigend'),
     'start0'     => $_('Datum publiziert: Aufsteigend'),
-    'start1'     => $_('Datum publiziert: Absteigend'), 
+    'start1'     => $_('Datum publiziert: Absteigend'),
     'title0'     => $_('Title: Aufsteigend'),
     'title1'     => $_('Title: Absteigend'),
 ];
@@ -26,9 +26,9 @@ $sort_orders = [
             <option value="<?= $key ?>"><?= $sort_order ?></option>
         <? endforeach; ?>
     </select>
-    <div>
+
         <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
-    </div>
+
 </form>
 
 <script type="text/javascript">
