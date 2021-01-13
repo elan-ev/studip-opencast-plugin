@@ -5,11 +5,10 @@ use Opencast\Models\OCConfig;
 class AdminNgClient extends OCRestClient
 {
     public static $me;
+    public        $serviceName = "Admin-Ng";
     
     public function __construct($config_id = 1)
     {
-        $this->serviceName = 'AdminNgClient';
-
         if ($config = OCConfig::getConfigForService('admin-ng', $config_id)) {
             parent::__construct($config);
         } else {
