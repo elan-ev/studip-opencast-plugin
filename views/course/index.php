@@ -272,7 +272,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
                 if ($vis) {
                     $actions->addLink(
-                        $_('Standardsichtbarkeit für alle'),
+                        $_('Neue Videos für alle sichtbar schalten'),
                         $controller->url_for('course/course_visibility/' . get_ticket() . '/' . !$vis),
                         Icon::create('upload'),
                         [
@@ -281,11 +281,11 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                     );
                 } else {
                     $actions->addLink(
-                        $_('Standardsichtbarkeit nur für Lehrende'),
+                        $_('Neue Videos nur für Lehrende sichtbar schalten'),
                         $controller->url_for('course/course_visibility/' . get_ticket() . '/' . !$vis),
                         Icon::create('upload'),
                         [
-                            'title' => $_('Neue Uploads sind momentan standardmäßig für alle Teilnehmer der Veranstaltung sichtbar.')
+                            'title' => $_('Neue Uploads sind momentan standardmäßig für alle Teilnehmenden der Veranstaltung sichtbar.')
                         ]
                     );
                 }
