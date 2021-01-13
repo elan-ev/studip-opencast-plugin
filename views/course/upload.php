@@ -9,6 +9,12 @@ use Studip\LinkButton;
 $vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
     : \Config::get()->OPENCAST_HIDE_EPISODES;
+
+$visibility_text = [
+    'invisible' => $_('Video ist nur für Sie sichtbar'),
+    'visible'   => $_('Video ist für Teilnehmende sichtbar'),
+    'free'      => $_('Video ist für jeden sichtbar')
+];
 ?>
 
 <form id="upload_form" action="#" enctype="multipart/form-data" method="post" class="default">
@@ -192,6 +198,17 @@ if($vis == false){
         <?= $_('Beschreibung') ?>
         <textarea class="oc_input" cols="50" rows="5" id="description" name="description"></textarea>
     </label>
+    
+
+    <label>
+        <?= $_('Sichtbarkeit auswählen:') ?>
+        <select name="visibility">
+            <? foreach ($visibility_text as $key => $text) : ?>
+                <option value="<?= $key ?>"><?= $text ?></option>
+            <? endforeach; ?>
+        </select>
+    </label>
+
 
     <section class="hgroup">
         <label>
