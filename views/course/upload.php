@@ -201,10 +201,14 @@ if($vis == false){
     
 
     <label>
-        <?= $_('Sichtbarkeit auswählen:') ?>
+        <?= $_('Sichtbarkeit') ?>
         <select name="visibility">
             <? foreach ($visibility_text as $key => $text) : ?>
-                <option value="<?= $key ?>"><?= $text ?></option>
+                <? if ($vis && ($key == "invisible") || !$vis && ($key == "visible")) : ?>
+                    <option selected value="<?= $key ?>"><?= $text ?></option>
+                <? else : ?>
+                    <option value="<?= $key ?>"><?= $text ?></option>
+                <? endif ?>
             <? endforeach; ?>
         </select>
     </label>
