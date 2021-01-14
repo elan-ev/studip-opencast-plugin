@@ -15,7 +15,7 @@ class Constants {
         'series',
         'services',
         'workflow',
-        'admin-ng'
+        'admin-ngevent'
     ];
 
     static $GLOBAL_CONFIG_OPTIONS = [

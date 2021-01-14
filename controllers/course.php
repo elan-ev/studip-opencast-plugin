@@ -884,7 +884,7 @@ class CourseController extends OpencastController
                 throw new AccessDeniedException();
             }
             
-            $adminng_client = AdminNgClient::getInstance();
+            $adminng_client = AdminNgEventClient::getInstance();
             
             if ($adminng_client->deleteEpisode($episode_id)) {
                 PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
