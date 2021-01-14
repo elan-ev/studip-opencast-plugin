@@ -879,24 +879,20 @@ class CourseController extends OpencastController
     public function remove_episode_action($ticket, $episode_id)
     {
         if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
-            $episode = \Opencast\Models\OCSeminarEpisodes::findOneBySQL(
-                'seminar_id = ? AND episode_id = ?',
-                [$this->course_id, $episode_id]
-            );
-            if ($episode) {
-                // live streams cannot be removed
-                if ($this->isLive($episode_id)) {
-                    throw new AccessDeniedException();
-                }
-
-                if ($this->retractEpisode($episode)) {
-                    PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
-                } else {
-                    PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
-                }
+            // live streams cannot be removed
+            if ($this->isLive($episode_id)) {
+                throw new AccessDeniedException();
+            }
+            
+            $adminng_client = AdminNgEventClient::getInstance();
+            
+            if ($adminng_client->deleteEpisode($episode_id)) {
+                PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
+            } else {
+                PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
             }
         }
-
+    
         $this->redirect('course/index/false');
     }
 
