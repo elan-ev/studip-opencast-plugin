@@ -250,6 +250,18 @@ class OCModel
         $success = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $success;
     }
+    
+    public static function checkRemovedRecordings($course_id)
+    {
+        $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
+                WHERE seminar_id = ?
+                AND date_id not in 
+                    (SELECT termin_id FROM termine
+                        WHERE range_id = ?)");
+        $stmt->execute([$course_id, $course_id]);
+        $success = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $success;
+    }
 
     /**
      * createScheduleEventXML - creates an xml representation for a new OC-Series

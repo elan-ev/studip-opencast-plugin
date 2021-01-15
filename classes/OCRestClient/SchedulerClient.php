@@ -83,6 +83,14 @@ class SchedulerClient extends OCRestClient
     {
         return $this->deleteJSON('/' . $event_id, true);
     }
+    
+    public function updateRemovedRecordings($course_id)
+    {
+        $recordings = OCModel::checkRemovedRecordings($course_id);
+        foreach ($recordings as $recording) {
+            $this->deleteEventForSeminar($course_id, $recording['resource_id'], $recording['date_id']);
+        }
+    }
 
     /**
      * updateEventForSeminar - updates an event

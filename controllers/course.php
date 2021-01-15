@@ -366,6 +366,8 @@ class CourseController extends OpencastController
         $this->workflow_client = WorkflowClient::getInstance();
         $this->tagged_wfs      = $this->workflow_client->getTaggedWorkflowDefinitions();
 
+        $scheduler_client = SchedulerClient::getInstance();
+        $scheduler_client->updateRemovedRecordings($this->course_id);
 
         $events_client   = ApiEventsClient::getInstance();
         $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
