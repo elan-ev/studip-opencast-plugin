@@ -42,7 +42,7 @@ class ApiEventsClient extends OCRestClient
         $cache_key = 'oc_episodesforseries/' . $series_id;
         $episodes  = $cache->read($cache_key);
 
-        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
+        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('tutor')) {
             $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
                 . $series_id . '&sort=&limit=0&offset=0';
 
