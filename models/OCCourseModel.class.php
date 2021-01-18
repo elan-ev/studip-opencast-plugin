@@ -91,11 +91,11 @@ class OCCourseModel
                 // add additional episode metadata from opencast
                 $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
-            
+
             if ($unset_live) {
                 $oc_events = ApiEventsClient::create($this->getCourseID());
                 $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->getCourseID()));
-                
+
                 foreach ($ordered_episodes as $episode) {
                     if ($events[$episode['id']]->publication_status[0] == 'engage-live')
                     {
@@ -103,7 +103,7 @@ class OCCourseModel
                     }
                 }
             }
-            
+
             // Get the Sort order title = TITLE, start = DATE_PUBLISHED, mkdata = DATE_CREATED (?)
             if ($_SESSION['opencast']['sort_order']) {
                 $sort_str = $_SESSION['opencast']['sort_order'];
@@ -182,7 +182,7 @@ class OCCourseModel
         $episodes    = [];
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
         $lastpos;
-        
+
         $vis_conf = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
             ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -262,6 +262,7 @@ class OCCourseModel
         if (is_array($oc_episodes)) foreach ($oc_episodes as $episode) {
             if (is_object($episode->mediapackage)) {
                 $presentation_preview  = false;
+                $preview               = false;
                 $presenter_download    = [];
                 $presentation_download = [];
                 $audio_download        = [];
