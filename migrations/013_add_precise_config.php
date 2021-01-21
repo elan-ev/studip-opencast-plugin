@@ -22,7 +22,7 @@ class AddPreciseConfig extends Migration
         ');
 
         DBManager::get()->query("INSERT INTO `oc_config_precise`(`id`, `name`, `description`, `value`, `for_config`) VALUES
-            (1, 'upload_chunk_size', 'Größe der Chunks für den Upload in Byte', '10000000', -1),
+            (1, 'upload_chunk_size', 'Größe der Chunks für das Hochladen in Byte', '10000000', -1),
             (2, 'number_of_configs', 'Maximale Anzahl von sichtbaren Konfigurationen', '1', -1),
             (3, 'time_buffer_overlap', 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern', '60', -1),
             (4, 'ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),

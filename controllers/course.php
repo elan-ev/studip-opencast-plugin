@@ -563,7 +563,7 @@ class CourseController extends OpencastController
     public function upload_action()
     {
         if ($this->isStudyGroup() && !$this->isStudentUploadForStudyGroupActivated()) {
-            PageLayout::postError(_('Uploads durch Studierende sind momentan verboten.'));
+            PageLayout::postError(_('Das Hochladen durch Studierende ist momentan verboten.'));
             $this->redirect('course/index/false');
         }
 
@@ -571,7 +571,7 @@ class CourseController extends OpencastController
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');
         }
-        $this->set_title($this->_('Opencast Medienupload'));
+        $this->set_title($this->_('Opencast Medien hochladen'));
 
         $workflow_client = WorkflowClient::getInstance();
 
@@ -677,12 +677,12 @@ class CourseController extends OpencastController
         $workflow_client = WorkflowClient::getInstance();
         if ($workflow_client->removeInstanceComplete($workflow_id)) {
             if (OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
-                PageLayout::postSuccess($this->_('Die hochgeladenen Daten wurden gelöscht.'));
+                PageLayout::postSuccess($this->_('Die hochgeladenen Medien wurden gelöscht.'));
             } else {
                 PageLayout::postError($this->_('Die Referenz in der Datenbank konnte nicht gelöscht werden.'));
             }
         } else {
-            PageLayout::postError($this->_('Die hochgeladenen Daten konnten nicht gelöscht werden.'));
+            PageLayout::postError($this->_('Die hochgeladenen Medien konnten nicht gelöscht werden.'));
         }
         $this->redirect('course/index/');
     }

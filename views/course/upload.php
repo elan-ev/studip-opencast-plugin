@@ -193,14 +193,14 @@ if($vis == false){
         <textarea class="oc_input" cols="50" rows="5" id="description" name="description"></textarea>
     </label>
 
-    <section class="hgroup">
+    <section class="hgroup">y
         <label>
             <?= $_('Eingestellter Workflow') ?>
 
             <? if (!$workflow) : ?>
                 <p style="color:red; max-width: 48em;">
                     <?= $_(
-                        'Es wurde noch kein Standardworkflow eingestellt. Der Upload ist erst möglich nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!'
+                        'Es wurde noch kein Standardworkflow eingestellt. Das Hochladen ist erst möglich nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!'
                     ) ?>
                 </p>
             <? else : ?>
@@ -209,7 +209,7 @@ if($vis == false){
         </label>
 
         <label>
-            <?= $_('Chunk-Größe für Uploads') ?>
+            <?= $_('Chunk-Größe für hochgeladene Medien') ?>
             <p><?= round((float)$config['upload_chunk_size'] / 1024 / 1024, 2) ?> MB</p>
         </label>
     </section>
@@ -279,7 +279,7 @@ if($vis == false){
 
 <div id="oc-media-upload-dialog" style="display: none;">
     <div class="oc-media-upload-dialog-content">
-        <h1 class="hide-in-dialog"><?= $_("Medien-Upload") ?></h1>
+        <h1 class="hide-in-dialog"><?= $_("Medien hochladen") ?></h1>
         <p><?= $_("Ihre Medien werden gerade hochgeladen.") ?></p>
         <div>
             <ul class="files">

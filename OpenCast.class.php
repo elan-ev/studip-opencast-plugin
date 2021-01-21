@@ -365,7 +365,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
             . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
             . "gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
-            . "Bedarf nachträglich über die Upload-Funktion zur verknüpften Serie hinzugefügt werden."
+            . "Bedarf nachträglich über die Hochladen-Funktion zur verknüpften Serie hinzugefügt werden."
         );
 
         $metadata['summary'] = $this->_("Vorlesungsaufzeichnung");

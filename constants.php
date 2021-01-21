@@ -57,7 +57,7 @@ class Constants {
         ],
         [
             'name'        => 'upload_chunk_size',
-            'description' => 'Größe der Chunks für den Upload in Byte',
+            'description' => 'Größe der Chunks für das Hochladen in Byte',
             'value'       => 5000000,
             'type'        => 'integer'
         ],

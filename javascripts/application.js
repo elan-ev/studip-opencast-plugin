@@ -343,7 +343,7 @@ const OC = {
                 var dialog = options.dialog;
                 var throttledRender = _.throttle(renderProgress, 200);
                 $(dialog).on("dialogbeforeclose", function () {
-                    return force || confirm("Wollen Sie den Medien-Upload wirklich abbrechen?")
+                    return force || confirm("Wollen Sie das Hochladen der Medien wirklich abbrechen?")
                 });
                 throttledRender();
                 origin.on("upload-progress", throttledRender);
