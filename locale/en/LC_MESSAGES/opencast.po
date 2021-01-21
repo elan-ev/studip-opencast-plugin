@@ -194,7 +194,7 @@ msgid "Opencast Medien hochladen"
 msgstr "Opencast mediaupload"
 
 #: controllers/course.php:680
-msgid "Die hochgeladenen Medien wurden gelöscht."
+msgid "Die hochgeladenen Daten wurden gelöscht."
 msgstr "The uploaded data have been deleted."
 
 #: controllers/course.php:682
@@ -202,7 +202,7 @@ msgid "Die Referenz in der Datenbank konnte nicht gelöscht werden."
 msgstr "Could not delete reference in database."
 
 #: controllers/course.php:685
-msgid "Die hochgeladenen Medien konnten nicht gelöscht werden."
+msgid "Die hochgeladenen Daten konnten nicht gelöscht werden."
 msgstr "The uploaded data could not be deleted."
 
 #: controllers/course.php:746

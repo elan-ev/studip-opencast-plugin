@@ -677,12 +677,12 @@ class CourseController extends OpencastController
         $workflow_client = WorkflowClient::getInstance();
         if ($workflow_client->removeInstanceComplete($workflow_id)) {
             if (OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
-                PageLayout::postSuccess($this->_('Die hochgeladenen Medien wurden gelöscht.'));
+                PageLayout::postSuccess($this->_('Die hochgeladenen Daten wurden gelöscht.'));
             } else {
                 PageLayout::postError($this->_('Die Referenz in der Datenbank konnte nicht gelöscht werden.'));
             }
         } else {
-            PageLayout::postError($this->_('Die hochgeladenen Medien konnten nicht gelöscht werden.'));
+            PageLayout::postError($this->_('Die hochgeladenen Daten konnten nicht gelöscht werden.'));
         }
         $this->redirect('course/index/');
     }
