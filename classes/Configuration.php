@@ -89,9 +89,7 @@ class Configuration implements \ArrayAccess
 
     public function load()
     {
-        $config = OCConfig::findOneBySql('id = ?', [$this->config_id]);
-
-
+        $config = OCConfig::find($this->config_id);
         if (!empty($config)) {
             $this->values = json_decode($config->settings->__toString(), true);
         }

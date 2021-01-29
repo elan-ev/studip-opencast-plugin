@@ -48,7 +48,7 @@ class RefreshScheduledEvents extends CronJob
 
         // TODO: consider multiple opencast installations
         $api_client = ApiEventsClient::getInstance(1);
-        $events = $api_client->getAllScheduledEvents($se['series_id']);
+        $events = $api_client->getAllScheduledEvents($scheduled_events['series_id']);
 
         if (!empty($scheduled_events)) {
             foreach ($scheduled_events as $se) {

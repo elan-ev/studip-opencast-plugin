@@ -181,7 +181,6 @@ class OCCourseModel
     {
         $episodes    = [];
         $oc_episodes = $this->prepareEpisodes($remote_episodes);
-        $lastpos;
 
         $vis_conf = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
             ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
@@ -215,6 +214,7 @@ class OCCourseModel
 
         //add new episodes
         if (!empty($oc_episodes)) {
+            $timestamp = time();
             foreach ($oc_episodes as $episode) {
                 $lastpos++;
                 $episode['visibility'] = $vis;
