@@ -206,9 +206,15 @@ msgid "Die hochgeladenen Daten konnten nicht gelöscht werden."
 msgstr "The uploaded data could not be deleted."
 
 #: controllers/course.php:746
-#, php-format
-msgid "Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."
-msgstr "The tab in the course navigation is now %s for all students."
+msgid ""
+"Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer sichtbar."
+msgstr "The tab in the course navigation is now visible for all students."
+
+#: controllers/course.php:748
+msgid ""
+"Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer "
+"ausgeblendet."
+msgstr "The tab in the course navigation is now invisible for all students."
 
 #: controllers/course.php:754
 #, php-format

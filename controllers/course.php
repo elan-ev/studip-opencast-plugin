@@ -742,10 +742,11 @@ class CourseController extends OpencastController
             $occourse->toggleSeriesVisibility();
             $visibility = $occourse->getSeriesVisibility();
             $vis        = ['visible' => 'sichtbar', 'invisible' => 'ausgeblendet'];
-            PageLayout::postSuccess(sprintf(
-                $this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer %s."),
-                htmlReady($vis[$visibility])
-            ));
+            if ($vis[$visibility] == 'sichtbar') {
+                PageLayout::postSuccess($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer sichtbar."));
+            } else {
+                PageLayout::postSuccess($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer ausgeblendet."));
+            }
 
             StudipLog::log(
                 'OC_CHANGE_TAB_VISIBILITY',
