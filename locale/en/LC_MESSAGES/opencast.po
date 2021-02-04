@@ -186,11 +186,11 @@ msgid "Verbindung zum Series-Service konnte nicht hergestellt werden."
 msgstr "Unable to connect to the series service."
 
 #: controllers/course.php:566 views/course/index.php:264
-msgid "Uploads durch Studierende sind momentan verboten."
+msgid "Das Hochladen durch Studierende ist momentan verboten."
 msgstr "Student uploads are currently prohibited."
 
 #: controllers/course.php:574
-msgid "Opencast Medienupload"
+msgid "Opencast Medien hochladen"
 msgstr "Opencast mediaupload"
 
 #: controllers/course.php:680
@@ -455,7 +455,7 @@ msgid ""
 "Aufzeichnungsplanung für eine Veranstaltung abzubilden. Voraussetzung "
 "hierfür sind entsprechende Einträge im Ablaufplan und eine gebuchte "
 "Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
-"Bedarf nachträglich über die Upload-Funktion zur verknüpften Serie "
+"Bedarf nachträglich über die Hochladen-Funktion zur verknüpften Serie "
 "hinzugefügt werden."
 msgstr ""
 "With this tool, videos from the lecture recording system (Opencast) can be "
@@ -559,7 +559,7 @@ msgid "Standardworkflow"
 msgstr "Default workflow"
 
 #: views/admin/resources.php:55
-msgid "Standardworkflow für Uploads:"
+msgid "Standardworkflow für hochgeladene Medien:"
 msgstr "Default workflow for uploads:"
 
 #: views/admin/resources.php:65
@@ -825,15 +825,15 @@ msgid "Downloads sind momentan verboten."
 msgstr "Downloads are currently prohibited."
 
 #: views/course/index.php:251
-msgid "Upload durch Studierende verbieten"
+msgid "Hochladen durch Studierende verbieten"
 msgstr "Prohibit Student uploads"
 
 #: views/course/index.php:255
-msgid "Uploads durch Studierende sind momentan erlaubt."
+msgid "Das Hochladen durch Studierende ist momentan erlaubt."
 msgstr "Student uploads are currently allowed."
 
 #: views/course/index.php:260
-msgid "Upload durch Studierende erlauben"
+msgid "Hochladen durch Studierende erlauben"
 msgstr "Allow student uploads"
 
 #: views/course/index.php:273
@@ -1019,7 +1019,7 @@ msgid "Die Änderung hier gilt nur für neue Aufzeichnungsplanungen!"
 msgstr "The changes apply to newly scheduled recordings only!"
 
 #: views/course/workflow.php:23
-msgid "Workflow für Uploads"
+msgid "Workflow für hochgeladene Medien"
 msgstr "Workflow for uploads"
 
 #: views/course/workflow.php:37
@@ -1072,14 +1072,14 @@ msgstr "Workflow"
 
 #: views/course/upload.php:197
 msgid ""
-"Es wurde noch kein Standardworkflow eingestellt. Der Upload ist erst möglich "
+"Es wurde noch kein Standardworkflow eingestellt. Das Hochladen ist erst möglich "
 "nach Einstellung eines Standard- oder eines Kursspezifischen Workflows!"
 msgstr ""
 "No default workflow has been set. No uploads are possible unless a default "
 "or course-specific workflow has been set!"
 
 #: views/course/upload.php:206
-msgid "Chunk-Größe für Uploads"
+msgid "Chunk-Größe für hochgeladene Medien"
 msgstr "Chunksize for uploads"
 
 #: views/course/upload.php:213
@@ -1142,7 +1142,7 @@ msgstr ""
 "Any media with copyright infringements are deleted without further notice."
 
 #: views/course/upload.php:276
-msgid "Medien-Upload"
+msgid "Medien hochladen"
 msgstr "Upload media"
 
 #: views/course/upload.php:277

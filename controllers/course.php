@@ -563,7 +563,7 @@ class CourseController extends OpencastController
     public function upload_action()
     {
         if ($this->isStudyGroup() && !$this->isStudentUploadForStudyGroupActivated()) {
-            PageLayout::postError(_('Uploads durch Studierende sind momentan verboten.'));
+            PageLayout::postError(_('Das Hochladen durch Studierende ist momentan verboten.'));
             $this->redirect('course/index/false');
         }
 
@@ -571,7 +571,7 @@ class CourseController extends OpencastController
         if (!$this->connectedSeries) {
             throw new Exception('Es ist keine Serie mit dieser Veranstaltung verknüpft!');
         }
-        $this->set_title($this->_('Opencast Medienupload'));
+        $this->set_title($this->_('Opencast Medien hochladen'));
 
         $workflow_client = WorkflowClient::getInstance();
 

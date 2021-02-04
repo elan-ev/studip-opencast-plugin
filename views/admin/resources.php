@@ -52,7 +52,7 @@ Helpbar::get()->addPlainText(
             </legend>
 
             <label>
-                <?= $_('Standardworkflow für Uploads:'); ?>
+                <?= $_('Standardworkflow für hochgeladene Medien:'); ?>
                 <select name="oc_course_uploadworkflow">
                     <? foreach ($workflows as $workflow) : ?>
                         <option value="<?= $workflow['id'] ?>" title="<?= $workflow['description'] ?>"

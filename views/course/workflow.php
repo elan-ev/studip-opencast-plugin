@@ -20,7 +20,7 @@ use Studip\Button,
         '</p>';
         ?>
         <label>
-            <?= $_('Workflow für Uploads'); ?>
+            <?= $_('Workflow für hochgeladene Medien'); ?>
 
             <select name="oc_course_uploadworkflow">
                 <? foreach ($workflows as $workflow) : ?>
