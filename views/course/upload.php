@@ -193,7 +193,7 @@ if($vis == false){
         <textarea class="oc_input" cols="50" rows="5" id="description" name="description"></textarea>
     </label>
 
-    <section class="hgroup">y
+    <section class="hgroup">
         <label>
             <?= $_('Eingestellter Workflow') ?>
 
