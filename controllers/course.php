@@ -962,7 +962,7 @@ class CourseController extends OpencastController
         $oc_events = ApiEventsClient::create($this->course_id);
         $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
 
-        foreach ($event as $events) {
+        foreach ($events as $event) {
             if ($event['id'] === $episode_id) {
                 return $event->publication_status[0] == 'engage-live';
             }
@@ -989,15 +989,16 @@ class CourseController extends OpencastController
 
     private function createStudyGroupObject($course)
     {
+        $studygroup_sem_types = studygroup_sem_types();
         $studyGroup_name = $this->_("Studiengruppe:") . " " . $course['name'];
         $current_studyGroup = Course::findOneBySQL('name = :name AND status IN (:studygroup_mode)', [
             ':name'    => $studyGroup_name,
-            ':studygroup_mode' => \studygroup_sem_types(),
+            ':studygroup_mode' => $studygroup_sem_types,
         ]);
         if (!$current_studyGroup) {
             $studyGroup = new Course();
             $studyGroup['name'] = $studyGroup_name;
-            $studyGroup['status'] = array_shift(studygroup_sem_types());
+            $studyGroup['status'] = array_shift($studygroup_sem_types);
             $studyGroup['start_time'] = $course['start_time'];
             $studyGroup->store();
         } else {
@@ -1071,7 +1072,7 @@ class CourseController extends OpencastController
                 }
             )->pluck('user_id');
             foreach ($studyGroup->members as $member) {
-                if ( !in_array($member->user_id, array_values($course_dozenten)) ) {
+                if (!in_array($member->user_id, array_values($course_dozenten)) ) {
                     $studyGroupMember = CourseMember::find([$studyGroupId, $member->user_id]);
                     $studyGroupMember['status'] = 'tutor';
                     $studyGroupMember->store();

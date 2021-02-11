@@ -90,7 +90,7 @@ class ApiEventsClient extends OCRestClient
         return json_decode(json_encode($this->getJSON('/' . $episode_id . '/acl')), true);
     }
 
-    public function getBySeries($series_id)
+    public function getBySeries($series_id, $params = [])
     {
         $events = $this->getJSON('/?filter=is_part_of:' .
             $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
