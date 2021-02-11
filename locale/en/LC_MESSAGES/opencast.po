@@ -868,7 +868,7 @@ msgid ""
 "Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!"
 msgstr "Wrong configuration for connected series!"
 
-#: views/course/index.php:316
+#: views/course/index.php:342
 msgid ""
 "Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. "
 "Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene "
@@ -876,6 +876,14 @@ msgid ""
 msgstr ""
 "You have not linked any series from Opencast to this course yet. Please "
 "create a new series or link an existing series."
+
+#: views/course/index.php:344
+msgid ""
+"Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. "
+"Bitte erstellen Sie eine neue Series."
+msgstr ""
+"You have not linked any series from Opencast to this course yet. Please "
+"create a new series."
 
 #: views/course/index.php:319
 msgid "Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt."
