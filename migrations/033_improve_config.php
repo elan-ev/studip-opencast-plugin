@@ -33,7 +33,7 @@ class ImproveConfig extends Migration
             $confid = $data['for_config'];
 
             if ($confid != -1) {
-                if (!isset($configs[$confid])) {
+                if (!isset($configs[$confid][$data['name']])) {
                     $configs[$confid][$data['name']] = $data['value'];
                 }
             }
@@ -65,6 +65,14 @@ class ImproveConfig extends Migration
 
             $db->exec("ALTER TABLE `oc_config`
                 CHANGE `id` `config_id` int(11) NOT NULL AUTO_INCREMENT FIRST;");
+
+            $db->exec('CREATE TABLE IF NOT EXISTS `oc_config_precise` (
+                `id` int(11) NOT NULL,
+                `name` varchar(100) COLLATE latin1_german1_ci DEFAULT NULL,
+                `description` text COLLATE latin1_german1_ci,
+                `value` varchar(255) COLLATE latin1_german1_ci DEFAULT NULL,
+                `for_config` int(11) DEFAULT NULL)
+            ');
         } catch (PDOException $e) {}
 
         SimpleOrMap::expireTableScheme();
