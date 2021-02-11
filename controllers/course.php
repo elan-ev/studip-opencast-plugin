@@ -535,9 +535,9 @@ class CourseController extends OpencastController
         if ($this->isLive($episode_id)) {
             throw new AccessDeniedException();
         }
-        
+
         $check_perm_for = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? ['tutor', 'dozent'] : 'dozent';
-        
+
         if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id) && !OCModel::checkPermForEpisode($episode_id, $this->user_id, $check_perm_for)) {
             throw new AccessDeniedException();
         }
@@ -838,7 +838,7 @@ class CourseController extends OpencastController
     	if (!$GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) {
     		return false;
     	}
-        	
+
         $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
         switch ($courseConfig) {
             case 'yes':
@@ -871,6 +871,22 @@ class CourseController extends OpencastController
         $this->redirect('course/index/false');
     }
 
+    public function redirect_studygroup_action($studyGroupId)
+    {
+        if ($this->isStudentUploadEnabled()) {
+            $this->addAllMembersToStudyGroup(
+                Course::find($this->course_id),
+                Course::find($studyGroupId)
+            );
+            $this->redirect(
+                PluginEngine::getURL($this->plugin, ['cid' => $studyGroupId], 'course/index')
+            );
+            return;
+        }
+
+        $this->redirect('course/index');
+    }
+
     public function isStudentUploadEnabled()
     {
         $studyGroupId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
@@ -884,16 +900,16 @@ class CourseController extends OpencastController
             if ($this->isLive($episode_id)) {
                 throw new AccessDeniedException();
             }
-            
+
             $adminng_client = AdminNgEventClient::getInstance();
-            
+
             if ($adminng_client->deleteEpisode($episode_id)) {
                 PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
             } else {
                 PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
             }
         }
-    
+
         $this->redirect('course/index/false');
     }
 
@@ -1075,7 +1091,7 @@ class CourseController extends OpencastController
         $linkedCourseId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         return !empty($linkedCourseId);
     }
-      
+
     public function sort_order_action()
     {
         if ($new_order = Request::get('order')) {
@@ -1088,7 +1104,7 @@ class CourseController extends OpencastController
         }
         $this->redirect('course/index/false');
     }
-    
+
     public function course_visibility_action($ticket, $visibility) {
         if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             CourseConfig::get($this->course_id)->store('COURSE_HIDE_EPISODES', $visibility);

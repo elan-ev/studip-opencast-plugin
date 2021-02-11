@@ -229,7 +229,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if (!empty($studyGroupId)) {
             $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-            $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $studyGroupId], 'course/index'));
+            $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
             $main->addSubNavigation('studygroup', $studyGroup);
         }
 
