@@ -349,6 +349,17 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
     <? endif; ?>
 <? endif; ?>
 
+<? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
+    <? foreach ($GLOBALS['SEM_CLASS'] as $sem_class) : ?>
+        <? if ($sem_class['name'] == 'Studiengruppen') : ?>
+            <? if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) : ?>
+                <?= MessageBox::info($_('Das Opencast Plugin ist momentan nicht für Studiengruppen aktiv. Wenden Sie sich an einen Admin, um das Problem zu beheben.'));
+                    break; ?>
+            <? endif ?>
+        <? endif ?>
+    <? endforeach ?>
+<? endif ?>
+
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?= $course_id ?>"></div>
 <div id="visibility_dialog" style="display: none">
