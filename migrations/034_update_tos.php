@@ -25,7 +25,9 @@ class UpdateTos extends Migration
             'value'       => $tos
         ]);
 
-        $db->exec('ALTER TABLE oc_config DROP IF EXISTS tos');
+        try {
+            $db->exec('ALTER TABLE oc_config DROP tos');
+        } catch (PDOException $e) {}
 
         $db->exec("UPDATE config
             SET description = 'Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?'
