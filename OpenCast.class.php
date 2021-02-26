@@ -408,4 +408,23 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         return 'Opencast';
     }
+
+    /**
+     * Returns whether the plugin may be activated in a certain context.
+     *
+     * @param Range $context
+     * @return bool
+     */
+    public function isActivatableForContext(Range $context)
+    {
+        if (!$GLOBALS['perm']->have_perm('root') &&
+            $context->getRangeType() === 'course' && 
+            $context->getSemClass()['studygroup_mode']) {
+            return false;
+        }
+        if ($context->getRangeType() === 'institute') {
+            return false;
+        }
+        return true;
+    }
 }
