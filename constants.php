@@ -67,25 +67,6 @@ class Constants {
             'description' => 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern',
             'value'       => 60,
             'type'        => 'integer'
-        ],
-
-        [
-            'name'        => 'ssl_verify_peer',
-            'description' => 'SSL Zertifikat des Peers prüfen',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
-            'name'        => 'ssl_verify_host',
-            'description' => 'SSL Zertifikat des Hosts prüfen',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
-            'name'        => 'ssl_cipher_list',
-            'description' => 'Zu benutzende SSL Chiffren',
-            'value'       => 'none',
-            'type'        => 'string'
         ]
     ];
 }
