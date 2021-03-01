@@ -228,9 +228,17 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
 
         if (!empty($studyGroupId)) {
-            $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-            $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
-            $main->addSubNavigation('studygroup', $studyGroup);
+            foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
+                if ($sem_class['name'] == 'Studiengruppen') {
+                    $isActive = $sem_class['modules']['OpenCast']['activated'] || !$sem_class['modules']['OpenCast']['sticky'];
+                    break;
+                }
+            }
+            if ($isActive) {
+                $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $main->addSubNavigation('studygroup', $studyGroup);
+            }
         }
 
         $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
@@ -407,5 +415,24 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getPluginName()
     {
         return 'Opencast';
+    }
+
+    /**
+     * Returns whether the plugin may be activated in a certain context.
+     *
+     * @param Range $context
+     * @return bool
+     */
+    public function isActivatableForContext(Range $context)
+    {
+        if (!$GLOBALS['perm']->have_perm('root') &&
+            $context->getRangeType() === 'course' && 
+            $context->getSemClass()['studygroup_mode']) {
+            return false;
+        }
+        if ($context->getRangeType() === 'institute') {
+            return false;
+        }
+        return true;
     }
 }
