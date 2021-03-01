@@ -287,7 +287,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $role = 'Learner';
         }
 
-        $lti_link->setUser($current_user_id, $role);
+        $lti_link->setUser($current_user_id, $role, True);
         $lti_link->setCourse($course_id);
         $lti_link->setResource(
             $connectedSeries,
