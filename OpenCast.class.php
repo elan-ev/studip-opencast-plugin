@@ -195,7 +195,16 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $ocmodel = new OCCourseModel($course_id);
-        $main    = new Navigation('Opencast');
+
+        $title = 'Opencast';
+        $invis = CourseConfig::get($course_id)->COURSE_HIDE_EPISODES
+                    ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
+                    : \Config::get()->OPENCAST_HIDE_EPISODES;
+        if ($invis) {
+            $title .= " (versteckt)";
+        }
+
+        $main    = new Navigation($title);
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
         $main->setImage(Icon::create(
             $this->getPluginURL() . '/images/opencast-black.svg',
