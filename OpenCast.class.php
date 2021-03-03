@@ -200,7 +200,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $invis = CourseConfig::get($course_id)->COURSE_HIDE_EPISODES
                     ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
-        if ($invis) {
+        if ($invis && $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $title .= " (versteckt)";
         }
 
