@@ -60,7 +60,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
         }
-
         $GLOBALS['opencast_already_loaded'] = true;
     }
 
@@ -70,7 +69,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      * parameters.
      *
      * @param String $string String to translate
-     * @return translated string
+     * @return String translated string
      */
     public function _($string)
     {
@@ -97,7 +96,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      * @param String $string0 String to translate (singular)
      * @param String $string1 String to translate (plural)
      * @param mixed $n Quantity factor (may be an array or array-like)
-     * @return translated string
+     * @return String translated string
      */
     public function _n($string0, $string1, $n)
     {
@@ -226,8 +225,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
 
-        if (!empty($studyGroupId)) {
+   /*     if(!$studyGroupId && $course->isStudygroup() && PluginManager::getInstance()->isPluginActivated($this->getPluginId(), $course->id)) {
+            CourseConfig::get($course->id)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', $course->id);
+            $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        }*/
+        if ($studyGroupId) {
             foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
                 if ($sem_class['name'] == 'Studiengruppen') {
                     $isActive = $sem_class['modules']['OpenCast']['activated'] || !$sem_class['modules']['OpenCast']['sticky'];
@@ -236,12 +240,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             if ($isActive) {
                 $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
                 $main->addSubNavigation('studygroup', $studyGroup);
             }
         }
 
-        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($linkedCourseId)) {
             $linkedCourse = new Navigation($this->_('Zur verknüpften Veranstaltung'));
             $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
@@ -426,7 +429,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function isActivatableForContext(Range $context)
     {
         if (!$GLOBALS['perm']->have_perm('root') &&
-            $context->getRangeType() === 'course' && 
+            $context->getRangeType() === 'course' &&
             $context->getSemClass()['studygroup_mode']) {
             return false;
         }

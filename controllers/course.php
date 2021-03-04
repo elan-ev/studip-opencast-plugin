@@ -855,7 +855,7 @@ class CourseController extends OpencastController
 
     public function allow_students_upload_action($ticket)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !$this->isStudyGroup()) {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $studyGroup = $this->createStudyGroup($this->course_id);
             PageLayout::postInfo($this->_('Teilnehmer dürfen nun Aufzeichnungen hochladen.'));
         }
@@ -864,7 +864,7 @@ class CourseController extends OpencastController
 
     public function disallow_students_upload_action($ticket)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !$this->isStudyGroup()) {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $this->unlinkStudyGroupAndCourse($this->course_id);
             PageLayout::postInfo($this->_('Teilnehmer dürfen nun keine Aufzeichnungen mehr hochladen.'));
         }
