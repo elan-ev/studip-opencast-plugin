@@ -197,7 +197,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         $ocmodel = new OCCourseModel($course_id);
         $title   = 'Opencast';
         if ($ocmodel->getSeriesVisibility() == 'invisible') {
-            $title .= " (versteckt)";
+            $title .= " (". $this->_('versteckt'). ")";
         }
         $main    = new Navigation($title);
 
