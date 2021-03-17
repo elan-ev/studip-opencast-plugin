@@ -81,11 +81,8 @@ class OCRestClient
         curl_setopt($this->ochandler, CURLOPT_FOLLOWLOCATION, 1);
 
         //ssl
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, $precise_config['ssl_verify_peer']);
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, $precise_config['ssl_verify_host']);
-        if ($precise_config['ssl_cipher_list'] != 'none') {
-            curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, $precise_config['ssl_cipher_list']);
-        }
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, False);
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, False);
 
         // debugging
         if (DEBUG_CURL) {
