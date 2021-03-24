@@ -25,9 +25,19 @@ const OC = {
                     withCredentials: true
                 },
                 crossDomain: true,
-                complete: function() {
+                success: function() {
                     OC.lti_done = 2;
                     success_callback();
+                },
+                error: function() {
+                    STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' + 
+                                        'in Opencast hergestellt werden. ' + 
+                                        'Laden sie die Seite neu. Falls das ' + 
+                                        'nicht hilft, wenden sich an ' + 
+                                        'eine/n Systemadministrator/in', {
+                        title: 'LTI Fehler',
+                        size: 'normal'
+                    });
                 }
             });
         }

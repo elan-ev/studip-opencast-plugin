@@ -84,7 +84,28 @@
                     'config'    => $data,
                     'config_id' => $config_id
                 ]); ?>
+
         <? } ?>
+
+        <?
+            $instance_config = Configuration::instance($config_id);
+            $lti_link = new LtiLink(
+                $config[$config_id]['service_url'],
+                $instance_config['lti_consumerkey'],
+                $instance_config['lti_consumersecret']
+            );
+            $launch_data = $lti_link->getBasicLaunchData();
+            $signature   = $lti_link->getLaunchSignature($launch_data);
+
+            $launch_data['oauth_signature'] = $signature;
+
+            $lti_data = json_encode($launch_data);
+            $lti_url  = $lti_link->getLaunchURL();
+        ?>
+        <script>
+        OC.ltiCall('<?= $lti_url ?>', <?= $lti_data ?>, function () {});
+        </script>
+
     </fieldset>
     <? endforeach ?>
 
