@@ -430,7 +430,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     public function isActivatableForContext(Range $context)
     {
-        if (!$GLOBALS['perm']->have_perm('root') &&
+        if (!Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF &&
+            !$GLOBALS['perm']->have_perm('root') &&
             $context->getRangeType() === 'course' && 
             $context->getSemClass()['studygroup_mode']) {
             return false;

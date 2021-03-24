@@ -874,6 +874,11 @@ class CourseController extends OpencastController
     public function redirect_studygroup_action($studyGroupId)
     {
         if ($this->isStudentUploadEnabled()) {
+            PluginManager::getInstance()->setPluginActivated(
+                $this->plugin->getPluginId(),
+                $studyGroupId,
+                true
+            );
             $this->addAllMembersToStudyGroup(
                 Course::find($this->course_id),
                 Course::find($studyGroupId)
