@@ -25,6 +25,7 @@ class Constants {
         'OPENCAST_ALLOW_STUDIO',
         'OPENCAST_HIDE_EPISODES',
         'OPENCAST_TUTOR_EPISODE_PERM',
+        'OPENCAST_ALLOW_STUDYGROUP_CONF',
         'OPENCAST_RESOURCE_PROPERTY_ID'
     ];
 
@@ -67,25 +68,6 @@ class Constants {
             'description' => 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern',
             'value'       => 60,
             'type'        => 'integer'
-        ],
-
-        [
-            'name'        => 'ssl_verify_peer',
-            'description' => 'SSL Zertifikat des Peers prüfen',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
-            'name'        => 'ssl_verify_host',
-            'description' => 'SSL Zertifikat des Hosts prüfen',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
-            'name'        => 'ssl_cipher_list',
-            'description' => 'Zu benutzende SSL Chiffren',
-            'value'       => 'none',
-            'type'        => 'string'
         ]
     ];
 }
