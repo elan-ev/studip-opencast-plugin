@@ -40,7 +40,7 @@ class CourseController extends OpencastController
         }
 
         $title_parts = array_reverse($title_parts);
-        $page_title  = implode(' - ', $title_parts);
+        $page_title = implode(' - ', $title_parts);
 
         PageLayout::setTitle($page_title);
     }
@@ -114,9 +114,9 @@ class CourseController extends OpencastController
         }
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
-        $this->wip_episodes    = [];
-        $this->instances       = [];
-        $this->multiconnected  = false;
+        $this->wip_episodes = [];
+        $this->instances = [];
+        $this->multiconnected = false;
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id) && !empty($this->connectedSeries)) {
             $this->workflow_client = WorkflowClient::getInstance();
@@ -128,10 +128,10 @@ class CourseController extends OpencastController
 
                 $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series['series_id']));
 
-                $oc_series                   = OCSeriesModel::getSeriesFromOpencast($series);
+                $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
                 $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                $this->wip_episodes          = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
-                $this->instances             = array_merge(
+                $this->wip_episodes = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
+                $this->instances = array_merge(
                     $this->workflow_client->getRunningInstances($series['series_id']),
                     $this->instances
                 );
@@ -147,10 +147,10 @@ class CourseController extends OpencastController
             });
 
             //workflow
-            $occourse         = new OCCourseModel($this->course_id);
+            $occourse = new OCCourseModel($this->course_id);
             $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
             $this->schedulewf = $occourse->getWorkflow('schedule');
-            $this->uploadwf   = $occourse->getWorkflow('upload');
+            $this->uploadwf = $occourse->getWorkflow('upload');
         }
 
         if (!empty($this->connectedSeries)) {
@@ -180,8 +180,8 @@ class CourseController extends OpencastController
                 }
 
                 // Upload-Dialog
-                $this->date   = date('Y-m-d');
-                $this->hour   = date('H');
+                $this->date = date('Y-m-d');
+                $this->hour = date('H');
                 $this->minute = date('i');
 
                 // Remove Series
@@ -346,28 +346,28 @@ class CourseController extends OpencastController
 
         $this->cseries = OCSeminarSeries::getSeries($this->course_id);
 
-        $course               = new Seminar($this->course_id);
+        $course = new Seminar($this->course_id);
         $selectable_semesters = new SimpleCollection(Semester::getAll());
-        $start                = $course->start_time;
-        $end                  = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
+        $start = $course->start_time;
+        $end = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
         $selectable_semesters = $selectable_semesters->findBy('beginn', [$start, $end], '>=<=')->toArray();
         if (count($selectable_semesters) > 1 || (count($selectable_semesters) == 1 && $course->hasDatesOutOfDuration())) {
             $selectable_semesters[] = ['name' => _('Alle Semester'), 'semester_id' => 'all'];
         }
         $this->selectable_semesters = array_reverse($selectable_semesters);
-        $current_semester           = reset($this->selectable_semesters);
-        $this->semester_filter      = Request::option('semester_filter') ?: $current_semester['semester_id'];
+        $current_semester = reset($this->selectable_semesters);
+        $this->semester_filter = Request::option('semester_filter') ?: $current_semester['semester_id'];
 
         UrlHelper::bindLinkParam('semester_filter', $this->semester_filter);
 
-        $this->dates           = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);
-        $this->all_semester    = Semester::getAll();
-        $this->caa_client      = CaptureAgentAdminClient::getInstance();
+        $this->dates = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);
+        $this->all_semester = Semester::getAll();
+        $this->caa_client = CaptureAgentAdminClient::getInstance();
         $this->workflow_client = WorkflowClient::getInstance();
-        $this->tagged_wfs      = $this->workflow_client->getTaggedWorkflowDefinitions();
+        $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
 
-        $events_client   = ApiEventsClient::getInstance();
+        $events_client = ApiEventsClient::getInstance();
         $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
 
         foreach ($events as $event) {
@@ -385,9 +385,9 @@ class CourseController extends OpencastController
                     ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
                     : $this->_('Aufzeichnung wurde geplant.')
                 );
-                $course  = Course::find($this->course_id);
+                $course = Course::find($this->course_id);
                 $members = $course->members;
-                $users   = [];
+                $users = [];
                 foreach ($members as $member) {
                     $users[] = $member->user_id;
                 }
@@ -434,13 +434,13 @@ class CourseController extends OpencastController
     public function schedule_update_action()
     {
         $event_id = Request::get('event_id');
-        $event    = OCScheduledRecordings::find($event_id);
+        $event = OCScheduledRecordings::find($event_id);
 
         if ($event && Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE
             && $GLOBALS['perm']->have_studip_perm('tutor', $event->seminar_id)
         ) {
             $start = Request::get('start');
-            $end   = Request::get('end');
+            $end = Request::get('end');
 
             if ($event) {
                 $date = $event->date->date;
@@ -464,7 +464,7 @@ class CourseController extends OpencastController
                 );
 
                 $event->start = $new_start;
-                $event->end   = $new_end;
+                $event->end = $new_end;
                 $event->store();
 
                 // update event in opencast
@@ -485,7 +485,7 @@ class CourseController extends OpencastController
     {
         if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $scheduler_client = SchedulerClient::create($this->course_id);
-            $scheduled        = OCModel::checkScheduledRecording($this->course_id, $resource_id, $termin_id);
+            $scheduled = OCModel::checkScheduledRecording($this->course_id, $resource_id, $termin_id);
 
             if ($scheduler_client->updateEventForSeminar($this->course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
                 PageLayout::postSuccess($this->_('Die geplante Aufzeichnung wurde aktualisiert.'));
@@ -584,7 +584,7 @@ class CourseController extends OpencastController
             }
         );
 
-        $occourse       = new OCCourseModel($this->course_id);
+        $occourse = new OCCourseModel($this->course_id);
         $this->workflow = $occourse->getWorkflow('upload');
 
         if ($this->workflow) {
@@ -689,22 +689,22 @@ class CourseController extends OpencastController
 
     public function get_player_action($episode_id = "")
     {
-        $occourse        = new OCCourseModel($this->course_id);
-        $episodes        = $occourse->getEpisodes();
-        $episode         = [];
+        $occourse = new OCCourseModel($this->course_id);
+        $episodes = $occourse->getEpisodes();
+        $episode = [];
         $current_preview = '';
         foreach ($episodes as $episode) {
             if ($episode['id'] == $episode_id) {
-                $episode['author']      = $episode['author'] != '' ? $episode['author'] : 'Keine Angaben vorhanden';
+                $episode['author'] = $episode['author'] != '' ? $episode['author'] : 'Keine Angaben vorhanden';
                 $episode['description'] = $episode['description'] != '' ? $episode['description'] : 'Keine Beschreibung vorhanden';
-                $episode['start']       = date("d.m.Y H:i", strtotime($episode['start']));
-                $cand_episode           = $episode;
+                $episode['start'] = date("d.m.Y H:i", strtotime($episode['start']));
+                $cand_episode = $episode;
             }
         }
 
         if (Request::isXhr()) {
             $this->set_status('200');
-            $active_id           = $episode_id;
+            $active_id = $episode_id;
             $this->search_client = SearchClient::getInstance();
 
             if ($this->paella) {
@@ -713,7 +713,7 @@ class CourseController extends OpencastController
                 $video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=" . $active_id;
             }
 
-            $perm  = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
+            $perm = $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id);
             $video = [
                 'url'    => $video_url,
                 'image'  => $current_preview,
@@ -741,7 +741,7 @@ class CourseController extends OpencastController
             $occourse = new OCCourseModel($this->course_id);
             $occourse->toggleSeriesVisibility();
             $visibility = $occourse->getSeriesVisibility();
-            $vis        = ['visible' => 'sichtbar', 'invisible' => 'ausgeblendet'];
+            $vis = ['visible' => 'sichtbar', 'invisible' => 'ausgeblendet'];
             if ($vis[$visibility] == 'sichtbar') {
                 PageLayout::postSuccess($this->_("Der Reiter in der Kursnavigation ist jetzt für alle Kursteilnehmer sichtbar."));
             } else {
@@ -774,7 +774,7 @@ class CourseController extends OpencastController
         }
         PageLayout::setTitle($this->_('Workflow konfigurieren'));
         $this->workflow_client = WorkflowClient::getInstance();
-        $this->workflows       = array_filter(
+        $this->workflows = array_filter(
             $this->workflow_client->getTaggedWorkflowDefinitions(),
             function ($element) {
                 return (in_array('upload', $element['tags']) !== false)
@@ -783,7 +783,7 @@ class CourseController extends OpencastController
             }
         );
 
-        $occourse       = new OCCourseModel($this->course_id);
+        $occourse = new OCCourseModel($this->course_id);
         $this->uploadwf = $occourse->getWorkflow('upload');
     }
 
@@ -805,7 +805,7 @@ class CourseController extends OpencastController
     {
         if (Request::isXhr() && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
             $occcourse = new OCCourseModel($this->course_id);
-            $success   = $occcourse->setWorkflowForDate($termin_id, $workflow_id);
+            $success = $occcourse->setWorkflowForDate($termin_id, $workflow_id);
             self::updateschedule($resource_id, $termin_id, $this->course_id);
             $this->render_json($success);
 
@@ -835,9 +835,9 @@ class CourseController extends OpencastController
 
     public function isDownloadAllowed()
     {
-    	if (!$GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) {
-    		return false;
-    	}
+        if (!$GLOBALS['perm']->have_studip_perm('autor', $this->course_id)) {
+            return false;
+        }
 
         $courseConfig = CourseConfig::get($this->course_id)->OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE;
         switch ($courseConfig) {
@@ -934,10 +934,10 @@ class CourseController extends OpencastController
 
     private function getOCParameters()
     {
-        $cid             = Context::getId();
+        $cid = Context::getId();
         $connectedSeries = OCSeminarSeries::getSeries($cid);
-        $occourse        = new OCCourseModel($cid);
-        $uploadwf        = $occourse->getWorkflow('upload');
+        $occourse = new OCCourseModel($cid);
+        $uploadwf = $occourse->getWorkflow('upload');
         if ($uploadwf) {
             $workflow = $uploadwf['workflow_id'];
         } else {
@@ -952,7 +952,7 @@ class CourseController extends OpencastController
     private function retractEpisode($episode)
     {
         $workflowClient = ApiWorkflowsClient::getInstance();
-        $result         = $workflowClient->retract($episode->episode_id);
+        $result = $workflowClient->retract($episode->episode_id);
         if (!$result) {
             return false;
         }
@@ -997,7 +997,7 @@ class CourseController extends OpencastController
         $studygroup_sem_types = studygroup_sem_types();
         $studyGroup_name = $this->_("Studiengruppe:") . " " . $course['name'];
         $current_studyGroup = Course::findOneBySQL('name = :name AND status IN (:studygroup_mode)', [
-            ':name'    => $studyGroup_name,
+            ':name'            => $studyGroup_name,
             ':studygroup_mode' => $studygroup_sem_types,
         ]);
         if (!$current_studyGroup) {
@@ -1077,7 +1077,7 @@ class CourseController extends OpencastController
                 }
             )->pluck('user_id');
             foreach ($studyGroup->members as $member) {
-                if (!in_array($member->user_id, array_values($course_dozenten)) ) {
+                if (!in_array($member->user_id, array_values($course_dozenten))) {
                     $studyGroupMember = CourseMember::find([$studyGroupId, $member->user_id]);
                     $studyGroupMember['status'] = 'tutor';
                     $studyGroupMember->store();
@@ -1098,20 +1098,28 @@ class CourseController extends OpencastController
         return !empty($linkedCourseId);
     }
 
+    public function isStudyGroupConnectedWithCourse()
+    {
+        return (int)DBManager::get()->fetchColumn(
+            'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
+            [$this->course_id]
+        ) > 0;
+    }
+
     public function sort_order_action()
     {
         if ($new_order = Request::get('order')) {
             if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
                 CourseConfig::get($this->course_id)->store('COURSE_SORT_ORDER', $new_order);
-            }
-            else {
+            } else {
                 $_SESSION['opencast']['sort_order'] = $new_order;
             }
         }
         $this->redirect('course/index/false');
     }
 
-    public function course_visibility_action($ticket, $visibility) {
+    public function course_visibility_action($ticket, $visibility)
+    {
         if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             CourseConfig::get($this->course_id)->store('COURSE_HIDE_EPISODES', $visibility);
         }

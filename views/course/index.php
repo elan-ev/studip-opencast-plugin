@@ -140,7 +140,10 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         }
 
         if ($can_schedule) {
-            if (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated()) || !$controller->isStudyGroup()) {
+            $isStudentUploadForStudyGroupActivated = $controller->isStudentUploadForStudyGroupActivated();
+            if (($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated)
+                || !$controller->isStudyGroup()
+                || ($controller->isStudyGroup() && !$isStudentUploadForStudyGroupActivated && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)) {
                 $actions->addLink(
                     $_('Medien hochladen'),
                     $controller->url_for('course/upload'),
@@ -225,7 +228,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
         }
 
-        if (!$controller->isStudyGroup()) {
+        if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
             if ($controller->isDownloadAllowed()) {
                 $actions->addLink(
                     $_('Downloads verbieten'),
@@ -246,27 +249,29 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 );
             }
 
-            if ($controller->isStudentUploadEnabled()) {
-                $actions->addLink(
-                    $_('Hochladen durch Studierende verbieten'),
-                    $controller->url_for('course/disallow_students_upload/' . get_ticket()),
-                    Icon::create('upload+accept'),
-                    [
-                        'title' => $_('Das Hochladen durch Studierende ist momentan erlaubt.')
-                    ]
-                );
-            } else {
-                $actions->addLink(
-                    $_('Hochladen durch Studierende erlauben'),
-                    $controller->url_for('course/allow_students_upload/' . get_ticket()),
-                    Icon::create('upload'),
-                    [
-                        'title' => $_('Das Hochladen durch Studierende ist momentan verboten.')
-                    ]
-                );
+            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated && !$controller->isStudyGroupConnectedWithCourse())) {
+                if ($controller->isStudentUploadEnabled()) {
+                    $actions->addLink(
+                        $_('Hochladen durch Studierende verbieten'),
+                        $controller->url_for('course/disallow_students_upload/' . get_ticket()),
+                        Icon::create('upload+accept'),
+                        [
+                            'title' => $_('Das Hochladen durch Studierende ist momentan erlaubt.')
+                        ]
+                    );
+                } else {
+                    $actions->addLink(
+                        $_('Hochladen durch Studierende erlauben'),
+                        $controller->url_for('course/allow_students_upload/' . get_ticket()),
+                        Icon::create('upload'),
+                        [
+                            'title' => $_('Das Hochladen durch Studierende ist momentan verboten.')
+                        ]
+                    );
+                }
             }
 
-            if (!$controller->isStudyGroup()) {
+            if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
                 $vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
                     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -293,7 +298,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
         }
 
     } else {
-        if (!$controller->isStudyGroup()) {
+        if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
             $actions->addLink(
                 $_('Neue Series anlegen'),
                 $controller->url_for('course/create_series'),

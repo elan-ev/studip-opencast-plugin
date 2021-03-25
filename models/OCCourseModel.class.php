@@ -281,8 +281,9 @@ class OCCourseModel
 
                 foreach ($tracks as $track) {
                     $parsed_url = parse_url($track->url);
+
                     if ($track->type === 'presenter/delivery') {
-                        if (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
+                        if (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && ((in_array('atom', $track->tags->tag) || in_array('engage-download', $track->tags->tag)) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
                             $quality = $this->calculate_size(
                                 $track->video->bitrate,
                                 $track->duration
@@ -335,7 +336,6 @@ class OCCourseModel
                 ];
             }
         }
-
         return $episodes;
     }
 
