@@ -249,7 +249,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 );
             }
 
-            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated && !$controller->isStudyGroupConnectedWithCourse())) {
+            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated && !CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE)) {
                 if ($controller->isStudentUploadEnabled()) {
                     $actions->addLink(
                         $_('Hochladen durch Studierende verbieten'),
