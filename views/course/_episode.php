@@ -1,7 +1,4 @@
-<? use
-    Studip\Button,
-    Studip\LinkButton
-?>
+<? use Studip\Button;?>
 
 <?
 $visibility_text = [
