@@ -231,7 +231,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
-
+        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($studyGroupId)) {
             foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
                 if ($sem_class['name'] == 'Studiengruppen') {
@@ -241,12 +241,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             if ($isActive) {
                 $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
                 $main->addSubNavigation('studygroup', $studyGroup);
             }
         }
 
-        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($linkedCourseId)) {
             $linkedCourse = new Navigation($this->_('Zur verknüpften Veranstaltung'));
             $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));

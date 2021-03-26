@@ -280,9 +280,10 @@ class OCCourseModel
                     : [$episode->mediapackage->media->track];
 
                 foreach ($tracks as $track) {
+                    $parsed_url = parse_url($track->url);
+
                     if ($track->type === 'presenter/delivery') {
-                        $parsed_url = parse_url($track->url);
-                        if (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
+                        if (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && ((in_array('atom', $track->tags->tag) || in_array('engage-download', $track->tags->tag)) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
                             $quality = $this->calculate_size(
                                 $track->video->bitrate,
                                 $track->duration
@@ -303,19 +304,17 @@ class OCCourseModel
                             ];
                         }
                     }
-                    if (($track->type === 'presentation/delivery') && (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && (in_array('atom', $track->tags->tag) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video))) {
-                        $url = parse_url($track->url);
-                        if (in_array('atom', $track->tags->tag) && $url['scheme'] != 'rtmp' && $url['scheme'] != 'rtmps') {
-                            $quality = $this->calculate_size(
-                                $track->video->bitrate,
-                                $track->duration
-                            );
 
-                            $presentation_download[$quality] = [
-                                'url'  => $track->url,
-                                'info' => $this->add_px_to_resolution($track->video->resolution)
-                            ];
-                        }
+                    if ($track->type === 'presentation/delivery' && (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && ((in_array('atom', $track->tags->tag) || in_array('engage-download', $track->tags->tag)) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video))) {
+                        $quality = $this->calculate_size(
+                            $track->video->bitrate,
+                            $track->duration
+                        );
+
+                        $presentation_download[$quality] = [
+                            'url'  => $track->url,
+                            'info' => $this->add_px_to_resolution($track->video->resolution)
+                        ];
                     }
                 }
                 ksort($presenter_download);
@@ -337,7 +336,6 @@ class OCCourseModel
                 ];
             }
         }
-
         return $episodes;
     }
 
