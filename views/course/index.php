@@ -272,13 +272,13 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
 
             if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
-                $vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
+                $vis = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
                 if ($vis) {
                     $actions->addLink(
                         $_('Neue Videos für alle Teilnehmenden sichtbar schalten'),
-                        $controller->url_for('course/course_visibility/' . get_ticket() . '/' . !$vis),
+                        $controller->url_for('course/course_visibility/' . get_ticket() . '/' . intval(!$vis)),
                         Icon::create('visibility-invisible'),
                         [
                             'title' => $_('Neue Medien sind momentan standardmäßig nur für Lehrende sichtbar.')
@@ -287,7 +287,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 } else {
                     $actions->addLink(
                         $_('Neue Videos nur für Lehrende sichtbar schalten'),
-                        $controller->url_for('course/course_visibility/' . get_ticket() . '/' . !$vis),
+                        $controller->url_for('course/course_visibility/' . get_ticket() . '/' . intval(!$vis)),
                         Icon::create('visibility-visible'),
                         [
                             'title' => $_('Neue Medien sind momentan standardmäßig für alle Teilnehmenden der Veranstaltung sichtbar.')
