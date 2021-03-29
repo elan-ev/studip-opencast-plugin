@@ -2,6 +2,8 @@
 
 use Studip\Button;
 use Studip\LinkButton;
+use Opencast\LTI\OpencastLTI;
+use Opencast\LTI\LtiLink;
 
 ?>
 
@@ -293,3 +295,39 @@ if($vis == false){
         OC.initUpload(<?= json_encode($config['service_url']) ?>);
     });
 </script>
+
+<?
+if ($this->connectedSeries[0]['series_id']) :
+    $current_user_id = $GLOBALS['auth']->auth['uid'];
+
+
+    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+        $upload_lti_link = new LtiLink(
+            $config['service_url'] . '/lti',
+            $config['lti_consumerkey'],
+            $config['lti_consumersecret']
+        );
+
+        $upload_lti_link->addCustomParameter('tool', '/ltitools');
+
+        $upload_lti_link->setUser($current_user_id, 'Instructor');
+        $upload_lti_link->setCourse($course_id);
+        $upload_lti_link->setResource(
+            $this->connectedSeries[0]['series_id'],
+            'series'
+        );
+
+        $upload_launch_data = $upload_lti_link->getBasicLaunchData();
+        $upload_signature   = $upload_lti_link->getLaunchSignature($upload_launch_data);
+
+        $upload_launch_data['oauth_signature'] = $upload_signature;
+    }
+    ?>
+
+    <script>
+            <? if ($upload_lti_link): ?>
+            OC.ltiCall('<?= $upload_lti_link->getLaunchURL() ?>', <?= json_encode($upload_launch_data) ?>, function () {
+            });
+            <? endif ?>
+    </script>
+<? endif ?>
