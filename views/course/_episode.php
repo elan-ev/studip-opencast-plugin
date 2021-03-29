@@ -152,13 +152,14 @@ $sort_orders = [
                             <div class="ocplayerlink">
 
                                 <?= Studip\LinkButton::create(
-                                        $_('Feedback'),
+                                        $_('Technisches Feedback'),
                                         'mailto:' . $GLOBALS['UNI_CONTACT']
                                             . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALinks zum betroffenen Video:%0D%0A'
                                             . $controller->link_for('course/index/' . $item['id']) ."%0D%0A"
                                             . $video_url . $item['id'],
                                         [
-                                            'class' => 'oc_feedback'
+                                            'class' => 'oc_feedback',
+                                            'title' => $_('Technisches Feedback geben (Ton- oder Abspielprobleme etc.)'),
                                         ]
                                 ); ?>
 
