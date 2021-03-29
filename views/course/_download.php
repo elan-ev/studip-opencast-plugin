@@ -7,7 +7,7 @@ foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' =
             <? $download_info = array_reverse($episode[$download_type], true) ?>
             <? foreach ($download_info as $quality => $content) : ?>
                 <?= Studip\LinkButton::create(
-                    $content['info'] . '  (' . CourseController::nice_size_text($quality) . ')',
+                    $content['info'] . ( $quality > 0 ? '  (' . CourseController::nice_size_text($quality) . ')' : '' ),
                     URLHelper::getURL($content['url']),
                     ['target' => '_blank', 'class' => 'download ' . $type]
                 ); ?>
