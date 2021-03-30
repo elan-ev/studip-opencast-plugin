@@ -11,15 +11,12 @@ class OCModel
 {
     public static function getOCRessources()
     {
-        if (StudipVersion::newerThan('4.4'))
-        {
+        if (StudipVersion::newerThan('4.4')) {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
                 LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)
                 WHERE rop.property_id = ?
                 AND rop.state = '1'");
-        }
-        else
-        {
+        } else {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
                 WHERE rop.property_id = ?
@@ -33,16 +30,13 @@ class OCModel
 
     public static function getAssignedOCRessources()
     {
-        if (StudipVersion::newerThan('4.4'))
-        {
+        if (StudipVersion::newerThan('4.4')) {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources ro
                 LEFT JOIN resource_properties rop ON (ro.id = rop.resource_id)
                 LEFT JOIN oc_resources ocr ON (ro.id = ocr.resource_id)
                 WHERE rop.property_id = ?
                 AND rop.state = 'on'");
-        }
-        else
-        {
+        } else {
             $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
                 LEFT JOIN oc_resources ocr ON (ro.resource_id = ocr.resource_id)
@@ -167,10 +161,10 @@ class OCModel
     {
         // 1st: retrieve series_id
         $series = OCSeminarSeries::getSeries($course_id);
-        $serie  = $series[0];
+        $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
-        $ca  = $cas[0];
+        $ca = $cas[0];
 
         $date = CourseDate::find($date_id);
 
@@ -205,10 +199,10 @@ class OCModel
     public static function checkScheduledRecording($course_id, $resource_id, $date_id)
     {
         $series = OCSeminarSeries::getSeries($course_id);
-        $serie  = $series[0];
+        $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
-        $ca  = $cas[0];
+        $ca = $cas[0];
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                                                     WHERE `seminar_id` = ?
                                                     AND `series_id` = ?
@@ -230,7 +224,7 @@ class OCModel
 
     public static function unscheduleRecording($event_id)
     {
-        $stmt    = DBManager::get()->prepare("DELETE FROM oc_scheduled_recordings
+        $stmt = DBManager::get()->prepare("DELETE FROM oc_scheduled_recordings
                 WHERE event_id = ?");
         $success = $stmt->execute([$event_id]);
 
@@ -263,7 +257,7 @@ class OCModel
         date_default_timezone_set("Europe/Berlin");
 
         $course = new Seminar($course_id);
-        $date   = new SingleDate($termin_id);
+        $date = new SingleDate($termin_id);
 
         // if event_id is null, there is not yet an event which could have other start or end-times
         if ($event_id) {
@@ -287,17 +281,17 @@ class OCModel
 
 
         $series = OCSeminarSeries::getSeries($course_id);
-        $serie  = $series[0];
+        $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
-        $ca  = $cas[0];
+        $ca = $cas[0];
 
         $creator = 'unknown';
 
         if ($GLOBALS['perm']->have_perm('admin')) {
             $instructors = $course->getMembers('dozent');
-            $instructor  = array_shift($instructors);
-            $creator     = $instructor['fullname'];
+            $instructor = array_shift($instructors);
+            $creator = $instructor['fullname'];
         } else {
             $creator = get_fullname();
         }
@@ -305,9 +299,9 @@ class OCModel
         $inst_data = Institute::find($course->institut_id);
 
         if (StudipVersion::newerThan('4.4')) {
-        	$room = new Resource($resource_id);
+            $room = new Resource($resource_id);
         } else {
-        	$room = ResourceObject::Factory($resource_id);
+            $room = ResourceObject::Factory($resource_id);
         }
 
         $start_time = $event_id ? $event->start : $date->getStartTime();
@@ -320,33 +314,32 @@ class OCModel
 
         $contributor = $inst_data['name'];
         $description = $issue->description;
-        $device      = $ca['capture_agent'];
+        $device = $ca['capture_agent'];
 
         $language = "de";
         $seriesId = $serie['series_id'];
 
         if (!$issue->title) {
             $course = new Seminar($course_id);
-            $name   = $course->getName();
-            $title  = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
+            $name = $course->getName();
+            $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
         } else $title = $issue_titles;
 
 
         // Additional Metadata
-        $location = $room->name;
         $abstract = $course->description;
 
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                <dcterms:creator><![CDATA[' .  urlencode($creator) . ']]></dcterms:creator>
-                                <dcterms:contributor><![CDATA[' .  urlencode($contributor) . ']]></dcterms:contributor>
+                                <dcterms:creator><![CDATA[' . urlencode($creator) . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . urlencode($contributor) . ']]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
                                 <dcterms:temporal xsi:type="dcterms:Period">start=' . self::getDCTime($start_time) . '; end=' . self::getDCTime($end_time) . '; scheme=W3C-DTF;</dcterms:temporal>
                                 <dcterms:description><![CDATA[' . urlencode($description) . ']]></dcterms:description>
-                                <dcterms:subject><![CDATA[' .  urlencode($abstract) . ']]></dcterms:subject>
+                                <dcterms:subject><![CDATA[' . urlencode($abstract) . ']]></dcterms:subject>
                                 <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
-                                <dcterms:title><![CDATA[' .  urlencode($title) . ']]></dcterms:title>
+                                <dcterms:title><![CDATA[' . urlencode($title) . ']]></dcterms:title>
                                 <dcterms:isPartOf>' . $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
@@ -354,7 +347,7 @@ class OCModel
 
     }
 
-    static function createACLXML()
+    public static function createACLXML()
     {
 
         $acl = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -379,7 +372,7 @@ class OCModel
      *
      * @return bool
      */
-    static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
+    public static function setVisibilityForEpisode($course_id, $episode_id, $visibility)
     {
         // Local
         $entry = self::getEntry($course_id, $episode_id);
@@ -443,9 +436,10 @@ class OCModel
      * @param string $episode_id
      * @return array
      */
-    static function getEntry($course_id, $episode_id)
+    public static function getEntry($course_id, $episode_id)
     {
-        $series = reset(OCSeminarSeries::getSeries($course_id));
+        $series = OCSeminarSeries::getSeries($course_id);
+        $series = reset($series);
 
         return OCSeminarEpisodes::findOneBySQL(
             'series_id = ? AND episode_id = ? AND seminar_id = ?',
@@ -453,12 +447,12 @@ class OCModel
         );
     }
 
-    static function getDCTime($timestamp)
+    public static function getDCTime($timestamp)
     {
         return gmdate("Y-m-d", $timestamp) . 'T' . gmdate('H:i:s', $timestamp) . 'Z';
     }
 
-    static function retrieveRESTservices($components, $match_protocol)
+    public static function retrieveRESTservices($components, $match_protocol)
     {
         $services = [];
         foreach ($components as $service) {
@@ -474,7 +468,7 @@ class OCModel
         return $services;
     }
 
-    static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate)
+    public static function setWorkflowIDforCourse($workflow_id, $seminar_id, $user_id, $mkdate)
     {
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_seminar_workflows (workflow_id, seminar_id, user_id, mkdate)
@@ -482,7 +476,7 @@ class OCModel
         return $stmt->execute([$workflow_id, $seminar_id, $user_id, $mkdate]);
     }
 
-    static function getWorkflowIDsforCourse($seminar_id)
+    public static function getWorkflowIDsforCourse($seminar_id)
     {
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows WHERE `seminar_id` = ?");
         $stmt->execute([$seminar_id]);
@@ -490,7 +484,7 @@ class OCModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    static function getWorkflowIDs()
+    public static function getWorkflowIDs()
     {
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_workflows");
         $stmt->execute();
@@ -505,7 +499,7 @@ class OCModel
      * @param string $workflow_ids
      * @return mixed
      */
-    static function getWorkflowStates($course_id, $workflow_ids)
+    public static function getWorkflowStates($course_id, $workflow_ids)
     {
         $states = static::getWorkflowStatesFromSQL($workflow_ids);
 
@@ -516,12 +510,12 @@ class OCModel
         return [];
     }
 
-    static function getWorkflowStatesFromSQL($table_entries)
+    public static function getWorkflowStatesFromSQL($table_entries)
     {
         $states = [];
 
         foreach ($table_entries as $table_entry) {
-            $current_workflow_client   = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($table_entry['seminar_id']));
+            $current_workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($table_entry['seminar_id']));
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
@@ -536,7 +530,7 @@ class OCModel
         return $states;
     }
 
-    static function removeWorkflowIDforCourse($workflow_id, $seminar_id)
+    public static function removeWorkflowIDforCourse($workflow_id, $seminar_id)
     {
         $stmt = DBManager::get()->prepare("DELETE FROM
                  oc_seminar_workflows
@@ -555,7 +549,7 @@ class OCModel
      *
      * @param boolean $is_retracting [description]
      */
-    static function setEpisode($episode_id, $series_id, $seminar_id, $visibility, $is_retracting)
+    public static function setEpisode($episode_id, $series_id, $seminar_id, $visibility, $is_retracting)
     {
         $is_new = false;
 
@@ -569,25 +563,25 @@ class OCModel
             $episode = new OCSeminarEpisodes();
 
             $episode->episode_id = $episode_id;
-            $episode->series_id  = $series_id;
+            $episode->series_id = $series_id;
             $episode->seminar_id = $seminar_id;
             // allow ACL changes right now
-            $episode->chdate     = 1;
-            $episode->mkdate     = time();
+            $episode->chdate = 1;
+            $episode->mkdate = time();
             $is_new = true;
         }
 
-        $episode->visible       = $visibility;
+        $episode->visible = $visibility;
         $episode->is_retracting = $is_retracting;
 
         $episode->store();
         if ($is_new) {
-          // apply correct ACLs to new Episode right now
-          static::setVisibilityForEpisode($seminar_id, $episode_id, $visibility);
+            // apply correct ACLs to new Episode right now
+            static::setVisibilityForEpisode($seminar_id, $episode_id, $visibility);
         }
     }
 
-    static function getCoursePositions($course_id)
+    public static function getCoursePositions($course_id)
     {
         $stmt = DBManager::get()->prepare("SELECT series_id, episode_id,
             `visible`, `is_retracting`, mkdate
@@ -599,7 +593,7 @@ class OCModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    static function getConfigurationstate()
+    public static function getConfigurationstate()
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_endpoints");
         $stmt->execute();
@@ -612,7 +606,7 @@ class OCModel
         return false;
     }
 
-    static function checkPermForEpisode($episode_id, $user_id, $user_status)
+    public static function checkPermForEpisode($episode_id, $user_id, $user_status)
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_seminar_episodes oce
             JOIN oc_seminar_series oss USING (series_id)
@@ -629,7 +623,7 @@ class OCModel
         return false;
     }
 
-    static function search_positions($array, $key, $value)
+    public static function search_positions($array, $key, $value)
     {
         $results = [];
 
@@ -646,7 +640,7 @@ class OCModel
         return $results;
     }
 
-    static function removeStoredEpisode($episode_id)
+    public static function removeStoredEpisode($episode_id)
     {
         $stmt = DBManager::get()->prepare("DELETE FROM `oc_seminar_episodes`
             WHERE `episode_id` = ?");
@@ -654,7 +648,7 @@ class OCModel
         return $stmt->execute([$episode_id]);
     }
 
-    static function getCoursesForEpisode($episode_id)
+    public static function getCoursesForEpisode($episode_id)
     {
         $stmt = DBManager::get()->prepare("SELECT DISTINCT seminar_id
             FROM oc_seminar_episodes
@@ -671,10 +665,10 @@ class OCModel
         return $return;
     }
 
-    static function getSeriesForEpisode($episode_id)
+    public static function getSeriesForEpisode($episode_id)
     {
         $courses = static::getCoursesForEpisode($episode_id);
-        $series  = [];
+        $series = [];
 
         $stmt = DBManager::get()->prepare("SELECT series_id FROM oc_seminar_series WHERE seminar_id = ?");
         foreach ($courses as $course_id) {

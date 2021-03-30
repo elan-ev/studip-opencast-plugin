@@ -1,7 +1,8 @@
 <? use Studip\Button,
     Studip\LinkButton,
     Opencast\Configuration,
-    Opencast\Constants;
+    Opencast\Constants,
+    Opencast\LTI\LtiLink;
 ?>
 <form class="default" action="<?= $controller->url_for('admin/update/') ?>" method=post>
     <fieldset class="collapsable">

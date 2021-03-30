@@ -195,7 +195,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $ocmodel = new OCCourseModel($course_id);
-        $main    = new Navigation('Opencast');
+        $title   = 'Opencast';
+        if ($ocmodel->getSeriesVisibility() == 'invisible') {
+            $title .= " (". $this->_('versteckt'). ")";
+        }
+        $main    = new Navigation($title);
+
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
         $main->setImage(Icon::create(
             $this->getPluginURL() . '/images/opencast-black.svg',
@@ -226,7 +231,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
-
+        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($studyGroupId)) {
             foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
                 if ($sem_class['name'] == 'Studiengruppen') {
@@ -236,12 +241,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             if ($isActive) {
                 $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $$linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
                 $main->addSubNavigation('studygroup', $studyGroup);
             }
         }
 
-        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
         if (!empty($linkedCourseId)) {
             $linkedCourse = new Navigation($this->_('Zur verknüpften Veranstaltung'));
             $linkedCourse->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/index'));
@@ -425,7 +429,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      */
     public function isActivatableForContext(Range $context)
     {
-        if (!$GLOBALS['perm']->have_perm('root') &&
+        if (!Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF &&
+            !$GLOBALS['perm']->have_perm('root') &&
             $context->getRangeType() === 'course' && 
             $context->getSemClass()['studygroup_mode']) {
             return false;

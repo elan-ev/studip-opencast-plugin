@@ -7,7 +7,7 @@ the LMS [Stud.IP](http://studip.de/).*
 *This is the development page for the Opencast plugin. To get a working version for your Stud.IP, head over to the [Stud.IP marketplace](https://develop.studip.de/studip/plugins.php/pluginmarket/presenting/details/dfd73b3d67c627be493536c1ae0e27c9). To build your own version, make sure to read how to [Build a working plugin zip](https://github.com/elan-ev/studip-opencast-plugin/wiki/Build-a-working-plugin-zip).*
 
 Plugin-Version: 1.x  
-Kompatibel zu Stud.IP Versionen: 4.0 - 4.5  
+Kompatibel zu Stud.IP Versionen: 4.0 - 4.6  
 Kompatibel zu Opencast Versionen:
 - Bis einschließlich Plugin-Version 1.2.113: 5.x, 6.x, 7.x, 8.x
 - Nach Plugin-Version 1.2.113: 8.3+ (für einen Direktupload nach LTI-Anmeldung)

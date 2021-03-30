@@ -40,7 +40,7 @@ class SeriesClient extends OCRestClient
 
         $acl = OpencastLTI::generate_standard_acls($course_id);
 
-        $vis_conf = CourseConfig::get($course_id)->COURSE_HIDE_EPISODES
+        $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
         $vis = $vis_conf

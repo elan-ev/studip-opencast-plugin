@@ -60,19 +60,44 @@ class ImproveConfig extends Migration
         $db = DBManager::get();
 
         try {
-            $db->exec("ALTER TABLE `oc_config`
-                DROP COLUMN `settings`");
-
-            $db->exec("ALTER TABLE `oc_config`
-                CHANGE `id` `config_id` int(11) NOT NULL AUTO_INCREMENT FIRST;");
-
             $db->exec('CREATE TABLE IF NOT EXISTS `oc_config_precise` (
-                `id` int(11) NOT NULL,
+                `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                 `name` varchar(100) COLLATE latin1_german1_ci DEFAULT NULL,
-                `description` text COLLATE latin1_german1_ci,
+                `description` text COLLATE latin1_german1_ci DEFAULT NULL,
                 `value` varchar(255) COLLATE latin1_german1_ci DEFAULT NULL,
                 `for_config` int(11) DEFAULT NULL)
             ');
+        
+            $db->query("INSERT INTO `oc_config_precise`(`name`, `description`, `value`, `for_config`) VALUES
+                ('upload_chunk_size', 'Größe der Chunks für das Hochladen in Byte', '10000000', -1),
+                ('number_of_configs', 'Maximale Anzahl von sichtbaren Konfigurationen', '1', -1),
+                ('time_buffer_overlap', 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern', '60', -1),
+                ('ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),
+                ('ssl_verify_host', 'SSL Zertifikat des Hosts prüfen', 'false', -1),
+                ('ssl_cipher_list', 'Zu benutzende SSL Chiffren', 'none', -1),
+                ('capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Opencast Capture Agent', -1),
+                ('lti_consumerkey', 'LTI Consumerkey', 'CONSUMERKEY', -1),
+                ('lti_consumersecret', 'LTI Consumersecret', 'CONSUMERSECRET', -1)
+            ");
+
+            $stmt = $db->prepare("INSERT IGNORE INTO oc_config_precise (name, value, for_config)
+                VALUES (:name, :value, :for_config)");
+            $data = $db->query("SELECT id, settings FROM `oc_config`")->fetchAll(PDO::FETCH_KEY_PAIR);
+            foreach($data as $id => $settings) {
+                $configs = json_decode($settings, True);
+                foreach($configs as $name => $value) {
+                    $stmt->execute([
+                        'name'       => $name,
+                        'value'      => $value,
+                        'for_config' => $id
+                    ]);
+                }
+            }
+
+            $db->exec("ALTER TABLE `oc_config`
+                CHANGE `id` `config_id` int(11) NOT NULL AUTO_INCREMENT FIRST;");
+            $db->exec("ALTER TABLE `oc_config`
+                DROP COLUMN `settings`");
         } catch (PDOException $e) {}
 
         SimpleOrMap::expireTableScheme();
