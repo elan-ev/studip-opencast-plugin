@@ -6,7 +6,7 @@ use Studip\LinkButton;
 ?>
 
 <?
-$vis = CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES
+$vis = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
     : \Config::get()->OPENCAST_HIDE_EPISODES;
 ?>
