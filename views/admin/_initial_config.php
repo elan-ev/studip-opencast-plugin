@@ -90,8 +90,10 @@
 
         <?
             $instance_config = Configuration::instance($config_id);
+            $url = parse_url($config[$config_id]['service_url']);
             $lti_link = new LtiLink(
-                $config[$config_id]['service_url'],
+                $url['scheme'] . '://' . $url['host']
+                . ($url['port'] ? ':' . $url['port'] : '') . '/lti',
                 $instance_config['lti_consumerkey'],
                 $instance_config['lti_consumersecret']
             );
