@@ -36,7 +36,7 @@ const OC = {
                                         'nicht hilft, wenden sich an ' + 
                                         'eine/n Systemadministrator/in', {
                         title: 'LTI Fehler',
-                        size: 'normal'
+                        size: 'small'
                     });
                 }
             });
