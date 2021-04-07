@@ -95,10 +95,6 @@
             $lti_link = new LtiLink(
                 $url['scheme'] . '://' . $url['host']
                 . ($url['port'] ? ':' . $url['port'] : '') . '/lti',
-=======
-            $lti_link = new LtiLink(
-                $config[$config_id]['service_url'],
->>>>>>> abe0d73 (error message bei LTI anmeldung. Nicht getestet!)
                 $instance_config['lti_consumerkey'],
                 $instance_config['lti_consumersecret']
             );
