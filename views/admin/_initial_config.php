@@ -90,7 +90,6 @@
 
         <?
             $instance_config = Configuration::instance($config_id);
-<<<<<<< HEAD
             $url = parse_url($config[$config_id]['service_url']);
             $lti_link = new LtiLink(
                 $url['scheme'] . '://' . $url['host']
