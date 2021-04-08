@@ -181,6 +181,19 @@ $sort_orders = [
                                                 'title'  => $_('Schnitteditor öffnen')
                                             ]
                                         ); ?>
+
+                                        <? $annotation_tool_url = $controller->get_annotation_tool($item['id']); ?>
+                                        <? if ($annotation_tool_url) : ?>
+                                            <?= Studip\LinkButton::create(
+                                                $_('Anmerkungen hinzufügen'),
+                                                $annotation_tool_url,
+                                                [
+                                                    'target' => '_blank',
+                                                    'class'  => 'oc_editor',
+                                                    'title'  => $_('Anmerkungen hinzufügen')
+                                                ]
+                                            ); ?>
+                                        <? endif ?>
                                     <? endif ?>
                                 <? endif; ?>
 
