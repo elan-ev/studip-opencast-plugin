@@ -250,8 +250,9 @@ class CourseController extends OpencastController
             return $this->redirect('course/index');
         }
 
-        OCTos::deleteBySQL('seminar_id = ?', [
-            $this->course_id
+        OCTos::deleteBySQL('seminar_id = :cid AND user_id = :uid', [
+            ':cid' => $this->course_id,
+            ':uid' => $GLOBALS['user']->id
         ]);
 
         $this->redirect('course/index');
