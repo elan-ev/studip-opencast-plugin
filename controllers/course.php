@@ -100,7 +100,7 @@ class CourseController extends OpencastController
 
         $this->mayWatchEpisodes = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
         if (!$this->mayWatchEpisodes) {
-            PageLayout::postInfo($this->_('Sie sind in dieser Veranstaltung nur Leser*in. Sie können die Aufzeichnungen leider nicht ansehen. Wenden Sie sich eventuell an die Lehrenden dieser Veranstaltung!'));
+            PageLayout::postInfo($this->_('Sie sind in dieser Veranstaltung nur Leser*in. Sie können die Aufzeichnungen daher nicht ansehen. Bitte wenden Sie sich an die Lehrenden dieser Veranstaltung!'));
         }
 
         $reload = true;
