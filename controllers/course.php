@@ -1125,4 +1125,16 @@ class CourseController extends OpencastController
         }
         $this->redirect('course/index/false');
     }
+
+    public function get_annotation_tool($episode_id)
+    {
+        $eventsClient = ApiEventsClient::getInstance();
+        $event = $eventsClient->getEpisode($episode_id, true)[1];
+        foreach ($event->publications as $publication) {
+            if ($publication->channel == 'annotation-tool') {
+                return $publication->url;
+            }
+        }
+        return false;
+    }
 }
