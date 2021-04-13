@@ -73,7 +73,7 @@ class CourseController extends OpencastController
         if (Config::get()->OPENCAST_SHOW_TOS
             && !$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
             && $action != 'tos' && $action != 'access_denied' && $action != 'accept_tos') {
-            if ($GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+            if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 if (empty(OCTos::findBySQL('user_id = ? AND seminar_id = ?', [$GLOBALS['user']->id, $this->course_id]))) {
                     $this->redirect('course/tos');
                 }
@@ -219,7 +219,7 @@ class CourseController extends OpencastController
 
     public function tos_action()
     {
-        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             return $this->redirect('course/index');
         }
 
@@ -229,7 +229,7 @@ class CourseController extends OpencastController
 
     public function accept_tos_action()
     {
-        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             return $this->redirect('course/index');
         }
 
@@ -246,7 +246,7 @@ class CourseController extends OpencastController
 
     public function withdraw_tos_action()
     {
-        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+        if (!Config::get()->OPENCAST_SHOW_TOS || !$GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             return $this->redirect('course/index');
         }
 
