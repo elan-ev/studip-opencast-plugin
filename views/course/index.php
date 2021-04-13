@@ -110,6 +110,17 @@ if ($this->connectedSeries[0]['series_id']) :
             <? endif ?>
         });
     </script>
+
+<? $studygroup_active = true; ?>
+<? foreach ($GLOBALS['SEM_CLASS'] as $sem_class) : ?>
+    <? if ($sem_class['name'] == 'Studiengruppen') : ?>
+        <? if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) : ?>
+            <?= $studygroup_active = false;
+                break; ?>
+        <? endif ?>
+    <? endif ?>
+<? endforeach ?>
+
 <?
     /*
     ?>
@@ -198,7 +209,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             }
         }
 
-        if (Config::get()->OPENCAST_SHOW_TOS && !$GLOBALS['perm']->have_perm('root')) {
+        if (Config::get()->OPENCAST_SHOW_TOS && !$GLOBALS['perm']->have_perm('admin')) {
             $actions->addLink(
                 $_('Datenschutzeinwilligung zurückziehen'),
                 $controller->url_for('course/withdraw_tos/' . get_ticket()),
@@ -259,7 +270,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                             'title' => $_('Das Hochladen durch Studierende ist momentan erlaubt.')
                         ]
                     );
-                } else {
+                } elseif ($studygroup_active) {
                     $actions->addLink(
                         $_('Hochladen durch Studierende erlauben'),
                         $controller->url_for('course/allow_students_upload/' . get_ticket()),
@@ -330,6 +341,10 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback');
 ?>
 
+<? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) && !$studygroup_active) : ?>
+    <?= MessageBox::error($_('Das Opencast Plugin ist momentan nicht für Studiengruppen aktiv. Wenden Sie sich an einen Admin, um das Problem zu beheben.')); ?>
+<? endif ?>
+
 <? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
     <? if ($GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) : ?>
         <?= $this->render_partial('course/_wip_episode') ?>
@@ -353,17 +368,6 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
         <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
     <? endif; ?>
 <? endif; ?>
-
-<? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
-    <? foreach ($GLOBALS['SEM_CLASS'] as $sem_class) : ?>
-        <? if ($sem_class['name'] == 'Studiengruppen') : ?>
-            <? if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) : ?>
-                <?= MessageBox::info($_('Das Opencast Plugin ist momentan nicht für Studiengruppen aktiv. Wenden Sie sich an einen Admin, um das Problem zu beheben.'));
-                    break; ?>
-            <? endif ?>
-        <? endif ?>
-    <? endforeach ?>
-<? endif ?>
 
 <!--- hidden -->
 <div class="hidden" id="course_id" data-courseId="<?= $course_id ?>"></div>
