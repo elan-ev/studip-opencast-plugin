@@ -129,7 +129,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
         $ocmodel = new OCCourseModel($course_id);
-        if (!$this->isActivated($course_id)) {
+        if (!$this->isActivated($course_id) || ($ocmodel->getSeriesVisibility() == 'invisible' && !$GLOBALS['perm']->have_studip_perm('tutor', $course_id))) {
             return;
         }
 
