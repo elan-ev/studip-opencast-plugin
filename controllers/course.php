@@ -737,7 +737,7 @@ class CourseController extends OpencastController
 
     public function toggle_tab_visibility_action($ticket)
     {
-        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('dozent', $this->course_id)) {
+        if (check_ticket($ticket) && $GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
             $occourse = new OCCourseModel($this->course_id);
             $occourse->toggleSeriesVisibility();
             $visibility = $occourse->getSeriesVisibility();
