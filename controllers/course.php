@@ -69,9 +69,9 @@ class CourseController extends OpencastController
             ],
         ]);
 
-        // check, if current user is lecturer, force tos if so
+        // check, if current user is admin, lecturer or tutor force tos if so
         if (Config::get()->OPENCAST_SHOW_TOS
-            && !$GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
+            && !$GLOBALS['perm']->have_studip_perm('root', $this->course_id)
             && $action != 'tos' && $action != 'access_denied' && $action != 'accept_tos') {
             if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
                 if (empty(OCTos::findBySQL('user_id = ? AND seminar_id = ?', [$GLOBALS['user']->id, $this->course_id]))) {
