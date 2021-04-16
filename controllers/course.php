@@ -965,6 +965,7 @@ class CourseController extends OpencastController
 
     private function isLive($episode_id)
     {
+        /*
         $oc_events = ApiEventsClient::create($this->course_id);
         $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
 
@@ -973,6 +974,7 @@ class CourseController extends OpencastController
                 return $event->publication_status[0] == 'engage-live';
             }
         }
+        */
 
         return false;
     }
