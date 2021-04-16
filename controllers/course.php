@@ -223,7 +223,7 @@ class CourseController extends OpencastController
             return $this->redirect('course/index');
         }
 
-        $this->set_title($this->_('Opencast - Datenschutzrichtlinien'));
+        $this->set_title($this->_('Opencast - Nutzungsvereinbarung'));
         Navigation::activateItem('course/opencast');
     }
 

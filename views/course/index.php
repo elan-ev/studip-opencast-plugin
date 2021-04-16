@@ -211,7 +211,7 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 
         if (Config::get()->OPENCAST_SHOW_TOS && !$GLOBALS['perm']->have_perm('admin')) {
             $actions->addLink(
-                $_('Datenschutzeinwilligung zurückziehen'),
+                $_('Nutzungsvereinbarung ablehnen'),
                 $controller->url_for('course/withdraw_tos/' . get_ticket()),
                 Icon::create('decline')
             );
