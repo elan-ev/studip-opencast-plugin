@@ -38,3 +38,8 @@ eigenen Planungsansicht. Hiermit entfällt die mehrfache Eingabe von Metadaten.
 
 *Kontrolle der Sichtbarkeit:* Die DozentInnen können die Sichtbarkeit jeder
 Aufzeichnung in Stud.IP individuell festlegen.
+
+Fallstricke
+-----------
+
+* Wenn die Opiton `OPENCAST_SHOW_TOS` ("Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?") aktiviert ist löscht der Cronjob `Opencast - "Scheduled-Events-Refresh"` alle Ereignisse aus Opencast, die keinem geplanten Event-Termin einer Stud.IP Veranstaltung zugeordnet werden können.
