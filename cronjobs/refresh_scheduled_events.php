@@ -84,13 +84,16 @@ class RefreshScheduledEvents extends CronJob
         }
 
         // the remaining events have no association in Stud.IP and need to be deleted
-        echo 'Folgende Events sind zum löschen vorgesehen:' . "\n";
+        if (Config::get()->OPENCAST_SHOW_TOS) {
+            echo _('Nicht über Stud.IP Termine abgedeckte Events:') . "\n";
+        } else {
+            echo _('Folgende Events werden gelöscht:') . "\n";
+        }
 
         if (is_array($events)) foreach ($events as $event) {
+            echo $event->identifier . "\n";
             // only delete events, if the TOS-system is activated
-            if (!Config::get()->OPENCAST_SHOW_TOS) {
-                echo $event->identifier . "\n";
-            } else {
+            if (Config::get()->OPENCAST_SHOW_TOS) {
                 $scheduler_client = SchedulerClient::getInstance(1);
                 $scheduler_client->deleteEvent($event->identifier);
                 OCScheduledRecordings::deleteBySql('event_id = ?', [$event->identifier]);
