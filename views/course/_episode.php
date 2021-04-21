@@ -11,8 +11,8 @@ $sort_orders = [
     'mkdate1'    => $_('Datum erstellt: Absteigend'),
     'start0'     => $_('Datum publiziert: Aufsteigend'),
     'start1'     => $_('Datum publiziert: Absteigend'),
-    'title0'     => $_('Title: Aufsteigend'),
-    'title1'     => $_('Title: Absteigend'),
+    'title0'     => $_('Titel: Aufsteigend'),
+    'title1'     => $_('Titel: Absteigend'),
 ];
 ?>
 

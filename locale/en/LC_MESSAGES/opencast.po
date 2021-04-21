@@ -673,11 +673,11 @@ msgid "Datum publiziert: Absteigend"
 msgstr ""
 
 #: views/course/_episode.php:17
-msgid "Title: Aufsteigend"
+msgid "Titel: Aufsteigend"
 msgstr ""
 
 #: views/course/_episode.php:18
-msgid "Title: Absteigend"
+msgid "Titel: Absteigend"
 msgstr ""
 
 #: views/course/_episode.php:24
