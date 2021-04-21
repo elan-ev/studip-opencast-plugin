@@ -39,7 +39,29 @@ eigenen Planungsansicht. Hiermit entfällt die mehrfache Eingabe von Metadaten.
 *Kontrolle der Sichtbarkeit:* Die DozentInnen können die Sichtbarkeit jeder
 Aufzeichnung in Stud.IP individuell festlegen.
 
-Fallstricke
------------
+Fallstricke und Einschränkungen
+-------------------------------
 
-* Wenn die Opiton `OPENCAST_SHOW_TOS` ("Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?") aktiviert ist löscht der Cronjob `Opencast - "Scheduled-Events-Refresh"` alle Ereignisse aus Opencast, die keinem geplanten Event-Termin einer Stud.IP Veranstaltung zugeordnet werden können.
+* Wenn die Opiton `OPENCAST_SHOW_TOS` ("Müssen Lehrende einem Datenschutztext
+zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden
+können?") aktiviert ist **löscht** der Cronjob
+`Opencast - "Scheduled-Events-Refresh"` alle Ereignisse aus Opencast, die keinem
+geplanten Event-Termin einer Stud.IP Veranstaltung zugeordnet werden können.
+* Ist die Option `OPENCAST_SHOW_TOS` ("Müssen Lehrende einem Datenschutztext
+zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden
+können?") aktiviert, so muss mindestens ein Lehrender, Tutor oder Admin den
+ToS zugestimmt haben, bevor Studierende (ggf. von roots hochgeladene) Videos
+sehen können.
+* Leser*innen einer Veranstaltung können keine Videos sehen.
+* Neue Endpunkte bei Updates oder Opencast-Aktualisierungen: Das Plugin cacht
+Opencast API Endpunkte in einer Tabelle. Das ist zum einen praktisch, weil man 
+Uploads dann z.B. an einen dedizierten Ingest-Endpunkt senden könnte (LTI Login
+fehlt noch), zum anderen muss man bei Plugin-Updates, die neuen Endpunkte
+ansprechen oder bei Verwendung anderer Opencast-Bündelungen (z.B. separater
+Admin statt Admin-Presentation) oder Domain-Umstellungen die Endpunkte neu
+erkennen lassen. Das geht am einfachsten, indem man die Einstellungen unter
+`Administration` -> `Opencast Einstellungen` ohne Änderung abspeichert.
+* Bei der Verknüpfung von Serien ist zunächst eingestellt, dass in der
+Veranstaltung nicht geplant werden darf. Damit Lehrende planen und hochladen
+können, muss die Medienaufzeichnung durch einen root user erlaubt werden.
+
