@@ -16,8 +16,13 @@ class OCPerm
             $context_id = Context::getId();
         }
 
-        //get permission level for editing episodes
-        $requiredPerm = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        // the special upload studygroups allow managing of episodes on an autor level
+        if (self::isUploadStudygroup($context_id)) {
+            $requiredPerm = 'autor';
+        } else {
+            //get permission level for editing episodes
+            $requiredPerm = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        }
 
         return $GLOBALS['perm']->have_studip_perm($requiredPerm, $context_id, $user_id);
     }
@@ -38,5 +43,19 @@ class OCPerm
         if (!self::editAllowed($context_id, $user_id)) {
             throw new AccessDeniedException('Sie haben keine Berechtigung zum Zugriff auf diese Funktion.');
         }
+    }
+
+    private static function isUploadStudygroup($course_id)
+    {
+        $course = Seminar::GetInstance($course_id);
+
+        if ($course->isStudygroup()) {
+            return (int)DBManager::get()->fetchColumn(
+                'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
+                [$course_id]
+            ) > 0;
+        }
+
+        return false;
     }
 }

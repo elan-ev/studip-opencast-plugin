@@ -237,7 +237,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
         $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
-        if (!empty($studyGroupId)) {
+
+        // check, if user is in course
+        if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
             foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
                 if ($sem_class['name'] == 'Studiengruppen') {
                     $isActive = $sem_class['modules']['OpenCast']['activated'] || !$sem_class['modules']['OpenCast']['sticky'];

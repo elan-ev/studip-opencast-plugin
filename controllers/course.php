@@ -103,6 +103,17 @@ class CourseController extends OpencastController
             PageLayout::postInfo($this->_('Sie sind in dieser Veranstaltung nur Leser*in. Sie können die Aufzeichnungen daher nicht ansehen. Bitte wenden Sie sich an die Lehrenden dieser Veranstaltung!'));
         }
 
+        // check, if studygroup upload is enabled and if the user is participant there
+        $studyGroupId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
+            PageLayout::postWarning($this->_(
+                'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
+                . 'da sie zum Zeitpunkt der Freischaltung nicht in der Teilnehmendenliste '
+                . 'eingetragen oder unsichtbar waren.'
+            ));
+        }
+
+
         $reload = true;
 
         foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
@@ -784,7 +795,7 @@ class CourseController extends OpencastController
 
         if (check_ticket($ticket)) {
             CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'yes');
-            PageLayout::postInfo($this->_('Teilnehmer dürfen nun Aufzeichnungen herunterladen.'));
+            PageLayout::postInfo($this->_('Teilnehmende dürfen nun Aufzeichnungen herunterladen.'));
         }
         $this->redirect('course/index/false');
     }
@@ -795,7 +806,7 @@ class CourseController extends OpencastController
 
         if (check_ticket($ticket) ) {
             CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'no');
-            PageLayout::postInfo($this->_('Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen.'));
+            PageLayout::postInfo($this->_('Teilnehmende dürfen nun keine Aufzeichnungen mehr herunterladen.'));
         }
 
         $this->redirect('course/index/false');
@@ -827,7 +838,7 @@ class CourseController extends OpencastController
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
             $studyGroup = $this->createStudyGroup($this->course_id);
-            PageLayout::postInfo($this->_('Teilnehmer dürfen nun Aufzeichnungen hochladen.'));
+            PageLayout::postInfo($this->_('Teilnehmende dürfen nun Aufzeichnungen hochladen.'));
         }
         $this->redirect('course/index/false');
     }
@@ -838,7 +849,7 @@ class CourseController extends OpencastController
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
             $this->unlinkStudyGroupAndCourse($this->course_id);
-            PageLayout::postInfo($this->_('Teilnehmer dürfen nun keine Aufzeichnungen mehr hochladen.'));
+            PageLayout::postInfo($this->_('Teilnehmende dürfen nun keine Aufzeichnungen mehr hochladen.'));
         }
         $this->redirect('course/index/false');
     }
@@ -1004,15 +1015,26 @@ class CourseController extends OpencastController
         foreach ($course->members as $member) {
             if ($studyGroup->members->findOneBy('user_id', $member->user_id)) {
                 $currentStudyGroupMember = CourseMember::find([$studyGroup->getId(), $member->user_id]);
-                $currentStudyGroupMember['status'] = 'dozent';
-                $currentStudyGroupMember->store();
+
+                // remove invisible users from studygroup
+                if ($member->visible != 'yes') {
+                    $currentStudyGroupMember->delete();
+                } else {
+                    $currentStudyGroupMember['status'] = $member->status;
+                    $currentStudyGroupMember->store();
+                }
+
                 continue;
             }
-            $studyGroupMember = new CourseMember();
-            $studyGroupMember['user_id'] = $member->user_id;
-            $studyGroupMember['seminar_id'] = $studyGroup->getId();
-            $studyGroupMember['status'] = 'dozent';
-            $studyGroupMember->store();
+
+            // do not add invisible users to studygroup
+            if ($member->visible == 'yes') {
+                $studyGroupMember = new CourseMember();
+                $studyGroupMember['user_id'] = $member->user_id;
+                $studyGroupMember['seminar_id'] = $studyGroup->getId();
+                $studyGroupMember['status'] = $member->status;
+                $studyGroupMember->store();
+            }
         }
     }
 
@@ -1045,20 +1067,6 @@ class CourseController extends OpencastController
         if (!empty($studyGroupId)) {
             CourseConfig::get($courseId)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', '');
             CourseConfig::get($studyGroupId)->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', '');
-            $studyGroup = Course::find($studyGroupId);
-            $course = Course::find($courseId);
-            $course_dozenten = $course->members->filter(
-                function ($member) {
-                    return $member['status'] === "dozent";
-                }
-            )->pluck('user_id');
-            foreach ($studyGroup->members as $member) {
-                if (!in_array($member->user_id, array_values($course_dozenten))) {
-                    $studyGroupMember = CourseMember::find([$studyGroupId, $member->user_id]);
-                    $studyGroupMember['status'] = 'tutor';
-                    $studyGroupMember->store();
-                }
-            }
         }
     }
 

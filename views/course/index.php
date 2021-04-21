@@ -5,6 +5,7 @@ use Opencast\LTI\LtiLink;
 
 ?>
 
+<? $studygroup_active = true; ?>
 <? if ($flash['delete']) : ?>
     <?= createQuestion2(sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
@@ -117,7 +118,6 @@ if ($this->connectedSeries[0]['series_id']) :
         });
     </script>
 
-<? $studygroup_active = true; ?>
 <? foreach ($GLOBALS['SEM_CLASS'] as $sem_class) : ?>
     <? if ($sem_class['name'] == 'Studiengruppen') : ?>
         <? if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) : ?>
@@ -128,18 +128,6 @@ if ($this->connectedSeries[0]['series_id']) :
 <? endforeach ?>
 
 <?
-    /*
-    ?>
-
-    <script>
-    OC.ltiCall('<?= OpencastLTI::getSearchUrl($this->course_id) ?>', <?= json_encode($lti_data) ?>, function() {
-        jQuery('img.previewimage').each(function() {
-            this.src = this.dataset.src;
-        });
-    });
-    </script>
-    <?
-    */
 endif;
 
 $sidebar = Sidebar::get();

@@ -226,21 +226,21 @@ msgid "Workflow konfigurieren"
 msgstr "Configure workflow"
 
 #: controllers/course.php:820
-msgid "Teilnehmer dürfen nun Aufzeichnungen herunterladen."
+msgid "Teilnehmende dürfen nun Aufzeichnungen herunterladen."
 msgstr "Participants are now allowed to download recordings."
 
 #: controllers/course.php:829
-msgid "Teilnehmer dürfen nun keine Aufzeichnungen mehr herunterladen."
+msgid "Teilnehmende dürfen nun keine Aufzeichnungen mehr herunterladen."
 msgstr "Participants are no longer allowed to download recordings."
 
 #: controllers/course.php:859
 #, fuzzy
-msgid "Teilnehmer dürfen nun Aufzeichnungen hochladen."
+msgid "Teilnehmende dürfen nun Aufzeichnungen hochladen."
 msgstr "Participants are now allowed to download recordings."
 
 #: controllers/course.php:868
 #, fuzzy
-msgid "Teilnehmer dürfen nun keine Aufzeichnungen mehr hochladen."
+msgid "Teilnehmende dürfen nun keine Aufzeichnungen mehr hochladen."
 msgstr "Participants are no longer allowed to download recordings."
 
 #: controllers/course.php:893
