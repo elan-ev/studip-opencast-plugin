@@ -75,7 +75,7 @@ class OCCourseModel
             $course = Course::find($this->getCourseID());
             $role   = '';
 
-            if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
+            if (OCPerm::editAllowed($course->id)) {
                 $role = 'Instructor';
             } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
                 $role = 'Learner';

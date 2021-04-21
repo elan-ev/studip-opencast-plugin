@@ -42,7 +42,7 @@ $sort_orders = [
         ]) ?>
     </span>
     -->
-        <ul class="oce_list list" <?= ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) ? 'id="oce_sortablelist"' : '' ?>>
+        <ul class="oce_list list" <?= (OCPerm::editAllowed($course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
                 <?
                 $now = time();
@@ -163,7 +163,7 @@ $sort_orders = [
                                         ]
                                 ); ?>
 
-                                <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
+                                <? if (OCPerm::editAllowed($course_id)) : ?>
                                     <?= $live ? '' : Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
                                         '', [
                                             'class'           => 'oc-togglevis ocspecial oc' . ($item['visibility'] ?: 'free'),
@@ -218,7 +218,7 @@ $sort_orders = [
                                          style="display: none;">
                                         <?= $this->render_partial("course/_download", ['course_id' => $course_id, 'series_id' => $this->connectedSeries[0]['series_id'], 'episode' => $item]) ?>
                                     </div>
-                                <? elseif ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
+                                <? elseif (OCPerm::editAllowed($course_id)) : ?>
                                     <? if (!empty($item['presenter_download'])
                                         || !empty($item['presentation_download'])
                                         || !empty($item['audio_download'])
@@ -240,7 +240,7 @@ $sort_orders = [
                                 <? endif ?>
 
 
-                                <? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) : ?>
+                                <? if (OCPerm::editAllowed($course_id)) : ?>
                                     <?= $live ? '' : Studip\LinkButton::create(
                                         $_('Entfernen'),
                                         $controller->url_for('course/remove_episode/' . get_ticket() . '/' . $item['id']),

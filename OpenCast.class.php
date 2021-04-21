@@ -129,7 +129,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
         $ocmodel = new OCCourseModel($course_id);
-        if (!$this->isActivated($course_id) || ($ocmodel->getSeriesVisibility() == 'invisible' && !$GLOBALS['perm']->have_studip_perm('tutor', $course_id))) {
+        if (!$this->isActivated($course_id)
+            || (
+                $ocmodel->getSeriesVisibility() == 'invisible'
+                && !OCPerm::editAllowed($course_id)
+            )
+        ) {
             return;
         }
 
@@ -219,7 +224,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $course = Seminar::getInstance($course_id);
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)
+        if (OCPerm::editAllowed($course_id)
             && !$course->isStudygroup()) {
             $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
             $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
@@ -252,7 +257,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $main->addSubNavigation('linkedcourse', $linkedCourse);
         }
 
-        if ($ocmodel->getSeriesVisibility() == 'visible' || $GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
+        if ($ocmodel->getSeriesVisibility() == 'visible' || OCPerm::editAllowed($course_id)) {
             return ['opencast' => $main];
         }
         return [];
@@ -293,7 +298,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $config['lti_consumersecret']
         );
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)) {
+        if (OCPerm::editAllowed($course_id, $current_user_id)) {
             $role = 'Instructor';
         } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
             $role = 'Learner';
@@ -431,7 +436,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     {
         if (!Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF &&
             !$GLOBALS['perm']->have_perm('root') &&
-            $context->getRangeType() === 'course' && 
+            $context->getRangeType() === 'course' &&
             $context->getSemClass()['studygroup_mode']) {
             return false;
         }

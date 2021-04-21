@@ -8,8 +8,8 @@ use Opencast\LTI\LtiLink;
 ?>
 
 <?
-$vis = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
-    ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
+$vis = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
+    ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
     : \Config::get()->OPENCAST_HIDE_EPISODES;
 ?>
 
@@ -19,7 +19,7 @@ $vis = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
 
     <?
     $oc_acl = '';
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+    if (OCPerm::editAllowed($course_id)) {
         $oc_acl          = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Policy PolicyId="mediapackage-1"
   RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides"
@@ -127,11 +127,11 @@ if($vis == false){
   </Rule>
 </Policy>
 ';
-        $instructor_role = $this->course_id . '_Instructor';
-        $learner_role = $this->course_id . '_Learner';
+        $instructor_role = $course_id . '_Instructor';
+        $learner_role    = $course_id . '_Learner';
         $oc_acl          = str_replace('ROLE_USER_LTI_Instructor', $instructor_role, $oc_acl);
-	if($vis == false){
-          $oc_acl          = str_replace('ROLE_USER_LTI_Learner', $learner_role, $oc_acl);
+        if ($vis == false) {
+            $oc_acl      = str_replace('ROLE_USER_LTI_Learner', $learner_role, $oc_acl);
         }
         $oc_acl          = str_replace(["\r", "\n"], '', $oc_acl);
         $oc_acl          = urlencode($oc_acl);
@@ -301,7 +301,7 @@ if ($this->connectedSeries[0]['series_id']) :
     $current_user_id = $GLOBALS['auth']->auth['uid'];
 
 
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+    if (OCPerm::editAllowed($course_id)) {
         $upload_lti_link = new LtiLink(
             $config['service_url'] . '/lti',
             $config['lti_consumerkey'],

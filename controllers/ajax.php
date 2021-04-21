@@ -22,7 +22,7 @@ class AjaxController extends OpencastController
 
         uasort($series, function ($a, $b) {
             return $a['endtime'] == $b['endtime'] ? 0
-                : $a['endtime'] < $b['endtime'] ? -1 : 1;
+                : ($a['endtime'] < $b['endtime'] ? -1 : 1);
         });
 
         $this->render_json(array_values($series));
@@ -33,12 +33,11 @@ class AjaxController extends OpencastController
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         //$episodes      = $search_client->getEpisodes($series_id);
         $result = [];
-        $course = Course::find(Context::getId());
         $role   = '';
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
+        if (OCPerm::editAllowed(Context::getId())) {
             $role = 'Instructor';
-        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
+        } else if ($GLOBALS['perm']->have_studip_perm('autor', Context::getId())) {
             $role = 'Learner';
         }
 

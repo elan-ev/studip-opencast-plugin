@@ -26,7 +26,7 @@ use Opencast\LTI\LtiLink;
 <?= $this->render_partial('messages') ?>
 <script>
     jQuery(function () {
-        STUDIP.hasperm = <?= var_export($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) ?>;
+        STUDIP.hasperm = <?= var_export(OCPerm::editAllowed($course_id)) ?>;
         OC.states = <?= json_encode($states) ?>;
         OC.initIndexpage();
     });
@@ -44,8 +44,14 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $lti_link->addCustomParameter('tool', '/ltitools');
 
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)
-        && (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated() || !$controller->isStudyGroup()))) {
+    if (OCPerm::editAllowed($course_id, $current_user_id)
+        && (
+            ($controller->isStudyGroup()
+                && $controller->isStudentUploadForStudyGroupActivated()
+            )
+            || !$controller->isStudyGroup()
+        )
+    ) {
         $role = 'Instructor';
     } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
         $role = 'Learner';
@@ -64,7 +70,7 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $launch_data['oauth_signature'] = $signature;
 
-    if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)
+    if (OCPerm::editAllowed($course_id)
         && \Config::get()->OPENCAST_ALLOW_STUDIO
         && $config['service_url'] . '/lti' != OpencastLTI::getSearchUrl($this->course_id)
     ) {
@@ -76,7 +82,7 @@ if ($this->connectedSeries[0]['series_id']) :
 
         $studio_lti_link->addCustomParameter('tool', '/ltitools');
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id, $current_user_id)
+        if (OCPerm::editAllowed($course_id, $current_user_id)
             && (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated() || !$controller->isStudyGroup()))) {
             $role = 'Instructor';
         } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
@@ -137,7 +143,7 @@ if ($this->connectedSeries[0]['series_id']) :
 endif;
 
 $sidebar = Sidebar::get();
-if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+if (OCPerm::editAllowed($course_id)) {
     $actions = new ActionsWidget ();
     $upload  = '';
 
@@ -341,12 +347,12 @@ if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
 Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback');
 ?>
 
-<? if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) && !$studygroup_active) : ?>
+<? if (OCPerm::editAllowed($course_id) && !$studygroup_active) : ?>
     <?= MessageBox::error($_('Das Opencast Plugin ist momentan nicht für Studiengruppen aktiv. Wenden Sie sich an einen Admin, um das Problem zu beheben.')); ?>
 <? endif ?>
 
 <? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
-    <? if ($GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) : ?>
+    <? if (OCPerm::editAllowed($course_id)) : ?>
         <?= $this->render_partial('course/_wip_episode') ?>
     <? endif ?>
 
@@ -354,7 +360,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' .
         <?= $this->render_partial('course/_episode') ?>
     <? endif ?>
 <? else: ?>
-    <? if (empty($this->connectedSeries) && $GLOBALS['perm']->have_studip_perm('dozent', $course_id)) : ?>
+    <? if (empty($this->connectedSeries) && OCPerm::editAllowed($course_id)) : ?>
         <? if ($this->config_error) : ?>
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
         <? else : ?>
