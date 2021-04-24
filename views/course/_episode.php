@@ -18,7 +18,16 @@ $sort_orders = [
 
 <form action="<?= $controller->url_for('course/sort_order') ?>" method=post>
     <select name="order">
-        <option selected disabled><?= $_('- Sortierung auswählen') ?></option>
+            <?
+            $sort_str = 'mkdate1';
+            if ($_SESSION['opencast']['sort_order']) {
+                $sort_str = $_SESSION['opencast']['sort_order'];
+            }
+            else if (CourseConfig::get($course_id)->COURSE_SORT_ORDER) {
+                $sort_str = CourseConfig::get($course_id)->COURSE_SORT_ORDER;
+            }
+            ?>
+        <option selected disabled><?= $sort_orders[$sort_str] ?></option>
         <? foreach ($sort_orders as $key => $sort_order) : ?>
             <option value="<?= $key ?>"><?= $sort_order ?></option>
         <? endforeach; ?>
