@@ -7,7 +7,7 @@ class AddLogTos extends Migration {
         $db = DBManager::get();
         $query = $db->prepare("INSERT INTO log_actions (action_id, name, description, info_template, active) VALUES (?, ?, ?, ?, ?)");
 
-        $query->execute(array(md5('OC_TOS'), 'OC_TOS', 'Opencast; TOS akzeptiert/verweigert', '%user hat TOS akzeptiert/verweigert in %sem(%affected). %info.', 1));
+        $query->execute(array(md5('OC_TOS'), 'OC_TOS', 'Opencast: TOS akzeptiert/abgelehnt', '%user hat TOS %info in %sem(%affected)', 1));
     }
 
     function down()
