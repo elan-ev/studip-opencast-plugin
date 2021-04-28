@@ -78,7 +78,7 @@ class SearchClient extends OCRestClient
      */
     public function getAllSeries()
     {
-        $service_url = "/series.json";
+        $service_url = "/series.json?limit=10000";
 
         if ($series = $this->getJSON($service_url)) {
             $x = "search-results";
