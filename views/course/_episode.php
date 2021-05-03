@@ -153,7 +153,7 @@ $sort_orders = [
 
                                 <?= Studip\LinkButton::create(
                                         $_('Technisches Feedback'),
-                                        'mailto:' . $GLOBALS['UNI_CONTACT']
+                                        'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL
                                             . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALinks zum betroffenen Video:%0D%0A'
                                             . $controller->link_for('course/index/' . $item['id']) ."%0D%0A"
                                             . $video_url . $item['id'],
