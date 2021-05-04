@@ -139,7 +139,7 @@ class CourseController extends OpencastController
 
                 $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series['series_id']));
 
-                $oc_series = OCSeriesModel::getSeriesFromOpencast($series);
+                $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                 $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
                 $this->wip_episodes = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
                 $this->instances = array_merge(

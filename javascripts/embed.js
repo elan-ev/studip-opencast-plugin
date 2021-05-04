@@ -32,8 +32,16 @@
 
     var loadSeries = function() {
         emptyEpisodes();
-        $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getseries").done(function(data) {
+        // show info while loading series
+        $('#oc_embed_content').append('<div style="clear: both" class="oc_loading"></div>'
+            + '<div class="oc_loading messagebox messagebox_info">'
+            + 'Lade Videoliste...'.toLocaleString()
+            + '</div>');
+
+        $.get(STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/getseries')).done(function(data) {
             var series = data;
+
+            $('.oc_loading').remove();
 
             var series_array = [];
             var series_id_array = [];
@@ -104,7 +112,7 @@
 
 
     var loadEpisodes = function(ser_id, ser_title) {
-        $.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getepisodes/" + ser_id).done(function(data) {
+        $.get(STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/getepisodes/' + ser_id)).done(function(data) {
             var episode = data;
 
             $('div#episodes_container').append("<p class='embed_episode_title'>Veranstaltung: " + ser_title + "</p>");
@@ -141,11 +149,16 @@
                     var attachments = episode[i].mediapackage.attachments;
                     var presenter_preview = false;
                     $(attachments.attachment).each(function(index, val) {
-                        if (val.type == 'presenter/search+preview' && val.mimetype == 'image/jpeg') {
+                        if (val.type == 'presenter/player+preview' && (
+                            val.mimetype == 'image/jpeg' || val.mimetype == 'image/png'
+                        )) {
                             img_url = val.url;
                             presenter_preview = true;
                         }
-                        if (!presenter_preview && val.type == 'presentation/search+preview' && val.mimetype == 'image/jpeg'){
+
+                        if (!presenter_preview && val.type == 'presentation/search+preview' && (
+                            val.mimetype == 'image/jpeg' || val.mimetype == 'image/png'
+                        )) {
 	                     img_url = val.url;
                         }
                     });

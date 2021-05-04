@@ -143,7 +143,7 @@ class OCConfig extends \SimpleORMap
 
     public static function getConfigIdForSeries($series_id)
     {
-        return OCSeminarSeries::findOneBySeminar_id($series_id)->config_id ?: 1;
+        return OCSeminarSeries::findOneBySeries_id($series_id)->config_id ?: 1;
     }
 
     public static function empty_config()

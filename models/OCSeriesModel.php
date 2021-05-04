@@ -5,17 +5,19 @@ use Opencast\LTI\OpencastLTI;
 
 class OCSeriesModel
 {
+
     /**
-     * [getSeriesFromOpencast description]
+     * Retrieve series for seminar from Opencast
      *
-     * @param  [type] $series    [description]
+     * @param  string $series_id  the series_id
+     * @param  string $seminar_id the seminar the series is connected to
      *
-     * @return [type]            [description]
+     * @return mixed             the series from opencast or false
      */
-    public static function getSeriesFromOpencast($series)
+    public static function getSeriesFromOpencast($series_id, $seminar_id)
     {
-        $sclient = SeriesClient::create($series['seminar_id']);
-        if ($oc_series = $sclient->getSeries($series['series_id'])) {
+        $sclient = SeriesClient::create($seminar_id);
+        if ($oc_series = $sclient->getSeries($series_id)) {
             return self::transformSeriesJSON($oc_series);
         }
 
@@ -31,32 +33,51 @@ class OCSeriesModel
     }
 
     /**
-     * [getSeriesForUser description]
+     * List all series user has access to globally and in the passed context (if any)
      *
-     * @param  [type] $user_id [description]
-     * @return [type]          [description]
+     * @param  string $user_id user to get series for
+     * @param  string $context_id optional, the context to include
+     *
+     * @return array          an array if the type ['series_id' => 'seminar_id', ...]
      */
-    public static function getSeriesForUser($user_id)
+    public static function getSeriesForUser($user_id, $context_id = null)
     {
+        $result = [];
+
         if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
-            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, se.series_id
+            // get all free videos,
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
                 FROM oc_seminar_series AS se
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
-                WHERE ep.visible != 'invisible'");
+                WHERE ep.visible = 'free'");
             $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
         } else {
-            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.seminar_id, se.config_id, se.series_id
+            // get all free videos user has access to
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
                 FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE su.user_id = ?
-                    AND ep.visible != 'invisible'");
+                    AND ep.visible = 'free'");
             $stmt->execute([$user_id]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
         }
+
+        // get visible videos for current context
+        if ($context_id) {
+            $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
+                FROM oc_seminar_series AS se
+                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
+                WHERE se.seminar_id = ?
+                    AND se.visibility = 'visible'
+                    AND ep.visible != 'invisible'");
+            $stmt->execute([$context_id]);
+
+            $result = array_merge($result, $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
+        }
+
+        return $result;
     }
 
     /**
