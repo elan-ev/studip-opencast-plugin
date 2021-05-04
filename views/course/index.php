@@ -332,7 +332,7 @@ if (OCPerm::editAllowed($course_id)) {
     Helpbar::get()->addPlainText('', $_('Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen.'));
 }
 
-Helpbar::get()->addLink('Bei Problemen: ' . $GLOBALS['UNI_CONTACT'], 'mailto:' . $GLOBALS['UNI_CONTACT'] . '?subject=[Opencast] Feedback');
+Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAIL, 'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL . '?subject=[Opencast] Feedback');
 ?>
 
 <? if (OCPerm::editAllowed($course_id) && !$studygroup_active) : ?>
