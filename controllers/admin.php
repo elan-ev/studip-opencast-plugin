@@ -239,8 +239,6 @@ class AdminController extends OpencastController
             }
         }
 
-        // after updating the configuration, clear the cached series data
-        OCSeriesModel::clearCachedSeriesData();
         #OpencastLTI::generate_complete_acl_mapping();
 
         $this->redirect('admin/config');

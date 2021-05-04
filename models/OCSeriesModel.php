@@ -283,52 +283,6 @@ class OCSeriesModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getCachedSeriesData($series_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT `content`
-            FROM oc_series_cache WHERE `series_id` = ?");
-        $stmt->execute([$series_id]);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (empty($result)) {
-            return false;
-        } else {
-            foreach ($result as $c) {
-                $content = unserialize($c['content']);
-            }
-
-            if (is_null($content) || empty($content)) {
-                return 'empty';
-            } else {
-                return $content;
-            }
-        }
-    }
-
-    public static function setCachedSeriesData($series_id, $data)
-    {
-        $stmt = DBManager::get()->prepare("INSERT INTO
-                oc_series_cache (`series_id`, `content`, `mkdate`, `chdate`)
-                VALUES (?, ?, ?, ?)");
-
-        return $stmt->execute([$series_id, $data, time(), time()]);
-    }
-
-    public static function updateCachedSeriesData($series_id, $data)
-    {
-        $stmt = DBManager::get()->prepare("UPDATE oc_series_cache
-            SET `content` = ?, `chdate`= ?
-            WHERE `series_id` = ?");
-
-        return $stmt->execute([$data, time(), $series_id]);
-    }
-
-    public static function clearCachedSeriesData()
-    {
-        DBManager::get()->exec("TRUNCATE oc_series_cache");
-    }
-
     public static function updateVisibility($seminar_id, $visibility)
     {
         $stmt = DBManager::get()->prepare("UPDATE

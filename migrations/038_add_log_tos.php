@@ -19,5 +19,3 @@ class AddLogTos extends Migration {
         $query2->execute(array(md5('OC_TOS')));
     }
 }
-
-?>
