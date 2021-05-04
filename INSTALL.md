@@ -20,8 +20,7 @@ oauth.consumer.key.1=CONSUMERKEY
 oauth.consumer.secret.1=CONSUMERSECRET
 ```
 
-3. Edit `etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg ``
-enable:
+3. Edit `etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg` and enable:
 ```
 lti.create_jpa_user_reference=true
 lti.custom_role_name=Instructor
