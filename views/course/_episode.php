@@ -18,13 +18,25 @@ $sort_orders = [
 
 <form action="<?= $controller->url_for('course/sort_order') ?>" method=post>
     <select name="order">
-        <option selected disabled><?= $_('- Sortierung auswählen') ?></option>
+        <?
+        $sort_str = 'mkdate1';
+        if ($_SESSION['opencast']['sort_order']) {
+            $sort_str = $_SESSION['opencast']['sort_order'];
+        }
+        else if (CourseConfig::get($course_id)->COURSE_SORT_ORDER) {
+            $sort_str = CourseConfig::get($course_id)->COURSE_SORT_ORDER;
+        }
+        ?>
         <? foreach ($sort_orders as $key => $sort_order) : ?>
-            <option value="<?= $key ?>"><?= $sort_order ?></option>
+            <? if ($sort_str === $key) : ?>
+                <option selected value="<?= $key ?>"><?= $sort_order ?></option>
+            <? else : ?>
+                <option value="<?= $key ?>"><?= $sort_order ?></option>
+            <? endif ?>
         <? endforeach; ?>
     </select>
 
-        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+    <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
 
 </form>
 
