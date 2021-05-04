@@ -235,7 +235,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
         }
 
-        $studyGroupId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        $studyGroupId = OCModel::getUploadStudygroupId($course_id);
         $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
 
         // check, if user is in course

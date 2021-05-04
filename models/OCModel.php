@@ -681,4 +681,24 @@ class OCModel
 
         return array_unique($series);
     }
+
+    /**
+     * get of connected studygroup for uploads (if any)
+     *
+     * @param  string $context_id the seminar for which to check if there exists a connected studygroup
+     * @return mixed             false or the studygroups id
+     */
+    public static function getUploadStudygroupId($context_id)
+    {
+        $studyGroupId = CourseConfig::get($context_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+
+        $course = Course::find($studyGroupId);
+
+        if (!$course) {
+            CourseConfig::get($context_id)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', '');
+            return false;
+        }
+
+        return $studyGroupId;
+    }
 }

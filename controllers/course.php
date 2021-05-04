@@ -104,7 +104,7 @@ class CourseController extends OpencastController
         }
 
         // check, if studygroup upload is enabled and if the user is participant there
-        $studyGroupId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        $studyGroupId = OCModel::getUploadStudygroupId($this->course_id);
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
             PageLayout::postWarning($this->_(
                 'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
@@ -877,7 +877,7 @@ class CourseController extends OpencastController
 
     public function isStudentUploadEnabled()
     {
-        $studyGroupId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        $studyGroupId = OCModel::getUploadStudygroupId($this->course_id);
         return !empty($studyGroupId);
     }
 
@@ -965,7 +965,7 @@ class CourseController extends OpencastController
 
     private function createStudyGroup($courseId)
     {
-        if (!empty(CourseConfig::get($courseId)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP)) {
+        if (OCModel::getUploadStudygroupId($this->course_id)) {
             return false;
         }
         $course = Course::find($courseId);
@@ -987,6 +987,7 @@ class CourseController extends OpencastController
             ':name'            => $studyGroup_name,
             ':studygroup_mode' => $studygroup_sem_types,
         ]);
+
         if (!$current_studyGroup) {
             $studyGroup = new Course();
             $studyGroup['name'] = $studyGroup_name;
@@ -1063,7 +1064,7 @@ class CourseController extends OpencastController
 
     private function unlinkStudyGroupAndCourse($courseId)
     {
-        $studyGroupId = CourseConfig::get($courseId)->OPENCAST_MEDIAUPLOAD_STUDY_GROUP;
+        $studyGroupId = OCModel::getUploadStudygroupId($courseId);
         if (!empty($studyGroupId)) {
             CourseConfig::get($courseId)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', '');
             CourseConfig::get($studyGroupId)->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', '');

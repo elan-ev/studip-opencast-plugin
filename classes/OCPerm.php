@@ -47,9 +47,7 @@ class OCPerm
 
     private static function isUploadStudygroup($course_id)
     {
-        $course = Seminar::GetInstance($course_id);
-
-        if ($course->isStudygroup()) {
+        if (StudygroupModel::isStudygroup($course_id)) {
             return (int)DBManager::get()->fetchColumn(
                 'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
                 [$course_id]
