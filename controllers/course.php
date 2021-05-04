@@ -240,6 +240,7 @@ class CourseController extends OpencastController
 
     public function accept_tos_action()
     {
+        StudipLog::log('OC_TOS', $this->course_id, null, "akzeptiert");
         if (!Config::get()->OPENCAST_SHOW_TOS || !OCPerm::editAllowed($this->course_id)) {
             return $this->redirect('course/index');
         }
@@ -257,6 +258,7 @@ class CourseController extends OpencastController
 
     public function withdraw_tos_action()
     {
+        StudipLog::log('OC_TOS', $this->course_id, null, "abgelehnt");
         if (!Config::get()->OPENCAST_SHOW_TOS || !OCPerm::editAllowed($this->course_id)) {
             return $this->redirect('course/index');
         }
