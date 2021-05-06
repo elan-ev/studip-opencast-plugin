@@ -235,8 +235,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
         }
 
-        $studyGroupId = OCModel::getUploadStudygroupId($course_id);
-        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
+        $studyGroupId = OCModel::getLinkedStudygroup($course_id);
+        $linkedCourseId = OCModel::getLinkedCourse($course_id);
 
         // check, if user is in course
         if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
@@ -248,7 +248,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             if ($isActive) {
                 $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $course_id], 'course/redirect_studygroup/' . $studyGroupId));
                 $main->addSubNavigation('studygroup', $studyGroup);
             }
         }

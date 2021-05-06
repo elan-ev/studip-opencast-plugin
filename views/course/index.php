@@ -254,7 +254,7 @@ if (OCPerm::editAllowed($course_id)) {
                 );
             }
 
-            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated && !CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE)) {
+            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated)) {
                 if ($controller->isStudentUploadEnabled()) {
                     $actions->addLink(
                         $_('Hochladen durch Studierende verbieten'),

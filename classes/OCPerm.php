@@ -49,7 +49,7 @@ class OCPerm
     {
         if (StudygroupModel::isStudygroup($course_id)) {
             return (int)DBManager::get()->fetchColumn(
-                'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
+                'SELECT COUNT(*) FROM `oc_upload_studygroup` WHERE studygroup_id = ?',
                 [$course_id]
             ) > 0;
         }

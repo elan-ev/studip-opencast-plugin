@@ -104,7 +104,7 @@ class CourseController extends OpencastController
         }
 
         // check, if studygroup upload is enabled and if the user is participant there
-        $studyGroupId = OCModel::getUploadStudygroupId($this->course_id);
+        $studyGroupId = OCModel::getLinkedStudygroup($this->course_id);
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
             PageLayout::postWarning($this->_(
                 'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
@@ -850,7 +850,7 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
-            $this->unlinkStudyGroupAndCourse($this->course_id);
+            OCModel::unlinkCourseAndStudygroup($this->course_id);
             PageLayout::postInfo($this->_('Teilnehmende dürfen nun keine Aufzeichnungen mehr hochladen.'));
         }
         $this->redirect('course/index/false');
@@ -879,7 +879,7 @@ class CourseController extends OpencastController
 
     public function isStudentUploadEnabled()
     {
-        $studyGroupId = OCModel::getUploadStudygroupId($this->course_id);
+        $studyGroupId = OCModel::getLinkedStudygroup($this->course_id);
         return !empty($studyGroupId);
     }
 
@@ -967,7 +967,7 @@ class CourseController extends OpencastController
 
     private function createStudyGroup($courseId)
     {
-        if (OCModel::getUploadStudygroupId($this->course_id)) {
+        if (OCModel::getLinkedStudygroup($this->course_id)) {
             return false;
         }
         $course = Course::find($courseId);
@@ -976,7 +976,7 @@ class CourseController extends OpencastController
         $this->copyAvatarToStudyGroup($course, $studyGroup);
         $this->addAllMembersToStudyGroup($course, $studyGroup);
         $this->setupOpencastInStudyGroup($studyGroup);
-        $this->linkStudyGroupAndCourse($course, $studyGroup);
+        OCModel::linkCourseAndStudygroup($course->getId(), $studyGroup->getId());
 
         return $studyGroup;
     }
@@ -1058,21 +1058,6 @@ class CourseController extends OpencastController
         }
     }
 
-    private function linkStudyGroupAndCourse($course, $studyGroup)
-    {
-        CourseConfig::get($course->getId())->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', $studyGroup->getId());
-        CourseConfig::get($studyGroup->getId())->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', $course->getId());
-    }
-
-    private function unlinkStudyGroupAndCourse($courseId)
-    {
-        $studyGroupId = OCModel::getUploadStudygroupId($courseId);
-        if (!empty($studyGroupId)) {
-            CourseConfig::get($courseId)->store('OPENCAST_MEDIAUPLOAD_STUDY_GROUP', '');
-            CourseConfig::get($studyGroupId)->store('OPENCAST_MEDIAUPLOAD_LINKED_COURSE', '');
-        }
-    }
-
     public function isStudyGroup()
     {
         $course = Seminar::GetInstance($this->course_id);
@@ -1081,16 +1066,12 @@ class CourseController extends OpencastController
 
     public function isStudentUploadForStudyGroupActivated()
     {
-        $linkedCourseId = CourseConfig::get($this->course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
-        return !empty($linkedCourseId);
+        return !empty(OCModel::getLinkedStudygroup($this->course_id));
     }
 
     public function isStudyGroupConnectedWithCourse()
     {
-        return (int)DBManager::get()->fetchColumn(
-            'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
-            [$this->course_id]
-        ) > 0;
+        return !empty(OCModel::getLinkedCourse($this->course_id));
     }
 
     public function sort_order_action()
