@@ -8,6 +8,11 @@ use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
+use Opencast\Models\OCSeminarWorkflowConfiguration;
+use Opencast\Models\OCTos;
+use Opencast\Models\OCScheduledRecordings;
+use Opencast\Models\OCUploadStudygroup;
 
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
@@ -59,6 +64,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
             }
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
+            NotificationCenter::addObserver($this, 'cleanCourse', 'CourseDidDelete');
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
@@ -235,8 +241,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
         }
 
-        $studyGroupId = OCModel::getLinkedStudygroup($course_id);
-        $linkedCourseId = OCModel::getLinkedCourse($course_id);
+        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ?', [$course_id])['studygroup_id'];
+        $linkedCourseId = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])['course_id'];
 
         // check, if user is in course
         if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
@@ -446,5 +452,20 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             return false;
         }
         return true;
+    }
+
+    public function cleanCourse($event, $course)
+    {
+        $course_id = $course->getId();
+        # oc_seminar_workflows (?)
+        OCScheduledRecordings::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarEpisodes::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarSeries::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarWorkflowConfiguration::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCTos::deleteBySQL('seminar_id = ?', [$course_id]);
+
+        # Studiengruppe mit löschen?
+        OCUploadStudygroup::deleteBySQL('course_id = ?', [$course_id]);
+        OCUploadStudygroup::deleteBySQL('studygroup_id = ?', [$course_id]);
     }
 }

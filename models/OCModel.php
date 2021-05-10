@@ -681,40 +681,4 @@ class OCModel
 
         return array_unique($series);
     }
-
-    public static function linkCourseAndStudygroup($course_id, $studygroup_id)
-    {
-        $stmt = DBManager::get()->prepare('INSERT IGNORE INTO oc_upload_studygroup (course_id, studygroup_id)
-            VALUES (?, ?)');
-
-        return $stmt->execute([$course_id, $studygroup_id]);
-    }
-
-    public static function unlinkCourseAndStudygroup($course_id)
-    {
-        $stmt = DBManager::get()->prepare("DELETE FROM oc_upload_studygroup
-            WHERE course_id = ?");
-
-        return $stmt->execute([$course_id]);
-    }
-
-    public static function getLinkedStudygroup($course_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT studygroup_id
-            FROM oc_upload_studygroup
-            WHERE course_id = ?");
-        $stmt->execute([$course_id]);
-
-        return $stmt->fetchColumn();
-    }
-
-    public static function getLinkedCourse($studygroup_id)
-    {
-        $stmt = DBManager::get()->prepare("SELECT course_id
-            FROM oc_upload_studygroup
-            WHERE studygroup_id = ?");
-        $stmt->execute([$studygroup_id]);
-
-        return $stmt->fetchColumn();
-    }
 }

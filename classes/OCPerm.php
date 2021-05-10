@@ -1,5 +1,7 @@
 <?
 
+use Opencast\Models\OCUploadStudygroup;
+
 class OCPerm
 {
     /**
@@ -48,10 +50,7 @@ class OCPerm
     private static function isUploadStudygroup($course_id)
     {
         if (StudygroupModel::isStudygroup($course_id)) {
-            return (int)DBManager::get()->fetchColumn(
-                'SELECT COUNT(*) FROM `oc_upload_studygroup` WHERE studygroup_id = ?',
-                [$course_id]
-            ) > 0;
+            return OCUploadStudygroup::countBySql('studygroup_id = ?', [$course_id]) > 0;
         }
 
         return false;
