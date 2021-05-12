@@ -105,7 +105,7 @@ class CourseController extends OpencastController
         }
 
         // check, if studygroup upload is enabled and if the user is participant there
-        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ?', [$this->course_id])['studygroup_id'];
+        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$this->course_id])['studygroup_id'];
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
             PageLayout::postWarning($this->_(
                 'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
@@ -577,7 +577,7 @@ class CourseController extends OpencastController
      */
     public function upload_action()
     {
-        if ($this->isStudyGroup() && !$this->isStudentUploadForStudyGroupActivated()) {
+        if ($this->isStudyGroup() && !$this->isStudentUploadEnabled()) {
             PageLayout::postError(_('Das Hochladen durch Studierende ist momentan verboten.'));
             $this->redirect('course/index/false');
         }
@@ -840,7 +840,7 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
-            $studyGroup = $this->createStudyGroup($this->course_id);
+            $studyGroup = $this->createStudyGroup();
             PageLayout::postInfo($this->_('Teilnehmende dürfen nun Aufzeichnungen hochladen.'));
         }
         $this->redirect('course/index/false');
@@ -851,7 +851,9 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
-            OCUploadStudygroup::deleteBySQL('course_id = ?', [$this->course_id]);
+            $link = OCUploadStudygroup::find($this->course_id);
+            $link->setValue('active', FALSE);
+            $link->store();
             PageLayout::postInfo($this->_('Teilnehmende dürfen nun keine Aufzeichnungen mehr hochladen.'));
         }
         $this->redirect('course/index/false');
@@ -880,8 +882,8 @@ class CourseController extends OpencastController
 
     public function isStudentUploadEnabled()
     {
-        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ?', [$this->course_id])['studygroup_id'];
-        return !empty($studyGroupId);
+        $link = OCUploadStudygroup::findOneBySql("(course_id = ? OR studygroup_id = ?) AND active = TRUE", [$this->course_id, $this->course_id]);
+        return !empty(link);
     }
 
     public function remove_episode_action($ticket, $episode_id)
@@ -966,25 +968,28 @@ class CourseController extends OpencastController
         return false;
     }
 
-    private function createStudyGroup($courseId)
+    private function createStudyGroup()
     {
-        if (OCUploadStudygroup::findBySQL('course_id = ?', [$courseId])) {
-            return false;
+        if($link = OCUploadStudygroup::findOneBySQL('course_id = ?', [$this->course_id])) {
+            $link->setValue('active', TRUE);
+            $link->store();
+            return;
         }
-        $course = Course::find($courseId);
+        $course = Course::find($this->course_id);
 
         $studyGroup = $this->createStudyGroupObject($course);
         $this->copyAvatarToStudyGroup($course, $studyGroup);
         $this->addAllMembersToStudyGroup($course, $studyGroup);
         $this->setupOpencastInStudyGroup($studyGroup);
+        
+
         OCUploadStudygroup::create(
             [
-                'course_id' => $courseId,
-                'studygroup_id' => $studyGroup->getId()
+                'course_id' => $this->course_id,
+                'studygroup_id' => $studyGroup->getId(),
+                'active' => TRUE
             ]
-        );
-
-        return $studyGroup;
+        );    
     }
 
     private function createStudyGroupObject($course)
@@ -1068,16 +1073,6 @@ class CourseController extends OpencastController
     {
         $course = Seminar::GetInstance($this->course_id);
         return $course->isStudygroup();
-    }
-
-    public function isStudentUploadForStudyGroupActivated()
-    {
-        return !empty(OCUploadStudygroup::findBySQL('course_id = ?', [$this->course_id]));
-    }
-
-    public function isStudyGroupConnectedWithCourse()
-    {
-        return !empty(OCUploadStudygroup::findBySQL('studygroup_id = ?', [$this->course_id]));
     }
 
     public function sort_order_action()

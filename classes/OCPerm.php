@@ -50,7 +50,7 @@ class OCPerm
     private static function isUploadStudygroup($course_id)
     {
         if (StudygroupModel::isStudygroup($course_id)) {
-            return OCUploadStudygroup::countBySql('studygroup_id = ?', [$course_id]) > 0;
+            return !empty(OCUploadStudygroup::findOneBySql('studygroup_id = ?', [$course_id]));
         }
 
         return false;

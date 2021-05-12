@@ -241,8 +241,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
         }
 
-        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ?', [$course_id])['studygroup_id'];
-        $linkedCourseId = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])['course_id'];
+        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$course_id])['studygroup_id'];
+        $linkedCourseId = OCUploadStudygroup::findOneBySQL('studygroup_id = ? AND active = TRUE', [$course_id])['course_id'];
 
         // check, if user is in course
         if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
@@ -457,15 +457,19 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function cleanCourse($event, $course)
     {
         $course_id = $course->getId();
-        # oc_seminar_workflows (?)
         OCScheduledRecordings::deleteBySQL('seminar_id = ?', [$course_id]);
         OCSeminarEpisodes::deleteBySQL('seminar_id = ?', [$course_id]);
         OCSeminarSeries::deleteBySQL('seminar_id = ?', [$course_id]);
         OCSeminarWorkflowConfiguration::deleteBySQL('seminar_id = ?', [$course_id]);
         OCTos::deleteBySQL('seminar_id = ?', [$course_id]);
 
-        # Studiengruppe mit löschen?
-        OCUploadStudygroup::deleteBySQL('course_id = ?', [$course_id]);
-        OCUploadStudygroup::deleteBySQL('studygroup_id = ?', [$course_id]);
+        if ($course_link = OCUploadStudygroup::findOneBySQL('course_id = ?', [$course_id])) {
+            $studygroup_id = $course_link['studygroup_id'];
+            $course_link->delete();
+            Course::find($studygroup_id)->delete();
+        }
+        else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
+            $studygroup_link->delete();
+        }
     }
 }

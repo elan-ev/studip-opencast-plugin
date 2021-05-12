@@ -48,7 +48,7 @@ if ($this->connectedSeries[0]['series_id']) :
     if (OCPerm::editAllowed($course_id, $current_user_id)
         && (
             ($controller->isStudyGroup()
-                && $controller->isStudentUploadForStudyGroupActivated()
+                && $controller->isStudentUploadEnabled()
             )
             || !$controller->isStudyGroup()
         )
@@ -84,7 +84,7 @@ if ($this->connectedSeries[0]['series_id']) :
         $studio_lti_link->addCustomParameter('tool', '/ltitools');
 
         if (OCPerm::editAllowed($course_id, $current_user_id)
-            && (($controller->isStudyGroup() && $controller->isStudentUploadForStudyGroupActivated() || !$controller->isStudyGroup()))) {
+            && (($controller->isStudyGroup() && $controller->isStudentUploadEnabled() || !$controller->isStudyGroup()))) {
             $role = 'Instructor';
         } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
             $role = 'Learner';
@@ -145,10 +145,9 @@ if (OCPerm::editAllowed($course_id)) {
         }
 
         if ($can_schedule) {
-            $isStudentUploadForStudyGroupActivated = $controller->isStudentUploadForStudyGroupActivated();
-            if (($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated)
+            if (($controller->isStudyGroup() && $controller->isStudentUploadEnabled())
                 || !$controller->isStudyGroup()
-                || ($controller->isStudyGroup() && !$isStudentUploadForStudyGroupActivated && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)) {
+                || ($controller->isStudyGroup() && !$controller->isStudentUploadEnabled() && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)) {
                 $actions->addLink(
                     $_('Medien hochladen'),
                     $controller->url_for('course/upload'),
@@ -254,7 +253,7 @@ if (OCPerm::editAllowed($course_id)) {
                 );
             }
 
-            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $isStudentUploadForStudyGroupActivated)) {
+            if (!$controller->isStudygroup() || ($controller->isStudyGroup() && $controller->isStudentUploadEnabled())) {
                 if ($controller->isStudentUploadEnabled()) {
                     $actions->addLink(
                         $_('Hochladen durch Studierende verbieten'),
