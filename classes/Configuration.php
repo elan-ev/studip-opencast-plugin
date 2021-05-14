@@ -143,8 +143,7 @@ class Configuration implements \ArrayAccess
             //Tabellenname            //Spaltenname
             'oc_endpoints'         => 'config_id',
             'oc_resources'         => 'config_id',
-            'oc_seminar_series'    => 'config_id',
-            'oc_seminar_workflows' => 'config_id'
+            'oc_seminar_series'    => 'config_id'
         ];
         $found_ids = [];
 

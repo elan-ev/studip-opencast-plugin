@@ -12,7 +12,6 @@
 [ ] OCSeminarEpisodes.php  
 [ ] OCSeminarSeries.php  
 [ ] OCSeminarWorkflowConfiguration.php  
-[ ] OCSeminarWorkflows.php  
 [ ] OCSeriesCache.php  
 [ ] OCSeriesModel.php  
 

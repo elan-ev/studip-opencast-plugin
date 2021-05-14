@@ -80,33 +80,4 @@ class AjaxController extends OpencastController
 
         $this->render_json(array_values($result));
     }
-
-    /**
-     * @param $workflow_id
-     * @throws Exception
-     * @throws Trails_DoubleRenderError
-     */
-    public function getWorkflowStatus_action($workflow_id)
-    {
-        if ($workflow = OCSeminarWorkflows::find($workflow_id)) {
-            $this->workflow_client = WorkflowClient::getInstance($workflow->config_id);
-            $resp                  = $this->workflow_client->getWorkflowInstance($workflow_id);
-            $this->render_text(json_encode($resp));
-            return;
-        }
-
-        $this->render_nothing();
-    }
-
-    public function getWorkflowStatusforCourse_action($course_id)
-    {
-        $workflow_ids          = OCModel::getWorkflowIDsforCourse($course_id);
-        $this->workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
-        if (!empty($workflow_ids)) {
-            $states = OCModel::getWorkflowStates($course_id, $workflow_ids);
-            $this->render_text(json_encode($states));
-        } else {
-            $this->render_nothing();
-        }
-    }
 }
