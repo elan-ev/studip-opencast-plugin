@@ -118,15 +118,6 @@ if ($this->connectedSeries[0]['series_id']) :
         });
     </script>
 
-<? foreach ($GLOBALS['SEM_CLASS'] as $sem_class) : ?>
-    <? if ($sem_class['name'] == 'Studiengruppen') : ?>
-        <? if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) : ?>
-            <?= $studygroup_active = false;
-                break; ?>
-        <? endif ?>
-    <? endif ?>
-<? endforeach ?>
-
 <?
 endif;
 
@@ -264,7 +255,7 @@ if (OCPerm::editAllowed($course_id)) {
                             'title' => $_('Das Hochladen durch Studierende ist momentan erlaubt.')
                         ]
                     );
-                } elseif ($studygroup_active) {
+                } elseif ($controller->isUploadStudygroupActivatable()) {
                     $actions->addLink(
                         $_('Hochladen durch Studierende erlauben'),
                         $controller->url_for('course/allow_students_upload/' . get_ticket()),
@@ -334,10 +325,6 @@ if (OCPerm::editAllowed($course_id)) {
 
 Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAIL, 'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL . '?subject=[Opencast] Feedback');
 ?>
-
-<? if (OCPerm::editAllowed($course_id) && !$studygroup_active) : ?>
-    <?= MessageBox::error($_('Das Opencast Plugin ist momentan nicht für Studiengruppen aktiv. Wenden Sie sich an einen Admin, um das Problem zu beheben.')); ?>
-<? endif ?>
 
 <? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
     <? if (OCPerm::editAllowed($course_id)) : ?>
