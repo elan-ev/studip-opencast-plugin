@@ -883,7 +883,7 @@ class CourseController extends OpencastController
     public function isStudentUploadEnabled()
     {
         $link = OCUploadStudygroup::findOneBySql("(course_id = ? OR studygroup_id = ?) AND active = TRUE", [$this->course_id, $this->course_id]);
-        return !empty(link);
+        return !empty($link);
     }
 
     public function remove_episode_action($ticket, $episode_id)
