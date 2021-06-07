@@ -30,10 +30,10 @@ const OC = {
                     success_callback();
                 },
                 error: function() {
-                    STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' + 
-                                        'in Opencast hergestellt werden. ' + 
-                                        'Laden sie die Seite neu. Falls das ' + 
-                                        'nicht hilft, wenden sich an ' + 
+                    STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' +
+                                        'in Opencast hergestellt werden. ' +
+                                        'Laden sie die Seite neu. Falls das ' +
+                                        'nicht hilft, wenden sich an ' +
                                         'eine/n Systemadministrator/in', {
                         title: 'LTI Fehler',
                         size: 'small'
@@ -417,14 +417,25 @@ const OC = {
                     });
                     return false;
                 }
-               
-                var maxLength = 128;
-      
-                uploadMedia.forEach(function (item, index) {
-                    var extension = item.file.name.split('.').pop();
 
-                    if (item.file.name.length > 128) {
-                    	  item.file.name = item.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
+                const maxLength = 128;
+
+                uploadMedia.forEach(function (medium, index) {
+                    if (medium.file.name.length > maxLength) {
+                        const extension = medium.file.name.split('.').pop();
+
+                        // The file name is a readonly property, hence a new
+                        // file object must be created, instead of simply
+                        // assigning the new file name.
+                        const newName = medium.file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
+                        medium.file =  new File(
+                          [medium.file],
+                          newName,
+                          {
+                            type: medium.file.type,
+                            lastModified: medium.file.lastModified
+                          }
+                        );
                     }
                 });
 
