@@ -687,23 +687,6 @@ class CourseController extends OpencastController
         }
     }
 
-    public function remove_failed_action($workflow_id)
-    {
-        OCPerm::checkEdit($this->course_id);
-
-        $workflow_client = WorkflowClient::getInstance();
-        if ($workflow_client->removeInstanceComplete($workflow_id)) {
-            if (OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
-                PageLayout::postSuccess($this->_('Die hochgeladenen Daten wurden gelöscht.'));
-            } else {
-                PageLayout::postError($this->_('Die Referenz in der Datenbank konnte nicht gelöscht werden.'));
-            }
-        } else {
-            PageLayout::postError($this->_('Die hochgeladenen Daten konnten nicht gelöscht werden.'));
-        }
-        $this->redirect('course/index/');
-    }
-
     public function toggle_tab_visibility_action($ticket)
     {
         OCPerm::checkEdit($this->course_id);

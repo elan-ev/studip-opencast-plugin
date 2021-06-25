@@ -69,7 +69,7 @@ const OC = {
 
 
             if (OC.states && STUDIP.hasperm) {
-                OC.getWorkflowProgressForCourse(cid, true, null);
+                window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/true"), '_self');
             }
         });
 
@@ -495,64 +495,6 @@ const OC = {
             return inp_kb + 'KB';
         }
         return input + 'Bytes'
-    },
-
-    getWorkflowProgressForCourse: function (course_id, animation, info) {
-
-        var reload = false;
-        if (info == null) {
-            info = [];
-            info[0] = [0, 0, 0];
-        }
-        jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/opencast/ajax/getWorkflowStatusforCourse/" + course_id).done(function (data) {
-            var response = jQuery.parseJSON(data);
-
-            if (!jQuery.isEmptyObject(response)) {
-                for (var job_id in response) {
-
-                    var job = response[job_id];
-
-                    if (job.state == 'RUNNING' || job.state == 'INSTANTIATED'  || job.state == 'STOPPED') {
-
-                        var counter = 1;
-                        var current_description = "";
-
-                        for (var operation in job.operations.operation) {
-                            counter++;
-
-                            if (job.operations.operation[operation].state == 'RUNNING'
-                                || job.operations.operation[operation].state == 'INSTANTIATED'
-                               ) {
-                                current_description = job.operations.operation[operation].description;
-                                break;
-                            }
-                        }
-
-                        info[info.length] = [
-                            (counter > job.operations.operation.length ? job.operations.operation.length : counter),
-                            job.operations.operation.length,
-                            counter / job.operations.operation.length
-                        ];
-
-                        jQuery('#' + job_id).attr('title', counter + '/' + job.operations.operation.length + ': ' + current_description);
-                        jQuery('#' + job_id).attr('alt', counter + '/' + job.operations.operation.length + ': ' + current_description);
-                    }
-                    else if (jQuery('#' + job_id).length > 0) {
-                        reload = true;
-                    }
-                }
-
-            }
-            if ((reload || response == "")) {
-                window.open(STUDIP.URLHelper.getURL("plugins.php/opencast/course/index/false/true"), '_self');
-            } else {
-                window.setTimeout(function () {
-                    OC.getWorkflowProgressForCourse(course_id, false, info)
-                }, 5000)
-            }
-
-        });
-
     },
 
     toggleVis: function (cid) {
