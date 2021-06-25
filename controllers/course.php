@@ -1091,4 +1091,16 @@ class CourseController extends OpencastController
         }
         return false;
     }
+
+    public function isUploadStudygroupActivatable()
+    {
+        foreach ($GLOBALS['SEM_CLASS'] as $sem_class) {
+            if ($sem_class['name'] == 'Studiengruppen') {
+                if (!$sem_class['modules']['OpenCast']['activated'] && $sem_class['modules']['OpenCast']['sticky']) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

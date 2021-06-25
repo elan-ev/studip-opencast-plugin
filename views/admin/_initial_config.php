@@ -5,6 +5,11 @@
     Opencast\LTI\LtiLink;
 ?>
 <form class="default" action="<?= $controller->url_for('admin/update/') ?>" method=post>
+
+    <? if (OCPerm::editAllowed($course_id) && !$controller->isUploadStudygroupActivatable()) : ?>
+        <?= MessageBox::error($_('Das Hochladen durch Studierende ist momentan nicht möglich. Um das Problem zu beheben, muss das Inhaltselement für Opencast aktiv oder wählbar geschaltet werden.')); ?>
+    <? endif ?>
+    
     <fieldset class="collapsable">
         <legend><?= $_('Globale Einstellungen'); ?></legend>
 
