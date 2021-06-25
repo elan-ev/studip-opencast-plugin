@@ -170,8 +170,9 @@ class OCModel
 
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_scheduled_recordings (seminar_id, series_id, date_id,
-                    resource_id, start, end, capture_agent, event_id, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    resource_id, start, end, capture_agent, event_id, status,
+                    mktime)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $success = $stmt->execute($data = [
             $course_id,
@@ -182,7 +183,8 @@ class OCModel
             $date->end_time,
             $ca['capture_agent'],
             $event_id,
-            'scheduled'
+            'scheduled',
+            time()
         ]);
 
         return $success;
