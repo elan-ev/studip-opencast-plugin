@@ -8,6 +8,11 @@ use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
+use Opencast\Models\OCSeminarWorkflowConfiguration;
+use Opencast\Models\OCTos;
+use Opencast\Models\OCScheduledRecordings;
+use Opencast\Models\OCUploadStudygroup;
 
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
@@ -59,6 +64,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
             }
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
+            NotificationCenter::addObserver($this, 'cleanCourse', 'CourseDidDelete');
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
@@ -235,8 +241,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
         }
 
-        $studyGroupId = OCModel::getUploadStudygroupId($course_id);
-        $linkedCourseId = CourseConfig::get($course_id)->OPENCAST_MEDIAUPLOAD_LINKED_COURSE;
+        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$course_id])['studygroup_id'];
+        $linkedCourseId = OCUploadStudygroup::findOneBySQL('studygroup_id = ? AND active = TRUE', [$course_id])['course_id'];
 
         // check, if user is in course
         if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
@@ -248,7 +254,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             }
             if ($isActive) {
                 $studyGroup = new Navigation($this->_('Zur Studiengruppe'));
-                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $linkedCourseId], 'course/redirect_studygroup/' . $studyGroupId));
+                $studyGroup->setURL(PluginEngine::getURL($this, ['cid' => $course_id], 'course/redirect_studygroup/' . $studyGroupId));
                 $main->addSubNavigation('studygroup', $studyGroup);
             }
         }
@@ -446,5 +452,24 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             return false;
         }
         return true;
+    }
+
+    public function cleanCourse($event, $course)
+    {
+        $course_id = $course->getId();
+        OCScheduledRecordings::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarEpisodes::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarSeries::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCSeminarWorkflowConfiguration::deleteBySQL('seminar_id = ?', [$course_id]);
+        OCTos::deleteBySQL('seminar_id = ?', [$course_id]);
+
+        if ($course_link = OCUploadStudygroup::findOneBySQL('course_id = ?', [$course_id])) {
+            $studygroup_id = $course_link['studygroup_id'];
+            $course_link->delete();
+            Course::find($studygroup_id)->delete();
+        }
+        else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
+            $studygroup_link->delete();
+        }
     }
 }

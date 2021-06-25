@@ -1,5 +1,7 @@
 <?
 
+use Opencast\Models\OCUploadStudygroup;
+
 class OCPerm
 {
     /**
@@ -48,10 +50,7 @@ class OCPerm
     private static function isUploadStudygroup($course_id)
     {
         if (StudygroupModel::isStudygroup($course_id)) {
-            return (int)DBManager::get()->fetchColumn(
-                'SELECT COUNT(*) FROM `config_values` WHERE range_id = ? AND field = "OPENCAST_MEDIAUPLOAD_LINKED_COURSE"',
-                [$course_id]
-            ) > 0;
+            return !empty(OCUploadStudygroup::findOneBySql('studygroup_id = ?', [$course_id]));
         }
 
         return false;
