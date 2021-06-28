@@ -346,14 +346,13 @@ const OC = {
         }
 
         function showUploadProgress(media) {
-            var force = false;
             var uploadDialog = $("#oc-media-upload-dialog").html()
             var origin = $("<div></div>")
             origin.on("dialog-open", function(_event, options) {
                 var dialog = options.dialog;
                 var throttledRender = _.throttle(renderProgress, 200);
                 $(dialog).on("dialogbeforeclose", function () {
-                    return force || confirm("Wollen Sie das Hochladen der Medien wirklich abbrechen?")
+                    return confirm("Wollen Sie das Hochladen der Medien wirklich abbrechen?")
                 });
                 throttledRender();
                 origin.on("upload-progress", throttledRender);
