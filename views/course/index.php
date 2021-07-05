@@ -123,12 +123,17 @@ endif;
 
 $sidebar = Sidebar::get();
 if (OCPerm::editAllowed($course_id)) {
-    $actions = new ActionsWidget ();
+    $actions = new LinksWidget ();
+    $actions->setTitle($_('Medien'));
+
+    $config_actions = new LinksWidget ();
+    $config_actions->setTitle($_('Konfiguration'));
+
     $upload  = '';
 
     if (!empty($connectedSeries)) {
         if (!$controller->isStudyGroup()) {
-            $actions->addLink(
+            $config_actions->addLink(
                 $_('Verknüpfung aufheben'),
                 $controller->url_for('course/remove_series/' . get_ticket()),
                 Icon::create('trash')
@@ -168,7 +173,7 @@ if (OCPerm::editAllowed($course_id)) {
             // TODO: Schnittool einbinden - Passender Workflow kucken
 
             if ($GLOBALS['perm']->have_perm('root')) {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Kursspezifischen Workflow konfigurieren'),
                     $controller->url_for('course/workflow'),
                     Icon::create('admin'),
@@ -179,13 +184,13 @@ if (OCPerm::editAllowed($course_id)) {
 
         if (!$controller->isStudyGroup()) {
             if ($coursevis == 'visible') {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Reiter verbergen'),
                     $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
                     Icon::create('visibility-visible')
                 );
             } else {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Reiter sichtbar machen'),
                     $controller->url_for('course/toggle_tab_visibility/' . get_ticket()),
                     Icon::create('visibility-invisible')
@@ -203,7 +208,7 @@ if (OCPerm::editAllowed($course_id)) {
 
         if ($GLOBALS['perm']->have_perm('root')) {
             if ($can_schedule) {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Medienaufzeichnung verbieten'),
                     $controller->url_for('course/toggle_schedule/' . get_ticket()),
                     Icon::create('video+accept'),
@@ -212,7 +217,7 @@ if (OCPerm::editAllowed($course_id)) {
                     ]
                 );
             } else {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Medienaufzeichnung erlauben'),
                     $controller->url_for('course/toggle_schedule/' . get_ticket()),
                     Icon::create('video+decline'),
@@ -225,7 +230,7 @@ if (OCPerm::editAllowed($course_id)) {
 
         if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
             if ($controller->isDownloadAllowed()) {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Downloads verbieten'),
                     $controller->url_for('course/disallow_download/' . get_ticket()),
                     Icon::create('download+accept'),
@@ -234,7 +239,7 @@ if (OCPerm::editAllowed($course_id)) {
                     ]
                 );
             } else {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Downloads erlauben'),
                     $controller->url_for('course/allow_download/' . get_ticket()),
                     Icon::create('download+decline'),
@@ -246,7 +251,7 @@ if (OCPerm::editAllowed($course_id)) {
 
             if (!$controller->isStudygroup()) {
                 if ($controller->isStudentUploadEnabled()) {
-                    $actions->addLink(
+                    $config_actions->addLink(
                         $_('Hochladen durch Studierende verbieten'),
                         $controller->url_for('course/disallow_students_upload/' . get_ticket()),
                         Icon::create('upload+accept'),
@@ -255,7 +260,7 @@ if (OCPerm::editAllowed($course_id)) {
                         ]
                     );
                 } elseif ($controller->isUploadStudygroupActivatable()) {
-                    $actions->addLink(
+                    $config_actions->addLink(
                         $_('Hochladen durch Studierende erlauben'),
                         $controller->url_for('course/allow_students_upload/' . get_ticket()),
                         Icon::create('upload'),
@@ -271,7 +276,7 @@ if (OCPerm::editAllowed($course_id)) {
                     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
                 if ($vis) {
-                    $actions->addLink(
+                    $config_actions->addLink(
                         $_('Neue Videos für alle Teilnehmenden sichtbar schalten'),
                         $controller->url_for('course/course_visibility/' . get_ticket() . '/' . intval(!$vis)),
                         Icon::create('visibility-invisible'),
@@ -280,7 +285,7 @@ if (OCPerm::editAllowed($course_id)) {
                         ]
                     );
                 } else {
-                    $actions->addLink(
+                    $config_actions->addLink(
                         $_('Neue Videos nur für Lehrende sichtbar schalten'),
                         $controller->url_for('course/course_visibility/' . get_ticket() . '/' . intval(!$vis)),
                         Icon::create('visibility-visible'),
@@ -291,17 +296,16 @@ if (OCPerm::editAllowed($course_id)) {
                 }
             }
         }
-
     } else {
         if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
-            $actions->addLink(
+            $config_actions->addLink(
                 $_('Neue Series anlegen'),
                 $controller->url_for('course/create_series'),
                 Icon::create('tools')
             );
 
             if ($GLOBALS['perm']->have_perm('root')) {
-                $actions->addLink(
+                $config_actions->addLink(
                     $_('Vorhandene Series verknüpfen'),
                     $controller->url_for('course/config'),
                     Icon::create('group'),
@@ -313,7 +317,10 @@ if (OCPerm::editAllowed($course_id)) {
         }
     }
 
+
     $sidebar->addWidget($actions);
+    $sidebar->addWidget($config_actions);
+
     Helpbar::get()->addPlainText(
         '',
         $_('Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen hinzufügen. Je nach Größe der Datei kann es einige Zeit in Anspruch nehmen, bis die entsprechende Aufzeichnung in der Liste sichtbar ist. Weiterhin ist es möglich die ausgewählten Sichtbarkeit einer Aufzeichnung innerhalb der Veranstaltung direkt zu ändern.')
