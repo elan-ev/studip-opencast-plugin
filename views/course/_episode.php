@@ -7,10 +7,10 @@ $visibility_text = [
     'free'      => $_('Video ist für jeden sichtbar')
 ];
 $sort_orders = [
-    'mkdate1'    => $_('Datum erstellt: Neueste zuerst'),
-    'mkdate0'    => $_('Datum erstellt: Älteste zuerst'),
-    'start1'     => $_('Datum publiziert: Neueste zuerst'),
-    'start0'     => $_('Datum publiziert: Älteste zuerst'),
+    'mkdate1'    => $_('Datum hochgeladen: Neueste zuerst'),
+    'mkdate0'    => $_('Datum hochgeladen: Älteste zuerst'),
+    'start1'     => $_('Aufnahmezeitpunkt: Neueste zuerst'),
+    'start0'     => $_('Aufnahmezeitpunkt: Älteste zuerst'),
     'title0'     => $_('Titel: Alphabetisch'),
     'title1'     => $_('Titel: Umgekehrt Alphabetisch'),
 ];
@@ -145,7 +145,7 @@ $sort_orders = [
                                         ) ?>
                                     </h3>
                                     <? else : ?>
-                                        <?= $_('Aufzeichnungsdatum') ?>:
+                                        <?= $_('Aufnahmezeitpunkt') ?>:
                                         <?= date("d.m.Y H:i", strtotime($item['start'])) ?> <?= $_("Uhr") ?>
                                     <? endif ?>
                                 </li>
