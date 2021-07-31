@@ -21,7 +21,7 @@
                             <? foreach ($all_series[$id] as $serie) : ?>
                                 <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
                                         class="nested-item">
-                                    <?= $serie->dcTitle ?>
+                                    <?= htmlReady($serie->dcTitle) ?>
                                 </option>
                             <? endforeach; ?>
                         </optgroup>

@@ -3,7 +3,7 @@ foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' =
     <? $download_type = $type . '_download' ?>
     <? if ($episode[$download_type]) : ?>
         <div>
-            <h2><?= _($button_text) ?></h2>
+            <h2><?= _(htmlReady($button_text)) ?></h2>
             <? $download_info = array_reverse($episode[$download_type], true) ?>
             <? foreach ($download_info as $quality => $content) : ?>
                 <?= Studip\LinkButton::create(

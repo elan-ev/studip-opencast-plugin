@@ -24,54 +24,6 @@ class AdminController extends OpencastController
         $this->config = OCConfig::getBaseServerConf();
     }
 
-    public function clear_series_action()
-    {
-        return;
-        set_time_limit(7200);
-
-        if (!$GLOBALS['perm']->have_perm('root')) {
-            throw new AccessDeniedException();
-        }
-
-        $series_client = SeriesClient::getInstance(1);
-        $apiseries     = ApiSeriesClient::getInstance(1);
-
-        $series = $series_client->getJSON('/allSeriesIdTitle.json');
-
-        $acl = '[
-              {
-                "allow": true,
-                "role": "ROLE_USER_ADMIN",
-                "action": "read"
-              },
-              {
-                "allow": true,
-                "role": "ROLE_USER_ADMIN",
-                "action": "write"
-              }
-            ]';
-
-        // set default acl for all series, with override
-        foreach ($series->series as $ser) {
-            $series_id = $ser->identifier;
-
-            echo '<b>' . $ser->title . '</b><br/>';
-            var_dump($apiseries->putJSON('/' . $series_id . '/acl', [
-                'acl'      => $acl,
-                'override' => 'true'
-            ]));
-        }
-
-        echo '<hr><hr>';
-
-        foreach (OCSeminarSeries::findBySQL(1) as $data) {
-            $seminar_id = $data->seminar_id;
-            var_dump($seminar_id);
-            var_dump(OpencastLTI::setAcls($seminar_id));
-        }
-        die;
-    }
-
     public function world_series_action()
     {
         return;

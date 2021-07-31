@@ -4,14 +4,14 @@ $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
 
 
 <td>
-    <?= $resource['name'] ?>
+    <?= htmlReady($resource['name']) ?>
 </td>
 <? if (!empty($assigned_agents)) : ?>
     <td>
-        <?= $assigned_agents['capture_agent'] ?>
+        <?= htmlReady($assigned_agents['capture_agent']) ?>
     </td>
     <td>
-        <?= $assigned_agents['workflow_id'] ?>
+        <?= htmlReady($assigned_agents['workflow_id']) ?>
     </td>
     <? foreach ($agents as $key => $agent) : ?>
         <? if (in_array($agent->name, $assigned_agents)): ?>
@@ -39,7 +39,7 @@ $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
                 <option value="" disabled selected><?= $_('Bitte wählen Sie einen CA.') ?></option>
                 <? foreach ($available_agents as $agent) : ?>
                     <? if (isset($agent)) : ?>
-                        <option value="<?= $agent->name ?>"> <?= $agent->name ?></option>
+                        <option value="<?= $agent->name ?>"> <?= htmlReady($agent->name) ?></option>
                     <? endif; ?>
                 <? endforeach; ?>
             </select>
@@ -60,11 +60,11 @@ $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
                                     in_array('schedule-ng', $definition->tags->tag))
                             ) : ?>
                                 <option value="<?= $definition->id ?>">
-                                    <?= $definition->title ?> (<?= $definition->id ?>)
+                                    <?= htmlReady($definition->title) ?> (<?= htmlReady($definition->id) ?>)
                                 </option>
                             <? elseif ($definition->tags->tag == 'schedule' || $definition->tags->tag == 'schedule-ng') : ?>
                                 <option value="<?= $definition->id ?>">
-                                    <?= $definition->title ?> (<?= $definition->id ?>)
+                                    <?= htmlReady($definition->title) ?> (<?= htmlReady($definition->id) ?>)
                                 </option>
                             <? endif; ?>
                         <? endif; ?>

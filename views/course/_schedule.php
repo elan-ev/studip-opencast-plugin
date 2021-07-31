@@ -71,12 +71,12 @@
                                 <? $topic = true; ?>
                                 <? $titles[] = my_substr($issue->getTitle(), 0, 80); ?>
                             <? endforeach; ?>
-                            <td><?= $_('Themen: ') . my_substr(implode(', ', $titles), 0, 80) ?></td>
+                            <td><?= $_('Themen: ') . htmlReady(my_substr(implode(', ', $titles), 0, 80)) ?></td>
                         <? else : ?>
                             <? foreach ($issues as $is) : ?>
                                 <? $issue = new Issue(['issue_id' => $is]); ?>
                                 <? $topic = true; ?>
-                                <td><?= my_substr($issue->getTitle(), 0, 80) ?></td>
+                                <td><?= htmlReady(my_substr($issue->getTitle(), 0, 80)) ?></td>
                             <? endforeach; ?>
                         <? endif; ?>
                     <? else: ?>
