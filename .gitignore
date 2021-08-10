@@ -1,2 +1,4 @@
 node_modules
 static
+app/views/course/index.php
+app/views/admin/index.php
