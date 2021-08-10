@@ -14,10 +14,10 @@
             <? if ($endpoint['config_id'] != $show_config_id) continue ?>
             <tr>
                 <td>
-                    <?= $endpoint['service_type'] ?>
+                    <?= htmlReady($endpoint['service_type']) ?>
                 </td>
                 <td>
-                    <?= $endpoint['service_url'] ?>
+                    <?= htmlReady($endpoint['service_url']) ?>
                 </td>
             </tr>
         <? endforeach; ?>

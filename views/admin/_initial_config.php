@@ -48,7 +48,7 @@
     <fieldset class="collapsable">
         <legend>
             <?= $_('Opencast Server Einstellungen')." (ID: $config_id) - "
-                . $_('OC Version') . ": ". $config[$config_id]['service_version'] .".x" ?>
+                . $_('OC Version') . ": ". htmlReady($config[$config_id]['service_version']) .".x" ?>
         </legend>
 
         <label>
