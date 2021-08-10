@@ -31,7 +31,10 @@ module.exports = {
 					loader: 'extract-loader',
 				},
 				{
-					loader: 'css-loader?-url'
+					loader: 'css-loader',
+                    options: {
+                        url: false
+                    }
 				},
 				{
 					loader: 'sass-loader'
@@ -54,7 +57,7 @@ module.exports = {
             template: 'vueapp/course_index.php',
             inject: false,
             minify: false,
-            filename: '../app/views/index/index.php'
+            filename: '../app/views/course/index.php'
         }),
         new HtmlWebpackPlugin({
             template: 'vueapp/admin_index.php',

@@ -3,6 +3,8 @@
 </div>
 
 <script type="text/javascript">
-    let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api') ?>';
+    let API_URL  = '<?= PluginEngine::getURL('opencastplugin', [], 'api') ?>';
     let ICON_URL = '<?= Assets::url('images/icons/') ?>';
 </script>
+
+
