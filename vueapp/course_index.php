@@ -3,7 +3,7 @@
 </div>
 
 <script type="text/javascript">
-    let API_URL  = '<?= PluginEngine::getURL('opencastplugin', [], 'api', true) ?>';
+    let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>';
     let CID      = '<?= $cid ?>';
     let ICON_URL = '<?= Assets::url('images/icons/') ?>';
     let PLUGIN_ASSET_URL =  '<?= $plugin->getAssetsUrl() ?>';

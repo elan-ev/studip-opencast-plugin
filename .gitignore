@@ -1,4 +1,5 @@
 node_modules
 static
+vendor
 app/views/course/index.php
 app/views/admin/index.php

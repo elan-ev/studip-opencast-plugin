@@ -15,7 +15,7 @@ $namespaces = [
     'Opencast\\Models',
     'Opencast\\LTI',
 ];
-$paths = ['models', 'classes', 'classes/lti', 'classes/OCRestClient'];
+$paths = ['app/models', 'classes', 'classes/lti', 'classes/OCRestClient'];
 foreach($namespaces as $namespace) {
     foreach($paths as $path) {
         StudipAutoloader::addAutoloadPath(__DIR__ . '/' . $path);
@@ -23,9 +23,9 @@ foreach($namespaces as $namespace) {
     }
 }
 
-require_once 'models/OCModel.php';
-require_once 'models/OCCourseModel.class.php';
-require_once 'models/OCSeriesModel.php';
+require_once 'app/models/OCModel.php';
+require_once 'app/models/OCCourseModel.class.php';
+require_once 'app/models/OCSeriesModel.php';
 
 require_once 'classes/OCPerm.php';
 

@@ -36,10 +36,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             //.. now the subnavi
             $main = new Navigation($this->_("Opencast Administration"));
             // TODO think about an index page.. for the moment the config page is in charge..
-            $main->setURL(PluginEngine::getURL($this, [], 'admin/config'));
+            $main->setURL(PluginEngine::getURL($this, [], 'admin#/admin'));
 
             $config = new Navigation($this->_('Opencast Einstellungen'));
-            $config->setURL(PluginEngine::getURL($this, [], 'admin/config'));
+            $config->setURL(PluginEngine::getURL($this, [], 'admin#/admin'));
             $main->addSubNavigation('oc-config', $config);
 
             Navigation::addItem('/start/opencast', $main);
@@ -54,12 +54,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         if (!$GLOBALS['opencast_already_loaded']) {
-            $this->addStylesheet('stylesheets/oc.less');
-            PageLayout::addScript($this->getPluginUrl() . '/static/bundle.js');
-            if ($GLOBALS['perm']->have_perm('tutor') && OCModel::getConfigurationstate()) {
-                PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
-                PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
-            }
             if (OCModel::getConfigurationstate()) {
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
             }
@@ -470,6 +464,32 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
         else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
             $studygroup_link->delete();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function perform($unconsumed_path)
+    {
+        require_once __DIR__ . '/vendor/autoload.php';
+
+        if (substr($unconsumed_path, 0, 3) == 'api') {
+            $appFactory = new AppFactory();
+            $app = $appFactory->makeApp($this);
+            $app->group('/meetingplugin/api', new RouteMap($app));
+            $app->run();
+        } else {
+            PageLayout::addStylesheet($this->getPluginUrl() . '/static/styles.css');
+
+            $trails_root = $this->getPluginPath() . '/app';
+            $dispatcher  = new Trails_Dispatcher($trails_root,
+                rtrim(PluginEngine::getURL($this, null, ''), '/'),
+                'index'
+            );
+
+            $dispatcher->current_plugin = $this;
+            $dispatcher->dispatch($unconsumed_path);
         }
     }
 }

@@ -1,0 +1,26 @@
+{
+    "name": "elanev/opencast-plugin",
+    "description": "integrate video conference services into the Stud.IP LMS",
+    "config": {
+        "platform": {
+            "php": "7.2.0"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/psr7": "~1.6.1",
+        "slim/slim": "^3.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "ElanEv\\Model\\": "app/models",
+            "ElanEv\\": "",
+            "Opencast\\": "lib/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.1",
+        "phpunit/phpunit-mock-objects": "^6.1.0",
+        "codeception/codeception": "^2.4"
+    }
+}

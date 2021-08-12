@@ -165,7 +165,7 @@ class OCConfig extends \SimpleORMap
     {
         if (is_null($config_id)) {
             return \SimpleCollection::createFromArray(
-                self::findBySql('1 ORDER BY config_id ASC')
+                self::findBySql('1 ORDER BY id ASC')
             )->toGroupedArray('config_id');
         }
 

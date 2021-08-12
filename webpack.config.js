@@ -10,8 +10,9 @@ module.exports = {
         './assets/css/opencast.scss'
     ], // the entry point
     output: {
-        filename: 'bundle.js', // the output filename
-        path: path.resolve(__dirname, 'static') // fully qualified path
+        filename: '[name].[contenthash].js', // the output filename
+        path: path.resolve(__dirname, 'static'), // fully qualified path
+        publicPath: '/'
     },
     module: {
         rules: [{
