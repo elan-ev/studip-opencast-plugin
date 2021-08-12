@@ -37,6 +37,6 @@ class CourseController extends OpencastController
      */
     public function index_action()
     {
-
+        Navigation::activateItem('/course/opencast');
     }
 }
