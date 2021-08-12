@@ -3,10 +3,6 @@
  * course.php - course controller
  */
 
-use Opencast\Models\OCConfig;
-use Opencast\Models\OCSeminarSeries;
-use Opencast\Models\OCTos;
-use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 use Opencast\LTI\OpencastLTI;
 
@@ -20,8 +16,8 @@ class CourseController extends OpencastController
 
         PageLayout::addHeadElement(
             'script',
-            [],
-            'OC.parameters = ' . json_encode($this->getOCParameters(), JSON_FORCE_OBJECT)
+            []
+            //'OC.parameters = ' . json_encode($this->getOCParameters(), JSON_FORCE_OBJECT)
         );
     }
 

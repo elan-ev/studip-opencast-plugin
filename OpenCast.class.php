@@ -6,13 +6,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
-use Opencast\Models\OCConfig;
-use Opencast\Models\OCSeminarSeries;
-use Opencast\Models\OCSeminarEpisodes;
-use Opencast\Models\OCSeminarWorkflowConfiguration;
-use Opencast\Models\OCTos;
-use Opencast\Models\OCScheduledRecordings;
-use Opencast\Models\OCUploadStudygroup;
+use Opencast\Models\Helpers;
 
 use Opencast\AppFactory;
 use Opencast\RouteMap;
@@ -48,7 +42,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             Navigation::addItem('/start/opencast', $main);
             Navigation::addItem('/admin/config/oc-config', $config);
 
-            if (OCModel::getConfigurationstate()) {
+            if (Helpers::getConfigurationstate()) {
                 $resources = new Navigation($this->_('Opencast Ressourcen'));
                 $resources->setURL(PluginEngine::getURL($this, [], 'admin/resources'));
                 $main->addSubNavigation('oc-resources', $resources);
@@ -57,7 +51,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         if (!$GLOBALS['opencast_already_loaded']) {
-            if (OCModel::getConfigurationstate()) {
+            if (Helpers::getConfigurationstate()) {
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
             }
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
@@ -198,15 +192,18 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
     public function getTabNavigation($course_id)
     {
-        if (!$this->isActivated($course_id) || !OCModel::getConfigurationstate()) {
+        if (!$this->isActivated($course_id) || !Helpers::getConfigurationstate()) {
             return;
         }
 
-        $ocmodel = new OCCourseModel($course_id);
+        //$ocmodel = new OCCourseModel($course_id);
         $title   = 'Opencast';
+        /*
         if ($ocmodel->getSeriesVisibility() == 'invisible') {
             $title .= " (". $this->_('versteckt'). ")";
         }
+        */
+       
         $main    = new Navigation($title);
 
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
@@ -221,6 +218,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             ['title' => 'Opencast']
         ));
 
+        return ['opencast' => $main];
+
+/*
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
         $main->addSubNavigation('overview', $overview);
@@ -266,6 +266,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             return ['opencast' => $main];
         }
         return [];
+        */
     }
 
     /**

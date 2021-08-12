@@ -600,11 +600,10 @@ class Helpers
 
     static function getConfigurationstate()
     {
-        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS COUNT FROM oc_endpoints");
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config");
         $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        if ($rows['0'] > 0) {
+        if ($stmt->fetchColumn() > 0) {
             return true;
         }
 

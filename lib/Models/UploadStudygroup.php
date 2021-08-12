@@ -2,7 +2,7 @@
 
 namespace Opencast\Models;
 
-class OCUploadStudygroup extends \SimpleORMap
+class UploadStudygroup extends \SimpleORMap
 {
     protected static function configure($config = array())
     {

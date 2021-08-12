@@ -13,7 +13,6 @@
     },
     "autoload": {
         "psr-4": {
-            "ElanEv\\Model\\": "app/models",
             "ElanEv\\": "",
             "Opencast\\": "lib/"
         }
