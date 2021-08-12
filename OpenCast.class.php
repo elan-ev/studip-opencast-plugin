@@ -16,6 +16,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
+    private $assetsUrl;
+
     /**
      * Initialize a new instance of the plugin.
      */
@@ -25,8 +27,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
-
-        $GLOBALS['ocplugin_path'] = $this->getPluginURL();
+        $this->assetsUrl = rtrim($this->getPluginURL(), '/').'/assets';
 
         if ($GLOBALS['perm']->have_perm('root')) {
             //check if we already have an connection to an opencast matterhorn
@@ -203,7 +204,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $title .= " (". $this->_('versteckt'). ")";
         }
         */
-       
+
         $main    = new Navigation($title);
 
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
@@ -495,5 +496,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
             $dispatcher->current_plugin = $this;
             $dispatcher->dispatch($unconsumed_path);
         }
+    }
+
+    public function getAssetsUrl()
+    {
+        return $this->assetsUrl;
     }
 }

@@ -5,7 +5,6 @@ import router from "./router";
 import store from "./store";
 import "./public-path";
 
-import { CHECK_AUTH, LOGOUT, ERROR_COMMIT } from "./store/actions.type";
 import ApiService from "./common/api.service";
 import DateFilter from "./common/date.filter";
 import ErrorFilter from "./common/error.filter";
@@ -19,9 +18,11 @@ ApiService.init();
 
 // Redirect to login page, if a 401 is catched
 Vue.axios.interceptors.response.use((response) => { // intercept the global error
+        store.dispatch('errorClear');
+
         return response;
     }, function (error) {
-        store.dispatch(ERROR_COMMIT, error.response);
+        store.dispatch('errorCommit', error.response);
 
         // Do something with response error
         return Promise.reject(error)

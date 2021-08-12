@@ -9,6 +9,8 @@
     let PLUGIN_ASSET_URL =  '<?= $plugin->getAssetsUrl() ?>';
 </script>
 
+<!-- load bundles -->
 <% for(var i = 0; i < htmlWebpackPlugin.tags.headTags.length; i++) { %>
 <? PageLayout::addScript($this->plugin->getPluginUrl() . '/static<%= htmlWebpackPlugin.tags.headTags[i].attributes.src %>'); ?>
 <% } %>
+<!-- END load bundles -->

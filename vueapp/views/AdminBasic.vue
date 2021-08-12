@@ -81,14 +81,6 @@ import MessageBox from "@/components/MessageBox";
 
 import OpencastConfigStep from "@/components/OpencastConfigStep";
 
-import {
-    CONFIG_READ, CONFIG_UPDATE,
-    CONFIG_CREATE, CONFIG_DELETE
-} from "@/store/actions.type";
-
-import {
-    CONFIG_SET
-} from "@/store/mutations.type";
 
 export default {
     name: "AdminBasic",
@@ -112,11 +104,11 @@ export default {
             this.message = { type: 'info', text: 'Überprüfe Konfiguration...'};
             this.config.checked = false;
 
-            this.$store.dispatch(CONFIG_CREATE, this.config)
+            this.$store.dispatch('configCreate', this.config)
                 .then(({ data }) => {
                     this.message = data.message;
                     this.checkLti(data.lti);
-                    this.$store.commit(CONFIG_SET, data.config);
+                    this.$store.commit('configSet', data.config);
                 });
         },
         checkLti(lti) {
@@ -138,7 +130,7 @@ export default {
         }
     },
     mounted() {
-        store.dispatch(CONFIG_READ, 1);
+        store.dispatch('configRead', 1);
     }
 };
 </script>

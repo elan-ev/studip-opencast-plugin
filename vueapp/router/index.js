@@ -22,6 +22,18 @@ export default new Router({
                     props: true
                 }
             ]
+        },
+        {
+            path: "/course",
+            component: () => import("@/views/Course"),
+
+            children: [
+                {
+                    name: "course",
+                    path: "episodes",
+                    component: () => import("@/views/Episodes")
+                }
+            ]
         }
     ]
 });

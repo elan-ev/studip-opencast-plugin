@@ -35,14 +35,6 @@ import MessageBox from "@/components/MessageBox";
 
 import OpencastConfigStep from "@/components/OpencastConfigStep";
 
-import {
-    CONFIG_READ, CONFIG_UPDATE,
-    CONFIG_CREATE, CONFIG_DELETE
-} from "@/store/actions.type";
-
-import {
-    CONFIG_SET
-} from "@/store/mutations.type";
 
 export default {
     name: "AdminOptions",

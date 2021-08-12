@@ -1,15 +1,6 @@
 import Vue from "vue";
 import ApiService from "@/common/api.service";
 
-import {
-    RESOURCES_READ,
-    RESOURCES_UPDATE
-} from "./actions.type";
-
-import {
-    RESOURCES_SET
-} from "./mutations.type";
-
 const initialState = {
     resources: {}
 
@@ -24,7 +15,7 @@ const getters = {
 export const state = { ...initialState };
 
 export const actions = {
-    async [RESOURCES_READ](context) {
+    async resourcesRead(context) {
         return new Promise(resolve => {
           ApiService.get('resources')
             .then(({ data }) => {
@@ -34,7 +25,7 @@ export const actions = {
         });
     },
 
-    async [RESOURCES_UPDATE](context, params) {
+    async resourcesUpdate(context, params) {
         return ApiService.update('resources', {
             resources: params
         });
@@ -43,7 +34,7 @@ export const actions = {
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 export const mutations = {
-    [RESOURCES_SET](state, data) {
+    resourcesSet(state, data) {
         state.resources = data;
     },
 };

@@ -24,8 +24,6 @@
 import store from "@/store";
 import { mapGetters } from "vuex";
 
-import { ERROR_CLEAR } from "@/store/actions.type";
-
 export default {
     name: "Error",
 
@@ -34,7 +32,7 @@ export default {
     },
     methods: {
         clearErrors() {
-            this.$store.dispatch(ERROR_CLEAR);
+            this.$store.dispatch('errorClear');
         }
     }
 };

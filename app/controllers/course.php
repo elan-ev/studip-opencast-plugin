@@ -3,7 +3,8 @@
  * course.php - course controller
  */
 
-use Opencast\Models\OCUploadStudygroup;
+use Opencast\Models\UploadStudygroup;
+use Opencast\Models\Config;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
@@ -12,13 +13,9 @@ class CourseController extends OpencastController
     {
         parent::__construct($dispatcher);
 
-        PageLayout::setHelpKeyword('Opencast');
+        $this->plugin = $dispatcher->current_plugin;
 
-        PageLayout::addHeadElement(
-            'script',
-            []
-            //'OC.parameters = ' . json_encode($this->getOCParameters(), JSON_FORCE_OBJECT)
-        );
+        PageLayout::setHelpKeyword('Opencast');
     }
 
 
@@ -31,7 +28,7 @@ class CourseController extends OpencastController
     {
         parent::before_filter($action, $args);
         $this->course_id = Context::getId();
-        $this->config = OCConfig::getConfigForCourse($this->course_id);
+        $this->config = Config::getConfigForCourse($this->course_id);
         $this->paella = $this->config['paella'] == '0' ? false : true;
     }
 
