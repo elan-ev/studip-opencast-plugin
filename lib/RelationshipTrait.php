@@ -6,6 +6,6 @@ Trait RelationshipTrait
 {
     private function getRelLink($slug)
     {
-        return \PluginEngine::getLink('unterrichtsplanung/api/' . $slug);
+        return \PluginEngine::getLink('opencast/api/' . $slug);
     }
 }

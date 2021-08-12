@@ -21,8 +21,10 @@ class ConfigShow extends OpencastController
         if ($config) {
             $config->config['id'] = $config->id;
             return $this->createResponse(['config' => json_decode($config->config)], $response);
+        } else {
+            return $this->createResponse(['config' => []], $response);
         }
 
-        throw new Error('Config not found', 404);
+        // throw new Error('Config with id '. $args['id'] .' not found', 404);
     }
 }

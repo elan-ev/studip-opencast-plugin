@@ -1,17 +1,17 @@
 <?php
 
-namespace Unterrichtsplanung\Routes\Users;
+namespace Opencast\Routes\Users;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Unterrichtsplanung\Errors\AuthorizationFailedException;
-use Unterrichtsplanung\Errors\Error;
-use Unterrichtsplanung\UnterrichtsplanungTrait;
-use Unterrichtsplanung\UnterrichtsplanungController;
+use Opencast\Errors\AuthorizationFailedException;
+use Opencast\Errors\Error;
+use Opencast\OpencastTrait;
+use Opencast\OpencastController;
 
-class UsersShow extends UnterrichtsplanungController
+class UsersShow extends OpencastController
 {
-    use UnterrichtsplanungTrait;
+    use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {

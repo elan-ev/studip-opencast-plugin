@@ -14,6 +14,9 @@ use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 
+use Opencast\AppFactory;
+use Opencast\RouteMap;
+
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 {
@@ -181,7 +184,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
      * The template will automatically get a standard layout, which
      * can be configured via attributes set on the template:
      *
-     *  title        title to display, defaults to plugin name
+     *  title        title to display, defaulAppFactoryts to plugin name
      *  icon_url     icon for this plugin (if any)
      *  admin_url    admin link for this plugin (if any)
      *  admin_title  title for admin link (default: Administration)
@@ -477,7 +480,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         if (substr($unconsumed_path, 0, 3) == 'api') {
             $appFactory = new AppFactory();
             $app = $appFactory->makeApp($this);
-            $app->group('/meetingplugin/api', new RouteMap($app));
+            $app->group('/opencast/api', new RouteMap($app));
             $app->run();
         } else {
             PageLayout::addStylesheet($this->getPluginUrl() . '/static/styles.css');

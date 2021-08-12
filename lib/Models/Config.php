@@ -13,7 +13,7 @@ class Config extends UPMap
     {
         $config['db_table'] = 'oc_config';
 
-        $config['serialized_fields']['config'] = 'JSONArrayObject';
+        $config['serialized_fields']['settings'] = 'JSONArrayObject';
 
         parent::configure($config);
     }
