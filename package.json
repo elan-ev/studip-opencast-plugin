@@ -2,9 +2,22 @@
   "name": "studip-opencast-plugin",
   "version": "2.0.0",
   "description": "Stud.IP plugin for Opencast",
+  "author": "Till Glöggler <tgloeggl@uos.de>",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode=development --watch",
+    "prebuild": "npm install",
+    "prezip": "npm install && npm run prod && composer install --no-dev",
+    "translate": "/bin/bash translate.sh",
+    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
+  },
+  "dependencies": {
+    "vue-apollo": "^3.0.0-beta.11"
+  },
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
+    "@vue/cli-service": "^4.5.13",
     "axios": "^0.21.1",
     "babel-loader": "^8.1.0",
     "clean-terminal-webpack-plugin": "^3.0.0",
@@ -14,6 +27,7 @@
     "date-fns": "^2.0.0-beta.2",
     "extract-loader": "^5.1.0",
     "file-loader": "^6.2.0",
+    "graphql-tag": "^2.9.0",
     "html-webpack-plugin": "^5.3.2",
     "install": "^0.12.2",
     "npm": "^6.9.2",
@@ -23,30 +37,22 @@
     "sass-loader": "^12.1.0",
     "vue": "^2.6.10",
     "vue-axios": "^3.2.5",
+    "vue-cli-plugin-apollo": "~0.22.2",
     "vue-loader": "^15.9.8",
     "vue-router": "^3.0.6",
     "vue-template-compiler": "^2.6.10",
     "vuex": "^3.1.1",
     "webpack": "^5.49.0",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.8.0"
   },
-  "scripts": {
-    "prebuild": "npm install",
-    "build": "webpack --mode production",
-    "dev": "webpack --mode=development --watch",
-    "translate": "/bin/bash translate.sh",
-    "prezip": "npm install && npm run prod && composer install --no-dev",
-    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/elan-ev/studip-opencast-plugin.git"
-  },
-  "author": "Till Glöggler <tgloeggl@uos.de>",
-  "license": "AGPL-3.0-or-later",
+  "browserslist": "> 0.25%, not dead, not IE 11",
   "bugs": {
     "url": "https://github.com/elan-ev/studip-opencast-plugin/issues"
   },
   "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme",
-  "browserslist": "> 0.25%, not dead, not IE 11"
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elan-ev/studip-opencast-plugin.git"
+  }
 }

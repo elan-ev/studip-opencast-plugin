@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1>Tob dich aus! ;)</h1>
+        <h2>{{ currentUser.id }}</h2>
     </div>
 </template>
 
@@ -12,6 +13,8 @@ import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 
+import gpl from "graphql-tag"
+
 export default {
     name: "Episodes",
     components: {
@@ -21,8 +24,19 @@ export default {
 
     data() {
         return {
-
+            currentUser: {
+                id: 'default'
+            }
         }
+    },
+
+    apollo: {
+        currentUser: gpl`
+        query {
+            currentUser {
+                id
+            }
+        }`
     },
 
     computed: {
