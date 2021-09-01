@@ -7,7 +7,8 @@ const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
 module.exports = {
     entry: [
         './vueapp/app.js',
-        './assets/css/opencast.scss'
+        './assets/css/opencast.scss',
+        "regenerator-runtime/runtime.js"
     ], // the entry point
     output: {
         filename: '[name].[contenthash].js', // the output filename

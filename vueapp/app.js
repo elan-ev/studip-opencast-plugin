@@ -10,6 +10,8 @@ import DateFilter from "./common/date.filter";
 import ErrorFilter from "./common/error.filter";
 import I18N from "./common/i18n.filter";
 
+import { createProvider } from "./vue-apollo";
+
 Vue.filter("date", DateFilter);
 Vue.filter("error", ErrorFilter);
 Vue.filter("i18n", I18N);
@@ -33,6 +35,7 @@ $(function() {
     window.Vue = new Vue({
         router,
         store,
+        apolloProvider: createProvider(),
         render: h => h(App)
     }).$mount('#app');
 
