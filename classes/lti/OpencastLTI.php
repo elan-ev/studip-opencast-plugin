@@ -279,7 +279,7 @@ class OpencastLTI
             // state is ''.
             // Do not continue on failed or stopped WFs! They MUST prevent StudIP
             // from changing ACLs
-            if (!in_array($workflow, ['SUCCEEDED', ''])) {
+            if (!in_array($workflow, ['SUCCEEDED', 'FAILED', 'STOPPED', ''])) {
                 // do not change ACLs if there is a running workflow!
                 return false;
             }
