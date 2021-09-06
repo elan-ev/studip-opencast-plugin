@@ -59,13 +59,6 @@ class Constants {
             'type'        => 'boolean'
         ],
         [
-            'name'        => 'upload_chunk_size',
-            'description' => 'Größe der Chunks für das Hochladen in Byte (aktuell ohne Wirkung)',
-            'value'       => 5000000,
-            'type'        => 'integer'
-        ],
-
-        [
             'name'        => 'time_buffer_overlap',
             'description' => 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern',
             'value'       => 60,
