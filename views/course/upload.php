@@ -209,11 +209,6 @@ if($vis == false){
                 <p><?= $workflow_text ?: $workflow['workflow_id'] ?></p>
             <? endif ?>
         </label>
-
-        <label>
-            <?= $_('Chunk-Größe für hochgeladene Medien') ?>
-            <p><?= round((float)$config['upload_chunk_size'] / 1024 / 1024, 2) ?> MB</p>
-        </label>
     </section>
 
     <label for="video_upload">
