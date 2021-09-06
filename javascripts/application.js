@@ -594,6 +594,48 @@ const OC = {
         }
 
         return true;
+    },
+
+    togglePasswordVis: function(element) {
+        var $elem       = $(element).parent().parent();
+        var $pass_field = $elem.find('input[data-type=password]');
+        var $pass       = $elem.find('input[type=hidden]');
+
+        // make password visible
+        if ($elem.find('img[data-name=visible]').is(':visible')) {
+            $elem.find('img[data-name=visible]').hide();
+            $elem.find('img[data-name=invisible]').show();
+
+            // copy password and around and keep any changes
+            if ($pass_field.val() != '*****') {
+                $pass.val($pass_field.val());
+            }
+            $pass_field.val($pass.val());
+            $pass_field.attr('type', 'text');
+        }
+
+        // make password invisible
+        else {
+            $elem.find('img[data-name=visible]').show();
+            $elem.find('img[data-name=invisible]').hide();
+
+            // copy password and around and keep any changes
+            $pass_field.attr('type', 'password');
+            if ($pass.val() != '') {
+                $pass.val($pass_field.val());
+                $pass_field.val('*****');
+            }
+        }
+
+        return false;
+    },
+
+    updateHiddenPassword: function(element) {
+        var $elem       = $(element).parent();
+        var $pass_field = $elem.find('input[data-type=password]');
+        var $pass       = $elem.find('input[type=hidden]');
+
+        $pass.val($pass_field.val());
     }
 };
 

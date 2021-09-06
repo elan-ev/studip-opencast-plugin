@@ -67,36 +67,6 @@
         <?= MessageBox::error($_('LTI Konfiguration für diesen Server fehlerhaft!')) ?>
         </span>
 
-        <label>
-            <span class="required">
-                <?=$_('Basis URL zur Opencast Installation')?>
-            </span>
-
-            <input type="text" name="config[<?= $config_id ?>][url]"
-                value="<?= $config[$config_id]['service_url'] ?>"
-                placeholder="http://opencast.url">
-        </label>
-
-        <label>
-            <span class="required">
-                <?=$_('Nutzerkennung')?>
-            </span>
-
-            <input type="text" name="config[<?= $config_id ?>][user]"
-                value="<?= $config[$config_id]['service_user'] ?>"
-                placeholder="ENDPOINT_USER">
-        </label>
-
-        <label>
-            <span class="required">
-                <?= $_('Passwort') ?>
-            </span>
-
-            <input type="password" name="config[<?= $config_id ?>][password]"
-                value="<?= $config[$config_id]['service_password'] ?>"
-                placeholder="ENDPOINT_USER_PASSWORD">
-        </label>
-
         <? foreach (Constants::$DEFAULT_CONFIG as $data) {
             if ($data['name'] == 'livestream') continue; # this option is currently not save to be used
             $instance_config = Configuration::instance($config_id);
