@@ -72,7 +72,7 @@ class AdminController extends OpencastController
             $data = $data->versions[0];
         }
 
-        return (int)substr($data->version, 0, 1);
+        return intval($data->version);
     }
 
     public function update_action()
