@@ -1,4 +1,5 @@
 @import (reference) "assets/stylesheets/less/breakpoints.less";
+@import (reference) "assets/stylesheets/mixins/colors.less";
 
 @item-height: auto;
 @item-width : 25em;
@@ -34,6 +35,16 @@
     padding: 0.5em;
     height: auto;
     width: 100%;
+}
+
+.oc_warning > legend {
+    background-color: @yellow ! important;
+}
+
+.oc_form_icon {
+    display: inline-block;
+    position: absolute;
+    right: 1em;
 }
 
 .oce_playercontainer {

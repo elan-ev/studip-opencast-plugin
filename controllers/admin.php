@@ -302,7 +302,42 @@ class AdminController extends OpencastController
     public function add_server_action()
     {
         $config = new OCConfig();
+
+        // set config defaults
+        $config->settings = [
+            'paella'              => true,
+            'upload_chunk_size'   => 50000000,
+            'time_buffer_overlap' => 60
+        ];
+
         $config->store();
+
+        PageLayout::postSuccess($this->_('Ein neuer Server wurde hinzugefügt, bitte konfigurieren sie ihn!'));
+
+        $this->redirect('admin/config');
+    }
+
+    public function delete_server_action($config_id)
+    {
+        if (!Request::option('confirm_delete')) {
+            PageLayout::postQuestion(
+                sprintf(
+                    $this->_('Wollen sie wirklich den Server mit der ID %s löschen?'),
+                    htmlReady($config_id)
+                ),
+                $this->url_for('admin/delete_server/' . $config_id,  [
+                    'confirm_delete' => true,
+                    'studipticket'   => get_ticket()
+                ]),
+                $this->url_for('admin/config')
+            );
+        } else {
+            check_ticket(Request::get('studipticket'));
+            $config = OCConfig::find($config_id);
+            $config->delete();
+
+            PageLayout::postSuccess($this->_('Der Server wurde gelöscht.'));
+        }
 
         $this->redirect('admin/config');
     }

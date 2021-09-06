@@ -7,7 +7,8 @@ const OC = {
         });
     },
 
-    ltiCall: async function(lti_url, lti_data, success_callback) {
+    ltiCall: async function(lti_url, lti_data, success_callback, error_callback) {
+
         while (OC.lti_done == 1) {
             await new Promise(resolve => setTimeout(resolve, 300));
         }
@@ -30,14 +31,18 @@ const OC = {
                     success_callback();
                 },
                 error: function() {
-                    STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' +
-                                        'in Opencast hergestellt werden. ' +
-                                        'Laden sie die Seite neu. Falls das ' +
-                                        'nicht hilft, wenden sich an ' +
-                                        'eine/n Systemadministrator/in', {
-                        title: 'LTI Fehler',
-                        size: 'small'
-                    });
+                    if (error_callback !== undefined) {
+                        error_callback();
+                    } else {
+                        STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' +
+                                            'in Opencast hergestellt werden. ' +
+                                            'Laden sie die Seite neu. Falls das ' +
+                                            'nicht hilft, wenden sich an ' +
+                                            'eine/n Systemadministrator/in', {
+                            title: 'LTI Fehler',
+                            size: 'small'
+                        });
+                    }
                 }
             });
         }
