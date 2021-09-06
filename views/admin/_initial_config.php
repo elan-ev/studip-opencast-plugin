@@ -110,7 +110,10 @@
         <? } ?>
 
         <?
-        if ($instance_config['lti_consumerkey'] && $instance_config['lti_consumersecret']) :
+        if ($instance_config['service_url']
+            && $instance_config['lti_consumerkey']
+            && $instance_config['lti_consumersecret']
+        ) :
             $instance_config = Configuration::instance($config_id);
             $url = parse_url($config[$config_id]['service_url']);
             $lti_link = new LtiLink(

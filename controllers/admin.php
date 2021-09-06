@@ -304,11 +304,9 @@ class AdminController extends OpencastController
         $config = new OCConfig();
 
         // set config defaults
-        $config->settings = [
-            'paella'              => true,
-            'upload_chunk_size'   => 50000000,
-            'time_buffer_overlap' => 60
-        ];
+        foreach (Constants::$DEFAULT_CONFIG as $conf) {
+            $config->settings[$conf['name']] = $conf['value'];
+        }
 
         $config->store();
 
