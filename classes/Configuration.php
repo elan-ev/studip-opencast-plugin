@@ -92,6 +92,10 @@ class Configuration implements \ArrayAccess
         $config = OCConfig::find($this->config_id);
         if (!empty($config)) {
             $this->values = json_decode($config->settings->__toString(), true);
+
+            foreach (['service_url', 'service_user', 'service_password'] as $opt) {
+                $this->values[$opt] = $config->$opt;
+            }
         }
 
         $this->values['livestream'] = false;

@@ -33,6 +33,27 @@ class Constants {
 
     static $DEFAULT_CONFIG = [
         [
+            'name'        => 'service_url',
+            'description' => 'Basis URL zur Opencast Installation',
+            'value'       => '',
+            'type'        => 'string',
+            'required'    => true
+        ],
+        [
+            'name'        => 'service_user',
+            'description' => 'Nutzerkennung',
+            'value'       => '',
+            'type'        => 'string',
+            'required'    => true
+        ],
+        [
+            'name'        => 'service_password',
+            'description' => 'Passwort',
+            'value'       => '',
+            'type'        => 'password',
+            'required'    => true
+        ],
+        [
             'name'        => 'lti_consumerkey',
             'description' => 'LTI Consumerkey',
             'value'       => 'CONSUMERKEY',
@@ -43,7 +64,7 @@ class Constants {
             'name'        => 'lti_consumersecret',
             'description' => 'LTI Consumersecret',
             'value'       => 'CONSUMERSECRET',
-            'type'        => 'string',
+            'type'        => 'password',
             'required'    => true
         ],
         [

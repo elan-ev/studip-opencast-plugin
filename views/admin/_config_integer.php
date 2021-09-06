@@ -1,6 +1,6 @@
 <label>
     <span <?= $config['required'] ? 'class="required"' : '' ?>>
-        <?= htmlReady($config['description']) ?>
+        <?= htmlReady($_($config['description'])) ?>
     </span>
 
     <input type="number"

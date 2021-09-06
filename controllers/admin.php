@@ -98,7 +98,8 @@ class AdminController extends OpencastController
             $configuration = Configuration::instance($config_id);
 
             foreach ($config as $name => $value) {
-                if (in_array($name, ['url', 'user', 'password']) === true) continue;
+                if (in_array($name, ['service_url', 'service_user', 'service_password']) === true) continue;
+                if ($value == '*****') continue;
                 $configuration[$name] = $value;
             }
 
@@ -106,18 +107,18 @@ class AdminController extends OpencastController
 
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
-            if (!$config['url']) {
+            if (!$config['service_url']) {
                 OCConfig::clearConfigAndAssociatedEndpoints($config_id);
                 continue;
             }
 
-            $service_url = parse_url($config['url']);
+            $service_url = parse_url($config['service_url']);
 
             // check the selected url for validity
             if (!array_key_exists('scheme', $service_url)) {
                 PageLayout::postError(sprintf(
                     $this->_('Ungültiges URL-Schema: "%s"'),
-                    htmlReady($config['url'])
+                    htmlReady($config['service_url'])
                 ));
                 OCConfig::clearConfigAndAssociatedEndpoints($config_id);
             } else {
@@ -127,19 +128,23 @@ class AdminController extends OpencastController
                     (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
                 try {
-                    $version = $this->getOCBaseVersion($service_host, $config['user'], $config['password']);
+                    $version = $this->getOCBaseVersion($service_host,
+                        $config['service_user'], $config['service_password']
+                    );
 
                     OCConfig::clearConfigAndAssociatedEndpoints($config_id);
-                    OCConfig::setConfig($config_id, $service_host, $config['user'], $config['password'], $version);
+                    OCConfig::setConfig($config_id, $service_host,
+                        $config['service_user'], $config['service_password'], $version
+                    );
                     $configuration->store();
 
                     // check, if the same url has been provided for multiple oc-instances
                     foreach (Request::getArray('config') as $zw_id => $zw_conf) {
-                        if ($zw_id != $config_id && $zw_conf['url'] == $config['url']) {
+                        if ($zw_id != $config_id && $zw_conf['service_url'] == $config['service_url']) {
                             PageLayout::postError(sprintf(
                                 $this->_('Sie haben mehr als einmal dieselbe URL für eine Opencast Installation angegeben.
                                         Dies ist jedoch nicht gestattet. Bitte korrigieren Sie Ihre Eingaben. URL: "%s"'),
-                                htmlReady($config['url'])
+                                htmlReady($config['service_url'])
                             ));
                             continue 2;
                         }
