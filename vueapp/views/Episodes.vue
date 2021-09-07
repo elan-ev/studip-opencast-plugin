@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1>Tob dich aus! ;)</h1>
+        <!-- <div v-if="$apollo.loading">Loading...</div> // "TypeError: _vm.$apollo is undefined" -->
         <h2>{{ currentUser.id }}</h2>
     </div>
 </template>
@@ -30,8 +31,8 @@ export default {
         }
     },
 
-    apollo: {
-        currentUser: gpl`
+    apollo: { // Anfrage wird nicht bearbeitet
+        currentUser: gpl` 
         query {
             currentUser {
                 id
