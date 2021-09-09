@@ -8,7 +8,6 @@
 
 namespace Opencast\LTI;
 
-use Opencast\Models\OCAccessControl;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
@@ -298,12 +297,8 @@ class OpencastLTI
 
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
-            if ($client->setACL($target_id, $acl)) {
-                foreach ($courses as $course) {
-                    OCAccessControl::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
-                }
-            }
-    }
+            $client->setACL($target_id, $acl);
+        }
     }
 
     public static function getSearchUrl($course_id)

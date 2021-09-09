@@ -96,7 +96,7 @@ class ApiEventsClient extends OCRestClient
             'acl' => json_encode($acl->toArray())
         ];
 
-        $result = $this->putJSON($episode_id . '/acl', $data, true);
+        $result = $this->putJSON('/' . $episode_id . '/acl', $data, true);
 
         return $result[1] == 200;
     }
