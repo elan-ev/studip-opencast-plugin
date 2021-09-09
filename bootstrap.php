@@ -31,7 +31,6 @@ require_once 'classes/OCPerm.php';
 
 require_once 'classes/OCRestClient/OCRestClient.php';
 
-require_once 'classes/OCRestClient/ACLManagerClient.php';
 require_once 'classes/OCRestClient/ArchiveClient.php';
 require_once 'classes/OCRestClient/ApiEventsClient.php';
 require_once 'classes/OCRestClient/ApiSeriesClient.php';

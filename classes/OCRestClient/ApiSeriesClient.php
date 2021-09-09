@@ -20,4 +20,15 @@ class ApiSeriesClient extends OCRestClient
     {
         return json_decode(json_encode($this->getJSON('/'.$series_id. '/acl')), true);
     }
+
+    public function setACL($series_id, $acl)
+    {
+        $data = [
+            'acl' => json_encode($acl->toArray())
+        ];
+
+        $result = $this->putJSON('/' . $series_id . '/acl', $data, true);
+
+        return $result[1] == 200;
+    }
 }
