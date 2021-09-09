@@ -349,22 +349,6 @@ class OCModel
 
     }
 
-    public static function createACLXML()
-    {
-
-        $acl = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <ns2:acl xmlns:ns2="org.opencastproject.security">
-                        <ace>
-                            <role>admin</role>
-                            <action>delete</action>
-                            <allow>true</allow>
-                         </ace>
-                    </ns2:acl>';
-
-        return $acl;
-
-    }
-
     /**
      * Set episode visibility
      *
@@ -395,15 +379,6 @@ class OCModel
             $entry->store();
 
             $config_id = OCConfig::getConfigIdForCourse($course_id);
-
-            // Remote: Try delete ACLs from Event if current visibility equals
-            // default visibility
-            // There is no point in changing ACLs prior to checking whether they
-            // should be changed and then changing them, if they should!?
-            //if ($visibility == $default) {
-            //    $acl_manager = ACLManagerClient::getInstance($config_id);
-            //    $acl_manager->applyACLto('episode', $episode_id, '');
-            //}
 
             // This function is named "setVisibilityForEpisode" so
             // only set Episode visibility
