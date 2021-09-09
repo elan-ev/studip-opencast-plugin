@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-05 10:00+0200\n"
+"POT-Creation-Date: 2021-09-09 12:56+0200\n"
 "PO-Revision-Date: 2021-07-05 10:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -22,7 +22,6 @@ msgstr ""
 #: classes/OCRestClient/ServicesClient.php:16
 #: classes/OCRestClient/ApiEventsClient.php:15
 #: classes/OCRestClient/IngestClient.php:16
-#: classes/OCRestClient/ACLManagerClient.php:20
 #: classes/OCRestClient/ApiSeriesClient.php:15
 #: classes/OCRestClient/CaptureAgentAdminClient.php:16
 #: classes/OCRestClient/SchedulerClient.php:18
@@ -33,10 +32,6 @@ msgstr ""
 #: classes/OCRestClient/ArchiveClient.php:15
 msgid "Die Konfiguration wurde nicht korrekt angegeben"
 msgstr "The configuration was not specified correctly"
-
-#: classes/OCRestClient/ACLManagerClient.php:47
-msgid "Es ist ein Fehler beim Anlegen der ACL aufgetreten."
-msgstr "An error has occurred during creation of the ACL."
 
 #: classes/OCRestClient/OCRestClient.php:224
 #: classes/OCRestClient/OCRestClient.php:301
@@ -189,7 +184,7 @@ msgstr "Series created"
 msgid "Verbindung zum Series-Service konnte nicht hergestellt werden."
 msgstr "Unable to connect to the series service."
 
-#: controllers/course.php:581 views/course/index.php:263
+#: controllers/course.php:581 views/course/index.php:268
 msgid "Das Hochladen durch Studierende ist momentan verboten."
 msgstr "Student uploads are currently prohibited."
 
@@ -249,12 +244,12 @@ msgstr "Study group:"
 msgid "Opencast Administration"
 msgstr "Opencast administration"
 
-#: controllers/admin.php:167
+#: controllers/admin.php:120
 #, php-format
 msgid "Ungültiges URL-Schema: \"%s\""
 msgstr "Incorrect URL scheme: \"%s\""
 
-#: controllers/admin.php:188
+#: controllers/admin.php:145
 #, php-format
 msgid ""
 "Sie haben mehr als einmal dieselbe URL für eine Opencast Installation "
@@ -266,7 +261,7 @@ msgstr ""
 "allowed.\n"
 "Please correct your settings. URL: \"%s\""
 
-#: controllers/admin.php:202
+#: controllers/admin.php:159
 #, php-format
 msgid ""
 "Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL \"%s\". "
@@ -274,7 +269,7 @@ msgid ""
 msgstr ""
 "Wrong authentication data for Opencast \"%s\". Please check your settings."
 
-#: controllers/admin.php:214
+#: controllers/admin.php:171
 #, php-format
 msgid ""
 "Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
@@ -288,12 +283,12 @@ msgstr ""
 "mind the difference between http and https and check if your Opencast "
 "installation supports https."
 
-#: controllers/admin.php:228
+#: controllers/admin.php:185
 #, php-format
 msgid "Die Opencast Installation \"%s\" wurde erfolgreich konfiguriert."
 msgstr "Opencast \"%s\" has been configured."
 
-#: controllers/admin.php:235
+#: controllers/admin.php:192
 #, php-format
 msgid ""
 "Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
@@ -302,34 +297,48 @@ msgstr ""
 "Could not retrieve endpoints for Opencast installation with URL \"%s\". "
 "Please check the entered data."
 
-#: controllers/admin.php:249
+#: controllers/admin.php:206
 msgid "Opencast Endpoint Verwaltung"
 msgstr "Opencast endpoint management"
 
-#: controllers/admin.php:258
+#: controllers/admin.php:215
 msgid "Opencast Capture Agent Verwaltung"
 msgstr "Opencast capture agent management"
 
-#: controllers/admin.php:263
+#: controllers/admin.php:220
 msgid "Es wurden keine passenden Ressourcen gefunden."
 msgstr "No matching resources were found."
 
-#: controllers/admin.php:287
+#: controllers/admin.php:244
 #, php-format
 msgid "Der Capture Agent %s existiert nicht mehr und wurde entfernt."
 msgstr "The capture agent %s no longer exists and has been removed."
 
-#: controllers/admin.php:320
+#: controllers/admin.php:277
 msgid "Capture Agents wurden zugewiesen."
 msgstr "Capture agents have been assigned."
 
-#: controllers/admin.php:325
+#: controllers/admin.php:282
 msgid "Alle von Nutzern angepassten Workfloweinstellungen wurden entfernt."
 msgstr "All user defined workflow settings have been removed."
 
-#: controllers/admin.php:332
+#: controllers/admin.php:289
 msgid "Standardworkflow eingestellt."
 msgstr "Default workflow has been set."
+
+#: controllers/admin.php:318
+msgid "Ein neuer Server wurde hinzugefügt, bitte konfigurieren sie ihn!"
+msgstr ""
+
+#: controllers/admin.php:328
+#, php-format
+msgid "Wollen sie wirklich den Server mit der ID %s löschen?"
+msgstr ""
+
+#: controllers/admin.php:342
+#, fuzzy
+msgid "Der Server wurde gelöscht."
+msgstr "The uploaded data have been deleted."
 
 #: controllers/ajax.php:10
 msgid "Ups.."
@@ -471,52 +480,53 @@ msgstr ""
 msgid "Vorlesungsaufzeichnung"
 msgstr "Lecture recording"
 
-#: views/admin/_initial_config.php:10
+#: views/admin/_initial_config.php:12
 msgid ""
 "Das Hochladen durch Studierende ist momentan nicht möglich. Um das Problem "
 "zu beheben, muss das Inhaltselement für Opencast aktiv oder wählbar "
 "geschaltet werden."
 msgstr ""
 
-#: views/admin/_initial_config.php:14
+#: views/admin/_initial_config.php:16
 msgid "Globale Einstellungen"
 msgstr "Global settings"
 
-#: views/admin/_initial_config.php:25
+#: views/admin/_initial_config.php:27
 msgid "Terms of service"
 msgstr "Terms of service"
 
-#: views/admin/_initial_config.php:35
+#: views/admin/_initial_config.php:37
 msgid "In der Datenbank verwendete Konfigurationen (IDs): "
 msgstr "Used configurations (IDs): "
 
-#: views/admin/_initial_config.php:50
+#: views/admin/_initial_config.php:53
 msgid "Opencast Server Einstellungen"
 msgstr "Opencast server settings"
 
-#: views/admin/_initial_config.php:51
+#: views/admin/_initial_config.php:54
 msgid "OC Version"
 msgstr "OC version"
 
-#: views/admin/_initial_config.php:56
-msgid "Basis URL zur Opencast Installation"
-msgstr "Base URL for Opencast system"
+#: views/admin/_initial_config.php:57
+#, fuzzy
+msgid "Server löschen"
+msgstr "Delete this video"
 
-#: views/admin/_initial_config.php:66
-msgid "Nutzerkennung"
-msgstr "User ID"
+#: views/admin/_initial_config.php:63
+msgid "LTI Konfiguration dieses Servers funktioniert."
+msgstr ""
 
-#: views/admin/_initial_config.php:76
-msgid "Passwort"
-msgstr "Password"
+#: views/admin/_initial_config.php:67
+msgid "LTI Konfiguration für diesen Server fehlerhaft!"
+msgstr ""
 
-#: views/admin/_initial_config.php:121 views/admin/resources.php:84
+#: views/admin/_initial_config.php:118 views/admin/resources.php:84
 #: views/course/config.php:38 views/course/_episode.php:39
 #: views/course/_schedule.php:218
 msgid "Übernehmen"
 msgstr "Accept"
 
-#: views/admin/_initial_config.php:122
+#: views/admin/_initial_config.php:121
 msgid "Neuen Opencast-Server hinzufügen"
 msgstr "Add Opencast server"
 
@@ -638,8 +648,8 @@ msgstr "No default workflow has been set!"
 msgid "Änderungen übernehmen"
 msgstr "Accept changes"
 
-#: views/admin/resources.php:85 views/course/index.php:398
-#: views/course/config.php:39 views/course/upload.php:276
+#: views/admin/resources.php:85 views/course/index.php:405
+#: views/course/config.php:39 views/course/upload.php:271
 #: views/course/_schedule.php:219 views/course/workflow.php:38
 msgid "Abbrechen"
 msgstr "Cancel"
@@ -681,106 +691,116 @@ msgstr "Description:"
 msgid "Wollen Sie die Verknüpfung zur Series \"%s\" wirklich aufheben?"
 msgstr "Are you sure you want to remove the link to the series \"%s\"?"
 
-#: views/course/index.php:132
+#: views/course/index.php:127
+#, fuzzy
+msgid "Medien"
+msgstr "Mediatitle"
+
+#: views/course/index.php:130
+#, fuzzy
+msgid "Konfiguration"
+msgstr "Opencast configuration"
+
+#: views/course/index.php:137
 msgid "Verknüpfung aufheben"
 msgstr "Remove link"
 
-#: views/course/index.php:143 views/course/upload.php:270
-#: views/course/upload.php:284
+#: views/course/index.php:148 views/course/upload.php:265
+#: views/course/upload.php:279
 msgid "Medien hochladen"
 msgstr "Upload media"
 
-#: views/course/index.php:151
+#: views/course/index.php:156
 msgid "Video aufnehmen"
 msgstr "Capture video"
 
-#: views/course/index.php:172
+#: views/course/index.php:177
 msgid "Kursspezifischen Workflow konfigurieren"
 msgstr "Configure course-specific worklow"
 
-#: views/course/index.php:183
+#: views/course/index.php:188
 msgid "Reiter verbergen"
 msgstr "Hide navigation tab"
 
-#: views/course/index.php:189
+#: views/course/index.php:194
 msgid "Reiter sichtbar machen"
 msgstr "Show navigation tab"
 
-#: views/course/index.php:198
+#: views/course/index.php:203
 msgid "Nutzungsvereinbarung ablehnen"
 msgstr "Decline terms of service"
 
-#: views/course/index.php:207
+#: views/course/index.php:212
 msgid "Medienaufzeichnung verbieten"
 msgstr "Disallow media recording"
 
-#: views/course/index.php:211
+#: views/course/index.php:216
 msgid "Die Medienaufzeichnung ist momentan erlaubt."
 msgstr "Media recording is allowed."
 
-#: views/course/index.php:216
+#: views/course/index.php:221
 msgid "Medienaufzeichnung erlauben"
 msgstr "Allow media recording"
 
-#: views/course/index.php:220
+#: views/course/index.php:225
 msgid "Die Medienaufzeichnung ist momentan verboten."
 msgstr "Media recording is forbidden."
 
-#: views/course/index.php:229
+#: views/course/index.php:234
 msgid "Downloads verbieten"
 msgstr "Prohibit downloads"
 
-#: views/course/index.php:233
+#: views/course/index.php:238
 msgid "Downloads sind momentan erlaubt."
 msgstr "Downloads are allowed."
 
-#: views/course/index.php:238
+#: views/course/index.php:243
 msgid "Downloads erlauben"
 msgstr "Allow downloads"
 
-#: views/course/index.php:242
+#: views/course/index.php:247
 msgid "Downloads sind momentan verboten."
 msgstr "Downloads are currently prohibited."
 
-#: views/course/index.php:250
+#: views/course/index.php:255
 msgid "Hochladen durch Studierende verbieten"
 msgstr "Prohibit Student uploads"
 
-#: views/course/index.php:254
+#: views/course/index.php:259
 msgid "Das Hochladen durch Studierende ist momentan erlaubt."
 msgstr "Student uploads are currently allowed."
 
-#: views/course/index.php:259
+#: views/course/index.php:264
 msgid "Hochladen durch Studierende erlauben"
 msgstr "Allow student uploads"
 
-#: views/course/index.php:275
+#: views/course/index.php:280
 msgid "Neue Videos für alle Teilnehmenden sichtbar schalten"
 msgstr "Make new videos visible for participants"
 
-#: views/course/index.php:279
+#: views/course/index.php:284
 msgid "Neue Medien sind momentan standardmäßig nur für Lehrende sichtbar."
 msgstr "New media is currently visible for lecturers only."
 
-#: views/course/index.php:284
+#: views/course/index.php:289
 msgid "Neue Videos nur für Lehrende sichtbar schalten"
 msgstr "Make new videos visible for lecturers only"
 
-#: views/course/index.php:288
+#: views/course/index.php:293
 msgid ""
 "Neue Medien sind momentan standardmäßig für alle Teilnehmenden der "
 "Veranstaltung sichtbar."
 msgstr "New media is currently visible for all participants."
 
-#: views/course/index.php:298
+#: views/course/index.php:302
 msgid "Neue Series anlegen"
 msgstr "Create new series"
 
-#: views/course/index.php:305
+#: views/course/index.php:309
 msgid "Vorhandene Series verknüpfen"
 msgstr "Link existing series"
 
-#: views/course/index.php:319
+#: views/course/index.php:326
 msgid ""
 "Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen. Sie können "
 "über den Unterpunkt Aktionen weitere Medien zur Liste der Aufzeichnungen "
@@ -795,16 +815,16 @@ msgstr ""
 "in the list. Furthermore, you can change the visibility of a recording "
 "within a course directly."
 
-#: views/course/index.php:322
+#: views/course/index.php:329
 msgid "Hier sehen Sie eine Übersicht ihrer Vorlesungsaufzeichnungen."
 msgstr "Here you can see an overview of your lecture recordings."
 
-#: views/course/index.php:339
+#: views/course/index.php:346
 msgid ""
 "Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!"
 msgstr "Wrong configuration for connected series!"
 
-#: views/course/index.php:342
+#: views/course/index.php:349
 msgid ""
 "Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. "
 "Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene "
@@ -813,7 +833,7 @@ msgstr ""
 "You have not linked any series from Opencast to this course yet. Please "
 "create a new series or link an existing series."
 
-#: views/course/index.php:344
+#: views/course/index.php:351
 msgid ""
 "Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. "
 "Bitte erstellen Sie eine neue Series."
@@ -821,24 +841,24 @@ msgstr ""
 "You have not linked any series from Opencast to this course yet. Please "
 "create a new series."
 
-#: views/course/index.php:348
+#: views/course/index.php:355
 msgid "Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt."
 msgstr "No lecture recordings are available."
 
-#: views/course/index.php:357
+#: views/course/index.php:364
 msgid "Sichtbarkeit einstellen"
 msgstr "Change visibility"
 
-#: views/course/index.php:362
+#: views/course/index.php:369
 msgid ""
 "Unsichtbar - Für Lehrende und Tutor/-innen dieser Veranstaltung sichtbar"
 msgstr "Invisible - Visible for lecturers and tutors only"
 
-#: views/course/index.php:369
+#: views/course/index.php:376
 msgid "Sichtbar - Für Teilnehmende dieser Veranstaltung sichtbar"
 msgstr "Visible - Visible for course participants"
 
-#: views/course/index.php:377
+#: views/course/index.php:384
 msgid ""
 "Diese Videoserie ist mit mehreren Seminaren verknüpft, das Video kann daher "
 "nicht freigegeben werden."
@@ -846,11 +866,11 @@ msgstr ""
 "Series is connected with multiple seminars; therefore, the video cannot be "
 "shared."
 
-#: views/course/index.php:384
+#: views/course/index.php:391
 msgid "Freigeben - Dieses Video ist für jeden sichtbar"
 msgstr "Free - Visible for everyone"
 
-#: views/course/index.php:392
+#: views/course/index.php:399
 msgid "Speichern"
 msgstr "Save"
 
@@ -924,15 +944,11 @@ msgstr ""
 "No default workflow has been set. No uploads are possible unless a default "
 "or course-specific workflow has been set!"
 
-#: views/course/upload.php:214
-msgid "Chunk-Größe für hochgeladene Medien"
-msgstr "Chunksize for uploads"
-
-#: views/course/upload.php:221
+#: views/course/upload.php:216
 msgid "Datei(en)"
 msgstr "File(s)"
 
-#: views/course/upload.php:224
+#: views/course/upload.php:219
 msgid ""
 "Mindestens ein Video wird benötigt. Unterstützte Formate sind .mkv, .avi, ."
 "mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, ."
@@ -942,15 +958,15 @@ msgstr ""
 "mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, ."
 "ts, .3gp and .3g2."
 
-#: views/course/upload.php:232
+#: views/course/upload.php:227
 msgid "Aufzeichnung des/der Vortragende*n hinzufügen"
 msgstr "Add recording of the lecturer(s)"
 
-#: views/course/upload.php:237 views/course/upload.php:249
+#: views/course/upload.php:232 views/course/upload.php:244
 msgid "Die gewählte Datei kann von Opencast nicht verarbeitet werden."
 msgstr "The selected file cannot be parsed by Opencast."
 
-#: views/course/upload.php:239 views/course/upload.php:251
+#: views/course/upload.php:234 views/course/upload.php:246
 msgid ""
 "Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, ."
 "flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2."
@@ -958,15 +974,15 @@ msgstr ""
 "Supported formats are .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, ."
 "flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp and .3g2."
 
-#: views/course/upload.php:244
+#: views/course/upload.php:239
 msgid "Aufzeichnung der Folien hinzufügen"
 msgstr "Add recording of the slides"
 
-#: views/course/upload.php:258
+#: views/course/upload.php:253
 msgid "Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!"
 msgstr "Only upload media where you are the holder of all copyrights!"
 
-#: views/course/upload.php:260
+#: views/course/upload.php:255
 msgid ""
 "Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich "
 "geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese "
@@ -976,18 +992,18 @@ msgstr ""
 "protected movies or music are allowed to be uploaded, if they are only  a "
 "small part of the complete work."
 
-#: views/course/upload.php:262
+#: views/course/upload.php:257
 msgid "§60 UrhG Zusammenfassung"
 msgstr "§60 UrhG summary"
 
-#: views/course/upload.php:264
+#: views/course/upload.php:259
 msgid ""
 "Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige "
 "Ankündigung umgehend gelöscht."
 msgstr ""
 "Any media with copyright infringements are deleted without further notice."
 
-#: views/course/upload.php:285
+#: views/course/upload.php:280
 msgid "Ihre Medien werden gerade hochgeladen."
 msgstr "Your media is beeing uploaded."
 
@@ -1205,8 +1221,20 @@ msgstr "Workflow for uploads"
 msgid "Workflow zuweisen"
 msgstr "Assign workflow"
 
-#~ msgid "Die hochgeladenen Daten wurden gelöscht."
-#~ msgstr "The uploaded data have been deleted."
+#~ msgid "Es ist ein Fehler beim Anlegen der ACL aufgetreten."
+#~ msgstr "An error has occurred during creation of the ACL."
+
+#~ msgid "Basis URL zur Opencast Installation"
+#~ msgstr "Base URL for Opencast system"
+
+#~ msgid "Nutzerkennung"
+#~ msgstr "User ID"
+
+#~ msgid "Passwort"
+#~ msgstr "Password"
+
+#~ msgid "Chunk-Größe für hochgeladene Medien"
+#~ msgstr "Chunksize for uploads"
 
 #~ msgid "Die Referenz in der Datenbank konnte nicht gelöscht werden."
 #~ msgstr "Could not delete reference in database."
@@ -1585,9 +1613,6 @@ msgstr "Assign workflow"
 
 #~ msgid "Erfolgreiche Uploads"
 #~ msgstr "Finished uploads"
-
-#~ msgid "Medientitel"
-#~ msgstr "Mediatitle"
 
 #~ msgid "Datum des Uploads"
 #~ msgstr "Upload date"
