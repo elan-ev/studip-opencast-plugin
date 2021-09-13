@@ -1,8 +1,12 @@
 <template>
     <div>
         <h1>Tob dich aus! ;)</h1>
-        <!-- <div v-if="$apollo.loading">Loading...</div> // "TypeError: _vm.$apollo is undefined" -->
-        <h2>{{ currentUser.id }}</h2>
+        <div v-if="$apollo.loading">Loading...</div>
+        <Episode 
+            v-for="(event, index) in events"
+            v-bind:event="event"
+            v-bind:index="index"
+            v-bind:key="event.id"></Episode>
     </div>
 </template>
 
@@ -13,6 +17,7 @@ import store from "@/store";
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
+import Episode from "@/components/Episode"
 
 import gpl from "graphql-tag"
 
@@ -20,24 +25,25 @@ export default {
     name: "Episodes",
     components: {
         StudipButton, StudipIcon,
-        MessageBox
+        MessageBox, Episode
     },
 
     data() {
         return {
-            currentUser: {
-                id: 'default'
-            }
+            events: []
         }
     },
 
-    apollo: { // Anfrage wird nicht bearbeitet
-        currentUser: gpl` 
-        query {
-            currentUser {
-                id
-            }
-        }`
+    apollo: {
+        events: {
+            query: gpl` query {
+                events {
+                    id
+                    title
+                    lecturer
+                }
+            }`
+        }
     },
 
     computed: {
