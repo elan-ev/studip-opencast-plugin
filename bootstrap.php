@@ -47,3 +47,6 @@ require_once 'classes/OCRestClient/WorkflowClient.php';
 
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
+
+/* Courseware Block */
+require_once 'lib/BlockTypes/OpencastBlock.php';

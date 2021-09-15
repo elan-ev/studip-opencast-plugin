@@ -14,8 +14,9 @@ use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 
+use Courseware\CoursewarePlugin;
 
-class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
+class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -25,6 +26,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function __construct()
     {
         parent::__construct();
+
+        $icon = new Icon($this->getPluginURL() . '/images/opencast-courseware.svg');
+
+        PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
+            background-image:url('. $icon->asImagePath() .')
+        }');
+
+        PageLayout::addScript($this->getPluginUrl() . '/dist/courseware-plugin-opencast-video.umd.js');
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
@@ -56,6 +65,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         if (!$GLOBALS['opencast_already_loaded']) {
             $this->addStylesheet('stylesheets/oc.less');
             PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
+
             if ($GLOBALS['perm']->have_perm('tutor') && OCModel::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
@@ -471,5 +481,37 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
             $studygroup_link->delete();
         }
+    }
+
+        /**
+     * Implement this method to register more block types.
+     *
+     * You get the current list of block types and must return an updated list
+     * containing your own block types.
+     *
+     * @param array $otherBlockTypes the current list of block types
+     *
+     * @return array the updated list of block types
+     */
+    public function registerBlockTypes(array $otherBlockTypes): array
+    {
+        $otherBlockTypes[] = OpencastBlock::class;
+
+        return $otherBlockTypes;
+    }
+
+    /**
+     * Implement this method to register more container types.
+     *
+     * You get the current list of container types and must return an updated list
+     * containing your own container types.
+     *
+     * @param array $otherContainerTypes the current list of container types
+     *
+     * @return array the updated list of container types
+     */
+    public function registerContainerTypes(array $otherContainerTypes): array
+    {
+        return $otherContainerTypes;
     }
 }
