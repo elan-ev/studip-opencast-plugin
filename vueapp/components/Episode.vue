@@ -1,10 +1,13 @@
 <template>
     <div>
         {{index+1}} : {{event.id}} : {{event.title}} : {{event.lecturer}}
+        <button v-on:click="removeEpisode">Remove Episode</button>
     </div>
 </template>
 
 <script>
+import gpl from "graphql-tag"
+
 export default {
     name: "Episode",
 
@@ -17,6 +20,23 @@ export default {
         return {
         }
     },
+
+    methods: {
+        removeEpisode() {
+            this.$apollo.mutate({
+                mutation: gpl` mutation ($id: ID!) {
+                    removeEvent(id: $id) {
+                        id
+                        title
+                        lecturer
+                    }
+                }`,
+                variables: {
+                    id: this.event.id
+                },
+            })
+        }
+    }
 }
 </script>
 

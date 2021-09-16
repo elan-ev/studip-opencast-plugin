@@ -7,6 +7,7 @@
             v-bind:event="event"
             v-bind:index="index"
             v-bind:key="event.id"></Episode>
+        <button v-on:click="addTestEpisode">Add Test Episode</button>
     </div>
 </template>
 
@@ -30,20 +31,26 @@ export default {
 
     data() {
         return {
-            events: []
+            events: [],
+            cid: 'test'
         }
     },
 
     apollo: {
         events: {
-            query: gpl` query {
-                events {
+            query: gpl` query getEvents($cid: ID!) {
+                events(id: $cid) {
                     id
                     title
                     lecturer
                 }
-            }`
-        }
+            }`,
+            variables() {
+                return {
+                    cid: this.cid
+                }
+            }
+        },
     },
 
     computed: {
@@ -51,7 +58,26 @@ export default {
     },
 
     methods: {
-
+        addTestEpisode() {
+            this.$apollo.mutate({
+                mutation: gpl` mutation ($input: EventInput) {
+                    addEvent(input: $input) {
+                        id
+                        title
+                        lecturer
+                    }
+                }`,
+                variables: {
+                    input: {
+                        id: "123-d",
+                        cid: "test",
+                        title: "testi",
+                        lecturer: "lecturer",
+                        type: "upload"
+                    }
+                },
+            })
+        }
     },
 
     mounted() {
