@@ -12,6 +12,6 @@
             "type": "string"
         }
     },
-    "required": ["id", "url"],
+    "required": ["series_id", "episode_id", "url"],
     "additionalProperties": false
 }

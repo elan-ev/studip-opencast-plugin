@@ -20,8 +20,8 @@
   },
   "scripts": {
     "prebuild": "npm install",
-    "build": "webpack --mode production",
-    "vue": "vue-cli-service build --target lib --name courseware-plugin-opencast-video --formats umd,umd-min src/register.js",
+    "build": "webpack --mode production && webpack --mode production --config ./webpack-courseware.config.js",
+    "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
     "dev": "webpack --mode development --watch",
     "translate": "/bin/bash translate.sh",
     "prezip": "npm run build",

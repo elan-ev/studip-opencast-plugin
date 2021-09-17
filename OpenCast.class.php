@@ -33,7 +33,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             background-image:url('. $icon->asImagePath() .')
         }');
 
-        PageLayout::addScript($this->getPluginUrl() . '/dist/courseware-plugin-opencast-video.umd.js');
+        PageLayout::addScript($this->getPluginUrl() . '/static/register.js');
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
@@ -64,10 +64,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         if (!$GLOBALS['opencast_already_loaded']) {
             $this->addStylesheet('stylesheets/oc.less');
-            PageLayout::addScript($this->getPluginUrl() . '/dist/application.js');
+            PageLayout::addScript($this->getPluginUrl() . '/static/application.js');
 
             if ($GLOBALS['perm']->have_perm('tutor') && OCModel::getConfigurationstate()) {
-                PageLayout::addScript($this->getPluginUrl() . '/dist/embed.js');
+                PageLayout::addScript($this->getPluginUrl() . '/static/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             }
             if (OCModel::getConfigurationstate()) {

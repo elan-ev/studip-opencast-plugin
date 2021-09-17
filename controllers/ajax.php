@@ -42,7 +42,7 @@ class AjaxController extends OpencastController
         $this->render_json(array_values($results));
     }
 
-    public function getepisodes_action($series_id)
+    public function getepisodes_action($series_id, $simple = false)
     {
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         $course_id     = OCConfig::getCourseIdForSeries($series_id);
@@ -76,6 +76,19 @@ class AjaxController extends OpencastController
                     $result[] = $episode;
                 }
             }
+        }
+
+        if ($simple) {
+            $new_result = [];
+            foreach ($episodes as $episode) {
+                $new_result[] = [
+                    'id'   => $episode->id,
+                    'name' => $episode->mediapackage->title,
+                    'date' => $episode->mediapackage->start,
+                    'url'  => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->id
+                ];
+            }
+            $result = $new_result;
         }
 
         $this->render_json(array_values($result));

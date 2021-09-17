@@ -1,6 +1,6 @@
 const path = require("path");
 
-const { VueLoaderPlugin }       = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
     entry: {
@@ -9,7 +9,7 @@ module.exports = {
 
     output: {
         filename: "[name].js",
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "static"),
         library: "courseware-plugin-opencast-video",
         libraryTarget: "umd",
         umdNamedDefine: true
