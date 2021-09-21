@@ -284,16 +284,11 @@
         $('#episodes_container').append('<i>' + text + '</i>');
     };
 
-
-
-
-    embed = {
-        label: "Opencast Video",
-        evaluate: openLinkDialog
-    };
-
     STUDIP.Toolbar.buttonSet.right = _.extend({
-        embed: embed
+        embed: {
+            label: "Opencast Video",
+            evaluate: openLinkDialog
+        }
     }, STUDIP.Toolbar.buttonSet.right);
 
 }).call(this);

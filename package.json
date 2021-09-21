@@ -5,16 +5,24 @@
   "devDependencies": {
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",
+    "@vue/cli-plugin-babel": "^4.5.13",
+    "@vue/cli-service": "^4.5.13",
     "babel-loader": "^8.2.2",
     "core-js": "^3.8.3",
     "regenerator-runtime": "^0.13.7",
+    "vue": "^2.6.14",
+    "vue-template-compiler": "^2.6.14",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"
   },
+  "directories": {
+    "lib": "lib/BlockTypes"
+  },
   "scripts": {
     "prebuild": "npm install",
-    "build": "webpack --mode production",
-    "dev": "webpack --mode=development --watch",
+    "build": "webpack --mode production && webpack --mode production --config ./webpack-courseware.config.js",
+    "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
+    "dev": "webpack --mode development --watch",
     "translate": "/bin/bash translate.sh",
     "prezip": "npm run build",
     "zip": "zip -r Opencast-V$npm_package_version.zip classes controllers cronjobs dist images javascripts locale migrations models stylesheets views LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
@@ -29,5 +37,9 @@
     "url": "https://github.com/elan-ev/studip-opencast-plugin/issues"
   },
   "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme",
-  "browserslist": "> 0.25%, not dead, not IE 11"
+  "browserslist": "> 0.25%, not dead, not IE 11",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "vuex": "^3.6.2"
+  }
 }
