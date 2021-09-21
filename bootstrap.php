@@ -49,4 +49,8 @@ require_once 'classes/OCRestClient/WorkflowClient.php';
 require_once 'lib/classes/CronJob.class.php';
 
 /* Courseware Block */
-require_once 'lib/BlockTypes/OpencastBlock.php';
+if (\StudipVersion::newerThan('4.6')) {
+    require_once 'lib/BlockTypes/OpencastBlock.php';
+} else {
+    require_once 'lib/FakeCoursewareInterface.php';
+}
