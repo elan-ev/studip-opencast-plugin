@@ -100,7 +100,7 @@ type Mutation {
     addEvent(course_id: ID!, metadata: MetadataInput!, config: EventConfig!): Event
     addTrack(event_id: ID!, track: TrackInput!) : Track
     editEventMetadata(event_id: ID!, metadata: MetadataInput!): Event
-    editEventVisibility(event_id: ID!, visibility: Visibility!)
-    editCourseConfig(course_id: ID!, workflow_id: ID, visibility: Visibility, sort_order: SortType)
+    editEventVisibility(event_id: ID!, visibility: Visibility!): Visibility
+    editCourseConfig(course_id: ID!, workflow_id: ID, visibility: Visibility, sort_order: SortType): CourseConfig
     removeEvent(id: ID!): Event
 }
