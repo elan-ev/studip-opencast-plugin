@@ -9,6 +9,7 @@ use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 use Opencast\Models\OCEndpoints;
+use Opencast\Models\OCSeminarACLRefresh;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
@@ -167,8 +168,10 @@ class CourseController extends OpencastController
         }
 
         if (!empty($this->connectedSeries)) {
-            OpencastLTI::updateEpisodeVisibility($this->course_id);
-            OpencastLTI::setAcls($this->course_id);
+            if(!OCSeminarACLRefresh::find($this->course_id)){
+              $seminar_acl_refresh = OCSeminarACLRefresh::create(['seminar_id' => $this->course_id]);
+              $seminar_acl_refresh->store();
+            }
         }
 
         Navigation::activateItem('course/opencast/overview');

@@ -26,6 +26,7 @@ foreach($namespaces as $namespace) {
 require_once 'models/OCModel.php';
 require_once 'models/OCCourseModel.class.php';
 require_once 'models/OCSeriesModel.php';
+require_once 'models/OCSeminarACLRefresh.php';
 
 require_once 'classes/OCPerm.php';
 
