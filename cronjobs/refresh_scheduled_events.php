@@ -88,18 +88,18 @@ class RefreshScheduledEvents extends CronJob
                     unset($opencast_events[$se['event_id']]);
                     unset($curated_events[$se['event_id']]);
 
-                    if ($cd->room_assignment->resource_id == $se['resource_id']) {
+                    if ($cd->room_booking->resource_id == $se['resource_id']) {
                         $scheduler_client = SchedulerClient::create($se['seminar_id']);
                         $scheduler_client->updateEventForSeminar($se['seminar_id'], $se['resource_id'], $se['date_id'], $se['event_id']);
 
                         echo sprintf(
                             _("Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n"),
-                            $cd->toString(), $course->name
+                            $cd->getFullname(), $course->name
                         );
                   } else {
                       echo sprintf(
                           _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"),
-                          $cd->toString(), $course->name
+                          $cd->getFullname(), $course->name
                       );
 
                       $scheduler_client = SchedulerClient::getInstance(1);
