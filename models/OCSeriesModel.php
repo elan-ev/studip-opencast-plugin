@@ -70,7 +70,6 @@ class OCSeriesModel
                 FROM oc_seminar_series AS se
                 JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
                 WHERE se.seminar_id = ?
-                    AND se.visibility = 'visible'
                     AND ep.visible != 'invisible'");
             $stmt->execute([$context_id]);
 
