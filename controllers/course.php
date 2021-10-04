@@ -10,6 +10,7 @@ use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 use Opencast\Models\OCEndpoints;
 use Opencast\Models\OCSeminarACLRefresh;
+use Opencast\Models\OCEndpoints;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
