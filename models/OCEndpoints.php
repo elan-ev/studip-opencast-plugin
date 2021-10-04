@@ -49,6 +49,21 @@ class OCEndpoints extends \SimpleORMap
     }
 
     /**
+     * Check if given config_id has an entry of service_type
+     * 
+     * @param string $config_id
+     * @param string $service_type
+     * @return bool
+     */
+    public static function hasEndpoint($config_id, $service_type)
+    {
+        return self::countBySql(
+            'config_id = ? AND service_type = ?',
+            [$config_id, $service_type]
+        ) > 0;
+    }
+
+    /**
      * Remove passed endpoint from config
      *
      * @param int $config_id

@@ -8,6 +8,7 @@ use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
+use Opencast\Models\OCEndpoints;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
@@ -885,6 +886,9 @@ class CourseController extends OpencastController
                 PageLayout::postSuccess($this->_('Die Episode wurde zum Entfernen markiert.'));
             } else {
                 PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
+                if (!OCEndpoints::hasEndpoint(OCConfig::getConfigIdForCourse($this->course_id), 'admin-ngevent')) {
+                    PageLayout::postError($this->_('Um das Problem zu Beheben, muss ein Admin in den OpenCast-Einstellungen auf Übernehmen klicken'));
+                }      
             }
         }
 
