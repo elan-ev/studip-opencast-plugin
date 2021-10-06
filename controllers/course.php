@@ -168,9 +168,14 @@ class CourseController extends OpencastController
         }
 
         if (!empty($this->connectedSeries)) {
-            if(!OCSeminarACLRefresh::find($this->course_id)){
-              $seminar_acl_refresh = OCSeminarACLRefresh::create(['seminar_id' => $this->course_id]);
-              $seminar_acl_refresh->store();
+            if (CronjobSchedule::findByTask_id(CronjobTask::findByClass('RefreshACLS')[0]->task_id)[0]->active) {
+                if (!OCSeminarACLRefresh::find($this->course_id)) {
+                    $seminar_acl_refresh = OCSeminarACLRefresh::create(['seminar_id' => $this->course_id]);
+                    $seminar_acl_refresh->store();
+                }
+            } else {
+                OpencastLTI::updateEpisodeVisibility($this->course_id);
+                OpencastLTI::setAcls($this->course_id);
             }
         }
 
