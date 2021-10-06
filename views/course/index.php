@@ -7,7 +7,7 @@ use Opencast\LTI\LtiLink;
 
 <? $studygroup_active = true; ?>
 <? if ($flash['delete']) : ?>
-    <?= createQuestion2(sprintf(    // question
+    <?= $params = [sprintf(    // question
         $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
         $this->connectedSeries[0]['title']
     ),
@@ -20,7 +20,12 @@ use Opencast\LTI\LtiLink;
             'cancel' => true
         ],
         $controller->url_for('course/remove_series/' . get_ticket())  // baseUrl
-    ) ?>
+    ] ?>
+    <? if (\StudipVersion::newerThan('4.6')) : ?>
+        <?= call_user_func_array(['QuestionBox', 'create'], $params) ?>
+    <? else : ?>
+        <?= call_user_func_array('createQuestion2', $params) ?>
+    <? endif ?>
 <? endif ?>
 
 
