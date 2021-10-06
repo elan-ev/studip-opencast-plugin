@@ -68,9 +68,11 @@ class RefreshACLS extends CronJob
           exit();
         }
       }
+      if($re){
+        $this->prepare(); //need to create new conn, old might be closed
+      }
     }
-    $this->prepare();
-    
+
     return true;
   }
 
