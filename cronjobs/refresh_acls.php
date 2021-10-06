@@ -69,7 +69,8 @@ class RefreshACLS extends CronJob
         }
       }
     }
-
+    $this->prepare();
+    
     return true;
   }
 
