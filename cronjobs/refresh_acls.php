@@ -28,15 +28,15 @@ class RefreshACLS extends CronJob
      * Execute the cronjob.
      *
      * @param mixed $last_result What the last execution of this cronjob
-     *                                                     returned.
+     *                           returned.
      * @param Array $parameters Parameters for this cronjob instance which
-     *                                                    were defined during scheduling.
+     *                          were defined during scheduling.
      */
     public function execute($last_result, $parameters = array())
     {
         // set memory_limit if present (fixes garuda static memory_limit)
         $memory_limit = trim(ini_get('memory_limit'));
-        if ($memory_limit) {
+        if ($memory_limit && $memory_limit != '-1') {
             $last = strtolower($memory_limit[strlen($memory_limit) - 1]);
             $memory_limit = substr($memory_limit, 0, -1);
             switch ($last) {
