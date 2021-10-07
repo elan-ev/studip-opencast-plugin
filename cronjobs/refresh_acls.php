@@ -87,18 +87,38 @@ class RefreshACLS extends CronJob
 
   private function prepare()
   {
+    // set default pdo connection
     try {
       DBManager::getInstance()
         ->setConnection(
           'studip',
           'mysql:host=' . $GLOBALS['DB_STUDIP_HOST'] .
-            ';dbname=' . $GLOBALS['DB_STUDIP_DATABASE'] .
-            ';charset=utf8mb4',
+          ';dbname=' . $GLOBALS['DB_STUDIP_DATABASE'] .
+          ';charset=utf8mb4',
           $GLOBALS['DB_STUDIP_USER'],
           $GLOBALS['DB_STUDIP_PASSWORD']
         );
     } catch (PDOException $exception) {
-      echo $exception;
+      throw new Exception($exception);
+    }
+    // set slave connection
+    if (isset($GLOBALS['DB_STUDIP_SLAVE_HOST'])) {
+      try {
+        DBManager::getInstance()
+          ->setConnection(
+            'studip-slave',
+            'mysql:host=' . $GLOBALS['DB_STUDIP_SLAVE_HOST'] .
+            ';dbname=' . $GLOBALS['DB_STUDIP_SLAVE_DATABASE'] .
+            ';charset=utf8mb4',
+            $GLOBALS['DB_STUDIP_SLAVE_USER'],
+            $GLOBALS['DB_STUDIP_SLAVE_PASSWORD']
+          );
+      } catch (PDOException $exception) {
+        DBManager::getInstance()->aliasConnection('studip', 'studip-slave');
+        throw new Exception($exception);
+      }
+    } else {
+      DBManager::getInstance()->aliasConnection('studip', 'studip-slave');
     }
   }
 }
