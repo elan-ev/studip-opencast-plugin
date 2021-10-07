@@ -168,6 +168,7 @@ class CourseController extends OpencastController
         }
 
         if (!empty($this->connectedSeries)) {
+            // if RefreshACLS is present, add the course to the "queue"
             if (CronjobSchedule::findByTask_id(CronjobTask::findByClass('RefreshACLS')[0]->task_id)[0]->active) {
                 if (!OCSeminarACLRefresh::find($this->course_id)) {
                     $seminar_acl_refresh = OCSeminarACLRefresh::create(['seminar_id' => $this->course_id]);
