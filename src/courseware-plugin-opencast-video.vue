@@ -6,14 +6,14 @@
             :canEdit="canEdit"
             :isTeacher="isTeacher"
             :preview="true"
-            :defaultGrade="false"
             @storeEdit="storeBlock"
             @closeEdit="initCurrentData"
         >
             <template #content>
                 <div>
-                  <div v-if="currentUrl === null">
-                      <translate>Es wurde bisher keine Video ausgewählt</translate>
+                  <div v-if="currentUrl === null || ltiConnected == false">
+                      <span v-if="currentUrl === null" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
+                      <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
                   </div>
                   <div v-else>
                       <iframe :src="currentUrl"
@@ -100,7 +100,8 @@ export default {
             currentEpisode : null,
             currentUrl     : null,
             series: [],
-            episodes: []
+            episodes: [],
+            ltiConnected   : false
         }
     },
 
@@ -134,25 +135,42 @@ export default {
             this.currentUrl     = get(this.block, "attributes.payload.url", "");
         },
 
-        async loadSeries() {
-          await axios
+        loadSeries() {
+          axios
             .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getseries?cid=' + this.context.id)
             .then(response => {
               this.series = response.data;
             })
         },
 
-        async loadEpisodes() {
+        loadEpisodes() {
             if (!this.currentSeries) {
                 return;
             }
 
-            await axios
+            axios
                 .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getepisodes/'
                     + this.currentSeries + '/simple'
                     + '?cid=' + this.context.id)
                 .then(response => {
                     this.episodes = response.data;
+                })
+        },
+
+        runLTI() {
+            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/' + this.context.id + '/' +  this.currentSeries)
+                .then(({data}) => {
+                    if (data.lti_url && data.lti_data) {
+                        OC.ltiCall(data.lti_url, JSON.parse(data.lti_data), 
+                        () => {
+                            this.ltiConnected = true;
+                        }, 
+                        () => {
+                            this.ltiConnected = false;
+                        });
+                    } else {
+                        this.ltiConnected = false;
+                    }
                 })
         }
     },
@@ -171,9 +189,10 @@ export default {
         }
     },
 
-    async mounted() {
+    mounted() {
+        this.loadSeries();
         this.initCurrentData();
-        await this.loadSeries();
+        this.runLTI();
     },
 
     inject: ["containerComponents"],
