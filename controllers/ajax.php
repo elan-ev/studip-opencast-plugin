@@ -5,7 +5,6 @@ use Opencast\Models\OCSeminarEpisodes;
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
-// use Opencast\Models\OCSeminarSeries;
 
 class AjaxController extends OpencastController
 {
@@ -101,7 +100,6 @@ class AjaxController extends OpencastController
     public function getltidata_action($course_id, $series_id)
     {
         $config     = OCConfig::getConfigForCourse($course_id);
-        // $connectedSeries = OCSeminarSeries::getSeries($course_id);
 
         $current_user_id = $GLOBALS['auth']->auth['uid'];
         $lti_link        = new LtiLink(
