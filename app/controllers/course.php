@@ -18,9 +18,6 @@ class CourseController extends OpencastController
         PageLayout::setHelpKeyword('Opencast');
     }
 
-
-
-
     /**
      * Common code for all actions: set default layout and page title.
      */
@@ -37,6 +34,50 @@ class CourseController extends OpencastController
      */
     public function index_action()
     {
+        $this->redirect(PluginEngine::getURL('opencast', [], 'course/episodes'));
+    }
+
+    public function episodes_action()
+    {
         Navigation::activateItem('/course/opencast');
+        
+        $sidebar = Sidebar::Get();
+        $actions = new TemplateWidget(
+            _('Aktionen'),
+            $this->get_template_factory()->open('course/action_widget')
+        );
+        $sidebar->addWidget($actions)->addLayoutCSSClass('action-widget');
+
+        Navigation::activateItem('course/opencast/episodes');
+
+        /*
+        $actions->addLink(
+            $_('Video aufnehmen'),
+            URLHelper::getLink(
+                $config['service_url'] . '/studio/index.html',
+                [
+                    'cid'             => null,
+                    'upload.seriesId' => $connectedSeries[0]['series_id'],
+                    'upload.acl'      => 'false',
+                    'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
+                    'return.label'    => 'Zurückkehren zu Stud.IP'
+                ]
+            ),
+            Icon::create('video2'),
+            ['target' => '_blank']
+        );
+        */
+    }
+
+    public function scheduler_action()
+    {
+        Navigation::activateItem('/course/opencast');
+        Navigation::activateItem('course/opencast/scheduler');
+    }
+
+    public function manager_action()
+    {
+        Navigation::activateItem('/course/opencast');
+        Navigation::activateItem('course/opencast/manager');
     }
 }

@@ -1,13 +1,10 @@
 <template>
-    <div>
-        <h1>Tob dich aus! ;)</h1>
-        <div v-if="$apollo.loading">Loading...</div>
-        <Episode 
-            v-for="(event, index) in events"
-            v-bind:event="event"
-            v-bind:index="index"
-            v-bind:key="event.id"></Episode>
-        <button v-on:click="addTestEpisode">Add Test Episode</button>
+    <div class="container" id="app-episodes">
+        <Navbar></Navbar>
+        <EpisodeList></EpisodeList>
+        <MountingPortal mountTo="#action-widget" name="sidebar-actions">
+            <action-widget></action-widget>
+        </MountingPortal>
     </div>
 </template>
 
@@ -18,70 +15,22 @@ import store from "@/store";
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
-import Episode from "@/components/Episode"
-
-import gpl from "graphql-tag"
+import EpisodeList from "@/components/Episodes/EpisodeList"
+import Navbar from "@/components/Episodes/Navbar"
+import ActionWidget from '../components/Episodes/ActionWidget.vue';
 
 export default {
     name: "Episodes",
+
+    data () {
+        return {
+        }
+    },
+
     components: {
         StudipButton, StudipIcon,
-        MessageBox, Episode
+        MessageBox, EpisodeList,
+        Navbar, ActionWidget
     },
-
-    data() {
-        return {
-            events: [],
-            cid: 'test'
-        }
-    },
-
-    apollo: {
-        events: {
-            query: gpl` query getEvents($cid: ID!) {
-                events(id: $cid) {
-                    id
-                    title
-                    lecturer
-                }
-            }`,
-            variables() {
-                return {
-                    cid: this.cid
-                }
-            }
-        },
-    },
-
-    computed: {
-
-    },
-
-    methods: {
-        addTestEpisode() {
-            this.$apollo.mutate({
-                mutation: gpl` mutation ($input: EventInput) {
-                    addEvent(input: $input) {
-                        id
-                        title
-                        lecturer
-                    }
-                }`,
-                variables: {
-                    input: {
-                        id: "123-d",
-                        cid: "test",
-                        title: "testi",
-                        lecturer: "lecturer",
-                        type: "upload"
-                    }
-                },
-            })
-        }
-    },
-
-    mounted() {
-
-    }
 };
 </script>

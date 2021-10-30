@@ -6,10 +6,10 @@ const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
 
 module.exports = {
     entry: [
-        './vueapp/app.js',
-        './assets/css/opencast.scss',
-        "regenerator-runtime/runtime.js"
-    ], // the entry point
+        './vueapp/app-episodes.js',
+        './vueapp/app-scheduler.js',
+        './vueapp/app-manager.js'
+        ], // the entry point
     output: {
         filename: '[name].[contenthash].js', // the output filename
         path: path.resolve(__dirname, 'static'), // fully qualified path
@@ -42,7 +42,7 @@ module.exports = {
 					loader: 'sass-loader'
 				}
 			]
-		},  {
+		}, {
             test: /\.js?$/,
             exclude: /node_modules/,
             loader: 'babel-loader',
@@ -56,13 +56,25 @@ module.exports = {
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
-            template: 'vueapp/course_index.php',
+            template: 'vueapp/templates/course_episodes.php',
             inject: false,
             minify: false,
-            filename: '../app/views/course/index.php'
+            filename: '../app/views/course/episodes.php'
         }),
         new HtmlWebpackPlugin({
-            template: 'vueapp/admin_index.php',
+            template: 'vueapp/templates/course_scheduler.php',
+            inject: false,
+            minify: false,
+            filename: '../app/views/course/scheduler.php'
+        }),
+        new HtmlWebpackPlugin({
+            template: 'vueapp/templates/course_manager.php',
+            inject: false,
+            minify: false,
+            filename: '../app/views/course/manager.php'
+        }),
+        new HtmlWebpackPlugin({
+            template: 'vueapp/templates/admin_index.php',
             inject: false,
             minify: false,
             filename: '../app/views/admin/index.php'

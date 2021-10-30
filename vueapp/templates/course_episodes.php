@@ -1,4 +1,4 @@
-<div class="container" id="app">
+<div class="container" id="app-episodes">
     <h1 class="display-1 text-center">Starte Anwendung&hellip;</h1>
 </div>
 
@@ -6,6 +6,7 @@
     let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>';
     let CID      = '<?= $cid ?>';
     let ICON_URL = '<?= Assets::url('images/icons/') ?>';
+    let ASSETS_URL = '<?= Assets::url('') ?>';
     let PLUGIN_ASSET_URL =  '<?= $plugin->getAssetsUrl() ?>';
 </script>
 
