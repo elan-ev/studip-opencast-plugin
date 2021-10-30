@@ -4,9 +4,9 @@
             <ul class="oce_list list">
                 <div v-if="$apollo.loading">Loading...</div>
                 <EpisodeCard 
-                    v-for="(event, index) in events"
+                    v-for="event in events"
                     v-bind:event="event"
-                    v-bind:index="index"
+                    v-bind:index="1"
                     v-bind:key="event.id"></EpisodeCard>
                 <button v-on:click="addTestEpisode">Add Test Episode</button>
             </ul>
@@ -15,12 +15,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import store from "@/store";
+import { mapGetters } from 'vuex'
 
 import EpisodeCard from "@/components/Episodes/EpisodeCard"
-
-import gpl from "graphql-tag"
 
 export default {
     name: "Episodes",
@@ -30,57 +27,32 @@ export default {
 
     data() {
         return {
-            events: [],
             cid: 'test'
         }
     },
 
-    apollo: {
-        events: {
-            query: gpl` query getEvents($cid: ID!) {
-                events(id: $cid) {
-                    id
-                    title
-                    lecturer
-                }
-            }`,
-            variables() {
-                return {
-                    cid: this.cid
-                }
-            }
-        },
-    },
-
     computed: {
-
+        ...mapGetters([
+            'events'
+        ]),
     },
 
     methods: {
         addTestEpisode() {
-            this.$apollo.mutate({
-                mutation: gpl` mutation ($input: EventInput) {
-                    addEvent(input: $input) {
-                        id
-                        title
-                        lecturer
-                    }
-                }`,
-                variables: {
-                    input: {
-                        id: "123-d",
-                        cid: "test",
-                        title: "testi",
-                        lecturer: "lecturer",
-                        type: "upload"
-                    }
-                },
-            })
+            this.$store.dispatch('addEvent', 
+                {
+                    id: "123-x", 
+                    cid: this.cid, 
+                    title: "testi", 
+                    lecturer: "Testor", 
+                    type: "upload"
+                }
+            );
         }
     },
 
     mounted() {
-
+        this.$store.dispatch('fetchEvents', this.cid)
     }
 };
 </script>

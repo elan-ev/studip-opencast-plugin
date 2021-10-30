@@ -12,6 +12,6 @@
 
 <!-- load bundles -->
 
-<? PageLayout::addScript($this->plugin->getPluginUrl() . '/static/main.beff5558c31e7b6c3111.js'); ?>
+<? PageLayout::addScript($this->plugin->getPluginUrl() . '/static/main.9f8542dae9652652017b.js'); ?>
 
 <!-- END load bundles -->

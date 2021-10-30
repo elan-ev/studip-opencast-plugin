@@ -1,6 +1,8 @@
 <template>
     <ul class="widget-list widget-links cw-action-widget">
-        <li class="cw-action-widget-edit">Seite bearbeiten</li>
+        <li class="cw-action-widget">Medien Hochladen</li>
+        <li class="cw-action-widget">Video Aufnehmen</li>
+        <li class="cw-action-widget">Test Episode hinzufügen</li>
     </ul>
 </template>
 
