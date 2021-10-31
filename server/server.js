@@ -31,6 +31,7 @@ const schema = gql(`
     id: ID!
     title: String!
     lecturer: String!
+    url: String
     type: EventType
   }
 
@@ -50,6 +51,7 @@ const events = [
     id: '123-a',
     title: 'Grundlagen zu Quantenstrudel',
     lecturer: 'Prof. Dr. Proton',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     type: 'upload'
   },
   {
@@ -62,6 +64,7 @@ const events = [
     id: '123-c',
     title: 'Quantenstrudel: Technische Umsetzung',
     lecturer: 'Prof. Dr. Proton',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     type: 'upload'
   }
 ]

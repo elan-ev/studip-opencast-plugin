@@ -2,8 +2,15 @@
     <li>
         <div class="oc_flexitem oc_flexplaycontainer">
             <div class="oce_playercontainer">
-                <span class="previewimage">
+                <a v-if="event.url" :href="event.url" target="_blank">
+                    <span class="previewimage">
+                        <img class="previewimage" :src="preview" height="200"/>
+                        <img class="playbutton" :src="play">
+                    </span>
+                </a>
+                <span v-else class="previewimage">
                     <img class="previewimage" :src="preview" height="200"/>
+                    <p>No video uploaded</p>
                 </span>
             </div>
         </div>
@@ -54,7 +61,8 @@ export default {
 
     data() {
         return {
-            preview: PLUGIN_ASSET_URL + '/images/default-preview.png'
+            preview: PLUGIN_ASSET_URL + '/images/default-preview.png',
+            play: PLUGIN_ASSET_URL + '/images/play.svg'
         }
     },
 

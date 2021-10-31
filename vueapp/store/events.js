@@ -36,6 +36,7 @@ const actions = {
                     events(id: $cid) {
                         id
                         title
+                        url
                         lecturer
                     }
                 }
@@ -70,6 +71,7 @@ const actions = {
                     removeEvent(id: $id) {
                         id
                         title
+                        url
                         lecturer
                     }
                 }
