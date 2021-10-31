@@ -28,7 +28,7 @@
                 </ul>
             </div>
             <div class="ocplayerlink">
-                <opencast-button icon="trash">Entfernen</opencast-button>
+                <opencast-button icon="trash" @click="removeEpisode">Entfernen</opencast-button>
                 <opencast-button icon="download">Download</opencast-button>
                 <opencast-button icon="edit">Edit</opencast-button>
             </div>
@@ -60,18 +60,7 @@ export default {
 
     methods: {
         removeEpisode() {
-            this.$apollo.mutate({
-                mutation: gpl` mutation ($id: ID!) {
-                    removeEvent(id: $id) {
-                        id
-                        title
-                        lecturer
-                    }
-                }`,
-                variables: {
-                    id: this.event.id
-                },
-            })
+            this.$store.dispatch('removeEvent', this.event.id)
         },
     }
 }

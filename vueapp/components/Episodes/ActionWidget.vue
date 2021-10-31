@@ -2,7 +2,7 @@
     <ul class="widget-list widget-links cw-action-widget">
         <li class="cw-action-widget">Medien Hochladen</li>
         <li class="cw-action-widget">Video Aufnehmen</li>
-        <li class="cw-action-widget">Test Episode hinzufügen</li>
+        <li class="cw-action-widget" @click="addTestEvent">Test Episode hinzufügen</li>
     </ul>
 </template>
 
@@ -16,6 +16,7 @@ export default {
     },
     data() {
         return {
+            cid: 'test'
         }
     },
     watch: {
@@ -24,6 +25,18 @@ export default {
         },
     },
 
-
+    methods: {
+        addTestEvent() {
+            this.$store.dispatch('addEvent', 
+                {
+                    id: "123-x", 
+                    cid: this.cid, 
+                    title: "testi", 
+                    lecturer: "Testor", 
+                    type: "upload"
+                }
+            );
+        }
+    }
 }
 </script>2

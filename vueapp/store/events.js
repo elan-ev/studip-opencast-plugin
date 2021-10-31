@@ -19,6 +19,12 @@ const mutations = {
 
     ADD_EVENT (state, event) {
         state.events.push(event)
+    },
+
+    REMOVE_EVENT (state, id) {
+        state.events = state.events.filter(function( event ) {
+            return event.id !== id;
+        });
     }
 }
 
@@ -55,6 +61,24 @@ const actions = {
             },
         })
         commit('ADD_EVENT', response.data.addEvent)
+    },
+
+    async removeEvent({commit}, id) {
+        const response = await apolloClient.mutate({
+            mutation: gql`
+                mutation ($id: ID!) {
+                    removeEvent(id: $id) {
+                        id
+                        title
+                        lecturer
+                    }
+                }
+            `,
+            variables: {
+                id: id
+            },
+        })
+        commit('REMOVE_EVENT', id)
     }
 }
 

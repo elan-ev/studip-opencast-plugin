@@ -8,7 +8,6 @@
                     v-bind:event="event"
                     v-bind:index="1"
                     v-bind:key="event.id"></EpisodeCard>
-                <button v-on:click="addTestEpisode">Add Test Episode</button>
             </ul>
         </div>
     </div>
@@ -38,17 +37,7 @@ export default {
     },
 
     methods: {
-        addTestEpisode() {
-            this.$store.dispatch('addEvent', 
-                {
-                    id: "123-x", 
-                    cid: this.cid, 
-                    title: "testi", 
-                    lecturer: "Testor", 
-                    type: "upload"
-                }
-            );
-        }
+        
     },
 
     mounted() {
