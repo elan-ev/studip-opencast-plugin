@@ -880,6 +880,7 @@ class CourseController extends OpencastController
                 throw new AccessDeniedException();
             }
 
+            StudipLog::log('OC_REMOVE_MEDIA', $this->course_id, null, $episode_id);
             $adminng_client = AdminNgEventClient::getInstance();
 
             if ($adminng_client->deleteEpisode($episode_id)) {
@@ -888,7 +889,7 @@ class CourseController extends OpencastController
                 PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
                 if (!OCEndpoints::hasEndpoint(OCConfig::getConfigIdForCourse($this->course_id), 'admin-ngevent')) {
                     PageLayout::postError($this->_('Um das Problem zu Beheben, muss ein Admin in den OpenCast-Einstellungen auf Übernehmen klicken'));
-                }      
+                }
             }
         }
 
@@ -968,7 +969,7 @@ class CourseController extends OpencastController
         $this->copyAvatarToStudyGroup($course, $studyGroup);
         $this->addAllMembersToStudyGroup($course, $studyGroup);
         $this->setupOpencastInStudyGroup($studyGroup);
-        
+
 
         OCUploadStudygroup::create(
             [
@@ -976,7 +977,7 @@ class CourseController extends OpencastController
                 'studygroup_id' => $studyGroup->getId(),
                 'active' => TRUE
             ]
-        );    
+        );
     }
 
     private function createStudyGroupObject($course)

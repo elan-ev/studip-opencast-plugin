@@ -160,9 +160,9 @@ const OC = {
             })
         }
 
-	function addACL(mediaPackage,acl) {
-	    var acldata = new FormData();
-	    acldata.append('mediaPackage', mediaPackage);
+    function addACL(mediaPackage,acl) {
+        var acldata = new FormData();
+        acldata.append('mediaPackage', mediaPackage);
             acldata.append('flavor', 'security/xacml+episode');
             acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
@@ -228,6 +228,20 @@ const OC = {
             }
         }
 
+        function logUpload(episode_id, mediaPackage, workflowId = "upload") {
+          console.log(mediaPackage);
+          return $.ajax({
+              url: STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/logupload/'),
+              method: "POST",
+              data: {
+                  mediaPackage: mediaPackage,
+                  workflow_id: workflowId,
+                  course_id: STUDIP.URLHelper.parameters.cid,
+                  episode_id: episode_id
+              }
+          })
+        }
+
         function finishIngest(mediaPackage, workflowId = "upload") {
             console.log(mediaPackage);
             return $.ajax({
@@ -246,12 +260,16 @@ const OC = {
                 .then(function (_mediaPackage, _status, resp) {
                     return addDCCCatalog(resp.responseText, terms)
                 })
-		.then(function (_mediaPackage, _status, resp) {
-		    var acl = terms.oc_acl;
-		    return addACL(resp.responseText, acl)
+                .then(function (_mediaPackage, _status, resp) {
+                    var acl = terms.oc_acl;
+                    return addACL(resp.responseText, acl)
                 })
                 .then(function (_mediaPackage, _status, resp) {
                     return uploadTracks(resp.responseText, files, onProgress)
+                })
+                .then(function (_mediaPackage, _status, resp) {
+                    const episode_id = _mediaPackage.documentElement.id;
+                    return logUpload(episode_id, _mediaPackage, workflowId)
                 })
                 .then(function (mediaPackage) {
                     return finishIngest(mediaPackage, workflowId)

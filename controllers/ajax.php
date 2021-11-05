@@ -10,6 +10,12 @@ class AjaxController extends OpencastController
         $this->render_text($this->_('Ups..'));
     }
 
+    public function logupload_action()
+    {
+        StudipLog::log('OC_UPLOAD_MEDIA', Request::get('workflow_id'), Request::get('course_id'), Request::get('episode_id'));
+        $this->render_text(Request::get('mediaPackage'));
+    }
+
     public function getseries_action()
     {
         $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id, Context::getId());
