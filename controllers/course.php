@@ -578,7 +578,8 @@ class CourseController extends OpencastController
      */
     public function upload_action()
     {
-        if ($this->isStudyGroup() && !$this->isStudentUploadEnabled()) {
+
+        if ($this->isStudyGroup() && !$this->isStudentUploadEnabled() && !Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
             PageLayout::postError(_('Das Hochladen durch Studierende ist momentan verboten.'));
             $this->redirect('course/index/false');
         }
@@ -888,7 +889,7 @@ class CourseController extends OpencastController
                 PageLayout::postError($this->_('Die Episode konnte nicht zum Entfernen markiert werden.'));
                 if (!OCEndpoints::hasEndpoint(OCConfig::getConfigIdForCourse($this->course_id), 'admin-ngevent')) {
                     PageLayout::postError($this->_('Um das Problem zu Beheben, muss ein Admin in den OpenCast-Einstellungen auf Übernehmen klicken'));
-                }      
+                }
             }
         }
 
@@ -968,7 +969,7 @@ class CourseController extends OpencastController
         $this->copyAvatarToStudyGroup($course, $studyGroup);
         $this->addAllMembersToStudyGroup($course, $studyGroup);
         $this->setupOpencastInStudyGroup($studyGroup);
-        
+
 
         OCUploadStudygroup::create(
             [
@@ -976,7 +977,7 @@ class CourseController extends OpencastController
                 'studygroup_id' => $studyGroup->getId(),
                 'active' => TRUE
             ]
-        );    
+        );
     }
 
     private function createStudyGroupObject($course)
