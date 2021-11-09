@@ -1,5 +1,5 @@
 <?php
-class AddLogEpisode extends Migration
+class AddRemoveMedia extends Migration
 {
 
   static $log_actions = [
