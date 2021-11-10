@@ -12,6 +12,10 @@ import I18N from "./common/i18n.filter";
 
 import { createProvider } from "./vue-apollo";
 
+import PortalVue from 'portal-vue'
+
+Vue.use(PortalVue)
+
 Vue.filter("date", DateFilter);
 Vue.filter("error", ErrorFilter);
 Vue.filter("i18n", I18N);

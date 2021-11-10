@@ -6,9 +6,7 @@ const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
 
 module.exports = {
     entry: [
-        './vueapp/app-episodes.js',
-        './vueapp/app-scheduler.js',
-        './vueapp/app-manager.js'
+        './vueapp/app.js'
         ], // the entry point
     output: {
         filename: '[name].[contenthash].js', // the output filename
@@ -56,22 +54,10 @@ module.exports = {
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
-            template: 'vueapp/templates/course_episodes.php',
+            template: 'vueapp/templates/course_index.php',
             inject: false,
             minify: false,
-            filename: '../app/views/course/episodes.php'
-        }),
-        new HtmlWebpackPlugin({
-            template: 'vueapp/templates/course_scheduler.php',
-            inject: false,
-            minify: false,
-            filename: '../app/views/course/scheduler.php'
-        }),
-        new HtmlWebpackPlugin({
-            template: 'vueapp/templates/course_manager.php',
-            inject: false,
-            minify: false,
-            filename: '../app/views/course/manager.php'
+            filename: '../app/views/course/index.php'
         }),
         new HtmlWebpackPlugin({
             template: 'vueapp/templates/admin_index.php',
