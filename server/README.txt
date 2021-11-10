@@ -1,2 +1,3 @@
 npm install
-nodemon server.js
+npx nodemon server.js
+
