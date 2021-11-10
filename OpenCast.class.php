@@ -220,15 +220,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         ));
 
         $episodes = new Navigation($this->_('Aufzeichnungen'));
-        $episodes->setURL(PluginEngine::getURL($this, [], 'course/episodes'));
+        $episodes->setURL(PluginEngine::getURL($this, [], 'course/index#/episodes'));
         $main->addSubNavigation('episodes', $episodes);
 
         $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
-        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
+        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler#/scheduler'));
         $main->addSubNavigation('scheduler', $scheduler);
 
         $manager = new Navigation($this->_('Verwaltung'));
-        $manager->setURL(PluginEngine::getURL($this, [], 'course/manager'));
+        $manager->setURL(PluginEngine::getURL($this, [], 'course/index#/manager'));
         $main->addSubNavigation('manager', $manager);
 
         return array('opencast' => $main);

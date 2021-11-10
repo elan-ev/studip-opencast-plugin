@@ -5,6 +5,26 @@ Vue.use(Router);
 
 export default new Router({
     routes: [
+        {
+            name: "course",
+            path: "/",
+            component: () => import("@/views/Course"),
+        },
+        {
+            name: "episodes",
+            path: "/episodes",
+            component: () => import("@/views/Episodes"),
+        },
+        {
+            name: "scheduler",
+            path: "/scheduler",
+            component: () => import("@/views/Scheduler"),
+        },
+        {
+            name: "manager",
+            path: "/manager",
+            component: () => import("@/views/Manager"),
+        },
     ]
 
     /*

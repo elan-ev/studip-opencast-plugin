@@ -46,8 +46,8 @@ const actions = {
         commit('SET_EVENTS', response.data.events)
     },
 
-    async addEvent({commit}, input) {
-        const response = await apolloClient.mutate({
+    async addEvent({commit, dispatch}, input) {
+        const response = apolloClient.mutate({
             mutation: gql` 
                 mutation ($input: EventInput) {
                     addEvent(input: $input) {
@@ -60,8 +60,7 @@ const actions = {
             variables: {
                 input: input
             },
-        })
-        commit('ADD_EVENT', response.data.addEvent)
+        }).then(()=>{dispatch('fetchEvents')})
     },
 
     async removeEvent({commit}, id) {
@@ -79,8 +78,7 @@ const actions = {
             variables: {
                 id: id
             },
-        })
-        commit('REMOVE_EVENT', id)
+        }).then(()=>{dispatch('fetchEvents')})
     }
 }
 
