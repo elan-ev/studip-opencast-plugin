@@ -838,3 +838,11 @@ iframe.oc_courseware {
     width: 100%;
     height: 600px;
 }
+
+.oc-widget-list {
+    li {
+        .oc-image {
+            margin-top: -2px;
+        }
+    }
+}
