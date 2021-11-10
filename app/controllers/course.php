@@ -36,6 +36,11 @@ class CourseController extends OpencastController
     public function index_action()
     {
         Navigation::activateItem('/course/opencast');
+    }
+
+    public function episodes_action()
+    {
+        Navigation::activateItem('/course/opencast');
         Navigation::activateItem('course/opencast/episodes');
 
         $sidebar = Sidebar::Get();
@@ -44,6 +49,8 @@ class CourseController extends OpencastController
             $this->get_template_factory()->open('course/action_widget')
         );
         $sidebar->addWidget($actions)->addLayoutCSSClass('action-widget');
+
+        $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
 
     public function scheduler_action()
@@ -58,5 +65,7 @@ class CourseController extends OpencastController
     {
         Navigation::activateItem('/course/opencast');
         Navigation::activateItem('course/opencast/manager');
+
+        $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
 }

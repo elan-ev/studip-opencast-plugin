@@ -12,17 +12,17 @@ export default new Router({
         },
         {
             name: "episodes",
-            path: "/episodes",
+            path: "/",
             component: () => import("@/views/Episodes"),
         },
         {
             name: "scheduler",
-            path: "/scheduler",
+            path: "/",
             component: () => import("@/views/Scheduler"),
         },
         {
             name: "manager",
-            path: "/manager",
+            path: "/",
             component: () => import("@/views/Manager"),
         },
     ]

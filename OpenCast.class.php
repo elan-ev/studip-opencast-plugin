@@ -207,7 +207,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         $main    = new Navigation($title);
 
-        $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
+        $main->setURL(PluginEngine::getURL($this, [], 'course/episodes'));
         $main->setImage(Icon::create(
             $this->getAssetsUrl() . '/images/opencast-black.svg',
             Icon::ROLE_CLICKABLE,
@@ -220,15 +220,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         ));
 
         $episodes = new Navigation($this->_('Aufzeichnungen'));
-        $episodes->setURL(PluginEngine::getURL($this, [], 'course/index#/episodes'));
+        $episodes->setURL(PluginEngine::getURL($this, [], 'course/episodes'));
         $main->addSubNavigation('episodes', $episodes);
 
         $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
-        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler#/scheduler'));
+        $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
         $main->addSubNavigation('scheduler', $scheduler);
 
         $manager = new Navigation($this->_('Verwaltung'));
-        $manager->setURL(PluginEngine::getURL($this, [], 'course/index#/manager'));
+        $manager->setURL(PluginEngine::getURL($this, [], 'course/manager'));
         $main->addSubNavigation('manager', $manager);
 
         return array('opencast' => $main);

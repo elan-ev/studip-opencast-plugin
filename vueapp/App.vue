@@ -27,6 +27,10 @@ export default {
         if (page == 'admin') {
             console.log('redirecting to admin');
             this.$router.push({ name: 'admin' });
+        } else if ((page == 'scheduler')) {
+            this.$router.push({ name: 'scheduler' });
+        } else if ((page == 'manager')) {
+            this.$router.push({ name: 'manager' });
         } else {
             this.$router.push({ name: 'episodes' });
         }
