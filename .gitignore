@@ -2,4 +2,7 @@ node_modules
 static
 vendor
 app/views/course/index.php
+app/views/course/episodes.php
+app/views/course/manager.php
+app/views/course/scheduler.php
 app/views/admin/index.php

@@ -50,14 +50,15 @@ const defaultOptions = {
   // clientState: { resolvers: { ... }, defaults: { ... } }
 }
 
-// Call this in the Vue app file
-export function createProvider (options = {}) {
-  // Create apollo client
-  const { apolloClient, wsClient } = createApolloClient({
-    ...defaultOptions,
-    ...options,
+// Create apollo client
+export const { apolloClient, wsClient } = createApolloClient({
+    ...defaultOptions
+    // removed ...options
   })
   apolloClient.wsClient = wsClient
+
+// Call this in the Vue app file
+export function createProvider () {
 
   // Create vue apollo provider
   const apolloProvider = new VueApollo({

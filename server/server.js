@@ -1,98 +1,112 @@
 const { ApolloServer, gql } = require('apollo-server');
 
 const schema = gql(`
+  input EventInput {
+    id: ID!
+    cid: ID!
+    title: String!
+    lecturer: String!
+    type: EventType!
+  }
+
+  enum Visibility {
+    open
+    learner
+    lecturer
+  }
+
+  enum EventType {
+    scheduled
+    upload
+    livestream
+  }
+
+  type Course {
+    id: ID!
+    visibility: Visibility
+    events: [Event]
+  }
+
+  type Event {
+    id: ID!
+    title: String!
+    lecturer: String!
+    url: String
+    type: EventType
+  }
+
   type Query {
-    currentUser: User
-    postsByUser(userId: String!): [Post]
+    events(id: ID!): [Event]
   }
 
-  type User {
-    id: ID!
-    username: String!
-    posts: [Post]
-  }
-
-  type Post {
-    id: ID!
-    content: String!
-    userId: ID!
-  }
-  
   type Mutation {
-    addPost(content: String): Post 
+    addEvent(input: EventInput): Event
+    removeEvent(id: ID!): Event
   }
 `);
+// Sortierung: Sollte die in einer Event-Liste gespeichert werden?
 
-var data = {};
-
-data.posts = [
-  { 
-    id: 'xyz-1',
-    content: "First Post - Hello world",
-    userId: 'abc-1',
+const events = [
+  {
+    id: '123-a',
+    title: 'Grundlagen zu Quantenstrudel',
+    lecturer: 'Prof. Dr. Proton',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    type: 'upload'
   },
   {
-    id: 'xyz-2',
-    content: "Second Post - Hello again",
-    userId: 'abc-1',
+    id: '123-b',
+    title: 'Quantenstrudel: Wie sie dein Wasser reinigen',
+    lecturer: 'Prof. Dr. Proton',
+    type: 'upload'
   },
   {
-    id: 'xyz-3',
-    content: "Random Post",
-    userId: 'abc-2',
+    id: '123-c',
+    title: 'Quantenstrudel: Technische Umsetzung',
+    lecturer: 'Prof. Dr. Proton',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    type: 'upload'
   }
-];
+]
 
-data.users = [
+const courses = [
   {
-    id: 'abc-1', 
-    username: "andy25",
-  },
-  {
-    id: 'abc-2', 
-    username: "randomUser",
+    id: 'test',
+    visibility: 'open',
+    events: events
   }
-];
-
-const currentUserId = 'abc-1';
+]
 
 var resolvers = {
   Query: {
-    currentUser: (_, __, { data, currentUserId }) => {
-      let user = data.users.find( u => u.id === currentUserId );
-      return user;
-    },
-    postsByUser: (_, { userId }, { data }) => {
-      let posts = data.posts.filter( p => p.userId === userId ); 
-      return posts
-    },
-  },
-  User: {
-    posts: (parent, __, { data }) => {
-      let posts = data.posts.filter( p => p.userId === parent.id );
-      return posts;
+    events: (parent, args) => {
+      return courses.find(course => course.id === args.id).events
     }
   },
   Mutation: {
-    addPost: async (_, { content }, { currentUserId, data }) => {
-      let post = { 
-        id: 'xyz-' + (data.posts.length + 1), 
-        content: content, 
-        userId: currentUserId,
-      };
-      data.posts.push(post);
-      return post;
+    addEvent: (parent, args) => {
+      var event = {
+        id: args.input.id,
+        title: args.input.title,
+        lecturer: args.input.lecturer,
+        type: args.input.type
+      }
+      courses.find(course => course.id === args.input.cid).events.push(event)
+      return event
+    },
+    removeEvent: (parent, args) => {
+      var event = events.find(event => event.id === args.id)
+      if (event) {
+        events.splice(events.indexOf(event))
+      }
+      return event
     }
-  },
+  }
 };
 
 const server = new ApolloServer({ 
   typeDefs: schema, 
-  resolvers: resolvers,
-  context: { 
-    currentUserId,
-    data
-  }
+  resolvers: resolvers
 });
 
 server.listen(4001).then(({ url }) => {

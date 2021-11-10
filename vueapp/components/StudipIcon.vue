@@ -1,5 +1,5 @@
 <template>
-    <img :src="path">
+    <img class="oc-image" :src="path" :width="size" :height="size">
 </template>
 
 <script>
@@ -17,6 +17,11 @@ export default {
                     'sort', 'status-yellow'].includes(value)
             },
             default: ''
+        },
+        size: {
+            type: String,
+            required: false,
+            default: "16"
         }
     },
 

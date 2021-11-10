@@ -1,7 +1,10 @@
 <template>
-    <div>
-        <h1>Tob dich aus! ;)</h1>
-        <h2>{{ currentUser.id }}</h2>
+    <div class="container" id="app-episodes">
+        <Navbar></Navbar>
+        <EpisodeList></EpisodeList>
+        <MountingPortal mountTo="#action-widget" name="sidebar-actions">
+            <action-widget></action-widget>
+        </MountingPortal>
     </div>
 </template>
 
@@ -12,43 +15,22 @@ import store from "@/store";
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
-
-import gpl from "graphql-tag"
+import EpisodeList from "@/components/Episodes/EpisodeList"
+import Navbar from "@/components/Episodes/Navbar"
+import ActionWidget from '../components/Episodes/ActionWidget.vue';
 
 export default {
     name: "Episodes",
-    components: {
-        StudipButton, StudipIcon,
-        MessageBox
-    },
 
-    data() {
+    data () {
         return {
-            currentUser: {
-                id: 'default'
-            }
         }
     },
 
-    apollo: {
-        currentUser: gpl`
-        query {
-            currentUser {
-                id
-            }
-        }`
+    components: {
+        StudipButton, StudipIcon,
+        MessageBox, EpisodeList,
+        Navbar, ActionWidget
     },
-
-    computed: {
-
-    },
-
-    methods: {
-
-    },
-
-    mounted() {
-
-    }
 };
 </script>
