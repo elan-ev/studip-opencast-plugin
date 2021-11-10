@@ -52,13 +52,12 @@ const actions = {
             `,
             variables: { cid: state.cid}
         })
-        console.log(response)
         commit('SET_EVENTS', response.data.events)
     },
 
     async addEvent({commit, dispatch}, input) {
         input['cid'] = state.cid
-        const response = apolloClient.mutate({
+        const response = await apolloClient.mutate({
             mutation: gql` 
                 mutation ($input: EventInput) {
                     addEvent(input: $input) {
