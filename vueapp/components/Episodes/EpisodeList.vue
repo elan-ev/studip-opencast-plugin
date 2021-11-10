@@ -26,7 +26,6 @@ export default {
 
     data() {
         return {
-            cid: 'test'
         }
     },
 
@@ -41,7 +40,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('fetchEvents', this.cid)
+        this.$store.dispatch('fetchEvents')
     }
 };
 </script>

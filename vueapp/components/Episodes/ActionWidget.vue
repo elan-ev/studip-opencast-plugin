@@ -25,7 +25,6 @@ export default {
     },
     data() {
         return {
-            cid: 'test'
         }
     },
     watch: {
@@ -39,7 +38,6 @@ export default {
             this.$store.dispatch('addEvent',
                 {
                     id: "123-x",
-                    cid: this.cid,
                     title: "testi",
                     lecturer: "Testor",
                     type: "upload"

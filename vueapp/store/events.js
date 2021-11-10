@@ -3,6 +3,7 @@ import { apolloClient } from '../vue-apollo'
 
 
 const state = {
+    cid: '',
     events: []
 }
 
@@ -13,15 +14,19 @@ const getters = {
 }
 
 const mutations = {
-    SET_EVENTS (state, events) {
+    SET_CID(state, cid) {
+        state.cid = cid
+    },
+
+    SET_EVENTS(state, events) {
         state.events = events
     },
 
-    ADD_EVENT (state, event) {
+    ADD_EVENT(state, event) {
         state.events.push(event)
     },
 
-    REMOVE_EVENT (state, id) {
+    REMOVE_EVENT(state, id) {
         state.events = state.events.filter(function( event ) {
             return event.id !== id;
         });
@@ -29,7 +34,11 @@ const mutations = {
 }
 
 const actions = {
-    async fetchEvents({commit}, cid) {
+    async setCID({commit}, cid) {
+        commit('SET_CID', cid)
+    },
+
+    async fetchEvents({commit}) {
         const response = await apolloClient.query({
             query: gql` 
                 query getEvents($cid: ID!) {
@@ -41,12 +50,14 @@ const actions = {
                     }
                 }
             `,
-            variables: { cid: cid}
+            variables: { cid: state.cid}
         })
+        console.log(response)
         commit('SET_EVENTS', response.data.events)
     },
 
     async addEvent({commit, dispatch}, input) {
+        input['cid'] = state.cid
         const response = apolloClient.mutate({
             mutation: gql` 
                 mutation ($input: EventInput) {
@@ -60,10 +71,10 @@ const actions = {
             variables: {
                 input: input
             },
-        }).then(()=>{dispatch('fetchEvents')})
+        }).then(()=>{dispatch('fetchEvents', state.cid)})
     },
 
-    async removeEvent({commit}, id) {
+    async removeEvent({commit, dispatch}, id) {
         const response = await apolloClient.mutate({
             mutation: gql`
                 mutation ($id: ID!) {
@@ -78,7 +89,7 @@ const actions = {
             variables: {
                 id: id
             },
-        }).then(()=>{dispatch('fetchEvents')})
+        }).then(()=>{dispatch('fetchEvents', state.cid)})
     }
 }
 
