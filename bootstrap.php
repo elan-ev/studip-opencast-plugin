@@ -15,3 +15,5 @@ require_once __DIR__ .'/classes/lti/OAuth.php';
 
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
+
+require_once 'classes/OpencastController.php';

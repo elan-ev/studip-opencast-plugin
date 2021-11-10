@@ -6,6 +6,7 @@
 use Opencast\Models\UploadStudygroup;
 use Opencast\Models\Config;
 use Opencast\LTI\OpencastLTI;
+use OpencastController;
 
 class CourseController extends OpencastController
 {
@@ -50,9 +51,7 @@ class CourseController extends OpencastController
         Navigation::activateItem('/course/opencast');
         Navigation::activateItem('course/opencast/scheduler');
 
-        $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
-
-        $this->render_template('course/index');
+        $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
 
     public function manager_action()
