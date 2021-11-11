@@ -5,7 +5,7 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
-use Opencast\Models\OCEndpoints;
+use Opencast\Models\Endpoints;
 use \Context;
 
 define('DEBUG_CURL', FALSE);
@@ -62,10 +62,10 @@ class RestClient
     {
         if ($config = Config::find($config_id)) {
             $this->config_id  = $config->id;
-            $this->base_url   = $config->config['url'];
+            $this->base_url   = $config->service_url;
 
             if ($service_type) {
-                if ($endpoint = OCEndpoints::findBySql(
+                if ($endpoint = Endpoints::findBySql(
                     'config_id = ? AND service_type = ?', [$config_id, $service_type]
                 )) {
                     $this->base_url = $endpoint[0]->service_url;
@@ -74,9 +74,9 @@ class RestClient
                 }
             }
 
-            $this->username   = $config->config['user'];
-            $this->password   = $config->config['password'];
-            $this->oc_version = $config->config['version'];
+            $this->username   = $config->service_user;
+            $this->password   = $config->service_password;
+            $this->oc_version = $config->service_version;
         } else {
             throw new \Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
         }
@@ -225,7 +225,7 @@ class RestClient
                 } else if ($httpCode == 401) {
                     throw new \AccessDeniedException('Wrong username/password for Opencast server!');
                 } else {
-                    return json_decode($response);
+                    return json_decode($response, true);
                 }
             }
         } else {

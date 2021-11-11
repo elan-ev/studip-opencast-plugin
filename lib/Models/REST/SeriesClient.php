@@ -1,20 +1,18 @@
 <?php
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
+
+use Opencast\Models\Config;
 use Opencast\LTI\OpencastLTI;
 
-class SeriesClient extends OCRestClient
+class SeriesClient extends RestClient
 {
     public static $me;
     public        $serviceName = 'Series';
 
     public function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('series', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'series');
     }
 
     /**

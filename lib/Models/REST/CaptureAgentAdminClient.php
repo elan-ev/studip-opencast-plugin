@@ -5,11 +5,10 @@ namespace Opencast\Models\REST;
 class CaptureAgentAdminClient extends RestClient
 {
     public static $me;
+    public        $serviceName = 'CaptureAgentAdminClient';
 
     function __construct($config_id = 1)
     {
-        $this->serviceName = 'CaptureAgentAdminClient';
-
         parent::__construct($config_id, 'capture-admin');
     }
 

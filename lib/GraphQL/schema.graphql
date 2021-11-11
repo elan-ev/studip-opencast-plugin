@@ -1,0 +1,112 @@
+schema {
+  query: Query
+}
+
+enum Visibility {
+    open
+    learner
+    lecturer
+}
+
+enum EventType {
+    scheduled
+    upload
+    livestream
+}
+
+enum SortType {
+    mk_date
+    up_date
+    title
+    author
+}
+
+type Workflow {
+    id: ID!
+    name: String!
+    type: EventType!
+}
+
+type CaptureAgent {
+    id: ID!
+    name: Name!
+}
+
+type GlobalConfig {
+    workflows: [Workflow]
+    capture_agents: [CaptureAgent]
+}
+
+type CourseConfig {
+    workflow: Workflow
+    default_visibility: Visibility!
+    default_sortorder: SortType!
+}
+
+type Event {
+    id: ID!
+    title: String!
+    author: String!
+    participants: String
+    topic: String
+    description: String
+
+    track_link: String
+    length: Int
+    workflow: Workflow
+    snipeditor: String
+    annotation_tool: String
+    up_date: Int
+
+    visibility: Visibility!
+    type: EventType!
+    mk_date: Int!
+}
+
+type Course {
+    id: ID!
+    name: String
+    visibility: Visibility
+    events: [Event]
+    studio: String
+    config: CourseConfig!
+}
+
+input MetadataInput {
+    title: String
+    author: String
+    participants: String
+    topic: String
+    description: String
+}
+
+input EventConfigInput {
+    visibility: Visibility
+    type: EventType!
+}
+
+input TrackInput {
+    track_link: String
+    length: Int
+    workflow: Workflow
+    snipeditor: String
+    annotation_tool: String
+    up_date: Int
+}
+
+type Query {
+    getEvents(course_id: ID!, event_type: EventType, sort: SortType): [Event]
+    getEventById(event_id: ID!): Event
+    getCourse(course_id: ID!) : Course
+    getGlobalConfig: GlobalConfig
+    echo(message: String!): String
+}
+
+type Mutation {
+    addEvent(course_id: ID!, metadata: MetadataInput!, config: EventConfig!): Event
+    addTrack(event_id: ID!, track: TrackInput!) : Track
+    editEventMetadata(event_id: ID!, metadata: MetadataInput!): Event
+    editEventVisibility(event_id: ID!, visibility: Visibility!): Visibility
+    editCourseConfig(course_id: ID!, workflow_id: ID, visibility: Visibility, sort_order: SortType): CourseConfig
+    removeEvent(id: ID!): Event
+}

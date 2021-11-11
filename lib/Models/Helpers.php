@@ -2,13 +2,9 @@
 
 namespace Opencast\Models;
 
-use Opencast\Models\Config as OCConfig;
-use Opencast\Models\OCSeminarSeries;
-use Opencast\Models\OCSeminarEpisodes;
-use OpenCast\Models\OCScheduledRecordings;
 use \DBManager;
 use \PDO;
-use \Config;
+use \Configuration as StudipConfiguration;
 
 use Opencast\LTI\OpencastLTI;
 
@@ -22,7 +18,7 @@ class Helpers
             WHERE property_id = ?
             AND state = 1");
 
-       $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
+       $stmt->execute([StudipConfiguration::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $resources;
     }
@@ -35,7 +31,7 @@ class Helpers
                 WHERE rop.property_id = ?
                 AND rop.state = 'on'");
 
-       $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
+       $stmt->execute([StudipConfiguration::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
        return $resources;
     }
@@ -154,7 +150,7 @@ class Helpers
     static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
     {
         // 1st: retrieve series_id
-        $series = OCSeminarSeries::getSeries($course_id);
+        $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -193,7 +189,7 @@ class Helpers
 
     static function checkScheduledRecording($course_id, $resource_id, $date_id)
     {
-        $series = OCSeminarSeries::getSeries($course_id);
+        $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -344,7 +340,7 @@ class Helpers
          }
 
 
-        $series = OCSeminarSeries::getSeries($course_id);
+        $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $cas = self::checkResource($resource_id);
@@ -444,7 +440,7 @@ class Helpers
 
             $entry->store();
 
-            $config_id = OCConfig::getConfigIdForCourse($course_id);
+            $config_id = Config::getConfigIdForCourse($course_id);
 
             // Remote
             if ($visibility == 'visible') {
@@ -478,7 +474,7 @@ class Helpers
      */
     static function getEntry($course_id, $episode_id)
     {
-        $series = reset(OCSeminarSeries::getSeries($course_id));
+        $series = reset(SeminarSeries::getSeries($course_id));
 
         return OCSeminarEpisodes::findOneBySQL(
             'series_id = ? AND episode_id = ?',
@@ -554,7 +550,7 @@ class Helpers
         $states = [];
 
         foreach ($table_entries as $table_entry){
-            $current_workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($table_entry['seminar_id']));
+            $current_workflow_client = WorkflowClient::getInstance(Config::getConfigIdForCourse($table_entry['seminar_id']));
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;

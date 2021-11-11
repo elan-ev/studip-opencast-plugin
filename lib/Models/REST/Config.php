@@ -2,7 +2,8 @@
 
 namespace Opencast\Models\REST;
 
-class Config {
+class Config
+{
     public static function getOCBaseVersion($config_id)
     {
         $oc = new RestClient($config_id);

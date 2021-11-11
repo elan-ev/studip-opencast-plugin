@@ -5,20 +5,18 @@
  * @version         1.0 (12:34)
  */
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
 
-class ACLManagerClient extends OCRestClient
+use Opencast\Models\Config;
+
+class ACLManagerClient extends RestClient
 {
     public static $me;
     public        $serviceName = "ACL-Manager";
 
     public function __construct($config_id)
     {
-        if ($config = OCConfig::getConfigForService('acl-manager', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'acl-manager');
     }
 
     public function createACL(AccessControlList $acl)

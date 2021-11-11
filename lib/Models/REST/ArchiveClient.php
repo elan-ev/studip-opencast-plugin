@@ -1,19 +1,17 @@
 <?php
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
 
-class ArchiveClient extends OCRestClient
+use Opencast\Models\Config;
+
+class ArchiveClient extends RestClient
 {
     public static $me;
     public        $serviceName = "Archive";
 
     function __construct($config_id)
     {
-        if ($config = OCConfig::getConfigForService('archive', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'archive');
     }
 
     public function deleteEvent($eventId)

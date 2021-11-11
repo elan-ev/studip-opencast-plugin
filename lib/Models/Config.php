@@ -3,7 +3,7 @@ namespace Opencast\Models;
 
 use Opencast\RelationshipTrait;
 use Opencast\Models\UPMap;
-use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\SeminarSeries;
 
 class Config extends UPMap
 {
@@ -28,13 +28,12 @@ class Config extends UPMap
      */
     static function getConfigForCourse($course_id)
     {
-        return false;
         static $config;
 
         if (!$config[$course_id]) {
             $config_id = self::getConfigIdForCourse($course_id);
             if ($config_id) {
-                $settings  = \Configuration::instance($config_id);
+                $settings  = Configuration::instance($config_id);
                 $oc_config = self::getBaseServerConf($config_id);
 
                 $config[$course_id] = array_merge($oc_config, $settings->toArray());
@@ -53,7 +52,7 @@ class Config extends UPMap
      */
     static function getConfigIdForCourse($course_id)
     {
-        return OCSeminarSeries::findOneBySeminar_id($course_id)->config_id;
+        return SeminarSeries::findOneBySeminar_id($course_id)->config_id;
     }
 
 
@@ -68,7 +67,7 @@ class Config extends UPMap
     public static function getConfigForService($service_type, $config_id = 1)
     {
         if (isset($service_type)) {
-            $config = OCEndpoints::findOneBySQL(
+            $config = Endpoints::findOneBySQL(
                 'service_type = ? AND config_id = ?' ,
                 [$service_type, $config_id]
             )->toArray();
@@ -89,5 +88,22 @@ class Config extends UPMap
     public function getRelationships()
     {
         return [];
+    }
+
+    /**
+     * [getBaseServerConf description]
+     *
+     * @param  [type] $config_id [description]
+     * @return [type]            [description]
+     */
+    public static function getBaseServerConf($config_id = null)
+    {
+        if (is_null($config_id)) {
+            return \SimpleCollection::createFromArray(
+                self::findBySql('1 ORDER BY id ASC')
+            )->toGroupedArray('id');
+        }
+
+        return self::find($config_id)->toArray();
     }
 }

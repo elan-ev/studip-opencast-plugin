@@ -1,19 +1,17 @@
 <?php
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
 
-class SearchClient extends OCRestClient
+use Opencast\Models\Config;
+
+class SearchClient extends RestClient
 {
     public static $me;
-    public $serviceName = 'Search';
+    public        $serviceName = 'Search';
 
     public function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('search', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'search');
     }
 
     /**
@@ -26,7 +24,7 @@ class SearchClient extends OCRestClient
      */
     public function getEpisodes($series_id, $refresh = false)
     {
-        $cache = StudipCacheFactory::getCache();
+        $cache = \StudipCacheFactory::getCache();
         $cache_key = 'oc_episodesforseries/' . $series_id;
         $episodes = $cache->read($cache_key);
 

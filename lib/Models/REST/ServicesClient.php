@@ -2,16 +2,15 @@
 
 namespace Opencast\Models\REST;
 
-use Opencast\Models\OCConfig;
+use Opencast\Models\Config;
 
 class ServicesClient extends RestClient
 {
-    static $me;
+    public static $me;
+    public        $serviceName = 'ServicesClient';
 
     function __construct($config_id = 1)
     {
-        $this->serviceName = 'ServicesClient';
-
         parent::__construct($config_id, 'services');
     }
 

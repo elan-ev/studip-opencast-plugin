@@ -1,22 +1,19 @@
 <?php
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
+
+use Opencast\Models\Config;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Configuration;
 
-class SchedulerClient extends OCRestClient
+class SchedulerClient extends RestClient
 {
     public static $me;
+    public        $serviceName = 'SchedulerClient';
 
     public function __construct($config_id = 1)
     {
-        $this->serviceName = 'SchedulerClient';
-
-        if ($config = OCConfig::getConfigForService('recordings', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'recordings');
     }
 
     /**
@@ -96,7 +93,7 @@ class SchedulerClient extends OCRestClient
      */
     public function updateEventForSeminar($course_id, $resource_id, $termin_id, $event_id)
     {
-        $config_id      = OCConfig::getConfigIdForCourse($course_id);
+        $config_id      = Config::getConfigIdForCourse($course_id);
         $precise_config = Configuration::instance($config_id);
 
         // currently, we only update the start and the end time
@@ -133,7 +130,7 @@ class SchedulerClient extends OCRestClient
 
     public static function createEventMetadata($course_id, $resource_id, $termin_id, $event_id)
     {
-        $config = OCConfig::getConfigForCourse($course_id);
+        $config = Config::getConfigForCourse($course_id);
 
         $dublincore = OCModel::createScheduleEventXML(
             $course_id, $resource_id, $termin_id, $event_id, $config['time_buffer_overlap']

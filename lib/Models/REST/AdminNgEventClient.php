@@ -1,21 +1,19 @@
 <?php
 
-use Opencast\Models\OCConfig;
+namespace Opencast\Models\REST;
 
-class AdminNgEventClient extends OCRestClient
+use Opencast\Models\Config;
+
+class AdminNgEventClient extends RestClient
 {
     public static $me;
     public        $serviceName = "Admin-ngEvent";
-    
+
     public function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('admin-ngevent', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
+        parent::__construct($config_id, 'admin-ngevent');
     }
-    
+
     /**
      * delelteEpisode -  retracts and deletes an episode
      *
@@ -26,7 +24,7 @@ class AdminNgEventClient extends OCRestClient
     public function deleteEpisode($episode_id)
     {
         $result = $this->deleteJSON('/' . $episode_id, true);
-        
+
         if (in_array($result[1], [200, 202])) {
             return true;
         }

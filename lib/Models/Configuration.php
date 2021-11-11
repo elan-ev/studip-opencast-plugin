@@ -5,9 +5,9 @@
  * @version         1.0 (13:27)
  */
 
-namespace Opencast;
+namespace Opencast\Models;
 
-use Opencast\Models\OCConfig;
+use Opencast\Constants;
 
 class Configuration implements \ArrayAccess
 {
@@ -27,7 +27,7 @@ class Configuration implements \ArrayAccess
     {
         $name = 'c_(' . $config_id . ')';
         if (!static::$instances[$name]) {
-            static::$instances[$name] = new Configuration($config_id);
+            static::$instances[$name] = new self($config_id);
         }
 
         return static::$instances[$name];
@@ -89,7 +89,7 @@ class Configuration implements \ArrayAccess
 
     public function load()
     {
-        $config = OCConfig::find($this->config_id);
+        $config = Config::find($this->config_id);
         if (!empty($config)) {
             $this->values = json_decode($config->settings->__toString(), true);
         }
@@ -99,7 +99,7 @@ class Configuration implements \ArrayAccess
 
     public function store()
     {
-        $config = OCConfig::find($this->config_id);
+        $config = Config::find($this->config_id);
 
         $config->settings = $this->values;
         $config->store();

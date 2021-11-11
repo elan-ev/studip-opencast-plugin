@@ -32,6 +32,8 @@ class RouteMap
         $this->app->get('/user', Routes\Users\UsersShow::class);
 
         $this->app->get('/resources', Routes\Resources\ResourcesList::class);
+
+        $this->app->any('/graphql', GraphQL\GraphQL::class);
         ##TEMPLATE##
     }
 

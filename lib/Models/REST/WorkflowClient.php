@@ -4,12 +4,11 @@ namespace Opencast\Models\REST;
 
 class WorkflowClient extends RestClient
 {
-    static $me;
+    public static $me;
+    public        $serviceName = 'WorkflowClient';
 
     function __construct($config_id = 1)
     {
-        $this->serviceName = 'WorkflowClient';
-
         parent::__construct($config_id, 'workflow');
     }
 
