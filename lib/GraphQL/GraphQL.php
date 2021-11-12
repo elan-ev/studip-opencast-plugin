@@ -77,8 +77,6 @@ class GraphQL extends OpencastController
         $debug = \GraphQL\Error\DebugFlag::INCLUDE_DEBUG_MESSAGE
             | \GraphQL\Error\DebugFlag::INCLUDE_TRACE;
 
-        return $this->createResponse([
-            $result->toArray($debug)
-        ], $response);
+        return $this->createResponse($result->toArray(), $response);
     }
 }
