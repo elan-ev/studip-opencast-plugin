@@ -12,6 +12,7 @@ import I18N from "./common/i18n.filter";
 
 import { createProvider } from "./vue-apollo";
 
+
 import PortalVue from 'portal-vue'
 
 Vue.use(PortalVue)
@@ -43,5 +44,7 @@ $(function() {
         render: h => h(App)
     }).$mount('#app');
 
+    store.dispatch('setCID', CID);
+    window.apolloEndpoint = API_URL + '/graphql';
     window.Vue.axios.defaults.baseURL = API_URL;
 });

@@ -40,17 +40,14 @@ const actions = {
 
     async fetchEvents({commit}) {
         const response = await apolloClient.query({
-            query: gql` 
-                query getEvents($cid: ID!) {
-                    events(id: $cid) {
-                        id
-                        title
-                        url
-                        lecturer
-                    }
-                }
-            `,
-            variables: { cid: state.cid}
+            query: gql`
+                query { getEvents(course_id: "${state.cid}") {
+                     id
+                     title
+                     author
+                     mk_date
+                }}
+            `
         })
         commit('SET_EVENTS', response.data.events)
     },
@@ -58,7 +55,7 @@ const actions = {
     async addEvent({commit, dispatch}, input) {
         input['cid'] = state.cid
         const response = await apolloClient.mutate({
-            mutation: gql` 
+            mutation: gql`
                 mutation ($input: EventInput) {
                     addEvent(input: $input) {
                         id

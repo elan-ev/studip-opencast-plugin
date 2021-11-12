@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
     let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>';
-    let CID      = '<?= $cid ?>';
+    let CID      = '<?= $course_id ?>';
     let ICON_URL = '<?= Assets::url('images/icons/') ?>';
     let ASSETS_URL = '<?= Assets::url('') ?>';
     let PLUGIN_ASSET_URL =  '<?= $plugin->getAssetsUrl() ?>';

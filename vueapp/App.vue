@@ -20,8 +20,6 @@ export default {
         Error
     },
     mounted() {
-        this.$store.dispatch('setCID', 'test') // add proper cid here or fix it in template
-
         let url  = new URL(window.location);
         let page = url.pathname.substr(url.pathname.lastIndexOf("/") + 1);
 
