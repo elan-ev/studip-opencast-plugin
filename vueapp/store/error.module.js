@@ -12,11 +12,11 @@ const getters = {
 
 const actions = {
     errorCommit(context, error) {
-        context.commit(ERROR_SET, error);
+        context.commit('errorSet', error);
     },
 
     errorClear(context) {
-        context.commit(ERROR_SET, null);
+        context.commit('errorSet', null);
     }
 };
 

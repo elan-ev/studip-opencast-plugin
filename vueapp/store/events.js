@@ -38,7 +38,7 @@ const actions = {
         commit('SET_CID', cid)
     },
 
-    async fetchEvents({commit}) {
+    async fetchEvents({commit, dispatch}) {
         const response = await apolloClient.query({
             query: gql`
                 query {
@@ -49,9 +49,16 @@ const actions = {
                      mk_date
                 }}
             `
-        })
+        }).catch((res) => {
+            const errors = res.graphQLErrors.map((error) => {
+                return error.message;
+            });
+            dispatch('errorCommit', { graphql: errors.join("\n") });
+        });
 
-        commit('SET_EVENTS', response.data.getEvents);
+        if (response !== undefined) {
+            commit('SET_EVENTS', response.data.getEvents);
+        }
     },
 
     async addEvent({commit, dispatch}, input) {
