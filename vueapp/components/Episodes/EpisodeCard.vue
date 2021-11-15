@@ -1,26 +1,26 @@
 <template>
     <li>
-        <div class="oc_flexitem oc_flexplaycontainer">
-            <div class="oce_playercontainer">
+        <div class="oc--flexitem oc--flexplaycontainer">
+            <div class="oc--playercontainer">
                 <a v-if="event.url" :href="event.url" target="_blank">
-                    <span class="previewimage">
-                        <img class="previewimage" :src="preview" height="200"/>
-                        <img class="playbutton" :src="play">
+                    <span class="oc--previewimage">
+                        <img class="oc--previewimage" :src="preview" height="200"/>
+                        <img class="oc--playbutton" :src="play">
                     </span>
                 </a>
-                <span v-else class="previewimage">
-                    <img class="previewimage" :src="preview" height="200"/>
+                <span v-else class="oc--previewimage">
+                    <img class="oc--previewimage" :src="preview" height="200"/>
                     <p>No video uploaded</p>
                 </span>
             </div>
         </div>
-        <div class="oce_metadatacontainer">
+        <div class="oc--metadata">
             <div>
-                <h2 class="oce_metadata oce_list_title">
+                <h2 class="oc--metadata-title">
                     {{event.title}}
                 </h2>
-                <ul class="oce_contentlist">
-                    <li class="oce_list_date">
+                <ul class="oc--metadata-content">
+                    <li>
                         Hochgeladen am: Das ist ein Datum
                     </li>
                     <li>
@@ -34,7 +34,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="ocplayerlink">
+            <div class="oc--episode-buttons">
                 <opencast-button icon="trash" @click="removeEpisode">Entfernen</opencast-button>
                 <opencast-button icon="download">Download</opencast-button>
                 <opencast-button icon="edit">Edit</opencast-button>

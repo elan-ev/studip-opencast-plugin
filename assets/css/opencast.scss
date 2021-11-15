@@ -13,26 +13,32 @@ $episode-background: $light-gray-color-20;
 /**
  * Flex-Episodelist
  */
-.oc_flex {
+.oc--flex {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
     margin-bottom: 1em;
+
+    .button::before {
+        background-position: 0 3px;
+        height: 20px !important;
+        padding-left: 5px;
+    }
 }
 
-.oc_flexitem {
+.oc--flexitem {
     display: inline-block;
     position: relative;
 }
 
-.oc_flexplaycontainer {
+.oc--flexplaycontainer {
     margin: 0 1px;
     float: left;
     width: $item-width;
     height: $item-height;
 }
 
-.oc_flexepisodelist {
+.oc--flexepisodelist {
     height: auto;
     width: 100%;
 }
@@ -59,7 +65,7 @@ $episode-background: $light-gray-color-20;
     }
 }
 
-.oce_playercontainer {
+.oc--playercontainer {
     background: $episode-background;
     margin-top: 1em;
     padding-right: 1.5em;
@@ -76,7 +82,7 @@ $episode-background: $light-gray-color-20;
         height: 360px;
     }
 
-    span.previewimage {
+    span.oc--previewimage {
         display: block;
         position: relative;
         left: 0;
@@ -88,7 +94,7 @@ $episode-background: $light-gray-color-20;
             }
         }
 
-        img.previewimage {
+        img.oc--previewimage {
             position: relative;
             left: 0;
             top: 0;
@@ -98,7 +104,7 @@ $episode-background: $light-gray-color-20;
             object-fit: contain;
         }
 
-        img.playbutton {
+        img.oc--playbutton {
             position: absolute;
             width: 50%;
             left: 25%;
@@ -122,12 +128,12 @@ $episode-background: $light-gray-color-20;
     }
 }
 
-.oce_contentlist {
+.oc--metadata-content {
     list-style-type: none;
     padding-left: 0;
 }
 
-.oce_list {
+.oc--episode-list {
     clear: both;
     padding-left: 0;
     list-style: none;
@@ -175,14 +181,21 @@ $episode-background: $light-gray-color-20;
     padding-bottom: 5px;
 }
 
-.oce_metadatacontainer {
+.oc--metadata {
     display: block;
     margin-left: $item-width;
+
+    .oc--metdata-title {
+        margin-top: 10px;
+    }
 }
 
-.ocplayerlink {
+.oc--episode-buttons {
     display: inline-flex;
     flex-wrap: wrap;
+    img {
+        vertical-align: text-bottom;
+    }
 }
 
 .oce_item {
@@ -193,9 +206,7 @@ $episode-background: $light-gray-color-20;
     opacity: 0.5;
 }
 
-.oce_list_title {
-    margin-top: 10px;
-}
+
 
 .hidden_ocvideodiv {
     opacity: 0.8;
@@ -398,14 +409,6 @@ textarea.oc_input:focus {
 img.ocinvisible {
     background-color: #FFCCCC;
     border: 4px solid red;
-}
-
-.oc_flex {
-    .button::before {
-        background-position: 0 3px;
-        height: 20px !important;
-        padding-left: 5px;
-    }
 }
 
 #opencast, ul.files {
@@ -689,19 +692,19 @@ img.ocinvisible {
 }
 
 @media only screen and (max-width: $major-breakpoint-large) {
-    .oc_flexplaycontainer {
+    .oc--flexplaycontainer {
         width: 15em;
     }
 
-    .oce_metadatacontainer {
+    .oc--metadata {
         margin-left: 15em;
     }
 
-    .oce_playercontainer span.previewimage img.playbutton {
+    .oc--playercontainer span.oc--previewimage img.oc--playbutton {
         max-height: 50px;
     }
 
-    .oce_playercontainer span.previewimage img.livebutton {
+    .oc--playercontainer span.previewimage img.livebutton {
         max-height: 300px;
     }
 
@@ -719,19 +722,19 @@ img.ocinvisible {
 }
 
 @media only screen and (max-width: $major-breakpoint-large) {
-    .oc_flexplaycontainer {
+    .oc--flexplaycontainer {
         width: 100%;
     }
 
-    .oce_metadatacontainer {
+    .oc--metadata {
         margin-left: 0;
     }
 
-    .oce_playercontainer span.previewimage img.playbutton {
+    .oc--playercontainer span.oc--previewimage img.playbutton {
         max-height: 100px;
     }
 
-    .oce_playercontainer span.previewimage img.livebutton {
+    .oc--playercontainer span.previewimage img.livebutton {
         max-height: 300px;
     }
 

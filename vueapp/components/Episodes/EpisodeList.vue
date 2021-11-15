@@ -1,9 +1,9 @@
 <template>
-    <div class="oc_flex">
-        <div id="episodes" class="oc_flexitem oc_flexepisodelist">
-            <ul class="oce_list list">
+    <div class="oc--flex">
+        <div id="episodes" class="oc--flexitem oc--flexepisodelist">
+            <ul class="oc--episode-list">
                 <div v-if="$apollo.loading">Loading...</div>
-                <EpisodeCard 
+                <EpisodeCard
                     v-for="event in events"
                     v-bind:event="event"
                     v-bind:index="1"
@@ -36,7 +36,7 @@ export default {
     },
 
     methods: {
-        
+
     },
 
     mounted() {
