@@ -9,7 +9,7 @@
     "prebuild": "npm install",
     "prezip": "npm run build && composer install --no-dev",
     "translate": "/bin/bash translate.sh",
-    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
+    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
   "dependencies": {
     "vue-apollo": "^3.0.0-beta.11"
