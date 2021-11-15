@@ -7,7 +7,7 @@
     "build": "webpack --mode production",
     "dev": "webpack --mode=development --watch",
     "prebuild": "npm install",
-    "prezip": "npm install && npm run prod && composer install --no-dev",
+    "prezip": "npm run build && composer install --no-dev",
     "translate": "/bin/bash translate.sh",
     "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
