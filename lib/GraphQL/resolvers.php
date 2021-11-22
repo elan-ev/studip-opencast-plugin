@@ -9,5 +9,13 @@ return [
         'getEvents' => function($root, $args, $context) {
             return Events::getEvents($root, $args, $context);
         }
+    ],
+    'Mutation' => [
+        'removeEvent' => function($root, $args, $context) {
+            return Events::removeEvent($root, $args, $context);
+        },
+        'addEvent' => function($root, $args, $context) {
+            return Events::addEvent($root, $args, $context);
+        }
     ]
 ];

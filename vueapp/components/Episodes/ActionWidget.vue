@@ -39,7 +39,7 @@ export default {
                 {
                     id: "123-x",
                     title: "testi",
-                    lecturer: "Testor",
+                    author: "Testor",
                     type: "upload"
                 }
             );

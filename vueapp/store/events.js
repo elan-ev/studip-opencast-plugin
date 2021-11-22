@@ -46,6 +46,10 @@ const actions = {
                      id
                      title
                      author
+                     track_link
+                     length
+                     annotation_tool
+                     description
                      mk_date
                 }}
             `
@@ -63,13 +67,14 @@ const actions = {
 
     async addEvent({commit, dispatch}, input) {
         input['cid'] = state.cid
+        input['mk_date'] = Math.floor(Date.now()/1000)
         const response = await apolloClient.mutate({
             mutation: gql`
                 mutation ($input: EventInput) {
                     addEvent(input: $input) {
                         id
                         title
-                        lecturer
+                        author
                     }
                 }
             `,
@@ -86,8 +91,7 @@ const actions = {
                     removeEvent(id: $id) {
                         id
                         title
-                        url
-                        lecturer
+                        author
                     }
                 }
             `,

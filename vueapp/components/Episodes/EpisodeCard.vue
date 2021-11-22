@@ -2,7 +2,7 @@
     <li>
         <div class="oc--flexitem oc--flexplaycontainer">
             <div class="oc--playercontainer">
-                <a v-if="event.url" :href="event.url" target="_blank">
+                <a v-if="event.track_link" :href="event.track_link" target="_blank">
                     <span class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
                         <img class="oc--playbutton" :src="play">
@@ -21,16 +21,19 @@
                 </h2>
                 <ul class="oc--metadata-content">
                     <li>
-                        Hochgeladen am: Das ist ein Datum
+                        Hochgeladen am: {{event.mk_date}}
                     </li>
                     <li>
-                        Autor: {{event.lecturer}}
+                        Autor: {{event.author}}
                     </li>
                     <li>
                         Mitwirkende: Das sind Mitwirkende
                     </li>
                     <li>
-                        Beschreibung: Das ist eine Beschreibung
+                        Beschreibung: {{event.description}}
+                    </li>
+                    <li>
+                        Länge: {{event.length}}
                     </li>
                 </ul>
             </div>
@@ -38,6 +41,7 @@
                 <opencast-button icon="trash" @click="removeEpisode">Entfernen</opencast-button>
                 <opencast-button icon="download">Download</opencast-button>
                 <opencast-button icon="edit">Edit</opencast-button>
+                <opencast-button v-if="event.annotation_tool" icon="edit" :href="event.annotation_tool">Annotation Tool</opencast-button>
             </div>
         </div>
     </li>
