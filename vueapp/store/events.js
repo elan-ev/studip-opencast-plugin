@@ -81,7 +81,10 @@ const actions = {
             variables: {
                 input: input
             },
-        }).then(()=>{dispatch('fetchEvents', state.cid)})
+            update: (store, { data: { addEvent } }) => {
+                commit('ADD_EVENT', addEvent);
+            },
+        });
     },
 
     async removeEvent({commit, dispatch}, id) {
@@ -98,7 +101,10 @@ const actions = {
             variables: {
                 id: id
             },
-        }).then(()=>{dispatch('fetchEvents', state.cid)})
+            update: (store, { data: { removeEvent } }) => {
+                commit('REMOVE_EVENT', removeEvent.id);
+            },
+        });
     }
 }
 

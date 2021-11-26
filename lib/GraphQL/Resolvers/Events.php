@@ -11,6 +11,15 @@ use Opencast\Models\REST\AdminNgEventClient;
 
 class Events
 {
+    /**
+     * return events for the passed course in the current users context
+     *
+     * @param  [type] $root                  [description]
+     * @param  [type] $args                  [description]
+     * @param  [type] $context               [description]
+     *
+     * @return [type]          [description]
+     */
     function getEvents($root, $args, $context)
     {
         $course_id = $args['course_id'];
@@ -79,15 +88,44 @@ class Events
         return $results;
     }
 
+    /**
+     * TODO
+     *
+     * [addEvent description]
+     *
+     * @param [type] $root     [description]
+     * @param [type] $args     [description]
+     * @param [type] $context  [description]
+     *
+      * @return [type]          [description]
+     */
     function addEvent($root, $args, $context)
     {
-        return null;
+        return $args['input'];
     }
 
+    /**
+     * TODO
+     *
+     * [removeEvent description]
+     *
+     * @param  [type] $root                  [description]
+     * @param  [type] $args                  [description]
+     * @param  [type] $context               [description]
+     *
+     * @return [type]          [description]
+     */
     function removeEvent($root, $args, $context)
     {
+        return [
+            'id'     => $args['id'],
+            'title'  => '',
+            'author' => ''
+        ];
+        /*
         $adminng_client = AdminNgEventClient::getInstance();
         $adminng_client->deleteEpisode($args['id']);
         return null;
+        */
     }
 }
