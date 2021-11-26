@@ -8,7 +8,7 @@
     "dev": "webpack --mode=development --watch",
     "prebuild": "npm install",
     "prezip": "npm run build && composer install --no-dev",
-    "translate": "/bin/bash translate.sh",
+    "translate": "gettext-extract --attribute v-i18n --attribute v-translate --output locale/en/LC_MESSAGES/opencast_js.pot $(find vueapp -type f -name '*.vue') && /bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
     "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "core-js": "^3.6.5",
     "css-loader": "^6.2.0",
     "date-fns": "^2.0.0-beta.2",
+    "easygettext": "^2.17.0",
     "extract-loader": "^5.1.0",
     "file-loader": "^6.2.0",
     "graphql-tag": "^2.9.0",
@@ -39,6 +40,7 @@
     "vue": "^2.6.10",
     "vue-axios": "^3.2.5",
     "vue-cli-plugin-apollo": "~0.22.2",
+    "vue-gettext": "^2.1.12",
     "vue-loader": "^15.9.8",
     "vue-router": "^3.0.6",
     "vue-template-compiler": "^2.6.10",

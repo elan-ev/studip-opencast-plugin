@@ -38,10 +38,24 @@
                 </ul>
             </div>
             <div class="oc--episode-buttons">
-                <opencast-button icon="trash" @click="removeEpisode">Entfernen</opencast-button>
-                <opencast-button icon="download">Download</opencast-button>
-                <opencast-button icon="edit">Edit</opencast-button>
-                <opencast-button v-if="event.annotation_tool" icon="edit" :href="event.annotation_tool">Annotation Tool</opencast-button>
+                <opencast-button icon="download" v-translate>
+                    Download
+                </opencast-button>
+
+                <opencast-button icon="edit" v-translate>
+                    Bearbeiten
+                </opencast-button>
+
+                <opencast-button v-if="event.annotation_tool"
+                    icon="edit" :href="event.annotation_tool"
+                    v-translate
+                >
+                    Annotationen
+                </opencast-button>
+
+                <opencast-button icon="trash" @click="removeEpisode" v-translate>
+                    Entfernen
+                </opencast-button>
             </div>
         </div>
     </li>
