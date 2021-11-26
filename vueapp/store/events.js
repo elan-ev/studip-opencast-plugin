@@ -4,7 +4,7 @@ import { apolloClient } from '../vue-apollo'
 
 const state = {
     cid: '',
-    events: []
+    events: null
 }
 
 const getters = {

@@ -1,8 +1,13 @@
 <template>
     <div class="oc--flex">
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul class="oc--episode-list">
-                <div v-if="$apollo.loading">Loading...</div>
+            <ul v-if="events === null" class="oc--episode-list oc--episode-list--empty">
+                <EmptyEpisodeCard />
+                <EmptyEpisodeCard />
+                <EmptyEpisodeCard />
+            </ul>
+
+            <ul class="oc--episode-list" v-else>
                 <EpisodeCard
                     v-for="event in events"
                     v-bind:event="event"
@@ -17,11 +22,13 @@
 import { mapGetters } from 'vuex'
 
 import EpisodeCard from "@/components/Episodes/EpisodeCard"
+import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
 
 export default {
     name: "Episodes",
     components: {
-        EpisodeCard
+        EpisodeCard,
+        EmptyEpisodeCard
     },
 
     data() {
