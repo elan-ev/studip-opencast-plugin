@@ -101,6 +101,14 @@ class Events
      */
     function addEvent($root, $args, $context)
     {
+        $course_id = $args['course_id'];
+        $user_id   = $context['user_id'];
+
+        if (!$GLOBALS['perm']->have_studip_perm('autor', $course_id, $user_id)) {
+            die('access');
+            throw new AccessDeniedException();
+        }
+
         return $args['input'];
     }
 
@@ -117,6 +125,13 @@ class Events
      */
     function removeEvent($root, $args, $context)
     {
+        $course_id = $args['course_id'];
+        $user_id   = $context['user_id'];
+
+        if (!$GLOBALS['perm']->have_studip_perm('autor', $course_id, $user_id)) {
+            die('access');
+            throw new AccessDeniedException();
+        }
         return [
             'id'     => $args['id'],
             'title'  => '',

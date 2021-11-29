@@ -55,9 +55,13 @@
                         Annotationen
                     </opencast-button>
 
-                    <opencast-button icon="trash" @click="removeEpisode" v-translate>
+                    <opencast-button icon="trash" @click="showDeleteDialog = true" v-translate>
                         Entfernen
                     </opencast-button>
+                    <EpisodeDeleteDialog v-if="showDeleteDialog"
+                        @done="removeEpisode"
+                        @cancel="showDeleteDialog = false"
+                    />
                 </div>
             </div>
         </li>
@@ -65,14 +69,15 @@
 </template>
 
 <script>
-import gpl from "graphql-tag"
-import OpencastButton from '../OpencastButton.vue'
+import EpisodeDeleteDialog from '@/components/Episodes/EpisodeDeleteDialog'
+import OpencastButton from '@/components/OpencastButton'
+
 
 export default {
     name: "Episode",
 
     components: {
-        OpencastButton
+        OpencastButton, EpisodeDeleteDialog
     },
 
     props: {
@@ -82,6 +87,7 @@ export default {
 
     data() {
         return {
+            showDeleteDialog: false,
             preview: PLUGIN_ASSET_URL + '/images/default-preview.png',
             play: PLUGIN_ASSET_URL + '/images/play.svg'
         }
@@ -90,6 +96,7 @@ export default {
     methods: {
         removeEpisode() {
             this.$store.dispatch('removeEvent', this.event.id)
+            this.showDeleteDialog = false
         },
     }
 }

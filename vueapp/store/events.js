@@ -66,12 +66,11 @@ const actions = {
     },
 
     async addEvent({commit, dispatch}, input) {
-        input['cid'] = state.cid
         input['mk_date'] = Math.floor(Date.now()/1000)
         const response = await apolloClient.mutate({
             mutation: gql`
-                mutation ($input: EventInput) {
-                    addEvent(input: $input) {
+                mutation ($course_id: ID!, $input: EventInput) {
+                    addEvent(course_id: $course_id, input: $input) {
                         id
                         title
                         author
@@ -79,6 +78,7 @@ const actions = {
                 }
             `,
             variables: {
+                course_id: state.cid,
                 input: input
             },
             update: (store, { data: { addEvent } }) => {
@@ -90,8 +90,8 @@ const actions = {
     async removeEvent({commit, dispatch}, id) {
         const response = await apolloClient.mutate({
             mutation: gql`
-                mutation ($id: ID!) {
-                    removeEvent(id: $id) {
+                mutation ($course_id: ID!, $id: ID!) {
+                    removeEvent(course_id: $course_id, id: $id) {
                         id
                         title
                         author
@@ -99,6 +99,7 @@ const actions = {
                 }
             `,
             variables: {
+                course_id: state.cid,
                 id: id
             },
             update: (store, { data: { removeEvent } }) => {

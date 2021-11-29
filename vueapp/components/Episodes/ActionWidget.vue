@@ -12,19 +12,29 @@
             <studip-icon style="margin-left: -20px;" icon="add" role="clickable"/>
             Test Episode hinzufügen
         </li>
+        <li class="cw-action-widget" @click="showAddDialog = true">
+            <studip-icon style="margin-left: -20px;" icon="add" role="clickable"/>
+            Episode hinzufügen
+        </li>
+
+        <EpisodeAdd v-if="showAddDialog"
+            @done="showAddDialog = false"
+            @cancel="showAddDialog = false"/>
     </ul>
 </template>
 
 <script>
 import StudipIcon from '../StudipIcon.vue';
+import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
 
 export default {
     name: 'courseware-action-widget',
     components: {
-        StudipIcon
+        StudipIcon, EpisodeAdd
     },
     data() {
         return {
+            showAddDialog: false
         }
     },
     watch: {

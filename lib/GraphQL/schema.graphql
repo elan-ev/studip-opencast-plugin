@@ -5,7 +5,6 @@ schema {
 
 input EventInput {
     id: ID!
-    cid: ID!
     title: String!
     author: String!
     type: EventType!
@@ -50,6 +49,6 @@ input EventInput {
   }
 
   type Mutation {
-    addEvent(input: EventInput): Event
-    removeEvent(id: ID!): Event
+    addEvent(course_id: ID!, input: EventInput): Event
+    removeEvent(course_id: ID!, id: ID!): Event
   }
