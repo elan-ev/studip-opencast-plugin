@@ -343,15 +343,17 @@ class CourseController extends OpencastController
 
         OCPerm::checkEdit($this->course_id);
 
-        if (Request::submitted('delete') && check_ticket($ticket)) {
-            if (OCSeriesModel::removeSeriesforCourse($this->course_id)) {
+        if (Request::submitted('delete')) {
+            if (check_ticket($ticket) && OCSeriesModel::removeSeriesforCourse($this->course_id)) {
                 PageLayout::postSuccess($this->_('Die Zuordnung wurde entfernt'));
                 StudipLog::log('OC_REMOVE_CONNECTED_SERIES', null, $this->course_id, '');
             } else {
                 PageLayout::postError($this->_('Die Zuordnung konnte nicht entfernt werden.'));
             }
+        } else {
+            $this->flash['cand_delete'] = true;
         }
-        $this->flash['cand_delete'] = true;
+
         $this->redirect('course/index');
     }
 

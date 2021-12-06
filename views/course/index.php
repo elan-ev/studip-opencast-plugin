@@ -22,7 +22,11 @@ use Opencast\LTI\LtiLink;
         $controller->url_for('course/remove_series/' . get_ticket())  // baseUrl
     ] ?>
     <? if (\StudipVersion::newerThan('4.6')) : ?>
-        <?= call_user_func_array(['QuestionBox', 'create'], $params) ?>
+        <?= call_user_func_array(['QuestionBox', 'create'], [
+            $params[0],
+            $controller->url_for('course/remove_series/' . get_ticket(), $params[1]),
+            $controller->url_for('course/remove_series/', $params[2])
+        ]) ?>
     <? else : ?>
         <?= call_user_func_array('createQuestion2', $params) ?>
     <? endif ?>
