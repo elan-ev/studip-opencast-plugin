@@ -10,8 +10,11 @@
         },
         "url": {
             "type": "string"
+        },
+        "visible": {
+            "type": "string"
         }
     },
-    "required": ["series_id", "episode_id", "url"],
+    "required": ["series_id", "episode_id", "url", "visible"],
     "additionalProperties": false
 }

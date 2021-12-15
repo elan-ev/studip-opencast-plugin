@@ -15,32 +15,42 @@ class AjaxController extends OpencastController
 
     public function getseries_action()
     {
-        $series = OCSeriesModel::getSeriesForUser($GLOBALS['user']->id, Context::getId());
-        $results = [];
+        $user_id = $GLOBALS['user']->id;
 
-        foreach ($series as $series_id => $seminar_id) {
-            $course   = Course::find($seminar_id);
+        $cache = StudipCacheFactory::getCache();
+        $cache_key = 'sop/series/'. $user_id .'/'. Context::getId();
+        $results = unserialize($cache->read($cache_key));
 
-            if (!$course || !$oc_items = OCSeriesModel::getSeriesFromOpencast($series_id, $seminar_id)) {
-                continue;
+        if ($results === false) {
+            $series = OCSeriesModel::getSeriesForUser($user_id, Context::getId());
+            $results = [];
+
+            foreach ($series as $series_id => $seminar_id) {
+                $course   = Course::find($seminar_id);
+
+                if (!$course || !$oc_items = OCSeriesModel::getSeriesFromOpencast($series_id, $seminar_id)) {
+                    continue;
+                }
+
+                $item = [
+                    'seminar_id' => $seminar_id,
+                    'series_id'  => $series_id
+                ];
+
+                $item['name']    = $course->getFullname('number-name-semester');
+                $item['endtime'] = $course->getEnd_Time();
+                $item            = array_merge($item, $oc_items);
+
+                $results[] = $item;
             }
 
-            $item = [
-                'seminar_id' => $seminar_id,
-                'series_id'  => $series_id
-            ];
+            uasort($results, function ($a, $b) {
+                return $a['endtime'] == $b['endtime'] ? 0
+                    : ($a['endtime'] < $b['endtime'] ? -1 : 1);
+            });
 
-            $item['name']    = $course->getFullname('number-name-semester');
-            $item['endtime'] = $course->getEnd_Time();
-            $item            = array_merge($item, $oc_items);
-
-            $results[] = $item;
+            $cache->write($cache_key, serialize($results), 3600);
         }
-
-        uasort($results, function ($a, $b) {
-            return $a['endtime'] == $b['endtime'] ? 0
-                : ($a['endtime'] < $b['endtime'] ? -1 : 1);
-        });
 
         $this->render_json(array_values($results));
     }
@@ -49,7 +59,7 @@ class AjaxController extends OpencastController
     {
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         $course_id     = OCConfig::getCourseIdForSeries($series_id);
-        $result = [];
+        $result = $simple_result = [];
 
         if (!OCPerm::editAllowed($course_id)
             || !$GLOBALS['perm']->have_studip_perm('autor', $course_id))
@@ -78,20 +88,19 @@ class AjaxController extends OpencastController
                 ) {
                     $result[] = $episode;
                 }
+
+                $simple_result[] = [
+                    'id'         => $episode->id,
+                    'name'       => $episode->mediapackage->title,
+                    'date'       => $episode->mediapackage->start,
+                    'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->id,
+                    'visible'    => $studip_episode->visible
+                ];
             }
         }
 
         if ($simple) {
-            $new_result = [];
-            foreach ($episodes as $episode) {
-                $new_result[] = [
-                    'id'   => $episode->id,
-                    'name' => $episode->mediapackage->title,
-                    'date' => $episode->mediapackage->start,
-                    'url'  => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->id
-                ];
-            }
-            $result = $new_result;
+            $result = $simple_result;
         }
 
         $this->render_json(array_values($result));

@@ -21,6 +21,13 @@
                         allowfullscreen
                     ></iframe>
                   </div>
+
+                  <div v-if="currentVisible == 'invisible' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
+                      <translate>
+                          Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
+                          Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
+                      </translate>
+                  </div>
                 </div>
             </template>
             <template v-if="canEdit" #edit>
@@ -38,7 +45,8 @@
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
                             </template>
                             <template #no-options="{ search, searching, loading }">
-                                <translate>Es steht keine Auswahl zur Verfügung</translate>.
+                                <translate v-if="loadingSeries">Bitte warten, verfügbare Serien werden geladen...</translate>
+                                <translate v-else>Es wurden keine zugreifbaren Serien gefunden!</translate>
                             </template>
                             <template #selected-option="{name}">
                                 <span>{{name}}</span>
@@ -63,18 +71,28 @@
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
                             </template>
                             <template #no-options="{ search, searching, loading }">
-                                <translate>Es steht keine Auswahl zur Verfügung</translate>.
+                                <translate v-if="loadingEpisodes">Bitte warten, verfügbare Episoden werden geladen...</translate>
+                                <translate v-else>Es wurden keine zugreifbaren Episoden gefunden!</translate>
                             </template>
-                            <template #selected-option="{name}">
-                                <span>{{ name }}</span>
+                            <template #selected-option="{name, visible}">
+                                <span>{{ name }}
+                                    <translate v-if="visible =='invisible'" class="oc_italic">
+                                        (unsichtbar für Teilnehmende!)
+                                    </translate>
+                                </span>
                             </template>
-                            <template #option="{name}">
-                                <span>{{ name }}</span>
+                            <template #option="{name, visible}">
+                                <span>{{ name }}
+                                    <translate v-if="visible =='invisible'" class="oc_italic">
+                                        (unsichtbar für Teilnehmende!)
+                                    </translate>
+                                </span>
                             </template>
                         </v-select>
                     </label>
                 </form>
             </template>
+
             <template #info><translate>Informationen zum Opencast-Block</translate></template>
         </component>
     </div>
@@ -96,12 +114,14 @@ export default {
 
     data() {
         return {
-            currentSeries  : null,
-            currentEpisode : null,
-            currentUrl     : null,
-            series: [],
-            episodes: [],
-            ltiConnected   : false
+            currentSeries   : null,
+            currentEpisode  : null,
+            currentUrl      : null,
+            series          : [],
+            episodes        : [],
+            ltiConnected    : false,
+            loadingSeries   : false,
+            loadingEpisodes : false
         }
     },
 
@@ -116,7 +136,8 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl
+                url       : this.currentUrl,
+                visible   : this.currentVisible
             } };
             const container = this.$store.getters["courseware-containers/related"]({
                 parent: this.block,
@@ -133,14 +154,19 @@ export default {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
             this.currentUrl     = get(this.block, "attributes.payload.url", "");
+            this.currentVisible = get(this.block, "attributes.payload.visible", "");
         },
 
         loadSeries() {
-          axios
-            .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getseries?cid=' + this.context.id)
-            .then(response => {
-              this.series = response.data;
-            })
+            let view = this;
+            view.loadingSeries = true;
+
+            axios
+                .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getseries?cid=' + this.context.id)
+                .then(response => {
+                    this.series = response.data;
+                    view.loadingSeries = false;
+                });
         },
 
         loadEpisodes() {
@@ -148,12 +174,16 @@ export default {
                 return;
             }
 
+            let view = this;
+            view.loadingEpisodes = true;
+
             axios
                 .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getepisodes/'
                     + this.currentSeries + '/simple'
                     + '?cid=' + this.context.id)
                 .then(response => {
                     this.episodes = response.data;
+                    view.loadingEpisodes = false;
                 })
         },
 
@@ -161,10 +191,10 @@ export default {
             axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/' + this.context.id + '/' +  this.currentSeries)
                 .then(({data}) => {
                     if (data.lti_url && data.lti_data) {
-                        OC.ltiCall(data.lti_url, JSON.parse(data.lti_data), 
+                        OC.ltiCall(data.lti_url, JSON.parse(data.lti_data),
                         () => {
                             this.ltiConnected = true;
-                        }, 
+                        },
                         () => {
                             this.ltiConnected = false;
                         });
@@ -183,7 +213,8 @@ export default {
         currentEpisode(old_id, new_id) {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
-                    this.currentUrl = this.episodes[id].url
+                    this.currentUrl     = this.episodes[id].url
+                    this.currentVisible = this.episodes[id].visible
                 }
             }
         }
