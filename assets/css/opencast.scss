@@ -40,6 +40,44 @@ $episode-background: $light-gray-color-20;
     width: 100%;
 }
 
+.oc--pagination {
+    button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        float: left;
+        cursor: pointer;
+
+        &:disabled {
+            cursor: default
+        }
+
+        /**
+        color: black;
+        background-color: white;
+        border: 1px solid #ddd;
+        float: left;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: background-color .3s;
+        
+        &:hover {
+            background-color: grey;
+        }
+        
+        .active {
+            background-color: blue;
+            color: white;
+        }
+        **/
+    }
+
+    .active {
+        background-color: dodgerblue;
+        color: white;
+        cursor: default
+    }
+}
+
 
 /* * * * * * * * * * * * * * * */
 /*   E P I S O D E   L I S T   */

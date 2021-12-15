@@ -5,7 +5,7 @@ import { apolloClient } from '../vue-apollo'
 const state = {
     cid: '',
     events: null,
-    limit: 10,
+    limit: 5,
     paging: {
         currPage: 0,
         lastPage: 0,
