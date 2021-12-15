@@ -45,7 +45,8 @@ input EventInput {
   }
 
   type Query {
-    getEvents(course_id: ID!): [Event]
+    getEvents(course_id: ID!, offset: Int, limit: Int): [Event]
+    getCountEvents(course_id: ID!) : Int
   }
 
   type Mutation {

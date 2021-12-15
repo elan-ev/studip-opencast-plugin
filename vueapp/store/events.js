@@ -4,18 +4,40 @@ import { apolloClient } from '../vue-apollo'
 
 const state = {
     cid: '',
-    events: null
+    events: null,
+    limit: 10,
+    paging: {
+        currPage: 0,
+        lastPage: 0,
+    },
 }
 
 const getters = {
     events(state) {
         return state.events
+    },
+    paging(state) {
+        return state.paging
     }
 }
 
 const mutations = {
     SET_CID(state, cid) {
         state.cid = cid
+    },
+
+    SET_LIMIT(state, limit) {
+        state.limit = limit
+    },
+
+    SET_PAGE(state, page) {
+        page = (page < 0) ? 0 : page
+        page = (page > state.paging.lastPage) ? state.paging.lastPage : page
+        state.paging.currPage = page
+    },
+
+    SET_LASTPAGE(state, lastPage) {
+        state.paging.lastPage = lastPage
     },
 
     SET_EVENTS(state, events) {
@@ -38,20 +60,41 @@ const actions = {
         commit('SET_CID', cid)
     },
 
+    async setLimit({commit}, limit) {
+        commit('SET_LIMIT', limit)
+    },
+
+    async setPage({commit, dispatch}, page) {
+        await dispatch('updateLastPage')
+        commit('SET_PAGE', page)
+    },
+
+    async updateLastPage({commit, dispatch}) {
+        const response = await apolloClient.query({
+            query: gql`
+                query {
+                    getCountEvents(course_id: "${state.cid}")
+                }
+            `
+        })
+        commit('SET_LASTPAGE', Math.floor(response.data.getCountEvents / state.limit))
+    },
+
     async fetchEvents({commit, dispatch}) {
         const response = await apolloClient.query({
             query: gql`
                 query {
-                    getEvents(course_id: "${state.cid}") {
-                     id
-                     title
-                     author
-                     track_link
-                     length
-                     annotation_tool
-                     description
-                     mk_date
-                }}
+                    getEvents(course_id: "${state.cid}", offset: ${state.paging.currPage*state.limit}, limit: ${state.limit}) {
+                        id
+                        title
+                        author
+                        track_link
+                        length
+                        annotation_tool
+                        description
+                        mk_date
+                    }
+                }
             `
         }).catch((res) => {
             const errors = res.graphQLErrors.map((error) => {
