@@ -69,10 +69,6 @@ export default {
     },
 
     methods: {
-        isLastPage() {
-            return 
-        },
-
         async setPage(page) {
             await this.$store.dispatch('setPage', page)
             this.$store.dispatch('fetchEvents')

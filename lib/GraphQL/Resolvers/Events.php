@@ -59,7 +59,11 @@ class Events
         $limit = $args['limit'] ? $args['limit'] : $num_events;
         $events = array_slice($events, $offset, $limit);
 
-        $result = [];
+        $results['page_info'] = [
+            'total_items' => $num_events,
+            'current_page' => floor($offset / $limit),
+            'last_page' => floor($num_events / $limit)
+        ];
 
         // conform events to schema
         foreach ($events as $event) {
@@ -79,7 +83,7 @@ class Events
                 }
             }
 
-            $results[] = [
+            $results['events'][] = [
                 'id'              => $event['identifier'],
                 'title'           => $event['title'],
                 'author'          => reset($event['presenter']),
@@ -92,51 +96,6 @@ class Events
         }
 
         return $results;
-    }
-
-    /**
-     * return number of events for the passed course in the current users context
-     *
-     * @param  [type] $root                  [description]
-     * @param  [type] $args                  [description]
-     * @param  [type] $context               [description]
-     *
-     * @return [type]          [description]
-     */
-    function getCountEvents($root, $args, $context)
-    {
-        $course_id = $args['course_id'];
-        $user_id   = $context['user_id'];
-
-        if (!$GLOBALS['perm']->have_studip_perm('user', $course_id, $user_id)) {
-            die('access');
-            throw new AccessDeniedException();
-        }
-
-        $connectedSeries = SeminarSeries::getSeries($course_id);
-
-
-        if (!$connectedSeries) {
-            return null;
-        }
-
-        //$seriesList = [];
-        $events = [];
-
-
-        foreach ($connectedSeries as $series) {
-            // check series visibility
-            if ($series->visibility == 'visible'
-                || $GLOBALS['perm']->have_studip_perm('tutor', $course_id, $user_id)
-            ) {
-                // get correct endpoint for current series
-                $eventsClient = ApiEventsClient::getInstance($series['config_id']);
-                //$seriesList[$series['series_id']]['events'] = $eventsClient->getBySeries($series['series_id']);
-                $events = array_merge($events, $eventsClient->getBySeries($series['series_id']));
-            }
-        }
-
-        return count($events);
     }
 
     /**

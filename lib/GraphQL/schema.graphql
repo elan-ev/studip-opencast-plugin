@@ -44,9 +44,19 @@ input EventInput {
     mk_date: Int!
   }
 
+  type PageInfo {
+    total_items: Int!
+    current_page: Int!
+    last_page: Int!
+  }
+
+  type EventsResult {
+    events: [Event!]!
+    page_info: PageInfo
+  }
+
   type Query {
-    getEvents(course_id: ID!, offset: Int, limit: Int): [Event]
-    getCountEvents(course_id: ID!) : Int
+    getEvents(course_id: ID!, offset: Int, limit: Int): EventsResult
   }
 
   type Mutation {

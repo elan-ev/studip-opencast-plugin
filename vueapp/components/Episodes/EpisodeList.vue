@@ -47,8 +47,7 @@ export default {
 
     methods: {},
 
-    async mounted() {
-        await this.$store.dispatch('updateLastPage')
+    mounted() {
         this.$store.dispatch('fetchEvents')
     }
 };

@@ -31,17 +31,15 @@ const mutations = {
     },
 
     SET_PAGE(state, page) {
-        page = (page < 0) ? 0 : page
-        page = (page > state.paging.lastPage) ? state.paging.lastPage : page
-        state.paging.currPage = page
+        if (page >= 0 && page <= state.paging.lastPage) {
+            state.paging.currPage = page
+        }
     },
 
-    SET_LASTPAGE(state, lastPage) {
-        state.paging.lastPage = lastPage
-    },
-
-    SET_EVENTS(state, events) {
-        state.events = events
+    SET_EVENTS(state, data) {
+        state.events = data.events
+        state.paging.currPage = data.page_info.current_page
+        state.paging.lastPage = data.page_info.last_page
     },
 
     ADD_EVENT(state, event) {
@@ -64,20 +62,8 @@ const actions = {
         commit('SET_LIMIT', limit)
     },
 
-    async setPage({commit, dispatch}, page) {
-        await dispatch('updateLastPage')
+    async setPage({commit}, page) {
         commit('SET_PAGE', page)
-    },
-
-    async updateLastPage({commit, dispatch}) {
-        const response = await apolloClient.query({
-            query: gql`
-                query {
-                    getCountEvents(course_id: "${state.cid}")
-                }
-            `
-        })
-        commit('SET_LASTPAGE', Math.floor(response.data.getCountEvents / state.limit))
     },
 
     async fetchEvents({commit, dispatch}) {
@@ -85,14 +71,20 @@ const actions = {
             query: gql`
                 query {
                     getEvents(course_id: "${state.cid}", offset: ${state.paging.currPage*state.limit}, limit: ${state.limit}) {
-                        id
-                        title
-                        author
-                        track_link
-                        length
-                        annotation_tool
-                        description
-                        mk_date
+                        events {
+                            id
+                            title
+                            author
+                            track_link
+                            length
+                            annotation_tool
+                            description
+                            mk_date
+                        }
+                        page_info {
+                            current_page
+                            last_page
+                        }
                     }
                 }
             `
