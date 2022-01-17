@@ -1,5 +1,6 @@
 <template>
     <div class="oc--flex">
+        <PaginationButtons @changePage="changePage"/>
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="events === null || loadingPage" class="oc--episode-list oc--episode-list--empty">
                 <EmptyEpisodeCard />
@@ -25,7 +26,6 @@
                     v-bind:key="event.id"></EpisodeCard>
             </ul>
         </div>
-        <PaginationButtons @changePage="changePage"/>
     </div>
 </template>
 

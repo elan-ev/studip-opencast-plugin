@@ -32,7 +32,6 @@ class Events
 
         $connectedSeries = SeminarSeries::getSeries($course_id);
 
-
         if (!$connectedSeries) {
             return null;
         }
@@ -145,6 +144,7 @@ class Events
             die('access');
             throw new AccessDeniedException();
         }
+
         return [
             'id'     => $args['id'],
             'title'  => '',

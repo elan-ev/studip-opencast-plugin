@@ -15,18 +15,10 @@
             1
         </button>
 
-        <button v-if="paging.lastPage > 2 && paging.currPage > 2" disabled>
-            ...
-        </button>
-
-        <button v-for="number in pageNumbers" :key="number" @click="setPage(number)"
-            v-bind:class="{active : number == paging.currPage}"
-            v-bind:disabled="number == paging.currPage">
-            {{ number + 1 }}
-        </button>
-
-        <button v-if="paging.lastPage > 2 && paging.currPage < paging.lastPage-2" disabled>
-            ...
+        <button v-for="number in pageNumbers" :key="number.page" @click="setPage(number.page)"
+            v-bind:class="{active : number.page == paging.currPage}"
+            v-bind:disabled="number.page == paging.currPage || number.page < 0">
+            {{ number.title }}
         </button>
 
         <button v-if="paging.lastPage >= 1"
@@ -39,7 +31,7 @@
 
         <button v-if="paging.lastPage > 0"
             v-bind:disabled="paging.currPage >= paging.lastPage"
-            @click="setPage(paging.currPage+1)"
+            @click="setPage(paging.currPage + 1)"
         >
             &raquo;
         </button>
@@ -63,19 +55,68 @@ export default {
             'paging'
         ]),
 
+        /**
+         * Takes care of the page numbers to display.  For ui-consistency,
+         * the number of elements is always the same, returning always 5 elements
+         * 
+         * @return Array An array of objects of the type {'title': ..., 'page': ...}
+         */
         pageNumbers() {
-            var numbers = []
-            for (var i = this.paging.currPage-1; i < this.paging.currPage+2; i++) {
-                if (i > 0 && i < this.paging.lastPage) {
-                    numbers.push(i)
+            if (this.paging.lastPage > 0 && this.paging.lastPage <= 5) {
+                return [1, 2, 3];
+            }
+
+            let numbers = [];
+            let countFrom = Math.min(this.paging.lastPage - 4, this.paging.currPage - 1);
+            let countTo   = Math.max(5, this.paging.currPage + 2);
+
+            // show [1] [2] [3] instead of [1] ... [3]
+            if (this.paging.lastPage >= 5 && this.paging.currPage >= 3) {
+                if (this.paging.currPage == 3) {
+                    countFrom--;
+                } else {
+                    numbers.push({
+                        'title': '...',
+                        'page' : -1
+                    });
                 }
             }
-            return numbers
+
+            // the page numbers to be shown in general
+            for (var i = countFrom; i < countTo; i++) {
+                if (i > 0 && i < this.paging.lastPage) {
+                    numbers.push({
+                        'title': i + 1,
+                        'page' : i
+                    })
+                }
+            }
+
+            // show [97] [98] [99] instead of [97] ... [99]
+            if (this.paging.lastPage >= 5 && this.paging.currPage < this.paging.lastPage - 2) {
+                if (this.paging.currPage == (this.paging.lastPage - 3)) {
+                    numbers.push({
+                        'title': this.paging.lastPage,
+                        'page' : this.paging.lastPage - 1
+                    })
+                } else {
+                    numbers.push({
+                        'title': '...',
+                        'page' : -2
+                    });
+                }
+            }
+
+            return numbers;
         }
     },
 
     methods: {
         async setPage(page) {
+            if (page < 0) {
+                return;
+            }
+
             this.$emit('changePage', page);
         },
     }
