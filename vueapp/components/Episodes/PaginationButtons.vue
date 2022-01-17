@@ -1,7 +1,5 @@
 <template>
     <div class="oc--pagination">
-        {{ paging }}
-
         <button v-if="paging.lastPage > 0"
             v-bind:disabled="paging.currPage <= 0"
             @click="setPage(paging.currPage-1)"
