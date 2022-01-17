@@ -11,9 +11,6 @@
     "translate": "gettext-extract --attribute v-i18n --attribute v-translate --output locale/en/LC_MESSAGES/opencast_js.pot $(find vueapp -type f -name '*.vue') && /bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
     "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
   },
-  "dependencies": {
-    "vue-apollo": "^3.0.0-beta.11"
-  },
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
@@ -38,6 +35,7 @@
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "vue": "^2.6.10",
+    "vue-apollo": "^3.0.0-beta.11",
     "vue-axios": "^3.2.5",
     "vue-cli-plugin-apollo": "~0.22.2",
     "vue-gettext": "^2.1.12",
