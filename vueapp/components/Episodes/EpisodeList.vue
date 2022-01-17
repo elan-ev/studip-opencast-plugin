@@ -9,6 +9,14 @@
                 <EmptyEpisodeCard />
             </ul>
 
+            <ul v-else-if="events.length === 0" class="oc--episode-list oc--episode-list--empty">
+                <MessageBox type="info">
+                    <translate>
+                        Es gibt bisher keine Aufzeichnungen.
+                    </translate>
+                </MessageBox>
+            </ul>
+
             <ul class="oc--episode-list" v-else>
                 <EpisodeCard
                     v-for="event in events"
@@ -22,18 +30,20 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
-import EpisodeCard from "@/components/Episodes/EpisodeCard"
-import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
-import PaginationButtons from '@/components/Episodes/PaginationButtons'
+import EpisodeCard from "@/components/Episodes/EpisodeCard";
+import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard";
+import PaginationButtons from '@/components/Episodes/PaginationButtons';
+import MessageBox from "@/components/MessageBox";
 
 export default {
     name: "Episodes",
     components: {
         EpisodeCard,
         EmptyEpisodeCard,
-        PaginationButtons
+        PaginationButtons,
+        MessageBox
     },
 
     data() {

@@ -36,10 +36,16 @@ const mutations = {
         }
     },
 
+    updatePaging(state, paging) {
+        state.paging = paging;
+    },
+
     SET_EVENTS(state, data) {
-        state.events = data.events
-        state.paging.currPage = data.page_info.current_page
-        state.paging.lastPage = data.page_info.last_page
+        if (data !== null && data.events !== undefined) {
+            state.events = data.events;
+        } else {
+            state.events = [];
+        }
     },
 
     ADD_EVENT(state, event) {
@@ -51,6 +57,15 @@ const mutations = {
             if (state.events[key].id == id) {
                 state.events[key].refresh = true;
                 console.log('marked for refresh: ', state.events[key]);
+            }
+        }
+
+        state.paging.totalItems -= 1;
+
+        // go one page back if event removing reduced the number of pages
+        if (Math.floor((state.paging.totalItems - 1) / 5) < state.paging.currPage) {
+            if (state.paging.currPage > 0) {
+                state.paging.currPage -= 1;
             }
         }
     }
@@ -65,7 +80,7 @@ const actions = {
         commit('SET_LIMIT', limit)
     },
 
-    async setPage({commit}, page) {
+    setPage({commit}, page) {
         commit('SET_PAGE', page)
     },
 
@@ -85,6 +100,7 @@ const actions = {
                             mk_date
                         }
                         page_info {
+                            total_items
                             current_page
                             last_page
                         }
@@ -100,6 +116,15 @@ const actions = {
 
         if (response !== undefined) {
             commit('SET_EVENTS', response.data.getEvents);
+
+            // only update paging if events and paging info are available
+            if (response.data.getEvents) {
+                commit('updatePaging', {
+                    currPage : response.data.getEvents.page_info.current_page,
+                    lastPage : response.data.getEvents.page_info.last_page,
+                    totalItems: response.data.getEvents.page_info.total_items
+                });
+            }
         }
     },
 

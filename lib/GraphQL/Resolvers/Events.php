@@ -38,7 +38,8 @@ class Events
         }
 
         //$seriesList = [];
-        $events = [];
+        $events  = [];
+        $results = null;
 
 
         foreach ($connectedSeries as $series) {
@@ -59,11 +60,13 @@ class Events
         $limit = $args['limit'] ? $args['limit'] : $num_events;
         $events = array_slice($events, $offset, $limit);
 
-        $results['page_info'] = [
-            'total_items' => $num_events,
-            'current_page' => floor($offset / $limit),
-            'last_page' => floor($num_events / $limit)
-        ];
+        if (!empty($events)) {
+            $results['page_info'] = [
+                'total_items'  => $num_events,
+                'current_page' => floor($offset / $limit),
+                'last_page'    => floor(($num_events - 1) / $limit),
+            ];
+        }
 
         // conform events to schema
         foreach ($events as $event) {
