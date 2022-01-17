@@ -1,6 +1,5 @@
 <template>
-    <button class="button" type="submit" :name="name" @click="onClick">
-        <studip-icon v-if="icon" :icon="icon" role="clickable"/>
+    <button class="button" :class="[icon]" type="submit" :name="name" @click="onClick">
         <slot>ButtonLabel</slot>
     </button>
 </template>
@@ -10,7 +9,7 @@ import StudipIcon from './StudipIcon.vue';
 
 export default {
     name: "OpencastButton",
-   
+
         components: {
             StudipIcon
         },

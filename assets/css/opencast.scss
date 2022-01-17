@@ -15,12 +15,6 @@ $episode-background: $light-gray-color-20;
     flex-wrap: wrap;
     justify-content: space-around;
     margin-bottom: 1em;
-
-    .button::before {
-        background-position: 0 3px;
-        height: 20px !important;
-        padding-left: 5px;
-    }
 }
 
 .oc--flexitem {
@@ -145,8 +139,10 @@ $episode-background: $light-gray-color-20;
 .oc--episode-buttons {
     display: inline-flex;
     flex-wrap: wrap;
-    img {
-        vertical-align: text-bottom;
+
+    button.download::before {
+        background-position: 0px 3px;
+        height: 20px;
     }
 }
 
