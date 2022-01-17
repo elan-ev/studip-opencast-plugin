@@ -81,6 +81,7 @@ const actions = {
     },
 
     setPage({commit}, page) {
+        apolloClient.stop();
         commit('SET_PAGE', page)
     },
 
