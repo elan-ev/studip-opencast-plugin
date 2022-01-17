@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { apolloClient } from '../vue-apollo'
+import { apolloClient, apolloProvider } from '../vue-apollo'
 
 
 const state = {
@@ -47,9 +47,12 @@ const mutations = {
     },
 
     REMOVE_EVENT(state, id) {
-        state.events = state.events.filter(function( event ) {
-            return event.id !== id;
-        });
+        for (let key in state.events) {
+            if (state.events[key].id == id) {
+                state.events[key].refresh = true;
+                console.log('marked for refresh: ', state.events[key]);
+            }
+        }
     }
 }
 
@@ -123,6 +126,7 @@ const actions = {
     },
 
     async removeEvent({commit, dispatch}, id) {
+        commit('REMOVE_EVENT', id);
         const response = await apolloClient.mutate({
             mutation: gql`
                 mutation ($course_id: ID!, $id: ID!) {
@@ -138,7 +142,9 @@ const actions = {
                 id: id
             },
             update: (store, { data: { removeEvent } }) => {
-                commit('REMOVE_EVENT', removeEvent.id);
+                // clear cache
+                apolloClient.cache.data.data = {};
+                dispatch('fetchEvents');
             },
         });
     }

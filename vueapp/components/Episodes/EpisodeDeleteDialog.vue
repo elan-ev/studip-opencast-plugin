@@ -1,19 +1,19 @@
 <template>
     <div>
-        <OpencastDialog @close="decline">
+        <OpencastDialog :title="$gettext('Aufzeichnung entfernen')" @close="decline">
             <template v-slot:content>
                 <p>Möchten Sie die Aufzeichnung wirklich entfernen?</p>
             </template>
             <template v-slot:buttons>
-                <StudipButton icon="accept" type="button" 
-                @click="accept" 
+                <StudipButton icon="accept" type="button"
+                @click="accept"
                 class="ui-button ui-corner-all ui-widget"
                 v-translate>
                     Akzeptieren
                 </StudipButton>
 
-                <StudipButton icon="cancel" type="button" 
-                @click="decline" 
+                <StudipButton icon="cancel" type="button"
+                @click="decline"
                 class="ui-button ui-corner-all ui-widget"
                 v-translate>
                     Abbrechen

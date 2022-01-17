@@ -1,7 +1,9 @@
 <template>
     <div class="oc--flex">
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="events === null" class="oc--episode-list oc--episode-list--empty">
+            <ul v-if="events === null || loadingPage" class="oc--episode-list oc--episode-list--empty">
+                <EmptyEpisodeCard />
+                <EmptyEpisodeCard />
                 <EmptyEpisodeCard />
                 <EmptyEpisodeCard />
                 <EmptyEpisodeCard />
@@ -15,7 +17,7 @@
                     v-bind:key="event.id"></EpisodeCard>
             </ul>
         </div>
-        <PaginationButtons/>
+        <PaginationButtons @changePage="changePage"/>
     </div>
 </template>
 
@@ -36,6 +38,7 @@ export default {
 
     data() {
         return {
+            loadingPage: false
         }
     },
 
@@ -45,7 +48,14 @@ export default {
         ]),
     },
 
-    methods: {},
+    methods: {
+        changePage: async function(page) {
+            this.loadingPage = true;
+            await this.$store.dispatch('setPage', page)
+            await this.$store.dispatch('fetchEvents')
+            this.loadingPage = false;
+        }
+    },
 
     mounted() {
         this.$store.dispatch('fetchEvents')

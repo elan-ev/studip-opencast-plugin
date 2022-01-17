@@ -70,8 +70,7 @@ export default {
 
     methods: {
         async setPage(page) {
-            await this.$store.dispatch('setPage', page)
-            this.$store.dispatch('fetchEvents')
+            this.$emit('changePage', page);
         },
     }
 }

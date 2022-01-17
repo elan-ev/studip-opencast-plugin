@@ -1,6 +1,6 @@
 <template>
     <transition name="oc--episode">
-        <li :key="event.id">
+        <li v-if="event.refresh === undefined" :key="event.id">
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
                     <a v-if="event.track_link" :href="event.track_link" target="_blank">
@@ -11,7 +11,7 @@
                     </a>
                     <span v-else class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
-                        <p>No video uploaded</p>
+                        <!-- <p>No video uploaded</p> -->
                     </span>
                 </div>
             </div>
@@ -65,10 +65,12 @@
                 </div>
             </div>
         </li>
+        <EmptyEpisodeCard v-else/>
     </transition>
 </template>
 
 <script>
+import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
 import EpisodeDeleteDialog from '@/components/Episodes/EpisodeDeleteDialog'
 import OpencastButton from '@/components/OpencastButton'
 
@@ -77,7 +79,9 @@ export default {
     name: "Episode",
 
     components: {
-        OpencastButton, EpisodeDeleteDialog
+        OpencastButton,
+        EpisodeDeleteDialog,
+        EmptyEpisodeCard
     },
 
     props: {
@@ -95,8 +99,13 @@ export default {
 
     methods: {
         removeEpisode() {
+            let view = this;
             this.$store.dispatch('removeEvent', this.event.id)
-            this.showDeleteDialog = false
+            .then(() => {
+                view.showDeleteDialog = false;
+                //console.log('reloading events for current page...');
+                //view.$store.dispatch('fetchEvents');
+            });
         },
     }
 }
