@@ -5,8 +5,8 @@
         <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>"
                 method="post" class="default" v-if="resources.resources && resources.resources.length">
             <fieldset class="conf-form-field">
-                <legend>
-                    {{ "Zuweisung der Capture Agents" | i18n }}
+                <legend v-translate>
+                    Zuweisung der Capture Agents
                 </legend>
 
                 <MessageBox type="info">
@@ -15,10 +15,10 @@
 
                 <table id="oc_resourcestab" class="default">
                     <tr>
-                        <th>{{ "Raum" | i18n }}</th>
-                        <th>{{ "Capture Agent" | i18n }}</th>
-                        <th>{{ "Workflow" | i18n }}</th>
-                        <th>{{ "Status" | i18n }}</th>
+                        <th v-translate>Raum</th>
+                        <th v-translate>Capture Agent</th>
+                        <th v-translate>Workflow</th>
+                        <th v-translate>Status</th>
                     </tr>
 
                     <!--loop the ressources -->
@@ -34,14 +34,16 @@
                                     :value="agent.name"
                                 >{{ agent.name }}</option>
                             </select>
-                            <span v-else>
-                                {{ "Kein (weiterer) CA verfügbar" | i18n }}
+                            <span v-else v-translate>
+                                Kein (weiterer) CA verfügbar
                             </span>
                         </td>
 
                         <td>
                             <select name="workflow" v-if="resources.available_agents && resources.definitions">
-                                <option value="" disabled selected>{{ "Bitte wählen Sie einen Worflow aus." | i18n }}</option>
+                                <option value="" disabled selected v-translate>
+                                    Bitte wählen Sie einen Worflow aus.
+                                </option>
 
                                 <option v-for="definition in resources.definitions"
                                     :value="definition.id"
@@ -68,12 +70,14 @@
 
 
             <fieldset>
-                <legend>
-                    {{ "Standardworkflow" | i18n }}
+                <legend v-translate>
+                    tandardworkflow
                 </legend>
 
                 <label>
-                    {{ "Standardworkflow für Uploads:" | i18n }}
+                    <translate>
+                    Standardworkflow für Uploads:
+                </translate>
                     <select name="oc_course_uploadworkflow">
                             <option v-for="workflow in resources.definitions"
                                 :value="workflow.id"
@@ -86,11 +90,13 @@
 
                 <label>
                     <input name="override_other_workflows" type="checkbox">
-                    {{ "Alle anderen Workflows überschreiben" | i18n }}
+                    <translate>
+                        Alle anderen Workflows überschreiben
+                    </translate>
                 </label>
 
-                <p style="color:red" v-if="!resources.workflows.length">
-                    {{ "Es wurde noch kein Standardworkflow definiert!" | i18n }}
+                <p style="color:red" v-if="!resources.workflows.length" v-translate>
+                    Es wurde noch kein Standardworkflow definiert!
                 </p>
             </fieldset>
 
@@ -102,8 +108,8 @@
             </footer>
         </form>
 
-        <MessageBox type="info" v-if="no_resources">
-            {{ "Weisen Sie Räumen die Eigenschaft für Aufzeichnungstechnik zu um hier Capture Agents zuweisen zu können." | i18n }}
+        <MessageBox type="info" v-if="no_resources" v-translate>
+            Weisen Sie Räumen die Eigenschaft für Aufzeichnungstechnik zu um hier Capture Agents zuweisen zu können.
         </MessageBox>
     </div>
 </template>

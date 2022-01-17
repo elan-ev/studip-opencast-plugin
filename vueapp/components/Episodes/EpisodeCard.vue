@@ -22,19 +22,19 @@
                         {{event.title}}
                     </h2>
                     <ul class="oc--metadata-content">
-                        <li>
-                            Hochgeladen am: {{event.mk_date}}
+                        <li v-translate>
+                            Hochgeladen am: {{event.mk_date * 1000 | datetime }} Uhr
                         </li>
-                        <li>
+                        <li v-translate>
                             Autor: {{event.author}}
                         </li>
-                        <li>
+                        <li v-translate>
                             Mitwirkende: Das sind Mitwirkende
                         </li>
-                        <li>
+                        <li v-translate>
                             Beschreibung: {{event.description}}
                         </li>
-                        <li>
+                        <li v-translate>
                             Länge: {{event.length}}
                         </li>
                     </ul>
@@ -58,6 +58,7 @@
                     <opencast-button icon="trash" @click="showDeleteDialog = true" v-translate>
                         Entfernen
                     </opencast-button>
+
                     <EpisodeDeleteDialog v-if="showDeleteDialog"
                         @done="removeEpisode"
                         @cancel="showDeleteDialog = false"
@@ -103,8 +104,6 @@ export default {
             this.$store.dispatch('removeEvent', this.event.id)
             .then(() => {
                 view.showDeleteDialog = false;
-                //console.log('reloading events for current page...');
-                //view.$store.dispatch('fetchEvents');
             });
         },
     }

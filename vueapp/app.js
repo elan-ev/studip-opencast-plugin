@@ -7,6 +7,7 @@ import "./public-path";
 
 import ApiService from "./common/api.service";
 import DateFilter from "./common/date.filter";
+import DateTimeFilter from "./common/datetime.filter";
 import ErrorFilter from "./common/error.filter";
 import GetTextPlugin from 'vue-gettext';
 import translations from './i18n/translations.json';
@@ -20,6 +21,7 @@ Vue.config.devtools = true // Need this to use devtool browser extension
 Vue.use(PortalVue)
 
 Vue.filter("date", DateFilter);
+Vue.filter("datetime", DateTimeFilter);
 Vue.filter("error", ErrorFilter);
 
 ApiService.init();
