@@ -9,8 +9,8 @@
                     Zuweisung der Capture Agents
                 </legend>
 
-                <MessageBox type="info">
-                    {{ "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden" | i18n }}
+                <MessageBox type="info" v-translate>
+                    Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden
                 </MessageBox>
 
                 <table id="oc_resourcestab" class="default">
@@ -29,7 +29,9 @@
 
                         <td>
                             <select :name="resource.resource_id" v-if="resources.available_agents">
-                                <option value="" disabled selected>{{ "Bitte wählen Sie einen CA." | i18n }}</option>
+                                <option value="" disabled selected v-translate
+                                    Bitte wählen Sie einen CA.
+                                </option>
                                 <option v-for="agent in resources.available_agents"
                                     :value="agent.name"
                                 >{{ agent.name }}</option>

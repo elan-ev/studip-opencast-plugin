@@ -20,7 +20,7 @@ class AdminController extends Opencast\Controller
     {
         parent::__construct($dispatcher);
 
-        $this->config = OCConfig::getBaseServerConf();
+        //$this->config = OCConfig::getBaseServerConf();
     }
 
     function before_filter(&$action, &$args)

@@ -28,7 +28,7 @@ export const actions = {
         return new Promise(resolve => {
           ApiService.get('config')
             .then(({ data }) => {
-                context.commit(CONFIG_LIST_SET, data);
+                context.commit('configListSet', data);
                 resolve(data);
             });
         });
@@ -37,13 +37,13 @@ export const actions = {
     async configRead(context, id) {
         return ApiService.get('config/' + id)
             .then(({ data }) => {
-                context.commit(CONFIG_SET, data.config);
+                context.commit('configSet', data.config);
             });
     },
 
     async configDelete(context, id) {
         await ApiService.delete('config/' + id);
-        context.dispatch(CONFIG_LIST_READ);
+        context.dispatch('configListRead');
     },
 
     async configUpdate(context, params) {
@@ -59,11 +59,11 @@ export const actions = {
     },
 
     configClear(context) {
-        context.commit(CONFIG_SET, {});
+        context.commit('configSet', {});
     },
 
     configListClear(context) {
-        context.commit(CONFIG_LIST_SET, {});
+        context.commit('configListSet', {});
     },
 };
 

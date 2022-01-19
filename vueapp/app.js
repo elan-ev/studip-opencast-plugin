@@ -56,7 +56,9 @@ $(function() {
         render: h => h(App)
     }).$mount('#app');
 
-    store.dispatch('setCID', CID);
+    if (CID !== null) {
+        store.dispatch('setCID', CID);
+    }
     window.apolloEndpoint = API_URL + '/graphql';
     window.Vue.axios.defaults.baseURL = API_URL;
 });

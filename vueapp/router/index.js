@@ -17,7 +17,7 @@ export default new Router({
         },
         {
             name: "scheduler",
-            path: "/",
+            path: "/scheduler",
             component: () => import("@/views/Scheduler"),
         },
         {
@@ -25,6 +25,25 @@ export default new Router({
             path: "/",
             component: () => import("@/views/Manager"),
         },
+        {
+            name: "admin",
+            path: "/admin",
+            component: () => import("@/views/Admin"),
+
+            children: [
+                {
+                    name: "add_server",
+                    path: "add",
+                    component: () => import("@/views/AdminBasic")
+                },
+
+                {
+                    name: "edit_server",
+                    path: "edit/:id",
+                    component: () => import("@/views/AdminBasic")
+                }
+            ]
+        }
     ]
 
     /*

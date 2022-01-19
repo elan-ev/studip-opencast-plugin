@@ -16,10 +16,16 @@ class ConfigList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $config = Config::all()->toArray();
+        $config = Config::findBySql(1);
+
+        $config_list = [];
+
+        foreach ($config as $conf) {
+            $config_list[] = $conf->toArray();
+        }
 
         if (!empty($config)) {
-            return $this->createResponse($config, $response);
+            return $this->createResponse($config_list, $response);
         }
 
         return $this->createResponse([], $response);

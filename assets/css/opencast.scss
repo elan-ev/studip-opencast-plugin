@@ -207,17 +207,63 @@ h2.oc--loadingbar {
 	}
 }
 
-// appear and disappear transitions for episodes
-/*
-.oc--episode-enter-active, .oc--episode-leave-active {
-    transition: all 0.5s;
-}
+/* * * * * * * * * * * * * * * * * * * * * * * * * */
+/*   A D M I N I S T R A T I O N   C L A S S E S   */
+/* * * * * * * * * * * * * * * * * * * * * * * * * */
 
-.oc--episode-enter, .oc--episode-leave-to {
-    opacity: 0;
-    transform: translateY(-100px);
+.oc--admin--server-card {
+    width: 520px;
+    height: 420px;
+    float: left;
+    background-color: $base-color;
+    color: $content-color-10;
+    margin-right: 10px;
+
+    cursor: pointer;
+
+    .oc--admin--server-image {
+        height: 180px;
+        width: 100%;
+        background-color: $black;
+
+        span {
+            display:block;
+            width: 170px;
+            float: left;
+            margin-left: 10px;
+        }
+
+        .oc--admin--server-id {
+            color: $base-gray;
+            float: right;
+            font-size: 8em;
+            line-height: 180px;
+            text-align: right;
+            margin-right: 10px;
+        }
+    }
+
+    .oc--admin--server-data {
+
+        div {
+            font-size: 1.25em;
+            padding: 10px 10px 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            span {
+                display: block;
+            }
+        }
+    }
+
+    .oc--admin-server-add {
+        font-size: 1.25em;
+        text-align: center;
+        line-height: 240px;
+    }
 }
-*/
 
 /* * * * * * * * * * * * * * * * * * * * * */
 /*   S C R E E N S I Z E   C L A S S E S   */

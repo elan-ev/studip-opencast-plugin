@@ -4,33 +4,35 @@
         <form class="default" v-if="config">
             <fieldset>
                 <legend>
-                    {{ "Opencast Server Einstellungen" | i18n }}
+                    <translate>
+                    Opencast Server Einstellungen
+                    </translate>
                     <StudipIcon icon="accept" role="status-green" v-if="config.checked"/>
                 </legend>
 
                 <label>
-                    {{ "Basis URL zur Opencast Installation" | i18n }}
+                    <translate>Basis URL zur Opencast Installation</translate>
                     <input type="text"
                         v-model="config.url"
-                        placeholder="http://opencast.url">
+                        placeholder="https://opencast.url">
                 </label>
 
                 <label>
-                    {{ "Nutzerkennung" | i18n }}
+                    <translate>Nutzerkennung</translate>
                     <input type="text"
                         v-model="config.user"
                         placeholder="ENDPOINT_USER">
                 </label>
 
                 <label>
-                    {{ "Passwort" | i18n }}
+                    <translate>Passwort</translate>
                     <input type="password"
                         v-model="config.password"
                         placeholder="ENDPOINT_USER_PASSWORD">
                 </label>
 
                 <label>
-                    {{ "LTI Consumerkey" | i18n }}
+                    <translate>LTI Consumerkey</translate>
                     <input type="text"
                         v-model="config.ltikey"
                         placeholder="CONSUMERKEY"
@@ -38,14 +40,14 @@
                 </label>
 
                 <label>
-                    {{ "LTI Consumersecret" | i18n }}
+                    <translate>LTI Consumersecret</translate>
                     <input type="text"
                         v-model="config.ltisecret"
                         placeholder="CONSUMERSECRET"
                         :class="{ 'invalid': lti_error }">
                 </label>
 
-                <MessageBox v-if="lti_error" type="error" @hide="lti_error = false">
+                <MessageBox v-if="lti_error" type="error" @hide="lti_error = false" v-translate>
                     Überprüfung der LTI Verbindung fehlgeschlagen! <br />
                     Kontrollieren Sie die eingetragenen Daten und stellen Sie
                     sicher, dass Cross-Origin Aufrufe von dieser Domain zur URL
@@ -56,11 +58,8 @@
             </fieldset>
 
             <footer>
-                <StudipButton icon="accept" @click="storeConfig">
+                <StudipButton icon="accept" @click="storeConfig" v-translate>
                     Einstellungen speichern und überprüfen
-                </StudipButton>
-                <StudipButton @click="nextStep" v-if="config.checked">
-                    Weiter zu Schritt 2 >>
                 </StudipButton>
             </footer>
         </form>

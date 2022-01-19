@@ -5,6 +5,7 @@
 <script type="text/javascript">
     let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api') ?>';
     let ICON_URL = '<?= Assets::url('images/icons/') ?>';
+    let CID      = null;
 </script>
 
 <!-- load bundles -->
