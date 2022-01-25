@@ -1,9 +1,9 @@
 <template>
     <div>
-        <OpencastServer v-for="config in config_list"
+        <ServerCard v-for="config in config_list"
             :config="config" :key="config.id"/>
 
-        <OpencastAddServer />
+        <ServerCard isAddCard />
 
         <div class="ui-helper-clearfix"></div>
         <br/>
@@ -32,15 +32,13 @@ import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 
-import OpencastServer from "@/components/OpencastServer";
-import OpencastAddServer from "@/components/OpencastAddServer";
+import ServerCard from "@/components/Config/ServerCard";
 
 export default {
     name: "AdminBasic",
     components: {
         StudipButton, StudipIcon,
-        MessageBox,
-        OpencastServer,OpencastAddServer
+        MessageBox, ServerCard
     },
     data() {
         return {
