@@ -25,9 +25,29 @@ class ConfigList extends OpencastController
         }
 
         if (!empty($config)) {
-            return $this->createResponse($config_list, $response);
+            return $this->createResponse([
+                'server'   => $config_list,
+                'settings' => $this->getGlobalConfig()
+            ], $response);
         }
 
         return $this->createResponse([], $response);
+    }
+
+    private function getGlobalConfig()
+    {
+        $config = [];
+
+        foreach ($this->container['opencast']['global_config_options'] as $option) {
+            $data = \Config::get()->getMetadata($option);
+            $config[] = [
+                'name'        => $option,
+                'description' => $data['description'],
+                'value'       => \Config::get()->$option,
+                'type'        => $data['type']
+            ];
+        }
+
+        return $config;
     }
 }

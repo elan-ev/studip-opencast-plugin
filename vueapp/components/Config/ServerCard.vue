@@ -1,9 +1,7 @@
 <template>
     <div class="oc--admin--server-card">
         <div class="oc--admin--server-image">
-            <span>
-                <OpencastIcon />
-            </span>
+            <OpencastIcon />
             <span v-if="config" class="oc--admin--server-id">
                 #{{ config.id }}
             </span>

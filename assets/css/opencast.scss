@@ -266,6 +266,17 @@ h2.oc--loadingbar {
     }
 }
 
+.oc--opencast-icon-small {
+    display: inline-block;
+    width: 24px;
+    padding-right: 10px;
+    margin-left: -15px;
+
+    svg {
+        vertical-align: middle;
+    }
+}
+
 /* * * * * * * * * * * * * * * * * * * * * */
 /*   S C R E E N S I Z E   C L A S S E S   */
 /* * * * * * * * * * * * * * * * * * * * * */

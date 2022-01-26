@@ -3,10 +3,13 @@
         <form class="default">
             <fieldset>
                 <legend v-translate>
+                    <OpencastIcon small/>
                     Globale Einstellungen
                 </legend>
-                {{ config_list }}
-                <ConfigOption v-for="settings in config.settings" :key="settings" />
+                <label>
+
+                </label>
+                <ConfigOption v-for="settings in config_list.settings" :key="settings.name" />
             </fieldset>
 
             <footer>
@@ -15,6 +18,9 @@
                 </StudipButton>
             </footer>
         </form>
+        <pre>
+        {{ config_list.settings }}
+        </pre>
     </div>
 </template>
 
@@ -25,13 +31,16 @@ import store from "@/store";
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
+import OpencastIcon from "@/components/OpencastIcon";
+import ConfigOption from "@/components/Config/ConfigOption";
 
 export default {
     name: "GlobalOptions",
 
     components: {
         StudipButton, StudipIcon,
-        MessageBox
+        MessageBox, OpencastIcon,
+        ConfigOption
     },
 
     computed: {

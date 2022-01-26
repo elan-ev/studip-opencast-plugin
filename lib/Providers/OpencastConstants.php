@@ -29,6 +29,18 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'services',
                 'upload',
                 'workflow'
+            ],
+            'global_config_options' => [
+                'OPENCAST_SHOW_TOS',
+                'OPENCAST_ALLOW_ALTERNATE_SCHEDULE' ,
+                'OPENCAST_ALLOW_MEDIADOWNLOAD' ,
+                'OPENCAST_ALLOW_STUDIO',
+                'OPENCAST_HIDE_EPISODES',
+                'OPENCAST_TUTOR_EPISODE_PERM',
+                'OPENCAST_ALLOW_STUDYGROUP_CONF',
+                'OPENCAST_MANAGE_ALL_OC_EVENTS',
+                'OPENCAST_RESOURCE_PROPERTY_ID',
+                'OPENCAST_SUPPORT_EMAIL'
             ]
         ];
     }

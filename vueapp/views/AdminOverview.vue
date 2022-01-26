@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ServerCard v-for="config in config_list"
+        <ServerCard v-for="config in config_list.server"
             :config="config" :key="config.id"/>
 
         <ServerCard isAddCard />
@@ -24,7 +24,7 @@ import ServerCard from "@/components/Config/ServerCard";
 import GlobalOptions from "@/components/Config/GlobalOptions";
 
 export default {
-    name: "Admin",
+    name: "AdminOverview",
     components: {
         StudipButton, StudipIcon,
         MessageBox, ServerCard,
