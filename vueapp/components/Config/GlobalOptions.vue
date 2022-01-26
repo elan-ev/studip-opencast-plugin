@@ -17,18 +17,19 @@
                     Terms of service
                 </legend>
 
-                <I18NText content="setting" />
+                <I18NText :text="opencastTos"
+                    :languages="config_list.languages"
+                    @input="updateTos"
+                />
             </fieldset>
 
             <footer>
-                <StudipButton icon="accept" v-translate>
+                <StudipButton icon="accept" v-translate @click="storeConfig($event)">
                     Einstellungen speichern
                 </StudipButton>
             </footer>
         </form>
-        <pre>
-        {{ config_list.settings }}
-        </pre>
+        <MessageList />
     </div>
 </template>
 
@@ -42,6 +43,7 @@ import MessageBox from "@/components/MessageBox";
 import OpencastIcon from "@/components/OpencastIcon";
 import ConfigOption from "@/components/Config/ConfigOption";
 import I18NText from "@/components/Config/I18NText";
+import MessageList from "@/components/MessageList";
 
 export default {
     name: "GlobalOptions",
@@ -49,7 +51,8 @@ export default {
     components: {
         StudipButton, StudipIcon,
         MessageBox, OpencastIcon,
-        ConfigOption, I18NText
+        ConfigOption, I18NText,
+        MessageList
     },
 
     computed: {
@@ -79,6 +82,20 @@ export default {
             }
 
             return false;
+        },
+
+        opencastTos() {
+            for (let id in this.config_list.settings) {
+                if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
+                    if (typeof JSON.parse(this.config_list.settings[id].value) !== 'object') {
+                        return {}
+                    } else {
+                        return JSON.parse(this.config_list.settings[id].value);
+                    }
+                }
+            }
+
+            return false;
         }
     },
 
@@ -91,6 +108,19 @@ export default {
                     return;
                 }
             }
+        },
+
+        updateTos(text) {
+            for (let id in this.config_list.settings) {
+                if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
+                    this.config_list.settings[id].value = JSON.stringify(text);
+                }
+            }
+        },
+
+        storeConfig() {
+            event.preventDefault();
+            this.$store.dispatch('configListUpdate', this.config_list.settings);
         }
     }
 }

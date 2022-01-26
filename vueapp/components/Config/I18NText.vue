@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <label>
             <div class="i18n_group">
                 <div v-for="lang in languages"
@@ -14,7 +15,6 @@
                         :id="`studip_wysiwyg_` + lang.name"
                         :ref="`studip_wysiwyg_` + lang.name"
                         class="studip-wysiwyg"
-                        @input="updateValue($event.target.value)"
                     >
                     </textarea>
                 </div>
@@ -41,26 +41,19 @@
 export default {
     name: 'I18NText',
 
-    props: ['content'],
+    props: {
+        text: {
+            type: Object
+        },
+        languages: {
+            type: Object
+        }
+    },
 
     data() {
         return {
-            languages: [{
-                'name': 'Deutsch',
-                'picture': 'lang_de.gif'
-            },{
-                'name': 'English',
-                'picture': 'lang_en.gif'
-            }],
-
-            selectedLang: {
-                'name': 'Deutsch',
-                'picture': 'lang_de.gif'
-            },
-            text: {
-                'Deutsch': 'deutscher Text',
-                'English': 'english text'
-            },
+            currentText: null,
+            selectedLang: null,
             fallbackActive: false,
             wysiwyg_editor: null
         }
@@ -68,11 +61,12 @@ export default {
 
     mounted() {
         let ckeInit = this.initCKE();
-        if (!ckeInit) {
-            this.fallbackActive = true;
-        }
     },
 
+    beforeMount() {
+        this.selectedLang = this.languages[Object.keys(this.languages)[0]];
+        this.currentText  = this.text;
+    },
 
     methods: {
         getLangImage(lang) {
@@ -101,16 +95,15 @@ export default {
             });
 
             view.wysiwyg_editor.on('change', function() {
-                view.text[view.selectedLang.name] = view.wysiwyg_editor.getData();
+                view.updateValue(view.wysiwyg_editor.getData());
             });
 
             return true;
         },
 
         updateValue(value) {
-            if (this.fallbackActive) {
-                this.$emit('input', value);
-            }
+            this.currentText[this.selectedLang.name] = value;
+            this.$emit('input', this.currentText);
         }
     }
 }

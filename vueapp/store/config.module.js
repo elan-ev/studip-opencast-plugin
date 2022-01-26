@@ -26,10 +26,24 @@ export const state = { ...initialState };
 export const actions = {
     async configListRead(context) {
         return new Promise(resolve => {
-          ApiService.get('config')
-            .then(({ data }) => {
-                context.commit('configListSet', data);
-                resolve(data);
+            ApiService.get('config')
+                .then(({ data }) => {
+                    context.commit('configListSet', data);
+                    resolve(data);
+                });
+            });
+    },
+
+    async configListUpdate(context, params) {
+        console.log(window.Vue);
+        return new Promise(resolve => {
+            ApiService.put('config', {
+                settings: params
+            }).then(() => {
+                context.dispatch('addMessage', {
+                    type: 'success',
+                    text: window.Vue.$gettext('Einstellungen gespeichert!')
+                });
             });
         });
     },

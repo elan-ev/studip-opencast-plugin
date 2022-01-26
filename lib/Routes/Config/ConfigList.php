@@ -26,8 +26,9 @@ class ConfigList extends OpencastController
 
         if (!empty($config)) {
             return $this->createResponse([
-                'server'   => $config_list,
-                'settings' => $this->getGlobalConfig()
+                'server'    => $config_list,
+                'settings'  => $this->getGlobalConfig(),
+                'languages' => $GLOBALS['CONTENT_LANGUAGES']
             ], $response);
         }
 

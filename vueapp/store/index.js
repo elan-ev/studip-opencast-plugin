@@ -5,6 +5,7 @@ import error from "./error.module";
 import config from "./config.module";
 import events from "./events";
 import resources from "./resources.module";
+import messages from "./messages.module";
 
 Vue.use(Vuex);
 Vue.config.devtools = true // Need this to use devtool browser extension
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     error,
     config,
     resources,
-    events
+    events,
+    messages
   }
 });
