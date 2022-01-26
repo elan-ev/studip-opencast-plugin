@@ -31,6 +31,7 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'workflow'
             ],
             'global_config_options' => [
+                'OPENCAST_TOS', 
                 'OPENCAST_SHOW_TOS',
                 'OPENCAST_ALLOW_ALTERNATE_SCHEDULE' ,
                 'OPENCAST_ALLOW_MEDIADOWNLOAD' ,
