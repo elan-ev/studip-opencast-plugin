@@ -1,6 +1,15 @@
 <template>
-    <router-view>
-    </router-view>
+    <div>
+        <ServerCard v-for="config in config_list"
+            :config="config" :key="config.id"/>
+
+        <ServerCard isAddCard />
+
+        <div class="ui-helper-clearfix"></div>
+        <br/>
+
+        <GlobalOptions />
+    </div>
 </template>
 
 <script>

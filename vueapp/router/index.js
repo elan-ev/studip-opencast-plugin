@@ -26,11 +26,15 @@ export default new Router({
             component: () => import("@/views/Manager"),
         },
         {
-            name: "admin",
-            path: "/admin",
+            path: "/",
             component: () => import("@/views/Admin"),
 
             children: [
+                {
+                    name: "admin",
+                    path: "/admin",
+                    component: () => import("@/views/AdminOverview")
+                },
                 {
                     name: "add_server",
                     path: "add",

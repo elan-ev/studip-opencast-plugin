@@ -128,6 +128,7 @@ export default {
             this.$router.push({ name: 'admin_step2' });
         }
     },
+
     mounted() {
         store.dispatch('configRead', 1);
     }
