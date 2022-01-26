@@ -6,6 +6,7 @@ namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
+use Opencast\Errors\RESTError;
 use \Context;
 
 class RestClient
@@ -36,7 +37,7 @@ class RestClient
         }
 
         if (!property_exists(get_called_class(), 'me')) {
-            throw new \Exception('Every child of ' . get_class() . ' needs to implement static property "$me"');
+            throw new RESTError('Every child of ' . get_class() . ' needs to implement static property "$me"');
         }
 
         if (!is_object(static::$me[$config_id])) {
@@ -69,7 +70,7 @@ class RestClient
                 )) {
                     $this->base_url = $endpoint[0]->service_url;
                 } else {
-                    throw new \Exception (_("Konnte keine Konfiguration für den Service $service_type  finden."));
+                    throw new RESTError(_("Konnte keine Konfiguration für den Service $service_type  finden."));
                 }
             }
 
@@ -78,7 +79,7 @@ class RestClient
             $this->oc_version = $config->service_version;
             $this->debug      = $config->settings->debug ? true : false;
         } else {
-            throw new \Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
+            throw new RESTError(_("Die Konfiguration wurde nicht korrekt angegeben."));
         }
     }
 
@@ -223,13 +224,13 @@ class RestClient
 
                     return false;
                 } else if ($httpCode == 401) {
-                    throw new \AccessDeniedException('Wrong username/password for Opencast server!');
+                    throw new RESTError('Wrong username/password for Opencast server!');
                 } else {
                     return json_decode($response, true);
                 }
             }
         } else {
-            throw new \Exception(_("Es wurde keine Service URL angegeben"));
+            throw new RESTError(_("Es wurde keine Service URL angegeben"));
         }
 
     }
@@ -294,7 +295,7 @@ class RestClient
                 }
             }
         } else {
-            throw new \Exception(_("Es wurde keine Service URL angegeben"));
+            throw new RESTError(_("Es wurde keine Service URL angegeben"));
         }
     }
 }
