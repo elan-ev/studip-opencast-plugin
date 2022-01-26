@@ -8,19 +8,7 @@
         <div class="ui-helper-clearfix"></div>
         <br/>
 
-        <form class="default">
-            <fieldset>
-                <legend v-translate>
-                    Globale Einstellungen
-                </legend>
-            </fieldset>
-
-            <footer>
-                <StudipButton icon="accept" v-translate>
-                    Einstellungen speichern
-                </StudipButton>
-            </footer>
-        </form>
+        <AdminGlobalOptions />
     </div>
 </template>
 
@@ -35,7 +23,7 @@ import MessageBox from "@/components/MessageBox";
 import ServerCard from "@/components/Config/ServerCard";
 
 export default {
-    name: "AdminBasic",
+    name: "Admin",
     components: {
         StudipButton, StudipIcon,
         MessageBox, ServerCard

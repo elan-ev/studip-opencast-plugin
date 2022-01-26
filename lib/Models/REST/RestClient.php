@@ -8,8 +8,6 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use \Context;
 
-define('DEBUG_CURL', FALSE);
-
 class RestClient
 {
     static $me;
@@ -19,6 +17,7 @@ class RestClient
         $password,
         $oc_version,
         $config_id,
+        $debug = false,
         $cookie;
 
     const
@@ -77,6 +76,7 @@ class RestClient
             $this->username   = $config->service_user;
             $this->password   = $config->service_password;
             $this->oc_version = $config->service_version;
+            $this->debug      = $config->settings->debug ? true : false;
         } else {
             throw new \Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
         }
@@ -105,7 +105,7 @@ class RestClient
         */
 
         // debugging
-        if (DEBUG_CURL) {
+        if ($this->debug) {
             curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
         }
     }
@@ -161,7 +161,7 @@ class RestClient
         if (isset($service_url)) {
             $this->initCurl();
 
-            if (DEBUG_CURL) {
+            if ($this->debug) {
                 echo '<pre>';
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
@@ -190,7 +190,7 @@ class RestClient
             }
 
 
-            if (!DEBUG_CURL) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
+            if (!$this->debug) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
                 // see: https://bugs.php.net/bug.php?id=65348
                 curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
             }
@@ -204,7 +204,7 @@ class RestClient
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-            if (DEBUG_CURL) {
+            if ($this->debug) {
                 fclose($this->debug);
                 echo '</pre>';
             }
@@ -214,7 +214,7 @@ class RestClient
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
-                    if (DEBUG_CURL) {
+                    if ($this->debug) {
                         error_log('[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)
@@ -242,7 +242,7 @@ class RestClient
         if (isset($service_url)) {
             $this->initCurl();
 
-            if (DEBUG_CURL) {
+            if ($this->debug) {
                 echo '<pre>';
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
@@ -271,7 +271,7 @@ class RestClient
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-            if (DEBUG_CURL) {
+            if ($this->debug) {
                 fclose($this->debug);
                 echo '</pre>';
             }
@@ -281,7 +281,7 @@ class RestClient
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
-                    if (DEBUG_CURL) {
+                    if ($this->debug) {
                         error_log('[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)

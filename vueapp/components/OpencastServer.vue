@@ -29,7 +29,7 @@
 
 <script>
 export default {
-    name: "OpencastConfigStep",
+    name: "OpencastServer",
     props: ['config'],
 };
 </script>

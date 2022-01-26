@@ -34,13 +34,13 @@ export default new Router({
                 {
                     name: "add_server",
                     path: "add",
-                    component: () => import("@/views/AdminBasic")
+                    component: () => import("@/views/AdminEditServer")
                 },
 
                 {
                     name: "edit_server",
                     path: "edit/:id",
-                    component: () => import("@/views/AdminBasic")
+                    component: () => import("@/views/AdminEditServer")
                 }
             ]
         }

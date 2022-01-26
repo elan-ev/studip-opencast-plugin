@@ -1,6 +1,5 @@
 <template>
     <div>
-        <OpencastConfigStep :step="1" :steps="5" />
         <form class="default" v-if="config">
             <fieldset>
                 <legend>
@@ -78,16 +77,14 @@ import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 
-import OpencastConfigStep from "@/components/OpencastConfigStep";
-
-
 export default {
-    name: "AdminBasic",
+    name: "AdminEditServer",
+
     components: {
         StudipButton, StudipIcon,
-        MessageBox,
-        OpencastConfigStep
+        MessageBox
     },
+
     data() {
         return {
             message: null,
@@ -95,9 +92,11 @@ export default {
             lti: {}
         }
     },
+
     computed: {
         ...mapGetters(['config'])
     },
+
     methods: {
         storeConfig() {
             this.message = { type: 'info', text: 'Überprüfe Konfiguration...'};
@@ -110,6 +109,7 @@ export default {
                     this.$store.commit('configSet', data.config);
                 });
         },
+
         checkLti(lti) {
             let view = this;
             this.lti = lti;
