@@ -1,6 +1,8 @@
 <template>
     <div>
-        <MessageBox v-if="messages" v-for="message in messages" :type="message.type" @hide="removeMessage(message.id)">
+        <MessageBox v-if="messages" v-for="message in messages"
+            :key="message.id"
+            :type="message.type" @hide="removeMessage(message.id)">
                 {{ message.text }}
         </MessageBox>
     </div>
