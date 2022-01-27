@@ -44,6 +44,7 @@ export default new Router({
                 {
                     name: "edit_server",
                     path: "edit/:id",
+                    props: true,
                     component: () => import("@/views/AdminEditServer")
                 }
             ]

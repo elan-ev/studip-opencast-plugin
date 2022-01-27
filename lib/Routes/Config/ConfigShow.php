@@ -19,8 +19,7 @@ class ConfigShow extends OpencastController
         $config = Config::find($args['id']);
 
         if ($config) {
-            $config->config['id'] = $config->id;
-            return $this->createResponse(['config' => json_decode($config->config)], $response);
+            return $this->createResponse(['config' => $config->toArray()], $response);
         } else {
             return $this->createResponse(['config' => []], $response);
         }

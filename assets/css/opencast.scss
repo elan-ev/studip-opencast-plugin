@@ -281,6 +281,17 @@ h2.oc--loadingbar {
     vertical-align: text-top;
 }
 
+.oc--admin-password {
+    input[type=password] {
+        margin-top: 0 ! important;
+    }
+
+    span {
+        img[data-name=invisible] {
+            display: none;
+        }
+    }
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * */
@@ -355,18 +366,6 @@ h2.oc--loadingbar {
     display: inline-block;
     position: absolute;
     right: 1em;
-}
-
-.oc_password_vis {
-    input[type=password] {
-        margin-top: 0 ! important;
-    }
-
-    span {
-        img[data-name=invisible] {
-            display: none;
-        }
-    }
 }
 
 .oce_wip {
