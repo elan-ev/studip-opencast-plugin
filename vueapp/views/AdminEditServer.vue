@@ -9,42 +9,9 @@
                     <StudipIcon icon="accept" role="status-green" v-if="config.checked"/>
                 </legend>
 
-                <label>
-                    <translate>Basis URL zur Opencast Installation</translate>
-                    <input type="text"
-                        v-model="config.url"
-                        placeholder="https://opencast.url">
-                </label>
-
-                <label>
-                    <translate>Nutzerkennung</translate>
-                    <input type="text"
-                        v-model="config.user"
-                        placeholder="ENDPOINT_USER">
-                </label>
-
-                <label>
-                    <translate>Passwort</translate>
-                    <input type="password"
-                        v-model="config.password"
-                        placeholder="ENDPOINT_USER_PASSWORD">
-                </label>
-
-                <label>
-                    <translate>LTI Consumerkey</translate>
-                    <input type="text"
-                        v-model="config.ltikey"
-                        placeholder="CONSUMERKEY"
-                        :class="{ 'invalid': lti_error }">
-                </label>
-
-                <label>
-                    <translate>LTI Consumersecret</translate>
-                    <input type="text"
-                        v-model="config.ltisecret"
-                        placeholder="CONSUMERSECRET"
-                        :class="{ 'invalid': lti_error }">
-                </label>
+                <ConfigOption v-for="setting in settings"
+                    :setting="setting" :key="setting.name"
+                    @updateValue="updateValue" />
 
                 <MessageBox v-if="lti_error" type="error" @hide="lti_error = false" v-translate>
                     Überprüfung der LTI Verbindung fehlgeschlagen! <br />
@@ -60,12 +27,19 @@
                 <StudipButton icon="accept" @click="storeConfig" v-translate>
                     Einstellungen speichern und überprüfen
                 </StudipButton>
+                <StudipButton icon="cancel" @click="$router.push('/admin')" v-translate>
+                    Abbrechen
+                </StudipButton>
             </footer>
         </form>
 
         <MessageBox v-if="message" :type="message.type" @hide="message = ''">
             {{ message.text }}
         </MessageBox>
+
+        <pre>
+            {{ config }}
+        </pre>
     </div>
 </template>
 
@@ -76,13 +50,24 @@ import store from "@/store";
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
+import ConfigOption from "@/components/Config/ConfigOption";
 
 export default {
     name: "AdminEditServer",
 
     components: {
         StudipButton, StudipIcon,
-        MessageBox
+        MessageBox, ConfigOption
+    },
+
+    props: {
+        id : {
+            required: true
+        },
+        configProp : {
+            type: Object,
+            default: null
+        }
     },
 
     data() {
@@ -94,7 +79,52 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config'])
+        ...mapGetters(['config']),
+
+        settings() {
+            return [
+                {
+                    description: this.$gettext('Basis URL zur Opencast Installation'),
+                    name: 'service_url',
+                    value: this.config.service_url,
+                    type: 'string',
+                    placeholder: 'https://opencast.url',
+                    required: true
+                },
+                {
+                    description: this.$gettext('Nutzerkennung'),
+                    name: 'service_user',
+                    value: this.config.service_user,
+                    type: 'string',
+                    placeholder: 'ENDPOINT_USER',
+                    required: true
+                },
+                {
+                    description: this.$gettext('Passwort'),
+                    name: 'service_password',
+                    value: this.config.service_password,
+                    type: 'password',
+                    placeholder: 'ENDPOINT_USER_PASSWORD',
+                    required: true
+                },
+                {
+                    description: this.$gettext('LTI Consumerkey'),
+                    name: 'lti_consumerkey',
+                    value: this.config['settings']['lti_consumerkey'],
+                    type: 'string',
+                    placeholder: 'CONSUMERKEY',
+                    required: true
+                },
+                {
+                    description: this.$gettext('LTI Consumersecret'),
+                    name: 'lti_consumersecret',
+                    value: this.config['settings']['lti_consumersecret'],
+                    type: 'password',
+                    placeholder: 'CONSUMERSECRET',
+                    required: true
+                }
+            ];
+        }
     },
 
     methods: {
@@ -124,13 +154,33 @@ export default {
                 view.lti_error = true;
             });
         },
-        nextStep() {
-            this.$router.push({ name: 'admin_step2' });
-        }
+
+        updateValue(setting, newValue) {
+            console.log('updateValue', setting, newValue);
+            for (let id in this.config) {
+                if (id == setting.name) {
+                    console.log('##1 found', newValue);
+                    this.config[id] = newValue;
+                    return;
+                }
+            }
+
+            for (let id in this.config['settings']) {
+                if (id == setting.name) {
+                    console.log('##2 found', newValue);
+                    this.config['settings'][id] = newValue;
+                    return;
+                }
+            }
+        },
     },
 
     mounted() {
-        store.dispatch('configRead', 1);
+        if (!this.configProp) {
+            store.dispatch('configRead', this.id);
+        } else {
+            this.config = this.configProp;
+        }
     }
 };
 </script>
