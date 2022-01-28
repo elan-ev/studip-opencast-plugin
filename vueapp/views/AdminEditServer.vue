@@ -33,13 +33,8 @@
             </footer>
         </form>
 
-        <MessageBox v-if="message" :type="message.type" @hide="message = ''">
-            {{ message.text }}
-        </MessageBox>
-
-        <pre>
-            {{ config }}
-        </pre>
+        {{ config }}
+        <MessageList />
     </div>
 </template>
 
@@ -49,7 +44,7 @@ import store from "@/store";
 
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
-import MessageBox from "@/components/MessageBox";
+import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
 
 export default {
@@ -57,12 +52,12 @@ export default {
 
     components: {
         StudipButton, StudipIcon,
-        MessageBox, ConfigOption
+        MessageList, ConfigOption
     },
 
     props: {
         id : {
-            required: true
+            default: 'new'
         },
         configProp : {
             type: Object,
@@ -128,16 +123,28 @@ export default {
     },
 
     methods: {
-        storeConfig() {
-            this.message = { type: 'info', text: 'Überprüfe Konfiguration...'};
+        storeConfig(event) {
+            event.preventDefault();
+
+            this.$store.dispatch('addMessage', {
+                type: 'info',
+                text: this.$gettext('Überprüfe Konfiguration...')
+            });
             this.config.checked = false;
 
-            this.$store.dispatch('configCreate', this.config)
+            if (this.id == 'new') {
+                this.$store.dispatch('configCreate', this.config)
                 .then(({ data }) => {
                     this.message = data.message;
                     this.checkLti(data.lti);
-                    this.$store.commit('configSet', data.config);
                 });
+            } else {
+                this.$store.dispatch('configUpdate', this.config)
+                .then(({ data }) => {
+                    this.message = data.message;
+                    this.checkLti(data.lti);
+                });
+            }
         },
 
         checkLti(lti) {
@@ -156,10 +163,8 @@ export default {
         },
 
         updateValue(setting, newValue) {
-            console.log('updateValue', setting, newValue);
             for (let id in this.config) {
                 if (id == setting.name) {
-                    console.log('##1 found', newValue);
                     this.config[id] = newValue;
                     return;
                 }
@@ -167,7 +172,6 @@ export default {
 
             for (let id in this.config['settings']) {
                 if (id == setting.name) {
-                    console.log('##2 found', newValue);
                     this.config['settings'][id] = newValue;
                     return;
                 }
@@ -176,10 +180,12 @@ export default {
     },
 
     mounted() {
-        if (!this.configProp) {
-            store.dispatch('configRead', this.id);
-        } else {
-            this.config = this.configProp;
+        if (this.id != 'new') {
+            if (!this.configProp) {
+                store.dispatch('configRead', this.id);
+            } else {
+                this.config = this.configProp;
+            }
         }
     }
 };

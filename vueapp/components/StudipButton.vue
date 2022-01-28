@@ -1,5 +1,5 @@
 <template>
-    <button class="button" :class="[icon]" type="submit" :name="name" @click="onClick">
+    <button class="button" :class="[icon]" type="submit" :name="name" @click="onClick($event)">
         <slot>ButtonLabel</slot>
     </button>
 </template>
@@ -20,8 +20,8 @@ export default {
         }
     },
     methods: {
-        onClick() {
-            this.$emit('click');
+        onClick(event) {
+            this.$emit('click', event);
         }
     }
 }

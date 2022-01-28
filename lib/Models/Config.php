@@ -5,7 +5,7 @@ use Opencast\RelationshipTrait;
 use Opencast\Models\UPMap;
 use Opencast\Models\SeminarSeries;
 
-class Config extends UPMap
+class Config extends \SimpleOrMap
 {
     use RelationshipTrait;
 
@@ -70,14 +70,12 @@ class Config extends UPMap
             $config = Endpoints::findOneBySQL(
                 'service_type = ? AND config_id = ?' ,
                 [$service_type, $config_id]
-            )->toArray();
+            );
 
             if ($config) {
-                return $config + self::find($config_id)->toArray();
+                return $config->toArray() + self::find($config_id)->toArray();
             } else {
-                return [
-                    self::empty_config()
-                ];
+                return false;
             }
 
         } else {

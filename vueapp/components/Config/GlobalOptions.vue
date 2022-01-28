@@ -24,7 +24,7 @@
             </fieldset>
 
             <footer>
-                <StudipButton icon="accept" v-translate @click="storeConfig($event)">
+                <StudipButton icon="accept" v-translate @click.stop="storeConfig()">
                     Einstellungen speichern
                 </StudipButton>
             </footer>
@@ -120,7 +120,13 @@ export default {
 
         storeConfig() {
             event.preventDefault();
-            this.$store.dispatch('configListUpdate', this.config_list.settings);
+            this.$store.dispatch('configListUpdate', this.config_list.settings)
+                .then(() => {
+                    this.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Einstellungen gespeichert!')
+                    });
+                });
         }
     }
 }

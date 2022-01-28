@@ -4,11 +4,13 @@ import ApiService from "@/common/api.service";
 const initialState = {
     config_list: [],
     config: {
-        'url' :      null,
-        'user':      null,
-        'password':  null,
-        'ltikey':    null,
-        'ltisecret': null
+        'service_url' :      null,
+        'service_user':      null,
+        'service_password':  null,
+        'settings': {
+            'lti_consumerkey':    null,
+            'lti_consumersecret': null
+        }
     }
 };
 
@@ -35,16 +37,8 @@ export const actions = {
     },
 
     async configListUpdate(context, params) {
-        console.log(window.Vue);
-        return new Promise(resolve => {
-            ApiService.put('config', {
-                settings: params
-            }).then(() => {
-                context.dispatch('addMessage', {
-                    type: 'success',
-                    text: window.Vue.$gettext('Einstellungen gespeichert!')
-                });
-            });
+        return  ApiService.put('config', {
+            settings: params
         });
     },
 
@@ -67,8 +61,10 @@ export const actions = {
     },
 
     async configCreate(context, params) {
-        return await ApiService.post('config', {
+        return ApiService.post('config', {
             config: params
+        }).then(({ data }) => {
+            this.$store.commit('configSet', data.config);
         });
     },
 

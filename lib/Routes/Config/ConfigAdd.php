@@ -9,8 +9,8 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 
 use Opencast\Models\Config;
-use Opencast\Models\OCEndpoints;
-use Opencast\Models\OCSeriesModel;
+use Opencast\Models\Endpoints;
+use Opencast\Models\SeminarEpisodes;
 
 use Opencast\Models\REST\Config as RESTConfig;
 use Opencast\Models\REST\ServicesClient;
@@ -28,17 +28,20 @@ class ConfigAdd extends OpencastController
         \SimpleOrMap::expireTableScheme();
 
         $json = $this->getRequestData($request);
-        $config_id = 1;
 
-        // store config in db
-        $config = Config::find($config_id);
+        $config_checked = false;
+        // check, if a config with the same data already exists:
+        if ($json['id']) {
+            $config = Config::find($json['id']);
+        } else {
+            $config = reset(Config::findBySql('service_url = ?', [$json['config']['service_url']]));
 
-        if (!$config) {
-            $config = new Config;
-            $config->id = $config_id;
+            if (!$config) {
+                $config = new Config;
+            }
         }
 
-        $config->config = $json['config'];
+        $config->setData($json['config']);
         $config->store();
 
         // check Configuration and load endpoints
@@ -47,7 +50,7 @@ class ConfigAdd extends OpencastController
         // invalidate series-cache when editing configuration
         \StudipCacheFactory::getCache()->expire('oc_allseries');
 
-        $service_url =  parse_url($config->config['url']);
+        $service_url =  parse_url($config->service_url);
 
         // check the selected url for validity
         if (!array_key_exists('scheme', $service_url)) {
@@ -55,11 +58,11 @@ class ConfigAdd extends OpencastController
                 'type' => 'error',
                 'text' => sprintf(
                     _('Ungültiges URL-Schema: "%s"'),
-                    $config->config['url']
+                    $config->service_url
                 )
             ];
 
-            OCEndpoints::deleteBySql('config_id = ?', [$config_id]);
+            Endpoints::deleteBySql('config_id = ?', [$config->id]);
         } else {
             $service_host =
                 $service_url['scheme'] .'://' .
@@ -69,19 +72,19 @@ class ConfigAdd extends OpencastController
             try {
                 $version = RESTConfig::getOCBaseVersion($config->id);
 
-                OCEndpoints::deleteBySql('config_id = ?', [$config_id]);
+                Endpoints::deleteBySql('config_id = ?', [$config->id]);
 
-                $config->config['version'] = $version;
+                $config->service_version = $version;
                 $config->store();
 
-                OCEndpoints::setEndpoint($config_id, $service_host .'/services', 'services');
+                Endpoints::setEndpoint($config->id, $service_host .'/services', 'services');
 
-                $services_client = new ServicesClient($config_id);
+                $services_client = new ServicesClient($config->id);
 
                 $comp = null;
                 $comp = $services_client->getRESTComponents();
             } catch (AccessDeniedException $e) {
-                OCEndpoints::removeEndpoint($config_id, 'services');
+                Endpoints::removeEndpoint($config->id, 'services');
 
                 $message = [
                     'type' => 'error',
@@ -99,8 +102,7 @@ class ConfigAdd extends OpencastController
                 $services = RESTConfig::retrieveRESTservices($comp, $service_url['scheme']);
 
                 if (empty($services)) {
-                    OCEndpoints::removeEndpoint($config_id, 'services');
-
+                    Endpoints::removeEndpoint($config->id, 'services');
                     $message = [
                         'type' => 'error',
                         'text' => sprintf(
@@ -118,7 +120,7 @@ class ConfigAdd extends OpencastController
                                 $this->container['opencast']['services']
                             ) !== false
                         ) {
-                            OCEndpoints::setEndpoint($config_id, $service_url, $service_type);
+                            Endpoints::setEndpoint($config->id, $service_url, $service_type);
                         } else {
                             unset($services[$service_url]);
                         }
@@ -134,11 +136,10 @@ class ConfigAdd extends OpencastController
                         'text' => implode('<br>', $success_message)
                     ];
 
-                    $config->config['checked'] = true;
-                    $config->store();
+                    $config_checked = true;
                 }
             } else {
-                //OCEndpoints::removeEndpoint($config_id, 'services');
+                //Endpoints::removeEndpoint($config_id, 'services');
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(
@@ -150,7 +151,7 @@ class ConfigAdd extends OpencastController
         }
 
         // return lti data to test lti connection
-        $search_config = Config::getConfigForService('search', $config_id);
+        $search_config = Config::getConfigForService('search', $config->id);
         $url = parse_url($search_config['service_url']);
 
         $search_url = $url['scheme'] . '://'. $url['host']
@@ -158,8 +159,8 @@ class ConfigAdd extends OpencastController
 
         $lti_link = new LtiLink(
             $search_url,
-            $config->config['ltikey'],
-            $config->config['ltisecret']
+            $config->settings->lti_consumerkey,
+            $config->settings->lti_consumersecret
         );
 
         $launch_data = $lti_link->getBasicLaunchData();
@@ -173,11 +174,11 @@ class ConfigAdd extends OpencastController
         ];
 
         // after updating the configuration, clear the cached series data
-        OCSeriesModel::clearCachedSeriesData();
+        SeminarEpisodes::deleteBySQL(1);
         #OpencastLTI::generate_complete_acl_mapping();
 
         return $this->createResponse([
-            'config' => $config->config->getArrayCopy(),
+            'config' => $config->toArray(),
             'message'=> $message,
             'lti' => $lti
         ], $response);

@@ -41,9 +41,10 @@
                 {{ setting.description }}
             </span>
             <input type="text"
-                :name="setting.name" :value="setting.value"
+                :name="setting.name"
                 :placeholder="setting.placeholder"
-                @change='setValue(this.value)'>
+                v-model="setting.value"
+                @change="setValue(setting.value)">
         </label>
 
         <label v-if="setting.type == 'password'">
@@ -87,13 +88,20 @@ export default {
 
     data() {
         return {
-            password: '*****',
+            password: '',
             passwordVisible: false
+        }
+    },
+
+    mounted() {
+        if (this.setting.type == 'password' && this.setting.value) {
+            this.password = '*****';
         }
     },
 
     methods: {
         setValue(newValue) {
+            console.log(newValue)
             this.$emit('updateValue', this.setting, newValue);
         },
 
@@ -104,13 +112,14 @@ export default {
                 this.password = this.setting.value;
                 this.passwordVisible = true;
             } else {
-                this.password = '*****'
+                if (this.setting.value) {
+                    this.password = '*****';
+                }
                 this.passwordVisible = false;
             }
         },
 
         updateHiddenPassword() {
-            console.log('updateHiddenPassowrd', this.password);
             this.setValue(this.password);
         }
     }

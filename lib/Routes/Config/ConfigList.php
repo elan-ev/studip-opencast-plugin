@@ -24,15 +24,11 @@ class ConfigList extends OpencastController
             $config_list[] = $conf->toArray();
         }
 
-        if (!empty($config)) {
-            return $this->createResponse([
-                'server'    => $config_list,
-                'settings'  => $this->getGlobalConfig(),
-                'languages' => $GLOBALS['CONTENT_LANGUAGES']
-            ], $response);
-        }
-
-        return $this->createResponse([], $response);
+        return $this->createResponse([
+            'server'    => $config_list ?: [],
+            'settings'  => $this->getGlobalConfig(),
+            'languages' => $GLOBALS['CONTENT_LANGUAGES']
+        ], $response);
     }
 
     private function getGlobalConfig()
