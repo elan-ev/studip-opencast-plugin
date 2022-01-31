@@ -42,10 +42,10 @@ class RouteMap
         $this->app->get('/config', Routes\Config\ConfigList::class);
         $this->app->put('/config', Routes\Config\ConfigUpdate::class);
 
-        $this->app->post('/config', Routes\Config\ConfigAdd::class);
+        $this->app->post('/config', Routes\Config\ConfigAddEdit::class);
         $this->app->get('/config/{id}', Routes\Config\ConfigShow::class);
         $this->app->post('/config/check', Routes\Config\ConfigCheck::class);
-        $this->app->put('/config/{id}', Routes\Config\ConfigEdit::class);
+        $this->app->put('/config/{id}', Routes\Config\ConfigAddEdit::class);
         $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);
     }
 }

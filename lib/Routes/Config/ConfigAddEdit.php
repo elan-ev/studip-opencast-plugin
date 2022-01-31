@@ -19,7 +19,7 @@ use Opencast\Models\LTI\LtiLink;
 
 use Opencast\Models\I18N as _;
 
-class ConfigAdd extends OpencastController
+class ConfigAddEdit extends OpencastController
 {
     use OpencastTrait;
 
