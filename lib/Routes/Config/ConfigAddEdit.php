@@ -31,8 +31,8 @@ class ConfigAddEdit extends OpencastController
 
         $config_checked = false;
         // check, if a config with the same data already exists:
-        if ($json['id']) {
-            $config = Config::find($json['id']);
+        if ($args['id']) {
+            $config = Config::find($args['id']);
         } else {
             $config = reset(Config::findBySql('service_url = ?', [$json['config']['service_url']]));
 

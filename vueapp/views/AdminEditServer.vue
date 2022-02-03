@@ -33,7 +33,6 @@
             </footer>
         </form>
 
-        {{ config }}
         <MessageList />
     </div>
 </template>
@@ -105,7 +104,7 @@ export default {
                 {
                     description: this.$gettext('LTI Consumerkey'),
                     name: 'lti_consumerkey',
-                    value: this.config['settings']['lti_consumerkey'],
+                    value: this.config.settings.lti_consumerkey,
                     type: 'string',
                     placeholder: 'CONSUMERKEY',
                     required: true
@@ -113,7 +112,7 @@ export default {
                 {
                     description: this.$gettext('LTI Consumersecret'),
                     name: 'lti_consumersecret',
-                    value: this.config['settings']['lti_consumersecret'],
+                    value: this.config.settings.lti_consumersecret,
                     type: 'password',
                     placeholder: 'CONSUMERSECRET',
                     required: true
@@ -126,10 +125,6 @@ export default {
         storeConfig(event) {
             event.preventDefault();
 
-            this.$store.dispatch('addMessage', {
-                type: 'info',
-                text: this.$gettext('Überprüfe Konfiguration...')
-            });
             this.config.checked = false;
 
             if (this.id == 'new') {
