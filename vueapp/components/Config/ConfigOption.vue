@@ -93,15 +93,16 @@ export default {
         }
     },
 
-    mounted() {
-        if (this.setting.type == 'password' && this.setting.value) {
+    updated() {
+        if (!this.passwordVisible && this.setting.type == 'password'
+            && this.setting.value)
+        {
             this.password = '*****';
         }
     },
 
     methods: {
         setValue(newValue) {
-            console.log(newValue)
             this.$emit('updateValue', this.setting, newValue);
         },
 
