@@ -4,18 +4,16 @@ namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
+use Opencast\Constants;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
-
+use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
-
+use Opencast\Models\LTI\LtiLink;
 use Opencast\Models\REST\Config as RESTConfig;
 use Opencast\Models\REST\ServicesClient;
-
-use Opencast\Models\LTI\LtiLink;
 
 use Opencast\Models\I18N as _;
 
@@ -41,6 +39,19 @@ class ConfigAddEdit extends OpencastController
             }
         }
 
+        // validate values
+        $new_settings = array();
+        foreach (Constants::$DEFAULT_CONFIG as $config_entry) {
+            foreach ($json['config']['settings'] as $setting_name => $setting) {
+                if ($setting_name == $config_entry['name']) {
+                    $new_settings[$setting_name] = $setting;
+                }
+            }
+        }
+
+        $json['config']['settings'] = $new_settings;
+
+        // store config to database
         $config->setData($json['config']);
         $config->store();
 
@@ -150,28 +161,36 @@ class ConfigAddEdit extends OpencastController
             }
         }
 
-        // return lti data to test lti connection
-        $search_config = Config::getConfigForService('search', $config->id);
-        $url = parse_url($search_config['service_url']);
+        if ($config_checked) {
+            // return lti data to test lti connection
+            $search_config = Config::getConfigForService('search', $config->id);
+            $url = parse_url($search_config['service_url']);
 
-        $search_url = $url['scheme'] . '://'. $url['host']
-            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+            $search_url = $url['scheme'] . '://'. $url['host']
+                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
 
-        $lti_link = new LtiLink(
-            $search_url,
-            $config->settings->lti_consumerkey,
-            $config->settings->lti_consumersecret
-        );
+            $lti_link = new LtiLink(
+                $search_url,
+                $config->settings->lti_consumerkey,
+                $config->settings->lti_consumersecret
+            );
 
-        $launch_data = $lti_link->getBasicLaunchData();
-        $signature   = $lti_link->getLaunchSignature($launch_data);
+            $launch_data = $lti_link->getBasicLaunchData();
+            $signature   = $lti_link->getLaunchSignature($launch_data);
 
-        $launch_data['oauth_signature'] = $signature;
+            $launch_data['oauth_signature'] = $signature;
 
-        $lti = [
-            'launch_url'  => $lti_link->getLaunchURL(),
-            'launch_data' => $launch_data
-        ];
+            $lti = [
+                'launch_url'  => $lti_link->getLaunchURL(),
+                'launch_data' => $launch_data
+            ];
+
+            return $this->createResponse([
+                'config' => $config->toArray(),
+                'message'=> $message,
+                'lti' => $lti
+            ], $response);
+        }
 
         // after updating the configuration, clear the cached series data
         SeminarEpisodes::deleteBySQL(1);
@@ -180,7 +199,6 @@ class ConfigAddEdit extends OpencastController
         return $this->createResponse([
             'config' => $config->toArray(),
             'message'=> $message,
-            'lti' => $lti
         ], $response);
     }
 }

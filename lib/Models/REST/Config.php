@@ -17,11 +17,11 @@ class Config
         }
 
         // always use the first found version information
-        if (is_array($data->versions)) {
-            $data = $data->versions[0];
+        if (is_array($data['versions'])) {
+            $data = $data['versions'][0];
         }
 
-        return (int)substr($data->version, 0, 1);
+        return $data['version'];
     }
 
     public static function retrieveRESTservices($components, $match_protocol)

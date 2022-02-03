@@ -66,7 +66,6 @@ export default {
 
     data() {
         return {
-            message: null,
             lti_error: false,
             lti: {}
         }
@@ -125,20 +124,33 @@ export default {
         storeConfig(event) {
             event.preventDefault();
 
+            this.$store.dispatch('clearMessages');
+
             this.config.checked = false;
 
             if (this.id == 'new') {
                 this.$store.dispatch('configCreate', this.config)
                 .then(({ data }) => {
-                    this.message = data.message;
-                    this.checkLti(data.lti);
+                    this.checkConfigResponse(data);
                 });
             } else {
                 this.$store.dispatch('configUpdate', this.config)
                 .then(({ data }) => {
-                    this.message = data.message;
-                    this.checkLti(data.lti);
+                    this.checkConfigResponse(data);
                 });
+            }
+        },
+
+        checkConfigResponse(data) {
+            if (data.message !== undefined) {
+                this.$store.dispatch('addMessage', {
+                     type: data.message.type,
+                     text: data.message.text
+                });
+            }
+
+            if (data.lti !== undefined) {
+                this.checkLti(data.lti);
             }
         },
 
@@ -165,12 +177,8 @@ export default {
                 }
             }
 
-            for (let id in this.config['settings']) {
-                if (id == setting.name) {
-                    this.config['settings'][id] = newValue;
-                    return;
-                }
-            }
+            this.config.settings[setting.name] = newValue;
+            return;
         },
     },
 

@@ -84,6 +84,10 @@ export const mutations = {
     },
 
     configSet(state, data) {
+        if (data.settings === undefined || Array.isArray(data.settings)) {
+            data.settings = {};
+        }
+
         state.config = data;
     }
 };

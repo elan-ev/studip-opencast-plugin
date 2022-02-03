@@ -30,6 +30,10 @@ export const actions = {
             text: message.text
         });
         context.commit('setMessages', messages);
+    },
+
+    clearMessages(context) {
+        context.commit('setMessages', []);
     }
 };
 
