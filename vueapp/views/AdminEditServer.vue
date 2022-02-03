@@ -12,15 +12,6 @@
                 <ConfigOption v-for="setting in settings"
                     :setting="setting" :key="setting.name"
                     @updateValue="updateValue" />
-
-                <MessageBox v-if="lti_error" type="error" @hide="lti_error = false" v-translate>
-                    Überprüfung der LTI Verbindung fehlgeschlagen! <br />
-                    Kontrollieren Sie die eingetragenen Daten und stellen Sie
-                    sicher, dass Cross-Origin Aufrufe von dieser Domain zur URL
-                    {{ lti.launch_url }} möglich sind! <br />
-                    Denken sie auch daran, in Opencast die korrekten
-                    access-control-allow-* Header zu setzen.
-                </MessageBox>
             </fieldset>
 
             <footer>
@@ -61,13 +52,6 @@ export default {
         configProp : {
             type: Object,
             default: null
-        }
-    },
-
-    data() {
-        return {
-            lti_error: false,
-            lti: {}
         }
     },
 
@@ -156,16 +140,26 @@ export default {
 
         checkLti(lti) {
             let view = this;
-            this.lti = lti;
 
-             Vue.axios.post(lti.launch_url, lti.launch_data, {
+            Vue.axios.post(lti.launch_url, lti.launch_data, {
                  crossDomain: true,
                  withCredentials: true
-             })
-            .then(() => {
-                view.lti_error = false;
+            })
+            .then(({ data }) => {
+                view.$store.dispatch('addMessage', {
+                     type: 'success',
+                     text: view.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
+                });
             }).catch(function (error) {
-                view.lti_error = true;
+                view.$store.dispatch('addMessage', {
+                     type: 'error',
+                     text: lti.launch_url + ': ' + view.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
+                         + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
+                         + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
+                         + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                         + 'Header zu setzen.'
+                     )
+                });
             });
         },
 

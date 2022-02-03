@@ -226,7 +226,7 @@ class RestClient
                 } else if ($httpCode == 401) {
                     throw new RESTError('Wrong username/password for Opencast server!');
                 } else {
-                    return json_decode($response, true);
+                    return json_decode($response);
                 }
             }
         } else {
