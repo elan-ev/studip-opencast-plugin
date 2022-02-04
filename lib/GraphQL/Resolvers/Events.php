@@ -73,6 +73,7 @@ class Events
             $length = 0;
             $annotation_tool = '';
             $publications = $eventsClient->getEpisode($event['identifier'], true)[1]['publications'];
+            /*
             foreach ($publications as $publication) {
                 if ($publication->channel == 'engage-player') {
                     $track_link = $publication->url;
@@ -84,6 +85,8 @@ class Events
                     $annotation_tool = $publication->url;
                 }
             }
+            */
+            $track_link = $publications[0]['url']; // Right path to Video in new testsystem
 
             $results['events'][] = [
                 'id'              => $event['identifier'],
