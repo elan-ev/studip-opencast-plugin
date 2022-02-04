@@ -24,7 +24,7 @@ class ServicesClient extends RestClient
         $service_url = "/services.json";
 
         if ($result = $this->getJSON($service_url)) {
-            return $result->services->service;
+            return $result['services']['service'];
         } else {
             return false;
         }

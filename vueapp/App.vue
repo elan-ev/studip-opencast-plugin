@@ -1,12 +1,12 @@
 <template>
     <div class="container" id="app">
+        <Error />
+
         <div class="content">
             <router-view></router-view>
         </div>
         <div class="clearfix"></div>
         <p></p>
-
-        <Error />
     </div>
 
 </template>

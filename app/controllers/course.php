@@ -6,7 +6,6 @@
 use Opencast\Models\UploadStudygroup;
 use Opencast\Models\Config;
 use Opencast\LTI\OpencastLTI;
-use OpencastController;
 
 class CourseController extends OpencastController
 {

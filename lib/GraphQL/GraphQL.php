@@ -72,11 +72,12 @@ class GraphQL extends OpencastController
 
 
         $result = \GraphQL\GraphQL::executeQuery($schema, $query, null, null, $variableValues);
-        //$result->toArray(\GraphQL\Error\DebugFlag::INCLUDE_DEBUG_MESSAGE);
-        //$
+
         $debug = \GraphQL\Error\DebugFlag::INCLUDE_DEBUG_MESSAGE
             | \GraphQL\Error\DebugFlag::INCLUDE_TRACE;
 
-        return $this->createResponse($result->toArray(), $response);
+        return $this->createResponse($result->toArray(
+            $debug
+        ), $response);
     }
 }

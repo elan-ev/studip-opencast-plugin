@@ -211,7 +211,7 @@ class RestClient
             }
 
             if ($with_res_code) {
-                return [json_decode($response) ? : $response, $httpCode];
+                return [json_decode($response, true) ? : $response, $httpCode];
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
@@ -226,7 +226,7 @@ class RestClient
                 } else if ($httpCode == 401) {
                     throw new RESTError('Wrong username/password for Opencast server!');
                 } else {
-                    return json_decode($response);
+                    return json_decode($response, true);
                 }
             }
         } else {
