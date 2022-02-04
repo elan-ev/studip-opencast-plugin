@@ -883,6 +883,7 @@ class CourseController extends OpencastController
                 throw new AccessDeniedException();
             }
 
+            StudipLog::log('OC_REMOVE_MEDIA', $this->course_id, null, $episode_id);
             $adminng_client = AdminNgEventClient::getInstance();
 
             if ($adminng_client->deleteEpisode($episode_id)) {

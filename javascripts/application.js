@@ -160,9 +160,9 @@ const OC = {
             })
         }
 
-	function addACL(mediaPackage,acl) {
-	    var acldata = new FormData();
-	    acldata.append('mediaPackage', mediaPackage);
+    function addACL(mediaPackage,acl) {
+        var acldata = new FormData();
+        acldata.append('mediaPackage', mediaPackage);
             acldata.append('flavor', 'security/xacml+episode');
             acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
@@ -241,20 +241,46 @@ const OC = {
             })
         }
 
+        function logUpload(episode_id, workflowId = "upload") {
+          return $.ajax({
+              url: STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/logupload/'),
+              method: "POST",
+              data: {
+                  workflow_id: workflowId,
+                  course_id: STUDIP.URLHelper.parameters.cid,
+                  episode_id: episode_id
+              }
+          })
+        }
+
         function upload(files, terms, workflowId, onProgress) {
             return getMediaPackage()
                 .then(function (_mediaPackage, _status, resp) {
                     return addDCCCatalog(resp.responseText, terms)
                 })
-		.then(function (_mediaPackage, _status, resp) {
-		    var acl = terms.oc_acl;
-		    return addACL(resp.responseText, acl)
+                .then(function (_mediaPackage, _status, resp) {
+                    var acl = terms.oc_acl;
+                    return addACL(resp.responseText, acl)
                 })
                 .then(function (_mediaPackage, _status, resp) {
                     return uploadTracks(resp.responseText, files, onProgress)
                 })
                 .then(function (mediaPackage) {
-                    return finishIngest(mediaPackage, workflowId)
+                    const jqXHR = finishIngest(mediaPackage, workflowId);
+                    try {
+                        let episode_id;
+                        // Nothing waiting for this XHR to finish, making the
+                        // log-entry a nice-to-have
+                        const xmlDoc = $.parseXML(mediaPackage);
+                        episode_id = xmlDoc.documentElement.id;
+                        if (episode_id) {
+                            logUpload(episode_id, workflowId);
+                        }
+                    } catch (ex) {
+                        console.log(ex);
+                        /* Catch XML parse error. On Error Resume Next ;-) */
+                    }
+                    return jqXHR;
                 })
         }
 
