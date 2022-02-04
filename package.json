@@ -39,7 +39,7 @@
   "homepage": "https://github.com/elan-ev/studip-opencast-plugin#readme",
   "browserslist": "> 0.25%, not dead, not IE 11",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "vuex": "^3.6.2"
   }
 }
