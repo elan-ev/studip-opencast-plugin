@@ -34,13 +34,12 @@
                 <form class="default" @submit.prevent="">
                     <label>
                         <translate>Serie auswählen</translate>
-                        <courseware-vue-select
+                        <studip-select
                             :options="series"
                             :reduce="series => series.series_id"
                             :clearable="false"
                             v-model="currentSeries"
                             class="cw-vs-select"
-                            append-to-body
                         >
                             <template #open-indicator="selectAttributes">
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
@@ -55,19 +54,18 @@
                             <template #option="{name}">
                                 <span>{{name}}</span>
                             </template>
-                        </courseware-vue-select>
+                        </studip-select>
                     </label>
 
                     <label v-if="currentSeries">
                         <translate>Video auswählen</translate>
-                        <courseware-vue-select
+                        <studip-select
                             :options="episodes"
                             label="episode"
                             :reduce="episodes => episodes.id"
                             :clearable="false"
                             v-model="currentEpisode"
                             class="cw-vs-select"
-                            append-to-body
                         >
                             <template #open-indicator="selectAttributes">
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
@@ -90,7 +88,7 @@
                                     </translate>
                                 </span>
                             </template>
-                        </courseware-vue-select>
+                        </studip-select>
                     </label>
                 </form>
             </template>
