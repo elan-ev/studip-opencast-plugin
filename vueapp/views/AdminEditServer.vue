@@ -36,6 +36,7 @@ import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
+import LTIService from "@/common/lti.service";
 
 export default {
     name: "AdminEditServer",
@@ -141,10 +142,8 @@ export default {
         checkLti(lti) {
             let view = this;
 
-            Vue.axios.post(lti.launch_url, lti.launch_data, {
-                 crossDomain: true,
-                 withCredentials: true
-            })
+            LTIService.init(lti);
+            LTIService.check()
             .then(({ data }) => {
                 view.$store.dispatch('addMessage', {
                      type: 'success',

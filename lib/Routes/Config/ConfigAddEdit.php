@@ -171,8 +171,8 @@ class ConfigAddEdit extends OpencastController
 
             $lti_link = new LtiLink(
                 $search_url,
-                $config->settings->lti_consumerkey,
-                $config->settings->lti_consumersecret
+                $config->settings['lti_consumerkey'],
+                $config->settings['lti_consumersecret']
             );
 
             $launch_data = $lti_link->getBasicLaunchData();
