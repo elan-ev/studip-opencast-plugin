@@ -100,7 +100,7 @@ class ConfigAddEdit extends OpencastController
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(
-                        $this->_('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
+                        _('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
                         $service_host
                     )
                 ];
@@ -117,7 +117,7 @@ class ConfigAddEdit extends OpencastController
                     $message = [
                         'type' => 'error',
                         'text' => sprintf(
-                            $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
+                            _('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
                                 . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
                                 . 'ob ihre Opencast-Installation https unterstützt.'),
                             $service_host
