@@ -64,7 +64,7 @@ export const actions = {
         return ApiService.post('config', {
             config: params
         }).then(({ data }) => {
-            this.$store.commit('configSet', data.config);
+            context.commit('configSet', data.config);
         });
     },
 
