@@ -6,14 +6,14 @@
                 <div v-for="lang in languages"
                     class="i18n"
                     :style="{
-                        display: lang.name != selectedLang.name ? 'none' : 'block'
+                        display: lang.id != selectedLang.id ? 'none' : 'block'
                     }"
-                    :data-lang="lang.name"
+                    :data-lang="lang.id"
                     :data-icon="`url(` + getLangImage(lang) + `)`">
                     <textarea
-                        v-model="text[lang.name]"
-                        :id="`studip_wysiwyg_` + lang.name"
-                        :ref="`studip_wysiwyg_` + lang.name"
+                        v-model="text[lang.id]"
+                        :id="`studip_wysiwyg_` + lang.id"
+                        :ref="`studip_wysiwyg_` + lang.id"
                         class="studip-wysiwyg"
                     >
                     </textarea>
@@ -84,7 +84,7 @@ export default {
                 await view.wysiwyg_editor.destroy();
             }
 
-            let textarea = view.$refs['studip_wysiwyg_' + view.selectedLang.name][0];
+            let textarea = view.$refs['studip_wysiwyg_' + view.selectedLang.id][0];
 
 
             await STUDIP.wysiwyg.replace(textarea);
@@ -102,7 +102,7 @@ export default {
         },
 
         updateValue(value) {
-            this.currentText[this.selectedLang.name] = value;
+            this.currentText[this.selectedLang.id] = value;
             this.$emit('input', this.currentText);
         }
     }

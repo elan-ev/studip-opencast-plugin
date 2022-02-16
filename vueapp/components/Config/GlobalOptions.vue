@@ -87,17 +87,20 @@ export default {
         opencastTos() {
             for (let id in this.config_list.settings) {
                 if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
-                    if (!this.config_list.settings[id].value ||
-                        typeof JSON.parse(this.config_list.settings[id].value) !== 'object')
-                    {
-                        return {}
-                    } else {
-                        return JSON.parse(this.config_list.settings[id].value);
+                    try {
+                        if (typeof JSON.parse(this.config_list.settings[id].value) !== 'object')
+                        {
+                            return {}
+                        } else {
+                            return JSON.parse(this.config_list.settings[id].value);
+                        }
+                    } catch (e) {
+                        console.log(e);
                     }
+
+                    return {}
                 }
             }
-
-            return false;
         }
     },
 

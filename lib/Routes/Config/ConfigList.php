@@ -24,10 +24,15 @@ class ConfigList extends OpencastController
             $config_list[] = $conf->toArray();
         }
 
+        $languages = [];
+        foreach ($GLOBALS['CONTENT_LANGUAGES'] as $id => $lang) {
+            $languages[$id] = array_merge(['id' => $id], $lang);
+        }
+
         return $this->createResponse([
             'server'    => $config_list ?: [],
             'settings'  => $this->getGlobalConfig(),
-            'languages' => $GLOBALS['CONTENT_LANGUAGES']
+            'languages' => $languages
         ], $response);
     }
 
