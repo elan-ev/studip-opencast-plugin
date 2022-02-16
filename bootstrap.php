@@ -17,3 +17,6 @@ require_once __DIR__ .'/classes/lti/OAuth.php';
 require_once 'lib/classes/CronJob.class.php';
 
 require_once 'classes/OpencastController.php';
+
+// Courseware Block
+require_once 'lib/BlockTypes/OpencastBlock.php';

@@ -1,6 +1,6 @@
 <template>
     <ul class="widget-list oc-widget-list widget-links cw-action-widget">
-        <li class="cw-action-widget">
+        <li class="cw-action-widget" @click="showAddDialog=true;">
             <studip-icon style="margin-left: -20px;" icon="upload" role="clickable"/>
             Medien Hochladen
         </li>

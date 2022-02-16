@@ -10,7 +10,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import store from "@/store";
 
 import MessageBox from '@/components/MessageBox';
 

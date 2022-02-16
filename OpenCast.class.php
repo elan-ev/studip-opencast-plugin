@@ -11,8 +11,9 @@ use Opencast\Models\Helpers;
 use Opencast\AppFactory;
 use Opencast\RouteMap;
 
+use Courseware\CoursewarePlugin;
 
-class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
+class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -513,5 +514,37 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     public function getAssetsUrl()
     {
         return $this->assetsUrl;
+    }
+
+    /**
+     * Implement this method to register more block types.
+     *
+     * You get the current list of block types and must return an updated list
+     * containing your own block types.
+     *
+     * @param array $otherBlockTypes the current list of block types
+     *
+     * @return array the updated list of block types
+     */
+    public function registerBlockTypes(array $otherBlockTypes): array
+    {
+        $otherBlockTypes[] = OpencastBlock::class;
+
+        return $otherBlockTypes;
+    }
+
+    /**
+     * Implement this method to register more container types.
+     *
+     * You get the current list of container types and must return an updated list
+     * containing your own container types.
+     *
+     * @param array $otherContainerTypes the current list of container types
+     *
+     * @return array the updated list of container types
+     */
+    public function registerContainerTypes(array $otherContainerTypes): array
+    {
+        return $otherContainerTypes;
     }
 }

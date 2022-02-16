@@ -1,7 +1,16 @@
 <template>
     <div>
-        <OpencastDialog :title="Episodehinzufügen" @close="decline">
-            <template v-slot:content>
+        <StudipDialog
+            title="Episode hinzufügen"
+            confirmText="Hochladen"
+            :confirmClass="'accept'"
+            closeText="Abbrechen"
+            :closeClass="'cancel'"
+            height="350"
+            @close="decline"
+            @confirm="accept"
+        >
+            <template v-slot:dialogContent>
                 <form class="default"
                     style="max-width: 50em;"
                 >
@@ -28,41 +37,26 @@
                     </fieldset>
                 </form>
             </template>
-            <template v-slot:buttons>
-                <StudipButton icon="accept" type="button" 
-                @click="accept" 
-                class="ui-button ui-corner-all ui-widget"
-                v-translate>
-                    Akzeptieren
-                </StudipButton>
-
-                <StudipButton icon="cancel" type="button" 
-                @click="decline" 
-                class="ui-button ui-corner-all ui-widget"
-                v-translate>
-                    Abbrechen
-                </StudipButton>
-            </template>
-        </OpencastDialog>
+        </StudipDialog>
     </div>
 </template>
 
 <script>
 import OpencastDialog from '@/components/OpencastDialog'
 import StudipButton from '@/components/StudipButton'
+import StudipDialog from 'studip/components/StudipDialog'
 import { dialog } from '@/common/dialog.mixins'
 
 export default {
     name: 'EpisodeAdd',
 
     components: {
-        OpencastDialog, StudipButton
+        OpencastDialog, StudipButton, StudipDialog
     },
-
-    mixins: [dialog],
 
     data () {
         return {
+            showAddEpisodeDialog: false,
             event: {}
         }
     },

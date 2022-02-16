@@ -1,4 +1,4 @@
-<div class="container" id="app">
+<div class="container" id="opencast">
     <h1 class="display-1 text-center">Starte Anwendung&hellip;</h1>
 </div>
 

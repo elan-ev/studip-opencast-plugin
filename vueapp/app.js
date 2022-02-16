@@ -54,7 +54,7 @@ $(function() {
         store,
         apolloProvider: createProvider(),
         render: h => h(App)
-    }).$mount('#app');
+    }).$mount('#opencast');
 
     if (CID !== null) {
         store.dispatch('setCID', CID);

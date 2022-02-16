@@ -30,7 +30,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import store from "@/store";
 
 import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";

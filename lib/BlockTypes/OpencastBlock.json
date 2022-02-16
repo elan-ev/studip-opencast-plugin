@@ -1,0 +1,20 @@
+{
+    "title": "Payload schema of OpencastBlock",
+    "type": "object",
+    "properties": {
+        "series_id" : {
+            "type": "string"
+        },
+        "episode_id": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        },
+        "visible": {
+            "type": "string"
+        }
+    },
+    "required": ["series_id", "episode_id", "url", "visible"],
+    "additionalProperties": false
+}

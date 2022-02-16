@@ -49,6 +49,7 @@ export default {
             }
             this.id = uniqueIdArr.join('-');
         },
+
         showDialog() {
             let self = this;
             // handle mobile devices
@@ -78,7 +79,7 @@ export default {
                     "ui-dialog": "studip-confirmation"
                 };
             }
-            
+
             // .studip-confirmation
             options.open = (event, ui) => {
                 //Handle blur background
@@ -87,7 +88,7 @@ export default {
                 $('#layout_wrapper').css('filter', 'blur(' + (parseInt(blurIndex) + 1) + 'px)');
                 if (self.parentId) {
                     $('#' + self.parentId).parent().css('filter', 'blur(1px)');
-                    $('#' + self.parentId).parent().find('button, input, select, a, textarea').prop('disabled', true).attr('disabled', 'disabled');                    
+                    $('#' + self.parentId).parent().find('button, input, select, a, textarea').prop('disabled', true).attr('disabled', 'disabled');
                     if ($('#' + self.parentId).parent().hasClass('ui-draggable')) {
                         $('#' + self.parentId).parent().draggable( 'disable' )
                     }
@@ -125,7 +126,7 @@ export default {
                             }
                         });
                     }
-                    //Handle Nested Dialogs 
+                    //Handle Nested Dialogs
                     ////make sure the child dialog is showing on-top when nested!
                     if (self.parentId) {
                         var zIndex = $('#' + self.parentId).parent().css('z-index');
@@ -135,7 +136,7 @@ export default {
                     }
                 }, 250);
             }
-        
+
             options.close = (event, ui) => {
                 //Handle Buttons - send them to original place in order to have consistency!
                 if ($('#' + self.id).next('.ui-dialog-buttonpane')) {
@@ -164,10 +165,12 @@ export default {
                 }
 
                 self.$emit('close');
+                console.log('DialogID', self.id);
                 $('#' + self.id).dialog('destroy');
             }
             $('#' + this.id).dialog(options);
         },
+
         scrollToTop() {
             if ($('#' + this.id).find('.messagebox.messagebox_error:not(.shown)').length) {
                 $('#' + this.id).animate({ scrollTop: 0}, 'slow', () => {
@@ -178,7 +181,7 @@ export default {
     },
     mounted () {
         this.setUniqueDialogId()
-    }, 
+    },
     updated () {
         this.showDialog();
         this.scrollToTop();

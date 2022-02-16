@@ -1,5 +1,5 @@
 <template>
-    <div class="container" id="app">
+    <div class="container" id="opencast">
         <Error />
 
         <div class="content">
