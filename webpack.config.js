@@ -71,7 +71,7 @@ module.exports = (env) => {
             extensions: ['.vue', '.js'],
             alias: {
                 '@': path.resolve(__dirname, 'vueapp'),
-                'studip': env.studip
+                '@studip': env.studip
             }
         }
     }

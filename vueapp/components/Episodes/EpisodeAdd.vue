@@ -6,7 +6,7 @@
             :confirmClass="'accept'"
             closeText="Abbrechen"
             :closeClass="'cancel'"
-            height="350"
+            height="500"
             @close="decline"
             @confirm="accept"
         >
@@ -44,7 +44,7 @@
 <script>
 import OpencastDialog from '@/components/OpencastDialog'
 import StudipButton from '@/components/StudipButton'
-import StudipDialog from 'studip/components/StudipDialog'
+import StudipDialog from '@studip/components/StudipDialog'
 import { dialog } from '@/common/dialog.mixins'
 
 export default {
