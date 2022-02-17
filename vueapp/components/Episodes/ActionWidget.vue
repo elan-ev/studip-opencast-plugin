@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import StudipIcon from '../StudipIcon.vue';
+import StudipIcon from '@/components/StudipIcon.vue';
 import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
 
 export default {
-    name: 'courseware-action-widget',
+    name: 'episodes-action-widget',
     components: {
         StudipIcon, EpisodeAdd
     },

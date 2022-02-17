@@ -2,6 +2,7 @@
     <div class="container" id="app-episodes">
         <Navbar></Navbar>
         <EpisodeList></EpisodeList>
+
         <MountingPortal mountTo="#action-widget" name="sidebar-actions" append>
             <action-widget @uploadVideo="uploadVideo"></action-widget>
         </MountingPortal>
@@ -11,9 +12,6 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@/components/StudipButton";
-import StudipIcon from "@/components/StudipIcon";
-import MessageBox from "@/components/MessageBox";
 import EpisodeList from "@/components/Episodes/EpisodeList"
 import Navbar from "@/components/Episodes/Navbar"
 import ActionWidget from '../components/Episodes/ActionWidget';
@@ -28,9 +26,7 @@ export default {
     },
 
     components: {
-        StudipButton, StudipIcon,
-        MessageBox, EpisodeList,
-        Navbar, ActionWidget,
+        EpisodeList, Navbar, ActionWidget,
     },
 
     methods: {
