@@ -11,7 +11,35 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent>
-                {{ servers }}
+                <form class="default">
+                    <fieldset v-translate>
+                        <legend v-translate>
+                            Weitere Serie verknüpfen
+                        </legend>
+
+                        <h4 v-translate>
+                            Server auswählen
+                        </h4>
+
+                        <label v-for="server in servers.servers"
+                            class="oc--server--mini-card "
+                        >
+                            <input class="studip_checkbox"
+                                type="radio"
+                                name="servers"
+                                v-model="selectedServer"
+                                :value="server.id">
+                            <span>
+                                #{{ server.id }} - {{ server.service_version }}
+                                <p>
+                                    {{ server.service_url }}
+                                </p>
+                            </span>
+                        </label>
+
+
+                    </fieldset>
+                </form>
             </template>
         </StudipDialog>
     </div>
@@ -29,6 +57,12 @@ export default {
         StudipDialog
     },
 
+    data() {
+        return {
+            selectedServer: 0
+        }
+    },
+
     computed: {
         ...mapGetters(['servers'])
     },
@@ -44,8 +78,14 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadServers');
-        //let lti =
+        this.$store.dispatch('loadServers').then(() => {
+            for (let id in this.servers.servers) {
+                let server = this.servers.servers[id];
+                let lti = new LtiService(server.id);
+                lti.setLaunchData(server.lti);
+                lti.authenticate();
+            }
+        });
     }
 }
 </script>

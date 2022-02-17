@@ -179,6 +179,16 @@ $episode-background: $light-gray-color-20;
     width: 300px;
 }
 
+.oc--server--mini-card {
+    input[type=radio] {
+        float: left;
+    }
+
+    span {
+        display: block;
+        margin-left: 2em;
+    }
+}
 
 li.oc--loadingbar {
     margin: 5px 0px;

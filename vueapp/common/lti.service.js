@@ -33,6 +33,10 @@ class LtiService {
         });
     }
 
+    setLaunchData(lti) {
+        this.lti = lti;
+    }
+
     getLaunchUrl() {
         if (!this.isAuthenticated()) {
             throw new LtiException();
@@ -58,7 +62,9 @@ class LtiService {
     async authenticate()
     {
         try {
-            await this.loadLaunchData();
+            if (this.lti === null) {
+                await this.loadLaunchData();
+            }
         } catch (e) {
             return e;
         }
