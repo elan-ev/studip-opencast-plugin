@@ -1,8 +1,8 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Aufzeichnung entfernen')"
-            :confirmText="$gettext('Löschen')"
+            :title="$gettext('Mit diesem Kurs verknüpfte Opencast Serien')"
+            :confirmText="$gettext('Speichern')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
@@ -11,24 +11,27 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent>
-                <p>Möchten Sie die Aufzeichnung wirklich entfernen?</p>
+                {{ servers }}
             </template>
         </StudipDialog>
     </div>
 </template>
 
 <script>
-import StudipDialog from '@studip/components/StudipDialog'
-import { dialog } from '@/common/dialog.mixins'
+import { mapGetters } from 'vuex';
+import { LtiService } from '@/common/lti.service';
+import StudipDialog from '@studip/components/StudipDialog';
 
 export default {
-    name: 'EpisodeDeleteDialog',
+    name: 'SeriesManager',
 
     components: {
         StudipDialog
     },
 
-    mixins: [dialog],
+    computed: {
+        ...mapGetters(['servers'])
+    },
 
     methods: {
         accept() {
@@ -38,6 +41,11 @@ export default {
         decline() {
             this.$emit('cancel');
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('loadServers');
+        //let lti =
     }
 }
 </script>

@@ -1,6 +1,3 @@
-import Vue from "vue";
-import ApiService from "@/common/api.service";
-
 const initialState = {
     messages: [],
     message_num: 1

@@ -34,6 +34,7 @@ class RouteMap
         $this->app->get('/resources', Routes\Resources\ResourcesList::class);
 
         $this->app->get('/lti/launch_data/{id}', Routes\LTI\LaunchData::class);
+        $this->app->get('/lti/servers', Routes\LTI\Servers::class);
 
         $this->app->any('/graphql', GraphQL\GraphQL::class);
         ##TEMPLATE##

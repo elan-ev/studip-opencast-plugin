@@ -9,7 +9,7 @@
                     <studip-icon icon="arr_1right" role="clickable" size="24"/>
                 </button>
             </nav>
-            <div class="cw-ribbon-breadcrumb">Test Thema</div>
+            <div class="cw-ribbon-breadcrumb">Startseite</div>
         </div>
         <div class="cw-ribbon-wrapper-right">
             <button class="cw-ribbon-button">

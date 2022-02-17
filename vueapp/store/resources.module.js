@@ -1,4 +1,3 @@
-import Vue from "vue";
 import ApiService from "@/common/api.service";
 
 const initialState = {

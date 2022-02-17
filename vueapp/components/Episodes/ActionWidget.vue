@@ -8,33 +8,36 @@
             <studip-icon style="margin-left: -20px;" icon="video" role="clickable"/>
             Video Aufnehmen
         </li>
-        <li class="cw-action-widget" @click="addTestEvent">
+        <li class="cw-action-widget" @click="showSeriesDialog=true;">
             <studip-icon style="margin-left: -20px;" icon="add" role="clickable"/>
-            Test Episode hinzufügen
-        </li>
-        <li class="cw-action-widget" @click="showAddDialog = true">
-            <studip-icon style="margin-left: -20px;" icon="add" role="clickable"/>
-            Episode hinzufügen
+            Serien verwalten
         </li>
 
         <EpisodeAdd v-if="showAddDialog"
             @done="showAddDialog = false"
             @cancel="showAddDialog = false"/>
+
+        <SeriesManager v-if="showSeriesDialog"
+            @done="showSeriesDialog = false"
+            @cancel="showSeriesDialog = false"/>
+
     </ul>
 </template>
 
 <script>
 import StudipIcon from '@/components/StudipIcon.vue';
 import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
+import SeriesManager from '@/components/SeriesManager'
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon, EpisodeAdd
+        StudipIcon, EpisodeAdd, SeriesManager
     },
     data() {
         return {
-            showAddDialog: false
+            showAddDialog: false,
+            showSeriesDialog: false
         }
     },
     watch: {
@@ -44,16 +47,7 @@ export default {
     },
 
     methods: {
-        addTestEvent() {
-            this.$store.dispatch('addEvent',
-                {
-                    id: "123-x",
-                    title: "testi",
-                    author: "Testor",
-                    type: "upload"
-                }
-            );
-        }
+
     }
 }
 </script>

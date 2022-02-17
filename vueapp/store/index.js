@@ -6,6 +6,7 @@ import config from "./config.module";
 import events from "./events";
 import resources from "./resources.module";
 import messages from "./messages.module";
+import series from "./series.module";
 
 Vue.use(Vuex);
 Vue.config.devtools = true // Need this to use devtool browser extension
@@ -16,6 +17,7 @@ export default new Vuex.Store({
     config,
     resources,
     events,
-    messages
+    messages,
+    series
   }
 });

@@ -1,10 +1,10 @@
 <template>
     <div>
         <StudipDialog
-            title="Episode hinzufügen"
-            confirmText="Hochladen"
+            :title="$gettext('Episode hinzufügen')"
+            :confirmText="$gettext('Hochladen')"
             :confirmClass="'accept'"
-            closeText="Abbrechen"
+            :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
             height="500"
             @close="decline"
@@ -42,16 +42,13 @@
 </template>
 
 <script>
-import OpencastDialog from '@/components/OpencastDialog'
-import StudipButton from '@/components/StudipButton'
 import StudipDialog from '@studip/components/StudipDialog'
-import { dialog } from '@/common/dialog.mixins'
 
 export default {
     name: 'EpisodeAdd',
 
     components: {
-        OpencastDialog, StudipButton, StudipDialog
+        StudipDialog
     },
 
     data () {
