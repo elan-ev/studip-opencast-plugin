@@ -6,33 +6,38 @@ Vue.use(Router);
 export default new Router({
     routes: [
         {
-            name: "course",
             path: "/",
-            component: () => import("@/views/Course"),
+            component: () => import("@/views/RouterView"),
+
+            children: [
+                {
+                    name: "episodes",
+                    path: "episodes",
+                    component: () => import("@/views/Episodes")
+                },
+                {
+                    name: "scheduler",
+                    path: "scheduler",
+                    component: () => import("@/views/Scheduler")
+                },
+
+                {
+                    name: "manager",
+                    path: "manager",
+                    props: true,
+                    component: () => import("@/views/Manager")
+                }
+            ]
         },
+
         {
-            name: "episodes",
             path: "/",
-            component: () => import("@/views/Episodes"),
-        },
-        {
-            name: "scheduler",
-            path: "/scheduler",
-            component: () => import("@/views/Scheduler"),
-        },
-        {
-            name: "manager",
-            path: "/",
-            component: () => import("@/views/Manager"),
-        },
-        {
-            path: "/",
-            component: () => import("@/views/Admin"),
+            component: () => import("@/views/RouterView"),
 
             children: [
                 {
                     name: "admin",
-                    path: "/admin",
+                    path: "admin",
                     component: () => import("@/views/AdminOverview")
                 },
                 {

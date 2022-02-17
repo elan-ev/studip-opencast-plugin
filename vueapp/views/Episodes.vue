@@ -2,7 +2,7 @@
     <div class="container" id="app-episodes">
         <Navbar></Navbar>
         <EpisodeList></EpisodeList>
-        <MountingPortal mountTo="#action-widget" name="sidebar-actions">
+        <MountingPortal mountTo="#action-widget" name="sidebar-actions" append>
             <action-widget @uploadVideo="uploadVideo"></action-widget>
         </MountingPortal>
     </div>
