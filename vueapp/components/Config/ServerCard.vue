@@ -53,7 +53,7 @@ export default {
             if (this.isAddCard) {
                 this.$router.push({ name: 'add_server'})
             } else {
-                this.$router.push({ name: 'edit_server', params: { id: this.config.id }})
+                this.$router.push({ name: 'edit_server', params: { config: this.config, id: this.config.id }})
             }
         }
     }

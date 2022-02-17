@@ -93,6 +93,14 @@ export default {
         }
     },
 
+    mounted() {
+        if (!this.passwordVisible && this.setting.type == 'password'
+            && this.setting.value)
+        {
+            this.password = '*****';
+        }
+    },
+
     updated() {
         if (!this.passwordVisible && this.setting.type == 'password'
             && this.setting.value)

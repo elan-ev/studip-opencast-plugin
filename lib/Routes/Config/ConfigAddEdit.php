@@ -12,6 +12,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
 use Opencast\Models\LTI\LtiLink;
+use Opencast\Models\LTI\LtiHelper;
 use Opencast\Models\REST\Config as RESTConfig;
 use Opencast\Models\REST\ServicesClient;
 
@@ -162,28 +163,9 @@ class ConfigAddEdit extends OpencastController
         }
 
         if ($config_checked) {
-            // return lti data to test lti connection
-            $search_config = Config::getConfigForService('search', $config->id);
-            $url = parse_url($search_config['service_url']);
-
-            $search_url = $url['scheme'] . '://'. $url['host']
-                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
-
-            $lti_link = new LtiLink(
-                $search_url,
-                $config->settings['lti_consumerkey'],
-                $config->settings['lti_consumersecret']
-            );
-
-            $launch_data = $lti_link->getBasicLaunchData();
-            $signature   = $lti_link->getLaunchSignature($launch_data);
-
-            $launch_data['oauth_signature'] = $signature;
-
-            $lti = [
-                'launch_url'  => $lti_link->getLaunchURL(),
-                'launch_data' => $launch_data
-            ];
+            $lti = LtiHelper::getLaunchData($config->id);
+            
+            SeminarEpisodes::deleteBySQL(1);
 
             return $this->createResponse([
                 'config' => $config->toArray(),

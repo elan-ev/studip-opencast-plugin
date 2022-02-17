@@ -45,7 +45,7 @@ export default {
     },
 
     mounted() {
-        store.dispatch('configListRead');
+        this.$store.dispatch('configListRead');
     }
 };
 </script>
