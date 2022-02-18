@@ -3,14 +3,6 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import ApiService from "@/common/api.service";
 
-/*
-let
-    lti,
-    lifetime,
-    config_id,
-    authenticated = false;
-*/
-
 function LtiException() {};
 
 /**
@@ -39,7 +31,6 @@ class LtiService {
         this.endpoints     = endpoints;
         this.authenticated = false;
         this.lti           = null;
-        this.lifetime      = 0;
     }
 
     belongsTo(config_id, endpoint) {
@@ -49,11 +40,25 @@ class LtiService {
         )
     }
 
+    async checkConnection() {
+        let obj = this;
+
+        return Vue.axios({
+            method: 'GET',
+            url: this.lti.launch_url,
+            crossDomain: true,
+        }).then(({ data }) => {
+            if (!data.roles) {
+                obj.authenticated = false;
+            }
+        }).catch(function (error) {
+            obj.authenticated = false;
+        });
+    }
+
     isAuthenticated() {
         return (
-            this.lti !== null &&
-            this.lifetime >= Math.round(Date.now() / 1000)
-            && this.authenticated
+            this.lti !== null && this.authenticated
         );
     }
 
@@ -80,7 +85,6 @@ class LtiService {
             }
         }).then(() => {
             obj.authenticated = true;
-            obj.lifetime      = Math.round(Date.now() / 1000) + 1800;
             return true;
         }).catch(function (error) {
             return error;

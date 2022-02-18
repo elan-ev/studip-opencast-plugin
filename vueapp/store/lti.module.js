@@ -42,7 +42,10 @@ const actions = {
             reauth_necessary = true;
         } else {
             for (let i = 0;  i < context.state.lti_connections.length; i++) {
-                if (!context.state.lti_connections[i].isAuthenticated()) {
+                let lti = context.state.lti_connections[i];
+                // check if we still are authenticated on the remote server
+                await lti.checkConnection();
+                if (!lti.isAuthenticated()) {
                     reauth_necessary = true;
                 }
             }
@@ -56,12 +59,9 @@ const actions = {
             let lti_connections = [];
             await context.dispatch('loadLaunchData');
 
-            console.log(context.state.launch_data);
-
             for (let id in context.state.launch_data) {
                 let data = context.state.launch_data[id];
 
-                console.log(data);
                 context.commit('setLti', []);
                 let lti = new LtiService(data.config_id, data.endpoints);
                 lti.setLaunchData(data);
@@ -77,7 +77,7 @@ const actions = {
 
 const mutations = {
     setLti(state, data) {
-        state.lti_connections[data.id] = data.lti;
+        state.lti_connections = data;
     },
 
     setLaunchData(state, data) {
