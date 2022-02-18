@@ -12,6 +12,12 @@
         >
             <template v-slot:dialogContent>
                 <form class="default">
+                    <fieldset>
+                        <legend v-translate>
+                            Verknüpfte Serien
+                        </legend>
+
+                    </fieldset>
                     <fieldset v-translate>
                         <legend v-translate>
                             Weitere Serie verknüpfen
@@ -36,8 +42,33 @@
                                 </p>
                             </span>
                         </label>
+                    </fieldset>
 
-
+                    <fieldset v-if="selectedServer">
+                        <label>
+                            <translate>Serie auswählen</translate>
+                            <StudipSelect
+                                :options="searchedSeries"
+                                :reduce="searchedSeries => searchedSeries.series_id"
+                                :clearable="false"
+                                v-model="currentSeries"
+                                class="cw-vs-select"
+                            >
+                                <template #open-indicator="selectAttributes">
+                                    <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
+                                </template>
+                                <template #no-options="{ search, searching, loading }">
+                                    <translate v-if="loadingSeries">Bitte warten, verfügbare Serien werden geladen...</translate>
+                                    <translate v-else>Es wurden keine zugreifbaren Serien gefunden!</translate>
+                                </template>
+                                <template #selected-option="{name}">
+                                    <span>{{name}}</span>
+                                </template>
+                                <template #option="{name}">
+                                    <span>{{name}}</span>
+                                </template>
+                            </StudipSelect>
+                        </label>
                     </fieldset>
                 </form>
             </template>
@@ -49,22 +80,26 @@
 import { mapGetters } from 'vuex';
 import { LtiService } from '@/common/lti.service';
 import StudipDialog from '@studip/components/StudipDialog';
+import StudipSelect from '@studip/components/StudipSelect';
+import StudipIcon from '@studip/components/StudipIcon';
 
 export default {
     name: 'SeriesManager',
 
     components: {
-        StudipDialog
+        StudipDialog, StudipSelect, StudipIcon
     },
 
     data() {
         return {
-            selectedServer: 0
+            selectedServer: 0,
+            searchedSeries: [],
+            currentSeries: null
         }
     },
 
     computed: {
-        ...mapGetters(['servers'])
+        ...mapGetters(['servers', 'series'])
     },
 
     methods: {
@@ -78,14 +113,8 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadServers').then(() => {
-            for (let id in this.servers.servers) {
-                let server = this.servers.servers[id];
-                let lti = new LtiService(server.id);
-                lti.setLaunchData(server.lti);
-                lti.authenticate();
-            }
-        });
+        this.$store.dispatch('loadServers');
+        this.$store.dispatch('authenticateLti');
     }
 }
 </script>

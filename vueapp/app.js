@@ -11,6 +11,7 @@ import DateTimeFilter from "./common/datetime.filter";
 import ErrorFilter from "./common/error.filter";
 import GetTextPlugin from 'vue-gettext';
 import translations from './i18n/translations.json';
+import  { createPopper } from '@popperjs/core';
 
 import { createProvider } from "./vue-apollo";
 

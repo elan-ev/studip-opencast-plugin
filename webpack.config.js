@@ -3,6 +3,8 @@ const path = require('path'); // node.js uses CommonJS modules
 const { VueLoaderPlugin }       = require('vue-loader');
 const HtmlWebpackPlugin         = require('html-webpack-plugin');
 const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
+const MiniCssExtractPlugin      = require("mini-css-extract-plugin");
+
 
 module.exports = (env) => {
     return {
@@ -18,30 +20,47 @@ module.exports = (env) => {
             rules: [{
                 test: /\.vue$/,
                 use: 'vue-loader'
-            }, {
-    			test: /.scss$/,
-    			use: [
-    				{
-    					loader: 'file-loader',
-    					options: {
-    						name: 'styles.css',
-    						outputPath: ''
-    					}
-    				},
+            },
+            {
+                test: /\.css$/,
+                use: [
                     {
-    					loader: 'extract-loader',
-    				},
-    				{
-    					loader: 'css-loader',
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: "css-loader",
                         options: {
-                            url: false
+                            url: false,
+                            importLoaders: 1
                         }
-    				},
-    				{
-    					loader: 'sass-loader'
-    				}
-    			]
-    		}, {
+                    },
+                    {
+                        loader: "postcss-loader"
+                    }
+                ]
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            url: false,
+                            importLoaders: 2
+                        }
+                    },
+                    {
+                        loader: "postcss-loader"
+                    },
+                    {
+                        loader: "sass-loader"
+                    }
+                ]
+            },
+            {
                 test: /\.js?$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
@@ -66,12 +85,17 @@ module.exports = (env) => {
                 minify: false,
                 filename: '../app/views/admin/index.php'
             }),
+            new MiniCssExtractPlugin({
+                filename: "static/[name].css",
+                chunkFilename: "static/[name].css?h=[chunkhash]"
+            }),
         ],
         resolve: {
             extensions: ['.vue', '.js'],
             alias: {
                 '@': path.resolve(__dirname, 'vueapp'),
-                '@studip': env.studip
+                '@studip': env.studip,
+                '@popperjs/core': path.resolve(__dirname, 'node_modules/@popperjs/core')
             }
         }
     }

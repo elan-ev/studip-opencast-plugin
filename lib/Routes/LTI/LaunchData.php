@@ -17,11 +17,14 @@ class LaunchData extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $config = Config::find($args['id']);
+        $configs = Config::findBySql(1);
 
-        if ($config) {
-            $lti = LtiHelper::getLaunchDataForCourse($config->id, \Context::getId());
-            return $this->createResponse(['lti' => $lti], $response);
+        if (!empty($configs)) {
+            $links = [];
+            foreach ($configs as $config) {
+                $links = array_merge($links, LtiHelper::getLaunchDataForCourse($config->id, \Context::getId()));
+            }
+            return $this->createResponse(['lti' => $links], $response);
         } else {
             return $this->createResponse(['lti' => []], $response);
         }

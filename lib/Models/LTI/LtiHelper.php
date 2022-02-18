@@ -3,45 +3,87 @@
 namespace Opencast\Models\LTI;
 
 use Opencast\Models\Config;
+use Opencast\Models\Endpoints;
 
 /**
  * LTI Helper class to create launch data
  */
 class LtiHelper
 {
-    public static function getLtiLink($config_id)
+    /**
+     * Returns an array of LtiLink-objects for every possible endpoint url
+     * for the config with the passed config_id
+     *
+     * @param  int  $config_id   config to check
+     *
+     * @return Array            array of LtiLink
+     */
+    public static function getLtiLinks($config_id)
     {
-        // return lti data to test lti connection
-        $search_config = Config::getConfigForService('search', $config_id);
-        $url = parse_url($search_config['service_url']);
+        $links = [];
+        $endpoints = Endpoints::findByConfig_id($config_id);
 
-        $search_url = $url['scheme'] . '://'. $url['host']
-            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+        foreach ($endpoints as $endpoint) {
+            $url = parse_url($endpoint['service_url']);
 
-        return new LtiLink(
-            $search_url,
-            $config->settings['lti_consumerkey'],
-            $config->settings['lti_consumersecret']
-        );
+            $lti_url = $url['scheme'] . '://'. $url['host']
+                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+
+            if (!$links[$lti_url]) {
+                $links[$lti_url] = [
+                    'link' => new LtiLink(
+                        $lti_url,
+                        $config->settings['lti_consumerkey'],
+                        $config->settings['lti_consumersecret']
+                    ),
+                    'endpoints' => [$endpoint->service_type]
+                ];
+            } else {
+                $links[$lti_url]['endpoints'][] = $endpoint->service_type;
+            }
+        }
+
+        return $links;
     }
 
+    /**
+     * Return basic launch data for every distinct endpoint url for the config
+     * with the passed config_id
+     *
+     * @param  int  $config_id   config to check
+     * @return Array             array of LtiLink
+     */
     public static function getLaunchData($config_id)
     {
+        $lti_links = [];
 
-        $lti_link    = self::getLtiLink($config_id);
-        $launch_data = $lti_link->getBasicLaunchData();
-        $signature   = $lti_link->getLaunchSignature($launch_data);
+        foreach(self::getLtiLinks($config_id) as $lti) {
+            $launch_data = $lti['link']->getBasicLaunchData();
+            $signature   = $lti['link']->getLaunchSignature($launch_data);
 
-        $launch_data['oauth_signature'] = $signature;
+            $launch_data['oauth_signature'] = $signature;
 
-        $lti = [
-            'launch_url'  => $lti_link->getLaunchURL(),
-            'launch_data' => $launch_data
-        ];
+            $lti_links[] = [
+                'launch_url'  => $lti['link']->getLaunchURL(),
+                'launch_data' => $launch_data,
+                'endpoints'   => $lti['endpoints'],
+                'config_id'   => $config_id
+            ];
+        }
 
-        return $lti;
+        return $lti_links;
     }
 
+    /**
+     * Return launch data with user and course for every distinct endpoint url
+     * for the config with the passed config_id
+     *
+     * @param  int  $config_id                 config to check
+     * @param  string $course_id               course_id to add to lti call
+     * @param  string $user_id                 optional, defaults to $GLOBALS['user']->id;
+     *
+     * @return Array             array of LtiLink
+     */
     public static function getLaunchDataForCourse($config_id, $course_id, $user_id = null)
     {
         global $user, $perm;
@@ -50,24 +92,28 @@ class LtiHelper
             $user_id = $user->id;
         }
 
-        $lti_link = self::getLtiLink($config_id);
-
         $role = $perm->have_studip_perm('tutor', $course_id, $user_id)
             ? 'Instructor' : 'Learner';
 
-        $lti_link->setUser($user_id, $role, true);
-        $lti_link->setCourse($course_id);
+        $lti_links = [];
 
-        $launch_data = $lti_link->getBasicLaunchData();
-        $signature   = $lti_link->getLaunchSignature($launch_data);
+        foreach(self::getLtiLinks($config_id) as $lti) {
+            $lti['link']->setUser($user_id, $role, true);
+            $lti['link']->setCourse($course_id);
 
-        $launch_data['oauth_signature'] = $signature;
+            $launch_data = $lti['link']->getBasicLaunchData();
+            $signature   = $lti['link']->getLaunchSignature($launch_data);
 
-        $lti = [
-            'launch_url'  => $lti_link->getLaunchURL(),
-            'launch_data' => $launch_data
-        ];
+            $launch_data['oauth_signature'] = $signature;
 
-        return $lti;
+            $lti_links[] = [
+                'launch_url'  => $lti['link']->getLaunchURL(),
+                'launch_data' => $launch_data,
+                'endpoints'   => $lti['endpoints'],
+                'config_id'   => $config_id
+            ];
+        }
+
+        return $lti_links;
     }
 }

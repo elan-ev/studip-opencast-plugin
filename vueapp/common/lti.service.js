@@ -22,38 +22,36 @@ function LtiException() {};
  */
 class LtiService {
 
-    loadLaunchData() {
-        return ApiService.get('/lti/launch_data/' + this.config_id)
-        .then(({ data }) => {
-            if (data.lti.length == 0) {
-                throw new LtiException('could not retrieve launch data from server!');
-            } else {
-                this.lti = data.lti;
-            }
-        });
-    }
-
     setLaunchData(lti) {
         this.lti = lti;
     }
 
-    getLaunchUrl() {
+    async getLaunchUrl() {
         if (!this.isAuthenticated()) {
-            throw new LtiException();
+            await this.authenticate();
         }
 
         return this.lti.launch_url;
     }
 
-    constructor(config_id) {
+    constructor(config_id, endpoints) {
         this.config_id     = config_id;
+        this.endpoints     = endpoints;
         this.authenticated = false;
         this.lti           = null;
         this.lifetime      = 0;
     }
 
+    belongsTo(config_id, endpoint) {
+        return (
+            this.config_id == config_id
+            && this.endpoints.includes(endpoint)
+        )
+    }
+
     isAuthenticated() {
         return (
+            this.lti !== null &&
             this.lifetime >= Math.round(Date.now() / 1000)
             && this.authenticated
         );
@@ -63,7 +61,7 @@ class LtiService {
     {
         try {
             if (this.lti === null) {
-                await this.loadLaunchData();
+                throw new LtiException('no lti launch data set!');
             }
         } catch (e) {
             return e;
@@ -89,9 +87,9 @@ class LtiService {
         });
     }
 
-    get(resource) {
+    async get(resource) {
         if (!this.isAuthenticated()) {
-            throw new LtiException();
+            await this.authenticate();
         }
 
         return Vue.axios({
@@ -100,9 +98,9 @@ class LtiService {
         });
     }
 
-    post(resource, params) {
+    async post(resource, params) {
         if (!this.isAuthenticated()) {
-            throw new LtiException();
+            await this.authenticate();
         }
 
         return Vue.axios({
@@ -113,9 +111,9 @@ class LtiService {
         });
     }
 
-    getNewMediaPackage() {
+    async getNewMediaPackage() {
         if (!this.isAuthenticated()) {
-            throw new LtiException();
+            await this.authenticate();
         }
 
         //return Vue.axios
