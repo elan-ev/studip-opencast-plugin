@@ -47,29 +47,13 @@ class RestClient
         return static::$me[$config_id];
     }
 
-    function __construct($config_id, $service_type = null)
+    public function __construct($config)
     {
-        if ($config = Config::find($config_id)) {
-            $this->config_id  = $config->id;
-            $this->base_url   = $config->service_url;
-
-            if ($service_type) {
-                if ($endpoint = Endpoints::findBySql(
-                    'config_id = ? AND service_type = ?', [$config_id, $service_type]
-                )) {
-                    $this->base_url = $endpoint[0]->service_url;
-                } else {
-                    throw new RESTError(_("Konnte keine Konfiguration für den Service $service_type  finden."));
-                }
-            }
-
-            $this->username   = $config->service_user;
-            $this->password   = $config->service_password;
-            $this->oc_version = $config->service_version;
-            $this->debug      = $config->settings['debug'] ? true : false;
-        } else {
-            throw new RESTError(_("Die Konfiguration wurde nicht korrekt angegeben."));
-        }
+        $this->config_id  = $config['config_id'];
+        $this->base_url   = $config['service_url'];
+        $this->username   = $config['service_user'];
+        $this->password   = $config['service_password'];
+        $this->oc_version = $config['service_version'];
     }
 
     private function initCurl()
@@ -129,7 +113,7 @@ class RestClient
         return $this->jsonRequest($service_url, $data, $with_res_code, self::POST);
     }
 
-    function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
+    public function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
         if ($is_get) {
             return $this->jsonRequest($service_url, [], $with_res_code, self::GET);
@@ -153,6 +137,8 @@ class RestClient
 
             if ($this->debug) {
                 echo '<pre>';
+                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
+                $timing = microtime(true);
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
@@ -196,6 +182,16 @@ class RestClient
 
             if ($this->debug) {
                 fclose($this->debug);
+                $runtime = (microtime(true) - $timing) / 1000;
+                if ($runtime > 1) {
+                    echo '<span style="font-weight: bold; color: red">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                } else {
+                    echo '<span style="font-weight: bold">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                }
                 echo '</pre>';
             }
 
@@ -234,6 +230,8 @@ class RestClient
 
             if ($this->debug) {
                 echo '<pre>';
+                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
+                $timing = microtime(true);
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
                 curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
@@ -263,6 +261,16 @@ class RestClient
 
             if ($this->debug) {
                 fclose($this->debug);
+                $runtime = (microtime(true) - $timing) / 1000;
+                if ($runtime > 1) {
+                    echo '<span style="font-weight: bold; color: red">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                } else {
+                    echo '<span style="font-weight: bold">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                }
                 echo '</pre>';
             }
 

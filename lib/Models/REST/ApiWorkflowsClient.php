@@ -1,15 +1,16 @@
 <?php
+namespace Opencast\Models\REST;
 
-use Opencast\Models\OCConfig;
+use Opencast\Models\Config;
 
-class ApiWorkflowsClient extends OCRestClient
+class ApiWorkflowsClient extends RestClient
 {
     public static $me;
     public $serviceName = "ApiWorkflows";
 
     function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('apiworkflows', $config_id)) {
+        if ($config = Config::getConfigForService('apiworkflows', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));

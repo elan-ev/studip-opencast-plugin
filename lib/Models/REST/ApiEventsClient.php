@@ -1,15 +1,16 @@
 <?php
+namespace Opencast\Models\REST;
 
-use Opencast\Models\OCConfig;
+use Opencast\Models\Config;
 
-class ApiEventsClient extends OCRestClient
+class ApiEventsClient extends RestClient
 {
     public static $me;
     public        $serviceName = 'ApiEvents';
 
     public function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('apievents', $config_id)) {
+        if ($config = Config::getConfigForService('apievents', $config_id)) {
             parent::__construct($config);
         } else {
             throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
@@ -107,7 +108,7 @@ class ApiEventsClient extends OCRestClient
             $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
 
         return array_reduce($events, function ($events, $event) {
-            $events[$event->identifier] = $event;
+            $events[$event['identifier']] = $event;
             return $events;
         }, []);
     }
