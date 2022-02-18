@@ -18,44 +18,6 @@ class Config extends \SimpleOrMap
         parent::configure($config);
     }
 
-
-    /**
-     * Return the complete configuration for the passed course
-     *
-     * @param  string $course_id
-     *
-     * @return mixed  the configuration data for the passed course
-     */
-    static function getConfigForCourse($course_id)
-    {
-        static $config;
-
-        if (!$config[$course_id]) {
-            $config_id = self::getConfigIdForCourse($course_id);
-            if ($config_id) {
-                $settings  = Configuration::instance($config_id);
-                $oc_config = self::getBaseServerConf($config_id);
-
-                $config[$course_id] = array_merge($oc_config, $settings->toArray());
-            }
-        }
-
-        return $config[$course_id];
-    }
-
-    /**
-     * get id of used config for passed course
-     *
-     * @param string $course_id
-     *
-     * @return int
-     */
-    static function getConfigIdForCourse($course_id)
-    {
-        return SeminarSeries::findOneBySeminar_id($course_id)->config_id;
-    }
-
-
     /**
      * function getConfigForService  - retries configutation for a given REST-Service-Client
      *
