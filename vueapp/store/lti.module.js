@@ -51,7 +51,7 @@ const actions = {
             }
         }
 
-        console.log('reauthentication necessery?', reauth_necessary);
+        console.log('LTI reauthentication necessary?', reauth_necessary);
 
         // if no launch_data has yet been retrieved or some connections are not authenticated,
         // load launch data from server and recreate all lti connections and authenticate them

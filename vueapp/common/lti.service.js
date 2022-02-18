@@ -47,6 +47,7 @@ class LtiService {
             method: 'GET',
             url: this.lti.launch_url,
             crossDomain: true,
+            withCredentials: true
         }).then(({ data }) => {
             if (!data.roles) {
                 obj.authenticated = false;

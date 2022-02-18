@@ -22,8 +22,14 @@ class LtiHelper
     {
         $links = [];
         $endpoints = Endpoints::findByConfig_id($config_id);
+        $config    = Config::find($config_id);
 
         foreach ($endpoints as $endpoint) {
+            // skip 'services' endpoints
+            if ($endpoint->service_type == 'services') {
+                continue;
+            }
+
             $url = parse_url($endpoint['service_url']);
 
             $lti_url = $url['scheme'] . '://'. $url['host']
