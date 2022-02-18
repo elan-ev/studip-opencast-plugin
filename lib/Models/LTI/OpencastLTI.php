@@ -285,9 +285,9 @@ class OpencastLTI
     public static function apply_acl_to_courses($acl, $courses, $target_id, $target_type)
     {
         if ($target_type == 'series') {
-            $client = \ApiSeriesClient::create($courses[0]);
+            $client = ApiSeriesClient::create($courses[0]);
         } else if ($target_type == 'episode') {
-            $client = \ApiEventsClient::create($courses[0]);
+            $client = ApiEventsClient::create($courses[0]);
 
             // check, if the target episode has a running workflow or the visibility has been changed less than 2 minutes ago
             $workflow = $client->getEpisode($target_id)[1]->processing_state;

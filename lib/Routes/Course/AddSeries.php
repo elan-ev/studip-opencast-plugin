@@ -9,8 +9,10 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\SeminarSeries;
-use Opencast\Models\REST\SeriesClient;
+use Opencast\Models\REST\ApiSeriesClient;
 use Opencast\Models\LTI\OpencastLTI;
+use Opencast\Models\LTI\ACL;
+use Opencast\Providers\Perm;
 
 class AddSeries extends OpencastController
 {
@@ -23,32 +25,34 @@ class AddSeries extends OpencastController
         $course_id = $args['course_id'];
         $json = $this->getRequestData($request);
 
-        if ($perm->have_studip_perm('tutor', $course_id)) {
+        if (Perm::editAllowed($course_id)) {
 
             $check = SeminarSeries::findBySql('seminar_id = ? AND series_id = ?', [
                 $course_id, $json['series_id']
             ]);
 
+            // TODO: remove me!
             if (!empty($check)) {
                 $check[0]->delete();
             }
 
+            // TODO: fix me
             if (true || empty($check)) {
                 $series = new SeminarSeries();
                 $series->setData([
                     'seminar_id' => $course_id,
                     'series_id'  => $json['series_id'],
                     'config_id'  => $json['config_id'],
-                    'visibility' => 'visible'
+                    'visibility' => ACL::getDefaultVisibility($course_id)
                 ]);
                 $series->store();
 
-                OpencastLTI::setAcls($course_id);
+                ACL::setForSeries($course_id, $json['config_id'], $json['series_id']);
 
                 $results = $series->toArray();
 
-                $sclient = SeriesClient::getInstance($json['config_id']);
-                $results[$key]['details'] = $sclient->getSeries($series['series_id']);
+                $sclient = ApiSeriesClient::getInstance($json['config_id']);
+                $results['details'] = $sclient->getSeries($series['series_id']);
 
                 return $this->createResponse(['series' => $results], $response);
             } else {

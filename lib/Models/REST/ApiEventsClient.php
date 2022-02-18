@@ -2,6 +2,7 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
+use Opencast\Models\Helpers;
 
 class ApiEventsClient extends RestClient
 {
@@ -132,13 +133,10 @@ class ApiEventsClient extends RestClient
         return $events;
     }
 
-    public function getVisibilityForEpisode($series_id, $episode_id, $course_id = null)
+    public function getVisibilityForEpisode($series_id, $episode_id, $course_id )
     {
-        if (is_null($course_id)) {
-            $course_id = Context::getId();
-        }
+        $acls     = self::getAclForEpisode($series_id, $episode_id);
 
-        $acls    = self::getAclForEpisode($series_id, $episode_id);
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -147,7 +145,7 @@ class ApiEventsClient extends RestClient
             : 'visible';
 
         if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+            Helper::setVisibilityForEpisode($course_id, $episode_id, $default);
             return $default;
         }
 
@@ -182,7 +180,7 @@ class ApiEventsClient extends RestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+        Helpers::setVisibilityForEpisode($course_id, $episode_id, $default);
         return $default;
     }
 }

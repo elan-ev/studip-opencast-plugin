@@ -1,8 +1,8 @@
 <?
 
-use Opencast\Models\OCUploadStudygroup;
+namespace Opencast\Providers;
 
-class OCPerm
+class Perm
 {
     /**
      * checks, if the current user has lecturer rights in the oc plugin
@@ -15,16 +15,13 @@ class OCPerm
     public static function editAllowed($context_id = null, $user_id = null)
     {
         if (is_null($context_id)) {
-            $context_id = Context::getId();
+            $context_id = \Context::getId();
         }
 
-        // the special upload studygroups allow managing of episodes on an autor level
-        if (self::isUploadStudygroup($context_id)) {
-            $requiredPerm = 'autor';
-        } else {
-            //get permission level for editing episodes
-            $requiredPerm = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
-        }
+        //get permission level for editing episodes
+        $requiredPerm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+
+        // TODO: allow authors editing their own videos as well
 
         return $GLOBALS['perm']->have_studip_perm($requiredPerm, $context_id, $user_id);
     }
@@ -45,14 +42,5 @@ class OCPerm
         if (!self::editAllowed($context_id, $user_id)) {
             throw new AccessDeniedException('Sie haben keine Berechtigung zum Zugriff auf diese Funktion.');
         }
-    }
-
-    private static function isUploadStudygroup($course_id)
-    {
-        if (StudygroupModel::isStudygroup($course_id)) {
-            return !empty(OCUploadStudygroup::findOneBySql('studygroup_id = ?', [$course_id]));
-        }
-
-        return false;
     }
 }

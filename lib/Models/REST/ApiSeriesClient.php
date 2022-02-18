@@ -25,11 +25,16 @@ class ApiSeriesClient extends RestClient
     public function setACL($series_id, $acl)
     {
         $data = [
-            'acl' => json_encode($acl->toArray())
+            'acl' => json_encode($acl)
         ];
 
         $result = $this->putJSON('/' . $series_id . '/acl', $data, true);
 
         return $result[1] == 200;
+    }
+
+    public function getSeries($series_id)
+    {
+        return $this->getJSON('/'. $series_id);
     }
 }

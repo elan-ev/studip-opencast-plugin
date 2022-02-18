@@ -10,6 +10,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\SeminarSeries;
 use Opencast\Models\REST\SeriesClient;
+use Opencast\Providers\Perm;
 
 class Series extends OpencastController
 {
@@ -21,7 +22,7 @@ class Series extends OpencastController
 
         $course_id = $args['course_id'];
 
-        if ($perm->have_studip_perm('tutor', $course_id)) {
+        if (Perm::editAllowed($course_id)) {
             $series_collection = new \SimpleCollection(SeminarSeries::findBySeminar_id($course_id));
             $series = $series_collection->toArray();
 
