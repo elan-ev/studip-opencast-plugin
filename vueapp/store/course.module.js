@@ -5,7 +5,7 @@ import ApiService from "@/common/api.service";
 
 
 const state = {
-    course_series: [],
+    course_series: []
 }
 
 const getters = {
@@ -23,7 +23,7 @@ const actions = {
             });
     },
 
-    async addCourseSeries({ commit, state }, data) {
+    async addCourseSeries({ commit, state, dispatch }, data) {
         return ApiService.post('course/series/' + CID, {
             series_id: data.series_id,
             config_id: data.config_id
@@ -31,6 +31,34 @@ const actions = {
             let series = state.course_series;
             series.push(data.series);
             commit('setCourseSeries', series);
+
+            // update episode list
+            dispatch('reloadEvents');
+        });
+    },
+
+    async removeCourseSeries({ commit, state, dispatch }, series_id) {
+        // optimistic removal of series from list
+        let series = state.course_series;
+        let new_series = [];
+
+        for (let i in series) {
+            if (series[i].series_id != series_id) {
+                new_series.push(series[i]);
+            }
+        }
+
+        commit('setCourseSeries', new_series);
+
+        // now try to get the server to cooperate
+        return ApiService.delete('course/series/'
+            + CID + '/' + series_id)
+        .then(({ data }) => {
+            // after the call reload the series to make sure our UI is up to date
+            dispatch('loadCourseSeries');
+
+            // update episode list
+            dispatch('reloadEvents');
         });
     }
 }
@@ -38,7 +66,7 @@ const actions = {
 const mutations = {
     setCourseSeries(state, data) {
         state.course_series = data;
-    }
+    },
 }
 
 

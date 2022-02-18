@@ -38,7 +38,8 @@ class RouteMap
         $this->app->get('/opencast/allseries/{id}', Routes\Opencast\AllSeries::class);
 
         $this->app->get('/course/series/{course_id}', Routes\Course\Series::class);
-        $this->app->post('/course/series/{course_id}', Routes\Course\AddSeries::class);
+        $this->app->post('/course/series/{course_id}', Routes\Course\SeriesAdd::class);
+        $this->app->delete('/course/series/{course_id}/{series_id}', Routes\Course\SeriesDelete::class);
 
         $this->app->any('/graphql', GraphQL\GraphQL::class);
         ##TEMPLATE##

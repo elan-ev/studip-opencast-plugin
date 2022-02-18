@@ -18,16 +18,17 @@
             @cancel="showAddDialog = false"/>
 
         <SeriesManager v-if="showSeriesDialog"
+            selectedServer="selectedServer"
+            @setserver="setServer"
             @done="showSeriesDialog = false"
             @cancel="showSeriesDialog = false"/>
-
     </ul>
 </template>
 
 <script>
 import StudipIcon from '@/components/StudipIcon.vue';
 import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
-import SeriesManager from '@/components/SeriesManager'
+import SeriesManager from '@/components/Series/SeriesManager'
 
 export default {
     name: 'episodes-action-widget',
@@ -37,7 +38,8 @@ export default {
     data() {
         return {
             showAddDialog: false,
-            showSeriesDialog: false
+            showSeriesDialog: false,
+            selectedServer: 0
         }
     },
     watch: {
@@ -47,7 +49,9 @@ export default {
     },
 
     methods: {
-
+        setServer(id) {
+            this.selectedServer = id;
+        }
     }
 }
 </script>

@@ -20,18 +20,6 @@ class SeriesClient extends RestClient
         }
     }
 
-    /**
-     *  getSeries() - retrieves seriesmetadata for a given series identifier from conntected Opencast-Matterhorn Core
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return array response of a series
-     */
-    public function getSeries($series_id)
-    {
-        return $this->transformSeriesJSON($this->getJSON("/{$series_id}.json"));
-    }
-
     public function getAllSeriesTitle()
     {
         return $this->getJSON('/allSeriesIdTitle.json');
@@ -42,6 +30,7 @@ class SeriesClient extends RestClient
      * @param string $course_id - course identifier
      * @return bool success or not
      */
+    /*
     public function createSeriesForSeminar($course_id)
     {
         $dublinCore = OCSeriesModel::createSeriesDC($course_id);
@@ -77,46 +66,5 @@ class SeriesClient extends RestClient
             return false;
         }
     }
-
-
-    /**
-     * updateAccesscontrolForSeminar - updates the ACL for a given series in OC Matterhorn
-     * @param string $series_id series identifier
-     * @param array $acl_data ACL
-     * @return bool success or not
-     */
-
-    public function updateAccesscontrolForSeminar($series_id, $acl_data)
-    {
-        $post = ['acl' => $acl_data];
-        $res  = $this->getXML("/{$series_id}/accesscontrol", $post, false, true);
-
-        if ($res[1] == 204) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * transforms multidimensional series array into 2 dimensional array
-     *
-     * @param array $data
-     * @return array
-     */
-    private static function transformSeriesJSON($data)
-    {
-        if (empty($data)) {
-            return false;
-        }
-
-        $res      = [];
-        $var_name = 'http://purl.org/dc/terms/';
-
-        foreach (get_object_vars($data->$var_name) as $key => $val) {
-            $res[$key] = $val[0]->value;
-        }
-
-        return $res;
-    }
+    */
 }

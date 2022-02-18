@@ -10,21 +10,38 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent>
-                <form class="default">
-                    <fieldset>
-                        <legend v-translate>
-                            Verknüpfte Serien
-                        </legend>
+                <table class="default" v-if="course_series.length">
+                    <caption v-translate>
+                        Verknüpfte Serien
+                    </caption>
+                    <thead>
+                        <th>Titel</th>
+                        <th>Ersteller/in</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="entry in course_series">
+                            <td v-if="!entry.details" colspan="3">
+                                Die Serie mit der ID {{ entry.series_id }}, Server #{{ entry.config_id }}
+                                konnte nicht ihm angeschlossenen Opencast-System gefunden werden!
+                            </td>
 
-                        <article v-for="entry in course_series">
-                            <span v-if="!entry.details">
-                                Die Serie mit der ID {{ entry.id }} konnte nicht ihm angeschlossenen Opencast-System gefunden werden!
-                            </span>
-                            <span v-else>
+                            <td v-if="entry.details">
                                 {{ entry.details.title }}
-                            </span>
-                        </article>
-                    </fieldset>
+                            </td>
+                            <td v-if="entry.details">
+                                {{ entry.details.creator }}
+                            </td>
+                            <td v-if="entry.details">
+                                <StudipIcon shape="trash" role="clickable"
+                                    @click.prevent="deleteSeries(entry.series_id)"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <form class="default">
                     <fieldset v-translate>
                         <legend v-translate>
                             Weitere Serie verknüpfen
@@ -34,13 +51,15 @@
                             Server auswählen
                         </h4>
 
+                        {{ testing }}
+
                         <label v-for="server in servers"
                             class="oc--server--mini-card "
                         >
                             <input class="studip_checkbox"
                                 type="radio"
                                 name="servers"
-                                v-model="selectedServer"
+                                v-model="setServer(server.id)"
                                 :value="server.id">
                             <span>
                                 #{{ server.id }} - {{ server.service_version }}
@@ -96,6 +115,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { LtiService } from '@/common/lti.service';
+
 import StudipDialog from '@studip/components/StudipDialog';
 import StudipSelect from '@studip/components/StudipSelect';
 import StudipIcon from '@studip/components/StudipIcon';
@@ -104,13 +124,17 @@ import StudipButton from "@/components/StudipButton";
 export default {
     name: 'SeriesManager',
 
+    props: [
+        'selectedServer'
+    ],
+
     components: {
-        StudipDialog, StudipSelect, StudipIcon, StudipButton
+        StudipDialog, StudipSelect, StudipIcon,
+        StudipButton
     },
 
     data() {
         return {
-            selectedServer: 0,
             currentSeries: null,
             loadingSeries: false
         }
@@ -143,11 +167,22 @@ export default {
                 series_id: this.currentSeries,
                 config_id: this.selectedServer
             });
+        },
+
+        deleteSeries(series_id) {
+            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Serie aus diesem Kurs entfernen möchten?'))) {
+                this.$store.dispatch('removeCourseSeries', series_id);
+            }
+        },
+
+        setServer(server_id) {
+            this.$emit('setserver', server_id);
         }
     },
 
     watch: {
         selectedServer(new_id, old_id) {
+            /*
             let view = this;
 
             this.loadingSeries = true;
@@ -156,10 +191,16 @@ export default {
             this.$store.dispatch('loadSeries', new_id).then(() => {
                 view.loadingSeries = false;
             });
+            */
         }
     },
 
+    updated() {
+        console.log('updated');
+    },
+
     mounted() {
+        console.log('mounted');
         this.$store.dispatch('loadServers');
         this.$store.dispatch('loadCourseSeries')
         this.$store.dispatch('authenticateLti');

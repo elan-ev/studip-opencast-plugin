@@ -14,7 +14,7 @@ use Opencast\Models\LTI\OpencastLTI;
 use Opencast\Models\LTI\ACL;
 use Opencast\Providers\Perm;
 
-class AddSeries extends OpencastController
+class SeriesAdd extends OpencastController
 {
     use OpencastTrait;
 
@@ -31,13 +31,7 @@ class AddSeries extends OpencastController
                 $course_id, $json['series_id']
             ]);
 
-            // TODO: remove me!
-            if (!empty($check)) {
-                $check[0]->delete();
-            }
-
-            // TODO: fix me
-            if (true || empty($check)) {
+            if (empty($check)) {
                 $series = new SeminarSeries();
                 $series->setData([
                     'seminar_id' => $course_id,

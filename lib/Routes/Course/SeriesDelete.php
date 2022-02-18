@@ -10,9 +10,11 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\SeminarSeries;
 use Opencast\Models\REST\ApiSeriesClient;
+use Opencast\Models\LTI\OpencastLTI;
+use Opencast\Models\LTI\ACL;
 use Opencast\Providers\Perm;
 
-class Series extends OpencastController
+class SeriesDelete extends OpencastController
 {
     use OpencastTrait;
 
@@ -21,18 +23,20 @@ class Series extends OpencastController
         global $perm;
 
         $course_id = $args['course_id'];
+        $series_id = $args['series_id'];
 
         if (Perm::editAllowed($course_id)) {
-            $series_collection = new \SimpleCollection(SeminarSeries::findBySeminar_id($course_id));
-            $series = $series_collection->toArray();
 
-            foreach($series as $key => $entry) {
-                $sclient = ApiSeriesClient::getInstance($entry['config_id']);
-                $series[$key]['details'] = $sclient->getSeries($entry['series_id']);
+            $check = SeminarSeries::findBySql('seminar_id = ? AND series_id = ?', [
+                $course_id, $series_id
+            ])[0];
+
+
+            if (!empty($check)) {
+                $check->delete();
             }
 
-
-            return $this->createResponse(['series' => $series], $response);
+            return $this->createResponse([], $response);
         } else {
             throw new AccessDeniedException();
         }

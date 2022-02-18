@@ -25,7 +25,7 @@
 
 <script>
 import StudipActionMenu from "@/components/StudipActionMenu"
-import StudipIcon from '../StudipIcon.vue';
+import StudipIcon from '@/components/StudipIcon.vue';
 
 export default {
     name: "Navbar",

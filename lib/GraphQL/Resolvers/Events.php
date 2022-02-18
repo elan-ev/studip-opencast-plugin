@@ -33,12 +33,19 @@ class Events
         $connectedSeries = SeminarSeries::getSeries($course_id);
 
         if (empty($connectedSeries)) {
-            return [];
+            return [
+                'events'    => [],
+                'page_info' => [
+                    'total_items'  => 0,
+                    'current_page' => 0,
+                    'last_page'    => 0
+                ]
+            ];
         }
 
         //$seriesList = [];
         $events  = [];
-        $results = null;
+        $results = [];
 
 
         foreach ($connectedSeries as $series) {

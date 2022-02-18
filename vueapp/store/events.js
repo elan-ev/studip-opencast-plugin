@@ -30,7 +30,7 @@ const mutations = {
         state.limit = limit
     },
 
-    SET_PAGE(state, page) {
+    setPage(state, page) {
         if (page >= 0 && page <= state.paging.lastPage) {
             state.paging.currPage = page
         }
@@ -82,10 +82,19 @@ const actions = {
 
     setPage({commit}, page) {
         apolloClient.stop();
-        commit('SET_PAGE', page)
+        commit('setPage', page)
+    },
+
+    async reloadEvents({ dispatch, commit }) {
+        console.log('reload events...');
+        apolloClient.cache.data.data = {};
+        apolloClient.store.cache.data.data = {};
+        console.log(apolloClient);
+        dispatch('fetchEvents');
     },
 
     async fetchEvents({commit, dispatch}) {
+        console.log('fetch events...');
         const response = await apolloClient.query({
             query: gql`
                 query {
