@@ -33,6 +33,10 @@ export default {
         uploadVideo() {
             this.uploadDialog = true;
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('authenticateLti');
     }
 };
 </script>

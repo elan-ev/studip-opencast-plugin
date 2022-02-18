@@ -1,7 +1,7 @@
 <?php
 // vim: foldmethod=marker
 
-namespace Opencast\LTI;
+namespace Opencast\Models\LTI;
 
 $OAuth_last_computed_signature = false;
 

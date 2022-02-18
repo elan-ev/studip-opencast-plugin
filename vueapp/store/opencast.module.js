@@ -22,16 +22,14 @@ const getters = {
 const actions = {
 
     async loadSeries({commit, dispatch}, id) {
-        /*
-        return ApiService.get('resources')
+        return ApiService.get('opencast/allseries/' + id)
             .then(({ data }) => {
-                context.commit('setServers', data);
+                commit('setSeries', data.series);
             });
-        */
     },
 
-    async loadServers({ commit, dispatch}, id) {
-        return ApiService.get('lti/servers')
+    async loadServers({ commit, dispatch}) {
+        return ApiService.get('opencast/servers')
             .then(({ data }) => {
                 commit('setServers', data.servers);
             });

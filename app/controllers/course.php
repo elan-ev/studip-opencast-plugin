@@ -25,8 +25,6 @@ class CourseController extends OpencastController
     {
         parent::before_filter($action, $args);
         $this->course_id = Context::getId();
-        $this->config = Config::getConfigForCourse($this->course_id);
-        $this->paella = $this->config['paella'] == '0' ? false : true;
     }
 
     /**

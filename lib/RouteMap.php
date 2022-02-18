@@ -34,7 +34,11 @@ class RouteMap
         $this->app->get('/resources', Routes\Resources\ResourcesList::class);
 
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
-        $this->app->get('/lti/servers', Routes\LTI\Servers::class);
+        $this->app->get('/opencast/servers', Routes\Opencast\Servers::class);
+        $this->app->get('/opencast/allseries/{id}', Routes\Opencast\AllSeries::class);
+
+        $this->app->get('/course/series/{course_id}', Routes\Course\Series::class);
+        $this->app->post('/course/series/{course_id}', Routes\Course\AddSeries::class);
 
         $this->app->any('/graphql', GraphQL\GraphQL::class);
         ##TEMPLATE##

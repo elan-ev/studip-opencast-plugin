@@ -74,6 +74,10 @@ export default {
         decline() {
             this.$emit('cancel');
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('authenticateLti');
     }
 }
 </script>

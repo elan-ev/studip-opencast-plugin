@@ -107,6 +107,13 @@ export default {
                     type: 'password',
                     placeholder: 'CONSUMERSECRET',
                     required: true
+                },
+                {
+                    description: this.$gettext('Debugmodus einschalten?'),
+                    name: 'debug',
+                    value: this.currentConfig.settings.debug,
+                    type: 'boolean',
+                    required: false
                 }
             ];
         }

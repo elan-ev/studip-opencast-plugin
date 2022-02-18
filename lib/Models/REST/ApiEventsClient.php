@@ -1,17 +1,19 @@
 <?php
 
-namespace Opencast\Models\REST;
+use Opencast\Models\OCConfig;
 
-use Opencast\Models\Config;
-
-class ApiEventsClient extends RestClient
+class ApiEventsClient extends OCRestClient
 {
     public static $me;
     public        $serviceName = 'ApiEvents';
 
     public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'apievents');
+        if ($config = OCConfig::getConfigForService('apievents', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**
@@ -88,13 +90,24 @@ class ApiEventsClient extends RestClient
         return json_decode(json_encode($this->getJSON('/' . $episode_id . '/acl')), true);
     }
 
+    public function setACL($episode_id, $acl)
+    {
+        $data = [
+            'acl' => json_encode($acl->toArray())
+        ];
+
+        $result = $this->putJSON('/' . $episode_id . '/acl', $data, true);
+
+        return $result[1] == 200;
+    }
+
     public function getBySeries($series_id, $params = [])
     {
         $events = $this->getJSON('/?filter=is_part_of:' .
             $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
 
         return array_reduce($events, function ($events, $event) {
-            $events[$event['identifier']] = $event;
+            $events[$event->identifier] = $event;
             return $events;
         }, []);
     }

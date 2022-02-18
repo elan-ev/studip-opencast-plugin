@@ -47,29 +47,22 @@ class Constants {
             'required'    => true
         ],
         [
-            'name'        => 'livestream',
-            'description' => 'Soll das Live-Streaming aktiviert werden?',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
-            'name'        => 'paella',
-            'description' => 'Soll der Paella Player verwendet werden statt Theodul?',
-            'value'       => 1,
-            'type'        => 'boolean'
-        ],
-        [
             'name'        => 'upload_chunk_size',
             'description' => 'Größe der Chunks für das Hochladen in Byte',
             'value'       => 5000000,
             'type'        => 'integer'
         ],
-
         [
             'name'        => 'time_buffer_overlap',
             'description' => 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern',
             'value'       => 60,
             'type'        => 'integer'
+        ],
+        [
+            'name'        => 'debug',
+            'description' => 'Debugmodus einschalten?',
+            'value'       =>  0,
+            'type'        => 'boolen'
         ]
     ];
 }

@@ -10,9 +10,6 @@ require_once 'lib/models/Institute.class.php';
 require_once 'lib/raumzeit/raumzeit_functions.inc.php';
 require_once 'vendor/trails/trails.php';
 
-/* OC plugin dependencies*/
-require_once __DIR__ .'/classes/lti/OAuth.php';
-
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
 

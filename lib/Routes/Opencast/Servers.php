@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Routes\LTI;
+namespace Opencast\Routes\Opencast;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

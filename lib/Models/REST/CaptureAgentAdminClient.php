@@ -1,15 +1,20 @@
 <?php
 
-namespace Opencast\Models\REST;
+use Opencast\Models\OCConfig;
 
-class CaptureAgentAdminClient extends RestClient
+class CaptureAgentAdminClient extends OCRestClient
 {
     public static $me;
-    public        $serviceName = 'CaptureAgentAdminClient';
 
-    function __construct($config_id = 1)
+    public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'capture-admin');
+        $this->serviceName = 'CaptureAgentAdminClient';
+
+        if ($config = OCConfig::getConfigForService('capture-admin', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception(_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**

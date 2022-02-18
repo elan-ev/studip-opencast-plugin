@@ -1,4 +1,5 @@
 <?php
+namespace Opencast\Models\LTI;
 
 class AccessControlEntity
 {

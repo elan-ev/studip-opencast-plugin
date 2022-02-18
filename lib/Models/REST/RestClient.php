@@ -47,17 +47,6 @@ class RestClient
         return static::$me[$config_id];
     }
 
-    static function create($course_id = null)
-    {
-        if (is_null($course_id)) {
-            $course_id = Context::getId();
-        }
-
-        $config_id = Config::getConfigIdForCourse($course_id) ?: 1;
-
-        return self::getInstance($config_id);
-    }
-
     function __construct($config_id, $service_type = null)
     {
         if ($config = Config::find($config_id)) {
@@ -77,7 +66,7 @@ class RestClient
             $this->username   = $config->service_user;
             $this->password   = $config->service_password;
             $this->oc_version = $config->service_version;
-            $this->debug      = $config->settings->debug ? true : false;
+            $this->debug      = $config->settings['debug'] ? true : false;
         } else {
             throw new RESTError(_("Die Konfiguration wurde nicht korrekt angegeben."));
         }

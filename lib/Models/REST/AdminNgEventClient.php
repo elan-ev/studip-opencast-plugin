@@ -1,17 +1,19 @@
 <?php
 
-namespace Opencast\Models\REST;
+use Opencast\Models\OCConfig;
 
-use Opencast\Models\Config;
-
-class AdminNgEventClient extends RestClient
+class AdminNgEventClient extends OCRestClient
 {
     public static $me;
     public        $serviceName = "Admin-ngEvent";
 
     public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'admin-ngevent');
+        if ($config = OCConfig::getConfigForService('admin-ngevent', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**

@@ -1,10 +1,11 @@
 <?php
+namespace Opencast\Models\LTI;
+
 /**
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
  * @version         1.0 (12:36)
  */
-
 class AccessControlList
 {
     const ACTION_READ = 'read';

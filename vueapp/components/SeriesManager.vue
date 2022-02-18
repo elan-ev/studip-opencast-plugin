@@ -2,11 +2,10 @@
     <div>
         <StudipDialog
             :title="$gettext('Mit diesem Kurs verknüpfte Opencast Serien')"
-            :confirmText="$gettext('Speichern')"
-            :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
+            :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
-            height="500"
+            height="600"
+            width="600"
             @close="decline"
             @confirm="accept"
         >
@@ -17,6 +16,14 @@
                             Verknüpfte Serien
                         </legend>
 
+                        <article v-for="entry in course_series">
+                            <span v-if="!entry.details">
+                                Die Serie mit der ID {{ entry.id }} konnte nicht ihm angeschlossenen Opencast-System gefunden werden!
+                            </span>
+                            <span v-else>
+                                {{ entry.details.title }}
+                            </span>
+                        </article>
                     </fieldset>
                     <fieldset v-translate>
                         <legend v-translate>
@@ -27,7 +34,7 @@
                             Server auswählen
                         </h4>
 
-                        <label v-for="server in servers.servers"
+                        <label v-for="server in servers"
                             class="oc--server--mini-card "
                         >
                             <input class="studip_checkbox"
@@ -48,8 +55,9 @@
                         <label>
                             <translate>Serie auswählen</translate>
                             <StudipSelect
-                                :options="searchedSeries"
-                                :reduce="searchedSeries => searchedSeries.series_id"
+                                :options="computedSeries"
+                                :reduce="computedSeries => computedSeries.identifier"
+                                label="title"
                                 :clearable="false"
                                 v-model="currentSeries"
                                 class="cw-vs-select"
@@ -61,15 +69,24 @@
                                     <translate v-if="loadingSeries">Bitte warten, verfügbare Serien werden geladen...</translate>
                                     <translate v-else>Es wurden keine zugreifbaren Serien gefunden!</translate>
                                 </template>
-                                <template #selected-option="{name}">
-                                    <span>{{name}}</span>
+                                <template #selected-option="{title}">
+                                    <span>{{title}}</span>
                                 </template>
-                                <template #option="{name}">
-                                    <span>{{name}}</span>
+                                <template #option="{title}">
+                                    <span>{{title}}</span>
                                 </template>
                             </StudipSelect>
                         </label>
                     </fieldset>
+
+                    <footer>
+                        <StudipButton icon="accept" v-translate @click.prevent="addSeries"
+                            :class="{
+                                disabled: currentSeries == null
+                            }">
+                            Serie hinzufügen
+                        </StudipButton>
+                    </footer>
                 </form>
             </template>
         </StudipDialog>
@@ -82,24 +99,33 @@ import { LtiService } from '@/common/lti.service';
 import StudipDialog from '@studip/components/StudipDialog';
 import StudipSelect from '@studip/components/StudipSelect';
 import StudipIcon from '@studip/components/StudipIcon';
+import StudipButton from "@/components/StudipButton";
 
 export default {
     name: 'SeriesManager',
 
     components: {
-        StudipDialog, StudipSelect, StudipIcon
+        StudipDialog, StudipSelect, StudipIcon, StudipButton
     },
 
     data() {
         return {
             selectedServer: 0,
-            searchedSeries: [],
-            currentSeries: null
+            currentSeries: null,
+            loadingSeries: false
         }
     },
 
     computed: {
-        ...mapGetters(['servers', 'series'])
+        ...mapGetters(['servers', 'series', 'course_series']),
+
+        computedSeries() {
+            if (this.loadingSeries) {
+                return [];
+            }
+
+            return this.series;
+        }
     },
 
     methods: {
@@ -109,11 +135,33 @@ export default {
 
         decline() {
             this.$emit('cancel');
+        },
+
+        addSeries() {
+            console.log(this.currentSeries);
+            this.$store.dispatch('addCourseSeries', {
+                series_id: this.currentSeries,
+                config_id: this.selectedServer
+            });
+        }
+    },
+
+    watch: {
+        selectedServer(new_id, old_id) {
+            let view = this;
+
+            this.loadingSeries = true;
+            this.currentSeries = null;
+
+            this.$store.dispatch('loadSeries', new_id).then(() => {
+                view.loadingSeries = false;
+            });
         }
     },
 
     mounted() {
         this.$store.dispatch('loadServers');
+        this.$store.dispatch('loadCourseSeries')
         this.$store.dispatch('authenticateLti');
     }
 }

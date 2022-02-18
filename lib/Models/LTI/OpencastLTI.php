@@ -6,12 +6,14 @@
  */
 
 
-namespace Opencast\LTI;
+namespace Opencast\Models\LTI;
 
-use Opencast\Models\OCAccessControl;
-use Opencast\Models\OCConfig;
-use Opencast\Models\OCSeminarSeries;
-use Opencast\Models\OCSeminarEpisodes;
+use Opencast\Models\Config;
+use Opencast\Models\SeminarSeries;
+use Opencast\Models\SeminarEpisodes;
+use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\REST\ApiSeriesClient;
+use Opencast\Models\REST\SearchClient;
 
 class OpencastLTI
 {
@@ -34,23 +36,25 @@ class OpencastLTI
     public static function updateEpisodeVisibility($course_id)
     {
         // check currently set ACLs to update status in Stud.IP if necessary
-        $series        = OCSeminarSeries::getSeries($course_id);
-        $series        = reset($series);
-        $search_client = \SearchClient::create($course_id);
-        $api_client    = \ApiEventsClient::create($course_id);
+        $series_list = SeminarSeries::getSeries($course_id);
 
-        // check the opencast visibility for episodes and update Stud.IP settings
-        foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
-            $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id, $course_id);
+        foreach ($series_list as $series) {
+            $search_client = SearchClient::getInstance($series['config_id']);
+            $api_client    = ApiEventsClient::getInstance($series['config_id']);
 
-            $entry = OCSeminarEpisodes::findOneBySQL(
-                'series_id = ? AND episode_id = ? AND seminar_id = ?',
-                [$series['series_id'], $episode->id, $course_id]
-            );
+            // check the opencast visibility for episodes and update Stud.IP settings
+            foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
+                $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id, $course_id);
 
-            if ($entry && $entry->visible != $vis) {
-                $entry->visible = $vis;
-                $entry->store();
+                $entry = OCSeminarEpisodes::findOneBySQL(
+                    'series_id = ? AND episode_id = ? AND seminar_id = ?',
+                    [$series['series_id'], $episode->id, $course_id]
+                );
+
+                if ($entry && $entry->visible != $vis) {
+                    $entry->visible = $vis;
+                    $entry->store();
+                }
             }
         }
     }
@@ -139,7 +143,7 @@ class OpencastLTI
      */
     public static function generate_acl_mapping_for_course($course_id)
     {
-        $series_list = OCSeminarSeries::getSeries($course_id);
+        $series_list = SeminarSeries::getSeries($course_id);
 
         if (!$series_list) {
             return false;
@@ -161,15 +165,28 @@ class OpencastLTI
         // iterate over all series for this course
         foreach ($series_list as $series) {
             // get all courses connected to this series and iterate over them
-            $entries = OCSeminarSeries::findBySeries_id($series['series_id']);
+            $entries = SeminarSeries::findBySeries_id($series['series_id']);
 
             foreach ($entries as $entry) {
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
-                $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes     = $course_model->getEpisodes(false, true);
+                // get episodes for this series and course
+                $sem_episodes = SeminarEpisodes::findBySql('seminar_id = ? AND series_id = ?', [
+                    $entry['seminar_id'],
+                    $series['series_id']
+                ]);
+
+                $sem_episodes = array_reduce($sem_episodes, function ($sem_episodes, $episode) {
+                    $sem_episodes[$episode['episode_id']] = $episode;
+                    return $sem_episodes;
+                }, []);
+
+                $eventsClient = ApiEventsClient::getInstance($series['config_id']);
+                $episodes     = $eventsClient->getBySeries($series['series_id']);
+
                 foreach ($episodes as $episode) {
-                    $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
+                    $result['e'][$episode['id']][$entry['seminar_id']]
+                        = $sem_episodes[$episode_id]['visibility'] ?: $vis;
                 }
             }
         }
@@ -192,25 +209,25 @@ class OpencastLTI
         $role_l = static::role_learner($course_id);
         $role_i = static::role_instructor($course_id);
 
-        $base_acl = new \AccessControlList('base');
-        $base_acl->add_ace(new \AccessControlEntity('ROLE_ADMIN', 'read', true));
-        $base_acl->add_ace(new \AccessControlEntity('ROLE_ADMIN', 'write', true));
-        $base_acl->add_ace(new \AccessControlEntity($role_i, 'read', true));
-        $base_acl->add_ace(new \AccessControlEntity($role_i, 'write', true));
+        $base_acl = new AccessControlList('base');
+        $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'read', true));
+        $base_acl->add_ace(new AccessControlEntity('ROLE_ADMIN', 'write', true));
+        $base_acl->add_ace(new AccessControlEntity($role_i, 'read', true));
+        $base_acl->add_ace(new AccessControlEntity($role_i, 'write', true));
 
-        $acl_visible = new \AccessControlList(static::generate_acl_name($course_id, 'visible'));
+        $acl_visible = new AccessControlList(static::generate_acl_name($course_id, 'visible'));
         $acl_visible->add_acl($base_acl);
-        $acl_visible->add_ace(new \AccessControlEntity($role_l, 'read', true));
+        $acl_visible->add_ace(new AccessControlEntity($role_l, 'read', true));
         // $acl_visible->add_ace(new \AccessControlEntity($role_l, 'write', false));
 
-        $acl_invisible = new \AccessControlList(static::generate_acl_name($course_id, 'invisible'));
+        $acl_invisible = new AccessControlList(static::generate_acl_name($course_id, 'invisible'));
         $acl_invisible->add_acl($base_acl);
 
-        $acl_free = new \AccessControlList(static::generate_acl_name($course_id, 'free'));
+        $acl_free = new AccessControlList(static::generate_acl_name($course_id, 'free'));
         $acl_free->add_acl($base_acl);
-        $acl_free->add_ace(new \AccessControlEntity($role_l, 'read', true));
+        $acl_free->add_ace(new AccessControlEntity($role_l, 'read', true));
         // $acl_free->add_ace(new \AccessControlEntity($role_l, 'write', false));
-        $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
+        $acl_free->add_ace(new AccessControlEntity('ROLE_ANONYMOUS', 'read', true));
         // $acl_free->add_ace(new \AccessControlEntity('ROLE_ANONYMOUS', 'write', false));
 
 
@@ -228,7 +245,7 @@ class OpencastLTI
         if (count($course_ids) == 1) {
             $name = static::generate_acl_name($course_ids[0], $modes[0], 'course');
         }
-        $resulting_acl = new \AccessControlList($name);
+        $resulting_acl = new AccessControlList($name);
         for ($index = 0; $index < count($course_ids); $index++) {
             $course_id = $course_ids[$index];
             $mode      = $modes[$index];
@@ -279,14 +296,14 @@ class OpencastLTI
             // state is ''.
             // Do not continue on failed or stopped WFs! They MUST prevent StudIP
             // from changing ACLs
-            if (!in_array($workflow, ['SUCCEEDED', ''])) {
+            if (!in_array($workflow, ['SUCCEEDED', 'FAILED', 'STOPPED', ''])) {
                 // do not change ACLs if there is a running workflow!
                 return false;
             }
 
             // check, if the episode entry has been changed just recently
             foreach ($courses as $course_id) {
-                $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ? AND seminar_id = ?', [$target_id, $course_id]);
+                $episode = SeminarEpisodes::findOneBySQL('episode_id = ? AND seminar_id = ?', [$target_id, $course_id]);
 
                 if ($episode->chdate > (time() - 120)) {
                     return false;
@@ -298,16 +315,7 @@ class OpencastLTI
 
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
-            $acl_manager = \ACLManagerClient::create($courses[0]);
-
-            $created_acl = $acl_manager->createACL($acl);
-            if ($created_acl) {
-                if ($acl_manager->applyACLto($target_type, $target_id, $created_acl->id)) {
-                    foreach ($courses as $course) {
-                        OCAccessControl::set_acl_for_course($target_id, $target_type, $course, $created_acl->id);
-                    }
-                }
-            }
+            $client->setACL($target_id, $acl);
         }
     }
 

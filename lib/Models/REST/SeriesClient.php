@@ -24,7 +24,12 @@ class SeriesClient extends RestClient
      */
     public function getSeries($series_id)
     {
-        return $this->getJSON("/{$series_id}.json");
+        return $this->transformSeriesJSON($this->getJSON("/{$series_id}.json"));
+    }
+
+    public function getAllSeriesTitle()
+    {
+        return $this->getJSON('/allSeriesIdTitle.json');
     }
 
     /**
@@ -86,5 +91,27 @@ class SeriesClient extends RestClient
         } else {
             return false;
         }
+    }
+
+    /**
+     * transforms multidimensional series array into 2 dimensional array
+     *
+     * @param array $data
+     * @return array
+     */
+    private static function transformSeriesJSON($data)
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        $res      = [];
+        $var_name = 'http://purl.org/dc/terms/';
+
+        foreach (get_object_vars($data->$var_name) as $key => $val) {
+            $res[$key] = $val[0]->value;
+        }
+
+        return $res;
     }
 }

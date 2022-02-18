@@ -8,7 +8,8 @@ const initialState = {
         'service_password':  null,
         'settings': {
             'lti_consumerkey':    null,
-            'lti_consumersecret': null
+            'lti_consumersecret': null,
+            'debug':              null
         }
     }
 };
