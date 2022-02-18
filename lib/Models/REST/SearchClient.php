@@ -7,11 +7,16 @@ use Opencast\Models\Config;
 class SearchClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'Search';
 
     public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'search');
+        $this->serviceName = 'Search';
+
+        if ($config = Config::getConfigForService('search', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**

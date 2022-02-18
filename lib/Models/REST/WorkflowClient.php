@@ -5,12 +5,18 @@ namespace Opencast\Models\REST;
 class WorkflowClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'WorkflowClient';
 
-    function __construct($config_id = 1)
+    public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'workflow');
+        $this->serviceName = 'WorkflowClient';
+
+        if ($config = Config::getConfigForService('workflow', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
+
 
     /**
      * getWorkflowInstance - Get a specific workflow instance

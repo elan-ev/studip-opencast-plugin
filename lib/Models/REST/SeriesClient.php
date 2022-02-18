@@ -8,11 +8,16 @@ use Opencast\LTI\OpencastLTI;
 class SeriesClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'Series';
 
     public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'series');
+        $this->serviceName = 'Series';
+
+        if ($config = Config::getConfigForService('series', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**

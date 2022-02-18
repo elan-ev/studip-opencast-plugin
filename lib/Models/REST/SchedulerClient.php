@@ -9,11 +9,16 @@ use Opencast\Configuration;
 class SchedulerClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'SchedulerClient';
 
     public function __construct($config_id = 1)
     {
-        parent::__construct($config_id, 'recordings');
+        $this->serviceName = 'SchedulerClient';
+
+        if ($config = Config::getConfigForService('recordings', $config_id)) {
+            parent::__construct($config);
+        } else {
+            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+        }
     }
 
     /**
