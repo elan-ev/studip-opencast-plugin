@@ -72,6 +72,7 @@ class Events
             $track_link = '';
             $length = 0;
             $annotation_tool = '';
+            $downloads = [];
             $publications = $eventsClient->getEpisode($event['identifier'], true)[1]['publications'];
             /*
             foreach ($publications as $publication) {
@@ -86,14 +87,33 @@ class Events
                 }
             }
             */
-            $track_link = $publications[0]['url']; // Right path to Video in new testsystem
+            foreach ($publications as $publication) {
+                if ($publication['channel'] == 'engage-player') {
+                    $track_link = $publication['url'];
+                    $medias = $publication['media'];
+                    foreach ($medias as $media) {
+                        if (in_array('engage-download', $media['tags'])) {
+                            $length = $media['duration'];
+                            $downloads[] = [
+                                'type'   => $media['flavor'],
+                                'url'    => $media['url'],
+                                'width'  => $media['width'],
+                                'height' => $media['height'],
+                                'size'   => $media['size']
+                            ];
+                        }
+                    }
+                }
+            }
 
             $results['events'][] = [
                 'id'              => $event['identifier'],
                 'title'           => $event['title'],
                 'author'          => reset($event['presenter']),
+                'contributor'     => $event['contributor'],
                 'track_link'      => $track_link,
                 'length'          => $length,
+                'downloads'       => $downloads,
                 'annotation_tool' => $annotation_tool,
                 'description'     => $event['description'],
                 'mk_date'         => strtotime($event['created'])

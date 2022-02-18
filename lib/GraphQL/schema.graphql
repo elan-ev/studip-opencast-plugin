@@ -34,14 +34,24 @@ input EventInput {
     id: ID!
     title: String!
     author: String!
+    contributor: [String]
 
     track_link: String
     length: Int
     annotation_tool: String
+    downloads: [Download]
 
     type: EventType
     description: String
     mk_date: Int!
+  }
+
+  type Download {
+    type: String!
+    url: String!
+    width: Int!
+    height: Int!
+    size: Int!
   }
 
   type PageInfo {

@@ -94,9 +94,17 @@ const actions = {
                             id
                             title
                             author
+                            contributor
                             track_link
                             length
                             annotation_tool
+                            downloads {
+                                type
+                                url
+                                width
+                                height
+                                size
+                            }
                             description
                             mk_date
                         }

@@ -29,7 +29,7 @@
                             Autor: {{event.author}}
                         </li>
                         <li v-translate>
-                            Mitwirkende: Das sind Mitwirkende
+                            Mitwirkende: {{event.contributor[0]}}
                         </li>
                         <li v-translate>
                             Beschreibung: {{event.description}}
@@ -40,7 +40,7 @@
                     </ul>
                 </div>
                 <div class="oc--episode-buttons">
-                    <opencast-button icon="download" v-translate>
+                    <opencast-button icon="download" @click="showDownloadDialog=true" v-translate>
                         Download
                     </opencast-button>
 
@@ -63,6 +63,8 @@
                         @done="removeEpisode"
                         @cancel="showDeleteDialog = false"
                     />
+                    <DownloadDialog :downloads="event.downloads" v-if="showDownloadDialog"
+                        @cancel="showDownloadDialog = false"/>
                 </div>
             </div>
         </li>
@@ -74,15 +76,15 @@
 import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
 import EpisodeDeleteDialog from '@/components/Episodes/EpisodeDeleteDialog'
 import OpencastButton from '@/components/OpencastButton'
+import DownloadDialog from '@/components/Episodes/DownloadDialog'
 
 
 export default {
     name: "Episode",
 
     components: {
-        OpencastButton,
-        EpisodeDeleteDialog,
-        EmptyEpisodeCard
+        OpencastButton, EpisodeDeleteDialog,
+        EmptyEpisodeCard, DownloadDialog
     },
 
     props: {
@@ -93,6 +95,7 @@ export default {
     data() {
         return {
             showDeleteDialog: false,
+            showDownloadDialog: false,
             preview: PLUGIN_ASSET_URL + '/images/default-preview.png',
             play: PLUGIN_ASSET_URL + '/images/play.svg'
         }
