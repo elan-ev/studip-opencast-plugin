@@ -26,7 +26,6 @@ class Servers extends OpencastController
                 'id'              => $config['id'],
                 'service_url'     => $config['service_url'],
                 'service_version' => $config['service_version'],
-                'lti'             => LtiHelper::getLaunchDataForCourse($config->id, \Context::getId())
             ];
         }
 

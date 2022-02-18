@@ -33,7 +33,7 @@ const actions = {
     async loadServers({ commit, dispatch}, id) {
         return ApiService.get('lti/servers')
             .then(({ data }) => {
-                commit('setServers', data);
+                commit('setServers', data.servers);
             });
     }
 }

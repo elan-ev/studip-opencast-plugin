@@ -141,16 +141,24 @@ export default {
                 });
             }
 
-            this.checkLti();
+            this.checkLti(data.lti);
         },
 
-        async checkLti() {
+        async checkLti(data) {
             let view = this;
 
-            let lti = new LtiService(this.currentConfig.id);
-            await lti.authenticate();
+            let check_successful = true;
 
-            if (lti.isAuthenticated()) {
+            for (let i = 0; i < data.length; i++) {
+                let lti = new LtiService(this.currentConfig.id, data.endpoints);
+                lti.setLaunchData(data[i]);
+                await lti.authenticate();
+                if (!lti.isAuthenticated()) {
+                    check_successful = false;
+                }
+            }
+
+            if (check_successful) {
                 view.$store.dispatch('addMessage', {
                      type: 'success',
                      text: view.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
