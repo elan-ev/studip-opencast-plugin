@@ -22,11 +22,11 @@ const getters = {
 }
 
 const mutations = {
-    SET_CID(state, cid) {
+    setCid(state, cid) {
         state.cid = cid
     },
 
-    SET_LIMIT(state, limit) {
+    setLimit(state, limit) {
         state.limit = limit
     },
 
@@ -48,11 +48,11 @@ const mutations = {
         }
     },
 
-    ADD_EVENT(state, event) {
+    addEvent(state, event) {
         state.events.push(event)
     },
 
-    REMOVE_EVENT(state, id) {
+    removeEvent(state, id) {
         for (let key in state.events) {
             if (state.events[key].id == id) {
                 state.events[key].refresh = true;
@@ -73,11 +73,11 @@ const mutations = {
 
 const actions = {
     async setCID({commit}, cid) {
-        commit('SET_CID', cid)
+        commit('setCid', cid)
     },
 
     async setLimit({commit}, limit) {
-        commit('SET_LIMIT', limit)
+        commit('setLimit', limit)
     },
 
     setPage({commit}, page) {
@@ -86,18 +86,13 @@ const actions = {
     },
 
     async reloadEvents({ dispatch, commit }) {
-        console.log('reload events...');
-        apolloClient.cache.data.data = {};
-        apolloClient.store.cache.data.data = {};
-
-        console.log(apolloClient);
-        commit('setEvents', []);
-        console.log('Events', state.events);
-        dispatch('fetchEvents');
+        apolloClient.clearStore().then(() =>
+         {
+            dispatch('fetchEvents');
+        });
     },
 
     async fetchEvents({commit, dispatch}) {
-        console.log('fetch events...');
         const response = await apolloClient.query({
             query: gql`
                 query {
@@ -129,13 +124,16 @@ const actions = {
                 }
             `
         }).catch((res) => {
-            const errors = res.graphQLErrors.map((error) => {
-                return error.message;
-            });
-            dispatch('errorCommit', { graphql: errors.join("\n") });
-        });
+            if (res.graphQLErrors) {
+                const errors = res.graphQLErrors.map((error) => {
+                    return error.message;
+                });
 
-        if (response !== undefined) {
+                dispatch('errorCommit', { graphql: errors.join("\n") });
+            } else {
+                dispatch('errorCommit', { graphql: res });
+            }
+        }).then(( response ) => {
             commit('setEvents', response.data.getEvents);
 
             // only update paging if events and paging info are available
@@ -146,7 +144,7 @@ const actions = {
                     totalItems: response.data.getEvents.page_info.total_items
                 });
             }
-        }
+        })
     },
 
     async addEvent({commit, dispatch}, input) {
@@ -166,13 +164,13 @@ const actions = {
                 input: input
             },
             update: (store, { data: { addEvent } }) => {
-                commit('ADD_EVENT', addEvent);
+                commit('addEvent', addEvent);
             },
         });
     },
 
     async removeEvent({commit, dispatch}, id) {
-        commit('REMOVE_EVENT', id);
+        commit('removeEvent', id);
         const response = await apolloClient.mutate({
             mutation: gql`
                 mutation ($course_id: ID!, $id: ID!) {

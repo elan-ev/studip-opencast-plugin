@@ -44,6 +44,7 @@
                                     <span
                                         :aria-label="$gettext('Diesen Dialog schließen')"
                                         class="studip-dialog-close-button"
+                                        :style="dialogCloseIcon"
                                         :title="$gettext('Schließen')"
                                         @click="closeDialog"
                                     >
@@ -197,6 +198,11 @@ export default {
         },
         contentHeight() {
             return this.currentHeight ? this.currentHeight - this.footerHeight + 'px' : 'unset';
+        },
+
+        dialogCloseIcon() {
+            return `background-image: url('` +
+                STUDIP.ASSETS_URL + `/images/icons/white/decline.svg')`
         }
     },
     methods: {

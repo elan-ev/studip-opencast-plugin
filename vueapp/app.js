@@ -51,6 +51,7 @@ Vue.use(GetTextPlugin, {
 
 $(function() {
     window.Vue = new Vue({
+        name: 'Opencast Vue',
         router,
         store,
         apolloProvider: createProvider(),

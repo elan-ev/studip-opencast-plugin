@@ -3,7 +3,7 @@
         <StudipDialog
             :title="$gettext('Mit diesem Kurs verknüpfte Opencast Serien')"
             :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
+            closeClass="cancel"
             height="600"
             width="600"
             @close="decline"
@@ -58,6 +58,7 @@
                                 type="radio"
                                 name="servers"
                                 v-model="selectedServer"
+                                @click="selectServer(server.id)"
                                 :value="server.id">
                             <span>
                                 #{{ server.id }} - {{ server.service_version }}
@@ -157,7 +158,6 @@ export default {
         },
 
         addSeries() {
-            console.log(this.currentSeries);
             this.$store.dispatch('addCourseSeries', {
                 series_id: this.currentSeries,
                 config_id: this.selectedServer
@@ -183,30 +183,6 @@ export default {
             });
         }
     },
-
-
-    /**
-     * This hack is necessary to circumvent binding problems with this component
-     */
-    deactivated() {
-        let elems = document.getElementsByClassName('studip-dialog');
-        for (let i = 0; i < elems.length; i++) {
-            console.log(elems[i].attributes);
-             elems[i].style.display = 'none';
-        }
-    },
-
-    /**
-     * This hack is necessary to circumvent binding problems with this component
-     */
-    activated() {
-        let elems = document.getElementsByClassName('studip-dialog');
-        for (let i = 0; i < elems.length; i++) {
-            console.log(elems[i].attributes);
-             elems[i].style.display = 'block    ';
-        }
-    },
-
 
     mounted() {
         this.$store.dispatch('loadServers');

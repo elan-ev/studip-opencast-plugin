@@ -14,9 +14,12 @@
             @done="uploadDialog = false"
             @cancel="uploadDialog = false"/>
 
-        <SeriesManager v-if="seriesDialog"
-            @done="seriesDialog = false"
-            @cancel="seriesDialog = false"/>
+        <keep-alive>
+            <SeriesManager v-if="seriesDialog"
+                @done="seriesDialog = false"
+                @cancel="seriesDialog = false"
+            />
+        </keep-alive>
     </div>
 </template>
 
