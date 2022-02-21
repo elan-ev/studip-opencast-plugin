@@ -11,7 +11,7 @@
             v-bind:class="{active : paging.currPage == 0}"
             v-bind:disabled="paging.currPage == 0"
             @click="setPage(0)"
-            >
+        >
             1
         </button>
 
@@ -62,10 +62,6 @@ export default {
          * @return Array An array of objects of the type {'title': ..., 'page': ...}
          */
         pageNumbers() {
-            if (this.paging.lastPage > 0 && this.paging.lastPage <= 5) {
-                return [1, 2, 3];
-            }
-
             let numbers = [];
             let countFrom = Math.min(this.paging.lastPage - 4, this.paging.currPage - 1);
             let countTo   = Math.max(5, this.paging.currPage + 2);
@@ -94,7 +90,7 @@ export default {
 
             // show [97] [98] [99] instead of [97] ... [99]
             if (this.paging.lastPage >= 5 && this.paging.currPage < this.paging.lastPage - 2) {
-                if (this.paging.currPage == (this.paging.lastPage - 3)) {
+                if (this.paging.currPage == (this.paging.lastPage - 2)) {
                     numbers.push({
                         'title': this.paging.lastPage,
                         'page' : this.paging.lastPage - 1

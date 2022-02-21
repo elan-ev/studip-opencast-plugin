@@ -58,7 +58,6 @@
                                 type="radio"
                                 name="servers"
                                 v-model="selectedServer"
-                                @click="selectServer(server.id)"
                                 :value="server.id">
                             <span>
                                 #{{ server.id }} - {{ server.service_version }}
