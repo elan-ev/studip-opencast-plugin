@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 import error        from "./error.module";
 import config       from "./config.module";
-import events       from "./events";
+import events       from "./events.module";
 import resources    from "./resources.module";
 import messages     from "./messages.module";
 import opencast     from "./opencast.module";

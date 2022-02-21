@@ -41,7 +41,7 @@
 <script>
 import { mapGetters } from 'vuex'
 
-import StudipIcon from '@/components/StudipIcon.vue'
+import StudipIcon from '@studip/StudipIcon.vue'
 
 export default {
     name: "PaginationButtons",
@@ -58,7 +58,7 @@ export default {
         /**
          * Takes care of the page numbers to display.  For ui-consistency,
          * the number of elements is always the same, returning always 5 elements
-         * 
+         *
          * @return Array An array of objects of the type {'title': ..., 'page': ...}
          */
         pageNumbers() {

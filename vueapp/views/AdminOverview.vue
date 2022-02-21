@@ -15,8 +15,8 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@/components/StudipButton";
-import StudipIcon from "@/components/StudipIcon";
+import StudipButton from "@studip/StudipButton";
+import StudipIcon from "@studip/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 
 import ServerCard from "@/components/Config/ServerCard";

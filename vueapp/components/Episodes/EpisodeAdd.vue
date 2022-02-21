@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/components/StudipDialog'
+import StudipDialog from '@studip/StudipDialog'
 
 export default {
     name: 'EpisodeAdd',

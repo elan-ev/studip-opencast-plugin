@@ -32,21 +32,21 @@ class Events
 
         $connectedSeries = SeminarSeries::getSeries($course_id);
 
+        $results = [
+            'events'    => [],
+            'page_info' => [
+                'total_items'  => 0,
+                'current_page' => 0,
+                'last_page'    => 0
+            ]
+        ];
+
         if (empty($connectedSeries)) {
-            return [
-                'events'    => [],
-                'page_info' => [
-                    'total_items'  => 0,
-                    'current_page' => 0,
-                    'last_page'    => 0
-                ]
-            ];
+            return $results;
         }
 
         //$seriesList = [];
         $events  = [];
-        $results = [];
-
 
         foreach ($connectedSeries as $series) {
             // check series visibility

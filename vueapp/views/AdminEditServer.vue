@@ -6,7 +6,7 @@
                     <translate>
                     Opencast Server Einstellungen
                     </translate>
-                    <StudipIcon icon="accept" role="status-green" v-if="currentConfig.checked"/>
+                    <StudipIcon shape="accept" role="status-green" v-if="currentConfig.checked"/>
                 </legend>
 
                 <ConfigOption v-for="setting in settings"
@@ -31,8 +31,8 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@/components/StudipButton";
-import StudipIcon from "@/components/StudipIcon";
+import StudipButton from "@studip/StudipButton";
+import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
 import { LtiService, LtiException } from "@/common/lti.service";

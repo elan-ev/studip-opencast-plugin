@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import StudipIcon from '@/components/StudipIcon.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
 
 export default {

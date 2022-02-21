@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import StudipIcon from './StudipIcon.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: "OpencastButton",

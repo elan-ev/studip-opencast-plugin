@@ -12,7 +12,7 @@
                     <h2>
                         ReferentIn
                     </h2>
-                    <a v-for="(media, index) in presenter" :key="index" 
+                    <a v-for="(media, index) in presenter" :key="index"
                             :href="media['url']" target="_blank">
                         <StudipButton>
                             {{ getMediaText(media) }}
@@ -23,7 +23,7 @@
                     <h2>
                         Bildschirm
                     </h2>
-                    <a v-for="(media, index) in presentation" :key="index" 
+                    <a v-for="(media, index) in presentation" :key="index"
                             :href="media['url']" target="_blank">
                         <StudipButton>
                             {{ getMediaText(media) }}
@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/components/StudipDialog'
-import StudipButton from '@/components/StudipButton'
+import StudipDialog from '@studip/StudipDialog'
+import StudipButton from '@studip/StudipButton'
 import { dialog } from '@/common/dialog.mixins'
 
 export default {

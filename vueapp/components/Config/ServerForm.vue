@@ -59,7 +59,7 @@
                 <StudipButton icon="accept" @click="false" v-translate>
                     Einstellungen speichern und überprüfen
                 </StudipButton>
-                <StudipButton icon="cancel" @click="$emit('closed')" v-translate>
+                <StudipButton shape="cancel" @click="$emit('closed')" v-translate>
                     Abbrechen
                 </StudipButton>
             </footer>
@@ -75,8 +75,8 @@
 import { mapGetters } from "vuex";
 import store from "@/store";
 
-import StudipButton from "@/components/StudipButton"
-import StudipIcon from "@/components/StudipIcon"
+import StudipButton from "@studip/StudipButton"
+import StudipIcon from "@studip/StudipIcon"
 import MessageBox from "@/components/MessageBox"
 
 export default {

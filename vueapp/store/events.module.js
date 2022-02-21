@@ -40,7 +40,7 @@ const mutations = {
         state.paging = paging;
     },
 
-    SET_EVENTS(state, data) {
+    setEvents(state, data) {
         if (data !== null && data.events !== undefined) {
             state.events = data.events;
         } else {
@@ -82,14 +82,17 @@ const actions = {
 
     setPage({commit}, page) {
         apolloClient.stop();
-        commit('setPage', page)
+        commit('setPage', page);
     },
 
     async reloadEvents({ dispatch, commit }) {
         console.log('reload events...');
         apolloClient.cache.data.data = {};
         apolloClient.store.cache.data.data = {};
+
         console.log(apolloClient);
+        commit('setEvents', []);
+        console.log('Events', state.events);
         dispatch('fetchEvents');
     },
 
@@ -133,7 +136,7 @@ const actions = {
         });
 
         if (response !== undefined) {
-            commit('SET_EVENTS', response.data.getEvents);
+            commit('setEvents', response.data.getEvents);
 
             // only update paging if events and paging info are available
             if (response.data.getEvents) {

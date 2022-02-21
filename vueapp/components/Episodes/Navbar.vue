@@ -3,20 +3,20 @@
         <div class="cw-ribbon-wrapper-left">
             <nav class="cw-ribbon-nav">
                 <button class="cw-ribbon-button">
-                    <studip-icon icon="arr_1left" role="clickable" size="24"/>
+                    <studip-icon shape="arr_1left" role="clickable" size="24"/>
                 </button>
                 <button class="cw-ribbon-button">
-                    <studip-icon icon="arr_1right" role="clickable" size="24"/>
+                    <studip-icon shape="arr_1right" role="clickable" size="24"/>
                 </button>
             </nav>
             <div class="cw-ribbon-breadcrumb">Startseite</div>
         </div>
         <div class="cw-ribbon-wrapper-right">
             <button class="cw-ribbon-button">
-                <studip-icon icon="table-of-contents" role="clickable" size="24"/>
+                <studip-icon shape="table-of-contents" role="clickable" size="24"/>
             </button>
             <button class="cw-ribbon-button">
-                <studip-icon icon="fullscreen-on" role="clickable" size="24"/>
+                <studip-icon shape="fullscreen-on" role="clickable" size="24"/>
             </button>
             <studip-action-menu :items="menuItems" class="cw-ribbon-action-menu"></studip-action-menu>
         </div>
@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import StudipActionMenu from "@/components/StudipActionMenu"
-import StudipIcon from '@/components/StudipIcon.vue';
+import StudipActionMenu from "@studip/StudipActionMenu"
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: "Navbar",

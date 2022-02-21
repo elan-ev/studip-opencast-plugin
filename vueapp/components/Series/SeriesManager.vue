@@ -51,15 +51,13 @@
                             Server auswählen
                         </h4>
 
-                        {{ testing }}
-
                         <label v-for="server in servers"
                             class="oc--server--mini-card "
                         >
                             <input class="studip_checkbox"
                                 type="radio"
                                 name="servers"
-                                v-model="setServer(server.id)"
+                                v-model="selectedServer"
                                 :value="server.id">
                             <span>
                                 #{{ server.id }} - {{ server.service_version }}
@@ -116,17 +114,13 @@
 import { mapGetters } from 'vuex';
 import { LtiService } from '@/common/lti.service';
 
-import StudipDialog from '@studip/components/StudipDialog';
-import StudipSelect from '@studip/components/StudipSelect';
-import StudipIcon from '@studip/components/StudipIcon';
-import StudipButton from "@/components/StudipButton";
+import StudipDialog from '@studip/StudipDialog';
+import StudipSelect from '@studip/StudipSelect';
+import StudipIcon from '@studip/StudipIcon';
+import StudipButton from "@studip/StudipButton";
 
 export default {
     name: 'SeriesManager',
-
-    props: [
-        'selectedServer'
-    ],
 
     components: {
         StudipDialog, StudipSelect, StudipIcon,
@@ -135,6 +129,7 @@ export default {
 
     data() {
         return {
+            selectedServer: 0,
             currentSeries: null,
             loadingSeries: false
         }
@@ -173,16 +168,11 @@ export default {
             if (confirm(this.$gettext('Sind sie sicher, dass sie diese Serie aus diesem Kurs entfernen möchten?'))) {
                 this.$store.dispatch('removeCourseSeries', series_id);
             }
-        },
-
-        setServer(server_id) {
-            this.$emit('setserver', server_id);
         }
     },
 
     watch: {
         selectedServer(new_id, old_id) {
-            /*
             let view = this;
 
             this.loadingSeries = true;
@@ -191,16 +181,34 @@ export default {
             this.$store.dispatch('loadSeries', new_id).then(() => {
                 view.loadingSeries = false;
             });
-            */
         }
     },
 
-    updated() {
-        console.log('updated');
+
+    /**
+     * This hack is necessary to circumvent binding problems with this component
+     */
+    deactivated() {
+        let elems = document.getElementsByClassName('studip-dialog');
+        for (let i = 0; i < elems.length; i++) {
+            console.log(elems[i].attributes);
+             elems[i].style.display = 'none';
+        }
     },
 
+    /**
+     * This hack is necessary to circumvent binding problems with this component
+     */
+    activated() {
+        let elems = document.getElementsByClassName('studip-dialog');
+        for (let i = 0; i < elems.length; i++) {
+            console.log(elems[i].attributes);
+             elems[i].style.display = 'block    ';
+        }
+    },
+
+
     mounted() {
-        console.log('mounted');
         this.$store.dispatch('loadServers');
         this.$store.dispatch('loadCourseSeries')
         this.$store.dispatch('authenticateLti');

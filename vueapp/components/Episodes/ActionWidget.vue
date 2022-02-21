@@ -1,57 +1,32 @@
 <template>
     <ul class="widget-list oc-widget-list widget-links cw-action-widget">
-        <li class="cw-action-widget" @click="showAddDialog=true;">
-            <studip-icon style="margin-left: -20px;" icon="upload" role="clickable"/>
+        <li class="cw-action-widget" @click="$emit('uploadVideo')">
+            <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
             Medien Hochladen
         </li>
         <li class="cw-action-widget">
-            <studip-icon style="margin-left: -20px;" icon="video" role="clickable"/>
+            <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
             Video Aufnehmen
         </li>
-        <li class="cw-action-widget" @click="showSeriesDialog=true;">
-            <studip-icon style="margin-left: -20px;" icon="add" role="clickable"/>
+        <li class="cw-action-widget" @click="$emit('seriesManager')">
+            <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
             Serien verwalten
         </li>
-
-        <EpisodeAdd v-if="showAddDialog"
-            @done="showAddDialog = false"
-            @cancel="showAddDialog = false"/>
-
-        <SeriesManager v-if="showSeriesDialog"
-            selectedServer="selectedServer"
-            @setserver="setServer"
-            @done="showSeriesDialog = false"
-            @cancel="showSeriesDialog = false"/>
     </ul>
 </template>
 
 <script>
-import StudipIcon from '@/components/StudipIcon.vue';
-import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
-import SeriesManager from '@/components/Series/SeriesManager'
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon, EpisodeAdd, SeriesManager
-    },
-    data() {
-        return {
-            showAddDialog: false,
-            showSeriesDialog: false,
-            selectedServer: 0
-        }
+        StudipIcon
     },
     watch: {
         $route(to) {
             this.setCurrentId(to.params.id);
         },
-    },
-
-    methods: {
-        setServer(id) {
-            this.selectedServer = id;
-        }
     }
 }
 </script>

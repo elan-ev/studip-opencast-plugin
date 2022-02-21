@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/components/StudipDialog'
+import StudipDialog from '@studip/StudipDialog'
 import { dialog } from '@/common/dialog.mixins'
 
 export default {

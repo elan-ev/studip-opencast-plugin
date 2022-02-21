@@ -2,9 +2,11 @@
     <div class="container" id="app-episodes">
         <router-view></router-view>
 
+        <!--
         <MountingPortal mountTo="#sidebar-navigation" name="sidebar-widget">
             <navigation-widget></navigation-widget>
         </MountingPortal>
+    -->
     </div>
 </template>
 

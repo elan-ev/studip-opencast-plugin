@@ -120,7 +120,7 @@
 import { mapGetters } from "vuex";
 import store from "@/store";
 
-import StudipButton from "@/components/StudipButton";
+import StudipButton from "@studip/StudipButton";
 import MessageBox from "@/components/MessageBox";
 
 import {

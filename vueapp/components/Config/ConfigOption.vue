@@ -65,8 +65,8 @@
 
                 <span class="input-group-append ">
                     <button class="button" @click.stop="togglePasswordVis($event)">
-                        <StudipIcon icon="visibility-visible" role="clickable" v-if="passwordVisible"/>
-                        <StudipIcon icon="visibility-invisible" role="clickable" v-if="!passwordVisible"/>
+                        <StudipIcon shape="visibility-visible" role="clickable" v-if="passwordVisible"/>
+                        <StudipIcon shape="visibility-invisible" role="clickable" v-if="!passwordVisible"/>
                     </button>
                 </span>
             </div>
@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import StudipIcon from '../StudipIcon.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: "ConfigOption",
