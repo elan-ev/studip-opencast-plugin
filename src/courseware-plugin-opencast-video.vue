@@ -39,7 +39,6 @@
                             :reduce="series => series.series_id"
                             :clearable="false"
                             v-model="currentSeries"
-                            class="cw-vs-select"
                         >
                             <template #open-indicator="selectAttributes">
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
@@ -65,7 +64,6 @@
                             :reduce="episodes => episodes.id"
                             :clearable="false"
                             v-model="currentEpisode"
-                            class="cw-vs-select"
                         >
                             <template #open-indicator="selectAttributes">
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
