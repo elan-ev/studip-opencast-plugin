@@ -13,7 +13,7 @@
             </span>
 
             <span class="oc--file-size">
-                <b v-translate>Größe:</b> {{ file.size }}
+                <b v-translate>Größe:</b> {{ file.size | filesize }}
             </span>
 
 

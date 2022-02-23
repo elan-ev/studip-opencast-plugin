@@ -5,11 +5,14 @@ import router from "./router";
 import store from "./store";
 import "./public-path";
 
-import ApiService from "./common/api.service";
-import DateFilter from "./common/date.filter";
-import DateTimeFilter from "./common/datetime.filter";
-import ErrorFilter from "./common/error.filter";
+import ApiService from "@/common/api.service";
+import DateFilter from "@/common/date.filter";
+import DateTimeFilter from "@/common/datetime.filter";
+import ErrorFilter from "@/common/error.filter";
+import FileSizeFilter from "@/common/filesize.filter";
 import GetTextPlugin from 'vue-gettext';
+
+
 import translations from './i18n/translations.json';
 import  { createPopper } from '@popperjs/core';
 
@@ -24,6 +27,7 @@ Vue.use(PortalVue)
 Vue.filter("date", DateFilter);
 Vue.filter("datetime", DateTimeFilter);
 Vue.filter("error", ErrorFilter);
+Vue.filter("filesize", FileSizeFilter);
 
 ApiService.init();
 
