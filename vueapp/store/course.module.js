@@ -5,12 +5,17 @@ import ApiService from "@/common/api.service";
 
 
 const state = {
-    course_series: []
+    course_series: [],
+    upload_xml: null
 }
 
 const getters = {
     course_series(state) {
         return state.course_series
+    },
+
+    upload_xml(state) {
+        return state.upload_xml
     }
 }
 
@@ -60,13 +65,24 @@ const actions = {
             // update episode list
             dispatch('reloadEvents');
         });
-    }
+    },
+
+    async loadUploadXML({ commit }) {
+        return ApiService.get('course/upload_xml/' + CID)
+            .then(({ data }) => {
+                commit('setUploadXML', data.oc_acl);
+            });
+    },
 }
 
 const mutations = {
     setCourseSeries(state, data) {
         state.course_series = data;
     },
+
+    setUploadXML(state, data) {
+        state.upload_xml = data;
+    }
 }
 
 

@@ -41,6 +41,8 @@ class RouteMap
         $this->app->post('/course/series/{course_id}', Routes\Course\SeriesAdd::class);
         $this->app->delete('/course/series/{course_id}/{series_id}', Routes\Course\SeriesDelete::class);
 
+        $this->app->get('/course/upload_xml/{course_id}', Routes\Course\UploadAcl::class);
+
         $this->app->any('/graphql', GraphQL\GraphQL::class);
         ##TEMPLATE##
     }

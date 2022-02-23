@@ -4,6 +4,7 @@ namespace Opencast\Models\LTI;
 
 use Opencast\Models\SeminarSeries;
 use Opencast\Models\REST\ApiSeriesClient;
+use Opencast\Providers\Perm;
 
 class ACL
 {
@@ -149,8 +150,8 @@ class ACL
 
     public static function getUploadXML($course_id)
     {
-        $vis = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
-            ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
+        $vis = !is_null(\CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
+            ? boolval(\CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
 
         $oc_acl = '';

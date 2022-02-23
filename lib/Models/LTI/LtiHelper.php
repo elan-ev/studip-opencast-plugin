@@ -43,8 +43,6 @@ class LtiHelper
                         $config->settings['lti_consumersecret']
                     ),
                     'endpoints'   => [$endpoint->service_type],
-                    'service_url' => $url['scheme'] . '://'. $url['host']
-                        . ($url['port'] ? ':' . $url['port'] : '')
                 ];
             } else {
                 $links[$lti_url]['endpoints'][] = $endpoint->service_type;
@@ -76,8 +74,7 @@ class LtiHelper
                 'launch_url'  => $lti['link']->getLaunchURL(),
                 'launch_data' => $launch_data,
                 'endpoints'   => $lti['endpoints'],
-                'config_id'   => $config_id,
-                'service_url' => $lti['service_url']
+                'config_id'   => $config_id
             ];
         }
 
@@ -120,8 +117,7 @@ class LtiHelper
                 'launch_url'  => $lti['link']->getLaunchURL(),
                 'launch_data' => $launch_data,
                 'endpoints'   => $lti['endpoints'],
-                'config_id'   => $config_id,
-                'service_url' => $lti['service_url']
+                'config_id'   => $config_id
             ];
         }
 

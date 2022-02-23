@@ -11,10 +11,8 @@
             @close="decline"
             @confirm="accept"
         >
-            <template v-slot:dialogContent>
-                <form class="default"
-                    style="max-width: 50em;"
-                >
+            <template v-slot:dialogContent ref="upload-dialog">
+                <form class="default" style="max-width: 50em;" ref="upload-form">
                     <fieldset>
                         <legend v-translate>
                             Allgemeine Angaben
@@ -24,9 +22,9 @@
                                 Serie auswählen:
                             </span>
 
-                            <select>
+                            <select v-model="selectedSeries" required>
                                 <option v-for="series in course_series"
-                                    :value="series.series_id"
+                                    :value="series"
                                 >
                                     {{ series.details.title }}
                                 </option>
@@ -107,7 +105,7 @@
                                 Workflow
                             </span>
 
-                            <select v-model="upload.workflow">
+                            <select v-model="upload.workflow" required>
                                 <option v-for="workflow in upload_workflows"
                                     :value="workflow.id">
                                     {{ workflow.name }}
@@ -166,6 +164,10 @@
                         </div>
                         <FilePreview v-else :files="files['presentation/source']"
                             type="presentation"  @remove="files['presentation/source']=[]"/>
+
+                        <MessageBox v-if="fileUploadError" type="error" v-translate>
+                            Sie müssen mindestens eine Datei auswählen!
+                        </MessageBox>
                     </fieldset>
 
                     <MessageBox type="info" v-translate>
@@ -191,6 +193,7 @@ import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
 import FilePreview from '@/components/Episodes/FilePreview'
 
+import UploadService from '@/common/upload.service'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
@@ -207,6 +210,8 @@ export default {
     data () {
         return {
             showAddEpisodeDialog: false,
+            selectedSeries: {},
+            fileUploadError: false,
             upload: {
                 creator: this.currentUser.fullname,
                 contributor: this.currentUser.fullname,
@@ -222,7 +227,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['course_series']),
+        ...mapGetters(['course_series', 'upload_xml']),
 
         upload_workflows() {
             // TODO
@@ -234,7 +239,72 @@ export default {
     },
 
     methods: {
-        accept() {
+        async accept() {
+            // make sure lti is authenticated
+            await this.$store.dispatch('authenticateLti');
+
+            if (!this.$refs['upload-form'].reportValidity()) {
+                return false;
+            }
+
+            // validate file upload
+            this.fileUploadError = false;
+            if (
+                !this.files['presenter/source'].length &&
+                !this.files['presentation/source'].length
+            ) {
+                this.fileUploadError = true;
+
+                // scroll to error message to make it visible to the user
+                this.$refs['upload-form'].parentNode.scrollTo({
+                    top: 1000,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+
+                return false;
+            }
+
+            // get correct upload endpoint url for selected series
+            let uploadService = new UploadService(this.selectedSeries['ingest_url']);
+
+            let uploadData         = this.upload;
+            uploadData['seriesId'] = this.selectedSeries.series_id;
+
+            uploadData['created']  = new Date(this.upload.recordDate).toISOString(),
+            delete uploadData['recordDate'];
+
+            uploadData['oc_acl']   = this.upload_xml.replace(/\+/g," ");
+
+            //console.log('uploadData', uploadData);
+
+            let files = [];
+            if (this.files['presenter/source'].length) {
+                files.push({
+                    file: this.files['presenter/source'][0],
+                    flavor: 'presenter/source',
+                    progress: {
+                        loaded: 0,
+                        total: this.files['presenter/source'][0].size
+                    }
+                })
+            }
+
+            if (this.files['presentation/source'].length) {
+                files.push({
+                    file: this.files['presentation/source'][0],
+                    flavor: 'presentation/source',
+                    progress: {
+                        loaded: 0,
+                        total: this.files['presentation/source'][0].size
+                    }
+                })
+            }
+
+            uploadService.upload(files, uploadData, this.upload.workflow);
+            console.log('uploadService', uploadService);
+
+            /*
             this.$store.dispatch('addEvent',
                 {
                     id: this.upload['id'],
@@ -244,6 +314,7 @@ export default {
                 }
             );
             this.$emit('done');
+            */
         },
 
         decline() {
@@ -263,6 +334,7 @@ export default {
     mounted() {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('loadCourseSeries');
+        this.$store.dispatch('loadUploadXML');
     }
 }
 </script>
