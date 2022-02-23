@@ -12,7 +12,8 @@
 
         <EpisodeAdd v-if="uploadDialog"
             @done="uploadDialog = false"
-            @cancel="uploadDialog = false"/>
+            @cancel="uploadDialog = false"
+            :currentUser="currentUser"/>
 
         <keep-alive>
             <SeriesManager v-if="seriesDialog"
@@ -45,6 +46,10 @@ export default {
     components: {
         EpisodeList,    Navbar,         ActionWidget,
         EpisodeAdd,     SeriesManager
+    },
+
+    computed: {
+        ...mapGetters(['currentUser'])
     },
 
     methods: {

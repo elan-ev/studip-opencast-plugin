@@ -217,6 +217,34 @@ h2.oc--loadingbar {
 	}
 }
 
+/* * * * * * * * * * * * * * * * * */
+/*   E P I S O D E   U P L O A D   */
+/* * * * * * * * * * * * * * * * * */
+
+.oc--file-preview {
+    .oc--file-name, .oc--file-size {
+        display: block;
+    }
+
+    border-bottom: 1px solid $base_color;
+}
+
+.oc--datetime-input {
+    display: block;
+    margin-top: .5ex;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid #c5c7ca;
+    color: #3c434e;
+    max-width: 48em;
+    padding: 5px;
+    vertical-align: middle;
+    width: 100%;
+    -webkit-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+    text-indent: .25ex;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 /*   A D M I N I S T R A T I O N   C L A S S E S   */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */

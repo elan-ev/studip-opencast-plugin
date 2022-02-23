@@ -26,6 +26,10 @@ export default {
         uploadVideo() {
             this.uploadDialog = true;
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('loadCurrentUser');
     }
 };
 </script>

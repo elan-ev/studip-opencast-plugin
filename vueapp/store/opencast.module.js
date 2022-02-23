@@ -6,7 +6,8 @@ import ApiService from "@/common/api.service";
 
 const state = {
     series: [],
-    servers: []
+    servers: [],
+    currentUser: {}
 }
 
 const getters = {
@@ -15,6 +16,9 @@ const getters = {
     },
     servers(state) {
         return state.servers
+    },
+    currentUser(state) {
+        return state.currentUser
     }
 }
 
@@ -33,6 +37,13 @@ const actions = {
             .then(({ data }) => {
                 commit('setServers', data.servers);
             });
+    },
+
+    async loadCurrentUser({ commit, dispatch}) {
+        return ApiService.get('user')
+            .then(({ data }) => {
+                commit('setCurrentUser', data.data);
+            });
     }
 }
 
@@ -44,6 +55,10 @@ const mutations = {
 
     setServers(state, data) {
         state.servers = data;
+    },
+
+    setCurrentUser(state, data) {
+        state.currentUser = data;
     }
 }
 
