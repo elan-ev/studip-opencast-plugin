@@ -14,7 +14,7 @@ class IngestClient extends RestClient
         if ($config = Config::getConfigForService('ingest', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new \Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 

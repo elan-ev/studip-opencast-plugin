@@ -15,7 +15,7 @@ class ServicesClient extends RestClient
         if ($config = Config::getConfigForService('services', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new \Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 

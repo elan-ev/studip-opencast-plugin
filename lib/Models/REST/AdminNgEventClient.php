@@ -13,7 +13,7 @@ class AdminNgEventClient extends RestClient
         if ($config = Config::getConfigForService('admin-ngevent', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new \Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
