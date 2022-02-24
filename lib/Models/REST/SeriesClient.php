@@ -16,7 +16,8 @@ class SeriesClient extends RestClient
         if ($config = Config::getConfigForService('series', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new \Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new \Exception ($this->serviceName . ': '
+                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 

@@ -126,7 +126,7 @@ const actions = {
         }).catch((res) => {
             if (res.graphQLErrors) {
                 const errors = res.graphQLErrors.map((error) => {
-                    return error.message;
+                    return error.debugMessage + ' - ' + error.message;
                 });
 
                 dispatch('errorCommit', { graphql: errors.join("\n") });
