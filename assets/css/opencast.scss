@@ -119,6 +119,16 @@ $episode-background: $light-gray-color-20;
             bottom: 0%;
             transform: translateY(50%);
         }
+
+        span.oc--duration {
+            position: absolute;
+            bottom: 1em;
+            right: 1em;
+            background-color: black;
+            color: white;
+            padding: 0 5px;
+            font-weight: bold;
+        }
     }
 }
 

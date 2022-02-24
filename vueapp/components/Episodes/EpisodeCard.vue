@@ -7,6 +7,9 @@
                         <span class="oc--previewimage">
                             <img class="oc--previewimage" :src="preview" height="200"/>
                             <img class="oc--playbutton" :src="play">
+                            <span class="oc--duration">
+                                {{ getDuration }}
+                            </span>
                         </span>
                     </a>
                     <span v-else class="oc--previewimage">
@@ -33,9 +36,6 @@
                         </li>
                         <li v-translate>
                             Beschreibung: {{event.description}}
-                        </li>
-                        <li v-translate>
-                            Länge: {{getDuration}}
                         </li>
                     </ul>
                 </div>
