@@ -64,6 +64,14 @@ class Events
         $num_events = count($events);
         $offset = $args['offset'] ? $args['offset'] : 0;
         $limit = $args['limit'] ? $args['limit'] : $num_events;
+
+        // sort events
+        uasort($events, function ($a, $b) {
+            return $a['created'] == $b['created'] ? 0
+                : ($a['created'] < $b['created'] ? 1 : -1);
+        });
+
+        // paginate events
         $events = array_slice($events, $offset, $limit);
 
         if (!empty($events)) {
