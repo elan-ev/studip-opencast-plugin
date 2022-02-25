@@ -255,6 +255,26 @@ h2.oc--loadingbar {
     text-indent: .25ex;
 }
 
+.oc--progress {
+    width: 100%;
+    height: 2em;
+    border: 1px solid $base-gray;
+
+    .oc--progress-bar {
+        background-color: $base_color;
+        height: 2em;
+        text-align: center;
+
+        span {
+            line-height: 2em;
+            color: $content-color-10;
+            font-weight: bold;
+        }
+    }
+
+    margin: 5px 0;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 /*   A D M I N I S T R A T I O N   C L A S S E S   */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */

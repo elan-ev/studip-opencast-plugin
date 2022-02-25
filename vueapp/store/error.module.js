@@ -1,28 +1,32 @@
 import ApiService from "@/common/api.service";
 
 const state = {
-    error: null
+    errors: []
 };
 
 const getters = {
-    error(state) {
-        return state.error;
+    errors(state) {
+        return state.errors;
     }
 };
 
 const actions = {
     errorCommit(context, error) {
-        context.commit('errorSet', error);
+        context.commit('errorsAdd', error);
     },
 
     errorClear(context) {
-        context.commit('errorSet', null);
+        context.commit('errorsClear');
     }
 };
 
 const mutations = {
-    errorSet(state, data) {
-        state.error = data;
+    errorsAdd(state, data) {
+        state.errors.push(data);
+    },
+
+    errorsClear(state) {
+        state.errors = [];
     }
 };
 

@@ -86,18 +86,19 @@ class UploadService {
         // Prepare meta data
         let episodeDC = this.createDCCCatalog(terms);
 
-        console.log('episodeDC', episodeDC)
-
         return Vue.axios({
             url: this.service_url + "/addDCCatalog",
             method: "POST",
-            data: {
+            data: new URLSearchParams({
                 mediaPackage: mediaPackage,
                 dublinCore: episodeDC,
                 flavor: 'dublincore/episode'
-            },
+            }),
             crossDomain: true,
             withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
         })
     }
 
@@ -107,25 +108,27 @@ class UploadService {
         acldata.append('flavor', 'security/xacml+episode');
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
-        return $.ajax({
+        return Vue.axios({
             url: this.service_url + "/addAttachment",
             method: "POST",
             data: acldata,
             processData: false,
             contentType: false,
-            xhrFields: { withCredentials: true },
+            crossDomain: true,
+            withCredentials: true,
         })
     }
 
     async uploadTracks(mediaPackage, files, onProgress) {
+        let obj = this;
         return files.reduce(function(promise, file) {
             return promise.then(function (mediaPackage) {
-                return addTrack(mediaPackage, file, onProgress);
+                return obj.addTrack(mediaPackage, file, onProgress);
             });
         }, Promise.resolve(mediaPackage))
     }
 
-     addTrack(mediaPackage, track, onProgress) {
+    addTrack(mediaPackage, track, onProgress) {
         var media = track.file;
         var data = new FormData();
         data.append('mediaPackage', mediaPackage);
@@ -141,8 +144,9 @@ class UploadService {
 
         return new Promise(
             function (resolve, reject) {
-                this.uploadPercentage = 0;
-                var xhr = Vue.axios({
+                obj.request = Vue.axios.CancelToken.source();
+
+                return Vue.axios({
                     url: obj.service_url + "/addTrack",
                     method: "POST",
                     data: data,
@@ -150,33 +154,31 @@ class UploadService {
                     contentType: false,
                     withCredentials: true,
                     onUploadProgress: function( progressEvent ) {
-                        obj.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ) );
-                    }
-                });
-                xhr.done(function (_data, _status, xhr) {
-                    resolve(xhr.responseText);
-                })
-                xhr.fail(function (xhr, status, error) {
-                    reject([xhr, status, error]);
+                        fnOnProgress(progressEvent);
+                    },
+                    cancelToken: obj.request.token
+                }).then(({ data }) => {
+                    resolve(data);
+                }).catch(function (error) {
+                    reject(error);
                 });
             }
         );
     }
 
     finishIngest(mediaPackage, workflowId = "upload") {
-        console.log('mediaPackage', mediaPackage);
         return Vue.axios({
             url: this.service_url + "/ingest",
             method: "POST",
-            data: {
+            data: new URLSearchParams({
                 mediaPackage: mediaPackage,
                 workflowDefinitionId: workflowId
-            },
+            }),
             withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
         })
-    }
-
-    logUpload(episode_id, workflowId = "upload") {
     }
 
     fixFilenames(files) {
@@ -205,9 +207,12 @@ class UploadService {
         return files;
     }
 
-    upload(files, terms, workflowId, onProgress) {
+    upload(files, terms, workflowId, options) {
         this.fixFilenames(files);
         let obj = this;
+        let onProgress = options.uploadProgress;
+        let uploadDone = options.uploadDone;
+
         return this.getMediaPackage()
             .then(function ({ data }) {
                 return obj.addDCCCatalog(data, terms)
@@ -220,28 +225,27 @@ class UploadService {
                 return obj.uploadTracks(data, files, onProgress)
             })
             .then(function (mediaPackage) {
-                const jqXHR = obj.finishIngest(mediaPackage, workflowId);
+                let ingest = obj.finishIngest(mediaPackage, workflowId);
+
                 try {
                     let episode_id;
                     // Nothing waiting for this XHR to finish, making the
                     // log-entry a nice-to-have
-                    /*
                     const xmlDoc = $.parseXML(mediaPackage);
                     episode_id = xmlDoc.documentElement.id;
                     if (episode_id) {
-                        this.logUpload(episode_id, workflowId);
+                        uploadDone(episode_id, workflowId);
                     }
-                    */
                 } catch (ex) {
                     console.log(ex);
                     /* Catch XML parse error. On Error Resume Next ;-) */
                 }
-                return jqXHR;
+                return ingest;
             })
     }
 
-    getUploadPercentage() {
-        return this.uploadPercentage;
+    cancel() {
+        this.request.cancel();
     }
 }
 

@@ -33,8 +33,6 @@ ApiService.init();
 
 // Redirect to login page, if a 401 is catched
 Vue.axios.interceptors.response.use((response) => { // intercept the global error
-        //store.dispatch('errorClear');
-
         return response;
     }, function (error) {
         store.dispatch('errorCommit', error.response);

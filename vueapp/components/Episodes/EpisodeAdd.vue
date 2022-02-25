@@ -3,7 +3,7 @@
         <StudipDialog
             :title="$gettext('Episode hinzufügen')"
             :confirmText="$gettext('Hochladen')"
-            :confirmClass="'accept'"
+            :confirmClass="uploadButtonClasses"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
             height="600"
@@ -13,7 +13,7 @@
         >
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
-                    <fieldset>
+                    <fieldset v-if="!uploadProgress">
                         <legend v-translate>
                             Allgemeine Angaben
                         </legend>
@@ -100,7 +100,7 @@
                             Video(s)
                         </legend>
 
-                        <label>
+                        <label v-if="!uploadProgress">
                             <span v-translate>
                                 Workflow
                             </span>
@@ -124,7 +124,7 @@
                             </p>
                         </label>
 
-                        <div v-if="!files['presenter/source'].length">
+                        <div v-if="!files['presenter/source'].length && !uploadProgress">
                             <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-presenter')">
                                 Aufzeichnung des/der Vortragende*n hinzufügen
                             </StudipButton>
@@ -143,9 +143,13 @@
                           </div>-->
                         </div>
                         <FilePreview v-else :files="files['presenter/source']"
-                            type="presenter" @remove="files['presenter/source']=[]"/>
+                            type="presenter" @remove="files['presenter/source']=[]"
+                            :uploading="uploadProgress"
+                        />
 
-                        <div v-if="!files['presentation/source'].length">
+                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presenter/source'" :progress="uploadProgress.progress" />
+
+                        <div v-if="!files['presentation/source'].length && !uploadProgress">
                             <StudipButton icon="accept" v-translate  @click.prevent="chooseFiles('oc-file-presentation')">
                                 Aufzeichnung der Folien hinzufügen
                             </StudipButton>
@@ -163,7 +167,11 @@
                            </div>-->
                         </div>
                         <FilePreview v-else :files="files['presentation/source']"
-                            type="presentation"  @remove="files['presentation/source']=[]"/>
+                            type="presentation"  @remove="files['presentation/source']=[]"
+                            :uploading="uploadProgress"
+                        />
+
+                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presentation/source'" :progress="uploadProgress.progress" />
 
                         <MessageBox v-if="fileUploadError" type="error" v-translate>
                             Sie müssen mindestens eine Datei auswählen!
@@ -192,6 +200,7 @@ import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
 import FilePreview from '@/components/Episodes/FilePreview'
+import ProgressBar from '@/components/ProgressBar'
 
 import UploadService from '@/common/upload.service'
 import { format } from 'date-fns'
@@ -202,7 +211,7 @@ export default {
 
     components: {
         StudipDialog,   MessageBox,     StudipButton,
-        FilePreview
+        FilePreview,    ProgressBar
     },
 
     props: ['currentUser'],
@@ -222,7 +231,8 @@ export default {
             files: {
                 'presenter/source': [],
                 'presentation/source': []
-            }
+            },
+            uploadProgress: null
         }
     },
 
@@ -235,11 +245,23 @@ export default {
                 id:   'upload',
                 name: 'Standard'
             }]
+        },
+
+        uploadButtonClasses() {
+            if (this.uploadProgress) {
+                return 'accept disabled';
+            }
+
+            return 'accept';
         }
     },
 
     methods: {
         async accept() {
+            if (this.uploadProgress) {
+                return;
+            }
+
             // make sure lti is authenticated
             await this.$store.dispatch('authenticateLti');
 
@@ -266,7 +288,7 @@ export default {
             }
 
             // get correct upload endpoint url for selected series
-            let uploadService = new UploadService(this.selectedSeries['ingest_url']);
+            this.uploadService = new UploadService(this.selectedSeries['ingest_url']);
 
             let uploadData         = this.upload;
             uploadData['seriesId'] = this.selectedSeries.series_id;
@@ -301,23 +323,39 @@ export default {
                 })
             }
 
-            uploadService.upload(files, uploadData, this.upload.workflow);
-            console.log('uploadService', uploadService);
+            let view = this;
 
-            /*
-            this.$store.dispatch('addEvent',
-                {
-                    id: this.upload['id'],
-                    title: this.upload['title'],
-                    author: this.upload['author'],
-                    type: this.upload['type']
+            this.uploadService.upload(files, uploadData, this.upload.workflow, {
+                uploadProgress: (track, loaded, total) => {
+                    view.uploadProgress = {
+                        flavor: track.flavor,
+                        progress: parseInt(Math.round((loaded / total) * 100 ))
+                    }
+                },
+                uploadDone: (episode_id, workflow_id) => {
+                    console.log('logUpload', episode_id, workflow_id);
+                    view.$emit('done');
+                    view.$store.dispatch('logUpload', {
+                        episode_id: episode_id,
+                        workflow_id: workflow_id
+                    })
                 }
-            );
-            this.$emit('done');
-            */
+            });
         },
 
         decline() {
+
+            if (this.uploadProgress &&
+                confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))
+            ) {
+                this.uploadService.cancel();
+            } else {
+                return;
+            }
+
+            this.uploadService  = null;
+            this.uploadProgress = null;
+
             this.$emit('cancel');
         },
 

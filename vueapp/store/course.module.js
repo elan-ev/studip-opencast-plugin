@@ -73,6 +73,10 @@ const actions = {
                 commit('setUploadXML', data.oc_acl);
             });
     },
+
+    async logUpload({ commit }, data) {
+        return ApiService.post('course/log_upload/' + CID, data);
+    }
 }
 
 const mutations = {

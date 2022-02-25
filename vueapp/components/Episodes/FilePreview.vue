@@ -21,6 +21,7 @@
             <span>
                 <button class='button cancel'
                     type=button v-translate @click="$emit('remove', file)"
+                    v-if="!uploading"
                 >
                     Entfernen
                 </button>
@@ -33,6 +34,6 @@
 export default {
     name: 'upload-file-preview',
 
-    props: ['files', 'type']
+    props: ['files', 'type', 'uploading']
 }
 </script>
