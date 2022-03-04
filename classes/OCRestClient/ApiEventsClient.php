@@ -57,7 +57,7 @@ class ApiEventsClient extends OCRestClient
     {
         static $events;
 
-        if (empty($events)) {
+        if (empty($events[$series_id])) {
             $offset = Pager::getOffset();
             $limit  = Pager::getLimit();
             $sort   = Pager::getSortOrder();
@@ -66,13 +66,13 @@ class ApiEventsClient extends OCRestClient
                 $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED'
                 . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset", $params);
 
-            $events = array_reduce($events, function ($events, $event) {
+            $events[$series_id] = array_reduce($events, function ($events, $event) {
                 $events[$event->identifier] = $event;
                 return $events;
             }, []);
         }
 
-        return $events;
+        return $events[$series_id];
     }
 
     public function getAllScheduledEvents()
