@@ -196,7 +196,7 @@ $sort_orders = [
                                             'title'           => $_('Sichtbarkeit für dieses Video ändern')
                                         ]); ?>
 
-                                    <? if (!$live && isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                    <? if (!$live && $item['has_previews']) : ?>
                                         <?= Studip\LinkButton::create(
                                             $_('Schnitteditor öffnen'),
                                             $config['service_url'] . '/admin-ng/index.html#!/events/events/' . $item['id'] . '/tools/editor',
@@ -207,11 +207,10 @@ $sort_orders = [
                                             ]
                                         ); ?>
 
-                                        <? $annotation_tool_url = $controller->get_annotation_tool($item['id']); ?>
-                                        <? if ($annotation_tool_url) : ?>
+                                        <? if ($item['annotation_tool']) : ?>
                                             <?= Studip\LinkButton::create(
                                                 $_('Anmerkungen hinzufügen'),
-                                                $annotation_tool_url,
+                                                $item['annotation_tool'],
                                                 [
                                                     'target' => '_blank',
                                                     'class'  => 'oc_editor',

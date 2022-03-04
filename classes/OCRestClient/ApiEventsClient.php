@@ -55,18 +55,24 @@ class ApiEventsClient extends OCRestClient
      */
     public function getBySeries($series_id, $params = [])
     {
-        $offset = Pager::getOffset();
-        $limit  = Pager::getLimit();
-        $sort   = Pager::getSortOrder();
+        static $events;
 
-        $events = $this->getJSON('/?filter=is_part_of:' .
-            $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED'
-            . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset", $params);
+        if (empty($events)) {
+            $offset = Pager::getOffset();
+            $limit  = Pager::getLimit();
+            $sort   = Pager::getSortOrder();
 
-        return array_reduce($events, function ($events, $event) {
-            $events[$event->identifier] = $event;
-            return $events;
-        }, []);
+            $events = $this->getJSON('/?filter=is_part_of:' .
+                $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED'
+                . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset", $params);
+
+            $events = array_reduce($events, function ($events, $event) {
+                $events[$event->identifier] = $event;
+                return $events;
+            }, []);
+        }
+
+        return $events;
     }
 
     public function getAllScheduledEvents()

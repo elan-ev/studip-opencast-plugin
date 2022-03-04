@@ -188,9 +188,16 @@ class OCCourseModel
             $l_episode = $local_episodes[$oc_episode['id']];
 
             if (!$l_episode) {
+                // add new episode to Stud.IP
+
                 $oc_episode['visibility']    = $vis;
                 $oc_episode['is_retracting'] = false;
                 $oc_episode['mkdate']        = $timestamp;
+
+                // invalidate acl cache for this course
+                $cache = \StudipCacheFactory::getCache();
+                $cache_key = 'sop/visiblity/'. \Context::getId();
+                $cache->expire($cache_key);
 
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
                     'episode_id'    => $oc_episode['id'],
@@ -243,6 +250,7 @@ class OCCourseModel
                 $presenter_download    = [];
                 $presentation_download = [];
                 $audio_download        = [];
+                $annotation_tool       = false;
 
                 foreach ((array) $episode->publications[0]->attachments as $attachment) {
                     if ($attachment->flavor === "presenter/search+preview") {
@@ -311,6 +319,13 @@ class OCCourseModel
                         ];
                     }
                 }
+
+                foreach ($episode->publications as $publication) {
+                    if ($publication->channel == 'annotation-tool') {
+                        $annotation_tool = $publication->url;
+                    }
+                }
+
                 ksort($presenter_download);
                 ksort($presentation_download);
                 ksort($audio_download);
@@ -327,6 +342,8 @@ class OCCourseModel
                     'presenter_download'    => $presenter_download,
                     'presentation_download' => $presentation_download,
                     'audio_download'        => $audio_download,
+                    'annotation_tool'       => $annotation_tool,
+                    'has_previews'          => $episode->has_previews ?: false
                 ];
             }
         }
