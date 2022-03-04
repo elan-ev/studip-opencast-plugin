@@ -35,12 +35,11 @@ class OpencastLTI
         // check currently set ACLs to update status in Stud.IP if necessary
         $series        = OCSeminarSeries::getSeries($course_id);
         $series        = reset($series);
-        $search_client = \SearchClient::create($course_id);
         $api_client    = \ApiEventsClient::create($course_id);
 
         // check the opencast visibility for episodes and update Stud.IP settings
-        foreach ($search_client->getEpisodes($series['series_id']) as $episode) {
-            $vis = $api_client->getVisibilityForEpisode($series['series_id'], $episode->id, $course_id);
+        foreach ($api_client->getBySeries($series['series_id']) as $episode) {
+            $vis = $api_client->getVisibilityForEpisode($episode, $course_id);
 
             $entry = OCSeminarEpisodes::findOneBySQL(
                 'series_id = ? AND episode_id = ? AND seminar_id = ?',
@@ -166,7 +165,7 @@ class OpencastLTI
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
                 $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes     = $course_model->getEpisodes(false, true);
+                $episodes     = $course_model->getEpisodes(true);
                 foreach ($episodes as $episode) {
                     $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
                 }

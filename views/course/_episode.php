@@ -1,4 +1,7 @@
-<? use Studip\Button;?>
+<?php
+use Studip\Button;
+use Opencast\Models\Pager;
+?>
 
 <?
 $visibility_text = [
@@ -7,12 +10,12 @@ $visibility_text = [
     'free'      => $_('Video ist für jeden sichtbar')
 ];
 $sort_orders = [
-    'mkdate1'    => $_('Datum hochgeladen: Neueste zuerst'),
-    'mkdate0'    => $_('Datum hochgeladen: Älteste zuerst'),
-    'start1'     => $_('Aufnahmezeitpunkt: Neueste zuerst'),
-    'start0'     => $_('Aufnahmezeitpunkt: Älteste zuerst'),
-    'title0'     => $_('Titel: Alphabetisch'),
-    'title1'     => $_('Titel: Umgekehrt Alphabetisch'),
+    'date:DESC'      => $_('Datum hochgeladen: Neueste zuerst'),
+    'date:ASC'       => $_('Datum hochgeladen: Älteste zuerst'),
+    'start_date:DESC'=> $_('Aufnahmezeitpunkt: Neueste zuerst'),
+    'start_date:ASC' => $_('Aufnahmezeitpunkt: Älteste zuerst'),
+    'title:ASC'      => $_('Titel: Alphabetisch'),
+    'title:DESC'     => $_('Titel: Umgekehrt Alphabetisch'),
 ];
 ?>
 
@@ -39,6 +42,15 @@ $sort_orders = [
     <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
 
 </form>
+
+<?= $pagechooser = $GLOBALS['template_factory']->render('shared/pagechooser', [
+    'page'         => Pager::getPage(),
+    'num_postings' => Pager::getLength(),
+    'perPage'      => Pager::getLimit(),
+    'pagelink'     => PluginEngine::getURL('opencast/course/index/?page=') . '%s'
+]); ?>
+
+
 
 <script type="text/javascript">
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
@@ -275,3 +287,6 @@ $sort_orders = [
         </ul>
     </div>
 </div>
+
+<!-- Seitenwähler (bei Bedarf) am unteren Rand anzeigen -->
+<?= $pagechooser ?>

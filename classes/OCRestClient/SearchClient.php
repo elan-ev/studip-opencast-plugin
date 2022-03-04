@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\Pager;
 
 class SearchClient extends OCRestClient
 {
@@ -13,41 +14,6 @@ class SearchClient extends OCRestClient
             parent::__construct($config);
         } else {
             throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
-        }
-    }
-
-    /**
-     *  getEpisodes() - retrieves episode metadata for a given series identifier
-     *  from connected Opencast
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return array response of episodes
-     */
-    public function getEpisodes($series_id, $refresh = false)
-    {
-        $cache = StudipCacheFactory::getCache();
-        $cache_key = 'oc_episodesforseries/' . $series_id;
-        $episodes = $cache->read($cache_key);
-
-        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
-            $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
-            $x = "search-results";
-
-            if ($search = $this->getJSON($service_url)) {
-                $episodes = $search->$x->result;
-
-                if (!is_array($episodes)) {
-                    $episodes = [$episodes];
-                }
-
-                $cache->write($cache_key, serialize($episodes), 7200);
-                return $episodes ?: [];
-            } else {
-                return [];
-            }
-        } else {
-            return unserialize($episodes) ?: [];
         }
     }
 

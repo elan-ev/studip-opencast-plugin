@@ -9,6 +9,7 @@ use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 use Opencast\Models\OCEndpoints;
+use Opencast\Models\Pager;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
@@ -92,6 +93,8 @@ class CourseController extends OpencastController
      */
     public function index_action($active_id = 'false', $upload_message = false)
     {
+        Pager::setPage(Request::int('page', 1));
+
         $this->set_title($this->_("Opencast Player"));
 
         if ($upload_message === 'true') {
@@ -114,9 +117,6 @@ class CourseController extends OpencastController
                 . 'eingetragen oder unsichtbar waren.'
             ));
         }
-
-
-        $reload = true;
 
         foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
             PageLayout::postError(sprintf($this->_(
@@ -143,7 +143,7 @@ class CourseController extends OpencastController
 
                 $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                 $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                $this->wip_episodes = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
+                $this->wip_episodes = array_merge($api_client->getBySeries($series['series_id']), $this->wip_episodes);
                 $this->instances = array_merge(
                     $this->workflow_client->getRunningInstances($series['series_id']),
                     $this->instances
@@ -180,8 +180,9 @@ class CourseController extends OpencastController
             $this->coursevis = $occourse->getSeriesVisibility();
 
             if ($occourse->getSeriesID()) {
+                Pager::setLength($this->search_client->getEpisodeCount($occourse->getSeriesID()));
 
-                $this->ordered_episode_ids = $this->get_ordered_episode_ids($reload);
+                $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 
                 if (!empty($this->ordered_episode_ids)) {
                     PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Vorlesungsaufzeichnungen'));
@@ -213,12 +214,12 @@ class CourseController extends OpencastController
         $this->configs = OCConfig::getBaseServerConf();
     }
 
-    private function get_ordered_episode_ids($reload)
+    private function get_ordered_episode_ids()
     {
         try {
             $oc_course = new OCCourseModel($this->course_id);
             if ($oc_course->getSeriesID()) {
-                $ordered_episode_ids = $oc_course->getEpisodes($reload);
+                $ordered_episode_ids = $oc_course->getEpisodes();
                 if (!OCPerm::editAllowed($this->course_id)) {
                     $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
                 }
@@ -392,7 +393,7 @@ class CourseController extends OpencastController
 
 
         $events_client = ApiEventsClient::getInstance();
-        $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
+        $events        = $events_client->getBySeries($this->cseries[0]['series_id']);
 
         foreach ($events as $event) {
             $this->events[$event->identifier] = $event;
@@ -548,11 +549,6 @@ class CourseController extends OpencastController
     public function permission_action($episode_id, $permission)
     {
         $this->user_id = $GLOBALS['user']->id;
-
-        // permissions of live streams cannot be changed
-        if ($this->isLive($episode_id)) {
-            throw new AccessDeniedException();
-        }
 
         $check_perm_for = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? ['tutor', 'dozent'] : 'dozent';
 
@@ -878,11 +874,6 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket)) {
-            // live streams cannot be removed
-            if ($this->isLive($episode_id)) {
-                throw new AccessDeniedException();
-            }
-
             StudipLog::log('OC_REMOVE_MEDIA', $this->course_id, null, $episode_id);
             $adminng_client = AdminNgEventClient::getInstance();
 
@@ -941,22 +932,6 @@ class CourseController extends OpencastController
         $episode->is_retracting = true;
         $episode->store();
         return true;
-    }
-
-    private function isLive($episode_id)
-    {
-        /*
-        $oc_events = ApiEventsClient::create($this->course_id);
-        $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
-
-        foreach ($events as $event) {
-            if ($event['id'] === $episode_id) {
-                return $event->publication_status[0] == 'engage-live';
-            }
-        }
-        */
-
-        return false;
     }
 
     private function createStudyGroup()

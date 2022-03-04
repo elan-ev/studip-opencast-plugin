@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\Pager;
 
 class ApiEventsClient extends OCRestClient
 {
@@ -28,63 +29,6 @@ class ApiEventsClient extends OCRestClient
         return [$code, $data];
     }
 
-    /**
-     *  getEpisodes() - retrieves episode metadata for a given series identifier
-     *  from connected Opencast
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return array response of episodes
-     */
-    public function getEpisodes($series_id, $refresh = false)
-    {
-        $cache     = StudipCacheFactory::getCache();
-        $cache_key = 'oc_episodesforseries/' . $series_id;
-        $episodes  = $cache->read($cache_key);
-
-        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('tutor')) {
-            $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
-                . $series_id . '&sort=&limit=0&offset=0';
-
-            if ($episodes = $this->getJSON($service_url)) {
-                foreach ($episodes as $key => $val) {
-                    $episodes[$key]->id = $val->identifier;
-                }
-
-                $cache->write($cache_key, serialize($episodes), 7200);
-                return $episodes ?: [];
-            } else {
-                return [];
-            }
-        } else {
-            return unserialize($episodes) ?: [];
-        }
-    }
-
-    public function getAclForEpisode($series_id, $episode_id)
-    {
-        static $acl;
-
-        if (!$acl[$series_id]) {
-            $params = [
-                'withacl' => 'true',
-                'filter'  => sprintf(
-                    'is_part_of:%s,status:EVENTS.EVENTS.STATUS.PROCESSED',
-                    $series_id
-                )
-            ];
-
-            $data = $this->getJSON('?' . http_build_query($params));
-
-            if (is_array($data)) foreach ($data as $episode) {
-                $acl[$series_id][$episode->identifier] = $episode->acl;
-            }
-        }
-
-        return $acl[$series_id][$episode_id];
-    }
-
-
     public function getACL($episode_id)
     {
         return json_decode(json_encode($this->getJSON('/' . $episode_id . '/acl')), true);
@@ -101,10 +45,23 @@ class ApiEventsClient extends OCRestClient
         return $result[1] == 200;
     }
 
+    /**
+     *  Retrieves episode metadata for a given series identifier
+     *  from connected Opencast
+     *
+     * @param string series_id Identifier for a Series
+     *
+     * @return array response of episodes
+     */
     public function getBySeries($series_id, $params = [])
     {
+        $offset = Pager::getOffset();
+        $limit  = Pager::getLimit();
+        $sort   = Pager::getSortOrder();
+
         $events = $this->getJSON('/?filter=is_part_of:' .
-            $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
+            $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED'
+            . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset", $params);
 
         return array_reduce($events, function ($events, $event) {
             $events[$event->identifier] = $event;
@@ -131,13 +88,14 @@ class ApiEventsClient extends OCRestClient
         return $events;
     }
 
-    public function getVisibilityForEpisode($series_id, $episode_id, $course_id = null)
+    public function getVisibilityForEpisode($episode, $course_id = null)
     {
         if (is_null($course_id)) {
             $course_id = Context::getId();
         }
 
-        $acls    = self::getAclForEpisode($series_id, $episode_id);
+        $acls = $episode->acl;
+
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -146,7 +104,7 @@ class ApiEventsClient extends OCRestClient
             : 'visible';
 
         if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+            OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
             return $default;
         }
 
