@@ -190,7 +190,8 @@ class CourseController extends OpencastController
                 $this->search_client = SearchClient::getInstance();
                 $this->coursevis = $occourse->getSeriesVisibility();
 
-                Pager::setLength($this->search_client->getEpisodeCount($this->series_id));
+                $api_events = ApiEventsClient::getInstance();
+                Pager::setLength($api_events->getEpisodeCount($this->series_id));
 
                 $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 

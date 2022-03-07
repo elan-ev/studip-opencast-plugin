@@ -59,28 +59,6 @@ class SearchClient extends OCRestClient
         }
     }
 
-
-
-
-    // other functions
-
-    /**
-     *  getEpisodeCount -
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return int number of episodes
-     */
-    public function getEpisodeCount($series_id)
-    {
-        if ($series = $this->getSeries($series_id)) {
-            $x = "search-results";
-            $count = $series->$x->total;
-
-            return intval($count);
-        }
-    }
-
     public function getBaseURL()
     {
         $base = $this->base_url;

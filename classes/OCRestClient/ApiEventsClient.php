@@ -53,26 +53,41 @@ class ApiEventsClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    public function getBySeries($series_id, $params = [])
+    public function getBySeries($series_id)
     {
-        static $events;
+        static $static_events;
 
-        if (empty($events[$series_id])) {
+        if (empty($static_events[$series_id])) {
             $offset = Pager::getOffset();
             $limit  = Pager::getLimit();
             $sort   = Pager::getSortOrder();
 
             $events = $this->getJSON('/?filter=is_part_of:' .
-                $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED'
-                . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset", $params);
+                $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED,textFilter:engage-player'
+                . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset");
 
-            $events[$series_id] = array_reduce($events, function ($events, $event) {
+            $static_events[$series_id] = array_reduce($events, function ($events, $event) {
                 $events[$event->identifier] = $event;
                 return $events;
             }, []);
         }
 
-        return $events[$series_id];
+        return $static_events[$series_id];
+    }
+
+    public function getEpisodeCount($series_id)
+    {
+        static $static_events;
+
+        if (empty($static_events[$series_id])) {
+            $events = $this->getJSON('/?filter=is_part_of:' .
+                $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED,textFilter:engage-player'
+                . "&sort=&limit=9999&offset=0");
+
+            $static_events[$series_id] = sizeof($events);
+        }
+
+        return $static_events[$series_id];
     }
 
     public function getAllScheduledEvents()
