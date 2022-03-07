@@ -24,6 +24,7 @@
 
                             <select v-model="selectedSeries" required>
                                 <option v-for="series in course_series"
+                                    :key="series.config_id"
                                     :value="series"
                                 >
                                     {{ series.details.title }}
@@ -107,6 +108,7 @@
 
                             <select v-model="upload.workflow" required>
                                 <option v-for="workflow in upload_workflows"
+                                    v-bind:key="workflow.id"
                                     :value="workflow.id">
                                     {{ workflow.name }}
                                 </option>
@@ -346,6 +348,7 @@ export default {
         decline() {
 
             if (this.uploadProgress &&
+                // TODO there is no confirm message
                 confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))
             ) {
                 this.uploadService.cancel();
