@@ -208,8 +208,6 @@ class OCCourseModel
                 $oc_episode['visibility']    = $l_episode['visible'];
                 $oc_episode['is_retracting'] = $l_episode['is_retracting'];
                 $oc_episode['mkdate']        = $l_episode['mkdate'];
-
-                unset($local_episodes[$oc_episode['id']]);
             }
 
             OCModel::setEpisode(
@@ -221,16 +219,6 @@ class OCCourseModel
             );
 
             $episodes[] = $oc_episode;
-        }
-
-        // removed orphaned episodes
-        if (!empty($local_episodes)) {
-            foreach ($local_episodes as $orphaned_episode) {
-                // todo log event for this action
-                OCModel::removeStoredEpisode(
-                    $orphaned_episode['episode_id']
-                );
-            }
         }
 
         return $episodes;
