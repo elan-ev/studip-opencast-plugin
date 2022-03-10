@@ -4,6 +4,7 @@ import { apolloClient, apolloProvider } from '../vue-apollo'
 
 const state = {
     cid: '',
+    search: '',
     events: null,
     limit: 5,
     paging: {
@@ -24,6 +25,10 @@ const getters = {
 const mutations = {
     setCid(state, cid) {
         state.cid = cid
+    },
+
+    setSearch(state, search) {
+        state.search = search
     },
 
     setLimit(state, limit) {
@@ -76,6 +81,11 @@ const actions = {
         commit('setCid', cid)
     },
 
+    async setSearch({dispatch, commit}, search) {
+        await commit('setSearch', search)
+        dispatch('reloadEvents')
+    },
+
     async setLimit({commit}, limit) {
         commit('setLimit', limit)
     },
@@ -96,7 +106,10 @@ const actions = {
         const response = await apolloClient.query({
             query: gql`
                 query {
-                    getEvents(course_id: "${state.cid}", offset: ${state.paging.currPage*state.limit}, limit: ${state.limit}) {
+                    getEvents(course_id: "${state.cid}", 
+                            offset: ${state.paging.currPage*state.limit}, 
+                            limit: ${state.limit},
+                            search: "${state.search}") {
                         events {
                             id
                             title

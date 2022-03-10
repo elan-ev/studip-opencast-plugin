@@ -60,6 +60,14 @@ class Events
             }
         }
 
+        // handle search
+        $search = $args['search'];
+        if ($search !== '') {
+            $events = array_filter($events, function($event) use($search) {
+                return str_contains(strtolower($event['title']), strtolower($search));
+            });
+        }
+
         // handle pagination
         $num_events = count($events);
         $offset = $args['offset'] ? $args['offset'] : 0;

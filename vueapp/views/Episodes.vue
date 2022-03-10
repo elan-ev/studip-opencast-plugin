@@ -1,6 +1,7 @@
 <template>
     <div class="container" id="app-episodes">
         <Navbar></Navbar>
+        <EpisodeSearch></EpisodeSearch>
         <EpisodeList></EpisodeList>
 
         <MountingPortal mountTo="#action-widget" name="sidebar-actions" append>
@@ -28,8 +29,9 @@
 import { mapGetters } from "vuex";
 
 import EpisodeList from "@/components/Episodes/EpisodeList"
+import EpisodeSearch from "@/components/Episodes/EpisodeSearch"
 import Navbar from "@/components/Episodes/Navbar"
-import ActionWidget from '../components/Episodes/ActionWidget';
+import ActionWidget from '../components/Episodes/ActionWidget'
 import EpisodeAdd from '@/components/Episodes/EpisodeAdd'
 import SeriesManager from '@/components/Series/SeriesManager'
 
@@ -40,12 +42,13 @@ export default {
         return {
             uploadDialog: false,
             seriesDialog: false,
+            search: ''
         }
     },
 
     components: {
         EpisodeList,    Navbar,         ActionWidget,
-        EpisodeAdd,     SeriesManager
+        EpisodeAdd,     SeriesManager, EpisodeSearch
     },
 
     computed: {
