@@ -227,6 +227,33 @@ h2.oc--loadingbar {
 	}
 }
 
+/* * * * * * * * * * * * * * * * * * * * */
+/*   E P I S O D E   S E A R C H B A R   */
+/* * * * * * * * * * * * * * * * * * * * */
+
+.oc--searchbar {
+    input[type=text] {
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid $light-gray-color-40;
+        float: left;
+        background: $dark-gray-color-5;
+    }
+
+    button.submit {
+        padding: 8px;
+        background: dodgerblue;
+        color: white;
+        font-size: 16px;
+        border: 1px solid $light-gray-color-40;
+        border-left: none; /* Prevent double borders */
+        cursor: pointer;
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+}
+
 /* * * * * * * * * * * * * * * * * */
 /*   E P I S O D E   U P L O A D   */
 /* * * * * * * * * * * * * * * * * */

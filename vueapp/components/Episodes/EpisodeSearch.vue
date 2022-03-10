@@ -1,6 +1,8 @@
 <template>
-    <div>
-        <input v-model="search" placeholder="search">
+    <div class="oc--searchbar">
+        <input type="text" v-model="search" placeholder="search" @keyup.enter="searchHandler">
+        <button class="submit" 
+            @click="searchHandler">submit</button>
     </div>
 </template>
 
@@ -14,10 +16,10 @@ export default {
         }
     },
 
-    watch: {
-        search: function (s) {
-            this.$store.dispatch('setSearch', s)
+    methods: {
+        searchHandler() {
+            this.$store.dispatch('setSearch', this.search)
         }
-    },
+    }
 }
 </script>
