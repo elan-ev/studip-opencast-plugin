@@ -95,6 +95,11 @@ class CourseController extends OpencastController
     {
         Pager::setPage(Request::int('page', 1));
 
+        $search = Request::get('search', $this->flash['search'] ?: null);
+        if ($search) {
+            Pager::setSearch($search);
+        }
+
         $this->set_title($this->_("Opencast Player"));
 
         Navigation::activateItem('course/opencast/overview');
@@ -129,7 +134,6 @@ class CourseController extends OpencastController
         }
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
-        $this->wip_episodes = [];
         $this->instances = [];
         $this->multiconnected = false;
 
@@ -163,7 +167,7 @@ class CourseController extends OpencastController
 
                     $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                     $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                    $this->wip_episodes = array_merge($this->events, $this->wip_episodes);
+
                     $this->instances = array_merge(
                         $this->workflow_client->getRunningInstances($series['series_id']),
                         $this->instances
@@ -175,8 +179,8 @@ class CourseController extends OpencastController
                     }
                 }
 
-                $this->wip_episodes = array_filter($this->wip_episodes, function ($element) {
-                    return ($element->processing_state == 'RUNNING');
+                $this->instances = array_filter($this->instances, function ($element) {
+                    return ($element->state == 'RUNNING');
                 });
 
                 //workflow
@@ -237,6 +241,13 @@ class CourseController extends OpencastController
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    public function search_episodes_action()
+    {
+        $this->flash['search'] = Request::get('search');
+
+        $this->redirect('course/index');
     }
 
     public function tos_action()

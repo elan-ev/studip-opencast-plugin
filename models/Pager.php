@@ -6,7 +6,8 @@ class Pager
 {
     static private
         $page   = -1,
-        $length = 0;
+        $length = 0,
+        $search = null;
 
     public static function setPage($page)
     {
@@ -31,6 +32,16 @@ class Pager
     public static function setLength($length)
     {
         self::$length = $length;
+    }
+
+    public static function setSearch($search)
+    {
+         self::$search = $search;
+    }
+
+    public static function getSearch()
+    {
+        return self::$search;
     }
 
     /**

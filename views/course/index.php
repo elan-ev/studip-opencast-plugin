@@ -131,6 +131,14 @@ if ($this->connectedSeries[0]['series_id']) :
 endif;
 
 $sidebar = Sidebar::get();
+
+// add search widget
+/*
+$search_widget = new SearchWidget($controller->url_for('course/search_episodes'));
+$search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, $search);
+$sidebar->addWidget($search_widget);
+*/
+
 if (OCPerm::editAllowed($course_id)) {
     $actions = new LinksWidget ();
     $actions->setTitle($_('Medien'));
@@ -341,11 +349,7 @@ if (OCPerm::editAllowed($course_id)) {
 Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAIL, 'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL . '?subject=[Opencast] Feedback');
 ?>
 
-<? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
-    <? if (OCPerm::editAllowed($course_id)) : ?>
-        <?= $this->render_partial('course/_wip_episode') ?>
-    <? endif ?>
-
+<? if (!(empty($ordered_episode_ids))) : ?>
     <? if (!(empty($ordered_episode_ids))) : ?>
         <?= $this->render_partial('course/_episode') ?>
     <? endif ?>

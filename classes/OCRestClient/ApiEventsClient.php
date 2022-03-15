@@ -61,9 +61,11 @@ class ApiEventsClient extends OCRestClient
             $offset = Pager::getOffset();
             $limit  = Pager::getLimit();
             $sort   = Pager::getSortOrder();
+            $search = Pager::getSearch();
 
             $events = $this->getJSON('/?filter=is_part_of:' .
                 $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED,textFilter:engage-player'
+                . ($search ? ',title:*'. $search : '*')
                 . "&withpublications=true&sort=$sort&limit=$limit&offset=$offset");
 
             $static_events[$series_id] = array_reduce($events, function ($events, $event) {
@@ -80,8 +82,11 @@ class ApiEventsClient extends OCRestClient
         static $static_events;
 
         if (empty($static_events[$series_id])) {
+            $search = Pager::getSearch();
+
             $events = $this->getJSON('/?filter=is_part_of:' .
                 $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED,textFilter:engage-player'
+                . ($search ? ',title:*'. $search : '*')
                 . "&sort=&limit=9999&offset=0");
 
             $static_events[$series_id] = sizeof($events);

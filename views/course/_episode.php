@@ -43,14 +43,17 @@ $sort_orders = [
 
 </form>
 
+<? if (OCPerm::editAllowed($course_id) && !empty($instances)) : ?>
+    <?= $this->render_partial('course/_wip_episode') ?>
+<? endif ?>
+
+
 <?= $pagechooser = $GLOBALS['template_factory']->render('shared/pagechooser', [
     'page'         => Pager::getPage(),
     'num_postings' => Pager::getLength(),
     'perPage'      => Pager::getLimit(),
-    'pagelink'     => PluginEngine::getURL('opencast/course/index/?page=') . '%s'
+    'pagelink'     => PluginEngine::getURL('opencast/course/index/?search='. Pager::getSearch() .'&page=') . '%s'
 ]); ?>
-
-
 
 <script type="text/javascript">
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
@@ -162,7 +165,7 @@ $sort_orders = [
                                     <? endif ?>
                                 </li>
                                 <li>
-                                    <?= $_('Autor') ?>:
+                                    <?= $_('Ersteller/in') ?>:
                                     <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                                 </li>
                                 <li>
