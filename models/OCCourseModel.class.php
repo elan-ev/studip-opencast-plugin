@@ -346,7 +346,7 @@ class OCCourseModel
      *
      * @return int the number of entries
      */
-    public function getCount($visitdate)
+    public static function getCount($course_id, $visitdate)
     {
         if ($visitdate < time() - OCCourseModel::LAST_VISIT_MAX) {
             $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
@@ -355,7 +355,7 @@ class OCCourseModel
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
             WHERE seminar_id = :seminar_id AND oc_seminar_episodes.mkdate > :lastvisit");
 
-        $stmt->bindParam(':seminar_id', $this->getCourseID());
+        $stmt->bindParam(':seminar_id', $course_id);
         $stmt->bindParam(':lastvisit', $visitdate);
 
         $stmt->execute();
