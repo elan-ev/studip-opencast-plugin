@@ -86,6 +86,8 @@ class CourseController extends OpencastController
                 }
             }
         }
+
+        $this->debug = boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL);
     }
 
     /**
@@ -246,6 +248,23 @@ class CourseController extends OpencastController
     public function search_episodes_action()
     {
         $this->flash['search'] = Request::get('search');
+
+        $this->redirect('course/index');
+    }
+
+    public function debug_action($ticket)
+    {
+        if ($GLOBALS['perm']->have_perm('root') && check_ticket($ticket)) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_DEBUG_CURL',
+                !boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)
+            );
+
+            if (boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)) {
+                PageLayout::postInfo($this->_('Debugging ist nun eingeschaltet für diesen Kurs.'));
+            } else {
+                PageLayout::postInfo($this->_('Debugging ist nun ausgeschaltet für diesen Kurs.'));
+            }
+        }
 
         $this->redirect('course/index');
     }

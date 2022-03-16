@@ -243,6 +243,27 @@ if (OCPerm::editAllowed($course_id)) {
                     ]
                 );
             }
+
+
+            if ($debug) {
+                $config_actions->addLink(
+                    $_('Debugging ausschalten'),
+                    $controller->url_for('course/debug/' . get_ticket()),
+                    Icon::create('admin+accept'),
+                    [
+                        'title' => $_('Debugging ist momentan eingeschaltet.')
+                    ]
+                );
+            } else {
+                $config_actions->addLink(
+                    $_('Debugging einschalten'),
+                    $controller->url_for('course/debug/' . get_ticket()),
+                    Icon::create('admin+decline'),
+                    [
+                        'title' => $_('Debugging ist momentan ausgeschaltet.')
+                    ]
+                );
+            }
         }
 
         if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {

@@ -249,7 +249,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
             $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
 
-            $series_metadata = OCSeminarSeries::getSeries($course_id);
+
+            $series_metadata = OCSeminarSeries::findBySeminar_id($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }

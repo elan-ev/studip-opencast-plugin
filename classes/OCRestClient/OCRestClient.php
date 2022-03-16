@@ -6,8 +6,6 @@
 use Opencast\Models\OCConfig;
 use Opencast\Configuration;
 
-define('DEBUG_CURL', FALSE);
-
 class OCRestClient
 {
     public static $me;
@@ -17,7 +15,8 @@ class OCRestClient
         $password,
         $oc_version,
         $config_id,
-        $cookie;
+        $cookie,
+        $debug_curl = false;
 
     const
         GET = 1,
@@ -84,10 +83,14 @@ class OCRestClient
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, False);
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, False);
 
-        // debugging
-        if (DEBUG_CURL) {
-            curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
+        // check, if debugging is enabled
+        if (Context::getId()) {
+            if (boolval(\CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)) {
+                $this->debug_curl = true;
+                curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
+            }
         }
+
     }
 
     public function has_config_error()
@@ -141,7 +144,7 @@ class OCRestClient
         if (isset($service_url)) {
             $this->initCurl();
 
-            if (DEBUG_CURL) {
+            if ($this->debug_curl) {
                 echo '<pre>';
                 echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
                 $timing = microtime(true);
@@ -172,7 +175,7 @@ class OCRestClient
             }
 
 
-            if (!DEBUG_CURL) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
+            if (!$this->debug_curl) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
                 // see: https://bugs.php.net/bug.php?id=65348
                 curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
             }
@@ -186,7 +189,7 @@ class OCRestClient
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-            if (DEBUG_CURL) {
+            if ($this->debug_curl) {
                 fclose($this->debug);
                 $runtime = (microtime(true) - $timing) / 1000;
                 if ($runtime > 1) {
@@ -206,7 +209,7 @@ class OCRestClient
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
-                    if (DEBUG_CURL) {
+                    if ($this->debug_curl) {
                         error_log('[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)
@@ -234,7 +237,7 @@ class OCRestClient
         if (isset($service_url)) {
             $this->initCurl();
 
-            if (DEBUG_CURL) {
+            if ($this->debug_curl) {
                 echo '<pre>';
                 echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
                 $timing = microtime(true);
@@ -265,7 +268,7 @@ class OCRestClient
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
-            if (DEBUG_CURL) {
+            if ($this->debug_curl) {
                 fclose($this->debug);
                 $runtime = (microtime(true) - $timing) / 1000;
                 if ($runtime > 1) {
@@ -285,7 +288,7 @@ class OCRestClient
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
-                    if (DEBUG_CURL) {
+                    if ($this->debug_curl) {
                         error_log('[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)
