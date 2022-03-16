@@ -65,67 +65,56 @@ class OCCourseModel
         $this->seriesMetadata = $seriesMetadata;
     }
 
-    /*  */
 
-    public function getEpisodes($force_reload = false, $unset_live = false)
+    public function getEpisodes($unset_live = false)
     {
-        if ($this->getSeriesID()) {
-            $search_client = SearchClient::create($this->getCourseID());
+        static $ordered_episodes;
 
-            $course = Course::find($this->getCourseID());
-            $role   = '';
+        if (empty($ordered_episodes)) {
+            if ($this->getSeriesID()) {
+                $search_client = SearchClient::create($this->getCourseID());
 
-            if (OCPerm::editAllowed($course->id)) {
-                $role = 'Instructor';
-            } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
-                $role = 'Learner';
-            }
+                $course = Course::find($this->getCourseID());
+                $role   = '';
 
-            $series = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
+                if (OCPerm::editAllowed($course->id)) {
+                    $role = 'Instructor';
+                } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
+                    $role = 'Learner';
+                }
 
-            $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
-            $ordered_episodes = [];
+                $api_events = ApiEventsClient::create($this->getCourseID());
+                $series     = $api_events->getBySeries($this->getSeriesID());
 
-            //check if series' episodes is already stored in studip
-            if (!empty($series)) {
-                // add additional episode metadata from opencast
-                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
-            }
+                $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
+                $ordered_episodes = [];
 
-            if ($unset_live) {
-                $oc_events = ApiEventsClient::create($this->getCourseID());
-                $oc_series = OCSeminarSeries::getSeries($this->getCourseID());
-                $events = $oc_events->getEpisodes($oc_series[0]['series_id']);
+                //check if series' episodes is already stored in studip
+                if (!empty($series)) {
+                    // add additional episode metadata from opencast
+                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                }
 
-                foreach ($ordered_episodes as $episode) {
-                    if ($events[$episode['id']]->publication_status[0] == 'engage-live')
-                    {
-                        unset($ordered_episodes[$episode['id']]);
+                if ($unset_live) {
+                    $oc_events = ApiEventsClient::create($this->getCourseID());
+                    $oc_series = OCSeminarSeries::getSeries($this->getCourseID());
+                    $events = $oc_events->getBySeries($oc_series[0]['series_id']);
+
+                    foreach ($ordered_episodes as $episode) {
+                        if ($events[$episode['id']]->publication_status[0] == 'engage-live')
+                        {
+                            unset($ordered_episodes[$episode['id']]);
+                        }
                     }
                 }
-            }
 
-            // Get the Sort order title = TITLE, start = DATE_PUBLISHED, mkdata = DATE_CREATED (?)
-            if ($_SESSION['opencast']['sort_order']) {
-                $sort_str = $_SESSION['opencast']['sort_order'];
+                return $ordered_episodes;
+            } else {
+                return false;
             }
-            else if (CourseConfig::get($this->getCourseID())->COURSE_SORT_ORDER) {
-                $sort_str = CourseConfig::get($this->getCourseID())->COURSE_SORT_ORDER;
-            }
-            else {
-                $sort_str = 'mkdate1';
-            }
-            $sort = substr($sort_str, 0, -1);
-            $reversed = boolval(substr($sort_str, -1));
-            return $this->order_episodes_by(
-                [$sort],
-                [SORT_NATURAL],
-                [$reversed],
-                $ordered_episodes
-            );
-        } else {
-            return false;
         }
+
+        return $ordered_episodes;
 
     }
 
@@ -178,10 +167,14 @@ class OCCourseModel
         return $episodes;
     }
 
-    private function episodeComparison($stored_episodes, $remote_episodes)
+    private function episodeComparison($stored_episodes, $oc_episodes)
     {
         $episodes    = [];
-        $oc_episodes = $this->prepareEpisodes($remote_episodes);
+
+        $local_episodes = [];
+        foreach ($stored_episodes as $episode) {
+            $local_episodes[$episode['episode_id']] = $episode;
+        }
 
         $vis_conf = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
@@ -190,153 +183,43 @@ class OCCourseModel
             ? 'invisible'
             : 'visible';
 
-        foreach ($stored_episodes as $key => $stored_episode) {
+        foreach ($oc_episodes as $oc_episode) {
+            $l_episode = $local_episodes[$oc_episode['id']];
 
-            if ($tmp = $oc_episodes[$stored_episode['episode_id']]) {
-                $tmp['visibility']    = $stored_episode['visible'];
-                $tmp['is_retracting'] = $stored_episode['is_retracting'];
-                $tmp['mkdate']        = $stored_episode['mkdate'];
+            if (!$l_episode) {
+                // add new episode to Stud.IP
 
-                OCModel::setEpisode(
-                    $stored_episode['episode_id'],
-                    $stored_episode['series_id'],
-                    $this->getCourseID(),
-                    $tmp['visibility'],
-                    $tmp['is_retracting']
-                );
+                $oc_episode['visibility']    = $vis;
+                $oc_episode['is_retracting'] = false;
+                $oc_episode['mkdate']        = $timestamp;
 
-                $episodes[] = $tmp;
+                // invalidate acl cache for this course
+                $cache = \StudipCacheFactory::getCache();
+                $cache_key = 'sop/visiblity/'. \Context::getId();
+                $cache->expire($cache_key);
 
-                unset($oc_episodes[$stored_episode['episode_id']]);
-                unset($stored_episodes[$key]);
-            }
-
-        }
-
-        //add new episodes
-        if (!empty($oc_episodes)) {
-            $timestamp = time();
-            foreach ($oc_episodes as $episode) {
-                $lastpos++;
-                $episode['visibility'] = $vis;
-                $episode['mkdate']     = $timestamp;
-
-                OCModel::setEpisode(
-                    $episode['id'],
-                    $episode['series_id'],
-                    $this->getCourseID(),
-                    $vis,
-                    false
-                );
-
-                $episodes[] = $episode;
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
-                    'episode_id'    => $episode['id'],
+                    'episode_id'    => $oc_episode['id'],
                     'course_id'     => $this->getCourseID(),
-                    'episode_title' => $episode['title']
+                    'episode_title' => $episode->title
                 ]);
+            } else {
+                $oc_episode['visibility']    = $l_episode['visible'];
+                $oc_episode['is_retracting'] = $l_episode['is_retracting'];
+                $oc_episode['mkdate']        = $l_episode['mkdate'];
             }
 
+            OCModel::setEpisode(
+                $oc_episode['id'],
+                $oc_episode['series_id'],
+                $this->getCourseID(),
+                $oc_episode['visibility'],
+                $oc_episode['is_retracting']
+            );
+
+            $episodes[] = $oc_episode;
         }
 
-        // removed orphaned episodes
-        if (!empty($stored_episodes)) {
-            foreach ($stored_episodes as $orphaned_episode) {
-                // todo log event for this action
-                OCModel::removeStoredEpisode(
-                    $orphaned_episode['episode_id']
-                );
-            }
-        }
-
-        return $episodes;
-
-    }
-
-    private function prepareEpisodes($oc_episodes)
-    {
-        $episodes = [];
-        if (is_object($oc_episodes)) {
-            $oc_episodes = [$oc_episodes];
-        }
-
-        if (is_array($oc_episodes)) foreach ($oc_episodes as $episode) {
-            if (is_object($episode->mediapackage)) {
-                $presentation_preview  = false;
-                $preview               = false;
-                $presenter_download    = [];
-                $presentation_download = [];
-                $audio_download        = [];
-                foreach ((array) $episode->mediapackage->attachments->attachment as $attachment) {
-                    if ($attachment->type === "presenter/search+preview") {
-                        $preview = $attachment->url;
-                    }
-                    if ($attachment->type === "presentation/player+preview") {
-                        $presentation_preview = $attachment->url;
-                    }
-                }
-
-                $tracks = (@sizeof($episode->mediapackage->media->track) > 1)
-                    ? $episode->mediapackage->media->track
-                    : [$episode->mediapackage->media->track];
-
-                foreach ($tracks as $track) {
-                    $parsed_url = parse_url($track->url);
-
-                    if ($track->type === 'presenter/delivery') {
-                        if (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && ((in_array('atom', $track->tags->tag) || in_array('engage-download', $track->tags->tag)) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video)) {
-                            $quality = $this->calculate_size(
-                                $track->video->bitrate,
-                                $track->duration
-                            );
-                            $presenter_download[$quality] = [
-                                'url'  => $track->url,
-                                'info' => $this->add_px_to_resolution($track->video->resolution)
-                            ];
-                        }
-                        if (in_array($track->mimetype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus']) && !empty($track->audio)) {
-                            $quality = $this->calculate_size(
-                                $track->audio->bitrate,
-                                $track->duration
-                            );
-                            $audio_download[$quality] = [
-                                'url'  => $track->url,
-                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mimetype)[1]
-                            ];
-                        }
-                    }
-
-                    if ($track->type === 'presentation/delivery' && (($track->mimetype === 'video/mp4' || $track->mimetype === 'video/avi') && ((in_array('atom', $track->tags->tag) || in_array('engage-download', $track->tags->tag)) && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps') && !empty($track->video))) {
-                        $quality = $this->calculate_size(
-                            $track->video->bitrate,
-                            $track->duration
-                        );
-
-                        $presentation_download[$quality] = [
-                            'url'  => $track->url,
-                            'info' => $this->add_px_to_resolution($track->video->resolution)
-                        ];
-                    }
-                }
-                ksort($presenter_download);
-                ksort($presentation_download);
-                ksort($audio_download);
-                $episodes[$episode->id] = [
-                    'id'                    => $episode->id,
-                    'series_id'             => $episode->dcIsPartOf,
-                    'title'                 => $episode->dcTitle,
-                    'start'                 => $episode->mediapackage->start,
-                    'duration'              => $episode->mediapackage->duration,
-                    'description'           => $episode->dcDescription,
-                    'author'                => $episode->dcCreator,
-                    'preview'               => $preview,
-                    'presentation_preview'  => $presentation_preview,
-                    'presenter_download'    => $presenter_download,
-                    'presentation_download' => $presentation_download,
-                    'audio_download'        => $audio_download,
-                ];
-            }
-        }
         return $episodes;
     }
 
@@ -347,7 +230,7 @@ class OCCourseModel
      *
      * @return int the number of entries
      */
-    public function getCount($visitdate)
+    public static function getCount($course_id, $visitdate)
     {
         if ($visitdate < time() - OCCourseModel::LAST_VISIT_MAX) {
             $visitdate = time() - OCCourseModel::LAST_VISIT_MAX;
@@ -356,7 +239,7 @@ class OCCourseModel
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
             WHERE seminar_id = :seminar_id AND oc_seminar_episodes.mkdate > :lastvisit");
 
-        $stmt->bindParam(':seminar_id', $this->getCourseID());
+        $stmt->bindParam(':seminar_id', $course_id);
         $stmt->bindParam(':lastvisit', $visitdate);
 
         $stmt->execute();
@@ -492,15 +375,5 @@ class OCCourseModel
                 WHERE seminar_id = ? AND date_id = ?");
 
         return $stmt->execute([$workflow_id, $this->getCourseID(), $termin_id]);
-    }
-
-    private function calculate_size($bitrate, $duration)
-    {
-        return ($bitrate / 8) * ($duration / 1000);
-    }
-
-    private function add_px_to_resolution($resolution)
-    {
-        return $resolution . 'px';
     }
 }

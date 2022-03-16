@@ -2,6 +2,7 @@
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
+use Opencast\Models\Pager;
 
 ?>
 
@@ -131,6 +132,12 @@ if ($this->connectedSeries[0]['series_id']) :
 endif;
 
 $sidebar = Sidebar::get();
+
+// add search widget
+$search_widget = new SearchWidget($controller->url_for('course/search_episodes'));
+$search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, Pager::getSearch());
+$sidebar->addWidget($search_widget);
+
 if (OCPerm::editAllowed($course_id)) {
     $actions = new LinksWidget ();
     $actions->setTitle($_('Medien'));
@@ -326,6 +333,27 @@ if (OCPerm::editAllowed($course_id)) {
         }
     }
 
+    if ($GLOBALS['perm']->have_perm('root')) {
+        if ($debug) {
+            $config_actions->addLink(
+                $_('Debugging ausschalten'),
+                $controller->url_for('course/debug/' . get_ticket()),
+                Icon::create('admin+accept'),
+                [
+                    'title' => $_('Debugging ist momentan eingeschaltet.')
+                ]
+            );
+        } else {
+            $config_actions->addLink(
+                $_('Debugging einschalten'),
+                $controller->url_for('course/debug/' . get_ticket()),
+                Icon::create('admin+decline'),
+                [
+                    'title' => $_('Debugging ist momentan ausgeschaltet.')
+                ]
+            );
+        }
+    }
 
     $sidebar->addWidget($actions);
     $sidebar->addWidget($config_actions);
@@ -341,11 +369,7 @@ if (OCPerm::editAllowed($course_id)) {
 Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAIL, 'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL . '?subject=[Opencast] Feedback');
 ?>
 
-<? if (!(empty($ordered_episode_ids)) || !(empty($wip_episodes))) : ?>
-    <? if (OCPerm::editAllowed($course_id)) : ?>
-        <?= $this->render_partial('course/_wip_episode') ?>
-    <? endif ?>
-
+<? if (!(empty($ordered_episode_ids))) : ?>
     <? if (!(empty($ordered_episode_ids))) : ?>
         <?= $this->render_partial('course/_episode') ?>
     <? endif ?>

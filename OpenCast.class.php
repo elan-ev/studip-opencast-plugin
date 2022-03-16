@@ -146,10 +146,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
      */
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
-        $ocmodel = new OCCourseModel($course_id);
+        $visibility = OCSeriesModel::getVisibility($course_id);
+
         if (!$this->isActivated($course_id)
             || (
-                $ocmodel->getSeriesVisibility() == 'invisible'
+                $visibility['visibility'] == 'invisible'
                 && !OCPerm::editAllowed($course_id)
             )
         ) {
@@ -158,7 +159,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         $this->image_path = $this->getPluginURL() . '/images/';
         if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
-            $ocgetcount = $ocmodel->getCount($last_visit);
+            $ocgetcount = OCCourseModel::getCount($course_id, $last_visit);
             $text       = sprintf(
                 $this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'),
                 $ocgetcount
@@ -217,9 +218,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             return;
         }
 
-        $ocmodel = new OCCourseModel($course_id);
-        $title   = 'Opencast';
-        if ($ocmodel->getSeriesVisibility() == 'invisible') {
+        $visibility = OCSeriesModel::getVisibility($course_id);
+        $title      = 'Opencast';
+
+        if ($visibility['visibility'] == 'invisible') {
             $title .= " (". $this->_('versteckt'). ")";
         }
         $main    = new Navigation($title);
@@ -247,7 +249,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
             $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
 
-            $series_metadata = OCSeminarSeries::getSeries($course_id);
+
+            $series_metadata = OCSeminarSeries::findBySeminar_id($course_id);
             if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
@@ -277,7 +280,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $main->addSubNavigation('linkedcourse', $linkedCourse);
         }
 
-        if ($ocmodel->getSeriesVisibility() == 'visible' || OCPerm::editAllowed($course_id)) {
+        if ($visibility['visibility'] == 'visible' || OCPerm::editAllowed($course_id)) {
             return ['opencast' => $main];
         }
         return [];

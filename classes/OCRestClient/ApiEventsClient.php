@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCConfig;
+use Opencast\Models\Pager;
 
 class ApiEventsClient extends OCRestClient
 {
@@ -28,63 +29,6 @@ class ApiEventsClient extends OCRestClient
         return [$code, $data];
     }
 
-    /**
-     *  getEpisodes() - retrieves episode metadata for a given series identifier
-     *  from connected Opencast
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return array response of episodes
-     */
-    public function getEpisodes($series_id, $refresh = false)
-    {
-        $cache     = StudipCacheFactory::getCache();
-        $cache_key = 'oc_episodesforseries/' . $series_id;
-        $episodes  = $cache->read($cache_key);
-
-        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('tutor')) {
-            $service_url = '/?sign=false&withacl=false&withmetadata=false&withscheduling=false&withpublications=true&filter=is_part_of:'
-                . $series_id . '&sort=&limit=0&offset=0';
-
-            if ($episodes = $this->getJSON($service_url)) {
-                foreach ($episodes as $key => $val) {
-                    $episodes[$key]->id = $val->identifier;
-                }
-
-                $cache->write($cache_key, serialize($episodes), 7200);
-                return $episodes ?: [];
-            } else {
-                return [];
-            }
-        } else {
-            return unserialize($episodes) ?: [];
-        }
-    }
-
-    public function getAclForEpisode($series_id, $episode_id)
-    {
-        static $acl;
-
-        if (!$acl[$series_id]) {
-            $params = [
-                'withacl' => 'true',
-                'filter'  => sprintf(
-                    'is_part_of:%s,status:EVENTS.EVENTS.STATUS.PROCESSED',
-                    $series_id
-                )
-            ];
-
-            $data = $this->getJSON('?' . http_build_query($params));
-
-            if (is_array($data)) foreach ($data as $episode) {
-                $acl[$series_id][$episode->identifier] = $episode->acl;
-            }
-        }
-
-        return $acl[$series_id][$episode_id];
-    }
-
-
     public function getACL($episode_id)
     {
         return json_decode(json_encode($this->getJSON('/' . $episode_id . '/acl')), true);
@@ -101,15 +45,65 @@ class ApiEventsClient extends OCRestClient
         return $result[1] == 200;
     }
 
-    public function getBySeries($series_id, $params = [])
+    /**
+     *  Retrieves episode metadata for a given series identifier
+     *  from connected Opencast
+     *
+     * @param string series_id Identifier for a Series
+     *
+     * @return array response of episodes
+     */
+    public function getBySeries($series_id)
     {
-        $events = $this->getJSON('/?filter=is_part_of:' .
-            $series_id . ',status:EVENTS.EVENTS.STATUS.PROCESSED', $params);
+        static $static_events;
 
-        return array_reduce($events, function ($events, $event) {
-            $events[$event->identifier] = $event;
-            return $events;
-        }, []);
+        $cache = \StudipCacheFactory::getCache();
+
+        if (empty($static_events[$series_id])) {
+            $events = [];
+
+            $offset = Pager::getOffset();
+            $limit  = Pager::getLimit();
+            $sort   = Pager::getSortOrder();
+            $search = Pager::getSearch();
+
+            $search_service = new SearchClient($this->config_id);
+
+            // first, get list of events ids from search service
+            $search_events = $search_service->getJSON('/episode.json?sid=' . $series_id
+                . ($search ? '&q='. $search : '')
+                . "&sort=$sort&limit=$limit&offset=$offset");
+
+            Pager::setLength($search_events->{'search-results'}->total);
+
+            $results = is_array($search_events->{'search-results'}->result)
+                ? $search_events->{'search-results'}->result
+                : [$search_events->{'search-results'}->result];
+
+            // then, iterate over list and get each event from the external-api
+            foreach ($results as $s_event) {
+                $cache_key = 'sop/episodes/'. $s_event->id;
+                $event = $cache->read($cache_key);
+
+                if (empty($s_event->id)) {
+                    continue;
+                }
+
+                if (!$event) {
+                    $event = self::prepareEpisode(
+                        $this->getJSON('/' . $s_event->id . '/?withpublications=true')
+                    );
+
+                    $cache->write($cache_key, $event, 86000);
+                }
+
+                $events[$s_event->id] = $event;
+            }
+
+            $static_events[$series_id] = $events;
+        }
+
+        return $static_events[$series_id];
     }
 
     public function getAllScheduledEvents()
@@ -131,13 +125,14 @@ class ApiEventsClient extends OCRestClient
         return $events;
     }
 
-    public function getVisibilityForEpisode($series_id, $episode_id, $course_id = null)
+    public function getVisibilityForEpisode($episode, $course_id = null)
     {
         if (is_null($course_id)) {
             $course_id = Context::getId();
         }
 
-        $acls    = self::getAclForEpisode($series_id, $episode_id);
+        $acls = $episode->acl;
+
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -146,7 +141,7 @@ class ApiEventsClient extends OCRestClient
             : 'visible';
 
         if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+            OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
             return $default;
         }
 
@@ -183,5 +178,125 @@ class ApiEventsClient extends OCRestClient
         // nothing found, return default visibility
         OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
         return $default;
+    }
+
+    private function prepareEpisode($episode)
+    {
+        $new_episode = [];
+
+        if (!empty($episode->publications[0]->attachments)) {
+            $presentation_preview  = false;
+            $preview               = false;
+            $presenter_download    = [];
+            $presentation_download = [];
+            $audio_download        = [];
+            $annotation_tool       = false;
+
+            foreach ((array) $episode->publications[0]->attachments as $attachment) {
+                if ($attachment->flavor === "presenter/search+preview") {
+                    $preview = $attachment->url;
+                }
+                if ($attachment->flavor === "presentation/player+preview") {
+                    $presentation_preview = $attachment->url;
+                }
+            }
+
+            foreach ($episode->publications[0]->media as $track) {
+                $parsed_url = parse_url($track->url);
+
+                if ($track->flavor === 'presenter/delivery') {
+                    if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
+                        && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
+                        && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                        && !empty($track->has_video)
+                    ) {
+                        $quality = $this->calculate_size(
+                            $track->bitrate,
+                            $track->duration
+                        );
+                        $presenter_download[$quality] = [
+                            'url'  => $track->url,
+                            'info' => $this->getResolutionString($track->width, $track->height)
+                        ];
+                    }
+
+                    if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
+                        && !empty($track->has_audio)
+                    ) {
+                        $quality = $this->calculate_size(
+                            $track->bitrate,
+                            $track->duration
+                        );
+                        $audio_download[$quality] = [
+                            'url'  => $track->url,
+                            'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
+                        ];
+                    }
+                }
+
+                if ($track->flavor === 'presentation/delivery' && (
+                    (
+                        $track->mediatype === 'video/mp4'
+                        || $track->mediatype === 'video/avi'
+                    ) && (
+                        (
+                            in_array('atom', $track->tags)
+                            || in_array('engage-download', $track->tags)
+                        )
+                        && $parsed_url['scheme'] != 'rtmp'
+                        && $parsed_url['scheme'] != 'rtmps'
+                    )
+                    && !empty($track->has_video)
+                )) {
+                    $quality = $this->calculate_size(
+                        $track->bitrate,
+                        $track->duration
+                    );
+
+                    $presentation_download[$quality] = [
+                        'url'  => $track->url,
+                        'info' => $this->getResolutionString($track->width, $track->height)
+                    ];
+                }
+            }
+
+            foreach ($episode->publications as $publication) {
+                if ($publication->channel == 'annotation-tool') {
+                    $annotation_tool = $publication->url;
+                }
+            }
+
+            ksort($presenter_download);
+            ksort($presentation_download);
+            ksort($audio_download);
+            $new_episode = [
+                'id'                    => $episode->identifier,
+                'series_id'             => $episode->is_part_of,
+                'title'                 => $episode->title,
+                'start'                 => $episode->start,
+                'duration'              => $episode->duration,
+                'description'           => $episode->description,
+                'author'                => $episode->creator,
+                'preview'               => $preview,
+                'presentation_preview'  => $presentation_preview,
+                'presenter_download'    => $presenter_download,
+                'presentation_download' => $presentation_download,
+                'audio_download'        => $audio_download,
+                'annotation_tool'       => $annotation_tool,
+                'has_previews'          => $episode->has_previews ?: false
+            ];
+        }
+
+        return $new_episode;
+    }
+
+    private function calculate_size($bitrate, $duration)
+    {
+        return ($bitrate / 8) * ($duration / 1000);
+    }
+
+    private function getResolutionString($width, $height)
+    {
+        return $width .' * '. $height . ' px';
     }
 }

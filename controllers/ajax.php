@@ -63,6 +63,7 @@ class AjaxController extends OpencastController
 
     public function getepisodes_action($series_id, $simple = false)
     {
+        $api_client    = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         $course_id     = OCConfig::getCourseIdForSeries($series_id);
         $result = $simple_result = [];
@@ -75,17 +76,17 @@ class AjaxController extends OpencastController
             return;
         }
 
-        $episodes = $search_client->getEpisodes($series_id);
+        $episodes = $api_client->getBySeries($series_id);
 
         if (!is_array($episodes)) {
             $episodes = [$episodes];
         }
 
         foreach ($episodes as $episode) {
-            if (key_exists('mediapackage', $episode)) {
+            if (key_exists('publications', $episode)) {
                 $studip_episode = OCSeminarEpisodes::findOneBySQL(
                     'series_id = ? AND episode_id = ? AND seminar_id = ?',
-                    [$series_id, $episode->id, $course_id]
+                    [$series_id, $episode->identifier, $course_id]
                 );
 
                 if ($studip_episode && (
@@ -96,10 +97,10 @@ class AjaxController extends OpencastController
                 }
 
                 $simple_result[] = [
-                    'id'         => $episode->id,
-                    'name'       => $episode->mediapackage->title,
-                    'date'       => $episode->mediapackage->start,
-                    'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->id,
+                    'id'         => $episode->identifier,
+                    'name'       => $episode->title,
+                    'date'       => $episode->start,
+                    'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->identifier,
                     'visible'    => $studip_episode->visible
                 ];
             }

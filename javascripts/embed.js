@@ -145,19 +145,19 @@
 
                 var img_url = "";
 
-                if ('attachments' in episode[i].mediapackage) {
-                    var attachments = episode[i].mediapackage.attachments;
+                if ('attachments' in episode[i].publications[0]) {
+                    var attachments = episode[i].publications[0].attachments;
                     var presenter_preview = false;
-                    $(attachments.attachment).each(function(index, val) {
-                        if (val.type == 'presenter/player+preview' && (
-                            val.mimetype == 'image/jpeg' || val.mimetype == 'image/png'
+                    $(attachments).each(function(index, val) {
+                        if (val.flavor == 'presenter/player+preview' && (
+                            val.mediatype == 'image/jpeg' || val.mediatype == 'image/png'
                         )) {
                             img_url = val.url;
                             presenter_preview = true;
                         }
 
-                        if (!presenter_preview && val.type == 'presentation/search+preview' && (
-                            val.mimetype == 'image/jpeg' || val.mimetype == 'image/png'
+                        if (!presenter_preview && val.flavor == 'presentation/search+preview' && (
+                            val.mediatype == 'image/jpeg' || val.mediatype == 'image/png'
                         )) {
 	                     img_url = val.url;
                         }
@@ -167,7 +167,7 @@
 
                 // Versuche Duration zu holen und umrechnen
                 try {
-                    var ep_dur = episode[i].mediapackage.duration;
+                    var ep_dur = episode[i].duration;
                     ep_dur /= 1000;
                     var time = parseInt(ep_dur, 10);
                     time = time < 0 ? 0 : time;
@@ -183,8 +183,8 @@
                     duration = "";
                 }
 
-                var ep_title = episode[i].dcTitle;
-                var ep_cont = episode[i].dcContributor;
+                var ep_title = episode[i].title;
+                var ep_cont = episode[i].creator;
                 if (ep_title == null) {
                     ep_title = "";
                 } else {
@@ -198,9 +198,9 @@
 
 
 
-                $('ul#loaded_episodes').append("<li id='" + episode[i].id + "'><img height='45px' width='80px' align=middle style='float:left; margin-right: 5px;' src=" + img_url + "><b>" + ep_title + "</b>" + ep_cont + "" + duration + "</li>");
-                episodes_list[i] = episode[i].dcTitle;
-                episodes_id_list[i] = episode[i].id;
+                $('ul#loaded_episodes').append("<li id='" + episode[i].identifier + "'><img height='45px' width='80px' align=middle style='float:left; margin-right: 5px;' src=" + img_url + "><b>" + ep_title + "</b>" + ep_cont + "" + duration + "</li>");
+                episodes_list[i] = episode[i].title;
+                episodes_id_list[i] = episode[i].identifier;
             }
 
             $('input#tags').autocomplete({

@@ -9,6 +9,7 @@ use Opencast\Models\OCTos;
 use Opencast\Models\OCScheduledRecordings;
 use Opencast\Models\OCUploadStudygroup;
 use Opencast\Models\OCEndpoints;
+use Opencast\Models\Pager;
 use Opencast\LTI\OpencastLTI;
 
 class CourseController extends OpencastController
@@ -85,6 +86,8 @@ class CourseController extends OpencastController
                 }
             }
         }
+
+        $this->debug = boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL);
     }
 
     /**
@@ -92,7 +95,16 @@ class CourseController extends OpencastController
      */
     public function index_action($active_id = 'false', $upload_message = false)
     {
+        Pager::setPage(Request::int('page', 1));
+
+        $search = Request::get('search', $this->flash['search'] ?: null);
+        if ($search) {
+            Pager::setSearch($search);
+        }
+
         $this->set_title($this->_("Opencast Player"));
+
+        Navigation::activateItem('course/opencast/overview');
 
         if ($upload_message === 'true') {
             PageLayout::postSuccess($this->_('Die Datei wurde erfolgreich hochgeladen. Je nach Größe der Datei und Auslastung des Opencast-Servers kann es einige Zeit dauern, bis die Aufzeichnung in der Liste sichtbar wird.'));
@@ -115,9 +127,6 @@ class CourseController extends OpencastController
             ));
         }
 
-
-        $reload = true;
-
         foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
             PageLayout::postError(sprintf($this->_(
                 'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
@@ -127,61 +136,69 @@ class CourseController extends OpencastController
         }
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
-        $this->wip_episodes = [];
         $this->instances = [];
         $this->multiconnected = false;
 
-        if (OCPerm::editAllowed($this->course_id) && !empty($this->connectedSeries)) {
-            $this->workflow_client = WorkflowClient::getInstance();
+        if (!empty($this->connectedSeries)) {
+            $this->series_id = $this->connectedSeries[0]['series_id'];
 
-            foreach ($this->connectedSeries as $key => $series) {
-                if ($series['schedule']) {
-                    $this->can_schedule = true;
-                }
+            // only check the the acls once per hour per course or if the cache has benn invalidated
+            $cache = \StudipCacheFactory::getCache();
+            $cache_key = 'sop/visiblity/'. \Context::getId();
+            $checked = $cache->read($cache_key);
 
-                $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series['series_id']));
+            if (!$checked) {
+                OpencastLTI::updateEpisodeVisibility($this->course_id);
+                OpencastLTI::setAcls($this->course_id);
 
-                $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
-                $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
-                $this->wip_episodes = array_merge($api_client->getEpisodes($series['series_id']), $this->wip_episodes);
-                $this->instances = array_merge(
-                    $this->workflow_client->getRunningInstances($series['series_id']),
-                    $this->instances
-                );
-
-                // is this series connected to more than one seminar?
-                if (count(OCSeminarSeries::findBySeries_id($series['series_id'])) > 1) {
-                    $this->multiconnected = true;
-                }
+                $cache->write($cache_key, time(), 3600);
             }
 
-            $this->wip_episodes = array_filter($this->wip_episodes, function ($element) {
-                return ($element->processing_state == 'RUNNING');
-            });
-
-            //workflow
-            $occourse = new OCCourseModel($this->course_id);
-            $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
-            $this->schedulewf = $occourse->getWorkflow('schedule');
-            $this->uploadwf = $occourse->getWorkflow('upload');
-        }
-
-        if (!empty($this->connectedSeries)) {
-            OpencastLTI::updateEpisodeVisibility($this->course_id);
-            OpencastLTI::setAcls($this->course_id);
-        }
-
-        Navigation::activateItem('course/opencast/overview');
-        try {
-            $this->search_client = SearchClient::getInstance();
+            $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
+            $this->events = $api_client->getBySeries($this->series_id);
 
             $occourse = new OCCourseModel($this->course_id);
 
-            $this->coursevis = $occourse->getSeriesVisibility();
+            if (OCPerm::editAllowed($this->course_id)) {
+                $this->workflow_client = WorkflowClient::getInstance();
 
-            if ($occourse->getSeriesID()) {
+                foreach ($this->connectedSeries as $key => $series) {
+                    if ($series['schedule']) {
+                        $this->can_schedule = true;
+                    }
 
-                $this->ordered_episode_ids = $this->get_ordered_episode_ids($reload);
+                    $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
+                    $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
+
+                    $this->instances = array_merge(
+                        $this->workflow_client->getRunningInstances($series['series_id']),
+                        $this->instances
+                    );
+
+                    // is this series connected to more than one seminar?
+                    if (count(OCSeminarSeries::findBySeries_id($series['series_id'])) > 1) {
+                        $this->multiconnected = true;
+                    }
+                }
+
+                $this->instances = array_filter($this->instances, function ($element) {
+                    return ($element->state == 'RUNNING');
+                });
+
+                //workflow
+
+                $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
+                $this->schedulewf = $occourse->getWorkflow('schedule');
+                $this->uploadwf = $occourse->getWorkflow('upload');
+            }
+
+            try {
+                $this->search_client = SearchClient::getInstance();
+                $this->coursevis = $occourse->getSeriesVisibility();
+
+                $api_events = ApiEventsClient::getInstance();
+
+                $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 
                 if (!empty($this->ordered_episode_ids)) {
                     PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Vorlesungsaufzeichnungen'));
@@ -201,24 +218,21 @@ class CourseController extends OpencastController
                 if ($this->flash['cand_delete']) {
                     $this->flash['delete'] = true;
                 }
-
-                $eventsClient = ApiEventsClient::getInstance(1);
-                $this->events = $eventsClient->getBySeries($occourse->getSeriesID());
+            } catch (Exception $e) {
+                $this->flash['error'] = $e->getMessage();
+                $this->render_action('_error');
             }
-        } catch (Exception $e) {
-            $this->flash['error'] = $e->getMessage();
-            $this->render_action('_error');
         }
 
         $this->configs = OCConfig::getBaseServerConf();
     }
 
-    private function get_ordered_episode_ids($reload)
+    private function get_ordered_episode_ids()
     {
         try {
             $oc_course = new OCCourseModel($this->course_id);
             if ($oc_course->getSeriesID()) {
-                $ordered_episode_ids = $oc_course->getEpisodes($reload);
+                $ordered_episode_ids = $oc_course->getEpisodes();
                 if (!OCPerm::editAllowed($this->course_id)) {
                     $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
                 }
@@ -228,6 +242,30 @@ class CourseController extends OpencastController
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    public function search_episodes_action()
+    {
+        $this->flash['search'] = Request::get('search');
+
+        $this->redirect('course/index');
+    }
+
+    public function debug_action($ticket)
+    {
+        if ($GLOBALS['perm']->have_perm('root') && check_ticket($ticket)) {
+            CourseConfig::get($this->course_id)->store('OPENCAST_DEBUG_CURL',
+                !boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)
+            );
+
+            if (boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)) {
+                PageLayout::postInfo($this->_('Debugging ist nun eingeschaltet für diesen Kurs.'));
+            } else {
+                PageLayout::postInfo($this->_('Debugging ist nun ausgeschaltet für diesen Kurs.'));
+            }
+        }
+
+        $this->redirect('course/index');
     }
 
     public function tos_action()
@@ -392,7 +430,7 @@ class CourseController extends OpencastController
 
 
         $events_client = ApiEventsClient::getInstance();
-        $events = $events_client->getEpisodes($this->cseries[0]['series_id']);
+        $events        = $events_client->getBySeries($this->cseries[0]['series_id']);
 
         foreach ($events as $event) {
             $this->events[$event->identifier] = $event;
@@ -549,16 +587,15 @@ class CourseController extends OpencastController
     {
         $this->user_id = $GLOBALS['user']->id;
 
-        // permissions of live streams cannot be changed
-        if ($this->isLive($episode_id)) {
-            throw new AccessDeniedException();
-        }
-
         $check_perm_for = Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? ['tutor', 'dozent'] : 'dozent';
 
         if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id) && !OCModel::checkPermForEpisode($episode_id, $this->user_id, $check_perm_for)) {
             throw new AccessDeniedException();
         }
+
+        $cache = \StudipCacheFactory::getCache();
+        $cache_key = 'sop/visiblity/'. \Context::getId();
+        $cache->expire($cache_key);
 
         if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
             StudipLog::log(
@@ -878,11 +915,6 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket)) {
-            // live streams cannot be removed
-            if ($this->isLive($episode_id)) {
-                throw new AccessDeniedException();
-            }
-
             StudipLog::log('OC_REMOVE_MEDIA', $this->course_id, null, $episode_id);
             $adminng_client = AdminNgEventClient::getInstance();
 
@@ -941,22 +973,6 @@ class CourseController extends OpencastController
         $episode->is_retracting = true;
         $episode->store();
         return true;
-    }
-
-    private function isLive($episode_id)
-    {
-        /*
-        $oc_events = ApiEventsClient::create($this->course_id);
-        $events = $oc_events->getEpisodes(OCSeminarSeries::getSeries($this->course_id));
-
-        foreach ($events as $event) {
-            if ($event['id'] === $episode_id) {
-                return $event->publication_status[0] == 'engage-live';
-            }
-        }
-        */
-
-        return false;
     }
 
     private function createStudyGroup()
@@ -1086,18 +1102,6 @@ class CourseController extends OpencastController
             CourseConfig::get($this->course_id)->store('COURSE_HIDE_EPISODES', $visibility);
         }
         $this->redirect('course/index/false');
-    }
-
-    public function get_annotation_tool($episode_id)
-    {
-        $eventsClient = ApiEventsClient::getInstance();
-        $event = $eventsClient->getEpisode($episode_id, true)[1];
-        foreach ($event->publications as $publication) {
-            if ($publication->channel == 'annotation-tool') {
-                return $publication->url;
-            }
-        }
-        return false;
     }
 
     public function isUploadStudygroupActivatable()

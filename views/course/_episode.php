@@ -1,4 +1,7 @@
-<? use Studip\Button;?>
+<?php
+use Studip\Button;
+use Opencast\Models\Pager;
+?>
 
 <?
 $visibility_text = [
@@ -6,14 +9,8 @@ $visibility_text = [
     'visible'   => $_('Video ist für Teilnehmende sichtbar'),
     'free'      => $_('Video ist für jeden sichtbar')
 ];
-$sort_orders = [
-    'mkdate1'    => $_('Datum hochgeladen: Neueste zuerst'),
-    'mkdate0'    => $_('Datum hochgeladen: Älteste zuerst'),
-    'start1'     => $_('Aufnahmezeitpunkt: Neueste zuerst'),
-    'start0'     => $_('Aufnahmezeitpunkt: Älteste zuerst'),
-    'title0'     => $_('Titel: Alphabetisch'),
-    'title1'     => $_('Titel: Umgekehrt Alphabetisch'),
-];
+
+$sort_orders = Pager::getSortOptions();
 ?>
 
 <form action="<?= $controller->url_for('course/sort_order') ?>" method=post>
@@ -39,6 +36,18 @@ $sort_orders = [
     <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
 
 </form>
+
+<? if (OCPerm::editAllowed($course_id) && !empty($instances)) : ?>
+    <?= $this->render_partial('course/_wip_episode') ?>
+<? endif ?>
+
+
+<?= $pagechooser = $GLOBALS['template_factory']->render('shared/pagechooser', [
+    'page'         => Pager::getPage(),
+    'num_postings' => Pager::getLength(),
+    'perPage'      => Pager::getLimit(),
+    'pagelink'     => PluginEngine::getURL('opencast/course/index/?search='. Pager::getSearch() .'&page=') . '%s'
+]); ?>
 
 <script type="text/javascript">
     OC.visibility_text = <?= json_encode($visibility_text) ?>;
@@ -150,7 +159,7 @@ $sort_orders = [
                                     <? endif ?>
                                 </li>
                                 <li>
-                                    <?= $_('Autor') ?>:
+                                    <?= $_('Ersteller/in') ?>:
                                     <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                                 </li>
                                 <li>
@@ -184,7 +193,7 @@ $sort_orders = [
                                             'title'           => $_('Sichtbarkeit für dieses Video ändern')
                                         ]); ?>
 
-                                    <? if (!$live && isset($events[$item['id']]) && $events[$item['id']]->has_previews) : ?>
+                                    <? if (!$live && $item['has_previews']) : ?>
                                         <?= Studip\LinkButton::create(
                                             $_('Schnitteditor öffnen'),
                                             $config['service_url'] . '/admin-ng/index.html#!/events/events/' . $item['id'] . '/tools/editor',
@@ -195,11 +204,10 @@ $sort_orders = [
                                             ]
                                         ); ?>
 
-                                        <? $annotation_tool_url = $controller->get_annotation_tool($item['id']); ?>
-                                        <? if ($annotation_tool_url) : ?>
+                                        <? if ($item['annotation_tool']) : ?>
                                             <?= Studip\LinkButton::create(
                                                 $_('Anmerkungen hinzufügen'),
-                                                $annotation_tool_url,
+                                                $item['annotation_tool'],
                                                 [
                                                     'target' => '_blank',
                                                     'class'  => 'oc_editor',
@@ -275,3 +283,6 @@ $sort_orders = [
         </ul>
     </div>
 </div>
+
+<!-- Seitenwähler (bei Bedarf) am unteren Rand anzeigen -->
+<?= $pagechooser ?>
