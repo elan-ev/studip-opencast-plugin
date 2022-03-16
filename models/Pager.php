@@ -71,13 +71,47 @@ class Pager
             $sort_str = \CourseConfig::get($cid)->COURSE_SORT_ORDER;
         }
         else {
-            $sort_str = 'date:DESC';
+            $sort_str = 'DATE_CREATED_DESC';
         }
 
-        if (strpos($sort_str, ':') === false) {
-            return 'date:DESC';
+        $sort_options = self::getSortOptions();
+
+        // check, if selected sort options is available
+        if (in_array($sort_str, array_keys($sort_options)) === false) {
+            return 'DATE_CREATED_DESC';
         }
 
         return $sort_str;
+    }
+
+    public static function getSortOptions()
+    {
+        return [
+            'DATE_CREATED_DESC' => self::_('Datum hochgeladen: Neueste zuerst'),
+            'DATE_CREATED'      => self::_('Datum hochgeladen: Älteste zuerst'),
+            'TITLE'             => self::_('Titel: Alphabetisch'),
+            'TITLE_DESC'        => self::_('Titel: Umgekehrt Alphabetisch')
+        ];
+    }
+
+
+    /**
+     * Plugin localization for a single string.
+     * This method supports sprintf()-like execution if you pass additional
+     * parameters.
+     *
+     * @param String $string String to translate
+     * @return translated string
+     */
+    public function _($string)
+    {
+        $result = \OpenCast::GETTEXT_DOMAIN === null
+            ? $string
+            : dcgettext(\OpenCast::GETTEXT_DOMAIN, $string, LC_MESSAGES);
+        if ($result === $string) {
+            $result = _($string);
+        }
+
+        return $result;
     }
 }

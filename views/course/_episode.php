@@ -9,14 +9,8 @@ $visibility_text = [
     'visible'   => $_('Video ist für Teilnehmende sichtbar'),
     'free'      => $_('Video ist für jeden sichtbar')
 ];
-$sort_orders = [
-    'date:DESC'      => $_('Datum hochgeladen: Neueste zuerst'),
-    'date:ASC'       => $_('Datum hochgeladen: Älteste zuerst'),
-    'start_date:DESC'=> $_('Aufnahmezeitpunkt: Neueste zuerst'),
-    'start_date:ASC' => $_('Aufnahmezeitpunkt: Älteste zuerst'),
-    'title:ASC'      => $_('Titel: Alphabetisch'),
-    'title:DESC'     => $_('Titel: Umgekehrt Alphabetisch'),
-];
+
+$sort_orders = Pager::getSortOptions();
 ?>
 
 <form action="<?= $controller->url_for('course/sort_order') ?>" method=post>
