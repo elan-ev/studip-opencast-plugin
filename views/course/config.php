@@ -19,9 +19,9 @@
                     <? foreach ($configs as $id => $config): ?>
                         <optgroup label="<?= $_(sprintf('%s. Opencast-System', $id)) ?>">
                             <? foreach ($all_series[$id] as $serie) : ?>
-                                <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->id ?>"}'
+                                <option value='{"config_id":"<?= $id ?>", "series_id":"<?= $serie->identifier ?>"}'
                                         class="nested-item">
-                                    <?= htmlReady($serie->dcTitle) ?>
+                                    <?= htmlReady($serie->title) ?>
                                 </option>
                             <? endforeach; ?>
                         </optgroup>

@@ -34,31 +34,6 @@ class SearchClient extends OCRestClient
         }
     }
 
-    /**
-     *  getAllSeries() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn
-     *  Core
-     *
-     * @param void
-     *
-     * @return array response of series
-     */
-    public function getAllSeries()
-    {
-        $service_url = "/series.json?limit=10000";
-
-        if ($series = $this->getJSON($service_url)) {
-            $x = "search-results";
-
-            if (is_array($series->$x->result)) {
-                return $series->$x->result;
-            } else {
-                return [$series->$x->result];
-            }
-        } else {
-            return false;
-        }
-    }
-
     public function getBaseURL()
     {
         $base = $this->base_url;

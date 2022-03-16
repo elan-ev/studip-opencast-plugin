@@ -89,4 +89,19 @@ class SeriesClient extends OCRestClient
             return false;
         }
     }
+
+    /**
+     *  getAllSeries() - retrieves episode metadata for a given series
+     *  identifier from conntected Opencast
+     *
+     * @param void
+     *
+     * @return array response of series
+     */
+    public function getAllSeries()
+    {
+        $service_url = "/allSeriesIdTitle.json";
+
+        return $this->getJSON($service_url)->series;
+    }
 }
