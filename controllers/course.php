@@ -154,7 +154,7 @@ class CourseController extends OpencastController
                 $cache->write($cache_key, time(), 3600);
             }
 
-            $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series['series_id']));
+            $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
             $this->events = $api_client->getBySeries($this->series_id);
 
             $occourse = new OCCourseModel($this->course_id);
@@ -197,7 +197,6 @@ class CourseController extends OpencastController
                 $this->coursevis = $occourse->getSeriesVisibility();
 
                 $api_events = ApiEventsClient::getInstance();
-                Pager::setLength($api_events->getEpisodeCount($this->series_id));
 
                 $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 

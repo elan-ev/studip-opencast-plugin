@@ -167,10 +167,9 @@ class OCCourseModel
         return $episodes;
     }
 
-    private function episodeComparison($stored_episodes, $remote_episodes)
+    private function episodeComparison($stored_episodes, $oc_episodes)
     {
         $episodes    = [];
-        $oc_episodes = $this->prepareEpisodes($remote_episodes);
 
         $local_episodes = [];
         foreach ($stored_episodes as $episode) {
@@ -219,121 +218,6 @@ class OCCourseModel
             );
 
             $episodes[] = $oc_episode;
-        }
-
-        return $episodes;
-    }
-
-    private function prepareEpisodes($oc_episodes)
-    {
-        $episodes = [];
-        if (is_object($oc_episodes)) {
-            $oc_episodes = [$oc_episodes];
-        }
-
-        if (is_array($oc_episodes)) foreach ($oc_episodes as $episode) {
-            if (!empty($episode->publications[0]->attachments)) {
-                $presentation_preview  = false;
-                $preview               = false;
-                $presenter_download    = [];
-                $presentation_download = [];
-                $audio_download        = [];
-                $annotation_tool       = false;
-
-                foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                    if ($attachment->flavor === "presenter/search+preview") {
-                        $preview = $attachment->url;
-                    }
-                    if ($attachment->flavor === "presentation/player+preview") {
-                        $presentation_preview = $attachment->url;
-                    }
-                }
-
-                foreach ($episode->publications[0]->media as $track) {
-                    $parsed_url = parse_url($track->url);
-
-                    if ($track->flavor === 'presenter/delivery') {
-                        if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
-                            && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
-                            && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
-                            && !empty($track->has_video)
-                        ) {
-                            $quality = $this->calculate_size(
-                                $track->bitrate,
-                                $track->duration
-                            );
-                            $presenter_download[$quality] = [
-                                'url'  => $track->url,
-                                'info' => $this->getResolutionString($track->width, $track->height)
-                            ];
-                        }
-
-                        if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
-                            && !empty($track->has_audio)
-                        ) {
-                            $quality = $this->calculate_size(
-                                $track->bitrate,
-                                $track->duration
-                            );
-                            $audio_download[$quality] = [
-                                'url'  => $track->url,
-                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
-                            ];
-                        }
-                    }
-
-                    if ($track->flavor === 'presentation/delivery' && (
-                        (
-                            $track->mediatype === 'video/mp4'
-                            || $track->mediatype === 'video/avi'
-                        ) && (
-                            (
-                                in_array('atom', $track->tags)
-                                || in_array('engage-download', $track->tags)
-                            )
-                            && $parsed_url['scheme'] != 'rtmp'
-                            && $parsed_url['scheme'] != 'rtmps'
-                        )
-                        && !empty($track->has_video)
-                    )) {
-                        $quality = $this->calculate_size(
-                            $track->bitrate,
-                            $track->duration
-                        );
-
-                        $presentation_download[$quality] = [
-                            'url'  => $track->url,
-                            'info' => $this->getResolutionString($track->width, $track->height)
-                        ];
-                    }
-                }
-
-                foreach ($episode->publications as $publication) {
-                    if ($publication->channel == 'annotation-tool') {
-                        $annotation_tool = $publication->url;
-                    }
-                }
-
-                ksort($presenter_download);
-                ksort($presentation_download);
-                ksort($audio_download);
-                $episodes[$episode->identifier] = [
-                    'id'                    => $episode->identifier,
-                    'series_id'             => $episode->is_part_of,
-                    'title'                 => $episode->title,
-                    'start'                 => $episode->start,
-                    'duration'              => $episode->duration,
-                    'description'           => $episode->description,
-                    'author'                => $episode->creator,
-                    'preview'               => $preview,
-                    'presentation_preview'  => $presentation_preview,
-                    'presenter_download'    => $presenter_download,
-                    'presentation_download' => $presentation_download,
-                    'audio_download'        => $audio_download,
-                    'annotation_tool'       => $annotation_tool,
-                    'has_previews'          => $episode->has_previews ?: false
-                ];
-            }
         }
 
         return $episodes;
@@ -492,15 +376,4 @@ class OCCourseModel
 
         return $stmt->execute([$workflow_id, $this->getCourseID(), $termin_id]);
     }
-
-    private function calculate_size($bitrate, $duration)
-    {
-        return ($bitrate / 8) * ($duration / 1000);
-    }
-
-    private function getResolutionString($width, $height)
-    {
-        return $width .' * '. $height . ' px';
-    }
-
 }

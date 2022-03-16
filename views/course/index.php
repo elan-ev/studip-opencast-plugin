@@ -2,6 +2,7 @@
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
+use Opencast\Models\Pager;
 
 ?>
 
@@ -133,11 +134,9 @@ endif;
 $sidebar = Sidebar::get();
 
 // add search widget
-/*
 $search_widget = new SearchWidget($controller->url_for('course/search_episodes'));
-$search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, $search);
+$search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, Pager::getSearch());
 $sidebar->addWidget($search_widget);
-*/
 
 if (OCPerm::editAllowed($course_id)) {
     $actions = new LinksWidget ();

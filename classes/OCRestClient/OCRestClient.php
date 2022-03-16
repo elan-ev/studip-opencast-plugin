@@ -41,6 +41,8 @@ class OCRestClient
             static::$me[$config_id] = new static($config_id);
         }
 
+        static::$me[$config_id]->config_id = $config_id;
+
         return static::$me[$config_id];
     }
 
