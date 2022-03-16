@@ -345,8 +345,8 @@ class CourseController extends OpencastController
         $this->configs = OCConfig::getBaseServerConf();
 
         foreach ($this->configs as $id => $config) {
-            $sclient = SearchClient::getInstance($id);
-            if ($series = $sclient->getAllSeries($this->course_id)) {
+            $sclient = SeriesClient::getInstance($id);
+            if ($series = $sclient->getAllSeries()) {
                 $this->all_series[$id] = $series;
             }
         }
