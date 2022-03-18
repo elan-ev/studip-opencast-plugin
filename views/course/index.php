@@ -384,8 +384,10 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
                 <?= MessageBox::info($_('Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series.')) ?>
             <? endif ?>
         <? endif; ?>
+    <? elseif (Pager::getSearch()) : ?>
+        <?= MessageBox::info($_('Es wurden keine Videos gefunden, die den gewählten Suchbegriff beinhalten.')); ?>
     <? else: ?>
-        <?= MessageBox::info($_('Es wurden bislang keine Vorlesungsaufzeichnungen bereitgestellt.')); ?>
+        <?= MessageBox::info($_('Es wurden bislang keine Videos bereitgestellt.')); ?>
     <? endif; ?>
 <? endif; ?>
 

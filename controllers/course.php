@@ -201,7 +201,7 @@ class CourseController extends OpencastController
                 $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 
                 if (!empty($this->ordered_episode_ids)) {
-                    PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Vorlesungsaufzeichnungen'));
+                    PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Medien'));
                     if ($this->paella) {
                         $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/watch.html?id=";
                     } else {

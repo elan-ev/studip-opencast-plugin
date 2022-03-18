@@ -47,7 +47,11 @@ class WorkflowClient extends OCRestClient
         $ret = [];
         $instances = $this->getJSON($service_url);
         if ($instances && !empty($instances->workflows->workflow) ) {
-            foreach ($instances->workflows->workflow as $wf) {
+            $workflows = is_array($instances->workflows->workflow)
+                ? $instances->workflows->workflow
+                : [$instances->workflows->workflow];
+
+            foreach ($workflows as $wf) {
                 if ($wf->state == 'RUNNING') {
                     $ret[$wf->mediapackage->id] = $wf;
                 }
