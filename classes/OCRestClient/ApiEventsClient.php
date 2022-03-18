@@ -55,55 +55,49 @@ class ApiEventsClient extends OCRestClient
      */
     public function getBySeries($series_id)
     {
-        static $static_events;
-
         $cache = \StudipCacheFactory::getCache();
 
-        if (empty($static_events[$series_id])) {
-            $events = [];
+        $events = [];
 
-            $offset = Pager::getOffset();
-            $limit  = Pager::getLimit();
-            $sort   = Pager::getSortOrder();
-            $search = Pager::getSearch();
+        $offset = Pager::getOffset();
+        $limit  = Pager::getLimit();
+        $sort   = Pager::getSortOrder();
+        $search = Pager::getSearch();
 
-            $search_service = new SearchClient($this->config_id);
+        $search_service = new SearchClient($this->config_id);
 
-            // first, get list of events ids from search service
-            $search_events = $search_service->getJSON('/episode.json?sid=' . $series_id
-                . ($search ? '&q='. $search : '')
-                . "&sort=$sort&limit=$limit&offset=$offset");
+        // first, get list of events ids from search service
+        $search_events = $search_service->getJSON('/episode.json?sid=' . $series_id
+            . ($search ? '&q='. $search : '')
+            . "&sort=$sort&limit=$limit&offset=$offset");
 
-            Pager::setLength($search_events->{'search-results'}->total);
+        Pager::setLength($search_events->{'search-results'}->total);
 
-            $results = is_array($search_events->{'search-results'}->result)
-                ? $search_events->{'search-results'}->result
-                : [$search_events->{'search-results'}->result];
+        $results = is_array($search_events->{'search-results'}->result)
+            ? $search_events->{'search-results'}->result
+            : [$search_events->{'search-results'}->result];
 
-            // then, iterate over list and get each event from the external-api
-            foreach ($results as $s_event) {
-                $cache_key = 'sop/episodes/'. $s_event->id;
-                $event = $cache->read($cache_key);
+        // then, iterate over list and get each event from the external-api
+        foreach ($results as $s_event) {
+            $cache_key = 'sop/episodes/'. $s_event->id;
+            $event = $cache->read($cache_key);
 
-                if (empty($s_event->id)) {
-                    continue;
-                }
-
-                if (!$event) {
-                    $event = self::prepareEpisode(
-                        $this->getJSON('/' . $s_event->id . '/?withpublications=true')
-                    );
-
-                    $cache->write($cache_key, $event, 86000);
-                }
-
-                $events[$s_event->id] = $event;
+            if (empty($s_event->id)) {
+                continue;
             }
 
-            $static_events[$series_id] = $events;
+            if (!$event) {
+                $event = self::prepareEpisode(
+                    $this->getJSON('/' . $s_event->id . '/?withpublications=true')
+                );
+
+                $cache->write($cache_key, $event, 86000);
+            }
+
+            $events[$s_event->id] = $event;
         }
 
-        return $static_events[$series_id];
+        return $events;
     }
 
     public function getAllScheduledEvents()
@@ -182,7 +176,16 @@ class ApiEventsClient extends OCRestClient
 
     private function prepareEpisode($episode)
     {
-        $new_episode = [];
+        $new_episode = [
+            'id'            => $episode->identifier,
+            'series_id'     => $episode->is_part_of,
+            'title'         => $episode->title,
+            'start'         => $episode->start,
+            'duration'      => $episode->duration,
+            'description'   => $episode->description,
+            'author'        => $episode->creator,
+            'has_previews'  => false
+        ];
 
         if (!empty($episode->publications[0]->attachments)) {
             $presentation_preview  = false;
@@ -269,22 +272,14 @@ class ApiEventsClient extends OCRestClient
             ksort($presenter_download);
             ksort($presentation_download);
             ksort($audio_download);
-            $new_episode = [
-                'id'                    => $episode->identifier,
-                'series_id'             => $episode->is_part_of,
-                'title'                 => $episode->title,
-                'start'                 => $episode->start,
-                'duration'              => $episode->duration,
-                'description'           => $episode->description,
-                'author'                => $episode->creator,
-                'preview'               => $preview,
-                'presentation_preview'  => $presentation_preview,
-                'presenter_download'    => $presenter_download,
-                'presentation_download' => $presentation_download,
-                'audio_download'        => $audio_download,
-                'annotation_tool'       => $annotation_tool,
-                'has_previews'          => $episode->has_previews ?: false
-            ];
+
+            $new_episode['preview']               = $preview;
+            $new_episode['presentation_preview']  = $presentation_preview;
+            $new_episode['presenter_download']    = $presenter_download;
+            $new_episode['presentation_download'] = $presentation_download;
+            $new_episode['audio_download']        = $audio_download;
+            $new_episode['annotation_tool']       = $annotation_tool;
+            $new_episode['has_previews']          = $episode->has_previews ?: false;
         }
 
         return $new_episode;

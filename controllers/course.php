@@ -339,7 +339,7 @@ class CourseController extends OpencastController
         $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_('Opencast Konfiguration'));
-        $this->response->add_header('X-Title', rawurlencode($this->_('Series mit Veranstaltung verknüpfen')));
+        $this->response->add_header('X-Title', rawurlencode($this->_('Serie mit Veranstaltung verknüpfen')));
 
 
         $this->configs = OCConfig::getBaseServerConf();
