@@ -87,7 +87,7 @@ class OCRestClient
 
         // check, if debugging is enabled
         if (Context::getId()) {
-            if (boolval(\CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)) {
+            if (boolval(@$_SESSION['OPENCAST_DEBUG_CURL'][Context::getId()])) {
                 $this->debug_curl = true;
                 curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
             }

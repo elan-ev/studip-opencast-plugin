@@ -87,7 +87,7 @@ class CourseController extends OpencastController
             }
         }
 
-        $this->debug = boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL);
+        $this->debug = boolval(@$_SESSION['OPENCAST_DEBUG_CURL'][Context::getId()]);
     }
 
     /**
@@ -254,11 +254,11 @@ class CourseController extends OpencastController
     public function debug_action($ticket)
     {
         if ($GLOBALS['perm']->have_perm('root') && check_ticket($ticket)) {
-            CourseConfig::get($this->course_id)->store('OPENCAST_DEBUG_CURL',
-                !boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)
-            );
+            @$_SESSION['OPENCAST_DEBUG_CURL'][Context::getId()]
+                = boolval(@!$_SESSION['OPENCAST_DEBUG_CURL'][Context::getId()]);
 
-            if (boolval(CourseConfig::get(Context::getId())->OPENCAST_DEBUG_CURL)) {
+
+            if (boolval(@$_SESSION['OPENCAST_DEBUG_CURL'][Context::getId()])) {
                 PageLayout::postInfo($this->_('Debugging ist nun eingeschaltet für diesen Kurs.'));
             } else {
                 PageLayout::postInfo($this->_('Debugging ist nun ausgeschaltet für diesen Kurs.'));
