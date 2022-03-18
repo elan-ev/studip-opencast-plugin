@@ -86,13 +86,13 @@ class ApiEventsClient extends OCRestClient
                 continue;
             }
 
-            //if (!$event) {
+            if (!$event) {
                 $event = self::prepareEpisode(
                     $this->getJSON('/' . $s_event->id . '/?withpublications=true')
                 );
 
                 $cache->write($cache_key, $event, 86000);
-            //}
+            }
 
             $events[$s_event->id] = $event;
         }
