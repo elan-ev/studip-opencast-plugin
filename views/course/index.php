@@ -379,9 +379,9 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
         <? else : ?>
             <? if ($GLOBALS['perm']->have_perm('root')) : ?>
-                <?= MessageBox::info($_('Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series oder verknüpfen eine bereits vorhandene Series.')) ?>
+                <?= MessageBox::info($_('Sie haben noch keine Serie aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Serie oder verknüpfen eine bereits vorhandene.')) ?>
             <? else : ?>
-                <?= MessageBox::info($_('Sie haben noch keine Series aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Series.')) ?>
+                <?= MessageBox::info($_('Sie haben noch keine Serie aus Opencast mit dieser Veranstaltung verknüpft. Bitte erstellen Sie eine neue Serie.')) ?>
             <? endif ?>
         <? endif; ?>
     <? elseif (Pager::getSearch()) : ?>

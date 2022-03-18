@@ -66,7 +66,7 @@ class OCCourseModel
     }
 
 
-    public function getEpisodes($unset_live = false)
+    public function getEpisodes()
     {
         static $ordered_episodes;
 
@@ -95,6 +95,7 @@ class OCCourseModel
                     $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
                 }
 
+                /*
                 if ($unset_live) {
                     $oc_events = ApiEventsClient::create($this->getCourseID());
                     $oc_series = OCSeminarSeries::getSeries($this->getCourseID());
@@ -107,6 +108,7 @@ class OCCourseModel
                         }
                     }
                 }
+                */
 
                 return $ordered_episodes;
             } else {
@@ -201,7 +203,7 @@ class OCCourseModel
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
                     'episode_id'    => $oc_episode['id'],
                     'course_id'     => $this->getCourseID(),
-                    'episode_title' => $episode->title
+                    'episode_title' => $oc_episode->title
                 ]);
             } else {
                 $oc_episode['visibility']    = $l_episode['visible'];
