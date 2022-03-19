@@ -71,9 +71,10 @@
                     contributor += "<br/>";
                 };
 
-                $("ul#loaded_series").append("<li title='" + series[i].title + "' id=" + series[i].identifier + "><b>" + series[i].title + "</b><br/>" + contributor + publisher + "</li>");
+                $("ul#loaded_series").append("<li title='" + series[i].title + "' id='" + series[i].series_id
+                    + "' course_id='" + series[i].seminar_id + "'><b>" + series[i].title + "</b><br/>" + contributor + publisher + "</li>");
                 series_array[i] = series[i].title;
-                series_id_array[i] = series[i].identifier;
+                series_id_array[i] = series[i].id;
             };
 
             var border_height = $('div#series_container li').outerHeight(true) * series.length;
@@ -103,7 +104,7 @@
 
             $('div#series_container li').click(function() {
                 emptyEpisodes();
-                loadEpisodes($(this).attr('id'), $(this).attr("title"));
+                loadEpisodes($(this).attr('course_id'), $(this).attr('id'), $(this).attr("title"));
             });
 
         });
@@ -111,8 +112,8 @@
 
 
 
-    var loadEpisodes = function(ser_id, ser_title) {
-        $.get(STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/getepisodes/' + ser_id)).done(function(data) {
+    var loadEpisodes = function(course_id, ser_id, ser_title) {
+        $.get(STUDIP.URLHelper.getURL('plugins.php/opencast/ajax/getepisodes/' + course_id + '/' + ser_id)).done(function(data) {
             var episode = data;
 
             $('div#episodes_container').append("<p class='embed_episode_title'>Veranstaltung: " + ser_title + "</p>");
@@ -138,32 +139,11 @@
             $('div#episodes_container').append("<ul id='loaded_episodes'>");
 
             for (var i = 0; i < episode.length; i++) {
-
-                //foreach($episode->mediapackage->attachments->attachment as $attachment) {
-                //    if($attachment->type === 'presenter/search+preview') $preview = $attachment->url;
-                //}
-
                 var img_url = "";
 
-                if ('attachments' in episode[i].publications[0]) {
-                    var attachments = episode[i].publications[0].attachments;
-                    var presenter_preview = false;
-                    $(attachments).each(function(index, val) {
-                        if (val.flavor == 'presenter/player+preview' && (
-                            val.mediatype == 'image/jpeg' || val.mediatype == 'image/png'
-                        )) {
-                            img_url = val.url;
-                            presenter_preview = true;
-                        }
-
-                        if (!presenter_preview && val.flavor == 'presentation/search+preview' && (
-                            val.mediatype == 'image/jpeg' || val.mediatype == 'image/png'
-                        )) {
-	                     img_url = val.url;
-                        }
-                    });
+                if (episode[i].preview) {
+                    img_url = episode[i].preview;
                 }
-
 
                 // Versuche Duration zu holen und umrechnen
                 try {
@@ -198,7 +178,7 @@
 
 
 
-                $('ul#loaded_episodes').append("<li id='" + episode[i].identifier + "'><img height='45px' width='80px' align=middle style='float:left; margin-right: 5px;' src=" + img_url + "><b>" + ep_title + "</b>" + ep_cont + "" + duration + "</li>");
+                $('ul#loaded_episodes').append("<li id='" + episode[i].id + "'><img height='45px' width='80px' align=middle style='float:left; margin-right: 5px;' src=" + img_url + "><b>" + ep_title + "</b>" + ep_cont + "" + duration + "</li>");
                 episodes_list[i] = episode[i].title;
                 episodes_id_list[i] = episode[i].identifier;
             }

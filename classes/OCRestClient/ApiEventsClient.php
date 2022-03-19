@@ -214,7 +214,6 @@ class ApiEventsClient extends OCRestClient
             'series_id'     => $episode->is_part_of,
             'title'         => $episode->title,
             'start'         => $episode->start,
-            'duration'      => $episode->duration,
             'description'   => $episode->description,
             'author'        => $episode->creator,
             'has_previews'  => false
@@ -227,6 +226,7 @@ class ApiEventsClient extends OCRestClient
             $presentation_download = [];
             $audio_download        = [];
             $annotation_tool       = false;
+            $duration              = 0;
 
             foreach ((array) $episode->publications[0]->attachments as $attachment) {
                 if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
@@ -254,6 +254,8 @@ class ApiEventsClient extends OCRestClient
                             'url'  => $track->url,
                             'info' => $this->getResolutionString($track->width, $track->height)
                         ];
+
+                        $duration = $track->duration;
                     }
 
                     if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
@@ -267,6 +269,8 @@ class ApiEventsClient extends OCRestClient
                             'url'  => $track->url,
                             'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
                         ];
+
+                        $duration = $track->duration;
                     }
                 }
 
@@ -313,6 +317,7 @@ class ApiEventsClient extends OCRestClient
             $new_episode['audio_download']        = $audio_download;
             $new_episode['annotation_tool']       = $annotation_tool;
             $new_episode['has_previews']          = $episode->has_previews ?: false;
+            $new_episode['duration']              = $duration;
         }
 
         return $new_episode;
