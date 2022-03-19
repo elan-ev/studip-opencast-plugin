@@ -2,6 +2,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarEpisodes;
+use Opencast\Models\OCSeminarSeries;
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\LTI\LtiLink;
@@ -61,14 +62,15 @@ class AjaxController extends OpencastController
         $this->render_json(array_values($results));
     }
 
-    public function getepisodes_action($series_id, $simple = false)
+    public function getepisodes_action($course_id, $series_id, $simple = false)
     {
         $api_client    = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
         $search_client = SearchClient::getInstance(OCConfig::getConfigIdForSeries($series_id));
-        $course_id     = OCConfig::getCourseIdForSeries($series_id);
+
+        $check = !empty(OCSeminarSeries::findBySql('seminar_id = ? AND series_id = ?', [$course_id, $series_id]));
         $result = $simple_result = [];
 
-        if (!OCPerm::editAllowed($course_id)
+        if (!$check || !OCPerm::editAllowed($course_id)
             || !$GLOBALS['perm']->have_studip_perm('autor', $course_id))
         {
             // do not list episodes if user has no permissions in the connected course
@@ -83,27 +85,25 @@ class AjaxController extends OpencastController
         }
 
         foreach ($episodes as $episode) {
-            if (key_exists('publications', $episode)) {
-                $studip_episode = OCSeminarEpisodes::findOneBySQL(
-                    'series_id = ? AND episode_id = ? AND seminar_id = ?',
-                    [$series_id, $episode->identifier, $course_id]
-                );
+            $studip_episode = OCSeminarEpisodes::findOneBySQL(
+                'series_id = ? AND episode_id = ? AND seminar_id = ?',
+                [$series_id, $episode['id'], $course_id]
+            );
 
-                if ($studip_episode && (
-                     (Context::getId() == $course_id && $studip_episode->visible != 'invisible'))
-                     || $studip_episode->visible == 'free'
-                ) {
-                    $result[] = $episode;
-                }
-
-                $simple_result[] = [
-                    'id'         => $episode->identifier,
-                    'name'       => $episode->title,
-                    'date'       => $episode->start,
-                    'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode->identifier,
-                    'visible'    => $studip_episode->visible
-                ];
+            if ($studip_episode && (
+                 (Context::getId() == $course_id && $studip_episode->visible != 'invisible'))
+                 || $studip_episode->visible == 'free'
+            ) {
+                $result[] = $episode;
             }
+
+            $simple_result[] = [
+                'id'         => $episode['id'],
+                'name'       => $episode['title'],
+                'date'       => $episode['start'],
+                'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode['id'],
+                'visible'    => $studip_episode->visible
+            ];
         }
 
         if ($simple) {

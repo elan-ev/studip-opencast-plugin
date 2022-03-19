@@ -177,7 +177,7 @@ export default {
 
             axios
                 .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getepisodes/'
-                    + this.currentSeries + '/simple'
+                    + this.context.id + '/' + this.currentSeries + '/simple'
                     + '?cid=' + this.context.id)
                 .then(response => {
                     this.episodes = response.data;
