@@ -86,7 +86,7 @@ class ApiEventsClient extends OCRestClient
                 continue;
             }
 
-            if (true || !$event) {
+            if (!$event) {
                 $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
 
                 if (empty($oc_event->publications[0]->attachments)) {
