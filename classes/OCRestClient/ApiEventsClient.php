@@ -87,9 +87,42 @@ class ApiEventsClient extends OCRestClient
             }
 
             if (!$event) {
-                $event = self::prepareEpisode(
-                    $this->getJSON('/' . $s_event->id . '/?withpublications=true')
-                );
+                $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
+
+                if (empty($oc_event->publications[0]->attachments)) {
+                    $media = [];
+
+                    foreach ($s_event->mediapackage->media->track as $track) {
+                        $width = 0; $height = 0;
+                        if (!empty($track->video)) {
+                            list($width, $height) = explode('x', $track->video->resolution);
+                            $bitrate = $track->video->bitrate;
+                        } else if (!empty($track->audio)) {
+                            $bitrate = $track->audio->bitrate;
+                        }
+
+                        //echo '<pre>'; print_r($track); echo '</pre>';
+
+                        $obj = new stdClass();
+                        $obj->mediatype = $track->mimetype;
+                        $obj->flavor    = $track->type;
+                        $obj->has_video = !empty($track->video);
+                        $obj->has_audio = !empty($track->audio);
+                        $obj->tags      = $track->tags->tag;
+                        $obj->url       = $track->url;
+                        $obj->duration  = $track->duration;
+                        $obj->bitrate   = $bitrate;
+                        $obj->width     = $width;
+                        $obj->height    = $height;
+
+                        $media[] = $obj;
+                    }
+
+                    $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                    $oc_event->publications[0]->media       = $media;
+                }
+
+                $event = self::prepareEpisode($oc_event);
 
                 $cache->write($cache_key, $event, 86000);
             }
@@ -196,10 +229,10 @@ class ApiEventsClient extends OCRestClient
             $annotation_tool       = false;
 
             foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview") {
+                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
                     $preview = $attachment->url;
                 }
-                if ($attachment->flavor === "presentation/player+preview") {
+                if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;
                 }
             }
