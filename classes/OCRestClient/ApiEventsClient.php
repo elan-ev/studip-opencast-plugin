@@ -89,10 +89,6 @@ class ApiEventsClient extends OCRestClient
             if (true || !$event) {
                 $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
 
-                // TODO: remove the following two lines
-                $oc_event->publications[0]->attachments = [];
-                $oc_event->publications[0]->media       = [];
-
                 if (empty($oc_event->publications[0]->attachments)) {
                     $media = [];
 
@@ -233,10 +229,10 @@ class ApiEventsClient extends OCRestClient
             $annotation_tool       = false;
 
             foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview") {
+                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
                     $preview = $attachment->url;
                 }
-                if ($attachment->flavor === "presentation/player+preview") {
+                if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;
                 }
             }
