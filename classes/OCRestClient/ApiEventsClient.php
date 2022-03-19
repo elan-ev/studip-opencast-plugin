@@ -79,9 +79,6 @@ class ApiEventsClient extends OCRestClient
 
         // then, iterate over list and get each event from the external-api
         foreach ($results as $s_event) {
-            echo '<pre>';
-            print_r($s_event);
-            echo '</pre>';
             $cache_key = 'sop/episodes/'. $s_event->id;
             $event = $cache->read($cache_key);
 
@@ -92,15 +89,11 @@ class ApiEventsClient extends OCRestClient
             if (true || !$event) {
                 $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
 
-                echo '<pre>';
-                print_r($oc_event);
-                echo '</pre>';
-                die;
+                // TODO: remove the following two lines
+                $oc_event->publications[0]->attachments = [];
+                $oc_event->publications[0]->media       = [];
 
-                // TODO: remove the following line
-                $oc_event->publications = [];
-
-                if (empty($oc_event->publications)) {
+                if (empty($oc_event->publications[0]->attachments)) {
                     $media = [];
 
                     foreach ($s_event->mediapackage->media->track as $track) {
@@ -112,30 +105,27 @@ class ApiEventsClient extends OCRestClient
                             $bitrate = $track->audio->bitrate;
                         }
 
-                        $media[] = [
-                            'mediatype' => $track->mimetype,
-                            'flavor'    => $track->type,
-                            'has_video' => !empty($track->video),
-                            'has_audio' => !empty($track->audio),
-                            'tags'      => $track->tags,
-                            'url'       => $track->url,
-                            'duration'  => $track->duration,
-                            'bitrate'   => $bitrate,
-                            'width'     => $width,
-                            'height'    => $height
-                        ];
+                        //echo '<pre>'; print_r($track); echo '</pre>';
+
+                        $obj = new stdClass();
+                        $obj->mediatype = $track->mimetype;
+                        $obj->flavor    = $track->type;
+                        $obj->has_video = !empty($track->video);
+                        $obj->has_audio = !empty($track->audio);
+                        $obj->tags      = $track->tags->tag;
+                        $obj->url       = $track->url;
+                        $obj->duration  = $track->duration;
+                        $obj->bitrate   = $bitrate;
+                        $obj->width     = $width;
+                        $obj->height    = $height;
+
+                        $media[] = $obj;
                     }
 
                     $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
                     $oc_event->publications[0]->media       = $media;
-                    //$oc_event->publications[0]->channel     = $s_event->mediapackage->media->track[0]->channel;
-                    //$oc_event->publications[0]->url         = $s_event->mediapackage->media->track[0]->url;
                 }
 
-                //echo '<pre>';
-                //print_r($oc_event);
-                //echo '</pre>';
-                //echo '<hr>';
                 $event = self::prepareEpisode($oc_event);
 
                 $cache->write($cache_key, $event, 86000);
@@ -311,9 +301,6 @@ class ApiEventsClient extends OCRestClient
             }
 
             foreach ($episode->publications as $publication) {
-                echo '<pre>';
-                print_r($publication);
-                echo '</pre>';
                 if ($publication->channel == 'annotation-tool') {
                     $annotation_tool = $publication->url;
                 }
