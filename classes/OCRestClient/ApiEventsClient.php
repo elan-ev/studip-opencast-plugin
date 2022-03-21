@@ -53,7 +53,7 @@ class ApiEventsClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    public function getBySeries($series_id)
+    public function getBySeries($series_id, $course_id)
     {
         $cache = \StudipCacheFactory::getCache();
 
@@ -63,12 +63,23 @@ class ApiEventsClient extends OCRestClient
         $limit  = Pager::getLimit();
         $sort   = Pager::getSortOrder();
         $search = Pager::getSearch();
+        $type   = $GLOBALS['perm']->have_studip_perm('tutor', $course_id)
+            ? 'Instructor' : 'Learner';
 
         $search_service = new SearchClient($this->config_id);
 
         // first, get list of events ids from search service
-        $search_events = $search_service->getJSON('/episode.json?sid=' . $series_id
-            . ($search ? '&q='. $search : '')
+        $search_query = '';
+        if ($search) {
+            $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
+        }
+
+        $lucene_query = '(dc_is_part_of:'. $series_id .')'. $search_query
+            .' AND oc_acl_read:'. $course_id .'_'. $type .' AND oc_organization:mh_default_org'
+            .' AND (oc_acl_read:ROLE_USER OR oc_acl_read:ROLE_USER_STUDIP_USER OR oc_acl_read:ROLE_ADMIN OR oc_acl_read:ROLE_ANONYMOUS)'
+            .' AND -oc_mediatype:Series AND -oc_deleted:[* TO *]';
+
+        $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
             . "&sort=$sort&limit=$limit&offset=$offset");
 
         Pager::setLength($search_events->{'search-results'}->total);
@@ -150,6 +161,50 @@ class ApiEventsClient extends OCRestClient
         }
 
         return $events;
+    }
+
+    public function setVisibility($course_id, $episode_id, $visibility)
+    {
+        $acl = [
+            [
+                'allow'  => true,
+                'role'   => $course_id .'_Instructor',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => $course_id .'_Instructor',
+                'action' => 'write'
+            ]
+        ];
+
+        if ($visibility == 'visible' || $visibility == 'free') {
+            $acl[] = [
+                'allow'  => true,
+                'role'   => $course_id .'_Learner',
+                'action' => 'read'
+            ];
+        }
+
+        if ($visibility == 'free') {
+            $acl[] = [
+                'allow'  => true,
+                'role'   => 'ROLE_ANONYMOUS',
+                'action' => 'read'
+            ];
+        }
+
+        // get current acl and filter out roles for this course, pertaining any other acl-roles
+        $oc_acl = array_filter($this->getACL($episode_id), function($entry) use ($course_id) {
+            return (strpos($entry['role'], $course_id) === false);
+        });
+
+        $result = $this->putJSON('/' . $episode_id . '/acl', [
+            'acl' => json_encode(array_merge($oc_acl, $acl))
+        ], true);
+
+        return $result[1] == 204;
     }
 
     public function getVisibilityForEpisode($episode, $course_id = null)

@@ -78,7 +78,7 @@ class AjaxController extends OpencastController
             return;
         }
 
-        $episodes = $api_client->getBySeries($series_id);
+        $episodes = $api_client->getBySeries($series_id, $course_id);
 
         if (!is_array($episodes)) {
             $episodes = [$episodes];
