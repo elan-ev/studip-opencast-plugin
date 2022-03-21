@@ -38,7 +38,7 @@ class OpencastLTI
         $api_client    = \ApiEventsClient::create($course_id);
 
         // check the opencast visibility for episodes and update Stud.IP settings
-        foreach ($api_client->getBySeries($series['series_id']) as $episode) {
+        foreach ($api_client->getBySeries($series['series_id'], $course_id) as $episode) {
             $vis = $api_client->getVisibilityForEpisode($episode, $course_id);
 
             $entry = OCSeminarEpisodes::findOneBySQL(

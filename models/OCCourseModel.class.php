@@ -84,7 +84,7 @@ class OCCourseModel
                 }
 
                 $api_events = ApiEventsClient::create($this->getCourseID());
-                $series     = $api_events->getBySeries($this->getSeriesID());
+                $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
 
                 $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
                 $ordered_episodes = [];
@@ -94,21 +94,6 @@ class OCCourseModel
                     // add additional episode metadata from opencast
                     $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
                 }
-
-                /*
-                if ($unset_live) {
-                    $oc_events = ApiEventsClient::create($this->getCourseID());
-                    $oc_series = OCSeminarSeries::getSeries($this->getCourseID());
-                    $events = $oc_events->getBySeries($oc_series[0]['series_id']);
-
-                    foreach ($ordered_episodes as $episode) {
-                        if ($events[$episode['id']]->publication_status[0] == 'engage-live')
-                        {
-                            unset($ordered_episodes[$episode['id']]);
-                        }
-                    }
-                }
-                */
 
                 return $ordered_episodes;
             } else {
@@ -197,7 +182,7 @@ class OCCourseModel
 
                 // invalidate acl cache for this course
                 $cache = \StudipCacheFactory::getCache();
-                $cache_key = 'sop/visiblity/'. \Context::getId();
+                $cache_key = 'sop/visibility/'. \Context::getId();
                 $cache->expire($cache_key);
 
                 NotificationCenter::postNotification('NewEpisodeForCourse', [

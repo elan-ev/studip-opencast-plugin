@@ -144,7 +144,7 @@ class CourseController extends OpencastController
 
             // only check the the acls once per hour per course or if the cache has benn invalidated
             $cache = \StudipCacheFactory::getCache();
-            $cache_key = 'sop/visiblity/'. \Context::getId();
+            $cache_key = 'sop/visibility/'. \Context::getId();
             $checked = $cache->read($cache_key);
 
             if (!$checked) {
@@ -155,7 +155,7 @@ class CourseController extends OpencastController
             }
 
             $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
-            $this->events = $api_client->getBySeries($this->series_id);
+            $this->events = $api_client->getBySeries($this->series_id, $this->course_id);
 
             $occourse = new OCCourseModel($this->course_id);
 
@@ -430,7 +430,7 @@ class CourseController extends OpencastController
 
 
         $events_client = ApiEventsClient::getInstance();
-        $events        = $events_client->getBySeries($this->cseries[0]['series_id']);
+        $events        = $events_client->getBySeries($this->cseries[0]['series_id'], $this->course_id);
 
         foreach ($events as $event) {
             $this->events[$event->identifier] = $event;
@@ -594,7 +594,7 @@ class CourseController extends OpencastController
         }
 
         $cache = \StudipCacheFactory::getCache();
-        $cache_key = 'sop/visiblity/'. \Context::getId();
+        $cache_key = 'sop/visibility/'. \Context::getId();
         $cache->expire($cache_key);
 
         if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {

@@ -363,10 +363,6 @@ class OCModel
         // Local
         $entry = self::getEntry($course_id, $episode_id);
 
-        $default = Config::get()->OPENCAST_HIDE_EPISODES
-            ? 'invisible'
-            : 'visible';
-
         if ($entry) {
             $old_visibility = $entry->visible;
             $entry->visible = $visibility;
@@ -380,11 +376,8 @@ class OCModel
 
             $config_id = OCConfig::getConfigIdForCourse($course_id);
 
-            // This function is named "setVisibilityForEpisode" so
-            // only set Episode visibility
-            // Do not continue starting a workflow if changing ACLs did not
-            // work!
-            if (OpencastLTI::setAcls($course_id, $episode_id) === false) {
+            $api_events = ApiEventsClient::getInstance($config_id);
+            if ($api_events->setVisibility($course_id, $episode_id, $visibility) === false) {
                 return false;
             }
 
