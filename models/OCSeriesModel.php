@@ -48,7 +48,10 @@ class OCSeriesModel
             // get all free videos,
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
                 FROM oc_seminar_series AS se
-                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
+                JOIN oc_seminar_episodes AS ep ON (
+                    se.series_id = ep.series_id
+                    AND ep.seminar_id = se.seminar_id
+                )
                 WHERE ep.visible = 'free'");
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -57,9 +60,13 @@ class OCSeriesModel
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
                 FROM seminar_user AS su
                 JOIN oc_seminar_series AS se ON (su.Seminar_id = se.seminar_id)
-                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
+                JOIN oc_seminar_episodes AS ep ON (
+                    se.series_id = ep.series_id
+                    AND ep.seminar_id = se.seminar_id
+                )
                 WHERE su.user_id = ?
                     AND ep.visible = 'free'");
+
             $stmt->execute([$user_id]);
             $result = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
         }
@@ -68,10 +75,14 @@ class OCSeriesModel
         if ($context_id) {
             $stmt = DBManager::get()->prepare("SELECT DISTINCT se.series_id, se.seminar_id
                 FROM oc_seminar_series AS se
-                JOIN oc_seminar_episodes AS ep ON (se.series_id = ep.series_id)
-                WHERE se.seminar_id = ?
+                JOIN oc_seminar_episodes AS ep ON (
+                    se.series_id = ep.series_id
+                    AND ep.seminar_id = se.seminar_id
+                )
+                WHERE se.seminar_id = :seminar_id
                     AND ep.visible != 'invisible'");
-            $stmt->execute([$context_id]);
+
+            $stmt->execute([':seminar_id' => $context_id]);
 
             $result = array_merge($result, $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
         }
