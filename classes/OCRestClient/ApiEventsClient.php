@@ -75,9 +75,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         $lucene_query = '(dc_is_part_of:'. $series_id .')'. $search_query
-            .' AND oc_acl_read:'. $course_id .'_'. $type .' AND oc_organization:mh_default_org'
-            .' AND (oc_acl_read:ROLE_USER OR oc_acl_read:ROLE_USER_STUDIP_USER OR oc_acl_read:ROLE_ADMIN OR oc_acl_read:ROLE_ANONYMOUS)'
-            .' AND -oc_mediatype:Series AND -oc_deleted:[* TO *]';
+            .' AND oc_acl_read:'. $course_id .'_'. $type;
 
         $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
             . "&sort=$sort&limit=$limit&offset=$offset");

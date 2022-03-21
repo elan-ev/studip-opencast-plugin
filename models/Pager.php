@@ -36,7 +36,8 @@ class Pager
 
     public static function setSearch($search)
     {
-         self::$search = $search;
+        // only allow text and numbers in search term
+        self::$search = preg_replace('/[^0-9a-zA-Z]/', '', $search);
     }
 
     public static function getSearch()
