@@ -75,13 +75,6 @@ class OCCourseModel
                 $search_client = SearchClient::create($this->getCourseID());
 
                 $course = Course::find($this->getCourseID());
-                $role   = '';
-
-                if (OCPerm::editAllowed($course->id)) {
-                    $role = 'Instructor';
-                } else if ($GLOBALS['perm']->have_studip_perm('autor', $course->id)) {
-                    $role = 'Learner';
-                }
 
                 $api_events = ApiEventsClient::create($this->getCourseID());
                 $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
