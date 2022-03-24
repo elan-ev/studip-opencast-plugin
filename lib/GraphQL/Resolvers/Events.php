@@ -74,6 +74,8 @@ class Events
         $limit = $args['limit'] ? $args['limit'] : $num_events;
 
         // sort events
+        $sort = $args['sort'];
+        
         uasort($events, function ($a, $b) {
             return $a['created'] == $b['created'] ? 0
                 : ($a['created'] < $b['created'] ? 1 : -1);

@@ -5,6 +5,7 @@ import { apolloClient, apolloProvider } from '../vue-apollo'
 const state = {
     cid: '',
     search: '',
+    sort: 'created_desc',
     events: null,
     limit: 5,
     paging: {
@@ -19,6 +20,9 @@ const getters = {
     },
     paging(state) {
         return state.paging
+    },
+    sort(state) {
+        return state.sort
     }
 }
 
@@ -29,6 +33,10 @@ const mutations = {
 
     setSearch(state, search) {
         state.search = search
+    },
+
+    setSort(state, sort) {
+        state.sort = sort
     },
 
     setLimit(state, limit) {
@@ -85,6 +93,11 @@ const actions = {
         await commit('setSearch', search)
         dispatch('reloadEvents')
     },
+    
+    async setSort({dispatch, commit}, sort) {
+        await commit('setSort', sort)
+        dispatch('reloadEvents')
+    },
 
     async setLimit({commit}, limit) {
         commit('setLimit', limit)
@@ -109,6 +122,7 @@ const actions = {
                     getEvents(course_id: "${state.cid}", 
                             offset: ${state.paging.currPage*state.limit}, 
                             limit: ${state.limit},
+                            sort: "${state.sort}",
                             search: "${state.search}") {
                         events {
                             id
