@@ -152,7 +152,7 @@ class ApiEventsClient extends RestClient
         // then, iterate over list and get each event from the external-api
         foreach ($results as $s_event) {
             $cache_key = 'sop/episodes/'. $s_event['id'];
-            $event = null; //$cache->read($cache_key);
+            $event = $cache->read($cache_key);
 
             if (empty($s_event['id'])) {
                 continue;
