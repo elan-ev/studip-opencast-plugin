@@ -291,6 +291,8 @@ class ApiEventsClient extends OCRestClient
             $presenter_download    = [];
             $presentation_download = [];
             $audio_download        = [];
+            $supplemental_material = [];
+            $i = -1;
             $annotation_tool       = false;
             $duration              = 0;
 
@@ -301,18 +303,49 @@ class ApiEventsClient extends OCRestClient
                 if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;
                 }
+                if ($attachment->flavor === "presenter/search+preview" && !$preview) {
+                    $preview = $attachment->url;
+                }
+                if ($attachment->flavor === "presenter/player+preview" && !$presentation_preview) {
+                    $presentation_preview = $attachment->url;
+                }
+                if (explode('/', $attachment->flavor)[0] === 'captions') {
+                    // Untertitel
+                    $supplemental_material[--$i] = [
+                        'url'  => $attachment->url,
+                        'info' => 'Untertitel (' . explode('/', $attachment->flavor)[1] . ')',
+                    ];
+                }
+                if ($attachment->flavor === "presentation/pdf" || $attachment->flavor === "attachment/notes") {
+                    $supplemental_material[--$i] = [
+                        'url'  => $attachment->url,
+                        'info' => 'Vortragsfolien ' . explode('/', $attachment->mediatype)[1],
+                    ];
+                }
+                if ($attachment->flavor === "etherpad/sharednotes") {
+                    $supplemental_material[--$i] = [
+                        'url'  => $attachment->url,
+                        'info' => 'Geteilte Notizen (Etherpad Versionsgeschichte)',
+                    ];
+                }
+                if ($attachment->flavor === "html/sharednotes") {
+                    $supplemental_material[--$i] = [
+                        'url'  => $attachment->url,
+                        'info' => 'Geteilte Notizen',
+                    ];
+                }
             }
 
             foreach ($episode->publications[0]->media as $track) {
                 $parsed_url = parse_url($track->url);
 
                 if ($track->flavor === 'presenter/delivery') {
-                    if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
-                        && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
-                            && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                    if ($track->mediatype === 'video/mp4'
+                        && $parsed_url['scheme'] != 'rtmp'
+                        && $parsed_url['scheme'] != 'rtmps'
                         && !empty($track->has_video)
                     ) {
-                        $quality = $this->calculate_size(
+                      $quality = isset($track->size) ? $track->size : $this->calculate_size(
                             $track->bitrate,
                             $track->duration
                         );
@@ -328,41 +361,60 @@ class ApiEventsClient extends OCRestClient
                         in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                         && !empty($track->has_audio)
                     ) {
-                        $quality = $this->calculate_size(
+                        $quality = isset($track->size) ? $track->size : $this->calculate_size(
                             $track->bitrate,
                             $track->duration
                         );
+                        $quality = $quality ? $quality : -rand();
+                        $bitrate = $track->bitrate ? round($track->bitrate / 1000, 1) . 'kb/s' : 'vbr';
+                        $encoder = isset($track->audio->encoder->type) ? ('/' . explode(' ', $track->audio->encoder->type)[0]) : '';
+                        $type = explode('/', $track->mediatype)[1] . '/' . $encoder;
                         $audio_download[$quality] = [
                             'url'  => $track->url,
-                            'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
+                            'info' => 'ReferentIn ' . $bitrate . ', ' . $type
                         ];
 
                         $duration = $track->duration;
                     }
                 }
 
-                if ($track->flavor === 'presentation/delivery' && (
-                    ($track->mediatype === 'video/mp4'
-                        || $track->mediatype === 'video/avi'
-                    ) && (
-                        (in_array('atom', $track->tags)
-                            || in_array('engage-download', $track->tags)
-                        )
-                        && $parsed_url['scheme'] != 'rtmp'
-                        && $parsed_url['scheme'] != 'rtmps'
-                    )
-                    && !empty($track->has_video)
-                )) {
-                    $quality = $this->calculate_size(
-                        $track->bitrate,
-                        $track->duration
-                    );
+                if ($track->flavor === 'presentation/delivery') {
+                  if (
+                        $track->mediatype === 'video/mp4'
+                         && $parsed_url['scheme'] != 'rtmp'
+                         && $parsed_url['scheme'] != 'rtmps'
+                         && !empty($track->has_video)
+                  ) {
+                      $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                          $track->bitrate,
+                          $track->duration
+                      );
 
-                    $presentation_download[$quality] = [
-                        'url'  => $track->url,
-                        'info' => $this->getResolutionString($track->width, $track->height)
-                    ];
-                }
+                      $presentation_download[$quality] = [
+                          'url'  => $track->url,
+                          'info' => $this->getResolutionString($track->width, $track->height)
+                      ];
+                   }
+
+                   if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
+                       && !empty($track->has_audio)
+                   ) {
+                       $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                           $track->bitrate,
+                           $track->duration
+                       );
+                       $quality = $quality ? $quality : -rand();
+                       $bitrate = $track->bitrate ? round($track->bitrate / 1000, 1) . 'kb/s' : 'vbr';
+                       $encoder = isset($track->audio->encoder->type) ? ('/' . explode(' ', $track->audio->encoder->type)[0]) : '';
+                       $type = explode('/', $track->mediatype)[1] . $encoder;
+                       $audio_download[$quality] = [
+                           'url'  => $track->url,
+                           'info' => 'Bildschirm ' . $bitrate . ', ' . $type
+                       ];
+
+                       $duration = $track->duration;
+                   }
+               }
             }
 
             foreach ($episode->publications as $publication) {
@@ -380,6 +432,7 @@ class ApiEventsClient extends OCRestClient
             $new_episode['presenter_download']    = $presenter_download;
             $new_episode['presentation_download'] = $presentation_download;
             $new_episode['audio_download']        = $audio_download;
+            $new_episode['supplemental_download'] = $supplemental_material;
             $new_episode['annotation_tool']       = $annotation_tool;
             $new_episode['has_previews']          = $episode->has_previews ?: false;
             $new_episode['duration']              = $duration;

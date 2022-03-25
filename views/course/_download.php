@@ -1,5 +1,5 @@
 <?php
-foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' => 'Audio'] as $type => $button_text) :?>
+foreach (['presenter' => 'ReferentIn', 'presentation' => 'Bildschirm', 'audio' => 'Audio', 'supplemental' => 'Materialien'] as $type => $button_text) :?>
     <? $download_type = $type . '_download' ?>
     <? if ($episode[$download_type]) : ?>
         <div>
