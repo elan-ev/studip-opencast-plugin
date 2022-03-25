@@ -5,7 +5,7 @@ import { apolloClient, apolloProvider } from '../vue-apollo'
 const state = {
     cid: '',
     search: '',
-    sort: 'created_desc',
+    sort: 'DATE_CREATED_DESC',
     events: null,
     limit: 5,
     paging: {
@@ -76,7 +76,7 @@ const mutations = {
         state.paging.totalItems -= 1;
 
         // go one page back if event removing reduced the number of pages
-        if (Math.floor((state.paging.totalItems - 1) / 5) < state.paging.currPage) {
+        if (Math.floor((state.paging.totalItems - 1) / state.limit) < state.paging.currPage) {
             if (state.paging.currPage > 0) {
                 state.paging.currPage -= 1;
             }
@@ -120,7 +120,7 @@ const actions = {
             query: gql`
                 query {
                     getEvents(course_id: "${state.cid}", 
-                            offset: ${state.paging.currPage*state.limit}, 
+                            page: ${state.paging.currPage}, 
                             limit: ${state.limit},
                             sort: "${state.sort}",
                             search: "${state.search}") {
@@ -135,8 +135,7 @@ const actions = {
                             downloads {
                                 type
                                 url
-                                width
-                                height
+                                info
                                 size
                             }
                             description

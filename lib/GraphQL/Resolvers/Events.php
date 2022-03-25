@@ -8,6 +8,7 @@ use Opencast\Models\SeminarSeries;
 use Opencast\Models\REST\SearchClient;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\AdminNgEventClient;
+use Opencast\Models\Pager;
 
 class Events
 {
@@ -48,6 +49,11 @@ class Events
         //$seriesList = [];
         $events  = [];
 
+        Pager::setPage($args['page']);
+        Pager::setLimit($args['limit']);
+        Pager::setSordOrder($args['sort']);
+        Pager::setSearch($args['search']);
+
         foreach ($connectedSeries as $series) {
             // check series visibility
             if ($series->visibility == 'visible'
@@ -56,90 +62,52 @@ class Events
                 // get correct endpoint for current series
                 $eventsClient = ApiEventsClient::getInstance($series['config_id']);
                 //$seriesList[$series['series_id']]['events'] = $eventsClient->getBySeries($series['series_id']);
-                $events = array_merge($events, $eventsClient->getBySeries($series['series_id']));
+                $events = array_merge($events, $eventsClient->getBySeries($series['series_id'], $course_id));
             }
         }
 
-        // handle search
-        $search = $args['search'];
-        if ($search !== '') {
-            $events = array_filter($events, function($event) use($search) {
-                return str_contains(strtolower($event['title']), strtolower($search));
-            });
-        }
-
-        // handle pagination
-        $num_events = count($events);
-        $offset = $args['offset'] ? $args['offset'] : 0;
-        $limit = $args['limit'] ? $args['limit'] : $num_events;
-
-        // sort events
-        $sort = $args['sort'];
-        
-        uasort($events, function ($a, $b) {
-            return $a['created'] == $b['created'] ? 0
-                : ($a['created'] < $b['created'] ? 1 : -1);
-        });
-
         // paginate events
-        $events = array_slice($events, $offset, $limit);
+        $num_events = Pager::getLength();
+        $offset = Pager::getOffset();
+        $limit = Pager::getLimit();
 
         if (!empty($events)) {
             $results['page_info'] = [
-                'total_items'  => $num_events,
-                'current_page' => floor($offset / $limit),
-                'last_page'    => floor(($num_events - 1) / $limit),
+                'total_items'  => Pager::getLength(),
+                'current_page' => Pager::getPage(),
+                'last_page'    => floor((Pager::getLength() - 1) / Pager::getLimit()),
             ];
         }
 
         // conform events to schema
         foreach ($events as $event) {
-            $track_link = '';
-            $length = 0;
-            $annotation_tool = '';
             $downloads = [];
-            $publications = $eventsClient->getEpisode($event['identifier'], true)[1]['publications'];
-            /*
-            foreach ($publications as $publication) {
-                if ($publication->channel == 'engage-player') {
-                    $track_link = $publication->url;
-                    if ($event['duration']) {
-                        $length = $event['duration'];
-                    }
-                }
-                if ($publication->channel == 'annotation_tool') {
-                    $annotation_tool = $publication->url;
-                }
+            foreach($event['presentation_download'] as $size => $download) {
+                $downloads[] = [
+                    'type' => 'presentation_download',
+                    'url' => $download['url'],
+                    'info' => $download['info'],
+                    'size' => $size
+                ];
             }
-            */
-            foreach ($publications as $publication) {
-                if ($publication['channel'] == 'engage-player') {
-                    $track_link = $publication['url'];
-                    $medias = $publication['media'];
-                    foreach ($medias as $media) {
-                        if (in_array('engage-download', $media['tags'])) {
-                            $length = $media['duration'];
-                            $downloads[] = [
-                                'type'   => $media['flavor'],
-                                'url'    => $media['url'],
-                                'width'  => $media['width'],
-                                'height' => $media['height'],
-                                'size'   => $media['size']
-                            ];
-                        }
-                    }
-                }
+            foreach($event['presenter_download'] as $size => $download) {
+                $downloads[] = [
+                    'type' => 'presenter_download',
+                    'url' => $download['url'],
+                    'info' => $download['info'],
+                    'size' => $size
+                ];
             }
 
             $results['events'][] = [
-                'id'              => $event['identifier'],
+                'id'              => $event['id'],
                 'title'           => $event['title'],
-                'author'          => reset($event['presenter']),
+                'author'          => $event['author'],
                 'contributor'     => $event['contributor'],
-                'track_link'      => $track_link,
-                'length'          => $length,
+                'track_link'      => $event['track_link'],
+                'length'          => $event['duration'],
                 'downloads'       => $downloads,
-                'annotation_tool' => $annotation_tool,
+                'annotation_tool' => $event['annotation_tool'],
                 'description'     => $event['description'],
                 'mk_date'         => strtotime($event['created'])
             ];

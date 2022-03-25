@@ -49,8 +49,7 @@ input EventInput {
   type Download {
     type: String!
     url: String!
-    width: Int!
-    height: Int!
+    info: String!
     size: Int!
   }
 
@@ -66,7 +65,7 @@ input EventInput {
   }
 
   type Query {
-    getEvents(course_id: ID!, offset: Int, limit: Int, sort: String, search: String): EventsResult
+    getEvents(course_id: ID!, page: Int, limit: Int, sort: String, search: String): EventsResult
   }
 
   type Mutation {

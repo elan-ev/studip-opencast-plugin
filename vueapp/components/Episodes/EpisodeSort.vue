@@ -21,10 +21,10 @@ export default {
       sel: '',
 
       options: {
-        "titel_asc": "Titel aufsteigend",
-        "titel_desc": "Titel absteigend",
-        "created_asc": "Aufzeichnungsdatum aufsteigend",
-        "created_desc": "Aufzeichnungsdatum absteigend"
+        "TITLE": "Titel: Alphabetisch",
+        "TITLE_DESC": "Titel: Umgekehrt Alphabetisch",
+        "DATE_CREATED": "Datum hochgeladen: Älteste zuerst",
+        "DATE_CREATED_DESC": "Datum hochgeladen: Neueste zuerst"
       }
     }
   },

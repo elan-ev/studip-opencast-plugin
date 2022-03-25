@@ -64,7 +64,7 @@ export default {
         },
 
         getMediaText(media) {
-            var text = media['width'] + 'x' + media['height'] + 'px'
+            var text = media['info']
             var size = media['size']/1000
             if (size > 1000) {
                 size = Math.round(size/1000 * 10) / 10
