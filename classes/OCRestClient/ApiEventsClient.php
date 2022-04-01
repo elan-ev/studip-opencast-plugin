@@ -303,7 +303,7 @@ class ApiEventsClient extends OCRestClient
 
         $acls = $episode->acl;
 
-        if (empty($acls) || $acls === NULL) {
+        if ($acls === NULL) {
             return NULL;
         }
 
@@ -313,6 +313,11 @@ class ApiEventsClient extends OCRestClient
         $default = $vis_conf
             ? 'invisible'
             : 'visible';
+
+        if (empty($acls)) {
+            OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
+            return $default;
+        }
 
         // check, if the video is free for all
         foreach ($acls as $acl) {
