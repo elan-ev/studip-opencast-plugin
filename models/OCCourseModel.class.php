@@ -172,6 +172,7 @@ class OCCourseModel
         return $stmt->fetchColumn();
     }
 
+    //CW 4.6
     public function getEpisodesforREST()
     {
         $rest_episodes = [];
