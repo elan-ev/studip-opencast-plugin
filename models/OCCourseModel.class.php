@@ -69,27 +69,30 @@ class OCCourseModel
     {
         static $ordered_episodes;
 
-        if (empty($ordered_episodes)) {
+        if (!isset($ordered_episodes[$this->getCourseID()])) {
             if ($this->getSeriesID()) {
+                if (empty($ordered_episodes)){
+                    $ordered_episodes = [];
+                }
+                $ordered_episodes[$this->getCourseID()] = [];
                 $api_events = ApiEventsClient::create($this->getCourseID());
                 $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
 
                 $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
-                $ordered_episodes = [];
 
                 //check if series' episodes is already stored in studip
                 if (!empty($series)) {
                     // add additional episode metadata from opencast
-                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                    $ordered_episodes[$this->getCourseID()] = $this->episodeComparison($stored_episodes, $series);
                 }
 
-                return $ordered_episodes;
+                return $ordered_episodes[$this->getCourseID()];
             } else {
                 return false;
             }
         }
 
-        return $ordered_episodes;
+        return $ordered_episodes[$this->getCourseID()];
     }
 
     private function episodeComparison($stored_episodes, $oc_episodes)
@@ -226,25 +229,6 @@ class OCCourseModel
         $visibility = OCSeriesModel::getVisibility($this->course_id);
 
         return $visibility['visibility'];
-    }
-
-    /**
-     * refine the list of episodes wrt. the visibility of an episode
-     *
-     * @param array $ordered_episodes list of all episodes for the given course
-     *
-     * @return array episodes refined list of episodes - only visible episodes are considered
-     */
-    public function refineEpisodesForStudents($ordered_episodes)
-    {
-        $episodes = [];
-        foreach ($ordered_episodes as $episode) {
-            if ($episode['visibility'] != 'invisible') {
-                $episodes[] = $episode;
-            }
-        }
-
-        return $episodes;
     }
 
     public function getWorkflow($target)
