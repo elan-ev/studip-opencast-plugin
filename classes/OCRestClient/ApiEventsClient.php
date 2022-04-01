@@ -303,10 +303,6 @@ class ApiEventsClient extends OCRestClient
 
         $acls = $episode->acl;
 
-        if ($acls === NULL) {
-            return NULL;
-        }
-
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
