@@ -67,32 +67,25 @@ class OCCourseModel
 
     public function getEpisodes()
     {
-        static $ordered_episodes;
-
-        if (!isset($ordered_episodes[$this->getCourseID()])) {
-            if ($this->getSeriesID()) {
-                if (empty($ordered_episodes)) {
-                    $ordered_episodes = [];
-                }
-                $ordered_episodes[$this->getCourseID()] = [];
-                $api_events = ApiEventsClient::create($this->getCourseID());
-                $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
-
-                $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
-
-                //check if series' episodes is already stored in studip
-                if (!empty($series)) {
-                    // add additional episode metadata from opencast
-                    $ordered_episodes[$this->getCourseID()] = $this->episodeComparison($stored_episodes, $series);
-                }
-
-                return $ordered_episodes[$this->getCourseID()];
-            } else {
-                return false;
+        if ($this->getSeriesID()) {
+            if (empty($ordered_episodes)) {
+                $ordered_episodes = [];
             }
-        }
+            $ordered_episodes[$this->getCourseID()] = [];
+            $api_events = ApiEventsClient::create($this->getCourseID());
+            $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
 
-        return $ordered_episodes[$this->getCourseID()];
+            $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
+
+            //check if series' episodes is already stored in studip
+            if (!empty($series)) {
+                // add additional episode metadata from opencast
+                $ordered_episodes[$this->getCourseID()] = $this->episodeComparison($stored_episodes, $series);
+            }
+
+            return $ordered_episodes[$this->getCourseID()];
+        }
+        return false;
     }
 
     private function episodeComparison($stored_episodes, $oc_episodes)
@@ -177,25 +170,6 @@ class OCCourseModel
         $stmt->execute();
 
         return $stmt->fetchColumn();
-    }
-
-    public function getEpisodesforREST()
-    {
-        $rest_episodes = [];
-        $is_dozent     = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
-        $episodes      = $this->getEpisodes();
-
-        foreach ($episodes as $episode) {
-            if ($episode['visibility'] == 'true') {
-                $rest_episodes[] = $episode;
-            } else {
-                if ($is_dozent) {
-                    $rest_episodes[] = $episode;
-                }
-            }
-        }
-
-        return $rest_episodes;
     }
 
     public function toggleSeriesVisibility()
