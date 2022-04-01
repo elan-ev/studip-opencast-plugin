@@ -11,6 +11,7 @@ use Opencast\Models\OCUploadStudygroup;
 use Opencast\Models\OCEndpoints;
 use Opencast\Models\Pager;
 use Opencast\LTI\OpencastLTI;
+use Opencast\Configuration;
 
 class CourseController extends OpencastController
 {
@@ -97,13 +98,6 @@ class CourseController extends OpencastController
      */
     public function index_action($active_id = 'false', $upload_message = false)
     {
-        Pager::setPage(Request::int('page', 1));
-
-        $search = Request::get('search', $this->flash['search'] ?: null);
-        if ($search) {
-            Pager::setSearch($search);
-        }
-
         $this->set_title($this->_("Opencast Player"));
 
         Navigation::activateItem('course/opencast/overview');
@@ -156,6 +150,13 @@ class CourseController extends OpencastController
                 $cache->write($cache_key, time(), 3600);
             }
 
+            //only used for livestream in _schedule.php
+            $this->events = [];
+            if (Configuration::instance($this->config['id'])->get('livestream')) {
+                $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
+                $this->events = $api_client->getBySeries($this->series_id, $this->course_id);
+            }
+
             $occourse = new OCCourseModel($this->course_id);
 
             if (OCPerm::editAllowed($this->course_id)) {
@@ -189,6 +190,13 @@ class CourseController extends OpencastController
                 $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
                 $this->schedulewf = $occourse->getWorkflow('schedule');
                 $this->uploadwf = $occourse->getWorkflow('upload');
+            }
+
+            Pager::setPage(Request::int('page', 1));
+
+            $search = Request::get('search', $this->flash['search'] ?: null);
+            if ($search) {
+                Pager::setSearch($search);
             }
 
             try {
