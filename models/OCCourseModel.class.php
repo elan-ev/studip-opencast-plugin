@@ -172,6 +172,25 @@ class OCCourseModel
         return $stmt->fetchColumn();
     }
 
+    public function getEpisodesforREST()
+    {
+        $rest_episodes = [];
+        $is_dozent     = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
+        $episodes      = $this->getEpisodes();
+
+        foreach ($episodes as $episode) {
+            if ($episode['visibility'] == 'true') {
+                $rest_episodes[] = $episode;
+            } else {
+                if ($is_dozent) {
+                    $rest_episodes[] = $episode;
+                }
+            }
+        }
+
+        return $rest_episodes;
+    }
+
     public function toggleSeriesVisibility()
     {
         if ($this->getSeriesVisibility() == 'visible') {
