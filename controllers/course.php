@@ -230,9 +230,6 @@ class CourseController extends OpencastController
             $oc_course = new OCCourseModel($this->course_id);
             if ($oc_course->getSeriesID()) {
                 $ordered_episode_ids = $oc_course->getEpisodes();
-                if (!OCPerm::editAllowed($this->course_id)) {
-                    $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
-                }
             }
 
             return $ordered_episode_ids;
