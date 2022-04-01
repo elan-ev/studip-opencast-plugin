@@ -45,9 +45,6 @@ class OpencastLTI
             }
 
             $vis = $api_client->getVisibilityForEpisode($episode, $course_id);
-            if ($vis === NULL) {
-                continue;
-            }
 
             $entry = OCSeminarEpisodes::findOneBySQL(
                 'series_id = ? AND episode_id = ? AND seminar_id = ?',
