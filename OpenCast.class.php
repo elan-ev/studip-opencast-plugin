@@ -150,7 +150,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         if (!$this->isActivated($course_id)
             || (
-                $visibility['visibility'] == 'invisible'
+                $visibility['visibility'] != 'visible'
                 && !OCPerm::editAllowed($course_id)
             )
         ) {
