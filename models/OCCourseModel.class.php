@@ -71,7 +71,7 @@ class OCCourseModel
 
         if (!isset($ordered_episodes[$this->getCourseID()])) {
             if ($this->getSeriesID()) {
-                if (empty($ordered_episodes)){
+                if (empty($ordered_episodes)) {
                     $ordered_episodes = [];
                 }
                 $ordered_episodes[$this->getCourseID()] = [];
@@ -112,7 +112,7 @@ class OCCourseModel
             : 'visible';
 
         foreach ($oc_episodes as $oc_episode) {
-            if($oc_episode===NULL){
+            if ($oc_episode === NULL) {
                 continue;
             }
 

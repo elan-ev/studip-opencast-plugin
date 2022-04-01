@@ -86,7 +86,7 @@ class AjaxController extends OpencastController
         }
 
         foreach ($episodes as $episode) {
-            if($episode===NULL){
+            if ($episode === NULL) {
                 continue;
             }
 

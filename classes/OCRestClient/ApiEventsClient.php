@@ -98,14 +98,14 @@ class ApiEventsClient extends OCRestClient
 
         //skip upcoming livestream
         $config = OCConfig::getConfigForCourse($course_id);
-        if(Configuration::instance($config['id'])->get('livestream')){
+        if (Configuration::instance($config['id'])->get('livestream')) {
             $now = time();
-            foreach($series as $episode){
+            foreach ($series as $episode) {
                 $startTime = strtotime($episode['start']);
                 $endTime = strtotime($episode['start']) + $episode['duration'] / 1000;
                 $live = $now < $endTime;
-    
-                /* today and the next full 7 days */;
+
+                    /* today and the next full 7 days */;
                 $isUpcoming = $startTime <= (strtotime("tomorrow") + 7 * 24 * 60 * 60);
                 if ($live && !$isUpcoming) {
                     continue;
