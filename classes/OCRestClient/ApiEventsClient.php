@@ -2,6 +2,7 @@
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\Pager;
+use Opencast\Models\OCSeminarEpisodes;
 
 class ApiEventsClient extends OCRestClient
 {
@@ -55,91 +56,160 @@ class ApiEventsClient extends OCRestClient
      */
     public function getBySeries($series_id, $course_id)
     {
-        $cache = \StudipCacheFactory::getCache();
-
         $events = [];
 
         $offset = Pager::getOffset();
         $limit  = Pager::getLimit();
         $sort   = Pager::getSortOrder();
         $search = Pager::getSearch();
-        $type   = $GLOBALS['perm']->have_studip_perm('tutor', $course_id)
-            ? 'Instructor' : 'Learner';
 
-        $search_service = new SearchClient($this->config_id);
+        //get
+        $series = $this->getJSON('/?filter=' . urlencode('is_part_of:' . $series_id));
 
-        // first, get list of events ids from search service
-        $search_query = '';
-        if ($search) {
-            $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
+        //check for new epsiodes
+        $episodes_404 = [];
+        foreach ($series as $episode) {
+            $entry = OCSeminarEpisodes::findOneBySQL(
+                'episode_id = ? AND series_id = ? AND seminar_id = ?',
+                [$episode->identifier, $series_id, $course_id]
+            );
+            if (!$entry) {
+                $episodes_404[] = $episode;
+            }
+        }
+        //get new epsiodes
+        $this->getEpisodes($episodes_404);
+
+        //check_perms
+        if (!OCPerm::editAllowed($course_id)) {
+            $episodes = [];
+            foreach ($series as $episode) {
+                $entry = OCSeminarEpisodes::findOneBySQL(
+                    'episode_id = ? AND series_id = ? AND seminar_id = ?',
+                    [$episode->identifier, $series_id, $course_id]
+                );
+                if ($entry && $entry->visible != 'invisible') {
+                    $episodes[] = $episode;
+                }
+            }
+            $series = $episodes;
         }
 
-        $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
-            . ' AND oc_acl_read:' . $course_id . '_' . $type;
+        // search
+        if ($search) {
+            $episodes = [];
+            foreach ($series as $episode) {
+                if (stripos($episode->title, $search) !== false) {
+                    $episodes[] = $episode;
+                }
+            }
+            $series = $episodes;
+        }
 
-        $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
-            . "&sort=$sort&limit=$limit&offset=$offset");
+        // sort
+        if (!empty($series)) {
+            switch ($sort) {
+                case 'DATE_CREATED_DESC':
+                    $columns_tmp = array_column($series, 'created');
+                    $columns = [];
+                    foreach ($columns_tmp as $col) {
+                        $columns[] = strtotime($col);
+                    }
+                    array_multisort($columns, SORT_DESC, $series);
+                    break;
+                case 'DATE_CREATED':
+                    $columns_tmp = array_column($series, 'created');
+                    $columns = [];
+                    foreach ($columns_tmp as $col) {
+                        $columns[] = strtotime($col);
+                    }
+                    array_multisort($columns, SORT_ASC, $series);
+                    break;
+                case 'TITLE':
+                    $columns = array_column($series, 'title');
+                    array_multisort($columns, SORT_ASC, $series);
+                    break;
+                case 'TITLE_DESC':
+                    $columns = array_column($series, 'title');
+                    array_multisort($columns, SORT_DESC, $series);
+                    break;
+            }
+        }
 
-        Pager::setLength($search_events->{'search-results'}->total);
+        $length = count($series);
+        Pager::setLength($length);
 
-        $results = is_array($search_events->{'search-results'}->result)
-            ? $search_events->{'search-results'}->result
-            : [$search_events->{'search-results'}->result];
+        if ($length) {
+            $events = array_slice($series, $offset, $limit);
+        }
 
         // then, iterate over list and get each event from the external-api
-        foreach ($results as $s_event) {
-            $cache_key = 'sop/episodes/' . $s_event->id;
+        $events = $this->getEpisodes($events);
+
+        return $events;
+    }
+
+    private function getEpisodes($episodes)
+    {
+        if (empty($episodes)) {
+            return [];
+        }
+        $cache = \StudipCacheFactory::getCache();
+        $events = [];
+        foreach ($episodes as $s_event) {
+            $cache_key = 'sop/episodes/' . $s_event->identifier;
             $event = $cache->read($cache_key);
 
-            if (empty($s_event->id)) {
+            if (empty($s_event->identifier)) {
                 continue;
             }
 
             if (!$event) {
-                $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
+                $oc_event = $this->getJSON('/' . $s_event->identifier . '/?withpublications=true');
 
-                if (empty($oc_event->publications[0]->attachments)) {
-                    $media = [];
+                if ($oc_event) {
+                    if (empty($oc_event->publications[0]->attachments)) {
+                        $media = [];
 
-                    foreach ($s_event->mediapackage->media->track as $track) {
-                        $width = 0;
-                        $height = 0;
-                        if (!empty($track->video)) {
-                            list($width, $height) = explode('x', $track->video->resolution);
-                            $bitrate = $track->video->bitrate;
-                        } else if (!empty($track->audio)) {
-                            $bitrate = $track->audio->bitrate;
+                        foreach ($s_event->mediapackage->media->track as $track) {
+                            $width = 0;
+                            $height = 0;
+                            if (!empty($track->video)) {
+                                list($width, $height) = explode('x', $track->video->resolution);
+                                $bitrate = $track->video->bitrate;
+                            } else if (!empty($track->audio)) {
+                                $bitrate = $track->audio->bitrate;
+                            }
+
+                            $obj = new stdClass();
+                            $obj->mediatype = $track->mimetype;
+                            $obj->flavor    = $track->type;
+                            $obj->has_video = !empty($track->video);
+                            $obj->has_audio = !empty($track->audio);
+                            $obj->tags      = $track->tags->tag;
+                            $obj->url       = $track->url;
+                            $obj->duration  = $track->duration;
+                            $obj->bitrate   = $bitrate;
+                            $obj->width     = $width;
+                            $obj->height    = $height;
+
+                            $media[] = $obj;
                         }
 
-                        //echo '<pre>'; print_r($track); echo '</pre>';
-
-                        $obj = new stdClass();
-                        $obj->mediatype = $track->mimetype;
-                        $obj->flavor    = $track->type;
-                        $obj->has_video = !empty($track->video);
-                        $obj->has_audio = !empty($track->audio);
-                        $obj->tags      = $track->tags->tag;
-                        $obj->url       = $track->url;
-                        $obj->duration  = $track->duration;
-                        $obj->bitrate   = $bitrate;
-                        $obj->width     = $width;
-                        $obj->height    = $height;
-
-                        $media[] = $obj;
+                        $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                        $oc_event->publications[0]->media       = $media;
                     }
 
-                    $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
-                    $oc_event->publications[0]->media       = $media;
+                    $event = self::prepareEpisode($oc_event);
+
+                    $cache->write($cache_key, $event, 86000);
+                } else {
+                    $event = NULL;
                 }
-
-                $event = self::prepareEpisode($oc_event);
-
-                $cache->write($cache_key, $event, 86000);
             }
 
-            $events[$s_event->id] = $event;
+            $events[$s_event->identifier] = $event;
         }
-
         return $events;
     }
 
@@ -214,17 +284,16 @@ class ApiEventsClient extends OCRestClient
 
         $acls = $episode->acl;
 
+        if (empty($acls) || $acls === NULL) {
+            return NULL;
+        }
+
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             : \Config::get()->OPENCAST_HIDE_EPISODES;
         $default = $vis_conf
             ? 'invisible'
             : 'visible';
-
-        if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
-            return $default;
-        }
 
         // check, if the video is free for all
         foreach ($acls as $acl) {
@@ -276,106 +345,109 @@ class ApiEventsClient extends OCRestClient
             'has_previews'  => false
         ];
 
-        if (!empty($episode->publications[0]->attachments)) {
-            $presentation_preview  = false;
-            $preview               = false;
-            $presenter_download    = [];
-            $presentation_download = [];
-            $audio_download        = [];
-            $annotation_tool       = false;
-            $duration              = 0;
+        foreach ($episode->publications as $publication) {
+            if (!empty($publication->attachments)) {
+                $presentation_preview  = false;
+                $preview               = false;
+                $presenter_download    = [];
+                $presentation_download = [];
+                $audio_download        = [];
+                $annotation_tool       = false;
+                $duration              = 0;
 
-            foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
-                    $preview = $attachment->url;
+                foreach ((array) $publication->attachments as $attachment) {
+                    if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
+                        $preview = $attachment->url;
+                    }
+                    if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
+                        $presentation_preview = $attachment->url;
+                    }
                 }
-                if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
-                    $presentation_preview = $attachment->url;
-                }
-            }
 
-            foreach ($episode->publications[0]->media as $track) {
-                $parsed_url = parse_url($track->url);
+                foreach ($publication->media as $track) {
+                    $parsed_url = parse_url($track->url);
 
-                if ($track->flavor === 'presenter/delivery') {
-                    if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
-                        && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
-                            && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                    if ($track->flavor === 'presenter/delivery') {
+                        if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
+                            && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
+                                && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                            && !empty($track->has_video)
+                        ) {
+                            $quality = $this->calculate_size(
+                                $track->bitrate,
+                                $track->duration
+                            );
+                            $presenter_download[$quality] = [
+                                'url'  => $track->url,
+                                'info' => $this->getResolutionString($track->width, $track->height)
+                            ];
+
+                            $duration = $track->duration;
+                        }
+
+                        if (
+                            in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
+                            && !empty($track->has_audio)
+                        ) {
+                            $quality = $this->calculate_size(
+                                $track->bitrate,
+                                $track->duration
+                            );
+                            $audio_download[$quality] = [
+                                'url'  => $track->url,
+                                'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
+                            ];
+
+                            $duration = $track->duration;
+                        }
+                    }
+
+                    if ($track->flavor === 'presentation/delivery' && (
+                        ($track->mediatype === 'video/mp4'
+                            || $track->mediatype === 'video/avi'
+                        ) && (
+                            (in_array('atom', $track->tags)
+                                || in_array('engage-download', $track->tags)
+                            )
+                            && $parsed_url['scheme'] != 'rtmp'
+                            && $parsed_url['scheme'] != 'rtmps'
+                        )
                         && !empty($track->has_video)
-                    ) {
+                    )) {
                         $quality = $this->calculate_size(
                             $track->bitrate,
                             $track->duration
                         );
-                        $presenter_download[$quality] = [
+
+                        $presentation_download[$quality] = [
                             'url'  => $track->url,
                             'info' => $this->getResolutionString($track->width, $track->height)
                         ];
-
-                        $duration = $track->duration;
-                    }
-
-                    if (
-                        in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
-                        && !empty($track->has_audio)
-                    ) {
-                        $quality = $this->calculate_size(
-                            $track->bitrate,
-                            $track->duration
-                        );
-                        $audio_download[$quality] = [
-                            'url'  => $track->url,
-                            'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
-                        ];
-
-                        $duration = $track->duration;
                     }
                 }
 
-                if ($track->flavor === 'presentation/delivery' && (
-                    ($track->mediatype === 'video/mp4'
-                        || $track->mediatype === 'video/avi'
-                    ) && (
-                        (in_array('atom', $track->tags)
-                            || in_array('engage-download', $track->tags)
-                        )
-                        && $parsed_url['scheme'] != 'rtmp'
-                        && $parsed_url['scheme'] != 'rtmps'
-                    )
-                    && !empty($track->has_video)
-                )) {
-                    $quality = $this->calculate_size(
-                        $track->bitrate,
-                        $track->duration
-                    );
-
-                    $presentation_download[$quality] = [
-                        'url'  => $track->url,
-                        'info' => $this->getResolutionString($track->width, $track->height)
-                    ];
+                foreach ($episode->publications as $publication) {
+                    if ($publication->channel == 'annotation-tool') {
+                        $annotation_tool = $publication->url;
+                    }
                 }
+
+                ksort($presenter_download);
+                ksort($presentation_download);
+                ksort($audio_download);
+
+                $new_episode['preview']               = $preview;
+                $new_episode['presentation_preview']  = $presentation_preview;
+                $new_episode['presenter_download']    = $presenter_download;
+                $new_episode['presentation_download'] = $presentation_download;
+                $new_episode['audio_download']        = $audio_download;
+                $new_episode['annotation_tool']       = $annotation_tool;
+                $new_episode['has_previews']          = $episode->has_previews ?: false;
+                $new_episode['duration']              = $duration;
+
+                break;
             }
-
-            foreach ($episode->publications as $publication) {
-                if ($publication->channel == 'annotation-tool') {
-                    $annotation_tool = $publication->url;
-                }
-            }
-
-            ksort($presenter_download);
-            ksort($presentation_download);
-            ksort($audio_download);
-
-            $new_episode['preview']               = $preview;
-            $new_episode['presentation_preview']  = $presentation_preview;
-            $new_episode['presenter_download']    = $presenter_download;
-            $new_episode['presentation_download'] = $presentation_download;
-            $new_episode['audio_download']        = $audio_download;
-            $new_episode['annotation_tool']       = $annotation_tool;
-            $new_episode['has_previews']          = $episode->has_previews ?: false;
-            $new_episode['duration']              = $duration;
         }
-
         return $new_episode;
     }
 

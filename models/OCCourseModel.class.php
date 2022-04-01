@@ -109,6 +109,10 @@ class OCCourseModel
             : 'visible';
 
         foreach ($oc_episodes as $oc_episode) {
+            if($oc_episode===NULL){
+                continue;
+            }
+
             $l_episode = $local_episodes[$oc_episode['id']];
 
             if (!$l_episode) {

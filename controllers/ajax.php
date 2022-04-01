@@ -86,6 +86,10 @@ class AjaxController extends OpencastController
         }
 
         foreach ($episodes as $episode) {
+            if($episode===NULL){
+                continue;
+            }
+
             $studip_episode = OCSeminarEpisodes::findOneBySQL(
                 'series_id = ? AND episode_id = ? AND seminar_id = ?',
                 [$series_id, $episode['id'], $course_id]
