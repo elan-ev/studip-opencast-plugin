@@ -1,6 +1,7 @@
 <?php
 use Studip\Button;
 use Opencast\Models\Pager;
+use Opencast\Configuration;
 ?>
 
 <?
@@ -58,16 +59,14 @@ $sort_orders = Pager::getSortOptions();
         <ul class="oce_list list" <?= (OCPerm::editAllowed($course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
                 <?
-                $now = time();
-                $startTime = strtotime($item['start']);
-                $endTime = strtotime($item['start']) + $item['duration'] / 1000;
-                $live = $now < $endTime;
-                $isOnAir = $startTime <= $now && $now <= $endTime;
-
-                /* today and the next full 7 days */;
-                $isUpcoming = $startTime <= (strtotime("tomorrow") + 7 * 24 * 60 * 60);
-                if ($live && !$isUpcoming) {
-                    continue;
+                $live = false;
+                $isOnAir = false;
+                if(Configuration::instance($config['id'])->get('livestream')){
+                    $now = time();
+                    $startTime = strtotime($item['start']);
+                    $endTime = strtotime($item['start']) + $item['duration'] / 1000;
+                    $live = $now < $endTime;
+                    $isOnAir = $startTime <= $now && $now <= $endTime;
                 }
                 ?>
 
