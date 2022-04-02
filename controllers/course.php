@@ -145,7 +145,6 @@ class CourseController extends OpencastController
 
             if (!$checked) {
                 OpencastLTI::updateEpisodeVisibility($this->course_id);
-                OpencastLTI::setAcls($this->course_id);
 
                 $cache->write($cache_key, time(), 3600);
             }
@@ -591,10 +590,6 @@ class CourseController extends OpencastController
         if (!$GLOBALS['perm']->have_studip_perm('admin', $this->course_id) && !OCModel::checkPermForEpisode($episode_id, $this->user_id, $check_perm_for)) {
             throw new AccessDeniedException();
         }
-
-        $cache = \StudipCacheFactory::getCache();
-        $cache_key = 'sop/visibility/' . \Context::getId();
-        $cache->expire($cache_key);
 
         if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
             StudipLog::log(

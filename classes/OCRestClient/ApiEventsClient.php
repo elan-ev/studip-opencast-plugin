@@ -146,7 +146,8 @@ class ApiEventsClient extends OCRestClient
         $length = count($series);
         Pager::setLength($length);
 
-        if ($length) {
+        $events = $series;
+        if ($length && $filter) {
             $events = array_slice($series, $offset, $limit);
         }
 
@@ -263,7 +264,7 @@ class ApiEventsClient extends OCRestClient
             ];
         }
 
-        if ($visibility == 'free') {
+        if ($visibility == 'free' || OCSeminarEpisodes::findOneBySQL('episode_id = ? AND visible = ?', [$episode_id, 'free'])) {
             $acl[] = [
                 'allow'  => true,
                 'role'   => 'ROLE_ANONYMOUS',
@@ -274,6 +275,11 @@ class ApiEventsClient extends OCRestClient
         // get current acl and filter out roles for this course, pertaining any other acl-roles
         $oc_acl = array_filter($this->getACL($episode_id), function ($entry) use ($course_id) {
             return (strpos($entry['role'], $course_id) === false);
+        });
+
+        // filter out free
+        $oc_acl = array_filter($oc_acl, function ($entry) {
+            return ($entry['role'] != 'ROLE_ANONYMOUS');
         });
 
         $result = $this->putJSON('/' . $episode_id . '/acl', [

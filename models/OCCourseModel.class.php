@@ -114,11 +114,6 @@ class OCCourseModel
                 $oc_episode['is_retracting'] = false;
                 $oc_episode['mkdate']        = time();
 
-                // invalidate acl cache for this course
-                $cache = \StudipCacheFactory::getCache();
-                $cache_key = 'sop/visibility/' . \Context::getId();
-                $cache->expire($cache_key);
-
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
                     'episode_id'    => $oc_episode['id'],
                     'course_id'     => $this->getCourseID(),
