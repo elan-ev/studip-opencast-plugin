@@ -24,7 +24,7 @@ class OpencastLTI
     public static function setAcls($course_id, $episode_id = null)
     {
         // write the new ACLs to Opencast
-        if ($mapping = self::generate_acl_mapping_for_course($course_id)) {
+        if ($mapping = self::generate_acl_mapping_for_course($course_id, $episode_id)) {
             $acls = self::mapping_to_defined_acls($mapping);
             return self::apply_defined_acls($acls, $episode_id);
         }
@@ -62,17 +62,16 @@ class OpencastLTI
     {
         $returnValue = true;
 
+        if ($episode_only_id !== null) {
+            $setting = $defined_acls['e'][$episode_only_id];
+            return self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_only_id, 'episode');
+        }
         foreach ($defined_acls['s'] as $series_id => $setting) {
-            // You may want to check here for $episode_only_id, too and
-            // skip series updates if the Episode ACls should be changed
             $returnValue =
                 self::apply_acl_to_courses($setting['acl'], $setting['courses'], $series_id, 'series')
                 && $returnValue;
         }
         foreach ($defined_acls['e'] as $episode_id => $setting) {
-            if ($episode_only_id && $episode_id !== $episode_only_id) {
-                continue;
-            }
             $returnValue =
                 self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode')
                 && $returnValue;
@@ -140,7 +139,7 @@ class OpencastLTI
      * @param string $course_id
      * @return mixed             array, if setting of the acls is needed, false otherwise
      */
-    public static function generate_acl_mapping_for_course($course_id)
+    public static function generate_acl_mapping_for_course($course_id, $episode_id = null)
     {
         $series_list = OCSeminarSeries::getSeries($course_id);
 
@@ -170,7 +169,7 @@ class OpencastLTI
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
                 $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes     = $course_model->getEpisodes();
+                $episodes     = $course_model->getEpisodes(false, false, $episode_id);
                 foreach ($episodes as $episode) {
                     $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
                 }
@@ -303,6 +302,8 @@ class OpencastLTI
         if ($oc_acl <> $acl->toArray()) {
             $client->setACL($target_id, $acl);
         }
+
+        return null;
     }
 
     public static function getSearchUrl($course_id)

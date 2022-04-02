@@ -1,7 +1,9 @@
 <?php
 
+use Opencast\LTI\OpencastLTI;
 use Opencast\Models\OCSeminarWorkflowConfiguration;
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCAclQueue;
 
 class OCCourseModel
 {
@@ -65,32 +67,37 @@ class OCCourseModel
     }
 
 
-    public function getEpisodes()
+    public function getEpisodes($filter = true, $top = true, $episode_id = null)
     {
         $ordered_episodes = [];
 
         if ($this->getSeriesID()) {
             $api_events = ApiEventsClient::create($this->getCourseID());
-            $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
+            $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID(), $filter, $episode_id);
 
             $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
 
             //check if series' episodes is already stored in studip
             if (!empty($series)) {
                 // add additional episode metadata from opencast
-                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                $ordered_episodes = $this->episodeComparison($stored_episodes, $series, $top);
             }
         }
         return $ordered_episodes;
     }
 
-    private function episodeComparison($stored_episodes, $oc_episodes)
+    public function episodeComparison($stored_episodes, $oc_episodes, $top)
     {
         $episodes    = [];
 
         $local_episodes = [];
         foreach ($stored_episodes as $episode) {
             $local_episodes[$episode['episode_id']] = $episode;
+        }
+
+        $oc_acl_queue = [];
+        foreach (OCAclQueue::findBySQL(1) as $entry) {
+            $oc_acl_queue[$entry->episode_id] = $entry;
         }
 
         $vis_conf = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
@@ -100,12 +107,15 @@ class OCCourseModel
             ? 'invisible'
             : 'visible';
 
+        $client = \ApiEventsClient::create($this->course_id);
+
         foreach ($oc_episodes as $oc_episode) {
             if ($oc_episode === NULL) {
                 continue;
             }
 
             $l_episode = $local_episodes[$oc_episode['id']];
+            $setAcls = false;
 
             if (!$l_episode) {
                 // add new episode to Stud.IP
@@ -114,11 +124,15 @@ class OCCourseModel
                 $oc_episode['is_retracting'] = false;
                 $oc_episode['mkdate']        = time();
 
-                NotificationCenter::postNotification('NewEpisodeForCourse', [
-                    'episode_id'    => $oc_episode['id'],
-                    'course_id'     => $this->getCourseID(),
-                    'episode_title' => $oc_episode->title
-                ]);
+                if ($top) {
+                    NotificationCenter::postNotification('NewEpisodeForCourse', [
+                        'episode_id'    => $oc_episode['id'],
+                        'course_id'     => $this->getCourseID(),
+                        'episode_title' => $oc_episode->title
+                    ]);
+                }
+
+                $setAcls = true;
             } else {
                 $oc_episode['visibility']    = $l_episode['visible'];
                 $oc_episode['is_retracting'] = $l_episode['is_retracting'];
@@ -132,6 +146,38 @@ class OCCourseModel
                 $oc_episode['visibility'],
                 $oc_episode['is_retracting']
             );
+
+            if ((isset($oc_acl_queue[$oc_episode['id']]) || $setAcls) && $top) {
+                $continue = true;
+                if (isset($oc_acl_queue[$oc_episode['id']])) {
+                    if ($oc_acl_queue[$oc_episode['id']]->chdate > (time() - 120)) {
+                        $continue = false;
+                    }
+                }
+                if ($continue) {
+                    $workflow = $client->getEpisode($oc_episode['id'])[1]->processing_state;
+                    if (!in_array($workflow, ['SUCCEEDED', 'FAILED', 'STOPPED', ''])) {
+                        $continue = false;
+                    }
+                }
+                if ($continue) {
+                    $set = OpencastLTI::setAcls($this->getCourseID(), $oc_episode['id']);
+                    if ($set === false) {
+                        $item = OCAclQueue::find($oc_episode['id']);
+                        if (!$item) {
+                            $item = OCAclQueue::create(['episode_id' => $oc_episode['id']]);
+                            $item->store();
+                        }
+                        $item->trys += 1;
+                        $item->store();
+                        if ($item->trys > 15) {
+                            $item->delete();
+                        }
+                    } elseif ($set === NULL && isset($oc_acl_queue[$oc_episode['id']])) {
+                        $oc_acl_queue[$oc_episode['id']]->delete();
+                    }
+                }
+            }
 
             $episodes[] = $oc_episode;
         }

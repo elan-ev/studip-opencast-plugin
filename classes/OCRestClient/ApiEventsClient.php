@@ -55,7 +55,7 @@ class ApiEventsClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    public function getBySeries($series_id, $course_id, $filter = true)
+    public function getBySeries($series_id, $course_id, $filter = true, $episode_id = null)
     {
         $events = [];
 
@@ -65,7 +65,23 @@ class ApiEventsClient extends OCRestClient
         $search = Pager::getSearch();
 
         //get
-        $series = $this->getJSON('/?filter=' . urlencode('is_part_of:' . $series_id));
+        $series = $this->getJSON('/?filter=' . urlencode('is_part_of:' . $series_id) . ($episode_id ? ',identifier:' . $episode_id : ''));
+
+        //check for new epsiodes
+        $episodes_404 = [];
+        foreach ($series as $episode) {
+            $entry = OCSeminarEpisodes::findOneBySQL(
+                'episode_id = ? AND series_id = ? AND seminar_id = ?',
+                [$episode->identifier, $series_id, $course_id]
+            );
+            if (!$entry) {
+                $episodes_404[] = $episode;
+            }
+        }
+        //get new epsiodes
+        $ocmodel = new OCCourseModel($course_id);
+        $episodes_404 = $this->getEpisodes($episodes_404);
+        $ocmodel->episodeComparison([], $episodes_404, true);
 
         if ($filter) {
             //check_perms
@@ -176,32 +192,41 @@ class ApiEventsClient extends OCRestClient
                 $oc_event = $this->getJSON('/' . $s_event->identifier . '/?withpublications=true');
 
                 if ($oc_event) {
-                    if (empty($oc_event->publications[0]->attachments)) {
+                    $attachments = false;
+                    foreach($oc_event->publications as $publications){
+                        if (!empty($publications->attachments)){
+                            $attachments = true;
+                            break;
+                        }
+                    }
+                    if (!$attachments && empty($oc_event->publications[0]->attachments)) {
                         $media = [];
 
-                        foreach ($s_event->mediapackage->media->track as $track) {
-                            $width = 0;
-                            $height = 0;
-                            if (!empty($track->video)) {
-                                list($width, $height) = explode('x', $track->video->resolution);
-                                $bitrate = $track->video->bitrate;
-                            } else if (!empty($track->audio)) {
-                                $bitrate = $track->audio->bitrate;
+                        if (isset($s_event->mediapackage->media->track)) {
+                            foreach ($s_event->mediapackage->media->track as $track) {
+                                $width = 0;
+                                $height = 0;
+                                if (!empty($track->video)) {
+                                    list($width, $height) = explode('x', $track->video->resolution);
+                                    $bitrate = $track->video->bitrate;
+                                } elseif (!empty($track->audio)) {
+                                    $bitrate = $track->audio->bitrate;
+                                }
+
+                                $obj = new stdClass();
+                                $obj->mediatype = $track->mimetype;
+                                $obj->flavor    = $track->type;
+                                $obj->has_video = !empty($track->video);
+                                $obj->has_audio = !empty($track->audio);
+                                $obj->tags      = $track->tags->tag;
+                                $obj->url       = $track->url;
+                                $obj->duration  = $track->duration;
+                                $obj->bitrate   = $bitrate;
+                                $obj->width     = $width;
+                                $obj->height    = $height;
+
+                                $media[] = $obj;
                             }
-
-                            $obj = new stdClass();
-                            $obj->mediatype = $track->mimetype;
-                            $obj->flavor    = $track->type;
-                            $obj->has_video = !empty($track->video);
-                            $obj->has_audio = !empty($track->audio);
-                            $obj->tags      = $track->tags->tag;
-                            $obj->url       = $track->url;
-                            $obj->duration  = $track->duration;
-                            $obj->bitrate   = $bitrate;
-                            $obj->width     = $width;
-                            $obj->height    = $height;
-
-                            $media[] = $obj;
                         }
 
                         $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
@@ -210,7 +235,9 @@ class ApiEventsClient extends OCRestClient
 
                     $event = self::prepareEpisode($oc_event);
 
-                    $cache->write($cache_key, $event, 86000);
+                    if ($event['has_previews'] || strtotime($oc_event->created) < (time() - 86000)) {
+                        $cache->write($cache_key, $event, 86000);
+                    }
                 } else {
                     $event = NULL;
                 }
