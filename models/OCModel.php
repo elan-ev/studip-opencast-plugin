@@ -1,5 +1,6 @@
 <?php
 
+use Opencast\LTI\OpencastLTI;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
@@ -442,8 +443,6 @@ class OCModel
      */
     public static function setEpisode($episode_id, $series_id, $seminar_id, $visibility, $is_retracting)
     {
-        $is_new = false;
-
         // check, if entry already ; update if so, otherwise create entry
         $episode = OCSeminarEpisodes::findOneBySQL(
             'episode_id = ?
@@ -460,17 +459,12 @@ class OCModel
             // allow ACL changes right now
             $episode->chdate = 1;
             $episode->mkdate = time();
-            $is_new = true;
         }
 
         $episode->visible = $visibility;
         $episode->is_retracting = $is_retracting;
 
         $episode->store();
-        if ($is_new) {
-            // apply correct ACLs to new Episode right now
-            static::setVisibilityForEpisode($seminar_id, $episode_id, $visibility);
-        }
     }
 
     public static function getCoursePositions($course_id)
