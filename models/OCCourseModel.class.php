@@ -67,11 +67,9 @@ class OCCourseModel
 
     public function getEpisodes()
     {
+        $ordered_episodes = [];
+
         if ($this->getSeriesID()) {
-            if (empty($ordered_episodes)) {
-                $ordered_episodes = [];
-            }
-            $ordered_episodes[$this->getCourseID()] = [];
             $api_events = ApiEventsClient::create($this->getCourseID());
             $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
 
@@ -80,12 +78,10 @@ class OCCourseModel
             //check if series' episodes is already stored in studip
             if (!empty($series)) {
                 // add additional episode metadata from opencast
-                $ordered_episodes[$this->getCourseID()] = $this->episodeComparison($stored_episodes, $series);
+                $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
             }
-
-            return $ordered_episodes[$this->getCourseID()];
         }
-        return false;
+        return $ordered_episodes;
     }
 
     private function episodeComparison($stored_episodes, $oc_episodes)
@@ -175,21 +171,13 @@ class OCCourseModel
     //CW 4.6
     public function getEpisodesforREST()
     {
-        $rest_episodes = [];
-        $is_dozent     = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
-        $episodes      = $this->getEpisodes();
-
-        foreach ($episodes as $episode) {
-            if ($episode['visibility'] == 'true') {
-                $rest_episodes[] = $episode;
-            } else {
-                if ($is_dozent) {
-                    $rest_episodes[] = $episode;
-                }
-            }
+        $episodes = [];
+        if ($this->getSeriesID()) {
+            $api_events = ApiEventsClient::create($this->getCourseID());
+            $episodes     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID(), false);
         }
 
-        return $rest_episodes;
+        return $episodes;
     }
 
     public function toggleSeriesVisibility()

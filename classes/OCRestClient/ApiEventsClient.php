@@ -55,7 +55,7 @@ class ApiEventsClient extends OCRestClient
      *
      * @return array response of episodes
      */
-    public function getBySeries($series_id, $course_id)
+    public function getBySeries($series_id, $course_id, $filter = true)
     {
         $events = [];
 
@@ -81,48 +81,50 @@ class ApiEventsClient extends OCRestClient
         //get new epsiodes
         $this->getEpisodes($episodes_404);
 
-        //check_perms
-        if (!OCPerm::editAllowed($course_id)) {
-            $episodes = [];
-            foreach ($series as $episode) {
-                $entry = OCSeminarEpisodes::findOneBySQL(
-                    'episode_id = ? AND series_id = ? AND seminar_id = ?',
-                    [$episode->identifier, $series_id, $course_id]
-                );
-                if ($entry && $entry->visible != 'invisible') {
+        if ($filter) {
+            //check_perms
+            if (!OCPerm::editAllowed($course_id)) {
+                $episodes = [];
+                foreach ($series as $episode) {
+                    $entry = OCSeminarEpisodes::findOneBySQL(
+                        'episode_id = ? AND series_id = ? AND seminar_id = ?',
+                        [$episode->identifier, $series_id, $course_id]
+                    );
+                    if ($entry && $entry->visible != 'invisible') {
+                        $episodes[] = $episode;
+                    }
+                }
+                $series = $episodes;
+            }
+
+            //skip upcoming livestream
+            $config = OCConfig::getConfigForCourse($course_id);
+            if (Configuration::instance($config['id'])->get('livestream')) {
+                $now = time();
+                foreach ($series as $episode) {
+                    $startTime = strtotime($episode['start']);
+                    $endTime = strtotime($episode['start']) + $episode['duration'] / 1000;
+                    $live = $now < $endTime;
+
+                    //today and the next full 7 days
+                    $isUpcoming = $startTime <= (strtotime("tomorrow") + 7 * 24 * 60 * 60);
+                    if ($live && !$isUpcoming) {
+                        continue;
+                    }
                     $episodes[] = $episode;
                 }
             }
-            $series = $episodes;
-        }
 
-        //skip upcoming livestream
-        $config = OCConfig::getConfigForCourse($course_id);
-        if (Configuration::instance($config['id'])->get('livestream')) {
-            $now = time();
-            foreach ($series as $episode) {
-                $startTime = strtotime($episode['start']);
-                $endTime = strtotime($episode['start']) + $episode['duration'] / 1000;
-                $live = $now < $endTime;
-
-                    /* today and the next full 7 days */;
-                $isUpcoming = $startTime <= (strtotime("tomorrow") + 7 * 24 * 60 * 60);
-                if ($live && !$isUpcoming) {
-                    continue;
+            // search
+            if ($search) {
+                $episodes = [];
+                foreach ($series as $episode) {
+                    if (stripos($episode->title, $search) !== false) {
+                        $episodes[] = $episode;
+                    }
                 }
-                $episodes[] = $episode;
+                $series = $episodes;
             }
-        }
-
-        // search
-        if ($search) {
-            $episodes = [];
-            foreach ($series as $episode) {
-                if (stripos($episode->title, $search) !== false) {
-                    $episodes[] = $episode;
-                }
-            }
-            $series = $episodes;
         }
 
         // sort

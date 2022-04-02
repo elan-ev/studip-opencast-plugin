@@ -154,7 +154,7 @@ class CourseController extends OpencastController
             $this->events = [];
             if (Configuration::instance($this->config['id'])->get('livestream')) {
                 $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
-                $this->events = $api_client->getBySeries($this->series_id, $this->course_id);
+                $this->events = $api_client->getBySeries($this->series_id, $this->course_id, false);
             }
 
             $occourse = new OCCourseModel($this->course_id);
