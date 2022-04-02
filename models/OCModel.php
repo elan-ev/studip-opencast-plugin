@@ -5,8 +5,6 @@ use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
 use OpenCast\Models\OCScheduledRecordings;
 
-use Opencast\LTI\OpencastLTI;
-
 class OCModel
 {
     public static function getOCRessources()
@@ -144,7 +142,6 @@ class OCModel
         } else {
             return false;
         }
-
     }
 
     /**
@@ -338,7 +335,6 @@ class OCModel
                             </dublincore>';
 
         return $dublincore;
-
     }
 
     /**
@@ -420,7 +416,8 @@ class OCModel
     {
         $services = [];
         foreach ($components as $service) {
-            if (!preg_match('/remote/', $service->type)
+            if (
+                !preg_match('/remote/', $service->type)
                 && !preg_match('#https?://localhost.*#', $service->host)
                 && mb_strpos($service->host, $match_protocol) === 0
             ) {
@@ -448,7 +445,8 @@ class OCModel
         $is_new = false;
 
         // check, if entry already ; update if so, otherwise create entry
-        $episode = OCSeminarEpisodes::findOneBySQL('episode_id = ?
+        $episode = OCSeminarEpisodes::findOneBySQL(
+            'episode_id = ?
             AND series_id = ? AND seminar_id = ?',
             [$episode_id, $series_id, $seminar_id]
         );
