@@ -67,20 +67,6 @@ class ApiEventsClient extends OCRestClient
         //get
         $series = $this->getJSON('/?filter=' . urlencode('is_part_of:' . $series_id));
 
-        //check for new epsiodes
-        $episodes_404 = [];
-        foreach ($series as $episode) {
-            $entry = OCSeminarEpisodes::findOneBySQL(
-                'episode_id = ? AND series_id = ? AND seminar_id = ?',
-                [$episode->identifier, $series_id, $course_id]
-            );
-            if (!$entry) {
-                $episodes_404[] = $episode;
-            }
-        }
-        //get new epsiodes
-        $this->getEpisodes($episodes_404);
-
         if ($filter) {
             //check_perms
             if (!OCPerm::editAllowed($course_id)) {
