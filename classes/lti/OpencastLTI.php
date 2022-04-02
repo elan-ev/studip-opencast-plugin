@@ -60,7 +60,7 @@ class OpencastLTI
 
     public static function apply_defined_acls($defined_acls, $episode_only_id = null)
     {
-        $return_value = true;
+        $returnValue = true;
 
         foreach ($defined_acls['s'] as $series_id => $setting) {
             // You may want to check here for $episode_only_id, too and
@@ -77,7 +77,7 @@ class OpencastLTI
                 self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode')
                 && $returnValue;
         }
-        return $return_value;
+        return $returnValue;
     }
 
     public static function mapping_to_defined_acls($mapping)
