@@ -150,13 +150,6 @@ class CourseController extends OpencastController
                 $cache->write($cache_key, time(), 3600);
             }
 
-            //only used for livestream in _schedule.php
-            $this->events = [];
-            if (Configuration::instance($this->config['id'])->get('livestream')) {
-                $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
-                $this->events = $api_client->getBySeries($this->series_id, $this->course_id, false);
-            }
-
             $occourse = new OCCourseModel($this->course_id);
 
             if (OCPerm::editAllowed($this->course_id)) {
@@ -431,12 +424,14 @@ class CourseController extends OpencastController
         $this->workflow_client = WorkflowClient::getInstance();
         $this->tagged_wfs = $this->workflow_client->getTaggedWorkflowDefinitions();
 
+        $this->events = [];
+        if (Configuration::instance($this->config['id'])->get('livestream')) {
+            $events_client = ApiEventsClient::getInstance();
+            $events        = $events_client->getBySeries($this->cseries[0]['series_id'], $this->course_id, false);
 
-        $events_client = ApiEventsClient::getInstance();
-        $events        = $events_client->getBySeries($this->cseries[0]['series_id'], $this->course_id);
-
-        foreach ($events as $event) {
-            $this->events[$event->identifier] = $event;
+            foreach ($events as $event) {
+                $this->events[$event->identifier] = $event;
+            }
         }
     }
 
