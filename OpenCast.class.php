@@ -303,8 +303,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
     public static function markupOpencast($markup, $matches, $contents)
     {
-        $series_id       = OCModel::getSeriesForEpisode($contents);
-        $course_id       = OCConfig::getCourseIdForSeries($series_id);
+        $course_id       = Context::getId();
         $connectedSeries = OCSeminarSeries::getSeries($course_id);
         $config          = OCConfig::getConfigForCourse($course_id);
 
