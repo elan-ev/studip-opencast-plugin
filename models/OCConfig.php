@@ -170,7 +170,7 @@ class OCConfig extends \SimpleORMap
                 self::findBySql('1 ORDER BY id ASC')
             )->toGroupedArray('id');
         }
-
-        return self::find($config_id)->toArray();
+        $config = self::find($config_id);
+        return (!empty($config)) ? $config->toArray() : null;
     }
 }
