@@ -347,14 +347,15 @@ export default {
 
         decline() {
 
-            if (this.uploadProgress &&
+            if (this.uploadProgress
                 // TODO there is no confirm message
-                confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))
+                // && confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))
             ) {
                 this.uploadService.cancel();
-            } else {
-                return;
-            }
+            } 
+            //else {
+            //    return;
+            //}
 
             this.uploadService  = null;
             this.uploadProgress = null;
