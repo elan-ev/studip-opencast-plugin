@@ -1,8 +1,8 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Aufzeichnung entfernen')"
-            :confirmText="$gettext('Löschen')"
+            :title="title"
+            :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
@@ -11,7 +11,7 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent>
-                <p>Möchten Sie die Aufzeichnung wirklich entfernen?</p>
+                <p>{{ message }}</p>
             </template>
         </StudipDialog>
     </div>
@@ -27,6 +27,8 @@ export default {
     components: {
         StudipDialog
     },
+
+    props: ['title','message'],
 
     mixins: [dialog],
 

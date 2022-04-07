@@ -55,13 +55,15 @@
                         Annotationen
                     </opencast-button>
 
-                    <opencast-button icon="trash" @click="showDeleteDialog = true" v-translate>
+                    <opencast-button icon="trash" @click="showConfirmDialog = true" v-translate>
                         Entfernen
                     </opencast-button>
 
-                    <EpisodeDeleteDialog v-if="showDeleteDialog"
+                    <ConfirmDialog v-if="showConfirmDialog"
+                        :title="$gettext('Aufzeichnung entfernen')"
+                        :message="$gettext('Möchten Sie die Aufzeichnung wirklich entfernen?')"
                         @done="removeEpisode"
-                        @cancel="showDeleteDialog = false"
+                        @cancel="showConfirmDialog = false"
                     />
                     <DownloadDialog :downloads="event.downloads" v-if="showDownloadDialog"
                         @cancel="showDownloadDialog = false"/>
@@ -74,7 +76,7 @@
 
 <script>
 import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
-import EpisodeDeleteDialog from '@/components/Episodes/EpisodeDeleteDialog'
+import ConfirmDialog from '@/components/ConfirmDialog'
 import OpencastButton from '@/components/OpencastButton'
 import DownloadDialog from '@/components/Episodes/DownloadDialog'
 
@@ -83,7 +85,7 @@ export default {
     name: "Episode",
 
     components: {
-        OpencastButton, EpisodeDeleteDialog,
+        OpencastButton, ConfirmDialog,
         EmptyEpisodeCard, DownloadDialog
     },
 
@@ -94,7 +96,7 @@ export default {
 
     data() {
         return {
-            showDeleteDialog: false,
+            showConfirmDialog: false,
             showDownloadDialog: false,
             preview: PLUGIN_ASSET_URL + '/images/default-preview.png',
             play: PLUGIN_ASSET_URL + '/images/play.svg'
@@ -106,7 +108,7 @@ export default {
             let view = this;
             this.$store.dispatch('removeEvent', this.event.id)
             .then(() => {
-                view.showDeleteDialog = false;
+                view.showConfirmDialog = false;
             });
         },
     },

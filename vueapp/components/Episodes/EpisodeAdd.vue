@@ -1,6 +1,12 @@
 <template>
     <div>
-        <StudipDialog
+        <ConfirmDialog v-if="showConfirmDialog"
+            :title="$gettext('Hochladen abbrechen')"
+            :message="$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?')"
+            @done="decline"
+            @cancel="showConfirmDialog = false"
+        />
+        <StudipDialog v-else
             :title="$gettext('Episode hinzufügen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
@@ -8,7 +14,7 @@
             :closeClass="'cancel'"
             height="600"
             width="600"
-            @close="decline"
+            @close="showConfirmDialog=true"
             @confirm="accept"
         >
             <template v-slot:dialogContent ref="upload-dialog">
@@ -203,6 +209,7 @@ import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
 import FilePreview from '@/components/Episodes/FilePreview'
 import ProgressBar from '@/components/ProgressBar'
+import ConfirmDialog from '@/components/ConfirmDialog'
 
 import UploadService from '@/common/upload.service'
 import { format } from 'date-fns'
@@ -213,7 +220,7 @@ export default {
 
     components: {
         StudipDialog,   MessageBox,     StudipButton,
-        FilePreview,    ProgressBar
+        FilePreview,    ProgressBar, ConfirmDialog
     },
 
     props: ['currentUser'],
@@ -234,7 +241,8 @@ export default {
                 'presenter/source': [],
                 'presentation/source': []
             },
-            uploadProgress: null
+            uploadProgress: null,
+            showConfirmDialog: false
         }
     },
 
@@ -346,16 +354,9 @@ export default {
         },
 
         decline() {
-
-            if (this.uploadProgress
-                // TODO there is no confirm message
-                // && confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))
-            ) {
+            if (this.uploadProgress) {
                 this.uploadService.cancel();
-            } 
-            //else {
-            //    return;
-            //}
+            }
 
             this.uploadService  = null;
             this.uploadProgress = null;
