@@ -8,10 +8,11 @@ use Opencast\Models\Pager;
 
 <? $studygroup_active = true; ?>
 <? if ($flash['delete']) : ?>
-    <?= $params = [sprintf(    // question
-        $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
-        $this->connectedSeries[0]['title']
-    ),
+    <?= $params = [
+        sprintf(    // question
+            $_('Wollen Sie die Verknüpfung zur Series "%s" wirklich aufheben?'),
+            $this->connectedSeries[0]['title']
+        ),
         [   // approveParams
             'course_id' => $course_id,
             'series_id' => $this->connectedSeries[0]['series_id'],
@@ -36,7 +37,7 @@ use Opencast\Models\Pager;
 
 <?= $this->render_partial('messages') ?>
 <script>
-    jQuery(function () {
+    jQuery(function() {
         STUDIP.hasperm = <?= var_export(OCPerm::editAllowed($course_id)) ?>;
         OC.states = <?= json_encode($states) ?>;
         OC.initIndexpage();
@@ -55,7 +56,8 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $lti_link->addCustomParameter('tool', '/ltitools');
 
-    if (OCPerm::editAllowed($course_id, $current_user_id)
+    if (
+        OCPerm::editAllowed($course_id, $current_user_id)
         && (
             ($controller->isStudyGroup()
                 && $controller->isStudentUploadEnabled()
@@ -81,7 +83,8 @@ if ($this->connectedSeries[0]['series_id']) :
 
     $launch_data['oauth_signature'] = $signature;
 
-    if (OCPerm::editAllowed($course_id)
+    if (
+        OCPerm::editAllowed($course_id)
         && \Config::get()->OPENCAST_ALLOW_STUDIO
         && $config['service_url'] . '/lti' != OpencastLTI::getSearchUrl($this->course_id)
     ) {
@@ -93,8 +96,10 @@ if ($this->connectedSeries[0]['series_id']) :
 
         $studio_lti_link->addCustomParameter('tool', '/ltitools');
 
-        if (OCPerm::editAllowed($course_id, $current_user_id)
-            && (($controller->isStudyGroup() && $controller->isStudentUploadEnabled() || !$controller->isStudyGroup()))) {
+        if (
+            OCPerm::editAllowed($course_id, $current_user_id)
+            && (($controller->isStudyGroup() && $controller->isStudentUploadEnabled() || !$controller->isStudyGroup()))
+        ) {
             $role = 'Instructor';
         } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
             $role = 'Learner';
@@ -112,18 +117,17 @@ if ($this->connectedSeries[0]['series_id']) :
 
         $studio_launch_data['oauth_signature'] = $studio_signature;
     }
-    ?>
+?>
 
     <script>
-        OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function () {
-            jQuery('img.previewimage').each(function () {
+        OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function() {
+            jQuery('img.previewimage').each(function() {
                 this.src = this.dataset.src;
             });
 
-            <? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO): ?>
-            OC.lti_done = 0;
-            OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function () {
-            });
+            <? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO) : ?>
+                OC.lti_done = 0;
+                OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function() {});
             <? endif ?>
         });
     </script>
@@ -139,10 +143,10 @@ $search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, Pager::g
 $sidebar->addWidget($search_widget);
 
 if (OCPerm::editAllowed($course_id)) {
-    $actions = new LinksWidget ();
+    $actions = new LinksWidget();
     $actions->setTitle($_('Medien'));
 
-    $config_actions = new LinksWidget ();
+    $config_actions = new LinksWidget();
     $config_actions->setTitle($_('Konfiguration'));
 
     $upload  = '';
@@ -159,7 +163,8 @@ if (OCPerm::editAllowed($course_id)) {
         if ($can_schedule) {
             if (($controller->isStudyGroup() && $controller->isStudentUploadEnabled())
                 || !$controller->isStudyGroup()
-                || ($controller->isStudyGroup() && !$controller->isStudentUploadEnabled() && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)) {
+                || ($controller->isStudyGroup() && !$controller->isStudentUploadEnabled() && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)
+            ) {
                 $actions->addLink(
                     $_('Medien hochladen'),
                     $controller->url_for('course/upload'),
@@ -168,6 +173,7 @@ if (OCPerm::editAllowed($course_id)) {
                 );
 
                 if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+                    $base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $actions->addLink(
                         $_('Video aufnehmen'),
                         URLHelper::getLink(
@@ -176,13 +182,14 @@ if (OCPerm::editAllowed($course_id)) {
                                 'cid'             => null,
                                 'upload.seriesId' => $connectedSeries[0]['series_id'],
                                 'upload.acl'      => 'false',
-                                'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
-                                'return.label'    => 'Zurückkehren zu Stud.IP'
+                                'return.target'   => PluginEngine::getLink('opencast/course/index', ['cid' => $course_id]),
+                                'return.label'    => 'Stud.IP'
                             ]
                         ),
                         Icon::create('video2'),
                         ['target' => '_blank']
                     );
+                    URLHelper::setBaseURL($base);
                 }
             }
 
@@ -244,7 +251,7 @@ if (OCPerm::editAllowed($course_id)) {
             }
         }
 
-        if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
+        if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
             if ($controller->isDownloadAllowed()) {
                 $config_actions->addLink(
                     $_('Downloads verbieten'),
@@ -287,7 +294,7 @@ if (OCPerm::editAllowed($course_id)) {
                 }
             }
 
-            if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF ) {
+            if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
                 $vis = !is_null(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     ? boolval(CourseConfig::get($this->course_id)->COURSE_HIDE_EPISODES)
                     : \Config::get()->OPENCAST_HIDE_EPISODES;
@@ -373,7 +380,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
     <? if (!(empty($ordered_episode_ids))) : ?>
         <?= $this->render_partial('course/_episode') ?>
     <? endif ?>
-<? else: ?>
+<? else : ?>
     <? if (empty($this->connectedSeries) && OCPerm::editAllowed($course_id)) : ?>
         <? if ($this->config_error) : ?>
             <?= MessageBox::error($_('Für aktuell verknüpfte Serie ist eine fehlerhafte Konfiguration hinterlegt!')) ?>
@@ -386,7 +393,7 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
         <? endif; ?>
     <? elseif (Pager::getSearch()) : ?>
         <?= MessageBox::info($_('Es wurden keine Videos gefunden, die den gewählten Suchbegriff beinhalten.')); ?>
-    <? else: ?>
+    <? else : ?>
         <?= MessageBox::info($_('Es wurden bislang keine Videos bereitgestellt.')); ?>
     <? endif; ?>
 <? endif; ?>
