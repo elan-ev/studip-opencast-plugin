@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
  */
@@ -31,7 +32,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         if (\StudipVersion::newerThan('4.6')) {
             PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
-                background-image:url('. $icon->asImagePath() .')
+                background-image:url(' . $icon->asImagePath() . ')
             }');
 
             PageLayout::addScript($this->getPluginUrl() . '/static/register.js');
@@ -148,9 +149,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     {
         $visibility = OCSeriesModel::getVisibility($course_id);
 
-        if (!$this->isActivated($course_id)
-            || (
-                $visibility['visibility'] != 'visible'
+        if (
+            !$this->isActivated($course_id)
+            || ($visibility['visibility'] != 'visible'
                 && !OCPerm::editAllowed($course_id)
             )
         ) {
@@ -177,16 +178,20 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $navigation->setDescription($text);
         if ($ocgetcount > 0) {
             $navigation->setImage(
-                Icon::create($this->getPluginURL() . '/images/opencast-red.svg',
+                Icon::create(
+                    $this->getPluginURL() . '/images/opencast-red.svg',
                     Icon::ROLE_ATTENTION,
                     ['title' => 'Opencast']
-                ));
+                )
+            );
         } else {
             $navigation->setImage(
-                Icon::create($this->getPluginURL() . '/images/opencast-grey.svg',
+                Icon::create(
+                    $this->getPluginURL() . '/images/opencast-grey.svg',
                     Icon::ROLE_INACTIVE,
                     ['title' => 'Opencast']
-                ));
+                )
+            );
         }
 
         return $navigation;
@@ -222,7 +227,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $title      = 'Opencast';
 
         if ($visibility['visibility'] == 'invisible') {
-            $title .= " (". $this->_('versteckt'). ")";
+            $title .= " (" . $this->_('versteckt') . ")";
         }
         $main    = new Navigation($title);
 
@@ -244,8 +249,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         $course = Seminar::getInstance($course_id);
 
-        if (OCPerm::editAllowed($course_id)
-            && !$course->isStudygroup()) {
+        if (
+            OCPerm::editAllowed($course_id)
+            && !$course->isStudygroup()
+        ) {
             $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
             $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
 
@@ -303,63 +310,85 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
     public static function markupOpencast($markup, $matches, $contents)
     {
-        $series_id       = OCModel::getSeriesForEpisode($contents);
-        $course_id       = OCConfig::getCourseIdForSeries($series_id);
-        $connectedSeries = OCSeminarSeries::getSeries($course_id);
-        $config          = OCConfig::getConfigForCourse($course_id);
+        $content = '';
+        $free = null;
+        $config = null;
+        $course_id = Context::getId() ?: null;
 
-        $search_client = SearchClient::getInstance($config['config_id']);
-
-        // TODO: get player type from config
-        $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
-        #$embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
-
-        $current_user_id = $GLOBALS['auth']->auth['uid'];
-        $lti_link        = new LtiLink(
-            OpencastLTI::getSearchUrl($course_id),
-            $config['lti_consumerkey'],
-            $config['lti_consumersecret']
-        );
-
-        if (OCPerm::editAllowed($course_id, $current_user_id)) {
-            $role = 'Instructor';
-        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
-            $role = 'Learner';
+        if ($course_id === null) {
+            $free = OCSeminarEpisodes::findBySQL('episode_id = ?  AND visible = "free"', [$contents]) ?: null;
+            if ($free) {
+                $tmp_series_id = OCModel::getSeriesForEpisode($contents);
+                $tmp_course_id = OCConfig::getCourseIdForSeries($tmp_series_id);
+                $config = OCConfig::getConfigForCourse($tmp_course_id);
+            }
+        } else {
+            $config = OCConfig::getConfigForCourse($course_id);
         }
 
-        $lti_link->setUser($current_user_id, $role, True);
-        $lti_link->setCourse($course_id);
-        $lti_link->setResource(
-            $connectedSeries,
-            'series',
-            'view complete series for course'
-        );
+        if ($config !== null) {
+            $paella = $config['paella'] == '0' ? false : true;
 
-        $launch_data = $lti_link->getBasicLaunchData();
-        $signature   = $lti_link->getLaunchSignature($launch_data);
+            $search_client = SearchClient::getInstance($config['config_id']);
 
-        $launch_data['oauth_signature'] = $signature;
+            if ($paella) {
+                $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
+            } else {
+                $embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
+            }
 
-        $lti_data = json_encode($launch_data);
-        $lti_url  = $lti_link->getLaunchURL();
+            $id = md5(uniqid());
+            if ($course_id !== null) {
+                $connectedSeries = OCSeminarSeries::getSeries($course_id);
+                $current_user_id = $GLOBALS['auth']->auth['uid'];
+                $lti_link        = new LtiLink(
+                    OpencastLTI::getSearchUrl($course_id),
+                    $config['lti_consumerkey'],
+                    $config['lti_consumersecret']
+                );
 
-        $id = md5(uniqid());
+                if (OCPerm::editAllowed($course_id, $current_user_id)) {
+                    $role = 'Instructor';
+                } elseif ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+                    $role = 'Learner';
+                }
 
-        return "<script>
-        OC.ltiCall('$lti_url', $lti_data, function() {
-            jQuery('#$id').attr('src', '$embed');
-        });
-        </script>"
-            . sprintf('<iframe id="%s"
-                style="border:0px #FFFFFF none;"
-                name="Opencast - Media Player"
-                scrolling="no"
-                frameborder="0"
-                marginheight="0px"
-                marginwidth="0px"
-                width="640" height="360"
-                allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true"
-            ></iframe><br>', $id);
+                $lti_link->setUser($current_user_id, $role, true);
+                $lti_link->setCourse($course_id);
+                $lti_link->setResource(
+                    $connectedSeries,
+                    'series',
+                    'view complete series for course'
+                );
+
+                $launch_data = $lti_link->getBasicLaunchData();
+                $signature   = $lti_link->getLaunchSignature($launch_data);
+
+                $launch_data['oauth_signature'] = $signature;
+
+                $lti_data = json_encode($launch_data);
+                $lti_url  = $lti_link->getLaunchURL();
+
+                $content .= "<script>
+                OC.ltiCall('$lti_url', $lti_data, function() {
+                    jQuery('#$id').attr('src', '$embed');
+                });
+                </script>";
+            }
+            $content .= '<iframe id="' . $id . '" ' .
+                ($course_id !== null ?: 'src="' . $embed . '"') .
+                'style="border:0px #FFFFFF none;" ' .
+                'name="Opencast - Media Player" ' .
+                'scrolling="no" ' .
+                'frameborder="0" ' .
+                'marginheight="0px" ' .
+                'marginwidth="0px" ' .
+                'width="640" height="360" ' .
+                'allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true" ' .
+                '></iframe><br>';
+        }
+
+        return $content;
     }
 
     public function NotifyUserOnNewEpisode($x, $data)
@@ -376,12 +405,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
             $notification = sprintf($this->_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
             PersonalNotifications::add(
-                $users, PluginEngine::getLink($this, [], 'course/index/' . $data['episode_id']),
-                $notification, $data['episode_id'],
+                $users,
+                PluginEngine::getLink($this, [], 'course/index/' . $data['episode_id']),
+                $notification,
+                $data['episode_id'],
                 Assets::image_path('icons/black/file-video.svg')
             );
         }
-
     }
 
     /**
@@ -399,13 +429,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $metadata['pluginname'] = $this->_("Opencast");
         $metadata['displayname'] = $this->_("Opencast");
 
-        $metadata['description'] = $this->_("Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
-            . "(Opencast) mit einer Stud.IP-Veranstaltung verknüpft werden. Die Aufzeichnungen werden in "
-            . "einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit "
-            . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
-            . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
-            . "gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
-            . "Bedarf nachträglich über die Hochladen-Funktion zur verknüpften Serie hinzugefügt werden."
+        $metadata['description'] = $this->_(
+            "Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
+                . "(Opencast) mit einer Stud.IP-Veranstaltung verknüpft werden. Die Aufzeichnungen werden in "
+                . "einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit "
+                . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
+                . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
+                . "gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
+                . "Bedarf nachträglich über die Hochladen-Funktion zur verknüpften Serie hinzugefügt werden."
         );
 
         $metadata['summary'] = $this->_("Vorlesungsaufzeichnung");
@@ -457,10 +488,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
      */
     public function isActivatableForContext(Range $context)
     {
-        if (!Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF &&
+        if (
+            !Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF &&
             !$GLOBALS['perm']->have_perm('root') &&
             $context->getRangeType() === 'course' &&
-            $context->getSemClass()['studygroup_mode']) {
+            $context->getSemClass()['studygroup_mode']
+        ) {
             return false;
         }
         if ($context->getRangeType() === 'institute') {
@@ -482,13 +515,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $studygroup_id = $course_link['studygroup_id'];
             $course_link->delete();
             Course::find($studygroup_id)->delete();
-        }
-        else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
+        } else if ($studygroup_link = OCUploadStudygroup::findOneBySQL('studygroup_id = ?', [$course_id])) {
             $studygroup_link->delete();
         }
     }
 
-        /**
+    /**
      * Implement this method to register more block types.
      *
      * You get the current list of block types and must return an updated list
