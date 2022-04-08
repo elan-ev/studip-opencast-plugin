@@ -178,7 +178,7 @@ if (OCPerm::editAllowed($course_id)) {
                                 'upload.seriesId' => $connectedSeries[0]['series_id'],
                                 'upload.acl'      => 'false',
                                 'return.target'   => PluginEngine::getLink('opencast/course/index', ['cid' => $course_id]),
-                                'return.label'    => 'Zurückkehren zu Stud.IP'
+                                'return.label'    => 'Stud.IP'
                             ]
                         ),
                         Icon::create('video2'),
