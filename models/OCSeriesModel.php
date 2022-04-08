@@ -219,26 +219,14 @@ class OCSeriesModel
         $course       = new Seminar($course_id);
         $name         = $course->getName() . ' - ' . $course->getStartSemesterName();
         $license      = "&copy; " . gmdate('Y') . " " . $GLOBALS['UNI_NAME_CLEAN'];
-        $rightsHolder = $GLOBALS['UNI_NAME_CLEAN'];
         $inst         = Institute::find($course->institut_id);
 
         $publisher   = $inst->name;
-        $start       = $course->getStartSemester();
-        $end         = $course->getEndSemesterVorlesEnde();
-        $audience    = "General Public";
         $instructors = $course->getMembers('dozent');
         $instructor  = array_shift($instructors);
         $contributor = $GLOBALS['UNI_NAME_CLEAN'];
         $creator     = $instructor['fullname'];
         $language    = 'de';
-        $description = '';
-
-        if (mb_strlen($course->description) > 1000) {
-            $description .= mb_substr($course->description, 0, 1000);
-            $description .= "... ";
-        } else {
-            $description = $course->description;
-        }
 
         $data = [
             'title'       => $name,
@@ -247,7 +235,7 @@ class OCSeriesModel
             'subject'     => $course->form,
             'language'    => $language,
             'license'     => $license,
-            'description' => $description,
+            'description' => '',
             'publisher'   => $publisher
         ];
 
