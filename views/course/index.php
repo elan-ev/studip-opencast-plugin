@@ -142,6 +142,10 @@ $search_widget = new SearchWidget($controller->url_for('course/search_episodes')
 $search_widget->addNeedle($_('Videotitel'), 'search', true, null, null, Pager::getSearch());
 $sidebar->addWidget($search_widget);
 
+if (!isset($can_schedule)) {
+    $can_schedule = false;
+}
+
 if (OCPerm::editAllowed($course_id)) {
     $actions = new LinksWidget();
     $actions->setTitle($_('Medien'));
@@ -327,13 +331,13 @@ if (OCPerm::editAllowed($course_id)) {
                 Icon::create('tools')
             );
 
-            if ($GLOBALS['perm']->have_perm('root')) {
+            if ($GLOBALS['perm']->have_perm('dozent')) {
                 $config_actions->addLink(
                     $_('Vorhandene Series verknüpfen'),
                     $controller->url_for('course/config'),
                     Icon::create('group'),
                     [
-                        'data-dialog' => 'width=550;height=500'
+                        'data-dialog' => 'width=750;height=500'
                     ]
                 );
             }

@@ -2,6 +2,7 @@
 
 use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
+use Opencast\LTI\OpencastLTI;
 
 /**
  * This class represents the content of a Courseware test block.
@@ -54,5 +55,14 @@ class OpencastBlock extends BlockType
     public static function getFileTypes(): array
     {
         return [];
+    }
+
+    public function copyPayload(string $rangeId = ''): array
+    {
+        $payload = $this->getPayload();
+        if ($rangeId && $payload) {
+            OpencastLTI::setCoursewareEpisodeAcls($rangeId, $payload['episode_id'], $payload['visible']);
+        }
+        return $payload;
     }
 }
