@@ -168,6 +168,7 @@ if (OCPerm::editAllowed($course_id)) {
                 );
 
                 if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+                    $base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $actions->addLink(
                         $_('Video aufnehmen'),
                         URLHelper::getLink(
@@ -176,13 +177,14 @@ if (OCPerm::editAllowed($course_id)) {
                                 'cid'             => null,
                                 'upload.seriesId' => $connectedSeries[0]['series_id'],
                                 'upload.acl'      => 'false',
-                                'return.target'   => $controller->url_for('course/index', ['cid' => $course_id]),
+                                'return.target'   => PluginEngine::getLink('opencast/course/index', ['cid' => $course_id]),
                                 'return.label'    => 'Zurückkehren zu Stud.IP'
                             ]
                         ),
                         Icon::create('video2'),
                         ['target' => '_blank']
                     );
+                    URLHelper::setBaseURL($base);
                 }
             }
 
