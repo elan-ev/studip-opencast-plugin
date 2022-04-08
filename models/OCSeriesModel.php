@@ -235,7 +235,6 @@ class OCSeriesModel
             'subject'     => $course->form,
             'language'    => $language,
             'license'     => $license,
-            'description' => '',
             'publisher'   => $publisher
         ];
 
