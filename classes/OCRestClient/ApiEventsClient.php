@@ -64,8 +64,17 @@ class ApiEventsClient extends OCRestClient
         $sort   = Pager::getSortOrder();
         $search = Pager::getSearch();
 
+        $filter = 'is_part_of:' . $series_id;
+        if ($episode_id !== null) {
+            $filter .= ',identifier:' . $episode_id;
+        }
+
+        $params = [
+            'filter' =>  $filter,
+        ];
+
         //get
-        $series = $this->getJSON('/?filter=' . urlencode('is_part_of:' . $series_id) . ($episode_id ? ',identifier:' . $episode_id : ''));
+        $series = $this->getJSON('/?' . http_build_query($params));
 
         //check for new epsiodes
         $episodes_404 = [];
@@ -193,8 +202,8 @@ class ApiEventsClient extends OCRestClient
 
                 if ($oc_event) {
                     $attachments = false;
-                    foreach($oc_event->publications as $publications){
-                        if (!empty($publications->attachments)){
+                    foreach ($oc_event->publications as $publications) {
+                        if (!empty($publications->attachments)) {
                             $attachments = true;
                             break;
                         }
