@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
 use Opencast\LTI\OpencastLTI;
 
 class OCSeriesModel
@@ -127,12 +128,23 @@ class OCSeriesModel
     {
         self::removeSeriesforCourse($course_id);
 
+        // Set Series
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
         $stmt->execute([$config_id, $series_id, $course_id, $visibility, $schedule, $mkdate]);
 
+        // Set Episodes of that series too!
+        // Getting it directly from opencast helps to get more controll!
+        $events_api_client = \ApiEventsClient::create($course_id);
+        $unstored_episodes = $events_api_client->getSeriesEpisodes($series_id);
+        foreach ($unstored_episodes as $episode) {
+            \OCModel::setEpisode($episode['identifier'], $series_id, $course_id, $visibility, 0);
+        }
+
         OpencastLTI::setAcls($course_id);
+
+        return (!empty($unstored_episodes)) ? count($unstored_episodes) : 0;
     }
 
     /**
@@ -143,15 +155,37 @@ class OCSeriesModel
      */
     public static function removeSeriesforCourse($course_id)
     {
+        // Get series list before deleting from db!
+        $series_list = OCSeminarSeries::getSeries($course_id);
+
+        // Delete series from studip db
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
             WHERE seminar_id = ?");
+        
+        // Remove episode caches!
+        $oc_seminar_episodes = OCSeminarEpisodes::findBySQL(
+            'seminar_id = ?',
+            [$course_id]
+        );
+        foreach ($oc_seminar_episodes as $episode) {
+            $cache_key = 'sop/episodes/'. $episode->episode_id;
+            StudipCacheFactory::getCache()->expire($cache_key);
+        }
 
+        // Delete stored episode in studip db
         $stmt_episodes = DBManager::get()->prepare("DELETE FROM
             oc_seminar_episodes
             WHERE seminar_id = ?");
+        
+        $series_deleted = $stmt->execute([$course_id]) && $stmt_episodes->execute([$course_id]);
+        
+        if ($series_deleted && !empty($series_list)) {
+            // Take out the ACLs first before deleting the records to have a better control!
+            OpencastLTI::removeAcls($course_id, $series_list);
+        }
 
-        return $stmt->execute([$course_id]) && $stmt_episodes->execute([$course_id]);
+        return $series_deleted;
     }
 
     /**

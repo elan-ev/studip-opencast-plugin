@@ -51,4 +51,25 @@ class OCSeminarSeries extends \SimpleORMap
 
         return $return;
     }
+
+    public static function findAll()
+    {
+        return self::findBySQL("1 ORDER BY mkdate");
+    }
+
+    public static function getSeriesByUserMemberStatus($user_id, $status = 'dozent') {
+        $user_series = [];
+        foreach (self::findAll() as $series) {
+            if (empty($series->seminar_id) || in_array($series->series_id, $user_series)) {
+                continue;
+            }
+            $course = \Course::find($series->seminar_id);
+            if (!empty($course) && in_array($user_id, array_column($course->getMembersWithStatus($status), 'user_id'))) {
+                if (self::checkSeries($series->seminar_id, $series->series_id)) {
+                    $user_series[] = $series->series_id;
+                }
+            }
+        }
+        return $user_series;
+    }
 }

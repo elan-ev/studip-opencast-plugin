@@ -38,6 +38,7 @@
                             :options="series"
                             :reduce="series => series.series_id"
                             :clearable="false"
+                            label="name"
                             v-model="currentSeries"
                         >
                             <template #open-indicator="selectAttributes">
@@ -60,7 +61,7 @@
                         <translate>Video auswählen</translate>
                         <studip-select
                             :options="episodes"
-                            label="episode"
+                            label="name"
                             :reduce="episodes => episodes.id"
                             :clearable="false"
                             v-model="currentEpisode"
@@ -119,7 +120,8 @@ export default {
             episodes        : [],
             ltiConnected    : false,
             loadingSeries   : false,
-            loadingEpisodes : false
+            loadingEpisodes : false,
+            currentVisible  : false
         }
     },
 

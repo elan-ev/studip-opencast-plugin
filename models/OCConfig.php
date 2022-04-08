@@ -53,7 +53,7 @@ class OCConfig extends \SimpleORMap
      * @return array configuration for corresponding client
      *
      */
-    public static function getConfigForService($service_type, $config_id = 1)
+    public static function getConfigForService($service_type, $config_id = 1, $force_endpoint = '')
     {
         if (isset($service_type)) {
             $config = OCEndpoints::findOneBySQL(
@@ -63,7 +63,20 @@ class OCConfig extends \SimpleORMap
 
             if ($config) {
                 return $config->toArray() + self::find($config_id)->toArray();
+            } else if (!empty($force_endpoint)) {
+                // Make sure all defined endpoint serives have their records in OCEndpoints when they have $force_endpoint!
+                // came across this issue that /api/service has been included in /service call!
+                $base_config = self::find($config_id)->toArray();
+                $service_url = $base_config['service_url'] . '/' . ltrim($force_endpoint, '/');
+                OCEndpoints::setEndpoint($config_id, $service_url, $service_type);
+                $config = OCEndpoints::findOneBySQL(
+                    'service_type = ? AND config_id = ?',
+                    [$service_type, $config_id]
+                );
+                return $config->toArray() + $base_config;
             } else {
+                // TODO: In case a config empty, it has to be empty array instead of empty_config in order
+                // for the rest of the code to catch the error/exception!
                 return [
                     self::empty_config()
                 ];

@@ -37,12 +37,21 @@ class ApiEventsClient extends OCRestClient
     public function setACL($episode_id, $acl)
     {
         $data = [
-            'acl' => json_encode($acl->toArray())
+            'acl' => json_encode(is_array($acl) ? $acl : $acl->toArray())
         ];
 
         $result = $this->putJSON('/' . $episode_id . '/acl', $data, true);
 
         return $result[1] == 200;
+    }
+
+    public function getSeriesEpisodes($series_id)
+    {
+        $params = [
+            'filter' => 'is_part_of:' . $series_id,
+        ];
+
+        return json_decode(json_encode($this->getJSON('?' . http_build_query($params))), true);
     }
 
     /**
@@ -256,7 +265,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+        OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
         return $default;
     }
 

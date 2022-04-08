@@ -9,7 +9,7 @@ class ApiSeriesClient extends OCRestClient
 
     function __construct($config_id = 1)
     {
-        if ($config = OCConfig::getConfigForService('apiseries', $config_id)) {
+        if ($config = OCConfig::getConfigForService('apiseries', $config_id, '/api/series')) {
             parent::__construct($config);
         } else {
             throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben"));
@@ -24,7 +24,7 @@ class ApiSeriesClient extends OCRestClient
     public function setACL($series_id, $acl)
     {
         $data = [
-            'acl' => json_encode($acl->toArray())
+            'acl' => json_encode(is_array($acl) ? $acl : $acl->toArray())
         ];
 
         $result = $this->putJSON('/' . $series_id . '/acl', $data, true);

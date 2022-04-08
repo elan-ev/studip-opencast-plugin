@@ -323,7 +323,7 @@ class CourseController extends OpencastController
 
     public function config_action()
     {
-        if (!$GLOBALS['perm']->have_perm('root')) {
+        if (!$GLOBALS['perm']->have_perm('dozent')) {
             throw new AccessDeniedException();
         }
         if (Request::isXhr()) {
@@ -344,10 +344,25 @@ class CourseController extends OpencastController
 
         $this->configs = OCConfig::getBaseServerConf();
 
+        $is_teacher = ($GLOBALS['perm']->get_perm() == 'dozent') ? true : false;
+        if ($is_teacher) {
+            $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
+        }
+
         foreach ($this->configs as $id => $config) {
             $sclient = SeriesClient::getInstance($id);
             if ($series = $sclient->getAllSeries()) {
-                $this->all_series[$id] = $series;
+                if ($is_teacher) {
+                    $filtered_series = [];
+                    foreach ($series as $series_index => $series_obj) {
+                        if (in_array($series_obj->identifier, $user_series)) {
+                            $filtered_series[] = $series_obj;
+                        }
+                    }
+                    $this->all_series[$id] = $filtered_series;
+                } else {
+                    $this->all_series[$id] = $series;
+                }
             }
         }
     }
@@ -356,19 +371,27 @@ class CourseController extends OpencastController
     {
         OCPerm::checkEdit($this->course_id);
 
+        $schedule = Config::get()->OPENCAST_ALLOW_LINKED_SERIES_UPLOAD;
         $series = json_decode(Request::get('series'), true);
-        OCSeriesModel::setSeriesforCourse(
+        $episode_counts = OCSeriesModel::setSeriesforCourse(
             $course_id,
             $series['config_id'],
             $series['series_id'],
             'visible',
-            0,
+            $schedule,
             time()
         );
         StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
-        PageLayout::postSuccess(
-            $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.')
-        );
+
+        $success_message = $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.');
+        if ($episode_counts) {
+            $success_message .= ' ' . sprintf(
+                $this->_('Verarbeitung von %s Video(s), bitte haben Sie etwas Geduld und aktualisieren Sie die Seite gelegentlich!'),
+                htmlReady($episode_counts)
+            );
+        
+        }
+        PageLayout::postSuccess($success_message);
         $this->redirect('course/index');
     }
 
