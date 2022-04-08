@@ -375,19 +375,17 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 });
                 </script>";
             }
-            if ($course_id !== null || $free !== null) {
-                $content .= '<iframe id="' . $id . '" ' .
-                    ($course_id !== null ?: 'src="' . $embed . '"') .
-                    'style="border:0px #FFFFFF none;" ' .
-                    'name="Opencast - Media Player" ' .
-                    'scrolling="no" ' .
-                    'frameborder="0" ' .
-                    'marginheight="0px" ' .
-                    'marginwidth="0px" ' .
-                    'width="640" height="360" ' .
-                    'allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true" ' .
-                    '></iframe><br>';
-            }
+            $content .= '<iframe id="' . $id . '" ' .
+                ($course_id !== null ?: 'src="' . $embed . '"') .
+                'style="border:0px #FFFFFF none;" ' .
+                'name="Opencast - Media Player" ' .
+                'scrolling="no" ' .
+                'frameborder="0" ' .
+                'marginheight="0px" ' .
+                'marginwidth="0px" ' .
+                'width="640" height="360" ' .
+                'allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true" ' .
+                '></iframe><br>';
         }
 
         return $content;
