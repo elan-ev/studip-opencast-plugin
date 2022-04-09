@@ -163,7 +163,7 @@ $sort_orders = Pager::getSortOptions();
 
                         <? if (!$item['is_retracting']) : ?>
                             <div class="ocplayerlink">
-
+                                <? $base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']); ?>
                                 <?= Studip\LinkButton::create(
                                         $_('Technisches Feedback'),
                                         'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL
@@ -171,10 +171,13 @@ $sort_orders = Pager::getSortOptions();
                                             . $controller->link_for('course/index/' . $item['id']) ."%0D%0A"
                                             . $video_url . $item['id'],
                                         [
+                                            'target' => '_blank',
+                                            'rel' => 'noopener noreferrer',
                                             'class' => 'oc_feedback',
                                             'title' => $_('Technisches Feedback geben (Ton- oder Abspielprobleme etc.)'),
                                         ]
                                 ); ?>
+                                <? URLHelper::setBaseURL($base); ?>
 
                                 <? if (OCPerm::editAllowed($course_id)) : ?>
                                     <?= $live ? '' : Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
