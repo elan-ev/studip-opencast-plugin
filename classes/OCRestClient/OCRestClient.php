@@ -5,7 +5,6 @@
  */
 
 use Opencast\Models\OCConfig;
-use Opencast\Configuration;
 
 class OCRestClient
 {
