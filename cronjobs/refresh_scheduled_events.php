@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 use  Opencast\Models\OCScheduledRecordings;
 
@@ -31,9 +31,9 @@ class RefreshScheduledEvents extends CronJob
      * @param Array $parameters Parameters for this cronjob instance which
      *                          were defined during scheduling.
      */
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
-        require_once __DIR__ .'/../classes/OCRestClient/SchedulerClient.php';
+        require_once __DIR__ . '/../classes/OCRestClient/SchedulerClient.php';
 
         echo "Lade geplante Events aus Opencast.\n";
 
@@ -41,7 +41,7 @@ class RefreshScheduledEvents extends CronJob
         // Opencast events are those reported as being scheduled by Opencast
         $api_client = ApiEventsClient::getInstance(1);
         $opencast_events = $api_client->getAllScheduledEvents($connected_events['series_id']);
-        echo 'In Opencast geplante Events: ' . sizeof($opencast_events). "\n";
+        echo 'In Opencast geplante Events: ' . sizeof($opencast_events) . "\n";
 
         // Only care about events created before now (i.e. avoids deletion
         // of events that should stay)
@@ -94,21 +94,23 @@ class RefreshScheduledEvents extends CronJob
 
                         echo sprintf(
                             _("Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n"),
-                            $cd->getFullname(), $course->name
+                            $cd->getFullname(),
+                            $course->name
                         );
-                  } else {
-                      echo sprintf(
-                          _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"),
-                          $cd->getFullname(), $course->name
-                      );
+                    } else {
+                        echo sprintf(
+                            _("Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"),
+                            $cd->getFullname(),
+                            $course->name
+                        );
 
-                      $scheduler_client = SchedulerClient::getInstance(1);
-                      $scheduler_client->deleteEvent($se['event_id']);
+                        $scheduler_client = SchedulerClient::getInstance(1);
+                        $scheduler_client->deleteEvent($se['event_id']);
 
-                      OCScheduledRecordings::deleteBySql('event_id = ?', [$se['event_id']]);
-                 }
-              }
-           }
+                        OCScheduledRecordings::deleteBySql('event_id = ?', [$se['event_id']]);
+                    }
+                }
+            }
         }
 
         // Delete remaining events that have been scheduled through Stud.IP but
@@ -125,7 +127,7 @@ class RefreshScheduledEvents extends CronJob
                 $scheduler_client = SchedulerClient::getInstance(1);
                 $scheduler_client->deleteEvent($event_id);
                 OCScheduledRecordings::deleteBySql('event_id = ?', [$event_id]);
-           }
+            }
         }
 
         // remaining events have no association to Stud.IP

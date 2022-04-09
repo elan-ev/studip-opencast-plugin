@@ -13,7 +13,7 @@ class ApiEventsClient extends OCRestClient
         if ($config = OCConfig::getConfigForService('apievents', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new Exception(_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
@@ -74,8 +74,8 @@ class ApiEventsClient extends OCRestClient
             $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
         }
 
-        $lucene_query = '(dc_is_part_of:'. $series_id .')'. $search_query
-            .' AND oc_acl_read:'. $course_id .'_'. $type;
+        $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
+            . ' AND oc_acl_read:' . $course_id . '_' . $type;
 
         $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
             . "&sort=$sort&limit=$limit&offset=$offset");
@@ -88,7 +88,7 @@ class ApiEventsClient extends OCRestClient
 
         // then, iterate over list and get each event from the external-api
         foreach ($results as $s_event) {
-            $cache_key = 'sop/episodes/'. $s_event->id;
+            $cache_key = 'sop/episodes/' . $s_event->id;
             $event = $cache->read($cache_key);
 
             if (empty($s_event->id)) {
@@ -102,7 +102,8 @@ class ApiEventsClient extends OCRestClient
                     $media = [];
 
                     foreach ($s_event->mediapackage->media->track as $track) {
-                        $width = 0; $height = 0;
+                        $width = 0;
+                        $height = 0;
                         if (!empty($track->video)) {
                             list($width, $height) = explode('x', $track->video->resolution);
                             $bitrate = $track->video->bitrate;
@@ -166,13 +167,13 @@ class ApiEventsClient extends OCRestClient
         $acl = [
             [
                 'allow'  => true,
-                'role'   => $course_id .'_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => $course_id .'_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'write'
             ]
         ];
@@ -180,7 +181,7 @@ class ApiEventsClient extends OCRestClient
         if ($visibility == 'visible' || $visibility == 'free') {
             $acl[] = [
                 'allow'  => true,
-                'role'   => $course_id .'_Learner',
+                'role'   => $course_id . '_Learner',
                 'action' => 'read'
             ];
         }
@@ -194,7 +195,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // get current acl and filter out roles for this course, pertaining any other acl-roles
-        $oc_acl = array_filter($this->getACL($episode_id), function($entry) use ($course_id) {
+        $oc_acl = array_filter($this->getACL($episode_id), function ($entry) use ($course_id) {
             return (strpos($entry['role'], $course_id) === false);
         });
 
@@ -227,7 +228,8 @@ class ApiEventsClient extends OCRestClient
 
         // check, if the video is free for all
         foreach ($acls as $acl) {
-            if ($acl->role == 'ROLE_ANONYMOUS'
+            if (
+                $acl->role == 'ROLE_ANONYMOUS'
                 && $acl->action == 'read'
                 && $acl->allow == true
             ) {
@@ -237,7 +239,8 @@ class ApiEventsClient extends OCRestClient
 
         // check, if the video is free for course
         foreach ($acls as $acl) {
-            if ($acl->role == $course_id . '_Learner'
+            if (
+                $acl->role == $course_id . '_Learner'
                 && $acl->action == 'read'
                 && $acl->allow == true
             ) {
@@ -247,7 +250,8 @@ class ApiEventsClient extends OCRestClient
 
         // check, if the video is free for lecturers
         foreach ($acls as $acl) {
-            if ($acl->role == $course_id . '_Instructor'
+            if (
+                $acl->role == $course_id . '_Instructor'
                 && $acl->action == 'read'
                 && $acl->allow == true
             ) {
@@ -256,7 +260,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+        OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
         return $default;
     }
 
@@ -296,7 +300,7 @@ class ApiEventsClient extends OCRestClient
                 if ($track->flavor === 'presenter/delivery') {
                     if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
                         && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
-                        && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                            && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
                         && !empty($track->has_video)
                     ) {
                         $quality = $this->calculate_size(
@@ -311,7 +315,8 @@ class ApiEventsClient extends OCRestClient
                         $duration = $track->duration;
                     }
 
-                    if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
+                    if (
+                        in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                         && !empty($track->has_audio)
                     ) {
                         $quality = $this->calculate_size(
@@ -328,12 +333,10 @@ class ApiEventsClient extends OCRestClient
                 }
 
                 if ($track->flavor === 'presentation/delivery' && (
-                    (
-                        $track->mediatype === 'video/mp4'
+                    ($track->mediatype === 'video/mp4'
                         || $track->mediatype === 'video/avi'
                     ) && (
-                        (
-                            in_array('atom', $track->tags)
+                        (in_array('atom', $track->tags)
                             || in_array('engage-download', $track->tags)
                         )
                         && $parsed_url['scheme'] != 'rtmp'
@@ -383,6 +386,6 @@ class ApiEventsClient extends OCRestClient
 
     private function getResolutionString($width, $height)
     {
-        return $width .' * '. $height . ' px';
+        return $width . ' * ' . $height . ' px';
     }
 }

@@ -55,14 +55,6 @@ $sort_orders = Pager::getSortOptions();
 
 <div class="oc_flex">
     <div id="episodes" class="oc_flexitem oc_flexepisodelist">
-        <!--<span class="oce_episode_search">
-        <input class="search" placeholder="<?= $_('Nach Aufzeichnung suchen') ?>" size="30"/>
-        <?= Icon::create('search', 'clickable', [
-            'class'     => 'sort',
-            'data-sort' => 'name'
-        ]) ?>
-    </span>
-    -->
         <ul class="oce_list list" <?= (OCPerm::editAllowed($course_id)) ? 'id="oce_sortablelist"' : '' ?>>
             <? foreach ($ordered_episode_ids as $pos => $item) : ?>
                 <?

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OCRestClient.php - The administarion of the opencast player
  */
@@ -68,8 +69,6 @@ class OCRestClient
 
     private function initCurl()
     {
-        $precise_config = Configuration::instance($this->config_id);
-
         // setting up a curl-handler
         $this->ochandler = curl_init();
         curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
@@ -92,13 +91,11 @@ class OCRestClient
                 curl_setopt($this->ochandler, CURLOPT_VERBOSE, true);
             }
         }
-
     }
 
     public function has_config_error()
     {
-        return
-            ($this->username == 'error' || $this->username == null) &&
+        return ($this->username == 'error' || $this->username == null) &&
             ($this->password == 'error' || $this->password == null) &&
             ($this->oc_version == 'error' || $this->oc_version == null) &&
             ($this->base_url == 'error' || $this->base_url == null);
@@ -106,7 +103,7 @@ class OCRestClient
 
     public function setCookie($name, $value)
     {
-        $this->cookie = $name .'='. $value;
+        $this->cookie = $name . '=' . $value;
     }
 
     public function getCookie()
@@ -148,7 +145,7 @@ class OCRestClient
 
             if ($this->debug_curl) {
                 echo '<pre>';
-                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
+                echo 'URL: <b>' . $this->base_url . $service_url . "</b>\n";
                 $timing = microtime(true);
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
@@ -185,7 +182,7 @@ class OCRestClient
 
 
             if ($this->getCookie()) {
-                curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: '. $this->getCookie()]);
+                curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: ' . $this->getCookie()]);
             }
 
             $response = curl_exec($this->ochandler);
@@ -207,14 +204,15 @@ class OCRestClient
             }
 
             if ($with_res_code) {
-                return [json_decode($response) ? : $response, $httpCode];
+                return [json_decode($response) ?: $response, $httpCode];
             } else {
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
                     if ($this->debug_curl) {
-                        error_log('[Opencast-Plugin] Error calling "'
-                            . $this->base_url . $service_url
-                            . '" ' . strip_tags($response)
+                        error_log(
+                            '[Opencast-Plugin] Error calling "'
+                                . $this->base_url . $service_url
+                                . '" ' . strip_tags($response)
                         );
                     }
 
@@ -228,7 +226,6 @@ class OCRestClient
         } else {
             throw new Exception(_("Es wurde keine Service URL angegeben"));
         }
-
     }
 
     /**
@@ -241,7 +238,7 @@ class OCRestClient
 
             if ($this->debug_curl) {
                 echo '<pre>';
-                echo 'URL: <b>'. $this->base_url . $service_url ."</b>\n";
+                echo 'URL: <b>' . $this->base_url . $service_url . "</b>\n";
                 $timing = microtime(true);
                 var_dump($data);
                 $this->debug = fopen('php://output', 'w');
@@ -263,7 +260,7 @@ class OCRestClient
             }
 
             if ($this->getCookie()) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Cookie: '. $this->getCookie()]);
+                curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: ' . $this->getCookie()]);
             }
 
             curl_setopt_array($this->ochandler, $options);
@@ -291,9 +288,10 @@ class OCRestClient
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
                     if ($this->debug_curl) {
-                        error_log('[Opencast-Plugin] Error calling "'
-                            . $this->base_url . $service_url
-                            . '" ' . strip_tags($response)
+                        error_log(
+                            '[Opencast-Plugin] Error calling "'
+                                . $this->base_url . $service_url
+                                . '" ' . strip_tags($response)
                         );
                     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
@@ -14,8 +15,6 @@ class Configuration implements \ArrayAccess
     private static $instances = [];
     private
         $values,
-        $descriptions,
-        $database_ids,
         $config_id;
 
     /**

@@ -12,24 +12,8 @@ class ApiWorkflowsClient extends OCRestClient
         if ($config = OCConfig::getConfigForService('apiworkflows', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new Exception(_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
-    }
-
-    public function retract($episode_id)
-    {
-        $service_url = '/';
-        $data = [
-            'event_identifier' => $episode_id,
-            'workflow_definition_identifier' => 'retract',
-        ];
-        list(, $code) = $this->postJSON($service_url, $data, true);
-
-        if ($code == 201) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

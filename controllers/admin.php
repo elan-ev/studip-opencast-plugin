@@ -1,8 +1,7 @@
 <?php
+
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCEndpoints;
-use Opencast\Models\OCSeminarSeries;
-use Opencast\LTI\OpencastLTI;
 use Opencast\Constants;
 use Opencast\Configuration;
 
@@ -37,7 +36,7 @@ class AdminController extends OpencastController
         $api        = ApiWorkflowsClient::getInstance(1);
         $api_events = ApiEventsClient::getInstance(1);
 
-        $fd = fopen($filename = __DIR__ . '/episodes.txt', 'r');
+        $fd = fopen(__DIR__ . '/episodes.txt', 'r');
 
         while ($episode_id = fgets($fd)) {
             $episode_id = str_replace("\n", '', $episode_id);
@@ -128,13 +127,19 @@ class AdminController extends OpencastController
                     (isset($service_url['port']) ? ':' . $service_url['port'] : '');
 
                 try {
-                    $version = $this->getOCBaseVersion($service_host,
-                        $config['service_user'], $config['service_password']
+                    $version = $this->getOCBaseVersion(
+                        $service_host,
+                        $config['service_user'],
+                        $config['service_password']
                     );
 
                     OCConfig::clearConfigAndAssociatedEndpoints($config_id);
-                    OCConfig::setConfig($config_id, $service_host,
-                        $config['service_user'], $config['service_password'], $version
+                    OCConfig::setConfig(
+                        $config_id,
+                        $service_host,
+                        $config['service_user'],
+                        $config['service_password'],
+                        $version
                     );
                     $configuration->store();
 
@@ -195,8 +200,6 @@ class AdminController extends OpencastController
                 }
             }
         }
-
-        #OpencastLTI::generate_complete_acl_mapping();
 
         $this->redirect('admin/config');
     }

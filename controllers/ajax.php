@@ -25,7 +25,7 @@ class AjaxController extends OpencastController
         $user_id = $GLOBALS['user']->id;
 
         $cache = StudipCacheFactory::getCache();
-        $cache_key = 'sop/series/'. $user_id .'/'. Context::getId();
+        $cache_key = 'sop/series/' . $user_id . '/' . Context::getId();
         $results = unserialize($cache->read($cache_key));
 
         if ($results === false) {
@@ -70,9 +70,10 @@ class AjaxController extends OpencastController
         $check = !empty(OCSeminarSeries::findBySql('seminar_id = ? AND series_id = ?', [$course_id, $series_id]));
         $result = $simple_result = [];
 
-        if (!$check || !OCPerm::editAllowed($course_id)
-            || !$GLOBALS['perm']->have_studip_perm('autor', $course_id))
-        {
+        if (
+            !$check || !OCPerm::editAllowed($course_id)
+            || !$GLOBALS['perm']->have_studip_perm('autor', $course_id)
+        ) {
             // do not list episodes if user has no permissions in the connected course
             $this->render_json(array_values([]));
             return;
@@ -90,9 +91,10 @@ class AjaxController extends OpencastController
                 [$series_id, $episode['id'], $course_id]
             );
 
-            if ($studip_episode && (
-                 (Context::getId() == $course_id && $studip_episode->visible != 'invisible'))
-                 || $studip_episode->visible == 'free'
+            if (
+                $studip_episode && (
+                    (Context::getId() == $course_id && $studip_episode->visible != 'invisible'))
+                || $studip_episode->visible == 'free'
             ) {
                 $result[] = $episode;
             }

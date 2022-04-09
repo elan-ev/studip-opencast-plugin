@@ -13,7 +13,7 @@ class IngestClient extends OCRestClient
         if ($config = OCConfig::getConfigForService('ingest', $config_id)) {
             parent::__construct($config);
         } else {
-            throw new Exception (_('Die Konfiguration wurde nicht korrekt angegeben'));
+            throw new Exception(_('Die Konfiguration wurde nicht korrekt angegeben'));
         }
     }
 
@@ -65,8 +65,6 @@ class IngestClient extends OCRestClient
     public function ingest($mediaPackage, $workFlowDefinitionID, $addendum = '')
     {
         $service_url               = "/ingest/" . $workFlowDefinitionID . $addendum;
-        $mediaPackageParsed        = new SimpleXMLElement($mediaPackage);
-        $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
 
         $data = [
             'mediaPackage'         => $mediaPackage,

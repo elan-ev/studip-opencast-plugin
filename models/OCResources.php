@@ -4,7 +4,7 @@ namespace Opencast\Models;
 
 class OCResources extends \SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_resources';
 

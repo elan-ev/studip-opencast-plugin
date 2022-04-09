@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
@@ -311,14 +312,13 @@ class OpencastLTI
 
         if ($config_id) {
             $search_config = OCConfig::getConfigForService('search', $config_id);
-            $config        = OCConfig::getConfigForCourse($course_id);
 
             $url = parse_url($search_config['service_url']);
 
             return $url['scheme'] . '://' . $url['host']
                 . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
-        } else {
-            return '';
         }
+
+        return '';
     }
 }

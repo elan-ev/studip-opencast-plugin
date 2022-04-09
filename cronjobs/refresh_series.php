@@ -1,10 +1,11 @@
 <?php
+
 /**
  * refresh_series.php
  */
 
 
-require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 class RefreshSeries extends CronJob
 {
@@ -19,9 +20,9 @@ class RefreshSeries extends CronJob
         return _('Opencast: Aktualisiert die Episodenuebersicht aller in Stud.IP verbundenen Serien, die aufgezeichnet werden.');
     }
 
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
-        require_once __DIR__ .'/../models/OCCourseModel.class.php';
+        require_once __DIR__ . '/../models/OCCourseModel.class.php';
 
         $semester_cur = Semester::findCurrent();
 
@@ -31,15 +32,16 @@ class RefreshSeries extends CronJob
                           AND (? <= start_time + duration_time OR duration_time = -1) AND ocs.schedule=1");
         $stmt->execute(array($semester_cur->beginn, $semester_cur->beginn));
         $courses  = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        if(!empty($courses)){
-            foreach($courses as $course_id) {
+        if (!empty($courses)) {
+            foreach ($courses as $course_id) {
                 try {
                     $ocmodel = new OCCourseModel($course_id);
                     $course = Course::find($course_id);
                     echo sprintf(_("Aktualisiere Episoden fuer den Kurs %s im Semester %s\n "), $course->name, $semester_cur->name);
 
                     $ocmodel->getEpisodes();
-                } catch (Exception $e) {}
+                } catch (Exception $e) {
+                }
 
                 unset($ocmodel);
             }
@@ -47,5 +49,4 @@ class RefreshSeries extends CronJob
 
         return true;
     }
-
 }

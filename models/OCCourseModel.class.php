@@ -32,7 +32,6 @@ class OCCourseModel
         } else {
             $this->setSeriesID(false);
         }
-
     }
 
     public function getCourseID()
@@ -72,10 +71,6 @@ class OCCourseModel
 
         if (empty($ordered_episodes)) {
             if ($this->getSeriesID()) {
-                $search_client = SearchClient::create($this->getCourseID());
-
-                $course = Course::find($this->getCourseID());
-
                 $api_events = ApiEventsClient::create($this->getCourseID());
                 $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
 
@@ -95,56 +90,6 @@ class OCCourseModel
         }
 
         return $ordered_episodes;
-
-    }
-
-    /**
-     * This function sorts an array 'deep'. This means the content is first sorted
-     * by the first key in the array. If there are more than one entry for this key
-     * the episodes in this group are sorted by the second key and so on.
-     *
-     * @param $keys
-     * @param $sort_flags
-     * @param $reversed
-     * @param $episodes
-     *
-     * @return array
-     */
-    private function order_episodes_by($keys, $sort_flags, $reversed, $episodes)
-    {
-        $ordered = [];
-
-        //Get the current settings for this episode group
-        $key                = array_shift($keys);
-        $current_reversed   = array_shift($reversed);
-        $current_sort_flags = array_shift($sort_flags);
-
-        //Regroup the current episodes bv the key field
-        foreach ($episodes as $episode) {
-            $ordered[$episode[$key]][] = $episode;
-        }
-
-        //Sort, reverse if needed
-        if ($current_reversed) {
-            krsort($ordered, $current_sort_flags);
-        } else {
-            ksort($ordered, $current_sort_flags);
-        }
-
-        //Now remove the grouping but contain the order within
-        $episodes = [];
-
-        foreach ($ordered as $entries) {
-            if (count($keys) > 0 && count($entries) > 1) {
-                $entries = $this->order_episodes_by($keys, $sort_flags, $reversed, $entries);
-            }
-            foreach ($entries as $entry) {
-                $episodes[] = $entry;
-            }
-        }
-
-        //Return really ordered list of episodes
-        return $episodes;
     }
 
     private function episodeComparison($stored_episodes, $oc_episodes)
@@ -171,11 +116,11 @@ class OCCourseModel
 
                 $oc_episode['visibility']    = $vis;
                 $oc_episode['is_retracting'] = false;
-                $oc_episode['mkdate']        = $timestamp;
+                $oc_episode['mkdate']        = time();
 
                 // invalidate acl cache for this course
                 $cache = \StudipCacheFactory::getCache();
-                $cache_key = 'sop/visibility/'. \Context::getId();
+                $cache_key = 'sop/visibility/' . \Context::getId();
                 $cache->expire($cache_key);
 
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
@@ -267,7 +212,8 @@ class OCCourseModel
         $series = $this->getSeriesMetadata();
 
         return OCSeriesModel::updateSchedule(
-            $this->course_id, $series['schedule'] ? 0 : 1
+            $this->course_id,
+            $series['schedule'] ? 0 : 1
         );
     }
 
@@ -318,7 +264,9 @@ class OCCourseModel
     public function setWorkflow($workflow_id, $target)
     {
         return static::setWorkflowWithCustomCourseID(
-            $this->getCourseID(), $workflow_id, $target
+            $this->getCourseID(),
+            $workflow_id,
+            $target
         );
     }
 

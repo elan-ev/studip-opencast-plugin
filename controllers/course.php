@@ -73,9 +73,11 @@ class CourseController extends OpencastController
         ]);
 
         // check, if current user is admin, lecturer or tutor force tos if so
-        if (Config::get()->OPENCAST_SHOW_TOS
+        if (
+            Config::get()->OPENCAST_SHOW_TOS
             && !$GLOBALS['perm']->have_studip_perm('root', $this->course_id)
-            && $action != 'tos' && $action != 'access_denied' && $action != 'accept_tos') {
+            && $action != 'tos' && $action != 'access_denied' && $action != 'accept_tos'
+        ) {
             if (OCPerm::editAllowed($this->course_id)) {
                 if (empty(OCTos::findBySQL('user_id = ? AND seminar_id = ?', [$GLOBALS['user']->id, $this->course_id]))) {
                     $this->redirect('course/tos');
@@ -122,16 +124,16 @@ class CourseController extends OpencastController
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
             PageLayout::postWarning($this->_(
                 'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
-                . 'da sie zum Zeitpunkt der Freischaltung nicht in der Teilnehmendenliste '
-                . 'eingetragen oder unsichtbar waren.'
+                    . 'da sie zum Zeitpunkt der Freischaltung nicht in der Teilnehmendenliste '
+                    . 'eingetragen oder unsichtbar waren.'
             ));
         }
 
         foreach (OCSeminarSeries::getMissingSeries($this->course_id) as $series) {
             PageLayout::postError(sprintf($this->_(
                 'Die verknüpfte Serie mit der ID "%s" konnte nicht in Opencast gefunden werden! ' .
-                'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
-                'wenden Sie sich an einen Systemadministrator.'
+                    'Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue oder ' .
+                    'wenden Sie sich an einen Systemadministrator.'
             ), $series['series_id']));
         }
 
@@ -144,7 +146,7 @@ class CourseController extends OpencastController
 
             // only check the the acls once per hour per course or if the cache has benn invalidated
             $cache = \StudipCacheFactory::getCache();
-            $cache_key = 'sop/visibility/'. \Context::getId();
+            $cache_key = 'sop/visibility/' . \Context::getId();
             $checked = $cache->read($cache_key);
 
             if (!$checked) {
@@ -195,8 +197,6 @@ class CourseController extends OpencastController
             try {
                 $this->search_client = SearchClient::getInstance();
                 $this->coursevis = $occourse->getSeriesVisibility();
-
-                $api_events = ApiEventsClient::getInstance();
 
                 $this->ordered_episode_ids = $this->get_ordered_episode_ids();
 
@@ -290,7 +290,8 @@ class CourseController extends OpencastController
                 [
                     'user_id'    => $GLOBALS['user']->id,
                     'seminar_id' => $this->course_id
-                ]);
+                ]
+            );
             $tos->store();
         }
         $this->redirect('course/index');
@@ -444,9 +445,10 @@ class CourseController extends OpencastController
 
         $scheduler_client = SchedulerClient::getInstance();
         if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
-            PageLayout::postSuccess($publishLive
-                ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
-                : $this->_('Aufzeichnung wurde geplant.')
+            PageLayout::postSuccess(
+                $publishLive
+                    ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
+                    : $this->_('Aufzeichnung wurde geplant.')
             );
             $course = Course::find($this->course_id);
             $members = $course->members;
@@ -594,14 +596,15 @@ class CourseController extends OpencastController
         }
 
         $cache = \StudipCacheFactory::getCache();
-        $cache_key = 'sop/visibility/'. \Context::getId();
+        $cache_key = 'sop/visibility/' . \Context::getId();
         $cache->expire($cache_key);
 
         if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
             StudipLog::log(
                 'OC_CHANGE_EPISODE_VISIBILITY',
                 null,
-                $this->course_id, "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
+                $this->course_id,
+                "Episodensichtbarkeit wurde auf {$permission} geschaltet ({$episode_id})"
             );
             $this->set_status('201');
         } else {
@@ -831,7 +834,7 @@ class CourseController extends OpencastController
     {
         OCPerm::checkEdit($this->course_id);
 
-        if (check_ticket($ticket) ) {
+        if (check_ticket($ticket)) {
             CourseConfig::get($this->course_id)->store('OPENCAST_ALLOW_MEDIADOWNLOAD_PER_COURSE', 'no');
             PageLayout::postInfo($this->_('Teilnehmende dürfen nun keine Aufzeichnungen mehr herunterladen.'));
         }
@@ -864,7 +867,7 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         if (check_ticket($ticket) && !$this->isStudyGroup()) {
-            $studyGroup = $this->createStudyGroup();
+            $this->createStudyGroup();
             PageLayout::postInfo($this->_('Teilnehmende dürfen nun Aufzeichnungen hochladen.'));
         }
         $this->redirect('course/index/false');
@@ -962,22 +965,9 @@ class CourseController extends OpencastController
         ];
     }
 
-    private function retractEpisode($episode)
-    {
-        $workflowClient = ApiWorkflowsClient::getInstance();
-        $result = $workflowClient->retract($episode->episode_id);
-        if (!$result) {
-            return false;
-        }
-
-        $episode->is_retracting = true;
-        $episode->store();
-        return true;
-    }
-
     private function createStudyGroup()
     {
-        if($link = OCUploadStudygroup::findOneBySQL('course_id = ?', [$this->course_id])) {
+        if ($link = OCUploadStudygroup::findOneBySQL('course_id = ?', [$this->course_id])) {
             $link->setValue('active', TRUE);
             $link->store();
             return;

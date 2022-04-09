@@ -17,34 +17,6 @@ class CaptureAgentAdminClient extends OCRestClient
         }
     }
 
-    /**
-     *  getCaptureAgents() - retrieves a representation of all Capture Agents from conntected Opencast-Matterhorn Core
-     *
-     *  @return array string response of connected Capture Agents
-     */
-    public function getCaptureAgentsXML()
-    {
-        // URL for Matterhorn 1.1
-        // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
-
-        $service_url = "/agents.xml";
-
-        // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
-        $needle = [
-            '<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
-            '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
-            '</ns1:agent-state-update>',
-            '</ns1:agent-state-updates>'
-        ];
-
-        $replacements = array('<agent-state-updates>','<agent-state-update>','</agent-state-update>','</agent-state-updates>');
-        $xml = simplexml_load_string(str_replace($needle, $replacements, $response));
-        $json = json_encode($xml);
-        $agent_repsonse = json_decode($json, true);
-
-        return $agent_repsonse['agent-state-update'];
-    }
-
     public function getCaptureAgents()
     {
         $service_url = "/agents.json";

@@ -174,7 +174,7 @@ class OCModel
                     mktime)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        $success = $stmt->execute($data = [
+        $success = $stmt->execute([
             $course_id,
             $serie['series_id'],
             $date_id,
@@ -203,8 +203,6 @@ class OCModel
         $series = OCSeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
-        $cas = self::checkResource($resource_id);
-        $ca = $cas[0];
         $stmt = DBManager::get()->prepare("SELECT * FROM oc_scheduled_recordings
                                                     WHERE `seminar_id` = ?
                                                     AND `series_id` = ?
@@ -300,12 +298,6 @@ class OCModel
 
         $inst_data = Institute::find($course->institut_id);
 
-        if (StudipVersion::newerThan('4.4')) {
-            $room = new Resource($resource_id);
-        } else {
-            $room = ResourceObject::Factory($resource_id);
-        }
-
         $start_time = $event_id ? $event->start : $date->getStartTime();
 
         if ($puffer) {
@@ -378,6 +370,8 @@ class OCModel
 
             $api_events = ApiEventsClient::getInstance($config_id);
             if ($api_events->setVisibility($course_id, $episode_id, $visibility) === false) {
+                $entry->visible = $old_visibility;
+                $entry->store();
                 return false;
             }
 

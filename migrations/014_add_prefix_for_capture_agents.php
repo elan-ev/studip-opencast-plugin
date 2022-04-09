@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author          Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright   (c) Authors
@@ -10,15 +11,12 @@ class AddPrefixForCaptureAgents extends Migration
 
     function up()
     {
-        if (StudipVersion::newerThan('4.4'))
-        {
-            $stmt = DBManager::get()->query("UPDATE `resource_property_definitions`
+        if (StudipVersion::newerThan('4.4')) {
+            DBManager::get()->query("UPDATE `resource_property_definitions`
             SET `name`= CONCAT('OCCA#', `name`)
             WHERE `name`='Opencast Capture Agent'");
-        }
-        else
-        {
-            $stmt = DBManager::get()->query("UPDATE `resources_properties`
+        } else {
+            DBManager::get()->query("UPDATE `resources_properties`
             SET `name`= CONCAT('OCCA#', `name`)
             WHERE `name`='Opencast Capture Agent'");
         }
@@ -26,18 +24,14 @@ class AddPrefixForCaptureAgents extends Migration
 
     function down()
     {
-        if (StudipVersion::newerThan('4.4'))
-        {
-            $stmt = DBManager::get()->query("UPDATE `resource_property_definitions`
+        if (StudipVersion::newerThan('4.4')) {
+            DBManager::get()->query("UPDATE `resource_property_definitions`
             SET `name`= 'Opencast Capture Agent'
             WHERE `name`='OCCA#%'");
-        }
-        else
-        {
-            $stmt = DBManager::get()->query("UPDATE `resources_properties`
+        } else {
+            DBManager::get()->query("UPDATE `resources_properties`
             SET `name`= 'Opencast Capture Agent'
             WHERE `name`='OCCA#%'");
         }
     }
-
 }
