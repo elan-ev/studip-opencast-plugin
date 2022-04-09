@@ -254,11 +254,11 @@ class OAuthRequest
       $ourpost = $_POST;
       // Deal with magic_quotes
       // http://www.php.net/manual/en/security.magicquotes.disabling.php
-      if ( get_magic_quotes_gpc() ) {
-         foreach ($_POST as $k => $v) {
-            $v = stripslashes($v);
-            $ourpost[$k] = $v;
-         }
+      if (get_magic_quotes_gpc()) {
+        foreach ($_POST as $k => $v) {
+          $v = stripslashes($v);
+          $ourpost[$k] = $v;
+        }
       }
       // Add POST Parameters if they exist
       $parameters = array_merge($parameters, $ourpost);
@@ -471,14 +471,16 @@ class OAuthRequest
   /**
    * util function: current timestamp
    */
-  public static function generate_timestamp() {
+  public static function generate_timestamp()
+  {
     return time();
   }
 
   /**
    * util function: current nonce
    */
-  public static function generate_nonce() {
+  public static function generate_nonce()
+  {
     $mt = microtime();
     $rand = mt_rand();
 
