@@ -54,8 +54,7 @@ class RefreshScheduledEvents extends CronJob
             FROM oc_scheduled_recordings oc
             LEFT JOIN oc_seminar_series oss USING (seminar_id)
             JOIN termine t ON (termin_id = date_id)
-            WHERE oss.schedule = 1
-                AND t.date >= UNIX_TIMESTAMP()
+            WHERE t.date >= UNIX_TIMESTAMP()
                 AND oc.mktime < :mktime");
         $stmt->execute([
             ':mktime' => $time

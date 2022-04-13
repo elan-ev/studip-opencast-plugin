@@ -25,14 +25,6 @@ class OCSeriesModel
         return false;
     }
 
-    public static function getSeminarAndSeriesData()
-    {
-        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_series WHERE schedule = '1';");
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     /**
      * List all series user has access to globally and in the passed context (if any)
      *
@@ -124,15 +116,15 @@ class OCSeriesModel
      *
      * @return type
      */
-    public static function setSeriesforCourse($course_id, $config_id, $series_id, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    public static function setSeriesforCourse($course_id, $config_id, $series_id, $visibility = 'visible', $mkdate = 0)
     {
         self::removeSeriesforCourse($course_id);
 
         // Set Series
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
+                oc_seminar_series (config_id, series_id, seminar_id, visibility, mkdate)
                 VALUES (?, ?, ?, ?, ?, ? )");
-        $stmt->execute([$config_id, $series_id, $course_id, $visibility, $schedule, $mkdate]);
+        $stmt->execute([$config_id, $series_id, $course_id, $visibility, $mkdate]);
 
         // Set Episodes of that series too!
         // Getting it directly from opencast helps to get more controll!
@@ -162,7 +154,7 @@ class OCSeriesModel
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
             WHERE seminar_id = ?");
-        
+
         // Remove episode caches!
         $oc_seminar_episodes = OCSeminarEpisodes::findBySQL(
             'seminar_id = ?',
@@ -177,9 +169,9 @@ class OCSeriesModel
         $stmt_episodes = DBManager::get()->prepare("DELETE FROM
             oc_seminar_episodes
             WHERE seminar_id = ?");
-        
+
         $series_deleted = $stmt->execute([$course_id]) && $stmt_episodes->execute([$course_id]);
-        
+
         if ($series_deleted && !empty($series_list)) {
             // Take out the ACLs first before deleting the records to have a better control!
             OpencastLTI::removeAcls($course_id, $series_list);

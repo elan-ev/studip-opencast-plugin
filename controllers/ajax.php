@@ -62,6 +62,41 @@ class AjaxController extends OpencastController
         $this->render_json(array_values($results));
     }
 
+    public function course_episodes_action($course_id)
+    {
+        if (OCPerm::editAllowed($course_id)) {
+            $result = [];
+
+            foreach (OCSeminarSeries::findBySeminar_id($course_id) as $series) {
+                $api_client    = ApiEventsClient::getInstance($series['config_id']);
+                $search_client = SearchClient::getInstance($series['config_id']);
+
+                $episodes = $api_client->getBySeries($series['series_id'], $course_id);
+
+                foreach ($episodes as $episode) {
+                    $studip_episode = OCSeminarEpisodes::findOneBySQL(
+                        'series_id = ? AND episode_id = ? AND seminar_id = ?',
+                        [$series['series_id'], $episode['id'], $course_id]
+                    );
+
+                    $result[] = [
+                        'series_id'  => $series['series_id'],
+                        'id'         => $episode['id'],
+                        'name'       => $episode['title'],
+                        'date'       => $episode['start'],
+                        'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode['id'],
+                        'visible'    => $studip_episode->visible
+                    ];
+                }
+            }
+
+            $this->render_json(array_values($result));
+            return;
+        }
+
+        $this->render_json([]);
+    }
+
     public function getepisodes_action($course_id, $series_id, $simple = false)
     {
         $api_client    = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($series_id));

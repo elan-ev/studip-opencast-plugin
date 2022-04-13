@@ -165,10 +165,6 @@ class CourseController extends OpencastController
                 $this->workflow_client = WorkflowClient::getInstance();
 
                 foreach ($this->connectedSeries as $key => $series) {
-                    if ($series['schedule']) {
-                        $this->can_schedule = true;
-                    }
-
                     $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                     $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
 
@@ -324,7 +320,7 @@ class CourseController extends OpencastController
 
     public function config_action()
     {
-        if (!$GLOBALS['perm']->have_perm('dozent')) {
+        if (!OCPerm::editAllowed()) {
             throw new AccessDeniedException();
         }
         if (Request::isXhr()) {
@@ -345,7 +341,7 @@ class CourseController extends OpencastController
 
         $this->configs = OCConfig::getBaseServerConf();
 
-        $is_teacher = ($GLOBALS['perm']->get_perm() == 'dozent') ? true : false;
+        $is_teacher = OCPerm::editAllowed();
         if ($is_teacher) {
             $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
         }
@@ -372,14 +368,12 @@ class CourseController extends OpencastController
     {
         OCPerm::checkEdit($this->course_id);
 
-        $schedule = Config::get()->OPENCAST_ALLOW_LINKED_SERIES_UPLOAD;
         $series = json_decode(Request::get('series'), true);
         $episode_counts = OCSeriesModel::setSeriesforCourse(
             $course_id,
             $series['config_id'],
             $series['series_id'],
             'visible',
-            $schedule,
             time()
         );
         StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
@@ -390,7 +384,7 @@ class CourseController extends OpencastController
                 $this->_('Verarbeitung von %s Video(s), bitte haben Sie etwas Geduld und aktualisieren Sie die Seite gelegentlich!'),
                 htmlReady($episode_counts)
             );
-        
+
         }
         PageLayout::postSuccess($success_message);
         $this->redirect('course/index');
@@ -775,17 +769,6 @@ class CourseController extends OpencastController
                 null,
                 sprintf($this->_("Reiter ist %s."), htmlReady($vis[$visibility]))
             );
-        }
-        $this->redirect('course/index/false');
-    }
-
-    public function toggle_schedule_action($ticket)
-    {
-        OCPerm::checkEdit($this->course_id);
-
-        if (check_ticket($ticket)) {
-            $occourse = new OCCourseModel($this->course_id);
-            $occourse->toggleSeriesSchedule();
         }
         $this->redirect('course/index/false');
     }
