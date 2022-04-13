@@ -40,13 +40,19 @@
                     </ul>
                 </div>
                 <div class="oc--episode-buttons">
-                    <opencast-button icon="download" @click="showDownloadDialog=true" v-translate>
+                    <opencast-button icon="download" @click="DownloadDialog=true" v-translate>
                         Download
                     </opencast-button>
+                    <DownloadDialog :downloads="event.downloads" v-if="DownloadDialog"
+                        @cancel="DownloadDialog = false"/>
 
-                    <opencast-button icon="edit" v-translate>
+                    <opencast-button icon="edit" @click="editDialog = true" v-translate>
                         Bearbeiten
                     </opencast-button>
+                    <EpisodeEdit v-if="editDialog"
+                        :event="event"
+                        @done="editDialog = false"
+                        @cancel="editDialog = false"/>
 
                     <opencast-button v-if="event.annotation_tool"
                         icon="edit" :href="event.annotation_tool"
@@ -55,18 +61,15 @@
                         Annotationen
                     </opencast-button>
 
-                    <opencast-button icon="trash" @click="showConfirmDialog = true" v-translate>
+                    <opencast-button icon="trash" @click="DeleteConfirmDialog = true" v-translate>
                         Entfernen
                     </opencast-button>
-
-                    <ConfirmDialog v-if="showConfirmDialog"
+                    <ConfirmDialog v-if="DeleteConfirmDialog"
                         :title="$gettext('Aufzeichnung entfernen')"
                         :message="$gettext('Möchten Sie die Aufzeichnung wirklich entfernen?')"
                         @done="removeEpisode"
-                        @cancel="showConfirmDialog = false"
+                        @cancel="DeleteConfirmDialog = false"
                     />
-                    <DownloadDialog :downloads="event.downloads" v-if="showDownloadDialog"
-                        @cancel="showDownloadDialog = false"/>
                 </div>
             </div>
         </li>
@@ -79,6 +82,7 @@ import EmptyEpisodeCard from "@/components/Episodes/EmptyEpisodeCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import OpencastButton from '@/components/OpencastButton'
 import DownloadDialog from '@/components/Episodes/DownloadDialog'
+import EpisodeEdit from '@/components/Episodes/EpisodeEdit'
 
 
 export default {
@@ -86,7 +90,8 @@ export default {
 
     components: {
         OpencastButton, ConfirmDialog,
-        EmptyEpisodeCard, DownloadDialog
+        EmptyEpisodeCard, DownloadDialog,
+        EpisodeEdit
     },
 
     props: {
@@ -96,8 +101,9 @@ export default {
 
     data() {
         return {
-            showConfirmDialog: false,
-            showDownloadDialog: false,
+            DeleteConfirmDialog: false,
+            DownloadDialog: false,
+            editDialog: false,
             preview: PLUGIN_ASSET_URL + '/images/default-preview.png',
             play: PLUGIN_ASSET_URL + '/images/play.svg'
         }
@@ -108,7 +114,7 @@ export default {
             let view = this;
             this.$store.dispatch('removeEvent', this.event.id)
             .then(() => {
-                view.showConfirmDialog = false;
+                view.DeleteConfirmDialog = false;
             });
         },
     },
