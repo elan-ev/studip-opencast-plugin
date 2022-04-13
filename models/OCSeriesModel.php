@@ -147,9 +147,6 @@ class OCSeriesModel
      */
     public static function removeSeriesforCourse($course_id)
     {
-        // Get series list before deleting from db!
-        $series_list = OCSeminarSeries::getSeries($course_id);
-
         // Delete series from studip db
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
@@ -170,14 +167,7 @@ class OCSeriesModel
             oc_seminar_episodes
             WHERE seminar_id = ?");
 
-        $series_deleted = $stmt->execute([$course_id]) && $stmt_episodes->execute([$course_id]);
-
-        if ($series_deleted && !empty($series_list)) {
-            // Take out the ACLs first before deleting the records to have a better control!
-            OpencastLTI::removeAcls($course_id, $series_list);
-        }
-
-        return $series_deleted;
+        return $stmt->execute([$course_id]) && $stmt_episodes->execute([$course_id]);
     }
 
     /**

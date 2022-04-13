@@ -10,7 +10,7 @@
             @closeEdit="initCurrentData"
         >
             <template #content>
-                <div>
+                <div v-if="context.type == 'courses'">
                   <div v-if="currentUrl === null || ltiConnected == false">
                       <span v-if="currentUrl === null" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
                       <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
@@ -29,9 +29,19 @@
                       </translate>
                   </div>
                 </div>
+
+                <div v-else>
+                    <div class="messagebox messagebox_info cw-canvasblock-text-info">
+                        <translate>
+                            Dies ist ein Opencast Video-Block. Um ein Video zuzuordnen, muss dieser
+                            Block in einem Veranstaltungskontext sein. Sobald dieser Block z.B. in eine
+                            Veranstaltung kopiert wurde, können sie ein Video zuordnen!
+                        </translate>
+                    </div>
+                </div>
             </template>
             <template v-if="canEdit" #edit>
-                <form class="default" @submit.prevent="">
+                <form v-if="context.type == 'courses'" class="default" @submit.prevent="">
                     <label>
                         <translate>Video auswählen</translate>
                         <studip-select
@@ -65,6 +75,15 @@
                         </studip-select>
                     </label>
                 </form>
+
+                <div v-else>
+                    <div class="messagebox messagebox_info cw-canvasblock-text-info">
+                        <translate>
+                            Sie können diesem Block momentan kein Video zuordnen, da dieser sich nicht
+                            in einer Veranstaltung befindet.
+                        </translate>
+                    </div>
+                </div>
             </template>
 
             <template #info><translate>Informationen zum Opencast-Block</translate></template>
