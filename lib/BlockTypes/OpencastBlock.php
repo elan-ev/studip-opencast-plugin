@@ -30,7 +30,6 @@ class OpencastBlock extends BlockType
     public function initialPayload(): array
     {
         return [
-            'id'  => '',
             'url' => ''
         ];
     }

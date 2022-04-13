@@ -21,13 +21,6 @@
                         allowfullscreen
                     ></iframe>
                   </div>
-
-                  <div v-if="currentVisible == 'invisible' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
-                      <translate>
-                          Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
-                          Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
-                      </translate>
-                  </div>
                 </div>
 
                 <div v-else>
@@ -41,6 +34,13 @@
                 </div>
             </template>
             <template v-if="canEdit" #edit>
+                <div v-if="currentVisible == 'invisible' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
+                    <translate>
+                        Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
+                        Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
+                    </translate>
+                </div>
+
                 <form v-if="context.type == 'courses'" class="default" @submit.prevent="">
                     <label>
                         <translate>Video auswählen</translate>
@@ -115,7 +115,7 @@ export default {
             ltiConnected    : false,
             loadingSeries   : false,
             loadingEpisodes : false,
-            currentVisible  : false
+            currentVisible  : true
         }
     },
 
@@ -130,8 +130,7 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl,
-                visible   : this.currentVisible
+                url       : this.currentUrl
             } };
             const container = this.$store.getters["courseware-containers/related"]({
                 parent: this.block,
@@ -148,7 +147,6 @@ export default {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
             this.currentUrl     = get(this.block, "attributes.payload.url", "");
-            this.currentVisible = get(this.block, "attributes.payload.visible", "");
         },
 
         loadEpisodes() {
