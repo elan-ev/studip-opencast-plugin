@@ -63,8 +63,13 @@ class OpencastLTI
         $returnValue = true;
 
         if ($episode_only_id !== null) {
-            $setting = $defined_acls['e'][$episode_only_id];
-            return self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_only_id, 'episode');
+            if (isset($defined_acls['e'][$episode_only_id])) {
+                $setting = $defined_acls['e'][$episode_only_id];
+                if ($setting['acl'] !== null) {
+                    return self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_only_id, 'episode');
+                }
+            }
+            return null;
         }
         foreach ($defined_acls['s'] as $series_id => $setting) {
             $returnValue =
@@ -300,7 +305,7 @@ class OpencastLTI
 
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
-            $client->setACL($target_id, $acl);
+            return $client->setACL($target_id, $acl);
         }
 
         return null;
