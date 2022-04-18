@@ -303,12 +303,18 @@ class OpencastLTI
 
         $oc_acl = $client->getACL($target_id);
 
+        $state = null;
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
-            return $client->setACL($target_id, $acl);
+            $state = $client->setACL($target_id, $acl);
+            if ($state !== null && $target_type == 'episode') {
+                $config_id = OCConfig::getConfigIdForCourse($courses[0]);
+                $api = ApiWorkflowsClient::getInstance($config_id);
+                $api->republish($target_id);
+            }
         }
 
-        return null;
+        return $state;
     }
 
     public static function getSearchUrl($course_id)

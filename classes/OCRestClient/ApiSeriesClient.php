@@ -29,6 +29,6 @@ class ApiSeriesClient extends OCRestClient
 
         $result = $this->putJSON('/' . $series_id . '/acl', $data, true);
 
-        return $result[1] == 200;
+        return $result[1] == 204;
     }
 }
