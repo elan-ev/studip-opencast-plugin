@@ -64,13 +64,13 @@ class ApiEventsClient extends OCRestClient
         $sort   = Pager::getSortOrder();
         $search = Pager::getSearch();
 
-        $filter = 'is_part_of:' . $series_id;
+        $paramFilter = 'is_part_of:' . $series_id;
         if ($episode_id !== null) {
-            $filter .= ',identifier:' . $episode_id;
+            $paramFilter .= ',identifier:' . $episode_id;
         }
 
         $params = [
-            'filter' =>  $filter,
+            'filter' =>  $paramFilter,
         ];
 
         //get
