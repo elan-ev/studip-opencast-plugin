@@ -8,6 +8,7 @@
         <MountingPortal mountTo="#action-widget" name="sidebar-actions" append>
             <action-widget
                 @uploadVideo="uploadDialog = true"
+                @recordVideo="recordVideo"
                 @seriesManager="seriesDialog = true"
             ></action-widget>
         </MountingPortal>
@@ -55,7 +56,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['currentUser'])
+        ...mapGetters(['currentUser', 'course_series', 'config'])
     },
 
     methods: {
@@ -63,13 +64,19 @@ export default {
             this.uploadDialog = true;
         },
 
+        recordVideo() {
+            window.open(this.config['service_url'] + "/studio/index.html") // TODO add params
+        },
+
         seriesManager() {
             this.uploadDialog = true;
         }
     },
 
-    mounted() {
+    async mounted() {
         this.$store.dispatch('authenticateLti');
+        await this.$store.dispatch('loadCourseSeries');
+        this.$store.dispatch('configRead', this.course_series[0]['config_id']);
     }
 };
 </script>

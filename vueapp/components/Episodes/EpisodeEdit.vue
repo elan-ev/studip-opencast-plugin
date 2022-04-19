@@ -200,7 +200,7 @@ import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 
 export default {
-    name: 'EpisodeAdd',
+    name: 'EpisodeEdit',
 
     components: {
         StudipDialog,   MessageBox,     StudipButton,
@@ -364,6 +364,25 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('loadCourseSeries');
         this.$store.dispatch('loadUploadXML');
+
+        var presentation = this.event['downloads'].filter(function (e) {
+            return e['type'].includes('presenter')
+        })
+
+        var presenter = this.event['downloads'].filter(function (e) {
+            return e['type'].includes('presentation')
+        })
+
+        this.files['presentation/source'].push({
+            name: presentation[presentation.length-1]['url'].split('/').pop(),
+            size: presentation[presentation.length-1]['size'],
+        })
+
+        this.files['presenter/source'].push({
+            name: presenter[presenter.length-1]['url'].split('/').pop(),
+            size: presenter[presenter.length-1]['size'],
+        })
+    
     }
 }
 </script>

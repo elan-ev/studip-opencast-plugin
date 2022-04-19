@@ -4,7 +4,7 @@
             <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
             Medien Hochladen
         </li>
-        <li class="cw-action-widget">
+        <li class="cw-action-widget" @click="$emit('recordVideo')">
             <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
             Video Aufnehmen
         </li>
