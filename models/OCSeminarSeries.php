@@ -57,19 +57,22 @@ class OCSeminarSeries extends \SimpleORMap
         return self::findBySQL("1 ORDER BY mkdate");
     }
 
-    public static function getSeriesByUserMemberStatus($user_id, $status = 'dozent') {
-        $user_series = [];
-        foreach (self::findAll() as $series) {
-            if (empty($series->seminar_id) || in_array($series->series_id, $user_series)) {
-                continue;
-            }
-            $course = \Course::find($series->seminar_id);
-            if (!empty($course) && in_array($user_id, array_column($course->getMembersWithStatus($status), 'user_id'))) {
-                if (self::checkSeries($series->seminar_id, $series->series_id)) {
-                    $user_series[] = $series->series_id;
-                }
-            }
-        }
-        return $user_series;
+    public static function getSeriesByUserMemberStatus($user_id, $status = 'dozent')
+    {
+        $stmt = \DBManager::get()->prepare('SELECT ocss.series_id
+            FROM   seminar_user AS su
+            JOIN oc_seminar_series AS ocss USING (seminar_id)
+            WHERE  su.user_id = :user_id
+                   AND su.status = :status
+            GROUP  BY ocss.series_id
+            ORDER  BY ocss.mkdate
+        ');
+
+        $stmt->execute([
+            ':user_id' => $user_id,
+            ':status'  => $status
+        ]);
+
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 }
