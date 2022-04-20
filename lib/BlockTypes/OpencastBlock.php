@@ -60,7 +60,7 @@ class OpencastBlock extends BlockType
     {
         $payload = $this->getPayload();
         if ($rangeId && $payload) {
-            OpencastLTI::setCoursewareEpisodeAcls($rangeId, $payload['episode_id'], $payload['visible']);
+            OpencastLTI::setCoursewareEpisodeAcls($rangeId, $payload['episode_id']);
         }
         return $payload;
     }

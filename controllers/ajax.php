@@ -150,30 +150,32 @@ class AjaxController extends OpencastController
         $this->render_json(array_values($result));
     }
 
-    public function getltidata_action($course_id, $series_id)
+    public function getltidata_action($series_id)
     {
-        $config     = OCConfig::getConfigForCourse($course_id);
+        $course_id = Context::getId();
+
+        if (!$GLOBALS['perm']->have_studip_perm('user', $course_id)) {
+            throw new AccessDeniedException();
+        }
+
+        $config_id = OCConfig::getConfigIdForSeries($series_id);
+        $config    = OCConfig::getBaseServerConf($config_id);
 
         $current_user_id = $GLOBALS['auth']->auth['uid'];
         $lti_link        = new LtiLink(
-            OpencastLTI::getSearchUrl($course_id),
+            OpencastLTI::getSearchUrlForConfig($config_id),
             $config['lti_consumerkey'],
             $config['lti_consumersecret']
         );
 
         if (OCPerm::editAllowed($course_id, $current_user_id)) {
             $role = 'Instructor';
-        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+        } else {
             $role = 'Learner';
         }
 
-        $lti_link->setUser($current_user_id, $role, True);
+        $lti_link->setUser($current_user_id, $role, true);
         $lti_link->setCourse($course_id);
-        $lti_link->setResource(
-            $series_id,
-            'series',
-            'view complete series for course'
-        );
 
         $launch_data = $lti_link->getBasicLaunchData();
         $signature   = $lti_link->getLaunchSignature($launch_data);

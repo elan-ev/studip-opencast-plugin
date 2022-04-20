@@ -39,9 +39,9 @@ class OpencastLTI
      * @param string $episode_id the episode id
      * @param string $visiblity the visiblity state
      *
-     * @return bool 
+     * @return bool
      */
-    public static function setCoursewareEpisodeAcls($course_id, $episode_id, $visiblity)
+    public static function setCoursewareEpisodeAcls($course_id, $episode_id)
     {
 
         $events_api_client = \ApiEventsClient::create($course_id);
@@ -50,9 +50,10 @@ class OpencastLTI
         $current_episode_acls = $events_api_client->getACL($episode_id);
 
         $standard_course_acls = static::generate_standard_acls($course_id);
-        $course_acls = (isset($standard_course_acls[$visiblity])) ? $standard_course_acls[$visiblity]->toArray() : [];
+        $course_acls = (isset($standard_course_acls['visible'])) ? $standard_course_acls['visible']->toArray() : [];
         $acl_lti_course = (!empty($course_acls)) ? self::acl_course_lti($course_id, $course_acls) : [];
         $new_episode_acl =  [];
+
         // Removing the course acls from the current acls
         foreach ($current_episode_acls as $acl) {
             if (in_array($acl['role'], array_column($acl_lti_course, 'role'))) {
@@ -61,9 +62,10 @@ class OpencastLTI
             $new_episode_acl[] = $acl;
         }
         $new_episode_acl = array_merge($new_episode_acl, $acl_lti_course);
-        
+
         if ($current_episode_acls <> $new_episode_acl) {
             $events_api_client->setACL($episode_id, $new_episode_acl);
+
             // republish Workflow
             $workflow_api_client->republish($episode_id);
         }
@@ -82,53 +84,6 @@ class OpencastLTI
         }
 
         return $lti_result;
-    }
-
-    /**
-     * Removes all course related acls from series and episodes
-     * @param string $course_id course id
-     * @return bool Whether the operation was completed
-     */
-    public static function removeAcls($course_id, $series_list)
-    {
-        $series_api_client = \ApiSeriesClient::create($course_id);
-        $events_api_client = \ApiEventsClient::create($course_id);
-        $workflow_api_client = \ApiWorkflowsClient::create($course_id);
-
-        // iterate over all series for this course
-        foreach ($series_list as $series) {
-            $current_series_acls = $series_api_client->getACL($series['series_id']);
-            $new_series_acls = self::acl_course_cleanup($course_id, $current_series_acls);
-            foreach ($events_api_client->getSeriesEpisodes($series['series_id']) as $episode) {
-                $current_episode_acls = $events_api_client->getACL($episode['identifier']);
-                $new_episode_acl = self::acl_course_cleanup($course_id, $current_episode_acls);
-                if ($current_episode_acls <> $new_episode_acl) {
-                    $events_api_client->setACL($episode['identifier'], $new_episode_acl);
-                    // republish Workflow
-                    $workflow_api_client->republish($episode['identifier']);
-                }
-            }
-
-            if ($current_series_acls <> $new_series_acls) {
-                $series_api_client->setACL($series['series_id'], $new_series_acls);
-            }
-        }
-    }
-
-    private static function acl_course_cleanup($course_id, $acls)
-    {
-        $cleanup_result = [];
-        $role_l = static::role_learner($course_id);
-        $role_i = static::role_instructor($course_id);
-
-        foreach ($acls as $acl) {
-            if ($acl['role'] == $role_l || $acl['role'] == $role_i) {
-                continue;
-            }
-            $cleanup_result[] = $acl;
-        }
-
-        return $cleanup_result;
     }
 
     public static function updateEpisodeVisibility($course_id)
@@ -420,5 +375,16 @@ class OpencastLTI
         }
 
         return '';
+    }
+
+    public static function getSearchUrlForConfig($config_id)
+    {
+        $search_config = OCConfig::getConfigForService('search', $config_id);
+
+        $url = parse_url($search_config['service_url']);
+
+        return $url['scheme'] . '://' . $url['host']
+            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+
     }
 }

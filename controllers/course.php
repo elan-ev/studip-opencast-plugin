@@ -337,19 +337,17 @@ class CourseController extends OpencastController
 
         $this->set_title($this->_('Opencast Konfiguration'));
         $this->response->add_header('X-Title', rawurlencode($this->_('Serie mit Veranstaltung verknüpfen')));
-
-
         $this->configs = OCConfig::getBaseServerConf();
 
-        $is_teacher = OCPerm::editAllowed();
-        if ($is_teacher) {
-            $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
-        }
+        $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
+
+
+        $is_admin = $GLOBALS['perm']->have_studip_perm('admin', Context::getId());
 
         foreach ($this->configs as $id => $config) {
             $sclient = SeriesClient::getInstance($id);
             if ($series = $sclient->getAllSeries()) {
-                if ($is_teacher) {
+                if (!$is_admin) {
                     $filtered_series = [];
                     foreach ($series as $series_index => $series_obj) {
                         if (in_array($series_obj->identifier, $user_series)) {

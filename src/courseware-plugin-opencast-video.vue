@@ -163,7 +163,8 @@ export default {
         },
 
         runLTI() {
-            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/' + this.context.id + '/' +  this.currentSeries)
+            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/'
+                + this.currentSeries +  '?cid=' + this.context.id)
                 .then(({data}) => {
                     if (data.lti_url && data.lti_data) {
                         OC.ltiCall(data.lti_url, JSON.parse(data.lti_data),

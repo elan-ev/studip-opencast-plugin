@@ -123,7 +123,7 @@ class OCSeriesModel
         // Set Series
         $stmt = DBManager::get()->prepare("REPLACE INTO
                 oc_seminar_series (config_id, series_id, seminar_id, visibility, mkdate)
-                VALUES (?, ?, ?, ?, ?, ? )");
+                VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$config_id, $series_id, $course_id, $visibility, $mkdate]);
 
         // Set Episodes of that series too!
