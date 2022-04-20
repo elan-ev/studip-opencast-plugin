@@ -172,6 +172,9 @@ class OCCourseModel
                         $item->store();
                         if ($item->trys > 15) {
                             $item->delete();
+                        } elseif ($item->trys > 10) {
+                            $item->chdate = time() + 3600;
+                            $item->store();
                         }
                     } elseif ($set === NULL && isset($oc_acl_queue[$oc_episode['id']])) {
                         $oc_acl_queue[$oc_episode['id']]->delete();

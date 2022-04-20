@@ -307,7 +307,7 @@ class OpencastLTI
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
             $state = $client->setACL($target_id, $acl);
-            if ($state !== null && $target_type == 'episode') {
+            if ($state === true && $target_type == 'episode') {
                 $config_id = OCConfig::getConfigIdForCourse($courses[0]);
                 $api = ApiWorkflowsClient::getInstance($config_id);
                 $api->republish($target_id);
