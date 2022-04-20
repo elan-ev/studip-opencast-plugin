@@ -1082,6 +1082,7 @@ class CourseController extends OpencastController
 
         if (check_ticket($ticket)) {
             CourseConfig::get($this->course_id)->store('COURSE_HIDE_EPISODES', $visibility);
+            OpencastLTI::setAcls($this->course_id, null, true);
         }
         $this->redirect('course/index/false');
     }

@@ -21,12 +21,12 @@ class OpencastLTI
      * @param [type] $course_id [description]
      * @return bool Whether the operation was completed
      */
-    public static function setAcls($course_id, $episode_id = null)
+    public static function setAcls($course_id, $episode_id = null, $series_only = false)
     {
         // write the new ACLs to Opencast
-        if ($mapping = self::generate_acl_mapping_for_course($course_id, $episode_id)) {
+        if ($mapping = self::generate_acl_mapping_for_course($course_id, $episode_id, $series_only)) {
             $acls = self::mapping_to_defined_acls($mapping);
-            return self::apply_defined_acls($acls, $episode_id);
+            return self::apply_defined_acls($acls, $episode_id, $series_only);
         }
         return true;
     }
@@ -58,11 +58,11 @@ class OpencastLTI
         }
     }
 
-    public static function apply_defined_acls($defined_acls, $episode_only_id = null)
+    public static function apply_defined_acls($defined_acls, $episode_only_id = null, $series_only = false)
     {
         $returnValue = true;
 
-        if ($episode_only_id !== null) {
+        if (!$series_only && $episode_only_id !== null) {
             if (isset($defined_acls['e'][$episode_only_id])) {
                 $setting = $defined_acls['e'][$episode_only_id];
                 if ($setting['acl'] !== null) {
@@ -71,15 +71,18 @@ class OpencastLTI
             }
             return null;
         }
+
         foreach ($defined_acls['s'] as $series_id => $setting) {
             $returnValue =
                 self::apply_acl_to_courses($setting['acl'], $setting['courses'], $series_id, 'series')
                 && $returnValue;
         }
-        foreach ($defined_acls['e'] as $episode_id => $setting) {
-            $returnValue =
-                self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode')
-                && $returnValue;
+        if (!$series_only) {
+            foreach ($defined_acls['e'] as $episode_id => $setting) {
+                $returnValue =
+                    self::apply_acl_to_courses($setting['acl'], $setting['courses'], $episode_id, 'episode')
+                    && $returnValue;
+            }
         }
         return $returnValue;
     }
@@ -144,7 +147,7 @@ class OpencastLTI
      * @param string $course_id
      * @return mixed             array, if setting of the acls is needed, false otherwise
      */
-    public static function generate_acl_mapping_for_course($course_id, $episode_id = null)
+    public static function generate_acl_mapping_for_course($course_id, $episode_id = null, $series_only = false)
     {
         $series_list = OCSeminarSeries::getSeries($course_id);
 
@@ -173,10 +176,12 @@ class OpencastLTI
             foreach ($entries as $entry) {
                 $result['s'][$series['series_id']][$entry['seminar_id']] = $vis;
 
-                $course_model = new \OCCourseModel($entry['seminar_id']);
-                $episodes     = $course_model->getEpisodes(false, false, $episode_id);
-                foreach ($episodes as $episode) {
-                    $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
+                if (!$series_only) {
+                    $course_model = new \OCCourseModel($entry['seminar_id']);
+                    $episodes     = $course_model->getEpisodes(false, false, $episode_id);
+                    foreach ($episodes as $episode) {
+                        $result['e'][$episode['id']][$entry['seminar_id']] = $episode['visibility'] ?: $vis;
+                    }
                 }
             }
         }
