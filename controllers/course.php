@@ -108,11 +108,6 @@ class CourseController extends OpencastController
             PageLayout::postError($this->_('Die Datei konnte nicht erfolgreich hochgeladen werden.'));
         }
 
-        $this->mayWatchEpisodes = $GLOBALS['perm']->have_studip_perm('autor', $this->course_id);
-        if (!$this->mayWatchEpisodes) {
-            PageLayout::postInfo($this->_('Sie sind in dieser Veranstaltung nur Leser*in. Sie können die Aufzeichnungen daher nicht ansehen. Bitte wenden Sie sich an die Lehrenden dieser Veranstaltung!'));
-        }
-
         // check, if studygroup upload is enabled and if the user is participant there
         $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$this->course_id])['studygroup_id'];
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
