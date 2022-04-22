@@ -314,7 +314,7 @@ class OpencastLTI
             $state = $client->setACL($target_id, $acl);
             if ($state === true && $target_type == 'episode') {
                 $config_id = OCConfig::getConfigIdForCourse($courses[0]);
-                $api = ApiWorkflowsClient::getInstance($config_id);
+                $api = \ApiWorkflowsClient::getInstance($config_id);
                 $api->republish($target_id);
             }
         }
