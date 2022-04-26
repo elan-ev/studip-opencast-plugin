@@ -164,8 +164,8 @@ class AjaxController extends OpencastController
         $current_user_id = $GLOBALS['auth']->auth['uid'];
         $lti_link        = new LtiLink(
             OpencastLTI::getSearchUrlForConfig($config_id),
-            $config['lti_consumerkey'],
-            $config['lti_consumersecret']
+            $config['settings']['lti_consumerkey'],
+            $config['settings']['lti_consumersecret']
         );
 
         if (OCPerm::editAllowed($course_id, $current_user_id)) {
