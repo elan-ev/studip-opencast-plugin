@@ -324,7 +324,10 @@ if (OCPerm::editAllowed($course_id)) {
             $config_actions->addLink(
                 $_('Neue Series anlegen'),
                 $controller->url_for('course/create_series'),
-                Icon::create('tools')
+                Icon::create('tools'),
+                [
+                    'class' => 'oc-debounce'
+                ]
             );
 
             if ($GLOBALS['perm']->have_perm('root')) {

@@ -662,7 +662,27 @@ const OC = {
         var $pass       = $elem.find('input[type=hidden]');
 
         $pass.val($pass_field.val());
+    },
+
+    /* Display an non dismissible modal preventing the user from undertaking
+    *  further actions in the current browser tab (e.g. until the page reloaded)
+    */
+    lockViewportBeforeReload: function() {
+        $('<div>')
+            .text('Ihre Anfrage wird bearbeitet. Bitte haben Sie einen kleinen Moment Geduld.')
+            .dialog({
+                closeOnEscape: false,
+                modal: true,
+                title: 'In Arbeit'
+            })
+            .parent()
+            .find('.ui-dialog-titlebar')
+            .hide();
     }
 };
 
-window.OC = OC
+window.OC = OC;
+
+$(function() {
+  $(document.body).on('click', '.oc-debounce', OC.lockViewportBeforeReload);
+});

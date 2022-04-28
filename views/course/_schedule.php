@@ -150,7 +150,7 @@
                                 </a>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
-                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 0 . '/' . $date->termin_id) ?>">
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 0 . '/' . $date->termin_id) ?>" class="oc-debounce">
                                         <?= Icon::create(
                                             'video',
                                             Icon::ROLE_CLICKABLE,
