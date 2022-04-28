@@ -151,7 +151,7 @@ $sort_orders = Pager::getSortOptions();
                                     <? endif ?>
                                 </li>
                                 <li>
-                                    <?= $_('Ersteller/in') ?>:
+                                    <?= $_('Vortragende:') ?>
                                     <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                                 </li>
                                 <li>

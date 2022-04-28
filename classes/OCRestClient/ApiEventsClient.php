@@ -272,7 +272,7 @@ class ApiEventsClient extends OCRestClient
             'title'         => $episode->title,
             'start'         => $episode->start,
             'description'   => $episode->description,
-            'author'        => $episode->creator,
+            'author'        => is_array($episode->presenter) ? implode(', ', $episode->presenter) : $episode->creator,
             'has_previews'  => false
         ];
 

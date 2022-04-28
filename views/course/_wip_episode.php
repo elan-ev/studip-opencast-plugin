@@ -30,7 +30,7 @@
                                         <?= $_('Video wird verarbeitet...') ?>
                                     </li>
                                     <li>
-                                        <?= $_('Ersteller/in:') ?>
+                                        <?= $_('Vortragende:') ?>
                                         <?= $episode->mediapackage->creators->creator ?>
                                     </li>
                                     <li class="oce_list_date">
