@@ -51,4 +51,28 @@ class OCSeminarSeries extends \SimpleORMap
 
         return $return;
     }
+
+    public static function findAll()
+    {
+        return self::findBySQL("1 ORDER BY mkdate");
+    }
+
+    public static function getSeriesByUserMemberStatus($user_id, $status = 'dozent')
+    {
+        $stmt = \DBManager::get()->prepare('SELECT ocss.series_id
+            FROM   seminar_user AS su
+            JOIN oc_seminar_series AS ocss USING (seminar_id)
+            WHERE  su.user_id = :user_id
+                   AND su.status = :status
+            GROUP  BY ocss.series_id
+            ORDER  BY ocss.mkdate
+        ');
+
+        $stmt->execute([
+            ':user_id' => $user_id,
+            ':status'  => $status
+        ]);
+
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
 }

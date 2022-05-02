@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\OCSeminarSeries;
+use Opencast\Models\OCSeminarEpisodes;
 use Opencast\LTI\OpencastLTI;
 
 class OCSeriesModel
@@ -22,14 +23,6 @@ class OCSeriesModel
         }
 
         return false;
-    }
-
-    public static function getSeminarAndSeriesData()
-    {
-        $stmt = DBManager::get()->prepare("SELECT * FROM oc_seminar_series WHERE schedule = '1';");
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -123,16 +116,27 @@ class OCSeriesModel
      *
      * @return type
      */
-    public static function setSeriesforCourse($course_id, $config_id, $series_id, $visibility = 'visible', $schedule = 0, $mkdate = 0)
+    public static function setSeriesforCourse($course_id, $config_id, $series_id, $visibility = 'visible', $mkdate = 0)
     {
         self::removeSeriesforCourse($course_id);
 
+        // Set Series
         $stmt = DBManager::get()->prepare("REPLACE INTO
-                oc_seminar_series (config_id, series_id, seminar_id, visibility, schedule, mkdate)
-                VALUES (?, ?, ?, ?, ?, ? )");
-        $stmt->execute([$config_id, $series_id, $course_id, $visibility, $schedule, $mkdate]);
+                oc_seminar_series (config_id, series_id, seminar_id, visibility, mkdate)
+                VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$config_id, $series_id, $course_id, $visibility, $mkdate]);
+
+        // Set Episodes of that series too!
+        // Getting it directly from opencast helps to get more controll!
+        $events_api_client = \ApiEventsClient::create($course_id);
+        $unstored_episodes = $events_api_client->getSeriesEpisodes($series_id);
+        foreach ($unstored_episodes as $episode) {
+            \OCModel::setEpisode($episode['identifier'], $series_id, $course_id, $visibility, 0);
+        }
 
         OpencastLTI::setAcls($course_id);
+
+        return (!empty($unstored_episodes)) ? count($unstored_episodes) : 0;
     }
 
     /**
@@ -143,10 +147,22 @@ class OCSeriesModel
      */
     public static function removeSeriesforCourse($course_id)
     {
+        // Delete series from studip db
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
             WHERE seminar_id = ?");
 
+        // Remove episode caches!
+        $oc_seminar_episodes = OCSeminarEpisodes::findBySQL(
+            'seminar_id = ?',
+            [$course_id]
+        );
+        foreach ($oc_seminar_episodes as $episode) {
+            $cache_key = 'sop/episodes/'. $episode->episode_id;
+            StudipCacheFactory::getCache()->expire($cache_key);
+        }
+
+        // Delete stored episode in studip db
         $stmt_episodes = DBManager::get()->prepare("DELETE FROM
             oc_seminar_episodes
             WHERE seminar_id = ?");

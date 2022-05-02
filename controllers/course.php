@@ -165,10 +165,6 @@ class CourseController extends OpencastController
                 $this->workflow_client = WorkflowClient::getInstance();
 
                 foreach ($this->connectedSeries as $key => $series) {
-                    if ($series['schedule']) {
-                        $this->can_schedule = true;
-                    }
-
                     $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                     $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
 
@@ -324,7 +320,7 @@ class CourseController extends OpencastController
 
     public function config_action()
     {
-        if (!$GLOBALS['perm']->have_perm('root')) {
+        if (!OCPerm::editAllowed()) {
             throw new AccessDeniedException();
         }
         if (Request::isXhr()) {
@@ -341,14 +337,27 @@ class CourseController extends OpencastController
 
         $this->set_title($this->_('Opencast Konfiguration'));
         $this->response->add_header('X-Title', rawurlencode($this->_('Serie mit Veranstaltung verknüpfen')));
-
-
         $this->configs = OCConfig::getBaseServerConf();
+
+        $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
+
+
+        $is_admin = $GLOBALS['perm']->have_studip_perm('admin', Context::getId());
 
         foreach ($this->configs as $id => $config) {
             $sclient = SeriesClient::getInstance($id);
             if ($series = $sclient->getAllSeries()) {
-                $this->all_series[$id] = $series;
+                if (!$is_admin) {
+                    $filtered_series = [];
+                    foreach ($series as $series_index => $series_obj) {
+                        if (in_array($series_obj->identifier, $user_series)) {
+                            $filtered_series[] = $series_obj;
+                        }
+                    }
+                    $this->all_series[$id] = $filtered_series;
+                } else {
+                    $this->all_series[$id] = $series;
+                }
             }
         }
     }
@@ -358,18 +367,24 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         $series = json_decode(Request::get('series'), true);
-        OCSeriesModel::setSeriesforCourse(
+        $episode_counts = OCSeriesModel::setSeriesforCourse(
             $course_id,
             $series['config_id'],
             $series['series_id'],
             'visible',
-            0,
             time()
         );
         StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
-        PageLayout::postSuccess(
-            $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.')
-        );
+
+        $success_message = $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.');
+        if ($episode_counts) {
+            $success_message .= ' ' . sprintf(
+                $this->_('Verarbeitung von %s Video(s), bitte haben Sie etwas Geduld und aktualisieren Sie die Seite gelegentlich!'),
+                htmlReady($episode_counts)
+            );
+
+        }
+        PageLayout::postSuccess($success_message);
         $this->redirect('course/index');
     }
 
@@ -752,17 +767,6 @@ class CourseController extends OpencastController
                 null,
                 sprintf($this->_("Reiter ist %s."), htmlReady($vis[$visibility]))
             );
-        }
-        $this->redirect('course/index/false');
-    }
-
-    public function toggle_schedule_action($ticket)
-    {
-        OCPerm::checkEdit($this->course_id);
-
-        if (check_ticket($ticket)) {
-            $occourse = new OCCourseModel($this->course_id);
-            $occourse->toggleSeriesSchedule();
         }
         $this->redirect('course/index/false');
     }

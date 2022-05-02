@@ -232,16 +232,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $main    = new Navigation($title);
 
         $main->setURL(PluginEngine::getURL($this, [], 'course/index'));
-        $main->setImage(Icon::create(
-            $this->getPluginURL() . '/images/opencast-black.svg',
-            Icon::ROLE_CLICKABLE,
-            ['title' => 'Opencast']
-        ));
-        $main->setImage(Icon::create(
-            $this->getPluginURL() . '/images/opencast-red.svg',
-            Icon::ROLE_ATTENTION,
-            ['title' => 'Opencast']
-        ));
 
         $overview = new Navigation($this->_('Aufzeichnungen'));
         $overview->setURL(PluginEngine::getURL($this, [], 'course/index'));
@@ -253,12 +243,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             OCPerm::editAllowed($course_id)
             && !$course->isStudygroup()
         ) {
+
             $scheduler = new Navigation($this->_('Aufzeichnungen planen'));
             $scheduler->setURL(PluginEngine::getURL($this, [], 'course/scheduler'));
-
-
             $series_metadata = OCSeminarSeries::findBySeminar_id($course_id);
-            if ($series_metadata && $series_metadata[0]['schedule'] == '1') {
+
+            if ($series_metadata) {
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }

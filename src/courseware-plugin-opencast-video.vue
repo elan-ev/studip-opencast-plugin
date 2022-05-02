@@ -10,7 +10,7 @@
             @closeEdit="initCurrentData"
         >
             <template #content>
-                <div>
+                <div v-if="context.type == 'courses'">
                   <div v-if="currentUrl === null || ltiConnected == false">
                       <span v-if="currentUrl === null" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
                       <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
@@ -21,46 +21,32 @@
                         allowfullscreen
                     ></iframe>
                   </div>
+                </div>
 
-                  <div v-if="currentVisible == 'invisible' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
-                      <translate>
-                          Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
-                          Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
-                      </translate>
-                  </div>
+                <div v-else>
+                    <div class="messagebox messagebox_info cw-canvasblock-text-info">
+                        <translate>
+                            Dies ist ein Opencast Video-Block. Um ein Video zuzuordnen, muss dieser
+                            Block in einem Veranstaltungskontext sein. Sobald dieser Block z.B. in eine
+                            Veranstaltung kopiert wurde, können sie ein Video zuordnen!
+                        </translate>
+                    </div>
                 </div>
             </template>
             <template v-if="canEdit" #edit>
-                <form class="default" @submit.prevent="">
-                    <label>
-                        <translate>Serie auswählen</translate>
-                        <studip-select
-                            :options="series"
-                            :reduce="series => series.series_id"
-                            :clearable="false"
-                            v-model="currentSeries"
-                        >
-                            <template #open-indicator="selectAttributes">
-                                <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
-                            </template>
-                            <template #no-options="{ search, searching, loading }">
-                                <translate v-if="loadingSeries">Bitte warten, verfügbare Serien werden geladen...</translate>
-                                <translate v-else>Es wurden keine zugreifbaren Serien gefunden!</translate>
-                            </template>
-                            <template #selected-option="{name}">
-                                <span>{{name}}</span>
-                            </template>
-                            <template #option="{name}">
-                                <span>{{name}}</span>
-                            </template>
-                        </studip-select>
-                    </label>
+                <div v-if="currentVisible == 'invisible' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
+                    <translate>
+                        Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
+                        Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
+                    </translate>
+                </div>
 
-                    <label v-if="currentSeries">
+                <form v-if="context.type == 'courses'" class="default" @submit.prevent="">
+                    <label>
                         <translate>Video auswählen</translate>
                         <studip-select
                             :options="episodes"
-                            label="episode"
+                            label="name"
                             :reduce="episodes => episodes.id"
                             :clearable="false"
                             v-model="currentEpisode"
@@ -89,6 +75,15 @@
                         </studip-select>
                     </label>
                 </form>
+
+                <div v-else>
+                    <div class="messagebox messagebox_info cw-canvasblock-text-info">
+                        <translate>
+                            Sie können diesem Block momentan kein Video zuordnen, da dieser sich nicht
+                            in einer Veranstaltung befindet.
+                        </translate>
+                    </div>
+                </div>
             </template>
 
             <template #info><translate>Informationen zum Opencast-Block</translate></template>
@@ -119,7 +114,8 @@ export default {
             episodes        : [],
             ltiConnected    : false,
             loadingSeries   : false,
-            loadingEpisodes : false
+            loadingEpisodes : false,
+            currentVisible  : true
         }
     },
 
@@ -134,8 +130,7 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl,
-                visible   : this.currentVisible
+                url       : this.currentUrl
             } };
             const container = this.$store.getters["courseware-containers/related"]({
                 parent: this.block,
@@ -152,33 +147,15 @@ export default {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
             this.currentUrl     = get(this.block, "attributes.payload.url", "");
-            this.currentVisible = get(this.block, "attributes.payload.visible", "");
-        },
-
-        loadSeries() {
-            let view = this;
-            view.loadingSeries = true;
-
-            axios
-                .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getseries?cid=' + this.context.id)
-                .then(response => {
-                    this.series = response.data;
-                    view.loadingSeries = false;
-                });
         },
 
         loadEpisodes() {
-            if (!this.currentSeries) {
-                return;
-            }
-
             let view = this;
             view.loadingEpisodes = true;
 
             axios
-                .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getepisodes/'
-                    + this.context.id + '/' + this.currentSeries + '/simple'
-                    + '?cid=' + this.context.id)
+                .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/course_episodes/'
+                    + this.context.id + '?cid=' + this.context.id)
                 .then(response => {
                     this.episodes = response.data;
                     view.loadingEpisodes = false;
@@ -186,7 +163,8 @@ export default {
         },
 
         runLTI() {
-            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/' + this.context.id + '/' +  this.currentSeries)
+            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/'
+                + this.currentSeries +  '?cid=' + this.context.id)
                 .then(({data}) => {
                     if (data.lti_url && data.lti_data) {
                         OC.ltiCall(data.lti_url, JSON.parse(data.lti_data),
@@ -204,22 +182,19 @@ export default {
     },
 
     watch: {
-        currentSeries(old_id, new_id) {
-            this.loadEpisodes();
-        },
-
         currentEpisode(old_id, new_id) {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
-                    this.currentUrl     = this.episodes[id].url
-                    this.currentVisible = this.episodes[id].visible
+                    this.currentSeries  = this.episodes[id].series_id;
+                    this.currentUrl     = this.episodes[id].url;
+                    this.currentVisible = this.episodes[id].visible;
                 }
             }
         }
     },
 
     mounted() {
-        this.loadSeries();
+        this.loadEpisodes();
         this.initCurrentData();
         this.runLTI();
     },

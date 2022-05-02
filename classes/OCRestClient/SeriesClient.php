@@ -59,7 +59,7 @@ class SeriesClient extends OCRestClient
 
         if ((int)$res[1] === 201) {
             $series_id  = $json['identifier'];
-            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, $vis, 1, time());
+            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, $vis, time());
 
             self::updateAccesscontrolForSeminar($series_id, $acl[$vis]->as_xml());
 

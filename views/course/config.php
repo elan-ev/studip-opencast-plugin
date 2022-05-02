@@ -13,7 +13,7 @@
                 <select name="series"
                         id="series-select"
                         data-placeholder="<?= $_('Wählen Sie eine Series aus.') ?>"
-                        style="max-width: 500px"
+                        style="max-width: 700px"
                 >
 
                     <? foreach ($configs as $id => $config): ?>
@@ -43,7 +43,7 @@
 <script type="text/javascript">
     jQuery("#series-select").select2({
         max_selected_options: 1,
-        width: "500px",
+        width: "700px",
         dropdownParent: $('#select-series')
     });
 </script>

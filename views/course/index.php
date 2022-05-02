@@ -160,50 +160,50 @@ if (OCPerm::editAllowed($course_id)) {
             );
         }
 
-        if ($can_schedule) {
-            if (($controller->isStudyGroup() && $controller->isStudentUploadEnabled())
-                || !$controller->isStudyGroup()
-                || ($controller->isStudyGroup() && !$controller->isStudentUploadEnabled() && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)
-            ) {
+
+        if (($controller->isStudyGroup() && $controller->isStudentUploadEnabled())
+            || !$controller->isStudyGroup()
+            || ($controller->isStudyGroup() && !$controller->isStudentUploadEnabled() && Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF)
+        ) {
+            $actions->addLink(
+                $_('Medien hochladen'),
+                $controller->url_for('course/upload'),
+                Icon::create('upload'),
+                []
+            );
+
+            if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
+                $base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                 $actions->addLink(
-                    $_('Medien hochladen'),
-                    $controller->url_for('course/upload'),
-                    Icon::create('upload'),
-                    []
+                    $_('Video aufnehmen'),
+                    URLHelper::getLink(
+                        $config['service_url'] . '/studio/index.html',
+                        [
+                            'cid'             => null,
+                            'upload.seriesId' => $connectedSeries[0]['series_id'],
+                            'upload.acl'      => 'false',
+                            'return.target'   => PluginEngine::getLink('opencast/course/index', ['cid' => $course_id]),
+                            'return.label'    => 'Stud.IP'
+                        ]
+                    ),
+                    Icon::create('video2'),
+                    ['target' => '_blank']
                 );
-
-                if (\Config::get()->OPENCAST_ALLOW_STUDIO) {
-                    $base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                    $actions->addLink(
-                        $_('Video aufnehmen'),
-                        URLHelper::getLink(
-                            $config['service_url'] . '/studio/index.html',
-                            [
-                                'cid'             => null,
-                                'upload.seriesId' => $connectedSeries[0]['series_id'],
-                                'upload.acl'      => 'false',
-                                'return.target'   => PluginEngine::getLink('opencast/course/index', ['cid' => $course_id]),
-                                'return.label'    => 'Stud.IP'
-                            ]
-                        ),
-                        Icon::create('video2'),
-                        ['target' => '_blank']
-                    );
-                    URLHelper::setBaseURL($base);
-                }
-            }
-
-            // TODO: Schnittool einbinden - Passender Workflow kucken
-
-            if ($GLOBALS['perm']->have_perm('root')) {
-                $config_actions->addLink(
-                    $_('Kursspezifischen Workflow konfigurieren'),
-                    $controller->url_for('course/workflow'),
-                    Icon::create('admin'),
-                    ['data-dialog' => 'size=auto']
-                );
+                URLHelper::setBaseURL($base);
             }
         }
+
+        // TODO: Schnittool einbinden - Passender Workflow kucken
+
+        if ($GLOBALS['perm']->have_perm('root')) {
+            $config_actions->addLink(
+                $_('Kursspezifischen Workflow konfigurieren'),
+                $controller->url_for('course/workflow'),
+                Icon::create('admin'),
+                ['data-dialog' => 'size=auto']
+            );
+        }
+
 
         if (!$controller->isStudyGroup()) {
             if ($coursevis == 'visible') {
@@ -227,28 +227,6 @@ if (OCPerm::editAllowed($course_id)) {
                 $controller->url_for('course/withdraw_tos/' . get_ticket()),
                 Icon::create('decline')
             );
-        }
-
-        if ($GLOBALS['perm']->have_perm('root')) {
-            if ($can_schedule) {
-                $config_actions->addLink(
-                    $_('Medienaufzeichnung verbieten'),
-                    $controller->url_for('course/toggle_schedule/' . get_ticket()),
-                    Icon::create('video+accept'),
-                    [
-                        'title' => $_('Die Medienaufzeichnung ist momentan erlaubt.')
-                    ]
-                );
-            } else {
-                $config_actions->addLink(
-                    $_('Medienaufzeichnung erlauben'),
-                    $controller->url_for('course/toggle_schedule/' . get_ticket()),
-                    Icon::create('video+decline'),
-                    [
-                        'title' => $_('Die Medienaufzeichnung ist momentan verboten.')
-                    ]
-                );
-            }
         }
 
         if (!$controller->isStudyGroup() || Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
@@ -327,13 +305,13 @@ if (OCPerm::editAllowed($course_id)) {
                 Icon::create('tools')
             );
 
-            if ($GLOBALS['perm']->have_perm('root')) {
+            if (OCPerm::editAllowed()) {
                 $config_actions->addLink(
                     $_('Vorhandene Series verknüpfen'),
                     $controller->url_for('course/config'),
                     Icon::create('group'),
                     [
-                        'data-dialog' => 'width=550;height=500'
+                        'data-dialog' => 'width=750;height=500'
                     ]
                 );
             }
