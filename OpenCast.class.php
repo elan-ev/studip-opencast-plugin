@@ -384,7 +384,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     public function NotifyUserOnNewEpisode($x, $data)
     {
         $ocmodel = new OCCourseModel($data['course_id']);
-        if ($ocmodel->getSeriesVisibility() == 'visible') {
+        if ($ocmodel->getSeriesVisibility() == 'visible' && empty($data['episode_id'])) {
             $course  = Course::find($data['course_id']);
             $members = $course->members;
 
