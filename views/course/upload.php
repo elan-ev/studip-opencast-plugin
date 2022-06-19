@@ -250,14 +250,8 @@ if($vis == false){
     </div>
 
     <?= MessageBox::info(
-        $_('Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!'),
-        [
-            $_('Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich geschützten Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.'),
-            '<a href="https://elan-ev.de/themen_p60.php" target="_blank">' .
-            $_('§60 UrhG Zusammenfassung') .
-            '</a>',
-            $_('Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht.')
-        ]
+        formatReady(Config::get()->OPENCAST_UPLOAD_INFO_TEXT_HEADING),
+        array_map('formatReady', explode("\n-", preg_replace('/^- *?/', '', Config::get()->OPENCAST_UPLOAD_INFO_TEXT_BODY)))
     ) ?>
 
     <footer>

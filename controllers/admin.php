@@ -90,7 +90,13 @@ class AdminController extends OpencastController
 
         // set tos (if any)
         if (Request::get('tos')) {
-            Configuration::setGlobalConfig(OPENCAST_TOS, Request::get('tos'));
+            Configuration::setGlobalConfig('OPENCAST_TOS', Request::get('tos'));
+        }
+        if (Request::get('upload_info_heading')) {
+            Configuration::setGlobalConfig('OPENCAST_UPLOAD_INFO_TEXT_HEADING', Request::get('upload_info_heading'));
+        }
+        if (Request::get('upload_info_body')) {
+            Configuration::setGlobalConfig('OPENCAST_UPLOAD_INFO_TEXT_BODY', Request::get('upload_info_body'));
         }
 
         foreach ($request as $config_id => $config) {
