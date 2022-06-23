@@ -139,7 +139,7 @@ class NewScheme extends Migration
             `id` int NOT NULL AUTO_INCREMENT,
             `playlist_id` int,
             `seminar_id` varchar(32),
-            `visibility` enum('invisible','visible'),
+            `visibility` enum('hidden','visible'),
             PRIMARY KEY (`id`),
             FOREIGN KEY (`playlist_id`) REFERENCES `oc_playlist`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             KEY `U.1` (`playlist_id`, `seminar_id`)
@@ -150,7 +150,7 @@ class NewScheme extends Migration
         $sql[] = "CREATE TABLE `oc_playlist_seminar_video` (
             `playlist_seminar_id` int,
             `video_id` int,
-            `visibility` enum('invisible','visible'),
+            `visibility` enum('hidden','visible'),
             PRIMARY KEY (`playlist_seminar_id`, `video_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             FOREIGN KEY (`playlist_seminar_id`) REFERENCES `oc_playlist_seminar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -161,7 +161,7 @@ class NewScheme extends Migration
         $sql[] = "CREATE TABLE `oc_video_seminar` (
             `video_id` int,
             `seminar_id` varchar(32),
-            `visibility` enum('invisible','visible'),
+            `visibility` enum('hidden','visible'),
             PRIMARY KEY (`video_id`, `seminar_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`)  ON DELETE CASCADE ON UPDATE CASCADE
           );
