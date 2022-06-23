@@ -39,6 +39,15 @@ paths:
         description: The numbers of items to return
         default: 20
         minimum: 20
+      - in: "body"
+        name: "filter"
+        required: false
+        description: Pass some filters to narrow down the list of videos
+        schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Filter"
+
       responses:
         "200":
           description: "successful operation"
@@ -103,9 +112,9 @@ paths:
             type: "object"
             items:
               $ref: "#/definitions/Playlist"
-  /playlists/{playlist_id}:
+  /playlists/{token}:
     parameters:
-      - name: "playlist_id"
+      - name: "token"
         in: "path"
         description: "ID of the playlist"
         required: true
@@ -153,16 +162,11 @@ paths:
       responses:
         "200":
           description: "successful operation"
-  /playlists/{playlist_id}/video/{video_id}:
+  /playlists/{token}/video/{token}:
     parameters:
-      - name: "playlist_id"
+      - name: "token"
         in: "path"
-        description: "ID of the playlist"
-        required: true
-        type: "integer"
-      - name: "video_id"
-        in: "path"
-        description: "ID of a video"
+        description: "token reference for playlist or video"
         required: true
         type: "integer"
     put:
@@ -189,9 +193,9 @@ paths:
       responses:
         "200":
           description: "successful operation"
-  /playlists/{playlist_id}/user/{user_id}:
+  /playlists/{token}/user/{user_id}:
     parameters:
-      - name: "playlist_id"
+      - name: "token"
         in: "path"
         description: "ID of the playlist"
         required: true
@@ -235,9 +239,9 @@ paths:
       responses:
         "200":
           description: "successful operation"
-  /course/{course_id}/playlists/{playlist_id}:
+  /courses/{course_id}/playlists/{token}:
     parameters:
-      - name: "playlist_id"
+      - name: "token"
         in: "path"
         description: "ID of the playlist"
         required: true
@@ -271,9 +275,9 @@ paths:
       responses:
         "200":
           description: "successful operation"
-  /videos/{video_id}:
+  /videos/{token}:
     parameters:
-      - name: "video_id"
+      - name: "token"
         in: "path"
         description: "ID of the video"
         required: true
@@ -417,13 +421,47 @@ paths:
       responses:
         "200":
           description: "successful operation"
-
+  /config/{config_id}:
+    parameters:
+    - name: "config_id"
+      in: "path"
+      description: "ID of the server config"
+      required: true
+      type: "integer"
+    get:
+        tags:
+        - "config"
+        summary: "Get opencast configuration for server"
+        operationId: "getOpencastServerConfig"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
+    put:
+        tags:
+        - "config"
+        summary: "Add or Update opencast configuration for server"
+        operationId: "addOrUpdateOpencastServerConfig"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
+    delete:
+        tags:
+        - "config"
+        summary: "Delete opencast configuration for server"
+        operationId: "deleteOpencastServerConfig"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
 definitions:
   Video:
     type: "object"
     properties:
-      id:
-        type: "integer"
       opencast_id:
         type: "string"
         description: "The id of the event in Opencast"
@@ -471,8 +509,6 @@ definitions:
   Playlist:
     type: "object"
     properties:
-      id:
-        type: "integer"
       title:
         type: "string"
         example: "Meine Videos"
@@ -492,7 +528,7 @@ definitions:
         items:
           $ref: '#/definitions/PlaylistReference'
     required:
-      - id
+      - token
       - title
   PlaylistReference:
     type: "object"
@@ -512,3 +548,11 @@ definitions:
         type: "object"
       languages:
         type: "object"
+  Filter:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        enum: ["text", "playlist", "tag"]
+      value:
+        type: "string"

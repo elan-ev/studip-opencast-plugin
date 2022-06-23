@@ -100,7 +100,6 @@ module.exports = (env) => {
             extensions: ['.vue', '.js'],
             alias: {
                 '@': path.resolve(__dirname, 'vueapp'),
-                //'@studip': env.studip,
                 '@studip': path.resolve(__dirname, 'vueapp/components/Studip'),
                 '@popperjs/core': path.resolve(__dirname, 'node_modules/@popperjs/core')
             }
