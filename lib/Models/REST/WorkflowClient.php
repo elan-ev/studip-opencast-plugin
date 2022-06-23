@@ -20,69 +20,82 @@ class WorkflowClient extends RestClient
 
 
     /**
-     * getWorkflowInstance - Get a specific workflow instance
+     * Get a specific workflow instance
      *
-     * @param $id The workflow instance identifier
+     * @param string $id The workflow instance identifier
      *
-     * @return $result A JSON representation of a workflow instance
+     * @return object|boolean A JSON representation of a workflow instance, or false when unable to get
      */
-    function getWorkflowInstance($id)
+    public function getWorkflowInstance($id)
     {
-        $service_url = "/instance/" . $id . ".json";
-        if ($result = $this->getJSON($service_url)) {
-            return $result->workflow;
+        $response = $this->opencastApi->workflow->getInstance($id);
+
+        if ($response['code'] == 200) {
+            if (isset($response['body']->workflow)) {
+                return $response['body']->workflow;
+            }
         }
 
         return false;
     }
 
     /**
-     * getInstances() - returns all Workflow instances for a given SeriesID
+     * Returns all Workflow instances for a given SeriesID
      *
-     *  @return array Workflow Instances
+     * @param string $series_id The series identifier
+     * 
+     * @return array|boolean Workflow Instances, or false if unable to get
      */
-    function getInstances($seriesID)
+    public function getInstances($series_id = null)
     {
-        $service_url = sprintf( "/instances.json?state=&q=&seriesId=%s&seriesTitle=&creator=&contributor=&fromdate=&todate=&language="
-                     . "&license=&title=&subject=&workflowdefinition=&mp=&op=&sort=&startPage=0&count=1000&compact=true", $seriesID);
+        $params = [
+            'count' => 1000,
+            'compact' => true
+        ];
 
-        if ($instances = $this->getJSON($service_url)) {
-            return $instances;
+        if (!empty($series_id)) {
+            $params['seriesId'] = $series_id;
+        }
+
+        $response = $this->opencastApi->workflow->getInstances($params);
+
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
 
         return false;
     }
 
     /**
-     * getDefinitions() - returns all Workflow definitions
+     * Returns all available workflow definitions
      *
-     *  @return array Workflow Instances
+     * @return array|boolean Workflow Instances
      */
-    function getDefinitions()
+    public function getDefinitions()
     {
-        $service_url = sprintf( "/definitions.json");
+        $response = $this->opencastApi->workflow->getDefinitions();
 
-        if ($definitions = $this->getJSON($service_url)) {
-            return $definitions->definitions;
+        if ($response['code'] == 200) {
+            if (isset($response['body']->definitions)) {
+                return $response['body']->definitions;
+            }
         }
 
         return false;
     }
 
-    function removeInstanceComplete($id)
+    /**
+     * Removes a workflow instance from connected Opencast
+     * 
+     * @param string $id the workflow instance id
+     * 
+     * @return boolean success or not
+     */
+    public function removeInstanceComplete($id)
     {
-        $service_url = sprintf( '/remove/'.$id);
-        $options = array(
-            CURLOPT_URL => $this->base_url.$service_url,
-            CURLOPT_FRESH_CONNECT => 1,
-            CURLOPT_CUSTOMREQUEST => 'DELETE'
-        );
+        $response = $this->opencastApi->workflow->removeInstance($id);
 
-        curl_setopt_array($this->ochandler, $options);
-        $response = curl_exec($this->ochandler);
-        $http = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-
-        if (in_array($http,array(204,404))) {
+        if (in_array($response['code'], [204, 404])) {
             return true;
         }
 
@@ -94,11 +107,11 @@ class WorkflowClient extends RestClient
      ####################
 
     /**
-     * getTaggedWorkflowDefinitions() - returns a revised collection of all tagged Workflow definitions
+     * Returns a revised collection of all tagged Workflow definitions
      *
-     *  @return array tagged Workflow Instances
+     * @return array tagged Workflow Instances
      */
-    function getTaggedWorkflowDefinitions()
+    public function getTaggedWorkflowDefinitions()
     {
         $wf_defs = self::getDefinitions();
 

@@ -20,108 +20,89 @@ class IngestClient extends RestClient
     }
 
     /**
-     *  createMediaPackage - Creates an empty media package
+     * Creates an empty media package
      *
-     * @return $mediapackage
+     * @return string media package in xml format, or false if unable to create
      */
     public function createMediaPackage()
     {
-        $service_url = "/createMediaPackage";
-        if ($mediapackage = self::getXML($service_url)) {
-            return $mediapackage;
-        } else return false;
+        $response = $this->opencastApi->ingest->createMediaPackage();
+        
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+        return false;
     }
 
     /**
-     *  addDCCatalog - Add a dublincore episode catalog to a given media package using an url
+     * Add a dublincore episode catalog to a given media package
      *
-     * @param $mediapackage
-     * @param $dublincore
-     * @param $flavor
+     * @param string $mediaPackage The media package
+     * @param string $dublinCore DublinCore catalog.
+     * @param string $flavor DublinCore Flavor
      *
-     * @return $mediapackage - the augmented mediapackage
+     * @return string augmented media package in xml format, or false if unable to add
      */
-    public function addDCCatalog($mediaPackage, $dublinCore, $flavor = null)
+    public function addDCCatalog($mediaPackage, $dublinCore, $flavor = '')
     {
-        $service_url = "/addDCCatalog";
-        $data        = [
-            'mediaPackage' => $mediaPackage,
-            'dublinCore'   => $dublinCore
-        ];
-        if ($flavor != null) {
-            $data['flavor'] = $flavor;
+        $response = $this->opencastApi->ingest->addDCCatalog($mediaPackage, $dublinCore, $flavor);
+        
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
-        if ($mediapackage = $this->getXML($service_url, $data, false)) {
-            return $mediapackage;
-        }
+        return false;
     }
 
     /**
-     *  ingest - Ingest the completed media package into the system, retrieving all URL-referenced files
+     * Ingest the completed media package into the system, retrieving all URL-referenced files
      *
-     * @param string $mediapackage
-     * @param $workFlowDefinitionID
+     * @param string $mediaPackage The media package
+     * @param string $workflowDefinitionId Workflow definition id.
+     * @param string $workflowInstanceId The workflow instance ID to associate this ingest with scheduled events.
      *
-     * @return $mediapackage
+     * @return string augmented media package in xml format, or false if unable to add
      */
-    public function ingest($mediaPackage, $workFlowDefinitionID, $addendum = '')
+    public function ingest($mediaPackage, $workflowDefinitionId = '', $workflowInstanceId = '')
     {
-        $service_url               = "/ingest/" . $workFlowDefinitionID . $addendum;
-        $mediaPackageParsed        = new SimpleXMLElement($mediaPackage);
-        $mediaPackageXMLAttributes = $mediaPackageParsed->attributes();
-
-        $data = [
-            'mediaPackage'         => $mediaPackage,
-            'workflowDefinitionId' => $workFlowDefinitionID
-        ];
-        if ($mediapackage = $this->getXML($service_url, $data, false)) {
-            return $mediapackage;
+        $response = $this->opencastApi->ingest->ingest($mediaPackage, $workflowDefinitionId, $workflowInstanceId);
+        
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
+        return false;
     }
 
     /**
-     * Add a track to the passed media-package
+     * Add a media track to a given media package using an URL.
      *
-     * @param string $mediaPackage
-     * @param string $trackURI
-     * @param string $flavor
+     * @param string $mediaPackage The media package
+     * @param string $trackURI The location of the media
+     * @param string $flavor The kind of media track
+     * 
+     * @return string augmented media package in xml format, or false if unable to add
      */
     public function addTrack($mediaPackage, $trackURI, $flavor)
     {
-        $data = [
-            'url'          => $trackURI,
-            'flavor'       => $flavor,
-            'mediaPackage' => $mediaPackage,
-            'tags'         => ''
-        ];
-
-        if ($res = $this->getXML('/addTrack', http_build_query($data), false, false, true)) {
-            return $res;
+        $response = $this->opencastApi->ingest->addTrackUrl($mediaPackage, $flavor, $trackURI);
+        
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
+        return false;
     }
 
-    public function schedule($media_package, $capabilities,  $publishLive, $worklow_definition = null)
+    /**
+     * Schedule an event based on the given media package.
+     * 
+     * @param string $mediaPackage The media package
+     * @param string $workflowDefinitionId  Workflow definition id
+     * 
+     * @return boolean whether the event is scheduled or not
+     */
+    public function schedule($mediaPackage, $workflowDefinitionId = '')
     {
-        $uri = '/schedule';
-
-        if ($worklow_definition != null) {
-            $uri .= '/' . $worklow_definition;
-        }
-
-        $query = [
-            'mediaPackage'         => $media_package,
-            'capture.device.names' => $capabilities,
-        ];
-
-        if ($publishLive) {
-            $query['publishLive'] = 'True';
-        }
-
-        $res = $this->getXML($uri, http_build_query($query), false, true, true);
-        if ($res) {
-            return $res;
-        } else {
-            return false;
-        }
+        $response = $this->opencastApi->ingest->schedule($mediaPackage, $workflowDefinitionId);
+        
+        return $response['code'] == 201;
     }
 }

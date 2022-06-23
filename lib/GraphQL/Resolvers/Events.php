@@ -61,8 +61,7 @@ class Events
             ) {
                 // get correct endpoint for current series
                 $eventsClient = ApiEventsClient::getInstance($series['config_id']);
-                //$seriesList[$series['series_id']]['events'] = $eventsClient->getBySeries($series['series_id']);
-                $events = array_merge($events, $eventsClient->getBySeries($series['series_id'], $course_id));
+                $events = array_merge($events, $eventsClient->getEpisodes($series['series_id'], $course_id));
             }
         }
 

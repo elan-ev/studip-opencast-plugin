@@ -63,6 +63,12 @@ class Constants {
             'description' => 'Debugmodus einschalten?',
             'value'       =>  0,
             'type'        => 'boolen'
+        ],
+        [
+            'name'        => 'advance_search',
+            'description' => 'GET-Requests mit Adnvaced-Suche wie Lucene/Search Endpoints ausführen?',
+            'value'       =>  false,
+            'type'        => 'boolen'
         ]
     ];
 }

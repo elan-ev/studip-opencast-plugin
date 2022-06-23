@@ -109,6 +109,13 @@ export default {
                     required: true
                 },
                 {
+                    description: this.$gettext('GET-Requests mit Adnvaced-Suche wie Lucene/Search Endpoints ausführen?'),
+                    name: 'advance_search',
+                    value: this.currentConfig.settings.advance_search,
+                    type: 'boolean',
+                    required: false
+                },
+                {
                     description: this.$gettext('Debugmodus einschalten?'),
                     name: 'debug',
                     value: this.currentConfig.settings.debug,

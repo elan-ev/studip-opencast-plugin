@@ -9,6 +9,7 @@ const initialState = {
         'settings': {
             'lti_consumerkey':    null,
             'lti_consumersecret': null,
+            'advance_search':     null,
             'debug':              null
         }
     }
