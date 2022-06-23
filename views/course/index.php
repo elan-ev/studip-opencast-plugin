@@ -416,6 +416,9 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
                 </label>
             <? endif ?>
         </fieldset>
+        <p>
+            <?= $_('Das Ändern der Sichtbarkeit dauert bis zu einer Minute. Bis zum Abschluss der Änderung in Opencast gilt die alte Sichtbarkeit.') ?>
+        </p>
 
         <footer data-dialog-button>
             <?= Studip\Button::createAccept(
