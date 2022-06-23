@@ -3,10 +3,6 @@
  * course.php - course controller
  */
 
-use Opencast\Models\UploadStudygroup;
-use Opencast\Models\Config;
-use Opencast\LTI\OpencastLTI;
-
 class ContentsController extends OpencastController
 {
     public function __construct($dispatcher)
@@ -33,5 +29,6 @@ class ContentsController extends OpencastController
     public function index_action()
     {
         Navigation::activateItem('/contents/opencast');
+        PageLayout::setTitle($this->_('Videos'));
     }
 }

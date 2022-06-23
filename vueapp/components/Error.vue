@@ -22,10 +22,7 @@
             </span>
 
             <span v-else>
-                <div v-if="error.graphql">
-                    GraphQL: {{ error.graphql }}
-                </div>
-                <div v-else>
+                <div>
                     {{ error }}
                 </div>
             </span>

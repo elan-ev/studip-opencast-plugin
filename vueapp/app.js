@@ -16,9 +16,6 @@ import GetTextPlugin from 'vue-gettext';
 import translations from './i18n/translations.json';
 import  { createPopper } from '@popperjs/core';
 
-import { createProvider } from "./vue-apollo";
-
-
 import PortalVue from 'portal-vue'
 
 Vue.config.devtools = true // Need this to use devtool browser extension
@@ -56,13 +53,11 @@ $(function() {
         name: 'Opencast Vue',
         router,
         store,
-        apolloProvider: createProvider(),
         render: h => h(App)
     }).$mount('#opencast');
 
     if (CID !== null) {
         store.dispatch('setCID', CID);
     }
-    window.apolloEndpoint = API_URL + '/graphql';
     window.Vue.axios.defaults.baseURL = API_URL;
 });

@@ -9,26 +9,32 @@
                 +
             </span>
         </div>
-        <div @click="addEditServer" class="oc--admin--server-data">
-            <div v-if="isAddCard" class="oc--admin-server-add" v-translate>
-                Neuen Server hinzufügen
+        <div @click="showEditServer" class="oc--admin--server-data">
+            <div v-if="isAddCard" class="oc--admin--server-data">
+                <div class="oc--admin-server-add" v-translate>
+                    Neuen Server hinzufügen
+                </div>
             </div>
             <div v-else class="oc--admin--server-data">
                 <div>
-                    <span>Server:</span>
                     {{ config.service_url }}
                 </div>
-                <div>
-                    <span>Opencast-Version:</span>
-                    {{ config.service_version }}
+                <div v-if="config.service_version">
+                    Opencast-Version: {{ config.service_version }}
                 </div>
             </div>
         </div>
+        <EditServer v-if="isShow"
+            :id="getId"
+            :config="config"
+            @close="isShow = false"
+        />
     </div>
 </template>
 
 <script>
 import OpencastIcon from "@/components/OpencastIcon";
+import EditServer from "@/components/Config/EditServer";
 
 export default {
     name: 'ServerCard',
@@ -44,17 +50,26 @@ export default {
         }
     },
 
+    data() {
+        return {
+            isShow: false
+        }
+    },
+
     components: {
-        OpencastIcon
+        OpencastIcon,
+        EditServer,
     },
 
     methods: {
-        addEditServer() {
-            if (this.isAddCard) {
-                this.$router.push({ name: 'add_server'})
-            } else {
-                this.$router.push({ name: 'edit_server', params: { config: this.config, id: this.config.id }})
+        showEditServer() {
+            this.isShow = true
+        },
+        getId(){
+            if(this.config){
+                return this.config.id;
             }
+            return 'new';
         }
     }
 }

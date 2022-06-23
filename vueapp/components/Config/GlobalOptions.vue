@@ -29,7 +29,6 @@
                 </StudipButton>
             </footer>
         </form>
-        <MessageList />
     </div>
 </template>
 
@@ -42,16 +41,17 @@ import MessageBox from "@/components/MessageBox";
 import OpencastIcon from "@/components/OpencastIcon";
 import ConfigOption from "@/components/Config/ConfigOption";
 import I18NText from "@/components/Config/I18NText";
-import MessageList from "@/components/MessageList";
 
 export default {
     name: "GlobalOptions",
 
     components: {
-        StudipButton, StudipIcon,
-        MessageBox, OpencastIcon,
-        ConfigOption, I18NText,
-        MessageList
+        StudipButton,
+        StudipIcon,
+        MessageBox,
+        OpencastIcon,
+        ConfigOption,
+        I18NText,
     },
 
     computed: {

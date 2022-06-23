@@ -1,5 +1,3 @@
-import ApiService from "@/common/api.service";
-
 const state = {
     errors: []
 };
@@ -31,8 +29,8 @@ const mutations = {
 };
 
 export default {
-  state,
-  actions,
-  mutations,
-  getters
+    state,
+    actions,
+    mutations,
+    getters
 };
