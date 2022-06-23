@@ -1,0 +1,79 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API Definition for Opencasts StudipUserProvider",
+    "version": "1.0.0",
+    "title": "Opencast Stud.IP User Provider",
+    "termsOfService": "",
+    "contact": {
+      "email": "tgloeggl@uos.de"
+    },
+    "license": {
+      "name": "GPL v2.0",
+      "url": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html.en"
+    }
+  },
+  "host": "studip.uni-osnabrueck.de",
+  "basePath": "/jsonapi.php/v1/opencast",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/user/{username}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user and roles by user name",
+        "description": "Returns the user with all necessary role ids",
+        "operationId": "getUserByName",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "The name that needs to be fetched.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid username supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  }
+}

@@ -85,6 +85,12 @@ module.exports = (env) => {
                 minify: false,
                 filename: '../app/views/admin/index.php'
             }),
+            new HtmlWebpackPlugin({
+                template: 'vueapp/templates/contents_index.php',
+                inject: false,
+                minify: false,
+                filename: '../app/views/contents/index.php'
+            }),
             new MiniCssExtractPlugin({
                 filename: "static/[name].css",
                 chunkFilename: "static/[name].css?h=[chunkhash]"

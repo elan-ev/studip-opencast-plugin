@@ -41,7 +41,7 @@ class ConfigAddEdit extends OpencastController
         }
 
         // validate values
-        $new_settings = array();
+        $new_settings = [];
         foreach (Constants::$DEFAULT_CONFIG as $config_entry) {
             foreach ($json['config']['settings'] as $setting_name => $setting) {
                 if ($setting_name == $config_entry['name']) {
@@ -56,11 +56,19 @@ class ConfigAddEdit extends OpencastController
         $config->setData($json['config']);
         $config->store();
 
+        // Testing
+        $test = [
+            'type' => 'success',
+            'text' => 'TestSaved'
+        ];
+
+        return $this->createResponse([
+            'config' => $config->toArray(),
+            'message'=> $test,
+        ], $response);
+
         // check Configuration and load endpoints
         $message = null;
-
-        // invalidate series-cache when editing configuration
-        \StudipCacheFactory::getCache()->expire('oc_allseries');
 
         $service_url =  parse_url($config->service_url);
 
@@ -151,7 +159,6 @@ class ConfigAddEdit extends OpencastController
                     $config_checked = true;
                 }
             } else {
-                //Endpoints::removeEndpoint($config_id, 'services');
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(
@@ -164,8 +171,6 @@ class ConfigAddEdit extends OpencastController
 
         if ($config_checked) {
             $lti = LtiHelper::getLaunchData($config->id);
-            
-            SeminarEpisodes::deleteBySQL(1);
 
             return $this->createResponse([
                 'config' => $config->toArray(),
@@ -173,10 +178,6 @@ class ConfigAddEdit extends OpencastController
                 'lti' => $lti
             ], $response);
         }
-
-        // after updating the configuration, clear the cached series data
-        SeminarEpisodes::deleteBySQL(1);
-        #OpencastLTI::generate_complete_acl_mapping();
 
         return $this->createResponse([
             'config' => $config->toArray(),

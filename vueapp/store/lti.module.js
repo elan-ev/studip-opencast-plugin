@@ -1,9 +1,5 @@
-import gql from 'graphql-tag'
-import { apolloClient, apolloProvider } from '../vue-apollo'
-
 import { LtiService } from "@/common/lti.service";
 import ApiService from "@/common/api.service";
-
 
 const state = {
     lti_connections: [],

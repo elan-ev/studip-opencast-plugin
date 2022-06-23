@@ -3,10 +3,6 @@
  * course.php - course controller
  */
 
-use Opencast\Models\UploadStudygroup;
-use Opencast\Models\Config;
-use Opencast\LTI\OpencastLTI;
-
 class CourseController extends OpencastController
 {
     public function __construct($dispatcher)
@@ -33,12 +29,8 @@ class CourseController extends OpencastController
     public function index_action()
     {
         Navigation::activateItem('/course/opencast');
-    }
 
-    public function episodes_action()
-    {
-        Navigation::activateItem('/course/opencast');
-        Navigation::activateItem('course/opencast/episodes');
+        PageLayout::setTitle($this->_('Videos'));
 
         $sidebar = Sidebar::Get();
         $actions = new TemplateWidget(
@@ -46,22 +38,6 @@ class CourseController extends OpencastController
             $this->get_template_factory()->open('course/action_widget')
         );
         $sidebar->addWidget($actions)->addLayoutCSSClass('action-widget');
-
-        $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
-    }
-
-    public function scheduler_action()
-    {
-        Navigation::activateItem('/course/opencast');
-        Navigation::activateItem('course/opencast/scheduler');
-
-        $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
-    }
-
-    public function manager_action()
-    {
-        Navigation::activateItem('/course/opencast');
-        Navigation::activateItem('course/opencast/manager');
 
         $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }

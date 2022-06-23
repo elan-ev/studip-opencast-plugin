@@ -29,33 +29,31 @@ class RouteMap
 
     public function authenticatedRoutes()
     {
-        $this->app->get('/user', Routes\Users\UsersShow::class);
+        $this->app->get('/user', Routes\User\UserShow::class);
 
-        $this->app->get('/resources', Routes\Resources\ResourcesList::class);
+        #Video
+        $this->app->get('/video', Routes\Video\Video::class);
+        $this->app->get('/video/{id}', Routes\Video\VideoShow::class);
+        $this->app->put('/video/{id}', Routes\Video\VideoUpdate::class);
+        $this->app->delete('/video/{id}', Routes\Video\VideoDelete::class);
+
+        #Playlist
+        $this->app->get('/playlist', Routes\Playlist\Playlist::class);
+        $this->app->get('/playlist/{id}', Routes\Playlist\PlaylistShow::class);
+        $this->app->put('/playlist/{id}', Routes\Playlist\PlaylistUpdate::class);
+        $this->app->delete('/playlist/{id}', Routes\Playlist\PlaylistDelete::class);
 
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
-        $this->app->get('/opencast/servers', Routes\Opencast\Servers::class);
-        $this->app->get('/opencast/allseries/{id}', Routes\Opencast\AllSeries::class);
 
-        $this->app->get('/course/series/{course_id}', Routes\Course\Series::class);
-        $this->app->post('/course/series/{course_id}', Routes\Course\SeriesAdd::class);
-        $this->app->delete('/course/series/{course_id}/{series_id}', Routes\Course\SeriesDelete::class);
-
-        $this->app->get('/course/upload_xml/{course_id}', Routes\Course\UploadAcl::class);
-        $this->app->post('/course/log_upload/{course_id}', Routes\Course\LogUpload::class);
-
-        $this->app->any('/graphql', GraphQL\GraphQL::class);
-        ##TEMPLATE##
     }
 
     public function adminRoutes()
     {
         $this->app->get('/config', Routes\Config\ConfigList::class);
         $this->app->put('/config', Routes\Config\ConfigUpdate::class);
-
         $this->app->post('/config', Routes\Config\ConfigAddEdit::class);
+
         $this->app->get('/config/{id}', Routes\Config\ConfigShow::class);
-        $this->app->post('/config/check', Routes\Config\ConfigCheck::class);
         $this->app->put('/config/{id}', Routes\Config\ConfigAddEdit::class);
         $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);
     }

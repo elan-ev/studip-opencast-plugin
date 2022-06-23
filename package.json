@@ -10,13 +10,14 @@
     "prebuild": "npm install",
     "prezip": "npm run build && composer install --no-dev",
     "translate": "gettext-extract --attribute v-i18n --attribute v-translate --output locale/en/LC_MESSAGES/opencast_js.pot $(find vueapp -type f -name '*.vue') && /bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
-    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest"
+    "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest",
+    "docs": "npx redoc-cli build docs/studip_opencast_routes.json --output docs/studip_opencast_routes.html"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
     "@popperjs/core": "^2.11.2",
-    "@vue/cli-service": "^4.5.13",
+    "@vue/cli-service": "^5.0.6",
     "axios": "^0.21.1",
     "babel-loader": "^8.1.0",
     "clean-terminal-webpack-plugin": "^3.0.0",
@@ -28,21 +29,19 @@
     "extract-loader": "^5.1.0",
     "file-loader": "^6.2.0",
     "focus-trap-vue": "^1.1.1",
-    "graphql-tag": "^2.9.0",
     "html-webpack-plugin": "^5.3.2",
     "install": "^0.12.2",
     "mini-css-extract-plugin": "^2.5.3",
     "portal-vue": "^2.1.7",
     "postcss": "^8.4.6",
     "postcss-loader": "^6.2.1",
+    "redoc-cli": "^0.13.16",
     "regenerator-runtime": "^0.13.5",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "vrp-vue-resizable": "^1.2.7",
     "vue": "^2.6.10",
-    "vue-apollo": "^3.1.0",
     "vue-axios": "^3.2.5",
-    "vue-cli-plugin-apollo": "^0.22.2",
     "vue-gettext": "^2.1.12",
     "vue-loader": "^15.9.8",
     "vue-router": "^3.0.6",
@@ -61,5 +60,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/elan-ev/studip-opencast-plugin.git"
+  },
+  "dependencies": {
+    "sortablejs": "^1.15.0",
+    "vue-infinite-loading": "^2.4.5"
   }
 }
