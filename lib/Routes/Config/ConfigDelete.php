@@ -16,7 +16,7 @@ class ConfigDelete extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $config = Config::where('id', $args['id'])->first();
+        $config = Config::find($args['id']);
         if ($config == null)
         {
             throw new Error('config not found.', 404);

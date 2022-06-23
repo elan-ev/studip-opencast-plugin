@@ -56,17 +56,6 @@ class ConfigAddEdit extends OpencastController
         $config->setData($json['config']);
         $config->store();
 
-        // Testing
-        $test = [
-            'type' => 'success',
-            'text' => 'TestSaved'
-        ];
-
-        return $this->createResponse([
-            'config' => $config->toArray(),
-            'message'=> $test,
-        ], $response);
-
         // check Configuration and load endpoints
         $message = null;
 

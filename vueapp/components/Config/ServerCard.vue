@@ -25,7 +25,7 @@
             </div>
         </div>
         <EditServer v-if="isShow"
-            :id="getId"
+            :id="config ? config.id : 'new'"
             :config="config"
             @close="isShow = false"
         />
@@ -64,12 +64,6 @@ export default {
     methods: {
         showEditServer() {
             this.isShow = true
-        },
-        getId(){
-            if(this.config){
-                return this.config.id;
-            }
-            return 'new';
         }
     }
 }

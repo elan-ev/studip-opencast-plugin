@@ -19,6 +19,12 @@
                 </form>
             </template>
 
+            <template v-slot:dialogButtons>
+                <button class="button trash" type="button" @click="deleteConfig">
+                    Löschen
+                </button>
+            </template>
+
             <MessageList />
 
         </StudipDialog>
@@ -58,7 +64,9 @@ export default {
 
     data() {
         return {
-            currentConfig: null
+            currentConfig: {
+                settings: {}
+            }
         }
     },
 
@@ -150,6 +158,20 @@ export default {
             }
         },
 
+        deleteConfig() {
+            if (confirm('Sind sie, dass sie diese Serverkonfiguration löschen möchten?')) {
+                if (this.id == 'new') {
+                    this.currentConfig = {
+                        settings: {}
+                    }
+                } else {
+                    this.$store.dispatch('configDelete', this.id);
+                }
+
+                this.close();
+            }
+        },
+
         checkConfigResponse(data) {
             if (data.lti !== undefined) {
                 this.checkLti(data.lti);
@@ -206,7 +228,12 @@ export default {
                 }
             }
 
+            if (this.currentConfig.settings === undefined) {
+                this.currentConfig.settings = {};
+            }
+
             this.currentConfig.settings[setting.name] = newValue;
+
             return;
         },
     },
@@ -214,16 +241,16 @@ export default {
     mounted() {
         this.$store.dispatch('clearMessages');
 
-        if (this.id != 'new') {
             if (!this.config) {
                 this.$store.dispatch('configRead', this.id)
                 .then(() => {
+                console.log(this.configStore);
                     this.currentConfig = this.configStore;
                 });
             } else {
                 this.currentConfig = this.config;
             }
-        }
+
     }
 };
 </script>
