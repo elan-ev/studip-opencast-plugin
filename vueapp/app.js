@@ -57,7 +57,7 @@ $(function() {
     }).$mount('#opencast');
 
     if (CID !== null) {
-        store.dispatch('setCID', CID);
+        store.dispatch('updateCid', CID);
     }
     window.Vue.axios.defaults.baseURL = API_URL;
 });

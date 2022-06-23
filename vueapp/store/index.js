@@ -5,6 +5,7 @@ import error from "./error.module";
 import config from "./config.module";
 import messages from "./messages.module";
 import lti from "./lti.module";
+import opencast from "./opencast.module";
 
 Vue.use(Vuex);
 Vue.config.devtools = true // Need this to use devtool browser extension
@@ -15,5 +16,6 @@ export default new Vuex.Store({
     config,
     messages,
     lti,
+    opencast
   }
 });
