@@ -64,9 +64,7 @@ export default {
 
     data() {
         return {
-            currentConfig: {
-                settings: {}
-            }
+            currentConfig: {}
         }
     },
 
@@ -104,7 +102,7 @@ export default {
                 {
                     description: this.$gettext('LTI Consumerkey'),
                     name: 'lti_consumerkey',
-                    value: this.currentConfig.settings.lti_consumerkey,
+                    value: this.currentConfig.lti_consumerkey,
                     type: 'string',
                     placeholder: 'CONSUMERKEY',
                     required: true
@@ -112,7 +110,7 @@ export default {
                 {
                     description: this.$gettext('LTI Consumersecret'),
                     name: 'lti_consumersecret',
-                    value: this.currentConfig.settings.lti_consumersecret,
+                    value: this.currentConfig.lti_consumersecret,
                     type: 'password',
                     placeholder: 'CONSUMERSECRET',
                     required: true
@@ -120,14 +118,14 @@ export default {
                 {
                     description: this.$gettext('GET-Requests mit Adnvaced-Suche wie Lucene/Search Endpoints ausführen?'),
                     name: 'advance_search',
-                    value: this.currentConfig.settings.advance_search,
+                    value: this.currentConfig.advance_search,
                     type: 'boolean',
                     required: false
                 },
                 {
                     description: this.$gettext('Debugmodus einschalten?'),
                     name: 'debug',
-                    value: this.currentConfig.settings.debug,
+                    value: this.currentConfig.debug,
                     type: 'boolean',
                     required: false
                 }
@@ -161,9 +159,7 @@ export default {
         deleteConfig() {
             if (confirm('Sind sie, dass sie diese Serverkonfiguration löschen möchten?')) {
                 if (this.id == 'new') {
-                    this.currentConfig = {
-                        settings: {}
-                    }
+                    this.currentConfig = {}
                 } else {
                     this.$store.dispatch('configDelete', this.id);
                 }
@@ -221,35 +217,23 @@ export default {
         },
 
         updateValue(setting, newValue) {
-            for (let id in this.currentConfig) {
-                if (id == setting.name) {
-                    this.currentConfig[id] = newValue;
-                    return;
-                }
-            }
-
-            if (this.currentConfig.settings === undefined) {
-                this.currentConfig.settings = {};
-            }
-
-            this.currentConfig.settings[setting.name] = newValue;
-
-            return;
+            this.currentConfig[setting.name] = newValue;
         },
     },
 
     mounted() {
         this.$store.dispatch('clearMessages');
 
+        if (this.id !== 'new') {
             if (!this.config) {
                 this.$store.dispatch('configRead', this.id)
                 .then(() => {
-                console.log(this.configStore);
                     this.currentConfig = this.configStore;
                 });
             } else {
                 this.currentConfig = this.config;
             }
+        }
 
     }
 };

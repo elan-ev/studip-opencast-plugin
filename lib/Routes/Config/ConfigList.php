@@ -21,7 +21,10 @@ class ConfigList extends OpencastController
         $config_list = [];
 
         foreach ($config as $conf) {
-            $config_list[] = $conf->toArray();
+            $ret_config = $conf->toArray();
+            $ret_config = array_merge($ret_config, $ret_config['settings']);
+            unset($ret_config['settings']);
+            $config_list[] = $ret_config;
         }
 
         $languages = [];

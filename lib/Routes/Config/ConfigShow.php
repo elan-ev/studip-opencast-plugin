@@ -18,8 +18,12 @@ class ConfigShow extends OpencastController
     {
         $config = Config::find($args['id']);
 
+        $ret_config = $config->toArray();
+        $ret_config = array_merge($ret_config, $ret_config['settings']);
+        unset($ret_config['settings']);
+
         if ($config) {
-            return $this->createResponse(['config' => $config->toArray()], $response);
+            return $this->createResponse(['config' => $ret_config], $response);
         } else {
             return $this->createResponse(['config' => []], $response);
         }

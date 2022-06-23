@@ -43,9 +43,10 @@ class ConfigAddEdit extends OpencastController
         // validate values
         $new_settings = [];
         foreach (Constants::$DEFAULT_CONFIG as $config_entry) {
-            foreach ($json['config']['settings'] as $setting_name => $setting) {
+            foreach ($json['config'] as $setting_name => $setting) {
                 if ($setting_name == $config_entry['name']) {
                     $new_settings[$setting_name] = $setting;
+                    unset($json['config'][$setting_name]);
                 }
             }
         }
@@ -158,18 +159,22 @@ class ConfigAddEdit extends OpencastController
             }
         }
 
+        $ret_config = $config->toArray();
+        $ret_config = array_merge($ret_config, $ret_config['settings']);
+        unset($ret_config['settings']);
+
         if ($config_checked) {
             $lti = LtiHelper::getLaunchData($config->id);
 
             return $this->createResponse([
-                'config' => $config->toArray(),
+                'config' => $ret_config,
                 'message'=> $message,
                 'lti' => $lti
             ], $response);
         }
 
         return $this->createResponse([
-            'config' => $config->toArray(),
+            'config' => $ret_config,
             'message'=> $message,
         ], $response);
     }
