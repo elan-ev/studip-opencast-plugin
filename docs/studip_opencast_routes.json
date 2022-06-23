@@ -375,7 +375,7 @@
         "tags": [
           "courses"
         ],
-        "summary": "Add video to playlist",
+        "summary": "Add playlist to course",
         "operationId": "addPlaylistToCourse",
         "produces": [
           "application/json"
@@ -422,7 +422,7 @@
         "tags": [
           "videos"
         ],
-        "summary": "Add video to playlist",
+        "summary": "Get Video for id",
         "operationId": "getVideo",
         "produces": [
           "application/json"
@@ -443,7 +443,7 @@
         "tags": [
           "videos"
         ],
-        "summary": "Add video to playlist",
+        "summary": "Update Video with ID",
         "operationId": "updateVideo",
         "parameters": [
           {
