@@ -18,48 +18,38 @@ class ApiWorkflowsClient extends RestClient
         }
     }
 
+    /**
+     * Perform the "retract" workflow for an episode
+     * 
+     * @param string $episode_id episode id
+     * 
+     * @return boolean the status of the performed workflow
+     */
     public function retract($episode_id)
     {
-        $service_url = '/';
-        $data = [
-            'event_identifier' => $episode_id,
-            'workflow_definition_identifier' => 'retract',
-        ];
-        list(, $code) = $this->postJSON($service_url, $data, true);
-
-        if ($code == 201) {
+        $response = $this->opencastApi->workflowsApi->run($episode_id, 'retract');
+        
+        if ($response['code'] == 201) {
             return true;
         }
-
         return false;
     }
 
     /**
      * Republish the passed episode / event
      *
-     * @param  string $episode_id
+     * @param string $episode_id episode id
      *
-     * @return int   true, if the workflow could be started, false if an error occured
-     *               or a workflow was already in process
+     * @return boolean true, if the workflow could be started, false if an error occured
+     * or a workflow was already in process
      */
     public function republish($episode_id)
     {
-        $service_url = "/";
+        $response = $this->opencastApi->workflowsApi->run($episode_id, 'republish-metadata');
 
-        $data = [
-            'event_identifier'               => $episode_id,
-            'workflow_definition_identifier' => 'republish-metadata',
-            'configuration'                  => '',
-            'withoperations'                 => false,
-            'withconfiguration'              => false
-        ];
-
-        $result = $this->postJSON($service_url, $data, true);
-
-        if ($result[1] == 201) {
+        if ($response['code'] == 201) {
             return true;
         }
-
         return false;
     }
 }

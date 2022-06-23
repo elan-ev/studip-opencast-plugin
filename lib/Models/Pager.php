@@ -39,7 +39,7 @@ class Pager
     public static function setSearch($search)
     {
         // only allow text and numbers in search term
-        self::$search = preg_replace('/[^0-9a-zA-Z]/', '', $search);
+        self::$search = preg_replace('/[^0-9a-zA-Z\w\ ]/', '', $search);
     }
 
     public static function getSearch()
@@ -77,16 +77,22 @@ class Pager
         }
     }
 
-    public static function getSortOrder()
+    public static function getSortOrder($map = false)
     {
         $sort_options = self::getSortOptions();
+        $sort_options_mapping = self::getSortOptionsMapping();
 
+        $sort_order = 'DATE_CREATED_DESC';
         // check, if selected sort options is available
-        if (in_array(self::$sort_order, array_keys($sort_options)) === false) {
-            return 'DATE_CREATED_DESC';
+        if (in_array(self::$sort_order, array_keys($sort_options))) {
+            $sort_order = self::$sort_order;
         }
 
-        return self::$sort_order;
+        if ($map && in_array($sort_order, array_keys($sort_options_mapping))) {
+            $sort_order = $sort_options_mapping[$sort_order];
+        }
+
+        return $sort_order;
     }
 
     /*
@@ -123,6 +129,16 @@ class Pager
             'DATE_CREATED'      => self::_('Datum hochgeladen: Älteste zuerst'),
             'TITLE'             => self::_('Titel: Alphabetisch'),
             'TITLE_DESC'        => self::_('Titel: Umgekehrt Alphabetisch')
+        ];
+    }
+
+    public static function getSortOptionsMapping()
+    {
+        return [
+            'DATE_CREATED_DESC' => ['start_date' => 'DESC'],
+            'DATE_CREATED'      => ['start_date' => 'ASC'],
+            'TITLE'             => ['title' => 'ASC'],
+            'TITLE_DESC'        => ['title' => 'DESC']
         ];
     }
 

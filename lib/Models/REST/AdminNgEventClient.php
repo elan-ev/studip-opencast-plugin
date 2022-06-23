@@ -19,17 +19,17 @@ class AdminNgEventClient extends RestClient
     }
 
     /**
-     * delelteEpisode -  retracts and deletes an episode
+     * Rtracts and deletes an episode with admin ng
      *
-     * @param string $episode_id - episode identifier
+     * @param string $episode_id episode identifier
      *
      * @return bool success or not
      */
     public function deleteEpisode($episode_id)
     {
-        $result = $this->deleteJSON('/' . $episode_id, true);
+        $response = $this->opencastApi->eventAdminNg->delete($episode_id);
 
-        if (in_array($result[1], [200, 202])) {
+        if (in_array($response['code'], [200, 202])) {
             return true;
         }
         return false;

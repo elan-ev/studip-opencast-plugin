@@ -21,18 +21,20 @@ class ServicesClient extends RestClient
     }
 
     /**
-     * getComponents() - retrieves episode system components from conntected Opencast-Matterhorn Core
+     * Retrieves episode system components from conntected Opencast-Matterhorn Core
      *
-     *  @return array response of components
+     * @return array|boolean response of components, or false if unable to get
      */
     function getRESTComponents()
     {
-        $service_url = "/services.json";
+        $response = $this->opencastApi->services->getServiceJSON();
 
-        if ($result = $this->getJSON($service_url)) {
-            return $result['services']['service'];
-        } else {
-            return false;
+        if ($response['code'] == 200) {
+            if ($services = $response['body']->services->service) {
+                return is_array($services) ? $services : [$services];
+            }
         }
+
+        return false;
     }
 }

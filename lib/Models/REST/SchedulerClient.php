@@ -39,7 +39,7 @@ class SchedulerClient extends RestClient
         $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id, null);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $publishLive, $metadata['workflow']);
+        $result = $ingest_client->schedule($media_package, $metadata['workflow']);
 
         if ($result
             && $result[1] != 400
@@ -82,14 +82,25 @@ class SchedulerClient extends RestClient
         }
     }
 
+    /**
+     * Deletes an event
+     * 
+     * @param string $event_id the event id
+     * 
+     * @return boolean success or not
+     */
     public function deleteEvent($event_id)
     {
-        return $this->deleteJSON('/' . $event_id, true);
+        $response = $this->opencastApi->recordings->deleteRecording($event_id);
+
+        if ($response['code'] == 200) {
+            return true;
+        }
+        return false;
     }
 
     /**
-     * updateEventForSeminar - updates an event
-     * TODO: Implement put route
+     * Updates an event
      *
      * @param string $course_id - course identifier
      * @param string $resource_id - resource identifier
@@ -118,22 +129,37 @@ class SchedulerClient extends RestClient
 
         $metadata = self::createEventMetadata($course_id, $resource_id, $termin_id, $event_id);
 
-        $post = [
-            'start'           => $event->start * 1000,
-            'end'             => ($event->end - $precise_config['time_buffer_overlap'] ?: 0) * 1000,
-            'agentparameters' => $metadata['agentparameters'],
-            'agent'           => $metadata['agent']
-        ];
+        $start = $event->start * 1000;
+        $end = ($event->end - $precise_config['time_buffer_overlap'] ?: 0) * 1000;
+        $agentparameters = $metadata['agentparameters'];
+        $agent = $metadata['agent'];
+        $response = $this->opencastApi->recordings->updateRecording(
+            $event_id,
+            $start,
+            $end,
+            $agent,
+            '',
+            '',
+            '',
+            $agentparameters
+        );
 
-        $result = $this->putJSON("/{$event_id}", $post, true);
-        if (in_array($result[1], [201, 200])) {
+        if ($response['code'] == 200) {
             return true;
-        } else {
-
-            return false;
         }
+        return false;
     }
 
+    /**
+     * Creates event recording metadata
+     * 
+     * @param string $course_id course id
+     * @param string $resource_id resource id
+     * @param string $termin_id termin id
+     * @param string $event_id event id
+     * 
+     * @return array event recording metadata
+     */
     public static function createEventMetadata($course_id, $resource_id, $termin_id, $event_id)
     {
         $config = Config::getConfigForCourse($course_id);

@@ -20,55 +20,47 @@ class CaptureAgentAdminClient extends RestClient
     }
 
     /**
-     *  getCaptureAgents() - retrieves a representation of all Capture Agents from conntected Opencast-Matterhorn Core
-     *
-     *  @return array string response of connected Capture Agents
+     * Retrieves capture agents of connected opencast
+     * 
+     * @return array|boolean array of capture agent list or false if unable to get.
      */
-    public function getCaptureAgentsXML()
-    {
-        // URL for Matterhorn 1.1
-        // TODO: USE JSON-based Service instead of XML (available since OC Matterhorn 1.2)
-
-        $service_url = "/agents.xml";
-
-        // deal with NS struggle of Matterhorn 1.1 since we cannot deal with json responses there...
-        $needle = [
-            '<ns1:agent-state-updates xmlns:ns1="http://capture.admin.opencastproject.org">',
-            '<ns1:agent-state-update xmlns:ns1="http://capture.admin.opencastproject.org">',
-            '</ns1:agent-state-update>',
-            '</ns1:agent-state-updates>'
-        ];
-
-        $replacements = array('<agent-state-updates>','<agent-state-update>','</agent-state-update>','</agent-state-updates>');
-        $xml = simplexml_load_string(str_replace($needle, $replacements, $response));
-        $json = json_encode($xml);
-        $agent_repsonse = json_decode($json, true);
-
-        return $agent_repsonse['agent-state-update'];
-    }
-
     public function getCaptureAgents()
     {
-        $service_url = "/agents.json";
-
-        if ($agents = $this->getJSON($service_url)) {
-            return $this->sanitizeAgents($agents);
+        $response = $this->opencastApi->captureAdmin->getAgents();
+        
+        if ($response['code'] == 200) {
+            return $this->sanitizeAgents($response['body']);
         }
-
         return false;
     }
 
+    /**
+     * Retrieves the capabilities of a given capture agent
+     * 
+     * @param string $agent_name name of capture agent
+     * 
+     * @return object|boolean capability object, or false if unable to get
+     */
     public function getCaptureAgentCapabilities($agent_name)
     {
-        $service_url = "/agents/" . $agent_name . "/capabilities.json";
-        if ($agent = $this->getJSON($service_url)) {
+        $response = $this->opencastApi->captureAdmin->getAgentCapabilities($agent_name);
+        
+        if ($response['code'] == 200) {
+            $capability = $response['body'];
             $x = 'properties-response';
-            return $agent->$x->properties->item;
-        } else {
-            return false;
+            $item = isset($capability->$x->properties->item) ? $capability->$x->properties->item : false;
+            return $item;
         }
+        return false;
     }
 
+    /**
+     * Sanitizes the list of capture agents.
+     * 
+     * @param object $agents the list of agents
+     * 
+     * @return array agents array list
+     */
     private function sanitizeAgents($agents)
     {
         if (is_array($agents->agents->agent)) {

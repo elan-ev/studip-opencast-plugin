@@ -182,7 +182,7 @@ class OpencastLTI
                 }, []);
 
                 $eventsClient = ApiEventsClient::getInstance($series['config_id']);
-                $episodes     = $eventsClient->getBySeries($series['series_id'], $course_id);
+                $episodes     = $eventsClient->getEpisodes($series['series_id'], $course_id);
 
                 foreach ($episodes as $episode) {
                     $result['e'][$episode['id']][$entry['seminar_id']]

@@ -21,104 +21,64 @@ class SearchClient extends RestClient
     }
 
     /**
-     *  getEpisodes() - retrieves episode metadata for a given series identifier
-     *  from connected Opencast
+     *  Retrieves episodes matching the query parameters from connected Opencast
      *
-     * @param string series_id Identifier for a Series
+     * @param array $params list of query params to look for
+     * @param string $format the output format
      *
-     * @return array response of episodes
+     * @return array|string response of episodes
      */
-    public function getEpisodes($series_id, $refresh = false)
+    public function getEpisodes($params = [], $format = '')
     {
-        $cache = \StudipCacheFactory::getCache();
-        $cache_key = 'oc_episodesforseries/' . $series_id;
-        $episodes = $cache->read($cache_key);
-
-        if ($refresh || $episodes === false || $GLOBALS['perm']->have_perm('dozent')) {
-            $service_url = "/episode.json?sid=" . $series_id . "&q=&episodes=true&sort=&limit=0&offset=0";
-            $x = "search-results";
-
-            if ($search = $this->getJSON($service_url)) {
-                $episodes = $search->$x->result;
-
-                if (!is_array($episodes)) {
-                    $episodes = [$episodes];
-                }
-
-                $cache->write($cache_key, serialize($episodes), 7200);
-                return $episodes ?: [];
-            } else {
-                return [];
-            }
-        } else {
-            return unserialize($episodes) ?: [];
+        $response = $this->opencastApi->search->getEpisodes($params, $format);
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
+
+        return false;
     }
 
     /**
-     *  getSeries() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn Core
+     *  Retrieves series matching the query parameters from connected Opencast
      *
-     * @param string series_id Identifier for a Series
+     * @param array $params list of query params to look for
+     * @param string $format the output format
      *
-     * @return array response of series
+     * @return array|string response of series
      */
-    public function getSeries($series_id)
+    public function getSeries($params = [], $format = '')
     {
-        $service_url = "/series.json?id={$series_id}&episodes=true&series=true";
-        if ($search = $this->getJSON($service_url)) {
-            //$x = "search-results";
-            //$episodes = $search->$x->result;
-            return $search;
+        $response = $this->opencastApi->search->getSeries($params, $format);
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
+
+        return false;
     }
 
     /**
-     *  getAllSeries() - retrieves episode metadata for a given series identifier from conntected Opencast-Matterhorn
-     *  Core
+     * Performs a Lucene search matching the query parameters
      *
-     * @param void
+     * @param array $params list of query params to look for
+     * @param string $format the output format
      *
-     * @return array response of series
+     * @return array|string lucene search results
      */
-    public function getAllSeries()
+    public function getLucene($params = [], $format = '')
     {
-        $service_url = "/series.json?limit=10000";
-
-        if ($series = $this->getJSON($service_url)) {
-            $x = "search-results";
-
-            if (is_array($series->$x->result)) {
-                return $series->$x->result;
-            } else {
-                return [$series->$x->result];
-            }
-        } else {
-            return false;
+        $response = $this->opencastApi->search->getLucene($params, $format);
+        if ($response['code'] == 200) {
+            return $response['body'];
         }
+
+        return false;
     }
-
-
-
-
-    // other functions
 
     /**
-     *  getEpisodeCount -
-     *
-     * @param string series_id Identifier for a Series
-     *
-     * @return int number of episodes
+     * Retrieves the base URL
+     * 
+     * @return string base url
      */
-    public function getEpisodeCount($series_id)
-    {
-        if ($series = $this->getSeries($series_id)) {
-            $x = "search-results";
-            $count = $series->$x->total;
-
-            return intval($count);
-        }
-    }
-
     public function getBaseURL()
     {
         $base = $this->base_url;

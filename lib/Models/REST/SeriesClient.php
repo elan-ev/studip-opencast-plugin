@@ -3,7 +3,6 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
-use Opencast\LTI\OpencastLTI;
 
 class SeriesClient extends RestClient
 {
@@ -21,51 +20,57 @@ class SeriesClient extends RestClient
         }
     }
 
-    public function getAllSeriesTitle()
+    /**
+     * Retrieves seriesmetadata for a given series identifier from conntected Opencast
+     *
+     * @param string series_id Identifier for a Series
+     *
+     * @return array|boolean response of a series, or false if unable to get
+     */
+    public function getSeries($series_id)
     {
-        return $this->getJSON('/allSeriesIdTitle.json');
+        $response = $this->opencastApi->series->get($series_id);
+        
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+        return false;
     }
 
     /**
-     * createSeriesForSeminar - creates an new Series for a given course in OC Matterhorn
-     * @param string $course_id - course identifier
+     * Updates the ACL for a given series in OC Matterhorn
+     * 
+     * @param string $series_id series identifier
+     * @param array $acl_data ACL
+     * 
      * @return bool success or not
      */
-    /*
-    public function createSeriesForSeminar($course_id)
+
+    public function updateAccesscontrolForSeminar($series_id, $acl_data)
     {
-        $dublinCore = OCSeriesModel::createSeriesDC($course_id);
+        $response = $this->opencastApi->series->updateAcl($series_id, $acl_data);
 
-        $acl = OpencastLTI::generate_standard_acls($course_id);
-
-        $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
-            ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
-            : \Config::get()->OPENCAST_HIDE_EPISODES;
-        $vis = $vis_conf
-            ? 'invisible'
-            : 'visible';
-
-        $post = [
-            'series' => urlencode($dublinCore),
-            'acl'    => urlencode($acl[$vis]->as_xml())
-        ];
-
-        $res    = $this->getXML('/', $post, false, true);
-        $string = str_replace('dcterms:', '', $res[0]);
-        $xml    = simplexml_load_string($string);
-        $json   = json_decode(json_encode($xml), true);
-
-        if ((int)$res[1] === 201) {
-            $new_series = json_decode($res[0]);
-            $series_id  = $json['identifier'];
-            OCSeriesModel::setSeriesforCourse($course_id, 1, $series_id, $vis, 1, time());
-
-            self::updateAccesscontrolForSeminar($series_id, $acl[$vis]->as_xml());
-
+        if ($response['code'] == 204) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
-    */
+
+    /**
+     * Retrieves episode metadata for a given series
+     * identifier from conntected Opencast
+     *
+     * @return array|boolean response of series, or false if unable to get
+     */
+    public function getAllSeriesTitle()
+    {
+        $response = $this->opencastApi->series->getTitles();
+
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+
+        return false;
+    }
 }

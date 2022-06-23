@@ -18,24 +18,51 @@ class ApiSeriesClient extends RestClient
         }
     }
 
+    /**
+     * Retrieves series ACL from connected Opencast
+     * 
+     * @param string $series_id id of series
+     * 
+     * @return array|bool
+     */
     public function getACL($series_id)
     {
-        return json_decode(json_encode($this->getJSON('/'.$series_id. '/acl')), true);
+        $response = $this->opencastApi->seriesApi->getAcl($series_id);
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+
+        return false;
     }
 
+    /**
+     * Sets ACL for a series in connected Opencast
+     * 
+     * @param string $series_id id of series
+     * @param object $acl the acl object
+     * 
+     * @return boolean
+     */
     public function setACL($series_id, $acl)
     {
-        $data = [
-            'acl' => json_encode($acl)
-        ];
-
-        $result = $this->putJSON('/' . $series_id . '/acl', $data, true);
-
-        return $result[1] == 200;
+        $response = $this->opencastApi->seriesApi->updateAcl($series_id, $acl);
+        return $response['code'] == 200;
     }
 
+    /**
+     * Get the series from connected opencsat
+     * 
+     * @param string $series_id id of series
+     * 
+     * @return object|bool series object or false if unable to get.
+     */
     public function getSeries($series_id)
     {
-        return $this->getJSON('/'. $series_id);
+        $response = $this->opencastApi->seriesApi->get($series_id);
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+
+        return false;
     }
 }
