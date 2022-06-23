@@ -52,11 +52,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             }
         }
 
-        if (Helpers::getConfigurationstate()) {
-            $resources = new Navigation($this->_('Videos'));
-            $resources->setURL(PluginEngine::getURL($this, [], 'contents/index'));
-            $main->addSubNavigation('index', $resources);
-            Navigation::addItem('/contents/opencast', $resources);
+        if ($GLOBALS['perm']->have_perm('autor') && Helpers::getConfigurationstate()) {
+            $videos = new Navigation($this->_('Videos'));
+            $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
+            Navigation::addItem('/contents/opencast', $videos);
         }
 
         if (!$GLOBALS['opencast_already_loaded']) {
