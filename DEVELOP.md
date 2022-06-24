@@ -11,3 +11,7 @@ To run the api tests, one needs to have Stud.IP installation at hand with curren
 Furthermore the URL of the Stud.IP installation needs to be configured in de `codeception.yml`
 
 Make sure that the composer and npm packages are up to date with the composer.json and package.json.
+
+To run the tests call `npm run tests`.
+
+Under `docs` is the db scheme and the REST-API-definition
