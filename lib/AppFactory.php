@@ -59,6 +59,7 @@ class AppFactory
         $container->register(new Providers\OpencastConstants());
         $container->register(new Providers\StudipServices());
         $container->register(new Providers\PluginRoles());
+        $container->register(new Providers\Tokens());
 
         return $app;
     }

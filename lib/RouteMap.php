@@ -27,26 +27,45 @@ class RouteMap
         $this->app->get('/discovery', Routes\DiscoveryIndex::class);
     }
 
+    /**
+     * Routes which every user can call
+     */
     public function authenticatedRoutes()
     {
+        // User routes
         $this->app->get('/user', Routes\User\UserShow::class);
 
-        #Video
-        $this->app->get('/video', Routes\Video\Video::class);
-        $this->app->get('/video/{id}', Routes\Video\VideoShow::class);
-        $this->app->put('/video/{id}', Routes\Video\VideoUpdate::class);
-        $this->app->delete('/video/{id}', Routes\Video\VideoDelete::class);
+        // Video routes
+        $this->app->get('/videos', Routes\Video\VideoList::class);
+        $this->app->get('/videos/{token}', Routes\Video\VideoShow::class);
+        $this->app->put('/videos/{token}', Routes\Video\VideoUpdate::class);
+        $this->app->delete('/videos/{token}', Routes\Video\VideoDelete::class);
 
-        #Playlist
-        $this->app->get('/playlist', Routes\Playlist\Playlist::class);
-        $this->app->get('/playlist/{id}', Routes\Playlist\PlaylistShow::class);
-        $this->app->put('/playlist/{id}', Routes\Playlist\PlaylistUpdate::class);
-        $this->app->delete('/playlist/{id}', Routes\Playlist\PlaylistDelete::class);
+        // Playlist routes
+        $this->app->get('/playlists', Routes\Playlist\PlaylistList::class);
+        $this->app->post('/playlists', Routes\Playlist\PlaylistAdd::class);
+        $this->app->get('/playlists/{token}', Routes\Playlist\PlaylistShow::class);
+        $this->app->put('/playlists/{token}', Routes\Playlist\PlaylistUpdate::class);
+        $this->app->delete('/playlists/{token}', Routes\Playlist\PlaylistDelete::class);
 
+
+        $this->app->put('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistAddVideo::class);
+        $this->app->delete('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistRemoveVideo::class);
+        $this->app->put('/playlists/{token}/user{user_id}', Routes\Playlist\PlaylistAddUser::class);
+        $this->app->delete('/playlists/{token}/users/{user_id}', Routes\Playlist\PlaylistRemoveUser::class);
+
+        // Course routes
+        $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Courses\CourseAddPlaylist::class);
+        $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Courses\CourseRemovePlaylist::class);
+
+        // LTI
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
 
     }
 
+    /**
+     * Routes which need admin permissions to call
+     */
     public function adminRoutes()
     {
         $this->app->get('/config', Routes\Config\ConfigList::class);

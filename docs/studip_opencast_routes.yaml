@@ -11,17 +11,11 @@ basePath: "/plugins.php/opencast/api"
 schemes:
 - "https"
 paths:
-  /users/{user_id}/videos:
-    parameters:
-      - name: "user_id"
-        in: "path"
-        description: "ID of user to return videos for"
-        required: true
-        type: "string"
+  /videos:
     get:
       tags:
-      - "users"
-      summary: "Get the videos the passed user has rights on"
+      - "videos"
+      summary: "Get the videos the session user has rights on"
       operationId: "getVideosForUser"
       produces:
       - "application/json"
@@ -55,17 +49,11 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Video"
-  /users/{user_id}/playlists:
-    parameters:
-      - name: "user_id"
-        in: "path"
-        description: "ID of user to return playlists for"
-        required: true
-        type: "string"
+  /playlists:
     get:
       tags:
-      - "users"
-      summary: "Get the playlist for the passed user"
+      - "playlists"
+      summary: "Get the playlist for the session user"
       operationId: "getPlaylistsForUser"
       produces:
       - "application/json"
@@ -90,7 +78,6 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Playlist"
-  /playlists:
     post:
       tags:
       - "playlists"

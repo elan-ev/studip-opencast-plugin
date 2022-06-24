@@ -15,21 +15,12 @@
     "https"
   ],
   "paths": {
-    "/users/{user_id}/videos": {
-      "parameters": [
-        {
-          "name": "user_id",
-          "in": "path",
-          "description": "ID of user to return videos for",
-          "required": true,
-          "type": "string"
-        }
-      ],
+    "/videos": {
       "get": {
         "tags": [
-          "users"
+          "videos"
         ],
-        "summary": "Get the videos the passed user has rights on",
+        "summary": "Get the videos the session user has rights on",
         "operationId": "getVideosForUser",
         "produces": [
           "application/json"
@@ -78,21 +69,12 @@
         }
       }
     },
-    "/users/{user_id}/playlists": {
-      "parameters": [
-        {
-          "name": "user_id",
-          "in": "path",
-          "description": "ID of user to return playlists for",
-          "required": true,
-          "type": "string"
-        }
-      ],
+    "/playlists": {
       "get": {
         "tags": [
-          "users"
+          "playlists"
         ],
-        "summary": "Get the playlist for the passed user",
+        "summary": "Get the playlist for the session user",
         "operationId": "getPlaylistsForUser",
         "produces": [
           "application/json"
@@ -127,9 +109,7 @@
             }
           }
         }
-      }
-    },
-    "/playlists": {
+      },
       "post": {
         "tags": [
           "playlists"
