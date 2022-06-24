@@ -11,6 +11,23 @@ The usual way to get a working version of this plugin, is to headover to the [St
 3. The production ready zip while will be located in the same folder and look something like
 `Opencast-VX.X.zip`
 
+# How to translate text strings in Opencast
+
+The plugin uses gettext to translate the text from german to other languages.
+
+## Extract
+
+Currently there is only the German and English translation present in this plugin. To generate the translation files (.po & .mo) one can simply run the `translate.sh` or use `npm run translate`. The latter is done automatically when creating a plugin zip via `npm run zip`.
+
+
+## Translate
+
+After extracting all present translation strings from the current code with the above commands, you can either directly edit `locale/en/LC_MESSAGES/opencast.po` or better use a tool like [Poedit](https://poedit.net/).
+
+
+## Compile
+
+After you are done entering translation strings, run one of the extract commands once more to regenerate the `opencast.mo` and the `translations.json`, which are the files used by the translation mechanic in Stud.IP and henceforth this plugin.
 
 # Codeception Tests
 
