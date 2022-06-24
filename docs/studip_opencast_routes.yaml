@@ -180,16 +180,11 @@ paths:
       responses:
         "200":
           description: "successful operation"
-  /playlists/{token}/user/{user_id}:
+  /playlists/{token}/user:
     parameters:
       - name: "token"
         in: "path"
         description: "ID of the playlist"
-        required: true
-        type: "integer"
-      - name: "user_id"
-        in: "path"
-        description: "ID of a user"
         required: true
         type: "integer"
     put:
@@ -202,7 +197,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "user_id"
+      - name: "username"
         in: "formData"
         description: "User to add/modify perms for the playlist"
         required: true
@@ -216,6 +211,18 @@ paths:
       responses:
         "200":
           description: "successful operation"
+  /playlists/{token}/user/{username}:
+    parameters:
+      - name: "token"
+        in: "path"
+        description: "ID of the playlist"
+        required: true
+        type: "integer"
+      - name: "username"
+        in: "path"
+        description: "Username of the user"
+        required: true
+        type: "string"
     delete:
       tags:
       - "playlists"

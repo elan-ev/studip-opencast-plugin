@@ -266,19 +266,12 @@
         }
       }
     },
-    "/playlists/{token}/user/{user_id}": {
+    "/playlists/{token}/user": {
       "parameters": [
         {
           "name": "token",
           "in": "path",
           "description": "ID of the playlist",
-          "required": true,
-          "type": "integer"
-        },
-        {
-          "name": "user_id",
-          "in": "path",
-          "description": "ID of a user",
           "required": true,
           "type": "integer"
         }
@@ -297,7 +290,7 @@
         ],
         "parameters": [
           {
-            "name": "user_id",
+            "name": "username",
             "in": "formData",
             "description": "User to add/modify perms for the playlist",
             "required": true,
@@ -322,7 +315,25 @@
             "description": "successful operation"
           }
         }
-      },
+      }
+    },
+    "/playlists/{token}/user/{username}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "ID of the playlist",
+          "required": true,
+          "type": "integer"
+        },
+        {
+          "name": "username",
+          "in": "path",
+          "description": "Username of the user",
+          "required": true,
+          "type": "string"
+        }
+      ],
       "delete": {
         "tags": [
           "playlists"

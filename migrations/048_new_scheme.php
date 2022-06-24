@@ -10,7 +10,7 @@ class NewScheme extends Migration
 
         $sql[] = "CREATE TABLE `oc_playlist` (
             `id` int NOT NULL AUTO_INCREMENT,
-            `token` varchar(1),
+            `token` varchar(8),
             `title` text,
             `description` text,
             `visibility` enum('internal','free','public'),
@@ -178,7 +178,7 @@ class NewScheme extends Migration
             `video_id` int,
             `user_id` varchar(32),
             `perm` enum('owner','write','read','share'),
-            PRIMARY KEY (`video_id`, `user_id`, `perm`),
+            PRIMARY KEY (`video_id`, `user_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
         ";

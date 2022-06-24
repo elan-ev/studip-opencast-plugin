@@ -11,7 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistsUserPerms;
 
-class PlaylistUpdate extends OpencastController
+class PlaylistRemoveUser extends OpencastController
 {
     use OpencastTrait;
 
@@ -30,17 +30,11 @@ class PlaylistUpdate extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        $json = $this->getRequestData($request);
-        $playlist->setData($json);
-        $playlist->store();
+        $user_id = \get_userid($args['username']);
+        $perm = PlaylistsUserPerms::deleteBySQL('user_id = ? AND playlist_id = ?', [
+            $user_id, $playlist->id
+        ]);
 
-        $ret_playlist = $playlist->toSanitizedArray();
-        $ret_playlist['users'] = [[
-            'user_id'  => $perm['user_id'],
-            'fullname' => \get_fullname($perm['user_id']),
-            'perm'     => $perm['perm']
-        ]];
-
-        return $this->createResponse($ret_playlist, $response->withStatus(200));
+        return $response->withStatus(204);
     }
 }

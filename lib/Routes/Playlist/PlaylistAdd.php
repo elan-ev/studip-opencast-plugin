@@ -47,8 +47,9 @@ class PlaylistAdd extends OpencastController
             'perm'     => $perm->perm
         ]];
 
-        return $this->createResponse([
-            'playlists' => $ret_playlist,
-        ], $response);
+        return $this->createResponse(
+            $ret_playlist,
+            $response->withStatus(201)
+        );
     }
 }

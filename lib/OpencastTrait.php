@@ -33,7 +33,7 @@ Trait OpencastTrait
     {
         return $response->withHeader(
             'Content-Type',
-            'application/vnd.api+json'
+            'application/json'
         )
         ->write(json_encode($data));
     }

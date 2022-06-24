@@ -8,15 +8,28 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistsUserPerms;
 
-class PlaylistUpdate extends OpencastController
+class PlaylistDelete extends OpencastController
 {
     use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        return $this->createResponse([
-            'type' => 'test',
-        ], $response);
+        global $user;
+
+        $playlist = Playlists::findOneByToken($args['token']);
+
+        // check what permissions the current user has on the playlist
+        $perm = $playlist->perms->findBy('user_id', $user->id)->toArray();
+
+        if (empty($perm) || !$perm[0] || $perm[0]['perm'] != 'owner') {
+            throw new \AccessDeniedException();
+        }
+
+        $playlist->delete();
+
+        return $response->withStatus(204);
     }
 }

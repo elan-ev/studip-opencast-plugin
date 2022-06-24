@@ -11,7 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistsUserPerms;
 
-class PlaylistUpdate extends OpencastController
+class PlaylistAddUser extends OpencastController
 {
     use OpencastTrait;
 
@@ -31,14 +31,20 @@ class PlaylistUpdate extends OpencastController
         }
 
         $json = $this->getRequestData($request);
-        $playlist->setData($json);
-        $playlist->store();
+
+        $perm = new PlaylistsUserPerms;
+        $perm->setData([
+            'playlist_id' => $playlist->id,
+            'user_id' => \get_userid($json['username']),
+            'perm'    => $json['perm']
+        ]);
+        $perm->store();
 
         $ret_playlist = $playlist->toSanitizedArray();
         $ret_playlist['users'] = [[
-            'user_id'  => $perm['user_id'],
-            'fullname' => \get_fullname($perm['user_id']),
-            'perm'     => $perm['perm']
+            'user_id'  => $perm->user_id,
+            'fullname' => \get_fullname($perm->user_id),
+            'perm'     => $perm->perm
         ]];
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));
