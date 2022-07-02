@@ -155,6 +155,12 @@ $sort_orders = Pager::getSortOptions();
                                     <?= $item['author'] ? htmlReady($item['author']) : 'Keine Angaben vorhanden' ?>
                                 </li>
                                 <li>
+                                    <?= $_('Spieldauer:') ?>
+                                    <?= $item['duration'] ? htmlReady(
+                                          DateTime::createFromFormat('s', round($item['duration']/1000))->format('H:i:s')
+                                      ) : 'Spieldauer wurde nicht ermittelt' ?>
+                                </li>
+                                <li>
                                     <?= $_('Beschreibung:') ?>
                                     <?= $item['description'] ? htmlReady($item['description']) : 'Keine Beschreibung vorhanden' ?>
                                 </li>
