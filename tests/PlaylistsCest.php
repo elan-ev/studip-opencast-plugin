@@ -103,6 +103,68 @@ class PlaylistsCest
         $I->seeResponseContainsJson($playlist);
     }
 
+    public function testAddVideo(ApiTester $I)
+    {
+        /*
+        // Create a playlist
+        $playlist = [
+            'title'       => 'Meine Videos' ,
+            'description' => 'Videoliste',
+            'visibility'  => 'internal'
+        ];
+
+        $response = $I->sendPostAsJson('/playlists', $playlist);
+        $I->seeResponseCodeIs(201);
+        $I->seeResponseIsJson();
+
+        $I->seeResponseContainsJson($playlist);
+        $I->seeResponseContainsJson(['users' => [['perm' => 'owner']]]);
+
+        list($token_playlist) = $I->grabDataFromResponseByJsonPath('$.token');
+
+        // Create a video
+        // TODO
+        list($token_video) = $I->grabDataFromResponseByJsonPath('$.token');
+
+        // Add video to playlist
+        $response = $I->sendPut('/playlists/' . $token_playlist . '/video/' . $token_video);
+        $I->seeResponseCodeIs(204);
+        */
+    }
+
+    public function testDeleteVideo(ApiTester $I)
+    {
+        /*
+        // Create a playlist
+        $playlist = [
+            'title'       => 'Meine Videos' ,
+            'description' => 'Videoliste',
+            'visibility'  => 'internal'
+        ];
+
+        $response = $I->sendPostAsJson('/playlists', $playlist);
+        $I->seeResponseCodeIs(201);
+        $I->seeResponseIsJson();
+
+        $I->seeResponseContainsJson($playlist);
+        $I->seeResponseContainsJson(['users' => [['perm' => 'owner']]]);
+
+        list($token_playlist) = $I->grabDataFromResponseByJsonPath('$.token');
+
+        // Create a video
+        // TODO
+        list($token_video) = $I->grabDataFromResponseByJsonPath('$.token');
+
+        // Add video to playlist
+        $response = $I->sendPut('/playlists/' . $token_playlist . '/video/' . $token_video);
+        $I->seeResponseCodeIs(204);
+
+        // Remove video from playlist
+        $response = $I->sendDelete('/playlists/' . $token_playlist . '/video/' . $token_video);
+        $I->seeResponseCodeIs(204);
+        */
+    }
+
     public function testEditingOfAccesibleForeignPlaylist(ApiTester $I)
     {
         // first, create a new playlist

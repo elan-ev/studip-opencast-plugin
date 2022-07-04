@@ -16,7 +16,7 @@ class Playlists extends \SimpleORMap
         parent::configure($config);
     }
 
-    public function findByUser_id($user_id)
+    public static function findByUser_id($user_id)
     {
         return self::findBySQL('LEFT JOIN oc_playlist_user_perms AS ocp
             ON (ocp.playlist_id = oc_playlist.id)
