@@ -31,13 +31,15 @@ After you are done entering translation strings, run one of the extract commands
 
 # Codeception Tests
 
-To run the api tests, one needs to have Stud.IP installation at hand with currently 3 users accounts with the following credentials:
+To run the api tests, one needs to have Stud.IP installation at hand with a default test course called "Test Lehrveranstaltung" with the id of "a07535cf2f8a72df33c12ddfa4b53dde" and currently 3 users accounts with the following credentials:
 
 | Username         | Password         |
 | ---------------- | ---------------- |
 | apitester        | apitester        |
 | apitester_autor1 | apitester_autor1 |
 | apitester_autor2 | apitester_autor2 |
+
+NOTE: the default course for test systems is available via applying the default db sql query under studip root directory: 'db/studip_demo_data.sql'.
 
 Furthermore the URL of the Stud.IP installation needs to be configured in de `codeception.yml`
 

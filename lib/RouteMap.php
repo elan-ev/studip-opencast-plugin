@@ -55,8 +55,8 @@ class RouteMap
         $this->app->delete('/playlists/{token}/user/{username}', Routes\Playlist\PlaylistRemoveUser::class);
 
         // Course routes
-        $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Courses\CourseAddPlaylist::class);
-        $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Courses\CourseRemovePlaylist::class);
+        $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
+        $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         // LTI
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);

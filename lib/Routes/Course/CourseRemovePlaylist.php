@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Routes\Playlist;
+namespace Opencast\Routes\Course;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -9,7 +9,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
-use Opencast\Models\PlaylistSeminar;
+use Opencast\Models\PlaylistVideos;
 
 class CourseRemovePlaylist extends OpencastController
 {
@@ -30,8 +30,8 @@ class CourseRemovePlaylist extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        PlaylistVideos::deleteBySQL('playlist_id = ? AND course_id = ?', [
-            $playlist->id, $course_id
+        PlaylistVideos::deleteBySQL('playlist_id = ?', [
+            $playlist->id
         ]);
 
         return $response->withStatus(204);

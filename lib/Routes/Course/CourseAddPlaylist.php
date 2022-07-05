@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Routes\Playlist;
+namespace Opencast\Routes\Course;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -9,7 +9,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
-use Opencast\Models\PlaylistSeminar;
+use Opencast\Models\PlaylistSeminars;
 
 class CourseAddPlaylist extends OpencastController
 {
@@ -30,7 +30,7 @@ class CourseAddPlaylist extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        $playlist_seminar = new PlaylistSeminar;
+        $playlist_seminar = new PlaylistSeminars;
         $playlist_seminar->setData([
             'playlist_id' => $playlist->id,
             'seminar_id' => $course_id,
