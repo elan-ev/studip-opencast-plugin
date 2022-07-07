@@ -63,7 +63,7 @@ window.addEventListener("DOMContentLoaded", function() {
     Vue.use(gettext);
 
     if (window.OpencastPlugin.CID !== undefined) {
-        store.dispatch('updateCid', CID);
+        store.dispatch('updateCid', window.OpencastPlugin.CID);
     }
 
     Vue.mount('#opencast');

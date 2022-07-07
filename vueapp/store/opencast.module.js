@@ -25,7 +25,7 @@ const getters = {
 
 const actions = {
     updateCid({commit}, cid) {
-        commit('setCid');
+        commit('setCid', cid);
     },
 
     async loadSeries({commit, dispatch}, id) {
