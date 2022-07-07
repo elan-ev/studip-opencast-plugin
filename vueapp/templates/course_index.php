@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
    window.OpencastPlugin = {
-        API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api') ?>',
+        API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>',
         CID        : '<?= $course_id ?>',
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
         ASSETS_URL : '<?= Assets::url('') ?>',
