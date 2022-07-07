@@ -37,12 +37,14 @@ const actions = {
 
 const mutations = {
     addVideos(state, videos){
-        $.each(videos, function(key, video) {
+        for(let id in videos) {
+            let video = videos[id]
             state.videos[video.token] = video
             if (! state.list.includes(video.token)) {
                 state.list.push(video.token)
             }
-        });
+        }
+        console.log(JSON.parse(JSON.stringify(state.videos)));
     },
     setRequestTime(state, requestTime) {
         state.requestTime = requestTime;

@@ -1,6 +1,9 @@
 <template>
   <div class="scrolling-component" ref="scrollComponent">
-    <VideoCard v-for="token in videosList" :video="videos[token]" :key="token"/>
+    {{ videos }}
+    <div v-if="videos">
+      <VideoCard v-for="(video, token) in videos" :video="video" :key="token"/>
+    </div>
   </div>
 </template>
 
