@@ -1,6 +1,5 @@
 <template>
   <div class="scrolling-component" ref="scrollComponent">
-    {{ videos }}
     <div v-if="videos">
       <VideoCard v-for="(video, token) in videos" :video="video" :key="token"/>
     </div>
@@ -13,19 +12,17 @@ import VideoCard from './VideoCard.vue';
 
 export default {
   name: "VideosList",
-  
-  computed: {
-    ...mapGetters(["videos", "videosList"]),
-  },
-  methods: {
-    
-  },
+
   components: {
-    VideoCard
+      VideoCard
+  },
+
+  computed: {
+      ...mapGetters(["videos"]),
   },
 
   mounted() {
-    this.$store.dispatch('loadVideos');
+      this.$store.dispatch('loadVideos');
   }
 };
 </script>

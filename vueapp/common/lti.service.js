@@ -1,7 +1,3 @@
-import Vue from "vue";
-import axios from "axios";
-import VueAxios from "vue-axios";
-import ApiService from "@/common/api.service";
 
 function LtiException() {};
 
@@ -43,7 +39,7 @@ class LtiService {
     async checkConnection() {
         let obj = this;
 
-        return Vue.axios({
+        return window.Vue.axios({
             method: 'GET',
             url: this.lti.launch_url,
             crossDomain: true,
@@ -75,7 +71,7 @@ class LtiService {
 
         let obj = this;
 
-        return await Vue.axios({
+        return await window.Vue.axios({
             method: 'POST',
             url: this.lti.launch_url,
             data: new URLSearchParams(this.lti.launch_data),
@@ -97,7 +93,7 @@ class LtiService {
             await this.authenticate();
         }
 
-        return Vue.axios({
+        return window.Vue.axios({
             url: resource,
             baseURL: this.lti.launch_url
         });
@@ -108,7 +104,7 @@ class LtiService {
             await this.authenticate();
         }
 
-        return Vue.axios({
+        return window.Vue.axios({
             method: 'POST',
             url: resource,
             baseURL: this.lti.launch_url,

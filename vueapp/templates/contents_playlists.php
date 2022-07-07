@@ -3,11 +3,12 @@
 </div>
 
 <script type="text/javascript">
-    let API_URL    = '<?= PluginEngine::getURL('opencast', [], 'api') ?>';
-    let IMAGE      = '<?= Assets::url('images/icons/') ?>';
-    let ICON_URL = '<?= Assets::url('images/icons/') ?>';
-    let ASSETS_URL = '<?= Assets::url('') ?>';
-    let CID        = null;
+    window.OpencastPlugin = {
+        API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api') ?>',
+        IMAGE      : '<?= Assets::url('images/icons/') ?>',
+        ICON_URL   : '<?= Assets::url('images/icons/') ?>',
+        ASSETS_URL : '<?= Assets::url('') ?>'
+    };
 </script>
 
 <!-- load bundles -->

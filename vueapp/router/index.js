@@ -1,9 +1,8 @@
-import Vue from "vue";
-import Router from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
 
-Vue.use(Router);
-
-export default new Router({
+export default new createRouter({
+    history: createWebHistory(window.location.pathname),
+    base: window.location.pathname,
     routes: [
         {
             path: "/",

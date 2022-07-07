@@ -94,7 +94,7 @@
 
 <script>
 import { FocusTrap } from 'focus-trap-vue';
-import VueResizeable from 'vrp-vue-resizable';
+import VueResizeable from 'vue-resizable';
 let uuid = 0;
 const dialogPadding = 3;
 

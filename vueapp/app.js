@@ -1,5 +1,7 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
+import axios from "axios";
+import VueAxios from "vue-axios";
 
 import router from "./router";
 import store from "./store";
@@ -10,53 +12,59 @@ import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";
 import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
-import GetTextPlugin from 'vue-gettext';
 
-
+import { createGettext } from "vue3-gettext";
 import translations from './i18n/translations.json';
-import  { createPopper } from '@popperjs/core';
 
-import PortalVue from 'portal-vue'
+window.addEventListener("DOMContentLoaded", function() {
+    window.Vue = createApp(App);
 
-Vue.config.devtools = true // Need this to use devtool browser extension
-Vue.use(PortalVue)
-Vue.filter("date", DateFilter);
-Vue.filter("datetime", DateTimeFilter);
-Vue.filter("error", ErrorFilter);
-Vue.filter("filesize", FileSizeFilter);
+    let Vue = window.Vue;
 
-ApiService.init();
+    Vue.use(router);
+    Vue.use(store);
 
-// Redirect to login page, if a 401 is catched
-Vue.axios.interceptors.response.use((response) => { // intercept the global error
-        return response;
-    }, function (error) {
-        store.dispatch('errorCommit', error.response);
+    Vue.config.devtools = true;
 
-        // Do something with response error
-        return Promise.reject(error)
-    }
-);
+    Vue.config.globalProperties.$filters = {
+        date: DateFilter,
+        datetime: DateTimeFilter,
+        error: ErrorFilter,
+        filesize: FileSizeFilter
+    };
 
-Vue.use(GetTextPlugin, {
-    availableLanguages: {
-        en_GB: 'British English',
-    },
-    defaultLanguage: String.locale.replace('-', '_'),
-    translations: translations,
-    silent: true,
-});
+    let oc_axios = axios.create({
+        baseURL: window.OpencastPlugin.API_URL
+    });
+    oc_axios.get('videos');
 
-$(function() {
-    window.Vue = new Vue({
-        name: 'Opencast Vue',
-        router,
-        store,
-        render: h => h(App)
-    }).$mount('#opencast');
+    Vue.use(VueAxios, oc_axios);
 
-    if (CID !== null) {
+    // Redirect to login page, if a 401 is catched
+    Vue.axios.interceptors.response.use((response) => { // intercept the global error
+            return response;
+        }, function (error) {
+            store.dispatch('errorCommit', error.response);
+
+            // Do something with response error
+            return Promise.reject(error)
+        }
+    );
+
+    const gettext = createGettext({
+        availableLanguages: {
+            en_GB: 'British English',
+        },
+        defaultLanguage: String.locale.replace('-', '_'),
+        translations: translations,
+        silent: true,
+    });
+
+    Vue.use(gettext);
+
+    if (window.OpencastPlugin.CID !== undefined) {
         store.dispatch('updateCid', CID);
     }
-    window.Vue.axios.defaults.baseURL = API_URL;
+
+    Vue.mount('#opencast');
 });

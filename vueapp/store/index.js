@@ -1,5 +1,4 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from 'vuex';
 
 import error from "./error.module";
 import config from "./config.module";
@@ -8,10 +7,7 @@ import lti from "./lti.module";
 import opencast from "./opencast.module";
 import videos from "./videos.module";
 
-Vue.use(Vuex);
-Vue.config.devtools = true // Need this to use devtool browser extension
-
-export default new Vuex.Store({
+export default createStore({
   modules: {
     error,
     config,

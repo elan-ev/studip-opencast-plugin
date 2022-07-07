@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-for="file in files" class="oc--file-preview">
+        <div v-for="file in files" class="oc--file-preview" :key="file.id">
             <h3 class="oc--file-type" v-if="type == 'presenter'" v-translate>
                 Vortragende*r
             </h3>
@@ -13,7 +13,7 @@
             </span>
 
             <span class="oc--file-size">
-                <b v-translate>Größe:</b> {{ file.size | filesize }}
+                <b v-translate>Größe:</b> {{ $filters.filesize(file.size) }}
             </span>
 
             <span>

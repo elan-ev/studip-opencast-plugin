@@ -1,7 +1,3 @@
-import Vue from "vue";
-import axios from "axios";
-import VueAxios from "vue-axios";
-
 /**
  * This object manages the episode upload via LTI
  *
@@ -86,7 +82,7 @@ class UploadService {
         // Prepare meta data
         let episodeDC = this.createDCCCatalog(terms);
 
-        return Vue.axios({
+        return window.Vue.axios({
             url: this.service_url + "/addDCCatalog",
             method: "POST",
             data: new URLSearchParams({
@@ -108,7 +104,7 @@ class UploadService {
         acldata.append('flavor', 'security/xacml+episode');
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
-        return Vue.axios({
+        return window.Vue.axios({
             url: this.service_url + "/addAttachment",
             method: "POST",
             data: acldata,
@@ -144,9 +140,9 @@ class UploadService {
 
         return new Promise(
             function (resolve, reject) {
-                obj.request = Vue.axios.CancelToken.source();
+                obj.request = window.Vue.axios.CancelToken.source();
 
-                return Vue.axios({
+                return window.Vue.axios({
                     url: obj.service_url + "/addTrack",
                     method: "POST",
                     data: data,
@@ -167,7 +163,7 @@ class UploadService {
     }
 
     finishIngest(mediaPackage, workflowId = "upload") {
-        return Vue.axios({
+        return window.Vue.axios({
             url: this.service_url + "/ingest",
             method: "POST",
             data: new URLSearchParams({

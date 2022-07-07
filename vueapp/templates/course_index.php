@@ -2,12 +2,15 @@
     <h1 class="display-1 text-center">Starte Anwendung&hellip;</h1>
 </div>
 
+
 <script type="text/javascript">
-    let API_URL  = '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>';
-    let CID      = '<?= $course_id ?>';
-    let ICON_URL = '<?= Assets::url('images/icons/') ?>';
-    let ASSETS_URL = '<?= Assets::url('') ?>';
-    let PLUGIN_ASSET_URL =  '<?= $plugin->getAssetsUrl() ?>';
+   window.OpencastPlugin = {
+        API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api') ?>',
+        CID        : '<?= $course_id ?>',
+        ICON_URL   : '<?= Assets::url('images/icons/') ?>',
+        ASSETS_URL : '<?= Assets::url('') ?>',
+        PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>'
+    };
 </script>
 
 <!-- load bundles -->

@@ -48,3 +48,51 @@ Make sure that the composer and npm packages are up to date with the composer.js
 To run the tests call `npm run tests`.
 
 Under `docs` is the db scheme and the REST-API-definition
+
+# Changes from using Vue 2 to Vue 3
+
+## Filters
+
+Before:  
+`{{ file.size | filesize }}`
+
+Now:  
+`{{ $filters.filesize(file.size) }}`
+
+## Translations
+
+Before:  
+`<b v-translate>Größe:</b>`  
+`<translate>Größe:</translate>`
+
+Now:  
+`<b>{{ $gettext('Größe:') }}</b>`  
+`{{ $gettext('Größe:') }}`
+
+## vue-portal / MountingPortal
+
+The functionalities of `vue-portal` are integrated into Vue 3 and is called `Teleport`.
+
+Before:  
+`<MountingPortal mountTo="#actions" name="actions">[...]</MountingPortal>`
+
+Now:  
+`<Teleport to="#actions" name="actions">[...]</Teleport>`
+
+## Injected global vars
+
+```
+window.OpencastPlugin = {
+    API_URL    : ...
+    CID        : ...
+    ICON_URL   : ...
+    ASSETS_URL : ...
+    PLUGIN_ASSET_URL : ...
+};
+```
+
+Before:  
+`console.log(API_URL)`
+
+Now:  
+`console.log(window.OpencastPlugin.API_URL)`
