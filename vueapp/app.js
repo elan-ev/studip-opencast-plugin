@@ -36,7 +36,6 @@ window.addEventListener("DOMContentLoaded", function() {
     let oc_axios = axios.create({
         baseURL: window.OpencastPlugin.API_URL
     });
-    oc_axios.get('videos');
 
     Vue.use(VueAxios, oc_axios);
 

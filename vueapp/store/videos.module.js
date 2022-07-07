@@ -1,7 +1,6 @@
 import ApiService from "@/common/api.service";
 
 const state = {
-    list: [],
     videos: {},
     requestTime: null
 }
@@ -13,9 +12,6 @@ const getters = {
     videos(state) {
         return state.videos
     },
-    videosList(state) {
-        return state.list
-    }
 }
 
 
@@ -33,16 +29,16 @@ const actions = {
                 context.commit('addVideos', data);
             });
     },
+
+    async deleteVideo(context, id) {
+        // TODO
+    }
 }
 
 const mutations = {
     addVideos(state, videos){
         for (let id in videos) {
-            let video = videos[id]
-            state.videos[video.token] = video
-            if (! state.list.includes(video.token)) {
-                state.list.push(video.token)
-            }
+            state.videos[videos[id].token] = videos[id]
         }
     },
 

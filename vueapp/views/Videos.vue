@@ -1,6 +1,6 @@
 <template>
     <div class="container" id="app-videos">
-        <p>Videos</p>
+        <h2>Videos</h2>
         <VideosList></VideosList>
     </div>
 </template>

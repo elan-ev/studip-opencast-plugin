@@ -7,7 +7,8 @@
         API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api') ?>',
         IMAGE      : '<?= Assets::url('images/icons/') ?>',
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
-        ASSETS_URL : '<?= Assets::url('') ?>'
+        ASSETS_URL : '<?= Assets::url('') ?>',
+        PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>'
     };
 </script>
 

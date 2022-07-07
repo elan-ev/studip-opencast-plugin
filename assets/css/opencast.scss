@@ -2,7 +2,7 @@
 @import "assets/stylesheets/scss/breakpoints";
 
 $item-height: auto;
-$item-width : 25em;
+$item-width : 20em;
 $item-height-small: auto;
 $item-width-small : 16em;
 $episode-background: $light-gray-color-20;
@@ -95,7 +95,7 @@ $episode-background: $light-gray-color-20;
             top: 0;
             width: 100%;
             height: auto;
-            max-height: 240px;
+            max-height: 130px;
             object-fit: contain;
         }
 
@@ -103,7 +103,7 @@ $episode-background: $light-gray-color-20;
             position: absolute;
             width: 50%;
             left: 25%;
-            max-height: 100px;
+            max-height: 80px;
             opacity: 0.6;
             padding-bottom: 0;
             bottom: 50%;
@@ -164,7 +164,7 @@ $episode-background: $light-gray-color-20;
     overflow: auto;
     height: auto;
 
-    > li {
+    > div > li {
         background: $episode-background;
         border-right-width: 1px;
         border-left-width: 1px;
