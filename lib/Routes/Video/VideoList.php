@@ -9,14 +9,16 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 
-class Video extends OpencastController
+class VideoList extends OpencastController
 {
     use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        return $this->createResponse([
-            'type' => 'test',
-        ], $response);
+        $array = [
+            (object) ["id" => 1, "token" => 2, "title" => "test1"],
+            (object) ["id" => 2, "token" => 3, "title" => "test1"]
+        ];
+        return $this->createResponse($array, $response);
     }
 }

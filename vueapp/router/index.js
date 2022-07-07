@@ -7,13 +7,13 @@ export default new Router({
     routes: [
         {
             path: "/",
-            name: "video",
-            component: () => import("@/views/Video"),
+            name: "videos",
+            component: () => import("@/views/Videos"),
         },
         {
-            path: "/playlist",
-            name: "playlist",
-            component: () => import("@/views/Playlist"),
+            path: "/playlists",
+            name: "playlists",
+            component: () => import("@/views/Playlists"),
         },
         {
             path: "/admin",

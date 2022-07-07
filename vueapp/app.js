@@ -20,7 +20,6 @@ import PortalVue from 'portal-vue'
 
 Vue.config.devtools = true // Need this to use devtool browser extension
 Vue.use(PortalVue)
-
 Vue.filter("date", DateFilter);
 Vue.filter("datetime", DateTimeFilter);
 Vue.filter("error", ErrorFilter);

@@ -1,6 +1,6 @@
 <template>
-    <div class="container" id="app-playlist">
-        <p>Playlist</p>
+    <div class="container" id="app-playlists">
+        <p>Playlists</p>
     </div>
 </template>
 
@@ -8,6 +8,6 @@
 import { mapGetters } from "vuex";
 
 export default {
-    name: "Playlist",
+    name: "Playlists",
 };
 </script>
