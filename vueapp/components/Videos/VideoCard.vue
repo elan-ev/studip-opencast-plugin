@@ -36,15 +36,15 @@
                         </li>
                         <li v-translate>
                             {{ $gettext('Autor:') }}
-                            -
+                            {{ event.autor }}
                         </li>
                         <li v-translate>
                             {{ $gettext('Mitwirkende:') }}
-                            -
+                            {{ event.contributors }}
                         </li>
                         <li v-translate>
                             {{ $gettext('Beschreibung:') }}
-                            {{event.description}}
+                            {{ event.description }}
                         </li>
                     </ul>
                 </div>
@@ -105,6 +105,7 @@ export default {
             var sec = parseInt(this.event.duration / 1000)
             var min = parseInt(sec / 60)
             var h = parseInt(min / 60)
+            console.log(this.event.mkdate);
             return ("0" + h).substr(-2) + ":" + ("0" + min%60).substr(-2) + ":" + ("0" + sec%60).substr(-2)
         }
     }

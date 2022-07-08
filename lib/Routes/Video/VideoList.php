@@ -19,6 +19,8 @@ class VideoList extends OpencastController
             'id'            => '2',
             'token'	        => 'abcdef1234',
             'config_id'	    => '22',
+            'autor'         => 'Günter Jung',          // Get it from oc_video_user_perms
+            'contributors'  => 'Miriam Fröhlich',      // Where to get that from?
             'episode'	    => 'abc-def-ghi-123-456',
             'title'	        => 'Testtitel',
             'description'	=> 'Beschreibung',
@@ -28,8 +30,7 @@ class VideoList extends OpencastController
             'publication'	=> 'https://studip.me',
             'visibility'	=> 'public',
             'chdate'	    => strtotime('2022-07-07 14:23:51'),
-            'mkdate'        => strtotime('0000-00-00 00:00:00') < 0 ? 0 : strtotime('0000-00-00 00:00:00')
-
+            'mkdate'        => strtotime('2022-07-05 09:12:12')
         ];
 
         $test2 = $test;
