@@ -8,7 +8,8 @@
         IMAGE      : '<?= Assets::url('images/icons/') ?>',
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
         ASSETS_URL : '<?= Assets::url('') ?>',
-        PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>'
+        PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
+        ROUTE      : 'videos'
     };
 </script>
 

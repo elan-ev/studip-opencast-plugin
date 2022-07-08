@@ -1,6 +1,6 @@
 <template>
     <div class="container" id="app-playlists">
-        <p>Playlists</p>
+        <h2>Wiedergabelisten</h2>
     </div>
 </template>
 

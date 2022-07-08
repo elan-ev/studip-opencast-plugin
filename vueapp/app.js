@@ -65,5 +65,7 @@ window.addEventListener("DOMContentLoaded", function() {
         store.dispatch('updateCid', window.OpencastPlugin.CID);
     }
 
+    store.dispatch('updatePage', window.OpencastPlugin.ROUTE);
+
     Vue.mount('#opencast');
 });

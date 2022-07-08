@@ -40,7 +40,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $videos = new Navigation($this->_('Videos'));
             $videos->setDescription($this->_('Opencast Aufzeichnungen'));
             $videos->setImage(Icon::create('video2'));
-            $videos->setURL(PluginEngine::getURL($this, [], 'contents/index#/'));
+            $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
 
             Navigation::addItem('/contents/opencast', $videos);
         }

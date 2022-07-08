@@ -1,5 +1,5 @@
 <template>
-    <div class="container" id="app-videos">
+    <div>
         <h2>Videos</h2>
         <VideosList></VideosList>
     </div>
@@ -12,7 +12,7 @@ import VideosList from "@/components/Videos/VideosList";
 export default {
     name: "Videos",
     components: {
-        VideosList,
+        VideosList
     },
 };
 </script>
