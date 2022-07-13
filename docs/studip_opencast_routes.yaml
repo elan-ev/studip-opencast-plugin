@@ -233,6 +233,27 @@ paths:
       responses:
         "200":
           description: "successful operation"
+  /courses/{course_id}/playlists:
+    parameters:
+      - name: "course_id"
+        in: "path"
+        description: "ID of coursre"
+        required: true
+        type: "string"
+    get:
+      tags:
+      - "courses"
+      summary: "Returns playlists for this course. Videos without explicit playlist in this course are mapped to a virtual playlist which can be accessed via the standard playlist routes"
+      operationId: "getPlaylistsForCourse"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            items:
+              $ref: "#/definitions/Playlist"
   /courses/{course_id}/playlists/{token}:
     parameters:
       - name: "token"
@@ -242,9 +263,9 @@ paths:
         type: "integer"
       - name: "course_id"
         in: "path"
-        description: "ID of a video"
+        description: "ID of coursre"
         required: true
-        type: "integer"
+        type: "string"
     put:
       tags:
       - "courses"
@@ -452,6 +473,35 @@ paths:
         responses:
           "200":
             description: "successful operation"
+  /opencast/user/{username}:
+    get:
+      tags:
+      - "opencast"
+      summary: "Get user and roles by user name"
+      description: "Returns the user with all necessary role ids"
+      operationId: "getUserByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "token"
+        in: "query"
+        description: "API Key to use for the call"
+        required: true
+        type: "string"
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be fetched."
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
 definitions:
   Video:
     type: "object"
@@ -550,3 +600,12 @@ definitions:
         enum: ["text", "playlist", "tag"]
       value:
         type: "string"
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      roles:
+        type: "array"
+        items:
+          type: "string"
