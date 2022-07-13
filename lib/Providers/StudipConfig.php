@@ -21,5 +21,9 @@ class StudipConfig implements \Pimple\ServiceProviderInterface
 
             return null;
         };
+
+        $container['api-token'] = function() {
+            return \Config::get()->OPENCAST_API_TOKEN;
+        };
     }
 }

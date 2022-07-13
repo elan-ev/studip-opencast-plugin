@@ -40,7 +40,8 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'OPENCAST_ALLOW_STUDYGROUP_CONF',
                 'OPENCAST_MANAGE_ALL_OC_EVENTS',
                 'OPENCAST_RESOURCE_PROPERTY_ID',
-                'OPENCAST_SUPPORT_EMAIL'
+                'OPENCAST_SUPPORT_EMAIL',
+                'OPENCAST_API_TOKEN'
             ]
         ];
     }

@@ -1,7 +1,4 @@
 <?php
-/* Opencast plugin constants */
-require_once __DIR__ .'/constants.php';
-
 /* Composer autoloader */
 require_once __DIR__ .'/vendor/autoload.php';
 

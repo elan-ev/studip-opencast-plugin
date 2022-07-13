@@ -24,6 +24,10 @@ class RouteMap
             ->add(new Middlewares\Authentication($container[StudipServices::AUTHENTICATOR]))
             ->add(new Middlewares\RemoveTrailingSlashes);
 
+        $this->app->group('/opencast', [$this, 'opencastRoutes'])
+            ->add(new Middlewares\TokenAuthentication($container['api-token']))
+            ->add(new Middlewares\RemoveTrailingSlashes);
+
         $this->app->get('/discovery', Routes\DiscoveryIndex::class);
     }
 
@@ -75,5 +79,13 @@ class RouteMap
         $this->app->get('/config/{id}', Routes\Config\ConfigShow::class);
         $this->app->put('/config/{id}', Routes\Config\ConfigAddEdit::class);
         $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);
+    }
+
+    /**
+     * Routes called by opencast vith token
+     */
+    public function opencastRoutes()
+    {
+        $this->app->get('/user/{username}', Routes\Opencast\UserRoles::class);
     }
 }

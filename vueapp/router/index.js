@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 export default new createRouter({
-    history: createWebHistory(window.location.pathname),
+    history: createWebHashHistory(),
     base: window.location.pathname,
     routes: [
         {

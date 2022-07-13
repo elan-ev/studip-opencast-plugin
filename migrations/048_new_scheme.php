@@ -217,8 +217,22 @@ class NewScheme extends Migration
         $db = DBManager::get();
 
         foreach ($sql as $query) {
-            $db->exec($query);
+            try {
+                $db->exec($query);
+            } catch (PDOException $e) {}
         }
+
+        $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
+                              VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
+
+        $stmt->execute([
+            'name'        => 'OPENCAST_API_TOKEN',
+            'section'     => 'opencast',
+            'description' => 'Dieser hier eingegebene API Token muss beim StudipUserProvider in Opencast eingetragen werden.',
+            'range'       => 'global',
+            'type'        => 'string',
+            'value'       => ''
+        ]);
 
         SimpleOrMap::expireTableScheme();
     }
@@ -226,6 +240,9 @@ class NewScheme extends Migration
     function down()
     {
         // There is no going back from this migration!!!
+        $db = DBManager::get();
+
+        $db->query("DELETE FROM config WHERE field = 'OPENCAST_API_TOKEN'");
     }
 
 }
