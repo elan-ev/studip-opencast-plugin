@@ -23,6 +23,13 @@ class Playlists extends \SimpleORMap
             WHERE ocp.user_id = ?', [$user_id]);
     }
 
+    public static function findByCourse_id($course_id)
+    {
+        return self::findBySQL('LEFT JOIN oc_playlist_seminar AS ocps
+            ON (ocps.playlist_id = oc_playlist.id)
+            WHERE ocps.seminar_id = ?', [$course_id]);
+    }
+
     /**
      * Get sanitized array to send to the frontend
      */

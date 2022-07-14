@@ -59,6 +59,7 @@ class RouteMap
         $this->app->delete('/playlists/{token}/user/{username}', Routes\Playlist\PlaylistRemoveUser::class);
 
         // Course routes
+        $this->app->get('/courses/{course_id}/playlist', Routes\Course\CourseListPlaylist::class);
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
