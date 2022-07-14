@@ -31,6 +31,18 @@ export default new createRouter({
             path: "/course",
             name: "course",
             component: () => import("@/views/Course.vue"),
+            children: [
+                {
+                    path: "videos",
+                    name: "videos",
+                    component: () => import("@/views/Videos"),
+                },
+                {
+                    path: "playlists",
+                    name: "playlists",
+                    component: () => import("@/views/Playlists"),
+                },
+            ]
         },
     ]
 });
