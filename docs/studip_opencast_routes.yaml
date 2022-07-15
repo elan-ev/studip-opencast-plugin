@@ -211,6 +211,27 @@ paths:
       responses:
         "200":
           description: "successful operation"
+  /playlists/{token}/videos:
+    parameters:
+      - name: "token"
+        in: "path"
+        description: "ID of the playlist"
+        required: true
+        type: "integer"
+    get:
+      tags:
+      - "playlists"
+      summary: "Get videos on the passed playlist"
+      operationId: "getVideosForPlaylist"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            items:
+              $ref: "#/definitions/Video"
   /playlists/{token}/user/{username}:
     parameters:
       - name: "token"
