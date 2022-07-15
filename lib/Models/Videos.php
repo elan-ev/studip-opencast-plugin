@@ -28,4 +28,11 @@ class Videos extends \SimpleORMap
 
         return $data;
     }
+    
+    public static function findByPlaylist_token($playlist_token)
+    {
+        return self::findBySQL('LEFT JOIN oc_playlist_video AS ocpv
+            ON (ocpv.video_id = oc_video.id)
+            WHERE ocpv.playlist_id = ?', [$playlist_token]);
+    }
 }

@@ -6,19 +6,20 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
-                    active: fragment == 'videos'
-                    }">
+                    active: currentPlaylist == null
+                    }"
+                    v-on:click="setPlaylist(null)">
                     <router-link :to="{ name: 'videos' }">
                         Videos
                     </router-link>
                 </li>
                 <li :class="{
-                    active: fragment == 'playlists' && currentPlaylist == playlist.token
+                    active: currentPlaylist == playlist.token
                     }"
                     v-for="playlist in playlists"
                     v-bind:key="playlist.token"
                     v-on:click="setPlaylist(playlist.token)">
-                    <router-link :to="{ name: 'playlists' }">
+                    <router-link :to="{ name: 'videos' }">
                         {{ playlist.title }}
                     </router-link>
                 </li>
@@ -71,6 +72,7 @@ export default {
     methods: {
         setPlaylist(token) {
             this.$store.dispatch('setCurrentPlaylist', token);
+            this.$store.dispatch('loadVideos');
         }
     },
 
@@ -83,6 +85,7 @@ export default {
     
     mounted() {
         this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('loadVideos');
     }
 }
 </script>

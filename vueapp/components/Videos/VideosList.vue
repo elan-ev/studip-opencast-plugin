@@ -56,7 +56,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadVideos');
+        // this.$store.dispatch('loadVideos');
     }
 };
 </script>

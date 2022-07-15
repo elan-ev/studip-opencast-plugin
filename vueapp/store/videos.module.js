@@ -2,7 +2,8 @@ import ApiService from "@/common/api.service";
 
 const state = {
     videos: {},
-    pagedVideos: {},
+    pagedAllVideos: {},
+    pagedPlaylistVideos: {},
     search: '',
     sort: {
         field: 'mkdate',
@@ -43,9 +44,11 @@ const getters = {
     },
 }
 
-
 const actions = {
-    async loadVideos({ commit, state }) {
+    async loadVideos({ commit, state, rootState }) {
+        let playlist_token = rootState.courses.currentPlaylist
+        let route = (playlist_token == null) ? 'videos' : 'playlists/' + playlist_token + '/videos';
+        
         state.loadingPage = true;
 
         const params = new URLSearchParams();
@@ -64,9 +67,9 @@ const actions = {
             }
         ]));
 
-        return ApiService.get('videos', { params })
+        return ApiService.get(route, { params })
             .then(({ data }) => {
-                commit('addVideos', data.videos);
+                commit('addVideos', {'videos': data.videos, 'playlist_token': playlist_token});
 
                 if (data.count) {
                     commit('updatePaging', {
@@ -105,15 +108,35 @@ const actions = {
 }
 
 const mutations = {
-    addVideos(state, videos){
-        state.pagedVideos[state.paging.currPage] = {};
+    addVideos(state, payload){
+        let videos = payload.videos;
+        let playlist_token = payload.playlist_token;
+        let videos_ref = {};
 
         for (let i = 0; i < videos.length; i++) {
             let video = videos[i];
-            state.pagedVideos[state.paging.currPage][video.token] = video;
+            videos_ref[video.token] = video;
         }
 
-        state.videos = state.pagedVideos[state.paging.currPage];
+        if (playlist_token == null) {
+            state.pagedAllVideos[state.paging.currPage] = {};
+            for (let i = 0; i < videos.length; i++) {
+                let video = videos[i];
+                state.pagedAllVideos[state.paging.currPage][video.token] = video;
+            }
+            state.videos = state.pagedAllVideos[state.paging.currPage];
+        }
+        else {
+            if (state.pagedPlaylistVideos[playlist_token] === undefined) {
+                state.pagedPlaylistVideos[playlist_token] = {}
+            }
+            state.pagedPlaylistVideos[playlist_token][state.paging.currPage] = {};
+            for (let i = 0; i < videos.length; i++) {
+                let video = videos[i];
+                state.pagedPlaylistVideos[playlist_token][state.paging.currPage][video.token] = video;
+            }
+            state.videos = state.pagedPlaylistVideos[playlist_token][state.paging.currPage];
+        }
     },
 
     setSort(state, sort) {
@@ -130,6 +153,7 @@ const mutations = {
                 state.videos = {};
             }
         }
+        state.videos = state.allVideos
     },
 
     updatePaging(state, paging) {

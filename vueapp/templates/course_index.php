@@ -10,7 +10,7 @@
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
         ASSETS_URL : '<?= Assets::url('') ?>',
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
-        ROUTE      : 'course'
+        ROUTE      : 'videos'
     };
 </script>
 

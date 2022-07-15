@@ -7,14 +7,15 @@
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
                     active: fragment == 'videos'
-                }">
+                    }"
+                    v-on:click="this.$store.dispatch('loadVideos')">
                     <router-link :to="{ name: 'videos' }">
                         Videos
                     </router-link>
                 </li>
                 <li :class="{
                     active: fragment == 'playlists'
-                }">
+                    }">
                     <router-link :to="{ name: 'playlists' }">
                         Wiedergabelisten
                     </router-link>
@@ -67,6 +68,10 @@ export default {
         fragment() {
             return this.$route.name;
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('loadVideos');
     }
 }
 </script>

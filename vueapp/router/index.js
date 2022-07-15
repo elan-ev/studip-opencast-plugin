@@ -37,11 +37,6 @@ export default new createRouter({
                     name: "videos",
                     component: () => import("@/views/Videos"),
                 },
-                {
-                    path: "playlists",
-                    name: "playlists",
-                    component: () => import("@/views/Playlists"),
-                },
             ]
         },
     ]
