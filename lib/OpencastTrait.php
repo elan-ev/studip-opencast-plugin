@@ -12,7 +12,8 @@ Trait OpencastTrait
     {
         $body = (string) $request->getBody();
         if ('' === $body) {
-            throw new UnprocessableEntityException('Empty request', 500);
+            //throw new UnprocessableEntityException('Empty request', 500);
+            return false;
         }
         $result = json_decode($body, true);
         if (JSON_ERROR_NONE !== json_last_error()) {

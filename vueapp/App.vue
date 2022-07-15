@@ -22,12 +22,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['page'])
+        ...mapGetters(['site'])
     },
 
     mounted() {
         // check, which site was requested
-        this.$router.push({name: this.page});
+        this.$router.push({name: this.site});
     }
 };
 </script>

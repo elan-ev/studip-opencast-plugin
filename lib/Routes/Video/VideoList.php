@@ -8,6 +8,9 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
+use Opencast\Models\Filter;
+use Opencast\Models\Videos;
+use Opencast\Models\Tags;
 
 class VideoList extends OpencastController
 {
@@ -15,28 +18,66 @@ class VideoList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $test = [
-            'id'            => '2',
-            'token'	        => 'abcdef1234',
-            'config_id'	    => '22',
-            'autor'         => 'Günter Jung',          // Get it from oc_video_user_perms
-            'contributors'  => 'Miriam Fröhlich',      // Where to get that from?
-            'episode'	    => 'abc-def-ghi-123-456',
-            'title'	        => 'Testtitel',
-            'description'	=> 'Beschreibung',
-            'duration'	    => '1230000',
-            'views'	        => '3',
-            'preview'	    => 'https://studip.me',
-            'publication'	=> 'https://studip.me',
-            'visibility'	=> 'public',
-            'chdate'	    => strtotime('2022-07-07 14:23:51'),
-            'mkdate'        => strtotime('2022-07-05 09:12:12')
+        global $user;
+
+        // select all videos the current user has perms on
+        $params = [
+            ':user_id'=> $user->id
         ];
 
-        $test2 = $test;
-        $test2['id'] = '42';
-        $test2['token'] = 'ghijklf1234';
+        $filters = new Filter($request);
 
-        return $this->createResponse([$test, $test2], $response);
+        $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+
+        $where = ' WHERE 1 ';
+        $tag_ids = [];
+
+        foreach ($filters->getFilters() as $filter) {
+            switch ($filter['type']) {
+                case 'text':
+                    $pname = ':text' . sizeof($params);
+                    $where .= " AND (title LIKE $pname OR description LIKE $pname)";
+                    $params[$pname] = '%' . $filter['value'] .'%';
+                    break;
+
+                case 'tag':
+                    // get id of this tag (if any)
+                    if (!empty($filter['value'])) {
+                        $tags = Tags::findBySQL($sq = 'tag LIKE ?',  $pr = ['%'. $filter['value'] .'%']);
+
+                        if (!empty($tags)) {
+                            foreach ($tags as $tag) {
+                                $tag_ids[] = $tag->id;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        if (!empty($tag_ids)) {
+            $sql .= ' INNER JOIN oc_video_tags AS t ON (t.tag_id IN('. implode(',', $tag_ids) .'))';
+        }
+
+        $sql .= $where;
+
+        $sql .= ' GROUP BY oc_video.id';
+
+        $stmt = \DBManager::get()->prepare($s = "SELECT COUNT(*) FROM (SELECT oc_video.* FROM oc_video $sql) t");
+        $stmt->execute($params);
+        $count = $stmt->fetchColumn();
+
+        $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
+        $videos = Videos::findBySQL($sql, $params);
+
+        $ret = [];
+        foreach ($videos as $video) {
+            $ret[] = $video->getCleanedArray();
+        }
+
+        return $this->createResponse([
+            'videos' => $ret,
+            'count'  => $count
+        ], $response);
     }
 }

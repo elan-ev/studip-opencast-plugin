@@ -15,4 +15,17 @@ class Videos extends \SimpleORMap
 
         parent::configure($config);
     }
+
+    public function getCleanedArray()
+    {
+        $data = $this->toArray();
+
+        $data['chdate'] = ($data['chdate'] == '0000-00-00 00:00:00')
+            ? 0 : \strtotime($data['chdate']);
+
+        $data['mkdate'] = ($data['mkdate'] == '0000-00-00 00:00:00')
+            ? 0 : \strtotime($data['mkdate']);
+
+        return $data;
+    }
 }

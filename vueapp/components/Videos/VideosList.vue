@@ -1,18 +1,31 @@
 <template>
-    <div class="scrolling-component" ref="scrollComponent">
-        <div v-if="Object.keys(videos).length" class="oc--episode-list">
-            <VideoCard
-                v-for="event in videos"
-                v-bind:event="event"
-                v-bind:key="event.id"
-            ></VideoCard>
-        </div>
-        <div v-else class="oc--episode-list">
-            <EmptyVideoCard />
-            <EmptyVideoCard />
-            <EmptyVideoCard />
-            <EmptyVideoCard />
-            <EmptyVideoCard />
+    <div>
+        <PaginationButtons @changePage="changePage"/>
+
+        <div id="episodes" class="oc--flexitem oc--flexepisodelist">
+            <ul v-if="Object.keys(videos).length === 0 && loadingPage" class="oc--episode-list oc--episode-list--empty">
+                <EmptyVideoCard />
+                <EmptyVideoCard />
+                <EmptyVideoCard />
+                <EmptyVideoCard />
+                <EmptyVideoCard />
+            </ul>
+
+            <ul v-else-if="Object.keys(videos).length === 0" class="oc--episode-list oc--episode-list--empty">
+                <MessageBox type="info">
+                    <translate>
+                        Es gibt bisher keine Aufzeichnungen.
+                    </translate>
+                </MessageBox>
+            </ul>
+
+            <ul class="oc--episode-list" v-else>
+                <VideoCard
+                    v-for="event in videos"
+                    v-bind:event="event"
+                    v-bind:key="event.id"
+                ></VideoCard>
+            </ul>
         </div>
     </div>
 </template>
@@ -21,16 +34,25 @@
 import { mapGetters } from "vuex";
 import VideoCard from './VideoCard.vue';
 import EmptyVideoCard from './EmptyVideoCard.vue';
+import PaginationButtons from '@/components/PaginationButtons.vue';
+import MessageBox from '@/components/MessageBox.vue';
 
 export default {
     name: "VideosList",
 
     components: {
-        VideoCard, EmptyVideoCard
+        VideoCard, EmptyVideoCard, PaginationButtons, MessageBox
     },
 
     computed: {
-        ...mapGetters(["videos"]),
+        ...mapGetters(["videos", "loadingPage"]),
+    },
+
+    methods: {
+        changePage: async function(page) {
+            await this.$store.dispatch('setPage', page)
+            await this.$store.dispatch('loadVideos')
+        }
     },
 
     mounted() {

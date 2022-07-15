@@ -5,7 +5,7 @@ const state = {
     servers: [],
     currentUser: {},
     cid: null,
-    page: null
+    site: null
 }
 
 const getters = {
@@ -21,8 +21,8 @@ const getters = {
     cid(state) {
         return state.cid;
     },
-    page(state) {
-        return state.page;
+    site(state) {
+        return state.site;
     }
 }
 
@@ -32,8 +32,8 @@ const actions = {
         commit('setCid', cid);
     },
 
-    updatePage({commit}, page) {
-        commit('setPage', page);
+    updateSite({commit}, site) {
+        commit('setSite', site);
     },
 
     async loadSeries({commit, dispatch}, id) {
@@ -63,8 +63,8 @@ const mutations = {
         state.cid = cid;
     },
 
-    setPage(state, page) {
-        state.page = page;
+    setSite(state, site) {
+        state.site = site;
     },
 
     setSeries(state, data) {
