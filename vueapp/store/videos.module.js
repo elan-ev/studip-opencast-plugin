@@ -111,12 +111,6 @@ const mutations = {
     addVideos(state, payload){
         let videos = payload.videos;
         let playlist_token = payload.playlist_token;
-        let videos_ref = {};
-
-        for (let i = 0; i < videos.length; i++) {
-            let video = videos[i];
-            videos_ref[video.token] = video;
-        }
 
         if (playlist_token == null) {
             state.pagedAllVideos[state.paging.currPage] = {};
