@@ -2,14 +2,12 @@ import ApiService from "@/common/api.service";
 
 const state = {
     videos: {},
-    pagedAllVideos: {},
-    pagedPlaylistVideos: {},
     search: '',
     sort: {
         field: 'mkdate',
         order: 'desc'
     },
-    limit: 5,
+    limit: 3,
     paging: {
         currPage: 0,
         lastPage: 0,
@@ -47,7 +45,7 @@ const getters = {
 const actions = {
     async loadVideos({ commit, state, rootState }) {
         let playlist_token = rootState.courses.currentPlaylist
-        let route = (playlist_token == null) ? 'videos' : 'playlists/' + playlist_token + '/videos';
+        let route = (playlist_token == 'all') ? 'videos' : 'playlists/' + playlist_token + '/videos';
         
         state.loadingPage = true;
 
@@ -112,24 +110,15 @@ const mutations = {
         let videos = payload.videos;
         let playlist_token = payload.playlist_token;
 
-        if (playlist_token == null) {
-            state.pagedAllVideos[state.paging.currPage] = {};
-            for (let i = 0; i < videos.length; i++) {
-                let video = videos[i];
-                state.pagedAllVideos[state.paging.currPage][video.token] = video;
-            }
-            state.videos = state.pagedAllVideos[state.paging.currPage];
+        if (state.videos[playlist_token] === undefined) {
+            state.videos[playlist_token] = {}
         }
-        else {
-            if (state.pagedPlaylistVideos[playlist_token] === undefined) {
-                state.pagedPlaylistVideos[playlist_token] = {}
-            }
-            state.pagedPlaylistVideos[playlist_token][state.paging.currPage] = {};
-            for (let i = 0; i < videos.length; i++) {
-                let video = videos[i];
-                state.pagedPlaylistVideos[playlist_token][state.paging.currPage][video.token] = video;
-            }
-            state.videos = state.pagedPlaylistVideos[playlist_token][state.paging.currPage];
+        if (state.videos[playlist_token][state.paging.currPage] === undefined) {
+            state.videos[playlist_token][state.paging.currPage] = {};
+        }
+        for (let i = 0; i < videos.length; i++) {
+            let video = videos[i];
+            state.videos[playlist_token][state.paging.currPage][video.token] = video;
         }
     },
 
@@ -140,14 +129,7 @@ const mutations = {
     setPage(state, page) {
         if (page >= 0 && page <= state.paging.lastPage) {
             state.paging.currPage = page
-
-            if (state.pagedVideos[state.paging.currPage] !== undefined) {
-                state.videos = state.pagedVideos[state.paging.currPage];
-            } else {
-                state.videos = {};
-            }
         }
-        state.videos = state.allVideos
     },
 
     updatePaging(state, paging) {

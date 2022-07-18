@@ -2,7 +2,7 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: {},
-    currentPlaylist: null
+    currentPlaylist: 'all'
 }
 
 const getters = {

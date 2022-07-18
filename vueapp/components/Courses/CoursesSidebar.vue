@@ -6,9 +6,9 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
-                    active: currentPlaylist == null
+                    active: currentPlaylist == 'all'
                     }"
-                    v-on:click="setPlaylist(null)">
+                    v-on:click="setPlaylist('all')">
                     <router-link :to="{ name: 'videos' }">
                         Videos
                     </router-link>

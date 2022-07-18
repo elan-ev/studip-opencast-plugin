@@ -3,7 +3,7 @@
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="Object.keys(videos).length === 0 && loadingPage" class="oc--episode-list oc--episode-list--empty">
+            <ul v-if="Object.keys(visVideos).length === 0 && loadingPage" class="oc--episode-list oc--episode-list--empty">
                 <EmptyVideoCard />
                 <EmptyVideoCard />
                 <EmptyVideoCard />
@@ -11,7 +11,7 @@
                 <EmptyVideoCard />
             </ul>
 
-            <ul v-else-if="Object.keys(videos).length === 0" class="oc--episode-list oc--episode-list--empty">
+            <ul v-else-if="Object.keys(visVideos).length === 0" class="oc--episode-list oc--episode-list--empty">
                 <MessageBox type="info">
                     <translate>
                         Es gibt bisher keine Aufzeichnungen.
@@ -21,7 +21,7 @@
 
             <ul class="oc--episode-list" v-else>
                 <VideoCard
-                    v-for="event in videos"
+                    v-for="event in visVideos"
                     v-bind:event="event"
                     v-bind:key="event.id"
                 ></VideoCard>
@@ -45,7 +45,19 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["videos", "loadingPage"]),
+        ...mapGetters([
+            "videos",
+            "currentPlaylist",
+            "paging",
+            "loadingPage"]),
+        
+        visVideos() {
+            if (this.videos[this.currentPlaylist] === undefined || 
+                this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
+                return {};
+            }
+            return this.videos[this.currentPlaylist][this.paging.currPage]
+        }
     },
 
     methods: {
