@@ -6,6 +6,9 @@
 
 class OpencastController extends PluginController
 {
+
+    protected $allow_nobody = false; //nobody is not allowed and always gets a login-screen
+
     /**
      * Constructs the controller and provide translations methods.
      *
