@@ -46,13 +46,14 @@ const actions = {
     async loadVideos({ commit, state, rootState }) {
         let playlist_token = rootState.playlists.currentPlaylist
         let route = (playlist_token == 'all') ? 'videos' : 'playlists/' + playlist_token + '/videos';
-        
+
         state.loadingPage = true;
 
         const params = new URLSearchParams();
 
         params.append('offset', state.paging.currPage * state.limit);
         params.append('limit', state.limit);
+        /*
         params.append('filters', JSON.stringify([{
                 'type': 'text',
                 'value': 'test'
@@ -64,6 +65,7 @@ const actions = {
                 'value': 'mathematik'
             }
         ]));
+        */
 
         return ApiService.get(route, { params })
             .then(({ data }) => {

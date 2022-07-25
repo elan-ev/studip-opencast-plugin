@@ -3,7 +3,7 @@
         <li v-if="event.refresh === undefined" :key="event.id">
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication" :href="event.publication" target="_blank">
+                    <a v-if="event.publication" :href="event.paella" target="_blank">
                         <span class="oc--previewimage">
                             <img class="oc--previewimage" :src="preview" height="200"/>
                             <img class="oc--playbutton" :src="play">

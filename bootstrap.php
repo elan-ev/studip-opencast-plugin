@@ -10,7 +10,8 @@ require_once 'vendor/trails/trails.php';
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
 
-require_once 'classes/OpencastController.php';
-
 // Courseware Block
 require_once 'lib/BlockTypes/OpencastBlock.php';
+
+// adding observer
+NotificationCenter::addObserver('Opencast\Models\Videos', 'parseEvent', 'OpencastVideoSync');

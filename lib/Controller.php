@@ -2,7 +2,7 @@
 
 namespace Opencast;
 
-use StudipController;
+use PluginController;
 use PageLayout;
 use Trails_Flash;
 use Config;
@@ -11,14 +11,31 @@ use Request;
 use URLHelper;
 
 
-class Controller extends StudipController
+class Controller extends PluginController
 {
+    protected $allow_nobody = false; //nobody is not allowed and always gets a login-screen
+
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
 
         $this->plugin = $this->dispatcher->current_plugin;
         $this->flash  = Trails_Flash::instance();
+
+         // Localization
+         $this->_ = function ($string) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_'],
+                func_get_args()
+            );
+        };
+
+        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
+            return call_user_func_array(
+                [$dispatcher->current_plugin, '_n'],
+                func_get_args()
+            );
+        };
     }
 
     /**

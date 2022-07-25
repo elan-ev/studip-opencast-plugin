@@ -3,7 +3,7 @@
  * course.php - course controller
  */
 
-class CourseController extends OpencastController
+class CourseController extends Opencast\Controller
 {
     public function __construct($dispatcher)
     {
