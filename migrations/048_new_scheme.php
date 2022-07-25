@@ -54,6 +54,7 @@ class NewScheme extends Migration
             `mkdate` timestamp,
             PRIMARY KEY (`id`),
             KEY `U.1` (`video_id`)
+            ADD FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
         ";
 
