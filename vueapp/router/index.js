@@ -6,6 +6,7 @@ export default new createRouter({
     routes: [
         {
             path: "/contents",
+            name: "contents",
             component: () => import("@/views/Contents"),
             children: [
                 {
@@ -17,6 +18,11 @@ export default new createRouter({
                     path: "playlists",
                     name: "playlists",
                     component: () => import("@/views/Playlists"),
+                },
+                {
+                    path: "playlistvideos",
+                    name: "playlistvideos",
+                    component: () => import("@/views/PlaylistVideos"),
                 },
             ]
         },
@@ -34,7 +40,7 @@ export default new createRouter({
             children: [
                 {
                     path: "videos",
-                    name: "videos",
+                    name: "coursevideos",
                     component: () => import("@/views/Videos"),
                 },
             ]

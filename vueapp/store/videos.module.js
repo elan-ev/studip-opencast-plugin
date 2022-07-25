@@ -44,7 +44,7 @@ const getters = {
 
 const actions = {
     async loadVideos({ commit, state, rootState }) {
-        let playlist_token = rootState.courses.currentPlaylist
+        let playlist_token = rootState.playlists.currentPlaylist
         let route = (playlist_token == 'all') ? 'videos' : 'playlists/' + playlist_token + '/videos';
         
         state.loadingPage = true;
@@ -94,11 +94,6 @@ const actions = {
         dispatch('reloadVideos')
     },
 
-    async setSort({dispatch, commit}, sort) {
-        await commit('setSort', sort)
-        dispatch('reloadVideos')
-    },
-
     setPage({commit}, page) {
         commit('setPage', page);
     },
@@ -133,7 +128,7 @@ const mutations = {
     },
 
     updatePaging(state, paging) {
-        paging.lastPage = Math.floor(paging.items / state.limit);
+        paging.lastPage = Math.round((paging.items / state.limit)-1);
         state.paging = paging;
     }
 }

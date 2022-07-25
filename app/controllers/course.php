@@ -32,13 +32,6 @@ class CourseController extends OpencastController
 
         PageLayout::setTitle($this->_('Videos'));
 
-        $sidebar = Sidebar::Get();
-        $actions = new TemplateWidget(
-            _('Aktionen'),
-            $this->get_template_factory()->open('course/action_widget')
-        );
-        $sidebar->addWidget($actions)->addLayoutCSSClass('action-widget');
-
         $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
 }

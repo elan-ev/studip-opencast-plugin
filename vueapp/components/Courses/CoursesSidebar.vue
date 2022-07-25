@@ -9,7 +9,7 @@
                     active: currentPlaylist == 'all'
                     }"
                     v-on:click="setPlaylist('all')">
-                    <router-link :to="{ name: 'videos' }">
+                    <router-link :to="{ name: 'coursevideos' }">
                         Videos
                     </router-link>
                 </li>
@@ -19,7 +19,7 @@
                     v-for="playlist in playlists"
                     v-bind:key="playlist.token"
                     v-on:click="setPlaylist(playlist.token)">
-                    <router-link :to="{ name: 'videos' }">
+                    <router-link :to="{ name: 'coursevideos' }">
                         {{ playlist.title }}
                     </router-link>
                 </li>

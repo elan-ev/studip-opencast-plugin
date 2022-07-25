@@ -18,7 +18,10 @@ const getters = {
 
 const actions = {
     async loadPlaylists(context) {
-        return ApiService.get('courses/' + context.rootState.opencast.cid + '/playlist')
+        let $cid = context.rootState.opencast.cid;
+        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlist';
+
+        return ApiService.get($route)
             .then(({ data }) => {
                 context.commit('addPlaylists', data);
             });

@@ -26,24 +26,17 @@ class PlaylistList extends OpencastController
         $playlists = Playlists::findByUser_id($user->id);
 
         foreach ($playlists as $playlist) {
-            $perms = [];
-
+            // check what permissions the current user has on the playlist
             foreach($playlist->perms as $perm) {
-                $perms[] = [
-                    'user_id'  => $perm->user->id,
-                    'fullname' => $perm->user->getFullname(),
-                    'perm'     => $perm->perm
-                ];
+                if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
+                    // Add playlist, if the user has access
+                    $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
+                    ? 0 : \strtotime($playlist['mkdate']);
+                    $playlist_list[] = $playlist->toSanitizedArray();
+                }
             }
-
-            $playlist_list[] = [
-                $playlist->toSanitizedArray(),
-                'users' => $perms
-            ];
         }
 
-        return $this->createResponse([
-            'playlists' => $playlist_list,
-        ], $response);
+        return $this->createResponse($playlist_list, $response);
     }
 }

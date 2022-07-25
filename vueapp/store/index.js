@@ -6,7 +6,7 @@ import messages from "./messages.module";
 import lti from "./lti.module";
 import opencast from "./opencast.module";
 import videos from "./videos.module";
-import courses from "./courses.module";
+import playlists from "./playlists.module";
 
 export default createStore({
   modules: {
@@ -16,6 +16,6 @@ export default createStore({
     lti,
     opencast,
     videos,
-    courses
+    playlists
   }
 });
