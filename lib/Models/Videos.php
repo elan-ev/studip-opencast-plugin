@@ -2,6 +2,8 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\Filter;
+use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 
 class Videos extends \SimpleORMap
@@ -18,22 +20,20 @@ class Videos extends \SimpleORMap
         parent::configure($config);
     }
 
-    public function getVideos($user_id, $filters, $playlist_token=null) {
+    public function findByFilter($filters)
+    {
+
+        global $user;
+
         $params = [
-            ':user_id'=> $user_id
+            ':user_id'=> $user->id
         ];
 
         $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
-        $where = ' WHERE 1 ';
-        if ($playlist_token != null) {
-            $playlist = Playlists::findOneBySQL('token = ?', [$playlist_token]);
-            if ($playlist != null) {
-                $sql  .= ' INNER JOIN oc_playlist_video AS pl ON (pl.video_id = id) ';
-                $where .= ' AND pl.playlist_id = ' . $playlist->id;
-            }
-        }
 
-        $tag_ids = [];
+        $where = ' WHERE 1 ';
+        $tag_ids      = [];
+        $playlist_ids = [];
 
         foreach ($filters->getFilters() as $filter) {
             switch ($filter['type']) {
@@ -52,14 +52,33 @@ class Videos extends \SimpleORMap
                             foreach ($tags as $tag) {
                                 $tag_ids[] = $tag->id;
                             }
+                        } else {
+                            $tag_ids[] = '-1';
                         }
                     }
+                    break;
+
+                case 'playlist':
+                    $playlists = Playlists::findByToken($filter['value']);
+
+                    if (!empty($playlists)) {
+                        foreach ($playlists as $playlist) {
+                            $playlist_ids[] = $playlist->id;
+                        }
+                    } else {
+                        $playlist_ids[] = '-1';
+                    }
+
                     break;
             }
         }
 
         if (!empty($tag_ids)) {
             $sql .= ' INNER JOIN oc_video_tags AS t ON (t.tag_id IN('. implode(',', $tag_ids) .'))';
+        }
+
+        if (!empty($playlist_ids)) {
+            $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
         }
 
         $sql .= $where;
@@ -71,20 +90,14 @@ class Videos extends \SimpleORMap
         $count = $stmt->fetchColumn();
 
         $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
-        $videos = Videos::findBySQL($sql, $params);
-
-        $ret = [];
-        foreach ($videos as $video) {
-            $ret[] = $video->getCleanedArray();
-        }
 
         return [
-            'videos' => $ret,
+            'videos' => self::findBySQL($sql, $params),
             'count'  => $count
         ];
     }
 
-    public function getCleanedArray()
+    public function toSanitizedArray()
     {
         $data = $this->toArray();
 
