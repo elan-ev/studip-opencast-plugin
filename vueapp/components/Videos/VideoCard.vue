@@ -24,30 +24,21 @@
                     <h2 class="oc--metadata-title">
                         {{event.title}}
                     </h2>
-                    <ul class="oc--metadata-content">
-                        <li>
-                            {{ $gettext('Hochgeladen am:') }}
-                            <span v-if="event.created && $filters.datetime(event.created)">
-                                {{ $filters.datetime(event.created) }} Uhr
-                            </span>
-                            <span v-else>
-                                {{ $gettext('unbekannt') }}
-                            </span>
-                        </li>
+                    <div>
+                        {{ event.author }}
+                        <span v-if="event.created && $filters.datetime(event.created)">
+                            - {{ $filters.datetime(event.created) }} Uhr
+                        </span>
+                    </div>
 
-                        <li>
-                            {{ $gettext('Autor:') }}
-                            {{ event.author }}
-                        </li>
-                        <li>
-                            {{ $gettext('Mitwirkende:') }}
-                            {{ event.contributors }}
-                        </li>
+                    <div v-if="event.contributors">
+                        {{ $gettext('Mitwirkende:') }}
+                        {{ event.contributors }}
+                    </div>
 
-                        <li>
-                            {{ event.description }}
-                        </li>
-                    </ul>
+                    <div class="oc--metadata-description">
+                        {{ event.description }}
+                    </div>
                 </div>
                 <div class="oc--episode-buttons">
                     <ConfirmDialog v-if="DeleteConfirmDialog"
