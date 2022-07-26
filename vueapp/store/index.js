@@ -7,7 +7,6 @@ import lti from "./lti.module";
 import opencast from "./opencast.module";
 import videos from "./videos.module";
 import playlists from "./playlists.module";
-import courses from "./courses.module";
 import log from "./log.module";
 
 
@@ -20,7 +19,6 @@ export default createStore({
     opencast,
     videos,
     playlists,
-    courses,
     log
   }
 });
