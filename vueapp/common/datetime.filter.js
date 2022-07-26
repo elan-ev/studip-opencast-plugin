@@ -6,5 +6,13 @@ export default date => {
         return '';
     }
 
-    return format(new Date(date), "d. MMM, yyyy, HH:ii", { locale: de});
+    let mydate = new Date(date);
+
+    console.log('date', mydate);
+
+    if (mydate instanceof Date && !isNaN(mydate)) {
+        return format(mydate, "d. MMM, yyyy, HH:ii", { locale: de});
+    }
+
+    return false;
 };

@@ -3,9 +3,9 @@
         <li v-if="event.refresh === undefined" :key="event.id">
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication" :href="event.paella" target="_blank">
+                    <a v-if="event.publication && event.preview" :href="event.paella" target="_blank">
                         <span class="oc--previewimage">
-                            <img class="oc--previewimage" :src="preview" height="200"/>
+                            <img class="oc--previewimage" :src="event.preview.player ? event.preview.player : event.preview.search" height="200"/>
                             <img class="oc--playbutton" :src="play">
                             <span class="oc--duration">
                                 {{ getDuration }}
@@ -27,23 +27,24 @@
                     <ul class="oc--metadata-content">
                         <li>
                             {{ $gettext('Hochgeladen am:') }}
-                            <span v-if="event.mkdate">
-                            {{ $filters.datetime(event.mkdate * 1000) }} Uhr
+                            <span v-if="event.created && $filters.datetime(event.created)">
+                                {{ $filters.datetime(event.created) }} Uhr
                             </span>
                             <span v-else>
                                 {{ $gettext('unbekannt') }}
                             </span>
                         </li>
-                        <li v-translate>
+
+                        <li>
                             {{ $gettext('Autor:') }}
-                            {{ event.autor }}
+                            {{ event.author }}
                         </li>
-                        <li v-translate>
+                        <li>
                             {{ $gettext('Mitwirkende:') }}
                             {{ event.contributors }}
                         </li>
-                        <li v-translate>
-                            {{ $gettext('Beschreibung:') }}
+
+                        <li>
                             {{ event.description }}
                         </li>
                     </ul>

@@ -14,8 +14,8 @@
                             :top="top"
                             :width="currentWidth"
                             :height="currentHeight"
-                            :min-width="minW | checkEmpty"
-                            :min-height="minH | checkEmpty"
+                            :min-width="checkEmpty(minW)"
+                            :min-height="checkEmpty(minH)"
                             @mount="initSize"
                             @resize:move="resizeHandler"
                             @resize:start="resizeHandler"
@@ -231,11 +231,10 @@ export default {
             this.left = data.left;
             this.top = data.top;
         },
-    },
-    filters: {
+
         checkEmpty(value) {
             return typeof value !== "number" ? 0 : value;
         }
-    },
+    }
 };
 </script>

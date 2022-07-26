@@ -7,7 +7,7 @@ use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\SearchClient;
 
-class Videos extends \SimpleORMap
+class Videos extends UPMap
 {
     protected static function configure($config = [])
     {
@@ -112,6 +112,9 @@ class Videos extends \SimpleORMap
             $search_client = SearchClient::getInstance($data['config_id']);
             $data['paella'] = $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $data['episode'];
         }
+
+        $data['preview']     = json_decode($data['preview'], true);
+        $data['publication'] = json_decode($data['publication'], true);
 
         return $data;
     }
@@ -223,6 +226,11 @@ class Videos extends \SimpleORMap
                 ],
                 'annotation_tool'  => $annotation_tool
             ]);
+
+            $video->created = date('Y-m-d H:i:s', strtotime($episode->created));
+
+            $video->author = $episode->creator;
+            $video->contributors = implode(', ', $episode->contributor);
 
             return $video->store();
         }

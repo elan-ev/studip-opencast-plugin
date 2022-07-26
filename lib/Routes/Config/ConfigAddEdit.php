@@ -4,7 +4,6 @@ namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Constants;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Errors\AuthorizationFailedException;
@@ -24,6 +23,7 @@ class ConfigAddEdit extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        $constants = $this->container->get('opencast');
         \SimpleOrMap::expireTableScheme();
 
         $json = $this->getRequestData($request);
@@ -42,7 +42,7 @@ class ConfigAddEdit extends OpencastController
 
         // validate values
         $new_settings = [];
-        foreach (Constants::$DEFAULT_CONFIG as $config_entry) {
+        foreach ($constants['global_config_options'] as $config_entry) {
             foreach ($json['config'] as $setting_name => $setting) {
                 if ($setting_name == $config_entry['name']) {
                     $new_settings[$setting_name] = $setting;

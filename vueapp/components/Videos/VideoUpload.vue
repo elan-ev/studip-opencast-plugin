@@ -23,17 +23,17 @@
                         <legend v-translate>
                             Allgemeine Angaben
                         </legend>
-                        <label>
+                        <label v-if="config && config['server'] && config['server'].length > 1">
                             <span class="required" v-translate>
-                                Serie auswählen:
+                                Server auswählen:
                             </span>
 
-                            <select v-model="selectedSeries" required>
-                                <option v-for="series in course_series"
-                                    :key="series.config_id"
-                                    :value="series"
+                            <select v-model="selectedServer" required>
+                                <option v-for="server in config['server']"
+                                    :key="server.id"
+                                    :value="server"
                                 >
-                                    {{ series.details.title }}
+                                    #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
                                 </option>
 
                             </select>
@@ -47,17 +47,6 @@
                             <input type="text" maxlength="255"
                                 name="title" id="titleField" v-model="upload.title" required>
                         </label>
-
-
-                        <label>
-                            <span class="required" v-translate>
-                                Vortragende
-                            </span>
-
-                            <input type="text" maxlength="255"
-                                name="creator" id="creator" v-model="upload.creator" required>
-                        </label>
-
 
                         <label>
                             <span class="required" v-translate>
@@ -207,7 +196,7 @@ import { mapGetters } from 'vuex';
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
-import VideoFilePreview from '@/components/Video/VideoFilePreview'
+import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
 import ConfirmDialog from '@/components/ConfirmDialog'
 
@@ -227,15 +216,17 @@ export default {
         ConfirmDialog
     },
 
+    emits: ['done', 'cancel'],
+
     props: ['currentUser'],
 
     data () {
         return {
             showAddEpisodeDialog: false,
-            selectedSeries: {},
+            selectedServer: false,
             fileUploadError: false,
             upload: {
-                creator: this.currentUser.fullname,
+                creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
                 workflow: 'upload',
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
@@ -251,7 +242,9 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['course_series', 'upload_xml']),
+        ...mapGetters({
+            'config' : 'simple_config_list',
+        }),
 
         upload_workflows() {
             // TODO
@@ -301,16 +294,15 @@ export default {
                 return false;
             }
 
-            // get correct upload endpoint url for selected series
-            this.uploadService = new UploadService(this.selectedSeries['ingest_url']);
+            // get correct upload endpoint url
+            this.uploadService = new UploadService(this.selectedServer['ingest']);
 
             let uploadData         = this.upload;
-            uploadData['seriesId'] = this.selectedSeries.series_id;
 
             uploadData['created']  = new Date(this.upload.recordDate).toISOString(),
             delete uploadData['recordDate'];
 
-            uploadData['oc_acl']   = this.upload_xml.replace(/\+/g," ");
+            uploadData['oc_acl']   = this.uploadService.uploadACL().replace(/\+/g," ");
 
             //console.log('uploadData', uploadData);
 
@@ -349,9 +341,12 @@ export default {
                 uploadDone: (episode_id, workflow_id) => {
                     console.log('logUpload', episode_id, workflow_id);
                     view.$emit('done');
-                    view.$store.dispatch('logUpload', {
-                        episode_id: episode_id,
-                        workflow_id: workflow_id
+                    view.$store.dispatch('createLogEvent', {
+                        event: 'upload',
+                        data: {
+                            episode_id: episode_id,
+                            workflow_id: workflow_id
+                        }
                     })
                 }
             });
@@ -380,8 +375,9 @@ export default {
 
     mounted() {
         this.$store.dispatch('authenticateLti');
-        this.$store.dispatch('loadCourseSeries');
-        this.$store.dispatch('loadUploadXML');
+        this.$store.dispatch('simpleConfigListRead').then(() => {
+            this.selectedServer = this.config['server'][0];
+        })
     }
 }
 </script>

@@ -7,7 +7,7 @@ const state = {
         field: 'mkdate',
         order: 'desc'
     },
-    limit: 3,
+    limit: 5,
     paging: {
         currPage: 0,
         lastPage: 0,

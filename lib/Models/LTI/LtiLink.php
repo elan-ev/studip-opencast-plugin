@@ -165,7 +165,7 @@ class LtiLink
             ]);
 
             $this->addLaunchParameters([
-                'lis_person_name_full' => $this->variables['Person.name.full'],
+                'lis_person_name_full' => $this->variables['Person.sourcedId'],
                 'lis_person_name_family' => $this->variables['Person.name.family'],
                 'lis_person_name_given' => $this->variables['Person.name.given'],
                 'lis_person_contact_email_primary' => $this->variables['Person.email.primary'],

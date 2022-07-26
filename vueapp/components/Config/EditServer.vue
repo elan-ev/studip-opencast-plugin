@@ -116,7 +116,7 @@ export default {
                     required: true
                 },
                 {
-                    description: this.$gettext('GET-Requests mit Adnvaced-Suche wie Lucene/Search Endpoints ausführen?'),
+                    description: this.$gettext('GET-Requests mit fortgeschrittener Suchfunktion ausführen (Lucene/Search-Endpunkte)?'),
                     name: 'advance_search',
                     value: this.currentConfig.advance_search,
                     type: 'boolean',

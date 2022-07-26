@@ -2,6 +2,7 @@ import ApiService from "@/common/api.service";
 
 const initialState = {
     config_list: [],
+    simple_config_list: [],
     config: {
         'service_url' :      null,
         'service_user':      null,
@@ -19,6 +20,11 @@ const getters = {
     config_list(state) {
         return state.config_list;
     },
+
+    simple_config_list(state) {
+        return state.simple_config_list;
+    },
+
     config(state) {
         return state.config;
     }
@@ -32,6 +38,16 @@ export const actions = {
             ApiService.get('config')
                 .then(({ data }) => {
                     context.commit('configListSet', data);
+                    resolve(data);
+                });
+            });
+    },
+
+    async simpleConfigListRead(context) {
+        return new Promise(resolve => {
+            ApiService.get('config/simple')
+                .then(({ data }) => {
+                    context.commit('simpleConfigListSet', data);
                     resolve(data);
                 });
             });
@@ -82,6 +98,10 @@ export const actions = {
 export const mutations = {
     configListSet(state, data) {
         state.config_list = data;
+    },
+
+    simpleConfigListSet(state, data) {
+        state.simple_config_list = data;
     },
 
     configSet(state, data) {

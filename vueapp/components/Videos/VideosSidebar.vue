@@ -52,6 +52,8 @@ export default {
         StudipIcon
     },
 
+    emits: ['uploadVideo', 'recordVideo'],
+
     watch: {
         $route(to) {
             //console.log('Route:', to);

@@ -67,6 +67,8 @@ class RouteMap
         // LTI
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
 
+        $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
+        $this->app->post('/log', Routes\Log\LogEntryCreate::class);
     }
 
     /**

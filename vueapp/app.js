@@ -37,9 +37,12 @@ window.addEventListener("DOMContentLoaded", function() {
         baseURL: window.OpencastPlugin.API_URL
     });
 
+    oc_axios.CancelToken = axios.CancelToken;
+    oc_axios.isCancel    = axios.isCancel;
+
     Vue.use(VueAxios, oc_axios);
 
-    // Redirect to login page, if a 401 is catched
+    // Catch errors
     Vue.axios.interceptors.response.use((response) => { // intercept the global error
             return response;
         }, function (error) {

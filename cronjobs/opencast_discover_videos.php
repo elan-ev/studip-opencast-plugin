@@ -76,6 +76,25 @@ class OpencastDiscoverVideos extends CronJob
                 $task->store();
             }
         }
+
+        // now check all videos which have no preview url (these were not yet ready when whe inspected them)
+
+        foreach (Videos::findBySql('preview IS NULL') as $video) {
+            // check, if there is already a task scheduled
+            if (empty(VideoSync::findByVideo_id($video->id))) {
+                echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
+                // create task to update permissions and everything else
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+        }
     }
 
 }
