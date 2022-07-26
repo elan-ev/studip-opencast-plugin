@@ -9,7 +9,7 @@
                     active: currentPlaylist == 'all'
                     }"
                     v-on:click="setPlaylist('all')">
-                    <router-link :to="{ name: 'coursevideos' }">
+                    <router-link :to="{ name: 'course' }">
                         Videos
                     </router-link>
                 </li>
@@ -19,7 +19,7 @@
                     v-for="playlist in playlists"
                     v-bind:key="playlist.token"
                     v-on:click="setPlaylist(playlist.token)">
-                    <router-link :to="{ name: 'coursevideos' }">
+                    <router-link :to="{ name: 'course' }">
                         {{ playlist.title }}
                     </router-link>
                 </li>
@@ -82,7 +82,7 @@ export default {
         },
         ...mapGetters(["playlists", "currentPlaylist"])
     },
-    
+
     mounted() {
         this.$store.dispatch('loadPlaylists');
         this.$store.dispatch('loadVideos');

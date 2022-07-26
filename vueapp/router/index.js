@@ -35,12 +35,11 @@ export default new createRouter({
 
         {
             path: "/course",
-            name: "course",
             component: () => import("@/views/Course.vue"),
             children: [
                 {
                     path: "videos",
-                    name: "coursevideos",
+                    name: "course",
                     component: () => import("@/views/Videos"),
                 },
             ]
