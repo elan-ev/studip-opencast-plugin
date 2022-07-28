@@ -284,7 +284,7 @@ paths:
         type: "integer"
       - name: "course_id"
         in: "path"
-        description: "ID of coursre"
+        description: "ID of course"
         required: true
         type: "string"
     put:
@@ -298,9 +298,7 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            type: "object"
-            items:
-              $ref: "#/definitions/Playlist"
+            $ref: "#/definitions/Playlist"
     delete:
       tags:
       - "courses"
@@ -311,6 +309,25 @@ paths:
       responses:
         "200":
           description: "successful operation"
+  /courses/{course_id}/schedule:
+    parameters:
+      - name: "course_id"
+        in: "path"
+        description: "ID of coursre"
+        required: true
+        type: "string"
+    get:
+      tags:
+      - "courses"
+      summary: "Get list of scheduled events for this course"
+      operationId: "getListOfScheduleEvents"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ScheduledEvent"
   /videos/{token}:
     parameters:
       - name: "token"
@@ -494,6 +511,97 @@ paths:
         responses:
           "200":
             description: "successful operation"
+  /config/simple:
+    get:
+        tags:
+        - "config"
+        summary: "Get the list of configured Opencast servers and the global config options, without any credentials or unsafe config options"
+        operationId: "getSimpleOpencastServerConfig"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
+  /lti/launch_data:
+    get:
+      tags:
+      - "lti"
+      summary: "Get the LTI launch data, signed and ready to send"
+      operationId: "getLTILaunchData"
+      produces:
+      - "application/json"
+      responses:
+          "200":
+            description: "successful operation"
+  /schedule/{schedule_id}:
+    parameters:
+    - name: "schedule_id"
+      in: "path"
+      description: "ID of scheduled event"
+      required: true
+      type: "string"
+    get:
+        tags:
+        - "schedule"
+        summary: "Get scheduled event"
+        operationId: "getScheduledEvent"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ScheduledEvent"
+    post:
+      tags:
+      - "schedule"
+      summary: "Add a new scheduled event"
+      operationId: "addScheduledEvent"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "ScheduledEvent object to be added, course is determined by date_id"
+        required: true
+        schema:
+          $ref: "#/definitions/ScheduledEvent"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            items:
+              $ref: "#/definitions/ScheduledEvent"
+    put:
+        tags:
+        - "schedule"
+        summary: "Update a scheduled event"
+        operationId: "updateScheduledEvent"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "body"
+          name: "body"
+          description: "Update an existing scheduled event"
+          required: true
+          schema:
+            $ref: "#/definitions/ScheduledEvent"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ScheduledEvent"
+    delete:
+        tags:
+        - "schedule"
+        summary: "Delete a scheduled event"
+        operationId: "deleteScheduledEvent"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
   /opencast/user/{username}:
     get:
       tags:
@@ -595,6 +703,23 @@ definitions:
     required:
       - token
       - title
+  ScheduledEvent:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      resource_id:
+        type: "string"
+        example: "ddce269a1e3d054cae349621c198dd52"
+      date_id:
+        type: "string"
+        example: "ddce269a1e3d054cae349621c198dd52"
+      event_id:
+        type: "string"
+        example: "f8c3de3d-1fea-4d7c-a8b0-29f63c4c3454"
+    required:
+      - resource_id
+      - date_id
   PlaylistReference:
     type: "object"
     properties:
