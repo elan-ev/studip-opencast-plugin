@@ -45,7 +45,6 @@ const getters = {
 const actions = {
     async loadVideos({ commit, state, rootState }) {
         let playlist_token = rootState.playlists.currentPlaylist
-        let route = (playlist_token == 'all') ? 'videos' : 'playlists/' + playlist_token + '/videos';
 
         state.loadingPage = true;
 
@@ -53,6 +52,15 @@ const actions = {
 
         params.append('offset', state.paging.currPage * state.limit);
         params.append('limit', state.limit);
+
+        if (playlist_token !== 'all') {
+            params.append('filters', JSON.stringify([{
+                'type': 'playlist',
+                'value': playlist_token
+                }
+            ]));
+        }
+
         /*
         params.append('filters', JSON.stringify([{
                 'type': 'text',
@@ -67,7 +75,7 @@ const actions = {
         ]));
         */
 
-        return ApiService.get(route, { params })
+        return ApiService.get('videos', { params })
             .then(({ data }) => {
                 commit('addVideos', {'videos': data.videos, 'playlist_token': playlist_token});
 

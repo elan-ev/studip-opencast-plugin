@@ -80,6 +80,7 @@ class Videos extends UPMap
 
         if (!empty($playlist_ids)) {
             $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
+            $where .= ' AND opv.video_id = id';
         }
 
         $sql .= $where;
