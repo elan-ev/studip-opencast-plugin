@@ -70,7 +70,7 @@ export default {
 
     methods: {
         getLangImage(lang) {
-            return ASSETS_URL + 'images/languages/' + lang.picture;
+            return OpencastPlugin.ASSETS_URL + 'images/languages/' + lang.picture;
         },
 
         async initCKE() {
