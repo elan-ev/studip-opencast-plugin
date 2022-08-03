@@ -15,10 +15,14 @@ class ConfigUpdate extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        $constants = $this->container->get('opencast');
         $json = $this->getRequestData($request);
 
         foreach ($json['settings'] as $config) {
-            \Config::get()->store($config['name'], $config['value']);
+            // validate values
+            if (in_array($config['name'], $constants['global_config_options'])) {
+                \Config::get()->store($config['name'], $config['value']);
+            }
         }
 
         return $response->withStatus(204);
