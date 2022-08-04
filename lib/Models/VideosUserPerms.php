@@ -18,6 +18,19 @@ class VideosUserPerms extends \SimpleORMap
         parent::configure($config);
     }
 
+    /**
+     * Set permissions for users who have rights on the passed video. Extracts
+     * lecturers if this Video belongs to a series in a course, otherwise tries to map the presenter
+     * to a Stud.IP username
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
     public static function setPermissions($eventType, $episode, $video)
     {
         // check, if there are any permissions for this video yet. Initial setting of permissions is only done once for each new video.

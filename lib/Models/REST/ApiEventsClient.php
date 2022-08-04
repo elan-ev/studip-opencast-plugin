@@ -22,7 +22,7 @@ class ApiEventsClient extends RestClient
 
     /**
      * Retrieves the episode object from opencast
-     * 
+     *
      * @param string $episode_id id of episode
      * @param array $params containing extra flags to specify in the request:
      * [
@@ -45,9 +45,9 @@ class ApiEventsClient extends RestClient
 
     /**
      * Retrieves episode ACL from connected Opencast
-     * 
+     *
      * @param string $episode_id id of episode
-     * 
+     *
      * @return array|bool
      */
     public function getACL($episode_id)
@@ -62,15 +62,15 @@ class ApiEventsClient extends RestClient
 
     /**
      * Sets ACL for an episode in connected Opencast
-     * 
+     *
      * @param string $episode_id id of episode
      * @param object $acl the acl object
-     * 
+     *
      * @return boolean
      */
     public function setACL($episode_id, $acl)
     {
-        $response = $this->opencastApi->eventsApi->updateAcl($episode_id, $acl->toArray());
+        $response = $this->opencastApi->eventsApi->updateAcl($episode_id, $acl);
         return $response['code'] == 200;
     }
 
@@ -95,167 +95,6 @@ class ApiEventsClient extends RestClient
             $events = $this->episodesLookup($series_id);
         }
 
-        return $events;
-    }
-
-    /**
-     * Look for episodes with more in depth query using Search Client
-     *
-     * @param string $series_id series Identifier
-     * @param string $course_id course Identifier
-     *
-     * @return array|boolean episodes lucene search response
-     */
-    private function episodesLookupAdvanced($series_id, $course_id)
-    {
-        $cache = \StudipCacheFactory::getCache();
-
-        $lucene_query_array = [];
-
-        $offset = Pager::getOffset();
-        $limit  = Pager::getLimit();
-        $sort   = Pager::getSortOrder();
-        $search = Pager::getSearch();
-
-        if (!empty($series_id)) {
-            $lucene_query_array[] = '(dc_is_part_of:' . $series_id . ')';
-        }
-
-        if (!empty($search)) {
-            $lucene_query_array[] = "( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
-        }
-
-        if (!empty($course_id)) {
-            $type = $GLOBALS['perm']->have_studip_perm('tutor', $course_id)
-                ? 'Instructor' : 'Learner';
-            $lucene_query_array[] = 'oc_acl_read:' . $course_id . '_' . $type;
-        }
-
-        $lucene_query = implode(' AND ', $lucene_query_array);
-            
-        $search_service = new SearchClient($this->config_id);
-        $params = [
-            'q' => $lucene_query,
-            'sort' => $sort,
-            'limit' => $limit,
-            'offset' => $offset
-        ];
-        
-        $search_results = $search_service->getLucene($params);
-        $results = [];
-        $total = 0;
-        if (isset($search_results->{'search-results'}->result)) {
-            $results = is_array($search_results->{'search-results'}->result)
-            ? $search_results->{'search-results'}->result
-            : [$search_results->{'search-results'}->result];
-
-            $total = $search_results->{'search-results'}->total;
-        }
-
-        Pager::setLength($total);
-
-        if (empty($results)) {
-            return $results;
-        }
-        
-        $events = [];
-        foreach ($results as $s_event) {
-            $cache_key = 'sop/episodes/' . $s_event->id;
-            $event = $cache->read($cache_key);
-
-            if (empty($s_event->id)) {
-                continue;
-            }
-
-            if (!$event) {
-                $oc_event = $this->getEpisode($s_event->id, ['withpublications' => true]);
-
-                if (empty($oc_event->publications[0]->attachments)) {
-                    $oc_event = $this->generatePublication($oc_event, $s_event);
-                }
-
-                $event = self::prepareEpisode(json_decode(json_encode($oc_event), true));
-
-                $cache->write($cache_key, $event, 86000);
-            }
-
-            $events[$s_event->id] = $event;
-        }
-
-        return $events;
-    }
-
-    /**
-     * Look for episodes
-     *
-     * @param string $series_id series Identifier
-     *
-     * @return array|boolean episodes
-     */
-    private function episodesLookup($series_id = null)
-    {
-        $cache = \StudipCacheFactory::getCache();
-
-        $offset = Pager::getOffset();
-        $limit  = Pager::getLimit();
-        $sort   = Pager::getSortOrder(true);
-        $search = Pager::getSearch();
-
-        $filter = [];
-        if (!empty($search)) {
-            $filter['textFilter'] = $search;
-        }
-        if (!empty($series_id)) {
-            $filter['is_part_of'] = $series_id;
-        }
-
-        $search_params = [
-            'withpublications' => true,
-            'sort' => $sort,
-            // 'limit' => $limit,
-            // 'offset' => $offset,
-            'filter' => $filter
-        ];
-
-        $get_results = $this->getAll($search_params);
-        Pager::setLength(count($get_results));
-        $results = [];
-        if (empty($get_results)) {
-            return $results;
-        }
-
-        $results = array_slice($get_results, $offset, $limit);
-        $search_service = new SearchClient($this->config_id);
-        $events = [];
-        foreach ($results as $oc_event) {
-            if (!isset($oc_event->id)) {
-                $oc_event->id = $oc_event->identifier;
-            }
-
-            $cache_key = 'sop/episodes/' . $oc_event->id;
-            $event = $cache->read($cache_key);
-
-            if (empty($oc_event->id)) {
-                continue;
-            }
-
-            if (!$event) {
-                if (empty($oc_event->publications[0]->attachments)) {
-                    $s_event_array = $search_service->getEpisodes(['id' => $oc_event->id]);
-                    if (!empty($s_event_array)) {
-                        $s_event = $s_event_array[0];
-                        $oc_event = $this->generatePublication($oc_event, $s_event);
-                    }
-                }
-
-                $event = self::prepareEpisode(json_decode(json_encode($oc_event), true));
-
-                $cache->write($cache_key, $event, 86000);
-            }
-
-            $events[$oc_event->id] = $event;
-        }
-        
         return $events;
     }
 
@@ -325,12 +164,12 @@ class ApiEventsClient extends RestClient
         $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
         $oc_event->publications[0]->media       = $media;
 
-        return $oc_event; 
+        return $oc_event;
     }
 
     /**
      * Get all scheduled events
-     * 
+     *
      * @return array
      */
     public function getAllScheduledEvents()
@@ -351,255 +190,5 @@ class ApiEventsClient extends RestClient
         }
 
         return $events;
-    }
-
-    /**
-     * Prepares episode to be consumed by throughout the app
-     * 
-     * @param array $episode event default object from opencast
-     * 
-     * @return array new consumable episode array
-     */
-    private function prepareEpisode($episode)
-    {
-        $new_episode = [
-            'id'            => $episode['identifier'],
-            'series_id'     => $episode['is_part_of'],
-            'title'         => $episode['title'],
-            'start'         => $episode['start'],
-            'description'   => $episode['description'],
-            'author'        => $episode['creator'],
-            'contributor'   => $episode['contributor'],
-            'has_previews'  => false,
-            'created'       => $episode['created']
-        ];
-
-        if (!empty($episode['publications'][0]['attachments'])) {
-            $presentation_preview  = false;
-            $preview               = false;
-            $presenter_download    = [];
-            $presentation_download = [];
-            $audio_download        = [];
-            $annotation_tool       = false;
-            $track_link            = false;
-            $duration              = 0;
-
-            foreach ((array) $episode['publications'][0]['attachments'] as $attachment) {
-                if ($attachment['flavor'] === "presenter/search+preview" || $attachment['type'] === "presenter/search+preview") {
-                    $preview = $attachment['url'];
-                }
-                if ($attachment['flavor'] === "presentation/player+preview" || $attachment['type'] === "presentation/player+preview") {
-                    $presentation_preview = $attachment['url'];
-                }
-            }
-
-            foreach ($episode['publications'][0]['media'] as $track) {
-                $parsed_url = parse_url($track['url']);
-
-                if ($track['flavor'] === 'presenter/delivery') {
-                    if (($track['mediatype'] === 'video/mp4' || $track['mediatype'] === 'video/avi')
-                        && ((in_array('atom', $track['tags']) || in_array('engage-download', $track['tags']))
-                        && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
-                        && !empty($track['has_video'])
-                    ) {
-                        $quality = $this->calculateSize(
-                            $track['bitrate'],
-                            $track['duration']
-                        );
-                        $presenter_download[$quality] = [
-                            'url'  => $track['url'],
-                            'info' => $this->getResolutionString($track['width'], $track['height'])
-                        ];
-
-                        $duration = $track['duration'];
-
-                    }
-
-                    if (in_array($track['mediatype'], ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
-                        && !empty($track['has_audio'])
-                    ) {
-                        $quality = $this->calculateSize(
-                            $track['bitrate'],
-                            $track['duration']
-                        );
-                        $audio_download[$quality] = [
-                            'url'  => $track['url'],
-                            'info' => round($track['audio']['bitrate'] / 1000, 1) . 'kb/s, ' . explode('/', $track['mediatype'])[1]
-                        ];
-
-                        $duration = $track['duration'];
-                    }
-                }
-
-                if ($track['flavor'] === 'presentation/delivery' && (
-                    (
-                        $track['mediatype'] === 'video/mp4'
-                        || $track['mediatype'] === 'video/avi'
-                    ) && (
-                        (
-                            in_array('atom', $track['tags'])
-                            || in_array('engage-download', $track['tags'])
-                        )
-                        && $parsed_url['scheme'] != 'rtmp'
-                        && $parsed_url['scheme'] != 'rtmps'
-                    )
-                    && !empty($track['has_video'])
-                )) {
-                    $quality = $this->calculateSize(
-                        $track['bitrate'],
-                        $track['duration']
-                    );
-
-                    $presentation_download[$quality] = [
-                        'url'  => $track['url'],
-                        'info' => $this->getResolutionString($track['width'], $track['height'])
-                    ];
-
-                    $duration = $track['duration'];
-                }
-            }
-
-            foreach ($episode['publications'] as $publication) {
-                if ($publication['channel'] == 'engage-player') {
-                    $track_link = $publication['url'];
-                }
-                if ($publication['channel'] == 'annotation-tool') {
-                    $annotation_tool = $publication['url'];
-                }
-            }
-
-            ksort($presenter_download);
-            ksort($presentation_download);
-            ksort($audio_download);
-
-            $new_episode['preview']               = $preview;
-            $new_episode['presentation_preview']  = $presentation_preview;
-            $new_episode['presenter_download']    = $presenter_download;
-            $new_episode['presentation_download'] = $presentation_download;
-            $new_episode['audio_download']        = $audio_download;
-            $new_episode['annotation_tool']       = $annotation_tool;
-            $new_episode['has_previews']          = $episode['has_previews'] ?: false;
-            $new_episode['track_link']            = $track_link;
-            $new_episode['duration']              = $duration;
-        }
-
-        return $new_episode;
-    }
-
-    /**
-     * Calculates the size of a track
-     * 
-     * @param int $bitrate the bit rate of a track
-     * @param int $duration the duration of a track
-     * 
-     * @return int size of a track
-     */
-    private function calculateSize($bitrate, $duration)
-    {
-        return ($bitrate / 8) * ($duration / 1000);
-    }
-
-    /**
-     * Get the resolution in string format
-     * 
-     * @param int $width the width of a track
-     * @param int $height the height of a track
-     * 
-     * @return string resolution string
-     */
-    private function getResolutionString($width, $height)
-    {
-        return $width .' * '. $height . ' px';
-    }
-
-    /**
-     * Returns the visiblity status of an episode
-     * 
-     * @param string $series_id series id
-     * @param string $episode_id episode id
-     * @param string $course_id course id
-     * 
-     * @return string visibility status
-     */
-    public function getVisibilityForEpisode($series_id, $episode_id, $course_id)
-    {
-        $acls = self::getAclForEpisodeInSeries($series_id, $episode_id);
-
-        $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
-            ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
-            : \Config::get()->OPENCAST_HIDE_EPISODES;
-        $default = $vis_conf
-            ? 'invisible'
-            : 'visible';
-
-        if (empty($acls)) {
-            Helper::setVisibilityForEpisode($course_id, $episode_id, $default);
-            return $default;
-        }
-
-        // check, if the video is free for all
-        foreach ($acls as $acl) {
-            if ($acl->role == 'ROLE_ANONYMOUS'
-                && $acl->action == 'read'
-                && $acl->allow == true
-            ) {
-                return 'free';
-            }
-        }
-
-        // check, if the video is free for course
-        foreach ($acls as $acl) {
-            if ($acl->role == $course_id . '_Learner'
-                && $acl->action == 'read'
-                && $acl->allow == true
-            ) {
-                return 'visible';
-            }
-        }
-
-        // check, if the video is free for lecturers
-        foreach ($acls as $acl) {
-            if ($acl->role == $course_id . '_Instructor'
-                && $acl->action == 'read'
-                && $acl->allow == true
-            ) {
-                return 'invisible';
-            }
-        }
-
-        // nothing found, return default visibility
-        Helpers::setVisibilityForEpisode($course_id, $episode_id, $default);
-        return $default;
-    }
-
-    /**
-     * Retrieves episode ACL from connected Opencast based on series
-     * 
-     * @param string $series_id id of series
-     * @param string $episode_id id of episode
-     * 
-     * @return array 
-     */
-    private function getAclForEpisodeInSeries($series_id, $episode_id)
-    {
-        static $acl;
-
-        if (!$acl[$series_id]) {
-            $params = [
-                'withacl' => true,
-                'filter' => [
-                    'is_part_of' => $series_id,
-                    'status' => 'EVENTS.EVENTS.STATUS.PROCESSED'
-                ]
-            ];
-
-            $data = $this->getAll($params);
-
-            if (is_array($data)) foreach ($data as $episode) {
-                $acl[$series_id][$episode->identifier] = $episode->acl;
-            }
-        }
-
-        return $acl[$series_id][$episode_id];
     }
 }
