@@ -54,7 +54,7 @@ class ApiEventsClient extends RestClient
     {
         $response = $this->opencastApi->eventsApi->getAcl($episode_id);
         if ($response['code'] == 200) {
-            return $response['body'];
+            return json_decode(json_encode($response['body']), true);
         }
 
         return false;

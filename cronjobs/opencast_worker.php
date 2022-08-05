@@ -27,9 +27,10 @@ class OpencastWorker extends CronJob
         // if a minute has already passed, stop executing tasks and finish the cronjob
 
         while ($start_time > (time() - 59)
-            && !empty($task = VideoSync::findOneBySQL("state = 'scheduled'
-                WHERE scheduled <= NOW()
-                ORDER BY scheduled ASC", []))
+            && !empty($task = VideoSync::findOneBySQL("
+                    scheduled <= NOW() AND state = 'scheduled'
+                    ORDER BY scheduled ASC",
+                []))
         ) {
             $task->state = 'running';
             $task->trys++;

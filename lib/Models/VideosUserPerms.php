@@ -15,6 +15,11 @@ class VideosUserPerms extends \SimpleORMap
             'foreign_key' => 'user_id',
         ];
 
+        $config['belongs_to']['video'] = [
+            'class_name' => 'Opencast\\Models\\Videos',
+            'foreign_key' => 'video_id',
+        ];
+
         parent::configure($config);
     }
 
@@ -44,13 +49,21 @@ class VideosUserPerms extends \SimpleORMap
             $series = SeminarSeries::findBySeries_id($episode->is_part_of);
 
             foreach ($series as $s) {
-                $course = \Course::find($s['course_id']);
-                foreach ($course->getMembers('dozent') as $member) {
-                    $perm = new self();
-                    $perm->user_id  = $member->id;
-                    $perm->video_id = $video->id;
-                    $perm->perm     = 'owner';
-                    $perm->store();
+                $course = \Course::find($s['seminar_id']);
+                foreach ($course->getMembersWithStatus('dozent') as $member) {
+                    // check, if there is already an entry for this user-video combination
+                    $perm = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                        ':video_id' => $video->id,
+                        ':user_id'  => $member->user_id
+                    ]);
+
+                    if (empty($perm)) {
+                        $perm = new self();
+                        $perm->user_id  = $member->user_id;
+                        $perm->video_id = $video->id;
+                        $perm->perm     = 'owner';
+                        $perm->store();
+                    }
                 }
             }
         } else {
