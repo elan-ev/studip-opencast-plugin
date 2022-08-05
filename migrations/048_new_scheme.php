@@ -118,27 +118,6 @@ class NewScheme extends Migration
             ADD KEY `U.1` (`series_id`, `config_id`);
         ";
 
-
-        $sql[] = "CREATE TABLE `oc_capture_agent` (
-            `id` int NOT NULL AUTO_INCREMENT,
-            `config_id` int,
-            `capture_agent` varchar(64),
-            PRIMARY KEY (`id`),
-            FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            KEY `U.1` (`config_id`, `capture_agent`)
-          );
-        ";
-
-        $sql[] = "CREATE TABLE `oc_capture_agent_resource` (
-            `resource_id` varchar(32),
-            `capture_agent_id` int,
-            `workflow_config_id` int,
-            PRIMARY KEY (`resource_id`, `capture_agent_id`),
-            FOREIGN KEY (`workflow_config_id`) REFERENCES `oc_workflow_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            FOREIGN KEY (`capture_agent_id`) REFERENCES `oc_capture_agent`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
-          );
-        ";
-
         $sql[] = "CREATE TABLE `oc_playlist_seminar` (
             `id` int NOT NULL AUTO_INCREMENT,
             `playlist_id` int,
