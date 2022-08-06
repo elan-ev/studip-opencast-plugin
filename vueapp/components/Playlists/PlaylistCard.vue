@@ -1,5 +1,5 @@
 <template>
-    <div name="oc--episode">
+    <div name="oc--episode" v-on:click='listVideos()'>
         <li v-if="playlist.refresh === undefined" :key="playlist.id">
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
@@ -12,12 +12,6 @@
                             </span>
                         </span>
                     </a>
-                    
-                    <span v-else class="oc--previewimage">
-                        <img class="oc--previewimage" :src="preview" height="200" v-on:click="listVideos()"/>
-                        <!-- <p>No video uploaded</p> -->
-                    </span>
-
                 </div>
             </div>
 
@@ -28,13 +22,17 @@
                     </h2>
                     <ul class="oc--metadata-content">
                         <li>
-                            {{ $gettext('Hochgeladen am:') }}
+                            {{ $gettext('Erstellt am:') }}
                             <span v-if="playlist.mkdate">
                             {{ $filters.datetime(playlist.mkdate * 1000) }} Uhr
                             </span>
                             <span v-else>
                                 {{ $gettext('unbekannt') }}
                             </span>
+                        </li>
+                        <li v-translate>
+                            {{ $gettext('Sichtbarkeit:') }}
+                            {{ playlist.visibility }}
                         </li>
                         <!-- <li v-translate>
                             {{ $gettext('Autor:') }}
