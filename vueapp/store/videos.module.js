@@ -138,7 +138,7 @@ const mutations = {
     },
 
     updatePaging(state, paging) {
-        paging.lastPage = Math.round((paging.items / state.limit)-1);
+        paging.lastPage = (paging.items == state.limit) ? 0 : Math.floor((paging.items / state.limit));
         state.paging = paging;
     }
 }
