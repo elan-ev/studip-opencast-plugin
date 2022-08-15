@@ -28,7 +28,8 @@
                 if (this.shape.indexOf("http") === 0) {
                     return this.shape;
                 }
-                return `${STUDIP.ASSETS_URL}images/icons/${this.color}/${this.shape}.svg`;
+                let path = this.shape.split('+').reverse().join('/');
+                return `${STUDIP.ASSETS_URL}images/icons/${this.color}/${path}.svg`;
             },
             color: function () {
                 switch (this.role) {
