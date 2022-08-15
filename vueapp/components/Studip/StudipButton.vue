@@ -1,5 +1,5 @@
 <template>
-    <button class="button" :class="[icon]" type="submit" :name="name" @click="onClick($event)">
+    <button class="button" :class="[icon]" :type="type" :name="name" v-bind="$attrs">
         <slot>ButtonLabel</slot>
     </button>
 </template>
@@ -7,7 +7,12 @@
 <script>
 export default {
     name: "StudipButton",
+    inheritAttrs: false,
     props: {
+        type: {
+            type: String,
+            default: 'submit'
+        },
         name: {
             type: String,
         },
@@ -19,10 +24,5 @@ export default {
             default: ''
         }
     },
-    methods: {
-        onClick(event) {
-            this.$emit('click', event);
-        }
-    }
 }
 </script>
