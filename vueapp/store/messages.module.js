@@ -21,12 +21,11 @@ export const actions = {
         }
 
         let messages = state.messages;
-        messages.push({
-            id:   state.message_num++,
-            type: message.type,
-            text: message.text
-        });
-        context.commit('setMessages', messages);
+        let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text);
+        if (!current_message) {
+            message.id = messages.length + 1;
+            context.commit('setMessage', message);
+        }
     },
 
     clearMessages(context) {
@@ -36,16 +35,18 @@ export const actions = {
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 export const mutations = {
+    setMessage(state, message) {
+        state.messages.push(message);
+    },
+
     setMessages(state, messages) {
         state.messages = messages;
     },
 
     removeMessage(state, id) {
-        for (let msg_id in state.messages) {
-            if (state.messages[msg_id].id == id) {
-                console.log(state.messages[msg_id]);
-                state.messages.splice(msg_id, 1);
-            }
+        let message_index = state.messages.findIndex(msg => msg.id == id);
+        if (message_index != -1) {
+            state.messages.splice(message_index, 1);
         }
     }
 };
