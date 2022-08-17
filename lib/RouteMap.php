@@ -52,8 +52,6 @@ class RouteMap
         $this->app->put('/playlists/{token}', Routes\Playlist\PlaylistUpdate::class);
         $this->app->delete('/playlists/{token}', Routes\Playlist\PlaylistDelete::class);
 
-
-        $this->app->get('/playlists/{token}/videos', Routes\Playlist\PlaylistListVideos::class);
         $this->app->put('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistAddVideo::class);
         $this->app->delete('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistRemoveVideo::class);
         $this->app->put('/playlists/{token}/user', Routes\Playlist\PlaylistAddUser::class);

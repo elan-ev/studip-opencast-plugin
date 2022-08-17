@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Wiedergabeliste - {{ playlists[currentPlaylist].title }}</h2>
-        <p v-on:click="$router.push('/contents/playlists')">Back button</p>
+        <button v-on:click="$router.push('/contents/playlists')">Back button</button>
         <VideosList></VideosList>
     </div>
 </template>

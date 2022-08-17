@@ -79,6 +79,12 @@ class OpencastDiscoverVideos extends CronJob
 
         // now check all videos which have no preview url (these were not yet ready when whe inspected them)
 
+        // TODO:
+        /* current event state in oc_videos speichern
+         * RUNNING wird immer neu inspiziert
+         * FAILED wird nur jede Stunde neu inspiziert
+         * Das scheduled Feld wird genutzt, um Dinge für die Zukunft zu planen
+         */
         foreach (Videos::findBySql('preview IS NULL') as $video) {
             // check, if there is already a task scheduled
             if (empty(VideoSync::findByVideo_id($video->id))) {

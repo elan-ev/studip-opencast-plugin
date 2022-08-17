@@ -6,6 +6,7 @@ use Opencast\Models\Filter;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\SearchClient;
+use Opencast\Models\REST\ApiEventsClient;
 
 class Videos extends UPMap
 {
@@ -80,6 +81,7 @@ class Videos extends UPMap
 
         if (!empty($playlist_ids)) {
             $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
+            $where .= ' AND opv.video_id = id';
         }
 
         $sql .= $where;
@@ -119,6 +121,108 @@ class Videos extends UPMap
         return $data;
     }
 
+    private static function filterForEpisode($episode_id, $acl)
+    {
+        $possible_roles = [
+            'STUDIP_' . $episode_id . '_read',
+            'STUDIP_' . $episode_id . '_write',
+            'ROLE_ANONYMOUS'
+        ];
+
+        $result = [];
+        foreach ($acl as $entry) {
+            if (in_array($entry['role'], $possible_roles) !== false) {
+                $result[] = $entry;
+            }
+        }
+
+        return $result;
+    }
+
+    private static function addEpisodeAcl($episode_id, $add_acl, $acl)
+    {
+        $possible_roles = [
+            'STUDIP_' . $episode_id . '_read',
+            'STUDIP_' . $episode_id . '_write',
+            'ROLE_ANONYMOUS'
+        ];
+
+        $result = [];
+        foreach ($acl as $entry) {
+            if (in_array($entry['role'], $possible_roles) === false) {
+                $result[] = $entry;
+            }
+        }
+
+        return array_merge($result, $add_acl);
+    }
+
+    /**
+     * Check that the episode has its unique ACL and set it if necessary
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
+    public static function checkEventACL($eventType, $episode, $video)
+    {
+        $api_client = ApiEventsClient::getInstance($video->config_id);
+
+        $current_acl = $api_client->getAcl($video->episode);
+
+        // one ACL for reading AND for reading and writing
+        $acl = [
+            [
+                'allow'  => true,
+                'role'   => 'STUDIP_' . $video->episode .'_read',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => 'STUDIP_' . $video->episode .'_write',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => 'STUDIP_' . $video->episode .'_write',
+                'action' => 'write'
+            ]
+        ];
+
+        $oc_acl = self::filterForEpisode($video->episode, $current_acl);
+
+        // add anonymous role if video is world visible
+        if ($video->visibility == 'public') {
+            $acl = [
+                'allow'  => true,
+                'role'   => 'ROLE_ANONYMOUS',
+                'action' => 'read'
+            ];
+        }
+
+        if ($acl <> $oc_acl) {
+            $new_acl = self::addEpisodeAcl($video->episode, $acl, $oc_acl);
+            $api_client->setACL($video->episode, $new_acl);
+        }
+    }
+
+    /**
+     * Extract data from the OC event and adds it to the videos db entry
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
     public static function parseEvent($eventType, $episode, $video)
     {
         if (!empty($episode->publications[0]->attachments)) {
@@ -148,7 +252,7 @@ class Videos extends UPMap
                             && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
                         && !empty($track->has_video)
                     ) {
-                        $quality = self::calculate_size(
+                        $quality = self::calculateSize(
                             $track->bitrate,
                             $track->duration
                         );
@@ -164,7 +268,7 @@ class Videos extends UPMap
                         in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                         && !empty($track->has_audio)
                     ) {
-                        $quality = self::calculate_size(
+                        $quality = self::calculateSize(
                             $track->bitrate,
                             $track->duration
                         );
@@ -189,7 +293,7 @@ class Videos extends UPMap
                     )
                     && !empty($track->has_video)
                 )) {
-                    $quality = self::calculate_size(
+                    $quality = self::calculateSize(
                         $track->bitrate,
                         $track->duration
                     );
@@ -202,6 +306,9 @@ class Videos extends UPMap
             }
 
             foreach ($episode->publications as $publication) {
+                if ($publication->channel == 'engage-player') {
+                    $track_link = $publication->url;
+                }
                 if ($publication->channel == 'annotation-tool') {
                     $annotation_tool = $publication->url;
                 }
@@ -224,7 +331,8 @@ class Videos extends UPMap
                     'presentation' => $presentation_download,
                     'audio'        => $audio_download
                 ],
-                'annotation_tool'  => $annotation_tool
+                'annotation_tool'  => $annotation_tool,
+                'track_link'       => $track_link
             ]);
 
             $video->created = date('Y-m-d H:i:s', strtotime($episode->created));
@@ -238,11 +346,27 @@ class Videos extends UPMap
         return false;
     }
 
-    private static function calculate_size($bitrate, $duration)
+    /**
+     * Calculates the size of a track
+     *
+     * @param int $bitrate the bit rate of a track
+     * @param int $duration the duration of a track
+     *
+     * @return int size of a track
+     */
+    private static function calculateSize($bitrate, $duration)
     {
         return ($bitrate / 8) * ($duration / 1000);
     }
 
+    /**
+     * Get the resolution in string format
+     *
+     * @param int $width the width of a track
+     * @param int $height the height of a track
+     *
+     * @return string resolution string
+     */
     private static function getResolutionString($width, $height)
     {
         return $width . ' * ' . $height . ' px';

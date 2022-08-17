@@ -15,9 +15,27 @@ class VideosUserPerms extends \SimpleORMap
             'foreign_key' => 'user_id',
         ];
 
+        $config['belongs_to']['video'] = [
+            'class_name' => 'Opencast\\Models\\Videos',
+            'foreign_key' => 'video_id',
+        ];
+
         parent::configure($config);
     }
 
+    /**
+     * Set permissions for users who have rights on the passed video. Extracts
+     * lecturers if this Video belongs to a series in a course, otherwise tries to map the presenter
+     * to a Stud.IP username
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
     public static function setPermissions($eventType, $episode, $video)
     {
         // check, if there are any permissions for this video yet. Initial setting of permissions is only done once for each new video.
@@ -31,13 +49,21 @@ class VideosUserPerms extends \SimpleORMap
             $series = SeminarSeries::findBySeries_id($episode->is_part_of);
 
             foreach ($series as $s) {
-                $course = \Course::find($s['course_id']);
-                foreach ($course->getMembers('dozent') as $member) {
-                    $perm = new self();
-                    $perm->user_id  = $member->id;
-                    $perm->video_id = $video->id;
-                    $perm->perm     = 'owner';
-                    $perm->store();
+                $course = \Course::find($s['seminar_id']);
+                foreach ($course->getMembersWithStatus('dozent') as $member) {
+                    // check, if there is already an entry for this user-video combination
+                    $perm = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                        ':video_id' => $video->id,
+                        ':user_id'  => $member->user_id
+                    ]);
+
+                    if (empty($perm)) {
+                        $perm = new self();
+                        $perm->user_id  = $member->user_id;
+                        $perm->video_id = $video->id;
+                        $perm->perm     = 'owner';
+                        $perm->store();
+                    }
                 }
             }
         } else {
