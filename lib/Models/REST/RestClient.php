@@ -8,6 +8,7 @@ use Opencast\Models\Config;
 use Opencast\Errors\RESTError;
 use \Context;
 use OpencastApi\OpenCast;
+use OpencastApi\Rest\OcRestClient;
 
 class RestClient
 {
@@ -21,6 +22,7 @@ class RestClient
         $advance_search = false;
 
     public $opencastApi;
+    public $ocRestClient;
 
     public $serviceName = 'ParentRestClientClass';
 
@@ -57,6 +59,7 @@ class RestClient
             'connect_timeout' => 30,
         ];
         $this->opencastApi = new OpenCast($oc_config);
+        $this->ocRestClient = new OcRestClient($oc_config);
         if (isset($config['settings']['advance_search'])) {
             $this->advance_search = $config['settings']['advance_search'];
         }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Opencast\Models\REST;
+use Opencast\Models\Config;
 
 class WorkflowClient extends RestClient
 {
@@ -76,8 +77,8 @@ class WorkflowClient extends RestClient
         $response = $this->opencastApi->workflow->getDefinitions();
 
         if ($response['code'] == 200) {
-            if (isset($response['body']->definitions)) {
-                return $response['body']->definitions;
+            if (isset($response['body']->definitions->definition) && !empty($response['body']->definitions->definition)) {
+                return $response['body']->definitions->definition;
             }
         }
 

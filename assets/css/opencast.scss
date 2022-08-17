@@ -523,14 +523,6 @@ h2.oc--loadingbar {
     opacity: 0.8;
 }
 
-td.oc-schedule-slider {
-    padding-left: 1em ! important;
-    padding-right: 1em ! important;
-
-    .slider-text {
-        text-align: center;
-    }
-}
 /** upload dialog **/
 
 #upload_form input[type="date"], #upload_form input[type="time"] {
@@ -1097,4 +1089,169 @@ iframe.oc_courseware {
 
 .sidebar .sidebar-image {
     background-image: url('../../assets/images/sidebar/noicon-sidebar.png');
+}
+
+/* Schedule Table */
+.oc--schedule-list {
+    td.oc-schedule-slider {
+        padding-left: 1em ! important;
+        padding-right: 1em ! important;
+    
+        .slider-text {
+            text-align: center;
+        }
+    }
+    
+    td {
+        img {
+            vertical-align: text-bottom;
+        }
+    }
+    
+    td.oc-schedule-actions {
+        .oc-schedule-action-item {
+            &:not(:first-of-type) {
+                margin-left: .5em;
+            }
+        }
+    }
+
+    td.oc-schedule-status {
+        span {
+            font-weight: bold;
+            color: var(--red);
+            margin-left: .4em;
+        }
+    }
+
+    tfoot {
+        border-top: 1px solid var(--base-color, #1e3e70);
+        background-color: var(--content-color-20, #e7ebf1);
+        tr {
+            td.thead {
+                button.button {
+                    &:first-of-type {
+                        margin-left: .4em;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*SChedule Loading*/
+.oc--schedule-loading {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+    backdrop-filter: blur(4px);
+
+    .oc-loading-container {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        span {
+            background-color: var(--base-color, #1e3e70);
+            border-radius: 50%;
+            height: 10px;
+            position: relative;
+            width: 10px;
+            display: inline-block;
+
+            &.load-1 {
+                animation: loading-animation-1 1s linear infinite;
+            }
+
+            &.load-2 {
+                animation: loading-animation-2 1s linear infinite;
+            }
+
+            &.load-3 {
+                animation: loading-animation-3 1s linear infinite;
+            }
+        }
+    }
+
+    @keyframes loading-animation-1 {
+        0%   { transform: scale(1); }
+        16%  { transform: scale(1.3); }
+        33%  { transform: scale(1); }
+        100% { transform: scale(1); }
+    }
+    
+    @keyframes loading-animation-2 {
+        0%   { transform: scale(1); }
+        33%  { transform: scale(1); }
+        49%  { transform: scale(1.3); }
+        65%  { transform: scale(1); }
+        100% { transform: scale(1); }
+    }
+    
+    @keyframes loading-animation-3 {
+        0%   { transform: scale(1); }
+        66%  { transform: scale(1); }
+        81%  { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+}
+
+/* Slider */
+.oc--slider{
+    --slider-bg: var(--white);
+    --slider-connect-bg:  var(--brand-color-lighter);
+    --slider-connect-bg-disabled: #f6f6f6;
+    --slider-height: .8em;
+    --slider-vertical-height: 100px;
+    --slider-radius: 0;
+
+    --slider-handle-bg: #f6f6f6;
+    --slider-handle-border: 1px solid #c5c5c5;
+    --slider-handle-width: 1.3em;
+    --slider-handle-height: 1.3em;
+    --slider-handle-radius: 0;
+    --slider-handle-shadow: none;
+    --slider-handle-shadow-active: none;
+    --slider-handle-ring-width: 3px;
+    --slider-handle-ring-color: var(--brand-color-lighter);
+
+    --slider-tooltip-font-size: 0.875rem;
+    --slider-tooltip-line-height: 1.25rem;
+    --slider-tooltip-font-weight: 600;
+    --slider-tooltip-min-width: 20px;
+    --slider-tooltip-bg: var(--white);
+    --slider-tooltip-bg-disabled: #9CA3AF;
+    --slider-tooltip-color: #fff;
+    --slider-tooltip-radius: 0;
+    --slider-tooltip-py: 2px;
+    --slider-tooltip-px: 6px;
+    --slider-tooltip-arrow-size: 5px;
+    --slider-tooltip-distance: 3px;
+
+    .slider-connects{
+        border: 1px solid #c5c5c5;
+        .slider-connect {
+            height: 104%;
+            cursor: default;
+        }
+    }
+
+    .slider-origin {
+        .slider-handle {
+            top: -0.3em;
+            cursor: default;
+            &:focus-visible, &:active {
+                border: 1px solid #003eff;
+                background-color: var(--brand-color-lighter);
+            }
+            &:hover {
+                background-color: var(--brand-color-lighter);
+            }
+        }
+    }
 }

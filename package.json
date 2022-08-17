@@ -62,6 +62,7 @@
     "url": "git+https://github.com/elan-ev/studip-opencast-plugin.git"
   },
   "dependencies": {
+    "@vueform/slider": "^2.1.2",
     "sortablejs": "^1.15.0"
   }
 }

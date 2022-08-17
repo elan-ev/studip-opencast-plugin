@@ -8,10 +8,11 @@ const initialState = {
         'service_user':      null,
         'service_password':  null,
         'settings': {
-            'lti_consumerkey':    null,
-            'lti_consumersecret': null,
-            'advance_search':     null,
-            'debug':              null
+            'lti_consumerkey':      null,
+            'lti_consumersecret':   null,
+            'advance_search':       null,
+            'time_buffer_overlap':  30,
+            'debug':                null
         }
     }
 };
@@ -54,9 +55,7 @@ export const actions = {
     },
 
     async configListUpdate(context, params) {
-        return  ApiService.put('config', {
-            settings: params
-        });
+        return  ApiService.put('config', params);
     },
 
     async configRead(context, id) {
@@ -67,8 +66,7 @@ export const actions = {
     },
 
     async configDelete(context, id) {
-        await ApiService.delete('config/' + id);
-        context.dispatch('configListRead');
+        return ApiService.delete('config/' + id);
     },
 
     async configUpdate(context, params) {
@@ -80,8 +78,6 @@ export const actions = {
     async configCreate(context, params) {
         return ApiService.post('config', {
             config: params
-        }).then(({ data }) => {
-            context.commit('configSet', data.config);
         });
     },
 

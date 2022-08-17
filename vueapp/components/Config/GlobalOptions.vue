@@ -1,34 +1,26 @@
 <template>
-    <div>
-        <form class="default">
-            <fieldset>
-                <legend v-translate>
-                    <OpencastIcon small/>
-                    Globale Einstellungen
-                </legend>
+    <div class="oc--admin--section">
+        <fieldset>
+            <legend v-translate>
+                <OpencastIcon small/>
+                Globale Einstellungen
+            </legend>
 
-                <ConfigOption v-for="setting in global_settings"
-                    :key="setting.name" :setting="setting"
-                    @updateValue="updateValue"/>
-            </fieldset>
+            <ConfigOption v-for="setting in global_settings"
+                :key="setting.name" :setting="setting"
+                @updateValue="updateValue"/>
+        </fieldset>
 
-            <fieldset v-if="showTos">
-                <legend v-translate>
-                    Terms of service
-                </legend>
+        <fieldset v-if="showTos">
+            <legend v-translate>
+                Terms of service
+            </legend>
 
-                <I18NText :text="opencastTos"
-                    :languages="config_list.languages"
-                    @input="updateTos"
-                />
-            </fieldset>
-
-            <footer>
-                <StudipButton icon="accept" v-translate @click.stop="storeConfig()">
-                    Einstellungen speichern
-                </StudipButton>
-            </footer>
-        </form>
+            <I18NText :text="opencastTos"
+                :languages="config_list.languages"
+                @input="updateTos"
+            />
+        </fieldset>
     </div>
 </template>
 
@@ -54,8 +46,10 @@ export default {
         I18NText,
     },
 
+    props: ['config_list'],
+
     computed: {
-        ...mapGetters(['config', 'config_list']),
+        ...mapGetters(['config']),
 
         /**
          * The list of global settings, cleaned by settings which should not be displayed directly
@@ -121,17 +115,6 @@ export default {
                 }
             }
         },
-
-        storeConfig() {
-            event.preventDefault();
-            this.$store.dispatch('configListUpdate', this.config_list.settings)
-                .then(() => {
-                    this.$store.dispatch('addMessage', {
-                        type: 'success',
-                        text: this.$gettext('Einstellungen gespeichert!')
-                    });
-                });
-        }
     }
 }
 </script>

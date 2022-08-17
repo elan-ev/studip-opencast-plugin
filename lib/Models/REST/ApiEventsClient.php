@@ -335,19 +335,14 @@ class ApiEventsClient extends RestClient
      */
     public function getAllScheduledEvents()
     {
-        static $events;
+        $params = [
+            'filter' => ['status' => 'EVENTS.EVENTS.STATUS.SCHEDULED'],
+        ];
 
-        if (!$events) {
+        $data = $this->getAll($params);
 
-            $params = [
-                'filter' => ['status' => 'EVENTS.EVENTS.STATUS.SCHEDULED'],
-            ];
-
-            $data = $this->getAll($params);
-
-            if (is_array($data)) foreach ($data as $event) {
-                $events[$event->identifier] = $event;
-            }
+        if (is_array($data)) foreach ($data as $event) {
+            $events[$event->identifier] = $event;
         }
 
         return $events;

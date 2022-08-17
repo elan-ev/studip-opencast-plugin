@@ -66,4 +66,33 @@ class Config extends \SimpleOrMap
 
         return self::find($config_id)->toArray();
     }
+
+    /**
+     * Return the complete configuration for the course
+     *
+     * @param string $course_id
+     *
+     * @return mixed  the configuration data for the passed course
+     */
+    public static function getConfigForCourse($course_id)
+    {
+        $oc_config = [];
+        $config_id = self::getConfigIdForCourse($course_id);
+        if ($config_id) {
+            $oc_config = self::getBaseServerConf($config_id);
+        }
+        return $oc_config;
+    }
+
+    /**
+     * get id of used config for the course
+     *
+     * @param string $course_id
+     *
+     * @return int
+     */
+    public static function getConfigIdForCourse($course_id)
+    {
+        return SeminarSeries::findOneBySeminar_id($course_id)->config_id;
+    }
 }

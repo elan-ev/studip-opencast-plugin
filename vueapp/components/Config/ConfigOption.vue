@@ -47,6 +47,19 @@
                 @change="setValue(setting.value)">
         </label>
 
+        <label v-if="setting.type == 'number'">
+            <span :class="{
+                required: setting.required
+            }">
+                {{ setting.description }}
+            </span>
+            <input type="number"
+                :name="setting.name"
+                :placeholder="setting.placeholder"
+                v-model="setting.value"
+                @change="setValue(setting.value)">
+        </label>
+
         <label v-if="setting.type == 'password'">
             <span :class="{
                 required: setting.required

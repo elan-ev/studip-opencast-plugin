@@ -15,7 +15,7 @@ class UserShow extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user;
+        global $user, $perm;
 
         $data = [
             'id'       => $user->id,
@@ -24,7 +24,8 @@ class UserShow extends OpencastController
             'status'   => $user->perms,
             'admin'    => \RolePersistence::isAssignedRole(
                 $GLOBALS['user']->user_id,
-                $this->container['roles']['admin'])
+                $this->container['roles']['admin']),
+            'can_edit' => $perm->have_perm('tutor')
         ];
 
         return $this->createResponse([
