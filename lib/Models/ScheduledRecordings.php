@@ -85,6 +85,37 @@ class ScheduledRecordings extends \SimpleORMap
     }
 
     /**
+     * Gets the list of schedule recording based on the parameters passed
+     * 
+     * @param string $resource_id id of resource
+     * @param string $seminar_id id of course
+     * @param string $status the status of the record
+     * 
+     * @return object|bool
+     */
+    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '')
+    {
+        $where_array = [];
+        $params = [];
+        if (!empty($resource_id)) {
+            $where_array[] = "resource_id = ?";
+            $params[] = $resource_id;
+        }
+        if (!empty($seminar_id)) {
+            $where_array[] = "seminar_id = ?";
+            $params[] = $seminar_id;
+        }
+        if (!empty($status)) {
+            $where_array[] = "status = ?";
+            $params[] = $status;
+        }
+        if (!empty($where_array)) {
+            return self::findBySQL(implode(' AND ', $where_array), $params);
+        }
+        return self::findBySQL(1);
+    }
+
+    /**
      * Removes a scheduled recording for a given date and resource within a course
      *
      * @param string $event_id id of oc event

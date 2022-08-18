@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
-use Opencast\Models\Resources;
+use Opencast\Models\ScheduleHelper;
 
 use Opencast\Models\I18N as _;
 
@@ -33,7 +33,7 @@ class ConfigUpdate extends OpencastController
             foreach ($json['resources'] as $resource) {
                 if (!empty($resource['capture_agent'])) {
                     try {
-                        Resources::setResource($resource['id'], $resource['config_id'], $resource['capture_agent'], $resource['workflow_id']);
+                        ScheduleHelper::addUpdateResource($resource['id'], $resource['config_id'], $resource['capture_agent'], $resource['workflow_id']);
                     } catch (\Throwable $th) {
                         $messages[] = [
                             'type' => 'error',
@@ -41,7 +41,7 @@ class ConfigUpdate extends OpencastController
                         ];
                     }
                 } else {
-                    Resources::removeResource($resource['id']);
+                    ScheduleHelper::deleteResource($resource['id']);
                 }
             }
         }

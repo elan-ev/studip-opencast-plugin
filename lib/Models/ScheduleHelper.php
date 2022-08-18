@@ -521,10 +521,11 @@ class ScheduleHelper
      *
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
+     * @param int $external_config_id - an external server config id to get SchedulerClient instance from
      *
      * @return bool success or not
      */
-    public static function deleteEventForSeminar($course_id, $termin_id)
+    public static function deleteEventForSeminar($course_id, $termin_id, $external_config_id = null)
     {
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
@@ -532,19 +533,26 @@ class ScheduleHelper
             return false;
         }
 
-        $event_data = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
+        $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
         
-        if (!$event_data) {
+        if (!$scheduled_recording_obj) {
             return false;
         }
-        $event_id = $event_data['event_id'];
+        $event_id = $scheduled_recording_obj['event_id'];
 
-        $resource_obj = Resources::findByResource_id($resource_id);
-        if (!$resource_obj) {
+        $config_id = null;
+        if (empty($external_config_id)) {
+            $resource_obj = Resources::findByResource_id($resource_id);
+            $config_id = $resource_obj ? $resource_obj['config_id'] : null;
+        } else {
+            $config_id = $external_config_id;
+        }
+
+        if (empty($config_id)) {
             return false;
         }
 
-        $scheduler_client = SchedulerClient::getInstance($resource_obj['config_id']);
+        $scheduler_client = SchedulerClient::getInstance($config_id);
 
         $result = $scheduler_client->deleteEvent($event_id);
 
@@ -566,10 +574,11 @@ class ScheduleHelper
      * @param string $termin_id - termin identifier
      * @param int $start - the start timestamp
      * @param int $end - the end timestamp
+     * @param bool $update_resource - whether to update the resources info of scheduled recording object
      *
      * @return bool success or not
      */
-    public static function updateEventForSeminar($course_id, $termin_id, $start = null, $end = null)
+    public static function updateEventForSeminar($course_id, $termin_id, $start = null, $end = null, $update_resource = false)
     {
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
@@ -589,16 +598,13 @@ class ScheduleHelper
 
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
 
-        $event_data = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
+        $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
         
-        if (!$event_data) {
+        if (!$scheduled_recording_obj) {
             return false;
         }
-        $event_id = $event_data['event_id'];
+        $event_id = $scheduled_recording_obj['event_id'];
 
-
-        // currently, we only update the start and the end time
-        $event = ScheduledRecordings::find($event_id);
         $date  = \CourseDate::find($termin_id);
 
         $new_start = 0;
@@ -611,12 +617,12 @@ class ScheduleHelper
                 date('j', $date->date),
                 date('Y', $date->date)
             );
-        } else if ($date->date > $event->start) {
+        } else if ($date->date > $scheduled_recording_obj->start) {
             $new_start = $date->date;
         }
         if (!empty($new_start)) {
-            $event->start = $new_start;
-            $event->store();
+            $scheduled_recording_obj->start = $new_start;
+            $scheduled_recording_obj->store();
         }
 
         $new_end = 0;
@@ -629,18 +635,26 @@ class ScheduleHelper
                 date('j', $date->date),
                 date('Y', $date->date)
             );
-        } else if ($date->end_time < $event->end) {
+        } else if ($date->end_time < $scheduled_recording_obj->end) {
             $new_end = $date->end_time;
         }
         if (!empty($new_end)) {
-            $event->end = $new_end;
-            $event->store();
+            $scheduled_recording_obj->end = $new_end;
+            $scheduled_recording_obj->store();
+        }
+
+        // Update resource
+        if ($update_resource) {
+            $scheduled_recording_obj->resource_id = $resource_id;
+            $scheduled_recording_obj->capture_agent = $resource_obj['capture_agent'];
+            $scheduled_recording_obj->workflow_id = $resource_obj['workflow_id'];
+            $scheduled_recording_obj->store();
         }
 
         $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id);
 
-        $start = $event->start * 1000;
-        $end = ($event->end - $buffer ?: 0) * 1000;
+        $start = $scheduled_recording_obj->start * 1000;
+        $end = ($scheduled_recording_obj->end - $buffer ?: 0) * 1000;
         $agentparameters = $metadata['agentparameters'];
         $agent = $metadata['agent'];
 
@@ -885,5 +899,66 @@ class ScheduleHelper
             }
         }
         return $course_events;
+    }
+
+    /**
+     * Adds or updates a resource and takes care of updating other parts
+     * 
+     * @param string $resource_id id of resource
+     * @param string $config_id id of server config
+     * @param string $capture_agent name of capture agent
+     * @param string $workflow_id name of workflow
+     * 
+     * @return bool
+     */
+    public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id)
+    {
+        // We take the current resource obj to use its data for deleteEventForSeminar,
+        // to make sure that server config id is correct!
+        $ex_resource_obj = Resources::findByResource_id($resource_id);
+        // We Update the resource first.
+        $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id);
+        // If is updated.
+        if ($success) {
+            // We update current scheduled events that uses this resource.
+            if ($scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id)) {
+                foreach ($scheduled_recordings as $recording) {
+                    // We try to update the those record as well.
+                    $updated = self::updateEventForSeminar($recording['seminar_id'], $recording['date_id'], null, null, true);
+                    // If update fails, we remove them!
+                    if (!$updated && $ex_resource_obj) {
+                        self::deleteEventForSeminar($recording['seminar_id'], $recording['date_id'], $ex_resource_obj['config_id']);
+                    }
+                }
+            }
+        }
+        return $success;
+    }
+
+    /**
+     * Removes a resource and takes care of the cleaning other parts
+     * 
+     * @param string $resource_id id of resource
+     * 
+     * @return bool
+     */
+    public static function deleteResource($resource_id)
+    {
+        // We take the current resource obj to use its data for deleteEventForSeminar,
+        // to make sure that server config id is correct!
+        $ex_resource_obj = Resources::findByResource_id($resource_id);
+        // Then we delete the resource.
+        $success = Resources::removeResource($resource_id);
+        // If the deletion succeed, then we perform the deleting of the scheduled recordings.
+        if ($success) {
+            $scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id);
+            if (!empty($scheduled_recordings) && !empty($ex_resource_obj)) {
+                foreach ($scheduled_recordings as $recording) {
+                    self::deleteEventForSeminar($recording['seminar_id'], $recording['date_id'], $ex_resource_obj['config_id']);
+                }
+            }
+        }
+        
+        return $success;
     }
 }
