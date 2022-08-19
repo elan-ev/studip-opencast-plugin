@@ -45,21 +45,23 @@ class ScheduledRecordings extends \SimpleORMap
                 $scheduled_recording = new self();
             }
 
-            $scheduled_recording->setData(compact(
-                'seminar_id',
-                'series_id',
-                'date_id',
-                'resource_id',
-                'start',
-                'end',
-                'capture_agent',
-                'event_id',
-                'status',
-                'workflow_id',
-            ));
+            $scheduled_recording->setData(
+                compact(
+                    'seminar_id',
+                    'series_id',
+                    'date_id',
+                    'resource_id',
+                    'start',
+                    'end',
+                    'capture_agent',
+                    'event_id',
+                    'status',
+                    'workflow_id'
+                )
+            );
             return $scheduled_recording->store();
         } else {
-            throw new Exception(_('Der geplante Termin wurden nicht korrekt angegeben.'));
+            throw new \Exception(_('Der geplante Termin wurden nicht korrekt angegeben.'));
         }
     }
 

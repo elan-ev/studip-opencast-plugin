@@ -81,14 +81,6 @@ class ScheduleHelper
                         }
                     }
                 }
-
-                // Record validation happens here.
-                // If capture agent doen not exist, we remove the record.
-                if (!$ca_valid) {
-                    Resources::removeResource($resource['id']);
-                } else if ($ca_valid && !$wd_valid) { // If workflow doen not exist, we update the record.
-                    Resources::setResource($resource['id'], $resource['config_id'], $resource['capture_agent'], null);
-                }
             }
             $resourse_list[] = [
                 'id' => $resource['id'],

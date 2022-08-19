@@ -22,8 +22,9 @@ class Controller extends PluginController
         $this->plugin = $this->dispatcher->current_plugin;
         $this->flash  = Trails_Flash::instance();
 
-         // Localization
-         $this->_ = function ($string) use ($dispatcher) {
+        $dispatcher = $this->dispatcher;
+        // Localization
+        $this->_ = function ($string) use ($dispatcher) {
             return call_user_func_array(
                 [$dispatcher->current_plugin, '_'],
                 func_get_args()
