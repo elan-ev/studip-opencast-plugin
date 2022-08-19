@@ -345,8 +345,8 @@ class CourseController extends OpencastController
         $is_admin = $GLOBALS['perm']->have_studip_perm('admin', Context::getId());
 
         foreach ($this->configs as $id => $config) {
-            $sclient = SeriesClient::getInstance($id);
-            if ($series = $sclient->getAllSeries()) {
+            $apiseries_client = ApiSeriesClient::getInstance($id);
+            if ($series = $apiseries_client->getAll()) {
                 if (!$is_admin) {
                     $filtered_series = [];
                     foreach ($series as $series_index => $series_obj) {
