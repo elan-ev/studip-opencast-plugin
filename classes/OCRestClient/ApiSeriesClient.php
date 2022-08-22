@@ -31,4 +31,20 @@ class ApiSeriesClient extends OCRestClient
 
         return $result[1] == 200;
     }
+
+    public function getAll($withacl = false, $onlyWithWriteAccess = false)
+    {
+        $params = [
+            'withacl' => $withacl,
+            'onlyWithWriteAccess' => $onlyWithWriteAccess,
+        ];
+
+        $data = $this->getJSON('?' . http_build_query($params));
+        $series = [];
+        if (is_array($data)) foreach ($data as $serie) {
+            $series[$serie->identifier] = $serie;
+        }
+
+        return $series;
+    }
 }
