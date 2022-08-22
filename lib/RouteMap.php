@@ -59,11 +59,19 @@ class RouteMap
 
         // Course routes
         $this->app->get('/courses/{course_id}/playlist', Routes\Course\CourseListPlaylist::class);
+        $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         // LTI
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
+
+        // Schedule
+        $this->app->get('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleShow::class);
+        $this->app->post('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleAdd::class);
+        $this->app->post('/schedulebulk/{course_id}', Routes\Schedule\ScheduleBulk::class);
+        $this->app->put('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleUpdate::class);
+        $this->app->delete('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleDelete::class);
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);

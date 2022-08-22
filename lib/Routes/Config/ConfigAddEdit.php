@@ -23,7 +23,6 @@ class ConfigAddEdit extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $constants = $this->container->get('opencast');
         \SimpleOrMap::expireTableScheme();
 
         $json = $this->getRequestData($request);
@@ -40,14 +39,11 @@ class ConfigAddEdit extends OpencastController
             }
         }
 
-        // validate values
         $new_settings = [];
-        foreach ($constants['global_config_options'] as $config_entry) {
-            foreach ($json['config'] as $setting_name => $setting) {
-                if ($setting_name == $config_entry['name']) {
-                    $new_settings[$setting_name] = $setting;
-                    unset($json['config'][$setting_name]);
-                }
+        $stored_config = $config->toArray();
+        foreach ($json['config'] as $setting_name => $setting) {
+            if (!in_array($setting_name, array_keys($stored_config)) && $setting_name != 'checked') {
+                $new_settings[$setting_name] = $setting;
             }
         }
 

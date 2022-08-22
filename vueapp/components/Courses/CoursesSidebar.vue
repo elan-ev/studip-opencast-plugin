@@ -14,6 +14,15 @@
                     </router-link>
                 </li>
                 <li :class="{
+                    active: currentPlaylist == 'schedule'
+                    }"
+                    v-if="can_schedule"
+                    v-on:click="getScheduleList">
+                    <router-link :to="{ name: 'schedule' }">
+                        Aufzeichnungen planen
+                    </router-link>
+                </li>
+                <li :class="{
                     active: currentPlaylist == playlist.token
                     }"
                     v-for="playlist in playlists"
@@ -27,23 +36,43 @@
         </div>
     </div>
 
-    <div class="sidebar-widget " id="sidebar-actions">
-        <div class="sidebar-widget-header" v-translate>
-            Aktionen
+    <template v-if="currentPlaylist == 'schedule'">
+        <div v-if="semester_list.length" class="sidebar-widget " id="sidebar-actions">
+            <div class="sidebar-widget-header" v-translate>
+                Semesterfilter
+            </div>
+            <div class="sidebar-widget-content">
+                <select class="sidebar-selectlist submit-upon-select" v-model="semesterFilter">
+                    <option v-for="semester in semester_list"
+                        :key="semester.id"
+                        :value="semester.id"
+                        :selected="semester.id == semester_filter"
+                        v-translate>
+                        {{ semester.name }}
+                    </option>
+                </select>
+            </div>
         </div>
-        <div class="sidebar-widget-content">
-            <ul class="widget-list oc--sidebar-links widget-links">
-                <li @click="$emit('uploadVideo')">
-                    <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                    Medien Hochladen
-                </li>
-                <li @click="$emit('recordVideo')">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Video Aufnehmen
-                </li>
-            </ul>
+    </template>
+    <template v-else>
+        <div class="sidebar-widget " id="sidebar-actions">
+            <div class="sidebar-widget-header" v-translate>
+                Aktionen
+            </div>
+            <div class="sidebar-widget-content">
+                <ul class="widget-list oc--sidebar-links widget-links">
+                    <li @click="$emit('uploadVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
+                        Medien Hochladen
+                    </li>
+                    <li @click="$emit('recordVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        Video Aufnehmen
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
+    </template>    
 </template>
 
 <script>
@@ -67,7 +96,8 @@ export default {
 
     data() {
         return {
-            showAddDialog: false
+            showAddDialog: false,
+            semesterFilter: null
         }
     },
 
@@ -75,19 +105,41 @@ export default {
         setPlaylist(token) {
             this.$store.dispatch('setCurrentPlaylist', token);
             this.$store.dispatch('loadVideos');
+        },
+
+        getScheduleList() {
+            this.$store.dispatch('setCurrentPlaylist', 'schedule');
+            this.$store.dispatch('clearMessages');
+            this.$store.dispatch('getScheduleList');
         }
     },
 
     computed: {
+        ...mapGetters(["playlists", "currentPlaylist", "cid", "semester_list", "semester_filter", 'currentUser']),
+
         fragment() {
             return this.$route.name;
         },
-        ...mapGetters(["playlists", "currentPlaylist"])
+
+        can_schedule() {
+            return this.cid !== undefined && this.currentUser.can_edit;
+        }
     },
 
     mounted() {
         this.$store.dispatch('loadPlaylists');
         this.$store.dispatch('loadVideos');
-    }
+        this.semesterFilter = this.semester_filter;
+    },
+
+    watch: {
+        semesterFilter(newValue, oldValue) {
+            if (newValue && oldValue && newValue != oldValue) {
+                this.$store.dispatch('setSemesterFilter', newValue);
+                this.$store.dispatch('clearMessages');
+                this.$store.dispatch('getScheduleList');
+            }
+        }
+    },
 }
 </script>

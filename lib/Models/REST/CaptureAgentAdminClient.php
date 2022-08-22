@@ -63,6 +63,10 @@ class CaptureAgentAdminClient extends RestClient
      */
     private function sanitizeAgents($agents)
     {
+        if (!isset($agents->agents->agent) || empty($agents->agents->agent)) {
+            return [];
+        }
+        
         if (is_array($agents->agents->agent)) {
             return $agents->agents->agent;
         }

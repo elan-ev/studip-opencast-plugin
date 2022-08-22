@@ -122,6 +122,20 @@ export default {
                     type: 'boolean',
                     required: false
                 },
+                /* { # this option is currently not safe to be used
+                    description: this.$gettext('Soll das Live-Streaming aktiviert werden?'),
+                    name: 'livestream',
+                    value: this.currentConfig.livestream ? this.currentConfig.livestream : false,
+                    type: 'boolean',
+                    required: false
+                }, */
+                {
+                    description: this.$gettext('Zeitpuffer (in Sekunden) um Überlappungen zu verhindern'),
+                    name: 'time_buffer_overlap',
+                    value: this.currentConfig.time_buffer_overlap ? this.currentConfig.time_buffer_overlap : this.default_time_buffer_overlap,
+                    type: 'number',
+                    required: false
+                },
                 {
                     description: this.$gettext('Debugmodus einschalten?'),
                     name: 'debug',
@@ -130,6 +144,10 @@ export default {
                     required: false
                 }
             ];
+        },
+
+        default_time_buffer_overlap() {
+            return this.configStore.settings.time_buffer_overlap;
         }
     },
 
@@ -146,6 +164,7 @@ export default {
             if (this.id == 'new') {
                 this.$store.dispatch('configCreate', this.currentConfig)
                 .then(({ data }) => {
+                    this.$store.commit('configSet', data.config);
                     this.checkConfigResponse(data);
                 });
             } else {
@@ -157,11 +176,19 @@ export default {
         },
 
         deleteConfig() {
-            if (confirm('Sind sie, dass sie diese Serverkonfiguration löschen möchten?')) {
+            if (confirm(this.$gettext('Sind sie, dass sie diese Serverkonfiguration löschen möchten?'))) {
                 if (this.id == 'new') {
                     this.currentConfig = {}
                 } else {
-                    this.$store.dispatch('configDelete', this.id);
+                    this.$store.dispatch('configDelete', this.id)
+                        .then(() => {
+                            this.$store.dispatch('configListRead');
+                            this.$store.dispatch('addMessage', {
+                                'type': 'success',
+                                'text': this.$gettext('Serverkonfiguration wurde entfernt')
+                            });
+                            this.$forceUpdate;
+                        });
                 }
 
                 this.close();

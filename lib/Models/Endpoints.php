@@ -44,7 +44,7 @@ class Endpoints extends \SimpleORMap
                 return $endpoint->store();
             }
         } else {
-            throw new Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
+            throw new \Exception(_('Die Konfigurationsparameter wurden nicht korrekt angegeben.'));
         }
     }
 

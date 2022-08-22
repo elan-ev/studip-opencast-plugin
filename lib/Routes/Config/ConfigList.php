@@ -4,11 +4,12 @@ namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
-use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Config;
+use Opencast\Models\Endpoints;
+use Opencast\Models\Resources;
+use Opencast\Models\ScheduleHelper;
 
 class ConfigList extends OpencastController
 {
@@ -32,11 +33,19 @@ class ConfigList extends OpencastController
             $languages[$id] = array_merge(['id' => $id], $lang);
         }
 
-        return $this->createResponse([
+        $response_data = [
             'server'    => $config_list ?: [],
             'settings'  => $this->getGlobalConfig(),
             'languages' => $languages
-        ], $response);
+        ];
+
+        // Checker to provide recourses.
+        $resources = Resources::getStudipResources();
+        if (!empty(Endpoints::getEndpoints()) && !empty($resources)) {
+            $response_data['scheduling'] = ScheduleHelper::prepareSchedulingConfig($config_list, $resources);
+        }
+
+        return $this->createResponse($response_data, $response);
     }
 
     private function getGlobalConfig()

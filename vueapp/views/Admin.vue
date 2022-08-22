@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="oc--admin--container">
         <MessageList />
 
         <div class="oc--admin--server-card-grid">
@@ -9,7 +9,7 @@
             <ServerCard isAddCard />
         </div>
 
-        <GlobalOptions />
+        <AdminConfigs />
     </div>
 </template>
 
@@ -21,7 +21,7 @@ import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 
 import ServerCard from "@/components/Config/ServerCard";
-import GlobalOptions from "@/components/Config/GlobalOptions";
+import AdminConfigs from "@/components/Config/AdminConfigs";
 
 export default {
     name: "Admin",
@@ -30,13 +30,7 @@ export default {
         StudipIcon,
         MessageList,
         ServerCard,
-        GlobalOptions
-    },
-
-    data() {
-        return {
-
-        }
+        AdminConfigs
     },
 
     computed: {
