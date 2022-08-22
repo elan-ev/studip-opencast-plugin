@@ -157,6 +157,9 @@ class CourseController extends OpencastController
             }
 
             $api_client = ApiEventsClient::getInstance(OCConfig::getConfigIdForSeries($this->series_id));
+            // set oc version for further usage
+            $this->oc_version = $api_client->getOCVersion();
+
             $this->events = $api_client->getBySeries($this->series_id, $this->course_id);
 
             $occourse = new OCCourseModel($this->course_id);

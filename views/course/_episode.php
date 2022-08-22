@@ -189,9 +189,12 @@ $sort_orders = Pager::getSortOptions();
                                         ]); ?>
 
                                     <? if (!$live && $item['has_previews']) : ?>
+
                                         <?= Studip\LinkButton::create(
                                             $_('Schnitteditor öffnen'),
-                                            $config['service_url'] . '/editor-ui/index.html?mediaPackageId=' . $item['id'] ,
+                                            version_compare($oc_version, '12', '<')
+                                                ? $config['service_url'] . '/admin-ng/index.html#!/events/events/' . $item['id'] . '/tools/editor'
+                                                : $config['service_url'] . '/editor-ui/index.html?mediaPackageId=' . $item['id'] ,
                                             [
                                                 'target' => '_blank',
                                                 'class'  => 'oc_editor',

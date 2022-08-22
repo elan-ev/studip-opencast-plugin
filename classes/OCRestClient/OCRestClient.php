@@ -66,6 +66,11 @@ class OCRestClient
         $this->oc_version = $config['service_version'];
     }
 
+    public function getOCVersion()
+    {
+        return $this->oc_version;
+    }
+
     private function initCurl()
     {
         // setting up a curl-handler
