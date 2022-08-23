@@ -53,8 +53,8 @@ class NewScheme extends Migration
             `chdate` timestamp,
             `mkdate` timestamp,
             PRIMARY KEY (`id`),
-            KEY `U.1` (`video_id`)
-            ADD FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            KEY `U.1` (`video_id`),
+            FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
         ";
 
@@ -111,7 +111,7 @@ class NewScheme extends Migration
         ";
 
         $sql[] ="ALTER TABLE `oc_seminar_series`
-            DROP schedule,
+            DROP IF EXISTS schedule,
             ADD `chdate` timestamp,
             CHANGE `mkdate` `mkdate` timestamp,
             ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -200,9 +200,11 @@ class NewScheme extends Migration
         $db = DBManager::get();
 
         foreach ($sql as $query) {
-            try {
+            //try {
                 $db->exec($query);
-            } catch (PDOException $e) {}
+            //} catch (PDOException $e) {
+            //    echo 'Error in Migration: '. $e->getMessage();
+            //}
         }
 
         $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
