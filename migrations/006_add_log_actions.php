@@ -59,7 +59,7 @@ class AddLogActions extends Migration {
         $query = $db->prepare("INSERT INTO log_actions (action_id, name, description, info_template, active) VALUES (?, ?, ?, ?, ?)");
 
         foreach (self::$log_actions as $action) {
-            $query->execute([md5($action['name']], $action['name'], $action['description'], $action['template'], $action['active']));
+            $query->execute([md5($action['name']), $action['name'], $action['description'], $action['template'], $action['active']]);
         }
 
     }
@@ -71,8 +71,8 @@ class AddLogActions extends Migration {
         $query2 = $db->prepare("DELETE FROM log_events WHERE action_id = ?");
 
         foreach (self::$log_actions as $action) {
-            $query->execute([md5($action['name'])));
-            $query2->execute([md5($action['name'])));
+            $query->execute([md5($action['name'])]);
+            $query2->execute([md5($action['name'])]);
         }
 
     }
