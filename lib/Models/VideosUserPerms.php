@@ -39,7 +39,7 @@ class VideosUserPerms extends \SimpleORMap
     public static function setPermissions($eventType, $episode, $video)
     {
         // check, if there are any permissions for this video yet. Initial setting of permissions is only done once for each new video.
-        if (!empty(self::findByVideo_id($video->id))) {
+        if (!empty(self::findByVideo_id($video->id)) || empty($episode)) {
             return;
         }
 

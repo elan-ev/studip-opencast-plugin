@@ -12,6 +12,8 @@ class MigrateExistingEpisodes extends Migration
 
     public function up()
     {
+        set_time_limit(3600);
+
         $db = DBManager::get();
 
         $stmt_sem = $db->prepare("INSERT INTO oc_video_seminar
