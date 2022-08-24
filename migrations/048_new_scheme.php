@@ -62,7 +62,7 @@ class NewScheme extends Migration
             `id` int NOT NULL AUTO_INCREMENT,
             `token` varchar(12),
             `config_id` int,
-            `episode` varchar(64),
+            `episode` varchar(64) UNIQUE,
             `title` text,
             `description` text,
             `duration` int,

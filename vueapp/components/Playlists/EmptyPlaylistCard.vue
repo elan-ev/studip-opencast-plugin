@@ -29,7 +29,7 @@
 <script>
 
 export default {
-    name: "EmptyEpisode",
+    name: "EmptyPlaylistCard",
 
     data() {
         return {

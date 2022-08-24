@@ -3,7 +3,7 @@
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="Object.keys(visVideos).length === 0 && loadingPage" class="oc--episode-list oc--episode-list--empty">
+            <ul v-if="Object.keys(visVideos).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
                 <EmptyVideoCard />
                 <EmptyVideoCard />
                 <EmptyVideoCard />
@@ -49,10 +49,10 @@ export default {
             "videos",
             "currentPlaylist",
             "paging",
-            "loadingPage"]),
-        
+            "loading"]),
+
         visVideos() {
-            if (this.videos[this.currentPlaylist] === undefined || 
+            if (this.videos[this.currentPlaylist] === undefined ||
                 this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
                 return {};
             }

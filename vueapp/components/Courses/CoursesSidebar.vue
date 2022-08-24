@@ -6,20 +6,38 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
-                    active: currentPlaylist == 'all'
+                    active: currentPage == 'videos'
                     }"
-                    v-on:click="setPlaylist('all')">
+                    v-on:click="setPage('videos')">
                     <router-link :to="{ name: 'course' }">
                         Videos
                     </router-link>
                 </li>
                 <li :class="{
-                    active: currentPlaylist == 'schedule'
+                    active: currentPage == 'schedule'
                     }"
                     v-if="can_schedule"
                     v-on:click="getScheduleList">
                     <router-link :to="{ name: 'schedule' }">
                         Aufzeichnungen planen
+                    </router-link>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="sidebar-widget" v-if="currentPage == 'videos'">
+        <div class="sidebar-widget-header" v-translate>
+            Wiedergabelisten
+        </div>
+        <div class="sidebar-widget-content">
+            <ul class="widget-list widget-links sidebar-navigation">
+                <li :class="{
+                    active: currentPlaylist == 'all'
+                    }"
+                    v-on:click="setPlaylist('all')">
+                    <router-link :to="{ name: 'course' }">
+                        Alle Videos
                     </router-link>
                 </li>
                 <li :class="{
@@ -36,7 +54,7 @@
         </div>
     </div>
 
-    <template v-if="currentPlaylist == 'schedule'">
+    <template v-if="currentPage == 'schedule'">
         <div v-if="semester_list.length" class="sidebar-widget " id="sidebar-actions">
             <div class="sidebar-widget-header" v-translate>
                 Semesterfilter
@@ -72,7 +90,7 @@
                 </ul>
             </div>
         </div>
-    </template>    
+    </template>
 </template>
 
 <script>
@@ -108,14 +126,20 @@ export default {
         },
 
         getScheduleList() {
-            this.$store.dispatch('setCurrentPlaylist', 'schedule');
+            this.$store.dispatch('setPage', 'schedule');
             this.$store.dispatch('clearMessages');
             this.$store.dispatch('getScheduleList');
-        }
+        },
+
+        setPage(page) {
+            this.$store.dispatch('setPage', page);
+            this.$store.dispatch('loadVideos');
+        },
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentPlaylist", "cid", "semester_list", "semester_filter", 'currentUser']),
+        ...mapGetters(["playlists", "currentPlaylist", "currentPage",
+            "cid", "semester_list", "semester_filter", 'currentUser']),
 
         fragment() {
             return this.$route.name;

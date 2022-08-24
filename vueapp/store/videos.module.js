@@ -12,8 +12,7 @@ const state = {
         currPage: 0,
         lastPage: 0,
         items: 0
-    },
-    loadingPage: true
+    }
 }
 
 const getters = {
@@ -35,18 +34,14 @@ const getters = {
 
     search(state) {
         return state.search
-    },
-
-    loadingPage(state) {
-        return state.loadingPage
-    },
+    }
 }
 
 const actions = {
-    async loadVideos({ commit, state, rootState }) {
+    async loadVideos({ commit, state, dispatch, rootState }) {
         let playlist_token = rootState.playlists.currentPlaylist
 
-        state.loadingPage = true;
+        dispatch('updateLoading', true);
 
         const params = new URLSearchParams();
 
@@ -86,7 +81,7 @@ const actions = {
                     });
                 }
 
-                state.loadingPage = false;
+                dispatch('updateLoading', false);
             });
     },
 

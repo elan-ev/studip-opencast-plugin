@@ -4,6 +4,8 @@ const state = {
     series: [],
     servers: [],
     currentUser: {},
+    currentPage: 'videos',
+    loading: false,
     cid: null,
     site: null
 }
@@ -18,12 +20,18 @@ const getters = {
     currentUser(state) {
         return state.currentUser
     },
+    currentPage(state) {
+        return state.currentPage
+    },
     cid(state) {
         return state.cid;
     },
     site(state) {
         return state.site;
-    }
+    },
+    loading(state) {
+        return state.loading
+    },
 }
 
 
@@ -34,6 +42,14 @@ const actions = {
 
     updateSite({commit}, site) {
         commit('setSite', site);
+    },
+
+    updatePage({commit}, page) {
+        commit('setPage', page);
+    },
+
+    updateLoading({commit}, loading) {
+        commit('setLoading', loading);
     },
 
     async loadSeries({commit, dispatch}, id) {
@@ -67,6 +83,10 @@ const mutations = {
         state.site = site;
     },
 
+    setPage(state, page) {
+        state.currentPage = page;
+    },
+
     setSeries(state, data) {
         state.series = data;
     },
@@ -77,6 +97,10 @@ const mutations = {
 
     setCurrentUser(state, data) {
         state.currentUser = data;
+    },
+
+    setLoading(state, loading) {
+        state.loading = loading;
     }
 }
 

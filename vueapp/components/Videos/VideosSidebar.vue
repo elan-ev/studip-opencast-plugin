@@ -30,13 +30,17 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list oc--sidebar-links widget-links">
-                <li @click="$emit('uploadVideo')">
+                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                     Medien Hochladen
                 </li>
-                <li @click="$emit('recordVideo')">
+                <li @click="$emit('recordVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Video Aufnehmen
+                </li>
+                <li @click="createPlaylist" v-if="fragment == 'playlists'">
+                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                    Wiedergabeliste anlegen
                 </li>
             </ul>
         </div>
@@ -69,6 +73,12 @@ export default {
     computed: {
         fragment() {
             return this.$route.name;
+        }
+    },
+
+    methods: {
+        createPlaylist() {
+            this.$store.dispatch('addPlaylistUI', true);
         }
     },
 
