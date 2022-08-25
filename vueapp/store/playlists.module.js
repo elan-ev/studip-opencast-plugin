@@ -34,6 +34,13 @@ const actions = {
             });
     },
 
+    async loadPlaylist(context, token) {
+        return ApiService.get('playlists/' + token)
+            .then(({ data }) => {
+                context.commit('setPlaylists', [data]);
+            });
+    },
+
     addPlaylistUI({ commit }, show) {
         commit('setPlaylistAdd', show);
     },
@@ -62,7 +69,11 @@ const actions = {
 
 const mutations = {
     setPlaylists(state, playlists) {
-        state.playlists = playlists || {};
+        let pl = playlists || {};
+
+        for (let id in pl) {
+            state.playlists[pl[id].token] = pl[id];
+        }
     },
 
 

@@ -1,3 +1,4 @@
+import { triggerRef } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 export default new createRouter({
@@ -19,8 +20,17 @@ export default new createRouter({
                     name: "playlists",
                     component: () => import("@/views/Playlists"),
                 },
+
+
                 {
-                    path: "playlistvideos",
+                    path: 'playlists/:token/edit/',
+                    name: 'playlist_edit',
+                    props: true,
+                    component: () => import("@/views/PlaylistEdit"),
+                },
+
+                {
+                    path: 'playlists/:token/list',
                     name: "playlistvideos",
                     component: () => import("@/views/PlaylistVideos"),
                 },

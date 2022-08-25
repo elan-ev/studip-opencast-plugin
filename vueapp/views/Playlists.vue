@@ -1,19 +1,122 @@
 <template>
-    <div class="container" id="app-playlists">
+    <div>
         <h2>Wiedergabelisten</h2>
-        <PlaylistList></PlaylistList>
+
+        <PaginationButtons @changePage="changePage" v-if="Object.keys(playlists).length !== 0"/>
+
+        <div id="episodes" class="oc--flexitem oc--flexepisodelist">
+            <table class="default">
+                <colgroup>
+                    <col style="width: 2%">
+                    <col style="width: 50%">
+                    <col style="width: 2%">
+                    <col style="width: 20%">
+                    <col style="width: 13%">
+                    <col style="width: 13%">
+                    <col style="width: 2%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox">
+                        </th>
+                        <th>
+                            {{ $gettext('Name') }}
+                        </th>
+
+                        <th></th>
+
+                        <th>
+                            {{ $gettext('Sichtbarkeit') }}
+                        </th>
+                        <th>
+                            {{ $gettext('Videos') }}
+                        </th>
+                        <th>
+                            {{ $gettext('Erstellt am') }}
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody v-if="Object.keys(playlists).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
+                    <EmptyPlaylistCard />
+                </tbody>
+                <tbody class="oc--playlist" v-else>
+                    <PlaylistCard
+                        v-for="playlist in playlists"
+                        v-bind:playlist="playlist"
+                        v-bind:key="playlist.token"
+                    ></PlaylistCard>
+                </tbody>
+            </table>
+
+            <MessageBox type="info" v-if="Object.keys(playlists).length === 0 && !addPlaylist">
+                <translate>
+                    Es gibt bisher keine Wiedergabelisten.
+                </translate>
+            </MessageBox>
+
+             <PlaylistAddCard v-if="addPlaylist"
+                @done="createPlaylist"
+                @cancel="cancelPlaylistAdd"
+            />
+        </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-
-import PlaylistList from '@/components/Playlists/PlaylistList'
+import PlaylistCard from '../components/Playlists/PlaylistCard.vue';
+import EmptyPlaylistCard from '../components/Playlists/EmptyPlaylistCard.vue';
+import PlaylistAddCard from '../components/Playlists/PlaylistAddCard.vue';
+import PaginationButtons from '@/components/PaginationButtons.vue';
+import MessageBox from '@/components/MessageBox.vue';
 
 export default {
     name: "Playlists",
+
     components: {
-        PlaylistList
+        PlaylistCard, EmptyPlaylistCard,
+        PaginationButtons, MessageBox, PlaylistAddCard
+    },
+
+    computed: {
+        ...mapGetters([
+            "playlists",
+            "currentPlaylist",
+            "paging",
+            "loading",
+            'addPlaylist'
+        ]),
+
+        /*
+        visVideos() {
+            if (this.videos[this.currentPlaylist] === undefined ||
+                this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
+                return {};
+            }
+            return this.videos[this.currentPlaylist][this.paging.currPage]
+        }
+        */
+    },
+
+    methods: {
+        changePage: async function(page) {
+            await this.$store.dispatch('setPage', page)
+            await this.$store.dispatch('loadPlaylists')
+        },
+
+        cancelPlaylistAdd() {
+            this.$store.dispatch('addPlaylistUI', false);
+        },
+
+        createPlaylist(playlist) {
+            this.$store.dispatch('addPlaylist', playlist);
+        }
+    },
+
+    mounted() {
+        this.$store.dispatch('loadPlaylists');
     }
 };
 </script>

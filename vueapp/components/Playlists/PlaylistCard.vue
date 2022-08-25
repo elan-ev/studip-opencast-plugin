@@ -4,14 +4,16 @@
              <input type="checkbox">
         </td>
 
-        <td v-on:click='listVideos()'>
-            {{ playlist.title }}
+        <td>
+            <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token, playlist: playlist } }">
+                {{ playlist.title }}
+            </router-link>
         </td>
 
         <td></td>
 
         <td>
-            {{ playlist.visibility }}
+            <PlaylistVisibility css="oc--playlist-visibility" :visibility="playlist.visibility"/>
         </td>
 
         <td>
@@ -39,13 +41,15 @@ import EmptyPlaylistCard from "@/components/Playlists/EmptyPlaylistCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
 import StudipActionMenu from '@/components/Studip/StudipActionMenu'
+import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue'
 
 export default {
     name: "PlaylistCard",
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyPlaylistCard, StudipActionMenu
+        EmptyPlaylistCard, StudipActionMenu,
+        PlaylistVisibility
     },
 
     props: {
