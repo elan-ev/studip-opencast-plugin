@@ -1,15 +1,47 @@
 <template>
-    <div v-show="schedule_loading" ref="main" class="oc--schedule-loading">
-        <div ref="container" class="oc-loading-container">
-            <h5 v-translate>
-                Vorgang läuft. Bitte warten Sie einen Moment.
-            </h5>
-            <div>
-                <span class="load-1"></span>
-                <span class="load-2"></span>
-                <span class="load-3"></span>
-            </div>
-        </div>
+    <div ref="main">
+        <table class="default oc--schedule-list">
+            <colgroup>
+                <col style="width: 2%">
+                <col style="width: 30%">
+                <template v-if="allow_schedule_alternate">
+                    <col style="width: 28%">
+                    <col style="width: 28%">
+                </template>
+                <template v-else>
+                    <col style="width: 56%">
+                </template>
+                <col style="width: 5%">
+                <col style="width: 7%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th v-translate>Termin</th>
+                    <template v-if="allow_schedule_alternate">
+                        <th v-translate>Aufzeichnungszeitraum</th>
+                    </template>
+                    <th v-translate>Titel</th>
+                    <th v-translate>Status</th>
+                    <th v-translate>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td><span class="oc--loadingbar oc--loadingbar-title"></span></td>
+                    <template v-if="allow_schedule_alternate">
+                        <td><span class="oc--loadingbar"></span></td>
+                        <td><span class="oc--loadingbar"></span></td>
+                    </template>
+                    <template v-else>
+                        <td><span class="oc--loadingbar"></span></td>
+                    </template>
+                    <td><span class="oc--loadingbar"></span></td>
+                    <td><span class="oc--loadingbar"></span></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>
 
@@ -18,31 +50,6 @@ import { mapGetters } from "vuex";
 export default {
     name: "ScheduleLoading",
 
-    computed: {
-        ...mapGetters(["schedule_loading"]),
-    },
-
-    mounted () {
-        this.setHeight();
-    },
-
-    updated () {
-        this.setHeight();
-    },
-
-    methods: {
-        setHeight() {
-            let body = document.body,
-                html = document.documentElement;
-
-            let height = Math.max( body.scrollHeight, body.offsetHeight, 
-                            html.clientHeight, html.scrollHeight, html.offsetHeight );
-            
-            this.$refs.main.style.height = `${height}px`;
-
-            let vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-            this.$refs.container.style.height = `${vh}px`;
-        }
-    }
+    props: ['allow_schedule_alternate']
 }
 </script>

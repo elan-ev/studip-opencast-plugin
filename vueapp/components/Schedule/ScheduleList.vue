@@ -94,11 +94,12 @@
                 </tr>
             </tfoot>
         </table>
-        <MessageBox v-else type="info">
+        <MessageBox v-else-if="!schedule_loading" type="info">
             <translate>
                 Es gibt bisher keine Termine.
             </translate>
         </MessageBox>
+         <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
     </div>
 </template>
 
@@ -108,6 +109,7 @@ import MessageBox from '@/components/MessageBox.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 import StudipSlider from '@studip/StudipSlider.vue';
 import StudipButton from '@studip/StudipButton.vue';
+import ScheduleLoading from "@/components/Schedule/ScheduleLoading";
 
 export default {
     name: "ScheduleList",
@@ -116,7 +118,8 @@ export default {
         MessageBox,
         StudipIcon,
         StudipSlider,
-        StudipButton
+        StudipButton,
+        ScheduleLoading
     },
 
     data() {
@@ -128,7 +131,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["schedule_list", "allow_schedule_alternate", "allow_livestream", "cid"]),
+        ...mapGetters(["schedule_list", "allow_schedule_alternate", "allow_livestream", "cid", 'schedule_loading']),
+
         get_bulk_actions() {
             let bulk_actions = [
                 {value: 'schedule', text: this.$gettext('Aufzeichnungen planen')},
