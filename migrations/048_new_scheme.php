@@ -11,8 +11,7 @@ class NewScheme extends Migration
         $sql[] = "CREATE TABLE `oc_playlist` (
             `id` int NOT NULL AUTO_INCREMENT,
             `token` varchar(8),
-            `title` text,
-            `description` text,
+            `title` varchar(255),
             `visibility` enum('internal','free','public'),
             `chdate` timestamp,
             `mkdate` timestamp,
