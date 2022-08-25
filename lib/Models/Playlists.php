@@ -2,7 +2,7 @@
 
 namespace Opencast\Models;
 
-class Playlists extends \SimpleORMap
+class Playlists extends UPMap
 {
     protected static function configure($config = [])
     {
