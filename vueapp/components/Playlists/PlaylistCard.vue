@@ -1,79 +1,51 @@
 <template>
-    <div name="oc--episode" v-on:click='listVideos()'>
-        <li v-if="playlist.refresh === undefined" :key="playlist.id">
-            <div class="oc--flexitem oc--flexplaycontainer">
-                <div class="oc--playercontainer">
-                    <a v-if="playlist.publication" :href="playlist.publication" target="_blank">
-                        <span class="oc--previewimage">
-                            <img class="oc--previewimage" :src="preview" height="200"/>
-                            <img class="oc--playbutton" :src="play">
-                            <span class="oc--duration">
-                                {{ getDuration }}
-                            </span>
-                        </span>
-                    </a>
-                </div>
-            </div>
+    <tr :key="playlist.id">
+        <td>
+             <input type="checkbox">
+        </td>
 
-            <div class="oc--metadata" :key="playlist.id">
-                <div>
-                    <h2 class="oc--metadata-title">
-                        {{playlist.title}}
-                    </h2>
-                    <ul class="oc--metadata-content">
-                        <li>
-                            {{ $gettext('Erstellt am:') }}
-                            <span v-if="playlist.mkdate">
-                            {{ $filters.datetime(playlist.mkdate * 1000) }} Uhr
-                            </span>
-                            <span v-else>
-                                {{ $gettext('unbekannt') }}
-                            </span>
-                        </li>
-                        <li v-translate>
-                            {{ $gettext('Sichtbarkeit:') }}
-                            {{ playlist.visibility }}
-                        </li>
-                        <!-- <li v-translate>
-                            {{ $gettext('Autor:') }}
-                            {{ playlist.autor }}
-                        </li>
-                        <li v-translate>
-                            {{ $gettext('Mitwirkende:') }}
-                            {{ playlist.contributors }}
-                        </li> -->
-                        <li v-translate>
-                            {{ $gettext('Beschreibung:') }}
-                            {{ playlist.description }}
-                        </li>
-                    </ul>
-                </div>
-                <div class="oc--episode-buttons">
-                    <ConfirmDialog v-if="DeleteConfirmDialog"
-                        :title="$gettext('Aufzeichnung entfernen')"
-                        :message="$gettext('Möchten Sie die Aufzeichnung wirklich entfernen?')"
-                        @done="removeVideo"
-                        @cancel="DeleteConfirmDialog = false"
-                    />
-                </div>
-            </div>
-        </li>
-        <EmptyPlaylistCard v-else/>
-    </div>
+        <td v-on:click='listVideos()'>
+            {{ playlist.title }}
+        </td>
+
+        <td></td>
+
+        <td>
+            {{ playlist.visibility }}
+        </td>
+
+        <td>
+            {{ playlist.videos_count }}
+        </td>
+
+        <td>
+            {{ $gettext('Erstellt am:') }}
+            <span v-if="playlist.mkdate">
+            {{ $filters.datetime(playlist.mkdate * 1000) }} Uhr
+            </span>
+            <span v-else>
+                {{ $gettext('unbekannt') }}
+            </span>
+        </td>
+
+        <td>
+           <StudipActionMenu :items="menuItems"/>
+        </td>
+    </tr>
 </template>
 
 <script>
 import EmptyPlaylistCard from "@/components/Playlists/EmptyPlaylistCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
-
+import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 
 export default {
     name: "PlaylistCard",
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyPlaylistCard,
+        EmptyPlaylistCard, StudipActionMenu
     },
 
     props: {
@@ -82,11 +54,26 @@ export default {
 
     data() {
         return {
-            DeleteConfirmDialog: false,
-            DownloadDialog: false,
-            editDialog: false,
-            preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
-            play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg'
+            menuItems: [
+                {
+                    id: 1,
+                    label: this.$gettext('Bearbeiten'),
+                    icon: 'edit',
+                    emit: 'editPlaylist'
+                },
+                {
+                    id: 2,
+                    label: this.$gettext('Zu Kurs hinzufügen'),
+                    icon: 'add',
+                    emit: 'addToCourse'
+                },
+                {
+                    id: 3,
+                    label: this.$gettext('Löschen'),
+                    icon: 'trash',
+                    emit: 'deletePlaylist'
+                }
+            ]
         }
     },
 
@@ -106,15 +93,6 @@ export default {
             this.$store.dispatch('loadVideos');
             this.$router.push('/contents/playlistvideos');
         }
-    },
-
-    computed: {
-        // getDuration() {
-        //     var sec = parseInt(this.playlist.duration / 1000)
-        //     var min = parseInt(sec / 60)
-        //     var h = parseInt(min / 60)
-        //     return ("0" + h).substr(-2) + ":" + ("0" + min%60).substr(-2) + ":" + ("0" + sec%60).substr(-2)
-        // }
     }
 }
 </script>

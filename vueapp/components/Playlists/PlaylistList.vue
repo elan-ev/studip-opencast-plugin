@@ -3,30 +3,61 @@
         <PaginationButtons @changePage="changePage" v-if="Object.keys(playlists).length !== 0"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="Object.keys(playlists).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
-                <EmptyPlaylistCard />
-                <EmptyPlaylistCard />
-                <EmptyPlaylistCard />
-                <EmptyPlaylistCard />
-                <EmptyPlaylistCard />
-            </ul>
+            <table class="default">
+                <colgroup>
+                    <col style="width: 2%">
+                    <col style="width: 50%">
+                    <col style="width: 2%">
+                    <col style="width: 20%">
+                    <col style="width: 13%">
+                    <col style="width: 13%">
+                    <col style="width: 2%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox">
+                        </th>
+                        <th>
+                            {{ $gettext('Name') }}
+                        </th>
 
-            <ul v-else-if="Object.keys(playlists).length === 0 && !addPlaylist" class="oc--episode-list oc--episode-list--empty">
-                <MessageBox type="info">
-                    <translate>
-                        Es gibt bisher keine Wiedergabelisten.
-                    </translate>
-                </MessageBox>
-            </ul>
+                        <th></th>
 
-            <ul class="oc--play-list" v-else>
-                <PlaylistAddCard @done="addPlaylist" @cancel="cancelPlaylistAdd"/>
-                <PlaylistCard
-                    v-for="playlist in playlists"
-                    v-bind:playlist="playlist"
-                    v-bind:key="playlist.id"
-                ></PlaylistCard>
-            </ul>
+                        <th>
+                            {{ $gettext('Sichtbarkeit') }}
+                        </th>
+                        <th>
+                            {{ $gettext('Videos') }}
+                        </th>
+                        <th>
+                            {{ $gettext('Erstellt am') }}
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody v-if="Object.keys(playlists).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
+                    <EmptyPlaylistCard />
+                </tbody>
+                <tbody class="oc--playlist" v-else>
+                    <PlaylistCard
+                        v-for="playlist in playlists"
+                        v-bind:playlist="playlist"
+                        v-bind:key="playlist.id"
+                    ></PlaylistCard>
+                </tbody>
+            </table>
+
+            <MessageBox type="info" v-if="Object.keys(playlists).length === 0 && !addPlaylist">
+                <translate>
+                    Es gibt bisher keine Wiedergabelisten.
+                </translate>
+            </MessageBox>
+
+             <PlaylistAddCard v-if="addPlaylist"
+                @done="createPlaylist"
+                @cancel="cancelPlaylistAdd"
+            />
         </div>
     </div>
 </template>
@@ -75,6 +106,10 @@ export default {
 
         cancelPlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
+        },
+
+        createPlaylist(playlist) {
+            this.$store.dispatch('addPlaylist', playlist);
         }
     },
 

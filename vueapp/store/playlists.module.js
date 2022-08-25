@@ -30,7 +30,7 @@ const actions = {
         return ApiService.get($route)
             .then(({ data }) => {
                 context.dispatch('updateLoading', false);
-                context.commit('addPlaylists', data);
+                context.commit('setPlaylists', data);
             });
     },
 
@@ -38,9 +38,17 @@ const actions = {
         commit('setPlaylistAdd', show);
     },
 
-    async addPlaylist(context, id) {
+    async addPlaylist({ commit, dispatch, rootState }, playlist) {
         // TODO
         commit('setPlaylistAdd', false);
+
+        let $cid = rootState.opencast.cid;
+        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlist';
+
+        return ApiService.post($route, playlist)
+            .then(({ data }) => {
+                dispatch('loadPlaylists');
+            });
     },
 
     async deletePlaylist(context, id) {
@@ -53,10 +61,8 @@ const actions = {
 }
 
 const mutations = {
-    addPlaylists(state, playlists) {
-        for (let id in playlists) {
-            state.playlists[playlists[id].token] = playlists[id]
-        }
+    setPlaylists(state, playlists) {
+        state.playlists = playlists || {};
     },
 
 
