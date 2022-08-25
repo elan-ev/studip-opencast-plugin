@@ -219,17 +219,26 @@ export default {
             if (event) {
                 event.preventDefault();
             }
+
             if (!this.cid) {
                 // This should not have happened, if so, we do nothing.
                 this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
                 console.log('There is no cid!');
                 return;
             }
+
             if (!Object.keys(this.$store._actions).includes(dispatchAction)) {
                 this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
                 console.log('No action available!');
                 return;
             }
+
+            if (dispatchAction == 'unschedule' && !confirm(
+                    this.$gettext('Sind sie sicher, dass sie die geplante Aufzeichnung entfernen möchten?')
+            )) {
+                return;
+            }
+
             this.$store.dispatch(dispatchAction, termin_id).then(({ data }) => {
                 if (data?.message && dispatchAction != 'unschedule') {
                     this.addMesssage(data.message.type, data.message.text, true);
