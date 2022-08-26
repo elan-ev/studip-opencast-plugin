@@ -2,11 +2,31 @@ import ApiService from "@/common/api.service";
 
 const state = {
     videos: {},
-    search: '',
-    sort: {
+    videoSearch: '',
+    videoSort: {
         field: 'mkdate',
-        order: 'desc'
+        order: 'desc',
+        text : 'Datum hochgeladen: Neuste zuerst'
     },
+    videoSorts: [
+        {
+            field: 'mkdate',
+            order: 'desc',
+            text : 'Datum hochgeladen: Neuste zuerst'
+        },  {
+            field: 'mkdate',
+            order: 'asc',
+            text : 'Datum hochgeladen: Älteste zuerst'
+        },  {
+            field: 'title',
+            order: 'desc',
+            text : 'Titel: Alphabetisch'
+        }, {
+            field: 'title',
+            order: 'asc',
+            text : 'Titel: Umgekehrt Alphabetisch'
+        }
+    ],
     limit: 5,
     paging: {
         currPage: 0,
@@ -28,8 +48,12 @@ const getters = {
         return state.limit
     },
 
-    sort(state) {
-        return state.sort
+    videoSort(state) {
+        return state.videoSort
+    },
+
+    videoSorts(state) {
+        return state.videoSorts
     },
 
     search(state) {
@@ -89,13 +113,13 @@ const actions = {
         // TODO
     },
 
-    async setSort({dispatch, commit}, sort) {
-        await commit('setSort', sort)
+    async setVideoSort({dispatch, commit}, sort) {
+        await commit('setVideoSort', sort)
         dispatch('reloadVideos')
     },
 
-    async setSearch({dispatch, commit}, search) {
-        await commit('setSearch', search)
+    async setVideoSearch({dispatch, commit}, search) {
+        await commit('setVideoSearch', search)
         dispatch('reloadVideos')
     },
 
@@ -122,14 +146,18 @@ const mutations = {
         }
     },
 
-    setSort(state, sort) {
-        state.sort = sort
+    setVideoSort(state, sort) {
+        state.videoSort = sort
     },
 
     setPage(state, page) {
         if (page >= 0 && page <= state.paging.lastPage) {
             state.paging.currPage = page
         }
+    },
+
+    setVideoSearch(state, search) {
+        state.videoSearch = search
     },
 
     updatePaging(state, paging) {
