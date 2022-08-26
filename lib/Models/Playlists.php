@@ -13,6 +13,13 @@ class Playlists extends UPMap
             'assoc_foreign_key' => 'playlist_id',
         ];
 
+        $config['has_and_belongs_to_many']['tags'] = [
+            'class_name'     => 'Opencast\\Models\\Tags',
+            'thru_table'     => 'oc_playlist_tags',
+            'thru_key'       => 'playlist_id',
+            'thru_assoc_key' => 'tag_id'
+        ];
+
         $config['has_many']['videos'] = [
             'class_name' => 'Opencast\\Models\\PlaylistVideos',
             'assoc_foreign_key' => 'playlist_id',
@@ -43,6 +50,8 @@ class Playlists extends UPMap
         $data = $this->toArray();
         unset($data['id']);
         $data['videos_count'] = count($this->videos);
+
+        $data['tags'] = $this->tags->toArray();
 
         return $data;
     }

@@ -29,6 +29,7 @@ const state = {
     ],
     addPlaylist: false,
     currentPlaylist: 'all',
+    availableTags: [],
 }
 
 const getters = {
@@ -42,6 +43,10 @@ const getters = {
 
     addPlaylist(state) {
         return state.addPlaylist;
+    },
+
+    availableTags(state) {
+        return state.availableTags;
     },
 
     playlistSort(state) {
@@ -71,6 +76,20 @@ const actions = {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
                 context.commit('setPlaylists', [data]);
+            });
+    },
+
+    async updatePlaylist(context, playlist) {
+        return ApiService.put('playlists/' + playlist.token, playlist)
+            .then(({ data }) => {
+                context.commit('setPlaylists', [data]);
+            });
+    },
+
+    async updateAvailableTags(context) {
+        return ApiService.get('tags')
+            .then(({ data }) => {
+                context.commit('setAvailableTags',data);
             });
     },
 
@@ -130,6 +149,10 @@ const mutations = {
 
     setCurrentPlaylist(state, token) {
         state.currentPlaylist = token;
+    },
+
+    setAvailableTags(state, availableTags) {
+        state.availableTags = availableTags;
     },
 
     setPlaylistSearch(state, search) {

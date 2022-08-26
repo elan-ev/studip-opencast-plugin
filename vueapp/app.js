@@ -13,6 +13,8 @@ import DateTimeFilter from "@/common/datetime.filter";
 import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
 
+import vSelect from "vue-select";
+
 import { createGettext } from "vue3-gettext";
 import translations from './i18n/translations.json';
 
@@ -63,6 +65,8 @@ window.addEventListener("DOMContentLoaded", function() {
     });
 
     Vue.use(gettext);
+
+    Vue.component("v-select", vSelect);
 
     if (window.OpencastPlugin.CID !== undefined) {
         store.dispatch('updateCid', window.OpencastPlugin.CID);
