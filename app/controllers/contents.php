@@ -30,5 +30,8 @@ class ContentsController extends Opencast\Controller
     {
         Navigation::activateItem('/contents/opencast');
         PageLayout::setTitle($this->_('Videos'));
+
+        
+        $this->studip_version = $this->getStudIPVersion();
     }
 }

@@ -10,4 +10,16 @@ class PlaylistVideos extends \SimpleORMap
 
         parent::configure($config);
     }
+
+    /**
+     * Get records for a playlist
+     * 
+     * @param int $playlist_id the playlist id
+     * 
+     * @return array the record
+     */
+    public static function findByPlaylist_id($playlist_id)
+    {
+        return self::findBySQL('playlist_id = ?', [$playlist_id]);
+    }
 }

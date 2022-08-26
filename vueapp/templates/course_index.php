@@ -12,6 +12,7 @@
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
         ROUTE      : 'course'
     };
+    <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;
 </script>
 
 <!-- load bundles -->

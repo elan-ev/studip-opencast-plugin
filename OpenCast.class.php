@@ -281,4 +281,18 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     {
         return $otherContainerTypes;
     }
+
+    /**
+     * get the plugin manifest from PluginManager getPluginManifest method
+     *
+     * @return Array $metadata the manifest metadata of this plugin
+     */
+    public static function getPluginManifestInfo()
+    {
+        $plugin_manager = \PluginManager::getInstance();
+        $this_plugin = $plugin_manager->getPluginInfo(__CLASS__);
+        $plugin_path = \get_config('PLUGINS_PATH') . '/' .$this_plugin['path'];
+        $manifest = $plugin_manager->getPluginManifest($plugin_path);
+        return $manifest;
+    }
 }
