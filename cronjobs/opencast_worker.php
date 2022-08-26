@@ -45,19 +45,21 @@ class OpencastWorker extends CronJob
                 $api_client = ApiEventsClient::getInstance($video->config_id);
                 $event = $api_client->getEpisode($video->episode, ['withpublications' => 'true']);
 
-                $video->title       = $event->title;
-                $video->description = $event->description;
-                $video->duration    = $event->duration;
-                $video->publication = json_encode($event->publications);
-
-                if (!$video->token) {
-                    $video->token = bin2hex(random_bytes(8));   // TODO: How to connect this with Providers/Tokens?
+                if ($event) {
+                    $video->title       = $event->title;
+                    $video->description = $event->description;
+                    $video->duration    = $event->duration;
+                    $video->publication = json_encode($event->publications);
+    
+                    if (!$video->token) {
+                        $video->token = bin2hex(random_bytes(8));   // TODO: How to connect this with Providers/Tokens?
+                    }
+    
+                    $video->store();
+    
+                    // send out Notification for video discovery plugins to react
+                    NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
                 }
-
-                $video->store();
-
-                // send out Notification for video discovery plugins to react
-                NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
             }
 
             $task->delete();
