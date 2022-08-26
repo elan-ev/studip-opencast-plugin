@@ -13,6 +13,11 @@ class Playlists extends UPMap
             'assoc_foreign_key' => 'playlist_id',
         ];
 
+        $config['has_many']['videos'] = [
+            'class_name' => 'Opencast\\Models\\PlaylistVideos',
+            'assoc_foreign_key' => 'playlist_id',
+        ];
+
         parent::configure($config);
     }
 
@@ -37,6 +42,7 @@ class Playlists extends UPMap
     {
         $data = $this->toArray();
         unset($data['id']);
+        $data['videos_count'] = count($this->videos);
 
         return $data;
     }
