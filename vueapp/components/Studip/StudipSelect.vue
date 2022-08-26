@@ -1,12 +1,12 @@
 <template>
     <v-select ref="select"
-        @change="updateValue"
+        @input="updateValue"
         v-bind="{...$props, ...$attrs}"
         :calculate-position="withPopper"
         class="studip-v-select"
         append-to-body
     >
-        <template v-for="(index, name) in $scopedSlots" v-slot:[name]="data">
+        <template v-for="(index, name) in $slots" v-slot:[name]="data">
             <slot :name="name" v-bind="data"></slot>
         </template>
     </v-select>
