@@ -32,6 +32,8 @@ class CourseController extends Opencast\Controller
 
         PageLayout::setTitle($this->_('Videos'));
 
+        $this->studip_version = $this->getStudIPVersion();
+
         $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
 }

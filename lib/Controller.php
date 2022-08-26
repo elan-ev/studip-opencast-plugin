@@ -71,4 +71,15 @@ class Controller extends PluginController
         $this->response->add_header('Content-Type', 'application/json');
         $this->render_text(json_encode($data));
     }
+
+    public function getStudIPVersion()
+    {
+        $studip_version = \StudipVersion::getStudipVersion();
+        if (empty($studip_version)) {
+            $manifest = OpenCast::getPluginManifestInfo();
+            $studip_version = isset($manifest["studipMinVersion"]) ? $manifest["studipMinVersion"] : 4.6;
+        }
+
+        return floatval($studip_version);
+    }
 }
