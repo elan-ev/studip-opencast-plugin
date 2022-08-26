@@ -2,8 +2,33 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: {},
+    playlistSearch: '',
+    playlistSort: {
+        field: 'mkdate',
+        order: 'desc',
+        text : 'Datum hochgeladen: Neuste zuerst'
+    },
+    playlistSorts: [
+        {
+            field: 'mkdate',
+            order: 'desc',
+            text : 'Datum hochgeladen: Neuste zuerst'
+        },  {
+            field: 'mkdate',
+            order: 'asc',
+            text : 'Datum hochgeladen: Älteste zuerst'
+        },  {
+            field: 'title',
+            order: 'desc',
+            text : 'Titel: Alphabetisch'
+        }, {
+            field: 'title',
+            order: 'asc',
+            text : 'Titel: Umgekehrt Alphabetisch'
+        }
+    ],
     addPlaylist: false,
-    currentPlaylist: 'all'
+    currentPlaylist: 'all',
 }
 
 const getters = {
@@ -17,7 +42,15 @@ const getters = {
 
     addPlaylist(state) {
         return state.addPlaylist;
-    }
+    },
+
+    playlistSort(state) {
+        return state.playlistSort
+    },
+
+    playlistSorts(state) {
+        return state.playlistSorts
+    },
 }
 
 
@@ -64,7 +97,22 @@ const actions = {
 
     async setCurrentPlaylist(context, token) {
         context.commit("setCurrentPlaylist", token);
-    }
+    },
+
+    async setPlaylistSearch({dispatch, commit}, search) {
+        await commit('setPlaylistSearch', search)
+        dispatch('reloadPlaylists')
+    },
+
+    async setPlaylistSort({dispatch, commit}, sort) {
+        await commit('setPlaylistSort', sort)
+        dispatch('reloadPlaylists')
+    },
+
+    async setPlaylistSearch({dispatch, commit}, search) {
+        await commit('setPlaylistSearch', search)
+        dispatch('reloadPlaylists')
+    },
 }
 
 const mutations = {
@@ -76,14 +124,21 @@ const mutations = {
         }
     },
 
-
     setPlaylistAdd(state, show) {
         state.addPlaylist = show;
     },
 
     setCurrentPlaylist(state, token) {
         state.currentPlaylist = token;
-    }
+    },
+
+    setPlaylistSearch(state, search) {
+        state.playlistSearch = search;
+    },
+
+    setPlaylistSort(state, sort) {
+        state.playlistSort = sort
+    },
 }
 
 

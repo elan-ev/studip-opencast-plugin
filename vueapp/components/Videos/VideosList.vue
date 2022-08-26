@@ -1,5 +1,6 @@
 <template>
     <div>
+        <SearchBar/>
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
@@ -36,12 +37,13 @@ import VideoCard from './VideoCard.vue';
 import EmptyVideoCard from './EmptyVideoCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
+import SearchBar from '@/components/SearchBar.vue'
 
 export default {
     name: "VideosList",
 
     components: {
-        VideoCard, EmptyVideoCard, PaginationButtons, MessageBox
+        VideoCard, EmptyVideoCard, PaginationButtons, MessageBox, SearchBar
     },
 
     computed: {
