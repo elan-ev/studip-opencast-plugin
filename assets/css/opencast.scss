@@ -176,7 +176,6 @@ $episode-background: $light-gray-color-20;
         position: relative;
         overflow: hidden;
         border-color: #ddd;
-        vertical-align: center;
     }
 }
 
@@ -282,7 +281,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     color: #3c434e;
     max-width: 48em;
     padding: 5px;
-    vertical-align: middle;
     width: 100%;
     -webkit-transition: all .3s ease-out;
     transition: all .3s ease-out;

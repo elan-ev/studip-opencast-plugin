@@ -43,7 +43,6 @@
 <script>
 import StudipButton from "@studip/StudipButton";
 import StudipDialog from '@studip/StudipDialog'
-import { dialog } from '@/common/dialog.mixins'
 
 export default {
     name: "PlaylistAddCard",

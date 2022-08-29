@@ -30,6 +30,7 @@ const state = {
     addPlaylist: false,
     currentPlaylist: 'all',
     availableTags: [],
+    playlistCourses: null
 }
 
 const getters = {
@@ -55,6 +56,10 @@ const getters = {
 
     playlistSorts(state) {
         return state.playlistSorts
+    },
+
+    playlistCourses(state) {
+        return state.playlistCourses
     },
 }
 
@@ -89,8 +94,15 @@ const actions = {
     async updateAvailableTags(context) {
         return ApiService.get('tags')
             .then(({ data }) => {
-                context.commit('setAvailableTags',data);
+                context.commit('setAvailableTags', data);
             });
+    },
+
+    async loadPlaylistCourses(context, token) {
+        return ApiService.get('playlists/' + token + '/courses')
+        .then(({ data }) => {
+            context.commit('setPlaylistCourses', data);
+        });
     },
 
     addPlaylistUI({ commit }, show) {
@@ -161,6 +173,10 @@ const mutations = {
 
     setPlaylistSort(state, sort) {
         state.playlistSort = sort
+    },
+
+    setPlaylistCourses(state, courses) {
+        state.playlistCourses = courses
     },
 }
 

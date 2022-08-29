@@ -25,6 +25,13 @@ class Playlists extends UPMap
             'assoc_foreign_key' => 'playlist_id',
         ];
 
+        $config['has_and_belongs_to_many']['courses'] = [
+            'class_name'     => 'Course',
+            'thru_table'     => 'oc_playlist_seminar',
+            'thru_key'       => 'playlist_id',
+            'thru_assoc_key' => 'seminar_id'
+        ];
+
         parent::configure($config);
     }
 

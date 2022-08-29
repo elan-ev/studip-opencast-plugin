@@ -46,6 +46,7 @@
                         v-for="playlist in playlists"
                         v-bind:playlist="playlist"
                         v-bind:key="playlist.token"
+                        @addToCourse="addToCourse"
                     ></PlaylistCard>
                 </tbody>
             </table>
@@ -61,6 +62,13 @@
                 @cancel="cancelPlaylistAdd"
             />
         </div>
+
+        <PlaylistAddToCourseDialog :title="playlistCourse.title"
+            :playlist="playlistCourse"
+            @key="playlistCourse.token"
+            v-if="playlistCourse"
+            @cancel="playlistCourse = null"
+        />
     </div>
 </template>
 
@@ -70,14 +78,22 @@ import PlaylistCard from '../components/Playlists/PlaylistCard.vue';
 import EmptyPlaylistCard from '../components/Playlists/EmptyPlaylistCard.vue';
 import PlaylistAddCard from '../components/Playlists/PlaylistAddCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
+import PlaylistAddToCourseDialog from '@/components/Playlists/PlaylistAddToCourseDialog.vue'
 import MessageBox from '@/components/MessageBox.vue';
 
 export default {
     name: "Playlists",
 
     components: {
-        PlaylistCard, EmptyPlaylistCard,
-        PaginationButtons, MessageBox, PlaylistAddCard
+        PlaylistCard,       EmptyPlaylistCard,
+        PaginationButtons,  MessageBox,
+        PlaylistAddCard,    PlaylistAddToCourseDialog
+    },
+
+    data() {
+        return {
+            playlistCourse: null
+        }
     },
 
     computed: {
@@ -112,6 +128,10 @@ export default {
 
         createPlaylist(playlist) {
             this.$store.dispatch('addPlaylist', playlist);
+        },
+
+        addToCourse(playlist) {
+            this.playlistCourse = playlist;
         }
     },
 

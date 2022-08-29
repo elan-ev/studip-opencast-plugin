@@ -57,6 +57,8 @@ class RouteMap
         $this->app->put('/playlists/{token}/user', Routes\Playlist\PlaylistAddUser::class);
         $this->app->delete('/playlists/{token}/user/{username}', Routes\Playlist\PlaylistRemoveUser::class);
 
+        $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);      // TODO: add this route to the API scheme
+
         // Course routes
         $this->app->get('/courses/{course_id}/playlist', Routes\Course\CourseListPlaylist::class);
         $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
@@ -73,7 +75,7 @@ class RouteMap
         $this->app->put('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleUpdate::class);
         $this->app->delete('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleDelete::class);
 
-        $this->app->get('/tags', Routes\Tags\TagListForUser::class);
+        $this->app->get('/tags', Routes\Tags\TagListForUser::class);    // TODO: add this route to the API scheme
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);

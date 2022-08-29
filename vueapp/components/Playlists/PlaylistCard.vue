@@ -35,7 +35,9 @@
         </td>
 
         <td>
-           <StudipActionMenu :items="menuItems"/>
+           <StudipActionMenu :items="menuItems"
+                @addToCourse="addToCourse(this.playlist)"
+           />
         </td>
     </tr>
 </template>
@@ -47,7 +49,6 @@ import StudipButton from '@/components/Studip/StudipButton'
 import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue'
 import Tag from '@/components/Tag.vue'
-
 
 export default {
     name: "PlaylistCard",
@@ -73,7 +74,7 @@ export default {
                 },
                 {
                     id: 2,
-                    label: this.$gettext('Zu Kurs hinzufügen'),
+                    label: this.$gettext('Verknüpfte Kurse'),
                     icon: 'add',
                     emit: 'addToCourse'
                 },
@@ -102,6 +103,10 @@ export default {
             window.scrollTo(0,0);
             this.$store.dispatch('loadVideos');
             this.$router.push('/contents/playlistvideos');
+        },
+
+        addToCourse(playlist) {
+            this.$emit('addToCourse', playlist);
         }
     }
 }
