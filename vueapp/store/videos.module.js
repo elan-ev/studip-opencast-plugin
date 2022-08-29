@@ -64,6 +64,7 @@ const getters = {
 const actions = {
     async loadVideos({ commit, state, dispatch, rootState }) {
         let playlist_token = rootState.playlists.currentPlaylist
+        let $cid = rootState.opencast.cid;
 
         dispatch('updateLoading', true);
 
@@ -78,6 +79,8 @@ const actions = {
                 'value': playlist_token
                 }
             ]));
+        } else if ($cid) {
+            params.append('cid', $cid);
         }
 
         /*
@@ -115,12 +118,12 @@ const actions = {
 
     async setVideoSort({dispatch, commit}, sort) {
         await commit('setVideoSort', sort)
-        dispatch('reloadVideos')
+        dispatch('loadVideos')
     },
 
     async setVideoSearch({dispatch, commit}, search) {
         await commit('setVideoSearch', search)
-        dispatch('reloadVideos')
+        dispatch('loadVideos')
     },
 
     setPage({commit}, page) {
