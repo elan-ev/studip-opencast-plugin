@@ -94,9 +94,10 @@ class NewScheme extends Migration
 
         $sql[] = "CREATE TABLE `oc_tags` (
             `id` int NOT NULL AUTO_INCREMENT,
-            `tag` varchar(255),
+            `user_id` VARCHAR(32) NOT NULL,
+            `tag` varchar(255) NOT NULL,
             PRIMARY KEY (`id`),
-            KEY `U.1` (`tag`)
+            KEY `U.1` (`tag`, `user_id`)
           );
         ";
 

@@ -38,13 +38,19 @@ class PlaylistUpdate extends OpencastController
         PlaylistTags::deleteByPlaylist_id($playlist->id);
 
         // readd the new ones
-        foreach ($json['tags'] as $name) {
+        foreach ($json['tags'] as $new_tag) {
             // check if tag already exists in oc_tags
-            $tag = Tags::findOneByTag($name);
+
+            if ($new_tag['id']) {
+                $tag = Tags::find($new_tag['id']);
+            } else {
+                $tag = Tags::findOneBySQL('tag = ? AND user_id = ?', [$new_tag['tag'], $user->id]);
+            }
 
             if (empty($tag)) {
                 $tag = new Tags();
-                $tag->tag = $name;
+                $tag->tag     = $new_tag['tag'];
+                $tag->user_id = $user->id;
                 $tag->store();
             }
 

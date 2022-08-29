@@ -20,30 +20,14 @@ class TagListForUser extends OpencastController
     {
         global $user;
 
-        return $this->createResponse([
-            '1' => 'PHP',
-            '2' => 'VueJS'
-        ], $response->withStatus(200));
+        $tags = Tags::findByUser_id($user->id);
 
-        /*
-        $playlists = Playlists::findByUser_id($user->id);
+        $ret = [];
 
-        foreach ($playlists as $playlist) {
-            // check what permissions the current user has on the playlist
-            foreach($playlist->perms as $perm) {
-                if ($perm->perm == 'owner') {
-
-                }
-            }
+        foreach ($tags as $tag) {
+            $ret[] = $tag->toArray();
         }
-        $ret_playlist = $playlist->toSanitizedArray();
-        $ret_playlist['users'] = [[
-            'user_id'  => $perm['user_id'],
-            'fullname' => \get_fullname($perm['user_id']),
-            'perm'     => $perm['perm']
-        ]];
 
-        return $this->createResponse($ret_playlist, $response->withStatus(200));
-        */
+        return $this->createResponse($ret, $response->withStatus(200));
     }
 }

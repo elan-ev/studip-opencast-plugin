@@ -1,18 +1,30 @@
 <template>
     <span>
-        <span :class="css" v-if="visibility == 'internal'">
+        <span :class="css" v-if="visibility == 'internal'"
+            :title="$gettext('Diese Liste sehen nur Veranstaltungsnutzer/Innen, sofern dort freigegeben')"
+        >
             <StudipIcon shape="visibility-invisible" />
-            {{ $gettext('Intern') }}
+            <span v-if="showText">
+                {{ $gettext('Intern') }}
+            </span>
         </span>
 
-        <span :class="css" v-if="visibility == 'free'">
+        <span :class="css" v-if="visibility == 'free'"
+            :title="$gettext('Auf diese Liste kann jede Person zugreifen, die den dazugehörigen Freigabelink kennt')"
+        >
             <StudipIcon shape="visibility-visible" />
-            {{ $gettext('Nicht gelistet') }}
+            <span v-if="showText">
+                {{ $gettext('Nicht gelistet') }}
+            </span>
         </span>
 
-        <span :class="css" v-if="visibility == 'public'">
+        <span :class="css" v-if="visibility == 'public'"
+            :title="$gettext('Auf diese Liste kann jede Person zugreifen und die List wird u.U. auch auf externen Plattformen einsehbar.')"
+        >
             <StudipIcon shape="globe" />
-            {{ $gettext('Öffentlich') }}
+            <span v-if="showText">
+                {{ $gettext('Öffentlich') }}
+            </span>
         </span>
     </span>
 </template>
@@ -23,7 +35,14 @@ import StudipIcon from '@studip/StudipIcon.vue';
 export default {
     name: 'PlaylistVisibility',
 
-    props: ['css', 'visibility'],
+    props: {
+        css: String,
+        visibility: String,
+        showText: {
+            type: Boolean,
+            default: true
+        }
+    },
 
     components: {
         StudipIcon

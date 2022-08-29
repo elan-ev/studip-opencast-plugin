@@ -8,6 +8,10 @@
             <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token, playlist: playlist } }">
                 {{ playlist.title }}
             </router-link>
+
+            <div class="oc--tags">
+            <Tag v-for="tag in playlist.tags" v-bind:key="tag.id" :tag="tag.tag" />
+            </div>
         </td>
 
         <td></td>
@@ -42,14 +46,16 @@ import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
 import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue'
+import Tag from '@/components/Tag.vue'
+
 
 export default {
     name: "PlaylistCard",
 
     components: {
-        StudipButton, ConfirmDialog,
-        EmptyPlaylistCard, StudipActionMenu,
-        PlaylistVisibility
+        StudipButton,           ConfirmDialog,
+        EmptyPlaylistCard,      StudipActionMenu,
+        PlaylistVisibility,     Tag
     },
 
     props: {

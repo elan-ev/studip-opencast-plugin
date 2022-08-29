@@ -1,10 +1,11 @@
 <template>
     <div v-if="playlist">
         <h2 v-if="!editmode">
+            <PlaylistVisibility
+                :showText="false" :visibility="playlist.visibility"/>
+
             {{ playlist.title }}
             <StudipIcon shape="edit" role="clickable" @click="editPlaylist"/>
-
-            <PlaylistVisibility css="oc--playlist-visibility" :visibility="playlist.visibility"/>
         </h2>
 
          <h2 v-if="editmode">
@@ -31,7 +32,7 @@
             </StudipButton>
         </h2>
 
-        <PlaylistTags :playlist="playlist" @update="updateTags"/>
+        <PlaylistTags :playlist="playlist" @update="updateTags" />
     </div>
 </template>
 
@@ -77,8 +78,20 @@ export default {
 
     methods: {
         updateTags() {
-            console.log('updateTags');
-            this.$store.dispatch('updatePlaylist', this.playlist);
+            this.fixTags();
+            this.$store.dispatch('updatePlaylist', this.playlist).then(() => {
+                this.$store.dispatch('updateAvailableTags', this.playlist);
+            });
+        },
+
+        fixTags() {
+            for (let i = 0; i < this.playlist.tags.length; i++) {
+                if (!this.playlist.tags[i].tag) {
+                    this.playlist.tags[i] = {
+                        tag: this.playlist.tags[i]
+                    }
+                }
+            }
         },
 
         editPlaylist() {

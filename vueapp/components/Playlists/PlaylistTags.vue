@@ -1,14 +1,30 @@
 <template>
     <div>
-        <studip-select :options="availableTags" v-model="playlist.tags" multiple taggable push-tags @option:selected="$emit('update');">
+        <studip-select :options="availableTags" v-model="playlist.tags"
+            multiple taggable
+            label="tag"
+            @option:selected="$emit('update');"
+            @option:deselected="$emit('update');"
+        >
+            <template #list-header>
+                <li style="text-align: center">
+                    <b>{{ $gettext('Tags') }}</b>
+                </li>
+            </template>
             <template #no-options="{ search, searching, loading }">
-                <translate>Es steht keine Auswahl zur Verfügung.</translate>
+                {{ $gettext('Es gibt bisher keine Tags, schreiben sie einfach in das Suchfeld ihren ersten eigenen Tag, dieser wird dann automatisch erstellt!')}}
             </template>
             <template #selected-option="option">
-                <studip-icon shape="tag" role="info"/> <span class="vs__option-with-icon">{{option.tag}}</span>
+                <studip-icon shape="tag" role="info"/>
+                <span class="vs__option-with-icon">
+                    {{ option.tag }}
+                </span>
             </template>
             <template #option="option">
-                <studip-icon shape="tag" role="info"/> <span class="vs__option-with-icon">{{option.tag}}</span>
+                <studip-icon shape="tag" role="info"/>
+                <span class="vs__option-with-icon">
+                    {{ option.tag }}
+                </span>
             </template>
         </studip-select>
     </div>

@@ -479,7 +479,34 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
 .oc--playlist-visibility {
     display: inline-block;
-    margin-left: 2em;
+
+    img {
+        vertical-align: middle;
+    }
+
+    span {
+        display: inline-block;
+        margin-left: 4px;
+        margin-top: 2px;
+        vertical-align: middle;
+    }
+}
+
+.oc--tags {
+
+    & > span {
+        display: inline-block;
+        align-items: center;
+        border-radius: 3px;
+        margin-right: 5px;
+        background-color: $light-gray-color-20;
+        padding-right: 4px;
+
+        img {
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+    }
 }
 
 /* * * * * * * * * * * * * * * * * */
@@ -1154,7 +1181,7 @@ iframe.oc_courseware {
 
 /*SChedule Loading*/
 .oc--schedule-loading {
-   
+
     .oc--loading-container {
         span {
             background-color: var(--base-color, #1e3e70);
