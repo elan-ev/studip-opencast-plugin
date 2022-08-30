@@ -9,7 +9,8 @@ class Filter
     private
         $offset,
         $limit,
-        $filters = [];
+        $filters = [],
+        $course_id;
 
     private static $ALLOWED_FILTERS = [
         'text', 'playlist', 'tag'
@@ -29,6 +30,10 @@ class Filter
             $this->limit = $params['limit'];
         } else {
             $this->limit = 20;
+        }
+
+        if (isset($params['cid']) && !empty($params['cid'])) {
+            $this->course_id = $params['cid'];
         }
 
         if (!empty($params['filters'])) {
@@ -57,5 +62,10 @@ class Filter
     public function getFilters()
     {
         return $this->filters;
+    }
+
+    public function getCourseId()
+    {
+        return $this->course_id;
     }
 }

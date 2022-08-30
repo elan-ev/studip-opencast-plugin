@@ -22,7 +22,7 @@ class Videos extends UPMap
         parent::configure($config);
     }
 
-    public function findByFilter($filters)
+    public static function findByFilter($filters)
     {
 
         global $user;
@@ -82,6 +82,11 @@ class Videos extends UPMap
         if (!empty($playlist_ids)) {
             $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
             $where .= ' AND opv.video_id = id';
+        }
+
+        if ($course_id = $filters->getCourseId()) {
+            $sql .= ' INNER JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id)';
+            $params[':seminar_id'] = $course_id;
         }
 
         $sql .= $where;
