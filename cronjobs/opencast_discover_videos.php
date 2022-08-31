@@ -52,7 +52,7 @@ class OpencastDiscoverVideos extends CronJob
             $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
 
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
-                echo 'found new video in Opencast: ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
+                echo 'found new video in Opencasti #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
                 $video = new Videos;
 
                 $video->setData([
