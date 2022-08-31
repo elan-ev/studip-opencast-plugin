@@ -62,7 +62,7 @@ const getters = {
 }
 
 const actions = {
-    async loadVideos({ commit, state, dispatch, rootState }) {
+    async loadVideos({ commit, state, dispatch, rootState }, filters) {
         let playlist_token = rootState.playlists.currentPlaylist
         let $cid = rootState.opencast.cid;
 
@@ -74,28 +74,15 @@ const actions = {
         params.append('limit', state.limit);
 
         if (playlist_token !== 'all') {
-            params.append('filters', JSON.stringify([{
+            filters.append({
                 'type': 'playlist',
                 'value': playlist_token
-                }
-            ]));
+            });
         } else if ($cid) {
             params.append('cid', $cid);
         }
 
-        /*
-        params.append('filters', JSON.stringify([{
-                'type': 'text',
-                'value': 'test'
-            }, {
-                'type': 'tag',
-                'value': 'php'
-            }, {
-                'type': 'tag',
-                'value': 'mathematik'
-            }
-        ]));
-        */
+        params.append('filters', JSON.stringify(filters));
 
         return ApiService.get('videos', { params })
             .then(({ data }) => {
@@ -133,20 +120,20 @@ const actions = {
 }
 
 const mutations = {
-    addVideos(state, payload){
+    addVideos(state, payload) {
         let videos = payload.videos;
         let playlist_token = payload.playlist_token;
 
         if (state.videos[playlist_token] === undefined) {
             state.videos[playlist_token] = {}
         }
+
         if (state.videos[playlist_token][state.paging.currPage] === undefined) {
             state.videos[playlist_token][state.paging.currPage] = {};
         }
-        for (let i = 0; i < videos.length; i++) {
-            let video = videos[i];
-            state.videos[playlist_token][state.paging.currPage][video.token] = video;
-        }
+
+        state.videos[playlist_token][state.paging.currPage] = videos;
+
     },
 
     setVideoSort(state, sort) {
@@ -155,7 +142,7 @@ const mutations = {
 
     setPage(state, page) {
         if (page >= 0 && page <= state.paging.lastPage) {
-            state.paging.currPage = page
+            state.paging.currPage = page;
         }
     },
 

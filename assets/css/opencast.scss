@@ -233,31 +233,118 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
-/* * * * * * * * * * * * * * * * * * * * */
-/*   E P I S O D E   S E A R C H B A R   */
-/* * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*   M U L T I   P U R P O S E   S E A R C H B A R   */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 .oc--searchbar {
-    input[type=text] {
-        padding: 8px;
-        font-size: 16px;
-        border: 1px solid $light-gray-color-40;
+    clear: both;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+
+    .oc--searchbar-container {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
         float: left;
-        background: $dark-gray-color-5;
+        margin-right: 5px;
+
+        display: flex;
+        flex-direction: row;
+
+        li {
+            padding: none;
+            white-space: nowrap;
+        }
+
+        border: 1px solid $light-gray-color-40;
     }
 
+    .oc--searchbar-input {
+        padding: 8px;
+        width: 100%;
+
+        input {
+            &:focus {
+                outline: none;
+            }
+
+            padding: 0px;
+            font-size: 16px;
+            border: none;
+            background: $dark-gray-color-5;
+            width: 100%;
+        }
+    }
+
+    select.oc--searchbar-sorter {
+        height: 40px;
+    }
+
+    .oc--tokenselector {
+        position: absolute;
+        z-index: 10;
+        border: 1px solid $light-gray-color-40;
+        background-color: $dark-gray-color-5;
+        margin-top: 5px;
+
+        ul, li {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: block;
+            padding: 0.5em;
+            cursor: pointer;
+
+            &:hover {
+                background-color: $light-gray-color-20;
+            }
+        }
+    }
+
+    .oc--searchbar-token {
+        margin: 3px;
+        padding: 5px;
+        border-radius: 3px;
+        border: 1px solid $light-gray-color-40;
+        background-color: $dark-gray-color-5;
+        display: inline;
+
+        span {
+            display: inline-block;
+            vertical-align: middle;
+
+            &.oc--shorten-token {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                max-width: 60px;
+            }
+        }
+
+        .oc--remove-filter {
+            vertical-align: middle;
+        }
+    }
+
+    /*
     button.submit {
         padding: 8px;
         background: dodgerblue;
         color: white;
         font-size: 16px;
         border: 1px solid $light-gray-color-40;
-        border-left: none; /* Prevent double borders */
+        border-left: none; // Prevent double borders
         cursor: pointer;
         &:hover {
             opacity: 0.9;
         }
     }
+    */
 }
 
 /* * * * * * * * * * * * * * * * * */
@@ -410,7 +497,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         }
     }
 }
-
 
 /* * * * * * * * * * * * * * * * * * * * * */
 /*   S C R E E N S I Z E   C L A S S E S   */

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <SearchBar/>
+        <SearchBar @search="doSearch"/>
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
@@ -66,6 +66,11 @@ export default {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
             await this.$store.dispatch('loadVideos')
+        },
+
+        doSearch(filters) {
+            console.log('video list update initiated', filters);
+            this.$store.dispatch('loadVideos', filters)
         }
     },
 
