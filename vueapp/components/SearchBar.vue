@@ -16,7 +16,7 @@
             </li>
             <li class="oc--searchbar-input">
                 <input type="text" ref="searchbar"
-                    v-on:keyup.enter="setSearch"
+                    v-on:keyup.enter="doSearch"
                     v-model="inputSearch" placeholder="Suche..."
                     @focus="showTokenSelector"
                     @blur="delayedHideTokenSelector"
@@ -63,8 +63,6 @@
                 </li>
             </ul>
         </div>
-
-        {{ outsideClick }}
     </div>
 </template>
 
@@ -93,9 +91,7 @@ export default {
             tokenSelectorPos: {
                 top: 0,
                 left: 0
-            },
-            outsideClick: false
-        }
+            }        }
     },
 
     computed: {
@@ -110,12 +106,7 @@ export default {
     },
 
     methods: {
-        setSearch() {
-            this.doSearch()
-        },
-
         setSort() {
-            console.log(this.sortRoute)
             this.$store.dispatch(this.sortRoute, this.inputSort)
         },
 
@@ -142,7 +133,6 @@ export default {
             let view = this;
 
             window.setTimeout(() => {
-                console.log(view.token);
                 if (view.token.type == null) {
                     view.hideTokenSelector();
                 }
@@ -154,7 +144,6 @@ export default {
         },
 
         selectToken(content) {
-            console.log('selectToken', content)
             if (this.tokenState == 'main')
             {
                 if (content == 'tag') {
@@ -208,7 +197,6 @@ export default {
                 });
             }
 
-            console.log('doSearch', filter);
             this.$emit('search', filter)
         }
 
