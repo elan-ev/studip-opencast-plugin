@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../bootstrap.php');
+
 use Opencast\Models\Videos;
 use Opencast\Models\VideoSync;
 
