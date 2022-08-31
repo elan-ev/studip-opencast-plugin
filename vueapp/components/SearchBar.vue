@@ -16,9 +16,11 @@
             </li>
             <li class="oc--searchbar-input">
                 <input type="text" ref="searchbar"
+                    v-on:keyup="hideTokenSelector"
                     v-on:keyup.enter="doSearch"
                     v-model="inputSearch" placeholder="Suche..."
                     @focus="showTokenSelector"
+                    @click="showTokenSelector"
                     @blur="delayedHideTokenSelector"
                     @submit="doSearch"
                 />
