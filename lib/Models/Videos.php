@@ -97,6 +97,10 @@ class Videos extends UPMap
         $stmt->execute($params);
         $count = $stmt->fetchColumn();
 
+        // TODO implement custom order
+        [$field, $order] = explode("_", $filters->getOrder());
+        $sql .= ' ORDER BY oc_video.' . $field . ' ' . $order;
+
         $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
 
         return [

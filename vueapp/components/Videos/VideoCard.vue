@@ -49,6 +49,12 @@
                     />
                 </div>
             </div>
+            <button :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')">
+                <studip-icon shape="arr_2up" role="navigation" />
+            </button>
+            <button :hidden="!canMoveDown" @click="$emit('moveDown', event.token)" :title="$gettext('Element nach unten verschieben')">
+                <studip-icon shape="arr_2down" role="navigation" />
+            </button>
         </li>
         <EmptyVideoCard v-else/>
     </div>
@@ -58,6 +64,7 @@
 import EmptyVideoCard from "@/components/Videos/EmptyVideoCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
+import StudipIcon from '@/components/Studip/StudipIcon'
 
 
 export default {
@@ -65,11 +72,19 @@ export default {
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyVideoCard,
+        EmptyVideoCard, StudipIcon
     },
 
     props: {
-        event: Object
+        event: Object,
+        canMoveUp: {
+            type: Boolean,
+            default: false
+        },
+        canMoveDown: {
+            type: Boolean,
+            default: false
+        }
     },
 
     data() {

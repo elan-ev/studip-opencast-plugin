@@ -22,9 +22,13 @@
 
             <ul class="oc--episode-list" v-else>
                 <VideoCard
-                    v-for="event in visVideos"
+                    v-for="(event, index) in visVideos"
                     v-bind:event="event"
                     v-bind:key="event.id"
+                    :canMoveUp="canMoveUp(index)"
+                    :canMoveDown="canMoveDown(index)"
+                    @moveUp="moveUpVideoCard"
+                    @moveDown="moveDownVideoCard"
                 ></VideoCard>
             </ul>
         </div>
@@ -49,6 +53,7 @@ export default {
     computed: {
         ...mapGetters([
             "videos",
+            "videoSortMode",
             "currentPlaylist",
             "paging",
             "loading"]),
@@ -71,7 +76,52 @@ export default {
         doSearch(filters) {
             console.log('video list update initiated', filters);
             this.$store.dispatch('loadVideos', filters)
-        }
+        },
+
+        canMoveUp(index) {
+            return this.videoSortMode && (this.paging.currPage !== 0 || index !== 0);
+        },
+
+        canMoveDown(index) {
+            return this.videoSortMode && (index !== this.visVideos.length - 1 || !(this.paging.currPage !== 0));
+        },
+
+        moveUpVideoCard(token) {
+            let sortVideos = this.visVideos;
+            const index = sortVideos.findIndex(video => {
+                return video.token === token;
+            });
+
+            if (this.canMoveUp(index)) {
+                if (index !== 0) {
+                    sortVideos.splice(index - 1, 0, sortVideos.splice(index, 1)[0]);
+                }
+                else {
+                    let length = this.videos[this.currentPlaylist][this.paging.currPage-1].length;
+                    let tmp = sortVideos[index];
+                    sortVideos[index] = this.videos[this.currentPlaylist][this.paging.currPage-1][length-1];
+                    this.videos[this.currentPlaylist][this.paging.currPage-1][length-1] = tmp;
+                }
+            }
+        },
+
+        moveDownVideoCard(token) {
+            let sortVideos = this.visVideos;
+            const index = sortVideos.findIndex(video => {
+                return video.token === token;
+            });
+
+            if (this.canMoveDown(index)) {
+                if (index !== this.visVideos.length - 1) {
+                    sortVideos.splice(index + 1, 0, sortVideos.splice(index, 1)[0]);
+                }
+                else {
+                    let tmp = sortVideos[index];
+                    sortVideos[index] = this.videos[this.currentPlaylist][this.paging.currPage+1][0];
+                    this.videos[this.currentPlaylist][this.paging.currPage+1][0] = tmp;
+                }
+            }
+        },
     },
 
     mounted() {

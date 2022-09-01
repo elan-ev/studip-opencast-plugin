@@ -19,14 +19,15 @@ const state = {
             text : 'Datum hochgeladen: Älteste zuerst'
         },  {
             field: 'title',
-            order: 'desc',
+            order: 'asc',
             text : 'Titel: Alphabetisch'
         }, {
             field: 'title',
-            order: 'asc',
+            order: 'desc',
             text : 'Titel: Umgekehrt Alphabetisch'
         }
     ],
+    videoSortMode: false,
     limit: 5,
     paging: {
         currPage: 0,
@@ -56,6 +57,10 @@ const getters = {
         return state.videoSorts
     },
 
+    videoSortMode(state) {
+        return state.videoSortMode
+    },
+
     search(state) {
         return state.search
     }
@@ -66,12 +71,15 @@ const actions = {
         let playlist_token = rootState.playlists.currentPlaylist
         let $cid = rootState.opencast.cid;
 
+        let preload = state.videoSortMode
+
         dispatch('updateLoading', true);
 
         const params = new URLSearchParams();
 
+        params.append('order', state.videoSort.field + "_" + state.videoSort.order)
         params.append('offset', state.paging.currPage * state.limit);
-        params.append('limit', state.limit);
+        preload ? params.append('limit', state.limit*2) : params.append('limit', state.limit);
 
         if (playlist_token !== 'all') {
             filters.append({
@@ -117,6 +125,9 @@ const actions = {
         commit('setPage', page);
     },
 
+    setVideoSortMode({commit}, mode) {
+        commit('setVideoSortMode', mode);
+    }
 }
 
 const mutations = {
@@ -127,17 +138,19 @@ const mutations = {
         if (state.videos[playlist_token] === undefined) {
             state.videos[playlist_token] = {}
         }
-
-        if (state.videos[playlist_token][state.paging.currPage] === undefined) {
-            state.videos[playlist_token][state.paging.currPage] = {};
+        for (let i=0; i<videos.length/state.limit; i++) {
+            if(!state.videoSortMode || state.videos[playlist_token][state.paging.currPage+i] === undefined) {
+                state.videos[playlist_token][state.paging.currPage+i] = videos.slice(i*state.limit, (i+1)*state.limit);
+            }
         }
-
-        state.videos[playlist_token][state.paging.currPage] = videos;
-
     },
 
     setVideoSort(state, sort) {
         state.videoSort = sort
+    },
+
+    setVideoSortMode(state, mode) {
+        state.videoSortMode = mode
     },
 
     setPage(state, page) {
@@ -153,7 +166,7 @@ const mutations = {
     updatePaging(state, paging) {
         paging.lastPage = (paging.items == state.limit) ? 0 : Math.floor((paging.items / state.limit));
         state.paging = paging;
-    }
+    },
 }
 
 

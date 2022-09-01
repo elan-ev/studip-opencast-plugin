@@ -38,9 +38,11 @@
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Video Aufnehmen
                 </li>
-                <li @click="createPlaylist" v-if="fragment == 'playlists'">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Wiedergabeliste anlegen
+                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit'">
+                    <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                    Videos Sortieren
+                </li>
+                <li @click="true" v-if="fragment == 'edit'">
                 </li>
             </ul>
         </div>
@@ -56,7 +58,7 @@ export default {
         StudipIcon
     },
 
-    emits: ['uploadVideo', 'recordVideo'],
+    emits: ['uploadVideo', 'recordVideo', 'sortVideos'],
 
     watch: {
         $route(to) {

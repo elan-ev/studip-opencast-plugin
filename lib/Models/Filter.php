@@ -9,11 +9,16 @@ class Filter
     private
         $offset,
         $limit,
+        $order,
         $filters = [],
         $course_id;
+    
+    private static $ALLOWED_ORDERS = [
+        'mkdate_desc', 'mkdate_asc', 'title_desc', 'title_asc', 'custom_desc', 'custom_asc'
+    ];
 
     private static $ALLOWED_FILTERS = [
-        'text', 'playlist', 'tag'
+        'text', 'playlist', 'tag', 'order'
     ];
 
     public function __construct(Request $request)
@@ -30,6 +35,12 @@ class Filter
             $this->limit = $params['limit'];
         } else {
             $this->limit = 20;
+        }
+
+        if (!empty($params['order']) && in_array($params['order'], self::$ALLOWED_ORDERS)) {
+            $this->order = $params['order'];
+        } else {
+            $this->order = $ALLOWED_ORDERS[0];
         }
 
         if (isset($params['cid']) && !empty($params['cid'])) {
@@ -57,6 +68,11 @@ class Filter
     public function getLimit()
     {
         return $this->limit;
+    }
+
+    public function getOrder()
+    {
+        return $this->order;
     }
 
     public function getFilters()
