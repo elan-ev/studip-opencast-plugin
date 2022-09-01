@@ -38,9 +38,17 @@
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Video Aufnehmen
                 </li>
-                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit'">
+                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     Videos Sortieren
+                </li>
+                <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
+                    <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                    Sortierung Speichern
+                </li>
+                <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
+                    <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                    Sortierung Abbrechen
                 </li>
                 <li @click="true" v-if="fragment == 'edit'">
                 </li>
@@ -50,6 +58,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
@@ -58,7 +68,7 @@ export default {
         StudipIcon
     },
 
-    emits: ['uploadVideo', 'recordVideo', 'sortVideos'],
+    emits: ['uploadVideo', 'recordVideo', 'sortVideos', 'saveSortVideo', 'cancelSortVideo'],
 
     watch: {
         $route(to) {
@@ -75,7 +85,11 @@ export default {
     computed: {
         fragment() {
             return this.$route.name;
-        }
+        },
+
+        ...mapGetters([
+            'videoSortMode'
+        ]),
     },
 
     methods: {

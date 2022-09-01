@@ -71,6 +71,7 @@ const actions = {
         let playlist_token = rootState.playlists.currentPlaylist
         let $cid = rootState.opencast.cid;
 
+        let page_from = state.paging.currPage
         let preload = state.videoSortMode
 
         dispatch('updateLoading', true);
@@ -78,8 +79,19 @@ const actions = {
         const params = new URLSearchParams();
 
         params.append('order', state.videoSort.field + "_" + state.videoSort.order)
-        params.append('offset', state.paging.currPage * state.limit);
-        preload ? params.append('limit', state.limit*2) : params.append('limit', state.limit);
+        params.append('offset', state.paging.currPage * state.limit)
+        
+        if (preload) {
+            if (state.paging.currPage > 0) {
+                page_from--
+                params.append('limit', state.limit*3)
+            }
+            else {
+                params.append('limit', state.limit*2)
+            }
+        } else {
+            params.append('limit', state.limit);
+        }
 
         if (playlist_token !== 'all') {
             filters.append({
@@ -94,7 +106,7 @@ const actions = {
 
         return ApiService.get('videos', { params })
             .then(({ data }) => {
-                commit('addVideos', {'videos': data.videos, 'playlist_token': playlist_token});
+                commit('addVideos', {'videos': data.videos, 'playlist_token': playlist_token, 'page_from': page_from});
 
                 if (data.count) {
                     commit('updatePaging', {
@@ -134,13 +146,14 @@ const mutations = {
     addVideos(state, payload) {
         let videos = payload.videos;
         let playlist_token = payload.playlist_token;
+        let page_from = payload.page_from;
 
         if (state.videos[playlist_token] === undefined) {
             state.videos[playlist_token] = {}
         }
         for (let i=0; i<videos.length/state.limit; i++) {
-            if(!state.videoSortMode || state.videos[playlist_token][state.paging.currPage+i] === undefined) {
-                state.videos[playlist_token][state.paging.currPage+i] = videos.slice(i*state.limit, (i+1)*state.limit);
+            if(!state.videoSortMode || state.videos[playlist_token][page_from+i] === undefined) {
+                state.videos[playlist_token][page_from+i] = videos.slice(i*state.limit, (i+1)*state.limit);
             }
         }
     },

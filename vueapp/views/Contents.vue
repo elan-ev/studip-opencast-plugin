@@ -3,7 +3,9 @@
         <Teleport to="#layout-sidebar > section.sidebar">
             <VideosSidebar 
                 @uploadVideo="uploadDialog = true"
-                @sortVideo="sortDialog = true">
+                @sortVideo="enableSortMode"
+                @saveSortVideo="saveSort"
+                @cancelSortVideo="cancelSort">
             </VideosSidebar>
         </Teleport>
 
@@ -13,11 +15,6 @@
             :currentUser="currentUser"
         />
 
-        <VideoSort v-if="sortDialog"
-            @done="sortDialog = false"
-            @cancel="sortDialog = false"
-        />
-
         <router-view></router-view>
     </div>
 </template>
@@ -25,13 +22,12 @@
 <script>
 import VideosSidebar from "@/components/Videos/VideosSidebar";
 import VideoUpload from "@/components/Videos/VideoUpload";
-import VideoSort from "@/components/Videos/VideoSort";
 import { mapGetters } from "vuex";
 
 export default {
     name: "Contents",
     components: {
-        VideosSidebar, VideoUpload, VideoSort
+        VideosSidebar, VideoUpload
     },
 
     computed: {
@@ -42,6 +38,24 @@ export default {
         return {
             uploadDialog: false,
             sortDialog: false
+        }
+    },
+
+    methods: {
+        enableSortMode() {
+            this.$store.dispatch('setVideoSortMode', true)
+            this.$store.dispatch('loadVideos')
+        },
+
+        saveSort() {
+            // TODO save sorting
+            this.$store.dispatch('setVideoSortMode', false)
+            this.$store.dispatch('loadVideos')
+        },
+
+        cancelSort() {
+            this.$store.dispatch('setVideoSortMode', false)
+            this.$store.dispatch('loadVideos')
         }
     },
 

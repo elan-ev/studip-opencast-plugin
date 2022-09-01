@@ -33,6 +33,8 @@
         </h2>
 
         <PlaylistTags :playlist="playlist" @update="updateTags" />
+
+        <VideosList/>
     </div>
 </template>
 
@@ -42,6 +44,7 @@ import StudipButton from '@studip/StudipButton.vue';
 
 import PlaylistTags from '@/components/Playlists/PlaylistTags.vue';
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue';
+import VideosList from "@/components/Videos/VideosList";
 
 import { mapGetters } from "vuex";
 
@@ -52,7 +55,8 @@ export default {
 
     components: {
         StudipIcon,     StudipButton,
-        PlaylistTags,   PlaylistVisibility
+        PlaylistTags,   PlaylistVisibility,
+        VideosList
     },
 
     data() {
@@ -63,7 +67,9 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlists']),
+        ...mapGetters([
+            'playlists',
+        ]),
 
         playlist() {
             return this.playlists[this.token];

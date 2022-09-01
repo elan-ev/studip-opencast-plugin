@@ -1,6 +1,6 @@
 <template>
     <div>
-        <SearchBar @search="doSearch"/>
+        <SearchBar @search="doSearch" v-if="!videoSortMode"/>
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
