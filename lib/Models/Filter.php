@@ -40,7 +40,7 @@ class Filter
         if (!empty($params['order']) && in_array($params['order'], self::$ALLOWED_ORDERS)) {
             $this->order = $params['order'];
         } else {
-            $this->order = $ALLOWED_ORDERS[0];
+            $this->order = self::$ALLOWED_ORDERS[0];
         }
 
         if (isset($params['cid']) && !empty($params['cid'])) {
