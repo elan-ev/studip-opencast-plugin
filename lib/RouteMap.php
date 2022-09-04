@@ -57,6 +57,8 @@ class RouteMap
         $this->app->put('/playlists/{token}/user', Routes\Playlist\PlaylistAddUser::class);
         $this->app->delete('/playlists/{token}/user/{username}', Routes\Playlist\PlaylistRemoveUser::class);
 
+        $this->app->put('/playlists/{token}/positions', Routes\Playlist\PlaylistUpdatePositions::class);
+
         $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);      // TODO: add this route to the API scheme
 
         // Course routes

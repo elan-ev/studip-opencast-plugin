@@ -99,7 +99,8 @@ class Videos extends UPMap
 
         // TODO implement custom order
         [$field, $order] = explode("_", $filters->getOrder());
-        $sql .= ' ORDER BY oc_video.' . $field . ' ' . $order;
+        $order_table = ($field === 'order') ? 'opv' : 'oc_video';
+        $sql .= ' ORDER BY ' . $order_table . '.' . $field . ' ' . $order;
 
         $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
 

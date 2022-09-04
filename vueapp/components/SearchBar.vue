@@ -29,7 +29,7 @@
 
         <select class="oc--searchbar-sorter" v-model="inputSort" @change="setSort">
             <option
-                v-for="sort in sorts"
+                v-for="sort in availableSortOrders"
                 v-bind:key="sort.key"
                 v-bind:value="sort">
                 <translate>{{ sort.text }}</translate>
@@ -82,7 +82,6 @@ export default {
     data() {
         return {
             inputSort: null,
-            sorts: null,
             inputSearch: '',
             searchRoute: '',
             sortRoute: '',
@@ -103,8 +102,21 @@ export default {
             'playlistSort',
             'playlistSorts',
             'availableTags',
-            'playlists'
+            'playlists',
+            'currentPlaylist'
         ]),
+
+        availableSortOrders() {
+            if (this.$route.name == 'playlists') {
+                return this.playlistSorts
+            }
+            if (this.currentPlaylist == 'all') {
+                return this.videoSorts.filter(element => {
+                    return element['field'] !== 'order';
+                });
+            }
+            return this.videoSorts;
+        }
     },
 
     methods: {
@@ -216,13 +228,11 @@ export default {
 
         if (this.$route.name == 'playlists') {
             this.inputSort = this.playlistSort
-            this.sorts = this.playlistSorts
             this.sortRoute = 'setPlaylistSort'
             this.searchRoute = 'setPlaylistSearch'
         }
         else {
             this.inputSort = this.videoSort
-            this.sorts = this.videoSorts
             this.sortRoute = 'setVideoSort'
             this.searchRoute = 'setVideoSearch'
         }

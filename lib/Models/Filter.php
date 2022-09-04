@@ -14,7 +14,7 @@ class Filter
         $course_id;
     
     private static $ALLOWED_ORDERS = [
-        'mkdate_desc', 'mkdate_asc', 'title_desc', 'title_asc', 'custom_desc', 'custom_asc'
+        'mkdate_desc', 'mkdate_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
     ];
 
     private static $ALLOWED_FILTERS = [

@@ -31,7 +31,10 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['currentUser'])
+        ...mapGetters([
+            'currentUser',
+            'currentPlaylist'
+        ])
     },
 
     data() {
@@ -48,7 +51,7 @@ export default {
         },
 
         saveSort() {
-            // TODO save sorting
+            this.$store.dispatch('uploadSortPositions', this.currentPlaylist)
             this.$store.dispatch('setVideoSortMode', false)
             this.$store.dispatch('loadVideos')
         },

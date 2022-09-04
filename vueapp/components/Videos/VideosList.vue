@@ -93,15 +93,30 @@ export default {
             });
 
             if (this.canMoveUp(index)) {
+                let from = {
+                    playlist: this.currentPlaylist,
+                    page: this.paging.currPage,
+                    index: index
+                }
+                let to = {}
+
                 if (index !== 0) {
-                    sortVideos.splice(index - 1, 0, sortVideos.splice(index, 1)[0]);
+                    to = {
+                        playlist: this.currentPlaylist,
+                        page: this.paging.currPage,
+                        index: index-1
+                    }
                 }
                 else {
                     let length = this.videos[this.currentPlaylist][this.paging.currPage-1].length;
-                    let tmp = sortVideos[index];
-                    sortVideos[index] = this.videos[this.currentPlaylist][this.paging.currPage-1][length-1];
-                    this.videos[this.currentPlaylist][this.paging.currPage-1][length-1] = tmp;
+
+                    to = {
+                        playlist: this.currentPlaylist,
+                        page: this.paging.currPage-1,
+                        index: length-1
+                    }
                 }
+                this.$store.dispatch('setVideoPosition', {'from': from, 'to': to})
             }
         },
 
@@ -112,14 +127,28 @@ export default {
             });
 
             if (this.canMoveDown(index)) {
+                let from = {
+                    playlist: this.currentPlaylist,
+                    page: this.paging.currPage,
+                    index: index
+                }
+                let to = {}
+
                 if (index !== this.visVideos.length - 1) {
-                    sortVideos.splice(index + 1, 0, sortVideos.splice(index, 1)[0]);
+                    to = {
+                        playlist: this.currentPlaylist,
+                        page: this.paging.currPage,
+                        index: index+1
+                    }
                 }
                 else {
-                    let tmp = sortVideos[index];
-                    sortVideos[index] = this.videos[this.currentPlaylist][this.paging.currPage+1][0];
-                    this.videos[this.currentPlaylist][this.paging.currPage+1][0] = tmp;
+                    to = {
+                        playlist: this.currentPlaylist,
+                        page: this.paging.currPage+1,
+                        index: 0
+                    }
                 }
+                this.$store.dispatch('setVideoPosition', {'from': from, 'to': to})
             }
         },
     },

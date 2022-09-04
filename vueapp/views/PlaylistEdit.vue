@@ -77,6 +77,8 @@ export default {
     },
 
     mounted() {
+        this.$store.dispatch('setCurrentPlaylist', this.token);
+        this.$store.dispatch('loadVideos');
         if (!this.playlists[this.token]) {
             this.$store.dispatch('loadPlaylist', this.token);
         }
