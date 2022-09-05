@@ -2,7 +2,8 @@
 
 use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
-
+use Opencast\Models\VideoCoursewareBlocks;
+use Opencast\Models\CoursewareBlockMappings;
 /**
  * This class represents the content of a Courseware test block.
  *
@@ -54,5 +55,24 @@ class OpencastBlock extends BlockType
     public static function getFileTypes(): array
     {
         return [];
+    }
+
+    public function copyPayload(string $rangeId = ''): array
+    {
+        $payload = $this->getPayload();
+
+        $token = md5($this->block['id'] . time());
+        $payload['copied_token'] = $token;
+
+        CoursewareBlockMappings::setRecord($token, $payload['video_id'], $rangeId);
+
+        return $payload;
+    }
+
+    public function setPayload($payload): void
+    {
+        $rangeId = $this->block->container->structural_element->range_id;
+        VideoCoursewareBlocks::setRecord($rangeId, $payload['video_id'], $this->block['id']);
+        parent::setPayload($payload);
     }
 }

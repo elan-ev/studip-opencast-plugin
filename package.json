@@ -4,10 +4,10 @@
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
-    "build": "webpack --mode production && webpack --mode production --config ./webpack-courseware.config.js",
-    "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
+    "build": "webpack --mode production",
+    "devcw": "cd courseware; sh watch.sh",
     "dev": "webpack --mode development --watch",
-    "prebuild": "npm install",
+    "prebuild": "npm install && cd courseware; sh prebuild.sh",
     "prezip": "npm run build && composer install --no-dev",
     "translate": "gettext-extract --attribute v-i18n --attribute v-translate --output locale/en/LC_MESSAGES/opencast_js.pot $(find vueapp -type f -name '*.vue') && /bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
     "zip": "zip -r Opencast-V$npm_package_version.zip app assets classes cronjobs locale migrations lib vendor static LICENSE INSTALL.md README.md bootstrap.php constants.php OpenCast.class.php plugin.manifest",

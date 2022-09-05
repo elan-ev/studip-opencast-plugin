@@ -44,6 +44,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
             Navigation::addItem('/contents/opencast', $videos);
         }
+
+        $icon = new Icon($this->assetsUrl . '/images/opencast-courseware.svg');
+
+        PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
+            background-image:url(' . $icon->asImagePath() . ')
+        }');
+
+        PageLayout::addStylesheet($this->getPluginUrl() . '/courseware/assets/css/oc-cw.css');
+        PageLayout::addScript($this->getPluginUrl() . '/courseware/static/register.js');
     }
 
     /**

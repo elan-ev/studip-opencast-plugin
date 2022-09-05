@@ -1,0 +1,115 @@
+.oc-cw-searchbar {
+    clear: both;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+.oc-cw-searchbar .oc-cw-searchbar-container {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    float: left;
+    margin-right: 5px;
+    flex: 2;
+
+    display: flex;
+    flex-direction: row;
+
+    border: 1px solid var(--light-gray-color-40);
+}
+.oc-cw-searchbar .oc-cw-searchbar-container li {
+    padding: none;
+    white-space: nowrap;
+}
+
+.oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-input {
+    padding: 8px;
+    width: 100%;
+}
+
+.oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-input > input {
+    padding: 0px;
+    font-size: 16px;
+    border: none;
+    background: var(--dark-gray-color-5);
+    width: 100%;
+}
+
+.oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-input input:focus {
+    outline: none;
+}
+
+.oc-cw-searchbar .oc-cw-searchbar-sorter {
+    flex: 1;
+    height: 40px !important;
+}
+
+
+.oc-cw-video-list {
+    margin-top: 1em;
+}
+
+.oc-cw-video-list ul {
+    clear: both;
+    padding-left: 0;
+    list-style: none;
+    overflow: auto;
+    height: auto;
+}
+.oc-cw-video-list ul li {
+    background: var(--dark-gray-color-5);
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-width: 1px 0 0;
+    margin-bottom: 1em;
+    padding: 1em;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-color: #ddd;
+    cursor: pointer;
+}
+
+.oc-cw-video-list ul li:hover, .oc-cw-video-list ul li.selected {
+    background: var(--content-color-40);
+}
+
+.oc-cw-pagination {
+    margin-bottom: 1em;
+    display: flex;
+}
+
+.oc-cw-pagination button {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    float: left;
+    cursor: pointer;
+}
+
+.oc-cw-pagination button:disabled {
+    cursor: default
+}
+
+.oc-cw-pagination .active {
+    background-color: var(--base-color-60);
+    color: white;
+    cursor: default;
+}
+
+.oc-cw-loadingbar {
+    border-radius: 15px;
+    background-color: var(--dark-gray-color-10);
+    height: 15px;
+    width: 300px;
+    display: block;
+}
+.oc-cw-loadingbar:not(:last-of-type) {
+    margin-bottom: 5px;
+}
+
+iframe.oc_cw_iframe {
+    border: none;
+    width: 100%;
+    height: 600px;
+}
