@@ -5,7 +5,7 @@
         </td>
 
         <td>
-            <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token, playlist: playlist } }">
+            <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token } }">
                 {{ playlist.title }}
             </router-link>
 
