@@ -40,10 +40,10 @@
             :style="`left:` + tokenSelectorPos.left + `px; top:` + tokenSelectorPos.top + `px;`"
         >
             <ul v-if="tokenState == 'main'">
-                <li @click="selectToken('tag')">
+                <li @click="selectToken('tag')" v-if="availableTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')">
+                <li @click="selectToken('playlist')" v-if="playlists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
