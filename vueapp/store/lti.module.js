@@ -20,7 +20,7 @@ const getters = {
 const actions = {
 
     async loadLaunchData(context) {
-        return ApiService.get('/lti/launch_data/')
+        return ApiService.get('lti/launch_data/')
         .then(({ data }) => {
             if (data.lti.length == 0) {
                 throw new LtiException('could not retrieve launch data from server!');
