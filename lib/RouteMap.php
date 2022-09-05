@@ -68,7 +68,8 @@ class RouteMap
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         // LTI
-        $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
+        // TODO: Update docs for new argument in this route
+        $this->app->get('/lti/launch_data/{context_id}', Routes\LTI\LaunchData::class);
 
         // Schedule
         $this->app->get('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleShow::class);
