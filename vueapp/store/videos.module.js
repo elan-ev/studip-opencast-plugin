@@ -37,7 +37,7 @@ const state = {
     ],
     videoSortMode: false,
     videoSortList: {},
-    limit: 3,
+    limit: 5,
     paging: {
         currPage: 0,
         lastPage: 0,
@@ -89,7 +89,7 @@ const actions = {
 
         params.append('order', state.videoSort.field + "_" + state.videoSort.order)
         params.append('offset', state.paging.currPage * state.limit)
-        
+
         if (preload) {
             if (state.paging.currPage > 0) {
                 page_from--
