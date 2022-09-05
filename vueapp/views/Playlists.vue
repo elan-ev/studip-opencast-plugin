@@ -47,6 +47,7 @@
                         v-bind:playlist="playlist"
                         v-bind:key="playlist.token"
                         @addToCourse="addToCourse"
+                        @deletePlaylist="deletePlaylist"
                     ></PlaylistCard>
                 </tbody>
             </table>
@@ -132,6 +133,15 @@ export default {
 
         addToCourse(playlist) {
             this.playlistCourse = playlist;
+        },
+
+        deletePlaylist(playlist) {
+            if (confirm(this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?'))) {
+                this.$store.dispatch('deletePlaylist', playlist.token)
+                .then(() => {
+                    this.$store.dispatch('loadPlaylists');
+                })
+            }
         }
     },
 

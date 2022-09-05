@@ -142,8 +142,8 @@ const actions = {
             });
     },
 
-    async deletePlaylist(context, id) {
-        // TODO
+    async deletePlaylist(context, token) {
+        return ApiService.delete('playlists/' + token);
     },
 
     async setCurrentPlaylist(context, token) {
@@ -152,27 +152,31 @@ const actions = {
 
     async setPlaylistSearch({dispatch, commit}, search) {
         await commit('setPlaylistSearch', search)
-        dispatch('reloadPlaylists')
+        dispatch('loadPlaylists')
     },
 
     async setPlaylistSort({dispatch, commit}, sort) {
         await commit('setPlaylistSort', sort)
-        dispatch('reloadPlaylists')
+        dispatch('loadPlaylists')
     },
 
     async setPlaylistSearch({dispatch, commit}, search) {
         await commit('setPlaylistSearch', search)
-        dispatch('reloadPlaylists')
+        dispatch('loadPlaylists')
     },
 }
 
 const mutations = {
     setPlaylists(state, playlists) {
+        state.playlists = playlists;
+
+        /*
         let pl = playlists || {};
 
         for (let id in pl) {
             state.playlists[pl[id].token] = pl[id];
         }
+        */
     },
 
     setPlaylistAdd(state, show) {

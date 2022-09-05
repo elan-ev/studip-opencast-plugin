@@ -37,6 +37,7 @@
         <td>
            <StudipActionMenu :items="menuItems"
                 @addToCourse="addToCourse(this.playlist)"
+                @deletePlaylist="deletePlaylist(this.playlist)"
            />
         </td>
     </tr>
@@ -107,6 +108,10 @@ export default {
 
         addToCourse(playlist) {
             this.$emit('addToCourse', playlist);
+        },
+
+        deletePlaylist(playlist) {
+           this.$emit('deletePlaylist', playlist);
         }
     }
 }
