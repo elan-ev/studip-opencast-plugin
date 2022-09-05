@@ -62,6 +62,7 @@ class RouteMap
         $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);      // TODO: add this route to the API scheme
 
         // Course routes
+        $this->app->get('/courses', Routes\Course\MyCourseList::class);                             // TODO: add this route to the API scheme
         $this->app->get('/courses/{course_id}/playlist', Routes\Course\CourseListPlaylist::class);
         $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
