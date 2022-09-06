@@ -78,6 +78,16 @@ class VideosUserPerms extends \SimpleORMap
                 $perm->video_id = $video->id;
                 $perm->perm     = 'owner';
                 $perm->store();
+
+                // notify user, that one of his videos is now available
+                PersonalNotifications::add(
+                    $user_id,
+                    URLHelper::getURL('plugins.php/opencast/contents/index', [], true),
+                    sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $episode->title),
+                    "opencast_" . $episode->identifier,
+                    Icon::create('video'),
+                    true
+                );
             }
         }
     }

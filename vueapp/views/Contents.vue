@@ -1,7 +1,7 @@
 <template>
     <div>
         <Teleport to="#layout-sidebar > section.sidebar">
-            <VideosSidebar 
+            <VideosSidebar
                 @uploadVideo="uploadDialog = true"
                 @sortVideo="enableSortMode"
                 @saveSortVideo="saveSort"
@@ -10,10 +10,12 @@
         </Teleport>
 
         <VideoUpload v-if="uploadDialog"
-            @done="uploadDialog = false"
+            @done="uploadDone"
             @cancel="uploadDialog = false"
             :currentUser="currentUser"
         />
+
+        <MessageList />
 
         <router-view></router-view>
     </div>
@@ -22,12 +24,15 @@
 <script>
 import VideosSidebar from "@/components/Videos/VideosSidebar";
 import VideoUpload from "@/components/Videos/VideoUpload";
+import MessageList from "@/components/MessageList";
+
 import { mapGetters } from "vuex";
 
 export default {
     name: "Contents",
     components: {
-        VideosSidebar, VideoUpload
+        VideosSidebar,      VideoUpload,
+        MessageList
     },
 
     computed: {
@@ -59,7 +64,17 @@ export default {
         cancelSort() {
             this.$store.dispatch('setVideoSortMode', false)
             this.$store.dispatch('loadVideos')
+        },
+
+        uploadDone() {
+            console.log('uploading of video done');
+            this.$store.dispatch('addMessage', {
+                type: 'info',
+                text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
+            });
+            this.uploadDialog = false
         }
+
     },
 
     mounted() {
