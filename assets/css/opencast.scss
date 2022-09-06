@@ -242,6 +242,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     position: relative;
     display: flex;
     flex-direction: row;
+    margin-bottom: 1em;
 
     .oc--searchbar-container {
         list-style-type: none;
@@ -274,7 +275,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
             padding: 0px;
             font-size: 16px;
             border: none;
-            background: $dark-gray-color-5;
             width: 100%;
         }
     }
