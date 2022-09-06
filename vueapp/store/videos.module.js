@@ -192,6 +192,14 @@ const mutations = {
         }
     },
 
+    clearPaging(state) {
+        state.paging = {
+            currPage: 0,
+            lastPage: 0,
+            items: 0
+        }
+    },
+
     setVideoSearch(state, search) {
         state.videoSearch = search
     },

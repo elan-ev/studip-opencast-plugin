@@ -154,7 +154,8 @@ export default {
     },
 
     mounted() {
-        // this.$store.dispatch('loadVideos');
+        this.$store.commit('clearPaging');
+        this.$store.dispatch('loadVideos');
     }
 };
 </script>
