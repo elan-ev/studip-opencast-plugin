@@ -61,10 +61,13 @@ class LtiHelper
      */
     public static function getLaunchData($config_id)
     {
+        global $user;
+
         $lti_links = [];
 
-
         foreach(self::getLtiLinks($config_id) as $lti) {
+            $lti['link']->setUser($user->id, 'Instructor', true);
+
             $launch_data = $lti['link']->getBasicLaunchData();
             $signature   = $lti['link']->getLaunchSignature($launch_data);
 
