@@ -376,7 +376,8 @@ export default {
     mounted() {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
-            this.selectedServer = this.config['server'][0];
+            this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
+
         })
     }
 }

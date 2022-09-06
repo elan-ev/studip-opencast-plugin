@@ -47,7 +47,7 @@
                 @change="setValue(setting.value)">
         </label>
 
-        <label v-if="setting.type == 'number'">
+        <label v-if="setting.type == 'integer'">
             <span :class="{
                 required: setting.required
             }">

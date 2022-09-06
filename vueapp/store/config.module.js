@@ -14,7 +14,8 @@ const initialState = {
             'time_buffer_overlap':  30,
             'debug':                null
         }
-    }
+    },
+    course_config: null
 };
 
 const getters = {
@@ -24,6 +25,10 @@ const getters = {
 
     simple_config_list(state) {
         return state.simple_config_list;
+    },
+
+    course_config(state) {
+        return state.course_config;
     },
 
     config(state) {
@@ -51,6 +56,13 @@ export const actions = {
                     context.commit('simpleConfigListSet', data);
                     resolve(data);
                 });
+            });
+    },
+
+    async loadCourseConfig(context, course_id) {
+        return ApiService.get('courses/' + course_id + '/config')
+            .then(({ data }) => {
+                context.commit('setCourseConfig', data);
             });
     },
 
@@ -98,6 +110,10 @@ export const mutations = {
 
     simpleConfigListSet(state, data) {
         state.simple_config_list = data;
+    },
+
+    setCourseConfig(state, data) {
+        state.course_config = data;
     },
 
     configSet(state, data) {

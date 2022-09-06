@@ -67,7 +67,6 @@ export default {
         },
 
         uploadDone() {
-            console.log('uploading of video done');
             this.$store.dispatch('addMessage', {
                 type: 'info',
                 text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')

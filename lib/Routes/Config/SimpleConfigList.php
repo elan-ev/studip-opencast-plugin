@@ -27,11 +27,12 @@ class SimpleConfigList extends OpencastController
         $config_list = [];
 
         foreach ($config as $conf) {
-            $config_list[] = [
+            $config_list[$conf->id] = [
                 'id'      => $conf->id,
                 'name'    => $conf->service_url,
                 'version' => $conf->service_version,
-                'ingest'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url
+                'ingest'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
+                'studio'  => $conf->service_url . '/studio/index.html'
             ];
         }
 
@@ -50,10 +51,7 @@ class SimpleConfigList extends OpencastController
                 continue;
             }
 
-            $config[] = [
-                'name'        => $option,
-                'value'       => \Config::get()->$option,
-            ];
+            $config[$option] = \Config::get()->$option;
         }
 
         return $config;

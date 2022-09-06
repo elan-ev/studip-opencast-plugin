@@ -34,10 +34,12 @@
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                     Medien Hochladen
                 </li>
+                <!--
                 <li @click="$emit('recordVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Video Aufnehmen
                 </li>
+                -->
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     Videos Sortieren

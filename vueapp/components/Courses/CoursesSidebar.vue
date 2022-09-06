@@ -83,9 +83,11 @@
                         <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                         Medien Hochladen
                     </li>
-                    <li @click="$emit('recordVideo')">
-                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                        Video Aufnehmen
+                    <li>
+                        <a :href="recordingLink" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                            Video Aufnehmen
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -106,16 +108,47 @@ export default {
 
     emits: ['uploadVideo', 'recordVideo'],
 
-    watch: {
-        $route(to) {
-            //console.log('Route:', to);
-        },
-    },
-
     data() {
         return {
             showAddDialog: false,
             semesterFilter: null
+        }
+    },
+
+    computed: {
+        ...mapGetters(["playlists", "currentPlaylist", "currentPage",
+            "cid", "semester_list", "semester_filter", 'currentUser',
+            'simple_config_list', 'course_config']),
+
+        fragment() {
+            return this.$route.name;
+        },
+
+        can_schedule() {
+            return this.cid !== undefined && this.currentUser.can_edit;
+        },
+
+        recordingLink() {
+            console.log('recordingLink', JSON.stringify(this.course_config));
+            if (!this.simple_config_list.settings || !this.course_config) {
+                return;
+            }
+
+            let config_id = this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
+            let server    = this.simple_config_list.server[config_id];
+
+            console.log('getRecordingLink::config_id', config_id);
+            console.log('getRecordingLink::server', JSON.parse(JSON.stringify(server)));
+
+            // use the first avai
+            return window.STUDIP.URLHelper.getURL(
+                server.studio, {
+                    'upload.seriesId' : this.course_config['series']['series_id'],
+                    'upload.acl'      : false,
+                    'return.target'   : window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + this.cid),
+                    'return.label'    : 'Stud.IP'
+                }
+            );
         }
     },
 
@@ -134,25 +167,14 @@ export default {
         setPage(page) {
             this.$store.dispatch('setPage', page);
             this.$store.dispatch('loadVideos');
-        },
-    },
-
-    computed: {
-        ...mapGetters(["playlists", "currentPlaylist", "currentPage",
-            "cid", "semester_list", "semester_filter", 'currentUser']),
-
-        fragment() {
-            return this.$route.name;
-        },
-
-        can_schedule() {
-            return this.cid !== undefined && this.currentUser.can_edit;
         }
     },
 
     mounted() {
         this.$store.dispatch('loadPlaylists');
         this.$store.dispatch('loadVideos');
+        this.$store.dispatch('simpleConfigListRead');
+        this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;
     },
 
