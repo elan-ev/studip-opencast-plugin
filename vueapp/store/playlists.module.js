@@ -2,6 +2,7 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: {},
+    playlists: null,
     playlistSearch: '',
     playlistSort: {
         field: 'mkdate',
@@ -37,6 +38,10 @@ const state = {
 const getters = {
     playlists(state) {
         return state.playlists
+    },
+
+    playlist(state) {
+        return state.playlist
     },
 
     currentPlaylist(state) {
@@ -85,7 +90,7 @@ const actions = {
     async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
-                context.commit('setPlaylists', [data]);
+                context.commit('setPlaylist', data);
             });
     },
 
@@ -169,14 +174,10 @@ const actions = {
 const mutations = {
     setPlaylists(state, playlists) {
         state.playlists = playlists;
+    },
 
-        /*
-        let pl = playlists || {};
-
-        for (let id in pl) {
-            state.playlists[pl[id].token] = pl[id];
-        }
-        */
+    setPlaylist(state, playlist) {
+        state.playlist = playlist;
     },
 
     setPlaylistAdd(state, show) {
