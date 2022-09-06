@@ -68,7 +68,7 @@ class NewScheme extends Migration
             `views` int,
             `preview` text,
             `publication` text,
-            `visibility` enum('internal','free','public'),
+            `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
             `created` timestamp,
             `author` varchar(255),
             `contributors` varchar(1000),
