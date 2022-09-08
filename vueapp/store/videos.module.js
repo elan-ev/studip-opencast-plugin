@@ -1,7 +1,7 @@
 import ApiService from "@/common/api.service";
 
 const state = {
-    videos: {},
+    storedVideos: {},
     videoSearch: '',
     videoSort: {
         field: 'mkdate',
@@ -46,8 +46,13 @@ const state = {
 }
 
 const getters = {
-    videos(state) {
-        return state.videos
+    videos(state, getters, rootState) {
+        let playlist_token = rootState.playlists.currentPlaylist
+        if (state.storedVideos[playlist_token] === undefined ||
+            state.storedVideos[playlist_token][state.paging.currPage] === undefined) {
+            return {};
+        }
+        return state.storedVideos[playlist_token][state.paging.currPage]
     },
 
     paging(state) {
@@ -153,7 +158,10 @@ const actions = {
         commit('setPage', page);
     },
 
-    setVideoSortMode({commit}, mode) {
+    setVideoSortMode({dispatch, state, commit}, mode) {
+        commit('setVideoSort', state.videoSorts.find(sort => {
+            return sort.field === 'order' && sort.order === 'asc';
+        }));
         commit('setVideoSortMode', mode);
     },
 
@@ -168,13 +176,11 @@ const mutations = {
         let playlist_token = payload.playlist_token;
         let page_from = payload.page_from;
 
-        if (state.videos[playlist_token] === undefined) {
-            state.videos[playlist_token] = {}
+        if (state.storedVideos[playlist_token] === undefined) {
+            state.storedVideos[playlist_token] = {}
         }
         for (let i=0; i<videos.length/state.limit; i++) {
-            if(!state.videoSortMode || state.videos[playlist_token][page_from+i] === undefined) {
-                state.videos[playlist_token][page_from+i] = videos.slice(i*state.limit, (i+1)*state.limit);
-            }
+            state.storedVideos[playlist_token][page_from+i] = videos.slice(i*state.limit, (i+1)*state.limit);
         }
     },
 
@@ -183,6 +189,7 @@ const mutations = {
     },
 
     setVideoSortMode(state, mode) {
+        state.videoSortList = {}
         state.videoSortMode = mode
     },
 
@@ -210,11 +217,11 @@ const mutations = {
     },
 
     setVideoPosition(state, {from, to}) {
-        let fromVideo = state.videos[from.playlist][from.page][from.index]
-        let toVideo = state.videos[to.playlist][to.page][to.index]
+        let fromVideo = state.storedVideos[from.playlist][from.page][from.index]
+        let toVideo = state.storedVideos[to.playlist][to.page][to.index]
 
-        state.videos[from.playlist][from.page][from.index] = toVideo
-        state.videos[to.playlist][to.page][to.index] = fromVideo
+        state.storedVideos[from.playlist][from.page][from.index] = toVideo
+        state.storedVideos[to.playlist][to.page][to.index] = fromVideo
 
         state.videoSortList[from.page*state.limit+from.index] = toVideo.token
         state.videoSortList[to.page*state.limit+to.index] = fromVideo.token
