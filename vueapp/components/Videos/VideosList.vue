@@ -4,7 +4,7 @@
         <PaginationButtons @changePage="changePage"/>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="Object.keys(visVideos).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
+            <ul v-if="Object.keys(videos).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
                 <EmptyVideoCard />
                 <EmptyVideoCard />
                 <EmptyVideoCard />
@@ -12,7 +12,7 @@
                 <EmptyVideoCard />
             </ul>
 
-            <ul v-else-if="Object.keys(visVideos).length === 0" class="oc--episode-list oc--episode-list--empty">
+            <ul v-else-if="Object.keys(videos).length === 0" class="oc--episode-list oc--episode-list--empty">
                 <MessageBox type="info">
                     <translate>
                         Es gibt bisher keine Aufzeichnungen.
@@ -22,7 +22,7 @@
 
             <ul class="oc--episode-list" v-else>
                 <VideoCard
-                    v-for="(event, index) in visVideos"
+                    v-for="(event, index) in videos"
                     v-bind:event="event"
                     v-bind:key="event.id"
                     :canMoveUp="canMoveUp(index)"
@@ -86,20 +86,7 @@ export default {
             "videoSortMode",
             "currentPlaylist",
             "paging",
-            "loading",
-            "cid"]),
-
-        visVideos() {
-            if (this.videos[this.currentPlaylist] === undefined ||
-                this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
-                return {};
-            }
-            return this.videos[this.currentPlaylist][this.paging.currPage]
-        },
-
-        isCourse() {
-            return this?.cid;
-        },
+            "loading"]),
     },
 
     methods: {
@@ -118,12 +105,11 @@ export default {
         },
 
         canMoveDown(index) {
-            return this.videoSortMode && (index !== this.visVideos.length - 1 || !(this.paging.currPage !== 0));
+            return this.videoSortMode && (index !== this.videos.length - 1 || !(this.paging.currPage !== 0));
         },
 
         moveUpVideoCard(token) {
-            let sortVideos = this.visVideos;
-            const index = sortVideos.findIndex(video => {
+            const index = this.videos.findIndex(video => {
                 return video.token === token;
             });
 
@@ -156,8 +142,7 @@ export default {
         },
 
         moveDownVideoCard(token) {
-            let sortVideos = this.visVideos;
-            const index = sortVideos.findIndex(video => {
+            const index = this.videos.findIndex(video => {
                 return video.token === token;
             });
 
@@ -169,7 +154,7 @@ export default {
                 }
                 let to = {}
 
-                if (index !== this.visVideos.length - 1) {
+                if (index !== this.videos.length - 1) {
                     to = {
                         playlist: this.currentPlaylist,
                         page: this.paging.currPage,
