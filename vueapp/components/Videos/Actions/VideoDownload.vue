@@ -5,25 +5,25 @@
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
             height="500"
-            @close="decline"
+            @close="this.$emit('cancel')"
         >
             <template v-slot:dialogContent>
-                <div v-if="presenter.length">
+                <div v-if="presenters.length">
                     <h2>
                         ReferentIn
                     </h2>
-                    <a v-for="(media, index) in presenter" :key="index"
+                    <a v-for="(media, index) in presenters" :key="index"
                             :href="media['url']" target="_blank">
                         <StudipButton>
                             {{ getMediaText(media) }}
                         </StudipButton>
                     </a>
                 </div>
-                <div v-if="presentation.length">
+                <div v-if="presentations.length">
                     <h2>
                         Bildschirm
                     </h2>
-                    <a v-for="(media, index) in presentation" :key="index"
+                    <a v-for="(media, index) in presentations" :key="index"
                             :href="media['url']" target="_blank">
                         <StudipButton>
                             {{ getMediaText(media) }}
@@ -38,7 +38,6 @@
 <script>
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
-import { dialog } from '@/common/dialog.mixins'
 
 export default {
     name: 'VideoDownload',
@@ -48,45 +47,55 @@ export default {
         StudipButton
     },
 
-    mixins: [dialog],
-
-    props: ['downloads'],
+    props: ['event'],
 
     data() {
         return {
-            presenter: [],
-            presentation: []
+            presentations: [],
+            presenters: []
         }
     },
 
     methods: {
-        decline() {
-            this.$emit('cancel');
-        },
-
         getMediaText(media) {
-            var text = media['info']
-            var size = media['size']/1000
+            var text = media?.info || '';
+            text = text.replace(' * ', ' x ');
+            var size = media?.size || 0;
+
+            if (size == 0) {
+                return text;
+            }
+
             if (size > 1000) {
                 size = Math.round(size/1000 * 10) / 10
                 text = text + ' (' + size + ' MB)'
-            }
-            else {
+            } else {
                 size = Math.round(size * 10) / 10
                 text = text + ' (' + size + ' KB)'
             }
+            
             return text
+        },
+
+        extractDownloads() {
+            let presentations = this.event?.publication?.downloads?.presentation || [];
+            for (const size in presentations) {
+                let presentation = presentations[size];
+                presentation.size = size;
+                this.presentations.push(presentation);
+            }
+
+            let presenters = this.event?.publication?.downloads?.presenter || [];
+            for (const size in presenters) {
+                let presenter = presenters[size];
+                presenter.size = size;
+                this.presenters.push(presenter);
+            }
         }
     },
 
     mounted() {
-        this.presentation = this.downloads.filter(function (e) {
-            return e['type'].includes('presenter')
-        })
-
-        this.presenter = this.downloads.filter(function (e) {
-            return e['type'].includes('presentation')
-        })
+        this.extractDownloads();
     }
 
 }

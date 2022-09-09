@@ -40,14 +40,6 @@
                         {{ event.description }}
                     </div>
                 </div>
-                <div class="oc--episode-buttons">
-                    <ConfirmDialog v-if="DeleteConfirmDialog"
-                        :title="$gettext('Aufzeichnung entfernen')"
-                        :message="$gettext('Möchten Sie die Aufzeichnung wirklich entfernen?')"
-                        @done="removeVideo"
-                        @cancel="DeleteConfirmDialog = false"
-                    />
-                </div>
             </div>
             <button :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')">
                 <studip-icon shape="arr_2up" role="navigation" />
@@ -55,6 +47,11 @@
             <button :hidden="!canMoveDown" @click="$emit('moveDown', event.token)" :title="$gettext('Element nach unten verschieben')">
                 <studip-icon shape="arr_2down" role="navigation" />
             </button>
+            <div v-if="canEdit" class="oc--actions-container">
+                <StudipActionMenu :items="menuItems"
+                    @performAction="performAction"
+                />
+            </div>
         </li>
         <EmptyVideoCard v-else/>
     </div>
@@ -65,14 +62,15 @@ import EmptyVideoCard from "@/components/Videos/EmptyVideoCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
 import StudipIcon from '@/components/Studip/StudipIcon'
-
+import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 
 export default {
     name: "VideoCard",
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyVideoCard, StudipIcon
+        EmptyVideoCard, StudipIcon,
+        StudipActionMenu,
     },
 
     props: {
@@ -84,27 +82,24 @@ export default {
         canMoveDown: {
             type: Boolean,
             default: false
-        }
+        },
+        isCourse: {
+            type: Boolean,
+            default: false
+        },
     },
 
     data() {
         return {
-            DeleteConfirmDialog: false,
-            DownloadDialog: false,
-            editDialog: false,
             preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
             play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg'
         }
     },
 
     methods: {
-        removeVideo() {
-            let view = this;
-            this.$store.dispatch('deleteVideo', this.event.id)
-            .then(() => {
-                view.DeleteConfirmDialog = false;
-            });
-        },
+        performAction(action) {
+            this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+        }
     },
 
     computed: {
@@ -113,6 +108,57 @@ export default {
             var min = parseInt(sec / 60)
             var h = parseInt(min / 60)
             return ("0" + h).substr(-2) + ":" + ("0" + min%60).substr(-2) + ":" + ("0" + sec%60).substr(-2)
+        },
+
+        menuItems() {
+            let menuItems = [
+                {
+                    label: this.$gettext('Bearbeiten'),
+                    icon: 'edit',
+                    emit: 'performAction',
+                    emitArguments: 'VideoEdit'
+                },
+                {
+                    label: this.$gettext('Hochladen'),
+                    icon: 'download',
+                    emit: 'performAction',
+                    emitArguments: 'VideoDownload'
+                },
+            ];
+
+            if (!this.isCourse) {
+                menuItems.push({
+                    label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
+                    icon: 'add',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAddToPlaylist'
+                });
+                menuItems.push({
+                    label: this.$gettext('Zu Kurs hinzufügen'),
+                    icon: 'add',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAddToSeminar'
+                });
+            }
+
+            menuItems.push({
+                label: this.$gettext('Problem melden'),
+                icon: 'support',
+                emit: 'performAction',
+                emitArguments: 'VideoReport'
+            });
+            menuItems.push({
+                label: this.$gettext('Entfernen'),
+                icon: 'trash',
+                emit: 'performAction',
+                emitArguments: 'VideoDelete'
+            });
+
+            return menuItems;
+        },
+
+        canEdit() {
+            return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
         }
     }
 }

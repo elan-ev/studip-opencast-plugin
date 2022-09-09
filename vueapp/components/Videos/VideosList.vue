@@ -27,11 +27,22 @@
                     v-bind:key="event.id"
                     :canMoveUp="canMoveUp(index)"
                     :canMoveDown="canMoveDown(index)"
+                    :isCourse="isCourse"
                     @moveUp="moveUpVideoCard"
                     @moveDown="moveDownVideoCard"
+                    @doAction="doAction"
                 ></VideoCard>
             </ul>
         </div>
+
+        <template v-if="showActionDialog">
+            <component :is="actionComponent"
+                @cancel="clearAction"
+                @done="doAfterAction"
+                :event="selectedEvent"
+            >
+            </component>
+        </template>
     </div>
 </template>
 
@@ -41,13 +52,32 @@ import VideoCard from './VideoCard.vue';
 import EmptyVideoCard from './EmptyVideoCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
-import SearchBar from '@/components/SearchBar.vue'
+import SearchBar from '@/components/SearchBar.vue';
+import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
+import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
+import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
+import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
+import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
+import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 
 export default {
     name: "VideosList",
 
     components: {
-        VideoCard, EmptyVideoCard, PaginationButtons, MessageBox, SearchBar
+        VideoCard, EmptyVideoCard,
+        PaginationButtons, MessageBox,
+        SearchBar, VideoAddToPlaylist,
+        VideoAddToSeminar, VideoDelete,
+        VideoDownload, VideoReport,
+        VideoEdit
+    },
+
+    data() {
+        return {
+            actionComponent: null,
+            showActionDialog: false,
+            selectedEvent: null
+        }
     },
 
     computed: {
@@ -56,7 +86,8 @@ export default {
             "videoSortMode",
             "currentPlaylist",
             "paging",
-            "loading"]),
+            "loading",
+            "cid"]),
 
         visVideos() {
             if (this.videos[this.currentPlaylist] === undefined ||
@@ -64,7 +95,11 @@ export default {
                 return {};
             }
             return this.videos[this.currentPlaylist][this.paging.currPage]
-        }
+        },
+
+        isCourse() {
+            return this?.cid;
+        },
     },
 
     methods: {
@@ -151,6 +186,27 @@ export default {
                 this.$store.dispatch('setVideoPosition', {'from': from, 'to': to})
             }
         },
+
+        doAction(args) {
+            if (Object.keys(this.$options.components).includes(args.actionComponent)) {
+                this.actionComponent = args.actionComponent;
+                this.selectedEvent = args.event;
+                this.showActionDialog = true;
+            }
+        },
+
+        async doAfterAction(args) {
+            this.clearAction();
+            if (args == 'refresh') {
+                await this.$store.dispatch('loadVideos');
+            }
+        },
+
+        clearAction() {
+            this.showActionDialog = false;
+            this.actionComponent = null;
+            this.selectedEvent = null;
+        }
     },
 
     mounted() {

@@ -7,6 +7,7 @@ use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\SearchClient;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\REST\ApiWorkflowsClient;
 
 class Videos extends UPMap
 {
@@ -110,6 +111,11 @@ class Videos extends UPMap
         ];
     }
 
+    public static function findByToken($token)
+    {
+        return self::findOneBySQL('token = ?', [$token]);
+    }
+
     public function toSanitizedArray()
     {
         $data = $this->toArray();
@@ -128,7 +134,94 @@ class Videos extends UPMap
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
+        $data['perm'] = $this->getUserPerm();
+
         return $data;
+    }
+
+    /**
+     * Gets the perm value related to this video for the current user.
+     *
+     * @return string $perm the perm value
+     */
+    public function getUserPerm()
+    {
+        global $user;
+
+        $perm = 'read';
+        foreach ($this->perms as $perm) {
+            if ($perm->user_id == $user->id) {
+                $perm = $perm->perm;
+            }
+        }
+
+        return $perm;
+    }
+
+    /**
+     * Updates the metadata related to this video in both opencast and local and runs republish-metadata workflow
+     *
+     * @param object $event the updated version of the event
+     *
+     * @return boolean the result of updating process
+     */
+    public function updateMetadata($event)
+    {
+        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        $allowed_metadata_fields = ['title', 'contributors', 'subject', 'language', 'description', 'startDate'];
+        $metadata = [];
+        foreach ($allowed_metadata_fields as $field_name) {
+            if (isset($event[$field_name])) {
+                $value = $event[$field_name];
+                $id = $field_name;
+                if ($field_name == 'subject') {
+                    $id = 'subjects';
+                    $value = [$value];
+                }
+                if ($field_name == 'contributors') {
+                    $id = 'contributor';
+                    $value = [$value];
+                }
+
+                $metadata[] = [
+                    'id' => $id,
+                    'value' => $value
+                ];
+            }
+        }
+        $success = false;
+        $response = $api_event_client->updateMetadata($this->episode, $metadata);
+        if ($response) {
+            $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
+            if($api_wf_client->republish($this->episode)) {
+                $success = true;
+                $store_data = [];
+                foreach ($allowed_metadata_fields as $field_name) {
+                    if (isset($event[$field_name])) {
+                        $store_data[$field_name] = $event[$field_name];
+                    }
+                }
+                if (!empty($store_data)) {
+                    $this->setData($store_data);
+                    $success = $this->store() !== false;
+                }
+            }
+        }
+        return $success;
+    }
+
+    /**
+     * Removes a video from both opencsat and local sides.
+     *
+     * @return boolean the result of deletion process
+     */
+    public function removeVideo()
+    {
+        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        if ($api_event_client->deleteEpisode($this->episode)) {
+            return $this->delete();
+        }
+        return false;
     }
 
     private static function filterForEpisode($episode_id, $acl)
