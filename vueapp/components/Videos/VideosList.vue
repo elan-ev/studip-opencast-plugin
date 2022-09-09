@@ -86,7 +86,12 @@ export default {
             "videoSortMode",
             "currentPlaylist",
             "paging",
-            "loading"]),
+            "loading",
+            "cid"]),
+
+        isCourse() {
+            return this?.cid;
+        },
     },
 
     methods: {
