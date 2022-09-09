@@ -341,28 +341,6 @@ class CourseController extends OpencastController
         $this->set_title($this->_('Opencast Konfiguration'));
         $this->response->add_header('X-Title', rawurlencode($this->_('Serie mit Veranstaltung verknüpfen')));
         $this->configs = OCConfig::getBaseServerConf();
-
-        $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
-
-
-        $is_admin = $GLOBALS['perm']->have_studip_perm('admin', Context::getId());
-
-        foreach ($this->configs as $id => $config) {
-            $apiseries_client = ApiSeriesClient::getInstance($id);
-            if ($series = $apiseries_client->getAll()) {
-                if (!$is_admin) {
-                    $filtered_series = [];
-                    foreach ($series as $series_index => $series_obj) {
-                        if (in_array($series_obj->identifier, $user_series)) {
-                            $filtered_series[] = $series_obj;
-                        }
-                    }
-                    $this->all_series[$id] = $filtered_series;
-                } else {
-                    $this->all_series[$id] = $series;
-                }
-            }
-        }
     }
 
     public function edit_action($course_id)

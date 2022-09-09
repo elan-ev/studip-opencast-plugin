@@ -191,4 +191,35 @@ class AjaxController extends OpencastController
         ];
         $this->render_json($result);
     }
+
+    public function search_series_action()
+    {
+        $configs     = OCConfig::getBaseServerConf();
+        $user_series = OCSeminarSeries::getSeriesByUserMemberStatus($GLOBALS['user']->id, 'dozent');
+        $all_series  = [];
+        $is_admin    = $GLOBALS['perm']->have_studip_perm('admin', Context::getId());
+
+        // search on every oc-server for the series with this name
+        foreach ($configs as $id => $config) {
+            $apiseries_client = ApiSeriesClient::getInstance($id);
+            $series = $apiseries_client->search(Request::option('search_term'));
+
+            if (!empty($series)) {
+                if (!$is_admin) {
+                    $filtered_series = [];
+                    foreach ($series as $series_id => $title) {
+                        if (in_array($series_id, $user_series)) {
+                            $filtered_series[$series_id] = $title;
+                        }
+                    }
+
+                    $all_series[$id] = $filtered_series;
+                } else {
+                    $all_series[$id] = $series;
+                }
+            }
+        }
+
+        $this->render_json($all_series);
+    }
 }
