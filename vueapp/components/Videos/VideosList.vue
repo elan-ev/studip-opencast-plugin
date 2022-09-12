@@ -51,7 +51,9 @@
                     v-bind:key="event.token"
                     :playlistForVideos="playlistForVideos"
                     :selectedVideos="selectedVideos"
+                    :isCourse="isCourse"
                     @toggle="toggleVideo"
+                    @doAction="doAction"
                 ></VideoCard>
             </ul>
         </div>
@@ -94,11 +96,10 @@ export default {
     },
 
     components: {
-        VideoCard,          EmptyVideoCard,
-       
-        PaginationButtons,  MessageBox,
-       
-        SearchBar, VideoAddToPlaylist,
+        VideoCard, EmptyVideoCard,
+        PaginationButtons, MessageBox,
+        SearchBar, Tag,
+        StudipButton, VideoAddToPlaylist,
         VideoAddToSeminar, VideoDelete,
         VideoDownload, VideoReport,
         VideoEdit
@@ -106,18 +107,12 @@ export default {
 
     data() {
         return {
+            filters: [],
+            selectedVideos: [],
+            videos_loading: true,
             actionComponent: null,
             showActionDialog: false,
             selectedEvent: null
-        },          Tag,
-        StudipButton
-    },
-
-    data() {
-        return {
-            filters: [],
-            selectedVideos: [],
-            videos_loading: true
         }
     },
 
@@ -126,8 +121,8 @@ export default {
             "videos",
             "paging",
             "axios_running",
+            "playlistForVideos",
             "cid",
-            "playlistForVideos"
         ]),
 
         isCourse() {
@@ -148,9 +143,12 @@ export default {
         toggleVideo(data) {
             if (data.checked === false) {
                 let index = this.selectedVideos.indexOf(data.event_id);
-
-        canMoveUp(index) {
-            return this.videoSortMode && (this.paging.currPage !== 0 || index !== 0);
+                if (index >= 0) {
+                    this.selectedVideos.splice(index, 1);
+                }
+            } else {
+                this.selectedVideos.push(data.event_id);
+            }
         },
 
         toggleAll(e) {
@@ -185,7 +183,7 @@ export default {
                      text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
                 });
             })
-        }
+        },
 
         doAction(args) {
             if (Object.keys(this.$options.components).includes(args.actionComponent)) {

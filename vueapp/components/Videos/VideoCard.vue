@@ -102,14 +102,6 @@ export default {
     },
 
     methods: {
-        removeVideo() {
-            let view = this;
-            this.$store.dispatch('deleteVideo', this.event.token)
-            .then(() => {
-                view.DeleteConfirmDialog = false;
-            });
-        },
-
         toggleVideo(e) {
             this.$emit("toggle", {
                 event_id: this.event.token,
@@ -181,7 +173,6 @@ export default {
         canEdit() {
             return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
         }
-
     }
 }
 </script>

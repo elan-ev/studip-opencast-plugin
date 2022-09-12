@@ -32,7 +32,7 @@ const getters = {
     },
     axios_running(state) {
         return state.axios_running;
-    }
+    },
     userCourses(state) {
         return state.userCourses
     },
