@@ -106,14 +106,6 @@ export default {
             });
         },
 
-        listVideos() {
-            this.$store.dispatch('setCurrentPlaylist', this.playlist.token);
-            this.$store.dispatch('setPage', 0);
-            window.scrollTo(0,0);
-            this.$store.dispatch('loadVideos');
-            this.$router.push('/contents/playlistvideos');
-        },
-
         addToCourse(playlist) {
             this.$emit('addToCourse', playlist);
         },

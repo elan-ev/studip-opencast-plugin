@@ -14,7 +14,7 @@
                     </router-link>
                 </li>
                 <li :class="{
-                    active: fragment == 'playlists' || fragment == 'playlistvideos'
+                    active: fragment == 'playlists'
                     }">
                     <router-link :to="{ name: 'playlists' }">
                         Wiedergabelisten
@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <div class="sidebar-widget " id="sidebar-actions">
+    <div class="sidebar-widget" id="sidebar-actions">
         <div class="sidebar-widget-header" v-translate>
             Aktionen
         </div>
@@ -68,17 +68,20 @@
             </ul>
         </div>
     </div>
+
+    <LoadingSpinner v-if="axios_running"/>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon
+        StudipIcon,     LoadingSpinner
     },
 
     emits: ['uploadVideo', 'recordVideo', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
@@ -101,7 +104,7 @@ export default {
         },
 
         ...mapGetters([
-            'videoSortMode', 'playlist'
+            'videoSortMode', 'playlist', 'axios_running'
         ]),
     },
 

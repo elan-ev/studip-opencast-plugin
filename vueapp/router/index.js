@@ -27,13 +27,7 @@ export default new createRouter({
                     name: 'playlist_edit',
                     props: true,
                     component: () => import("@/views/PlaylistEdit"),
-                },
-
-                {
-                    path: 'playlists/:token/list',
-                    name: "playlistvideos",
-                    component: () => import("@/views/PlaylistVideos"),
-                },
+                }
             ]
         },
 

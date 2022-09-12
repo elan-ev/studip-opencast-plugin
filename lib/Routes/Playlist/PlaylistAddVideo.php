@@ -33,13 +33,19 @@ class PlaylistAddVideo extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        $playlist_video = new PlaylistVideos;
-        $playlist_video->setData([
-            'playlist_id' => $playlist->id,
-            'video_id' => $video->id,
-            'order' => 0 //TODO set order correctly
+        $playlist_video = PlaylistVideos::findOneBySql('playlist_id = ? AND video_id = ?', [
+            $playlist->id, $video->id
         ]);
-        $playlist_video->store();
+
+        if (empty($playlist_video)) {
+            $playlist_video = new PlaylistVideos;
+            $playlist_video->setData([
+                'playlist_id' => $playlist->id,
+                'video_id' => $video->id,
+                'order' => 0 //TODO set order correctly
+            ]);
+            $playlist_video->store();
+        }
 
         return $response->withStatus(204);
     }

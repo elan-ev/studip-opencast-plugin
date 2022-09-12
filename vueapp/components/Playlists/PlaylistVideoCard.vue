@@ -1,5 +1,5 @@
 <template>
-    <div name="oc--episode">
+    <div>
         <li v-if="event.refresh === undefined" :key="event.id" style="display: flex; flex-direction: row;">
             <div class="oc--flex-checkbox" v-if="playlistForVideos">
                  <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
@@ -52,6 +52,16 @@
                         @cancel="DeleteConfirmDialog = false"
                     />
                 </div>
+            </div>
+            <div class="oc--sort-options">
+                <studip-icon
+                    shape="arr_2up" role="navigation"
+                    :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')"
+                />
+                <studip-icon
+                    shape="arr_2down" role="navigation"
+                    :hidden="!canMoveDown" @click="$emit('moveDown', event.token)" :title="$gettext('Element nach unten verschieben')"
+                />
             </div>
         </li>
         <EmptyVideoCard v-else/>

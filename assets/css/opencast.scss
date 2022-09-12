@@ -102,7 +102,6 @@ $episode-background: $light-gray-color-20;
             top: 0;
             width: 100%;
             height: auto;
-            max-height: 130px;
             object-fit: contain;
         }
 
@@ -130,8 +129,6 @@ $episode-background: $light-gray-color-20;
 
         span.oc--duration {
             position: absolute;
-            bottom: 1em;
-            right: 1em;
             background-color: black;
             color: white;
             padding: 0 5px;
@@ -145,6 +142,12 @@ $episode-background: $light-gray-color-20;
 
     .oc--metdata-title {
         margin-top: 10px;
+    }
+}
+
+.oc--metadata--empty {
+    div {
+        margin-bottom: 5px;
     }
 }
 
@@ -180,6 +183,80 @@ $episode-background: $light-gray-color-20;
         position: relative;
         overflow: hidden;
         border-color: #ddd;
+    }
+
+    img.oc--previewimage {
+        max-height: 130px;
+    }
+
+    .oc--duration {
+        bottom: 1em;
+        right: 1em;
+    }
+
+    .oc--metadata--empty {
+        margin-left: $item-width;
+    }
+}
+
+
+.oc--episode-list--small {
+    clear: both;
+    padding-left: 0;
+    list-style: none;
+    overflow: auto;
+    height: auto;
+
+    .oc--flexplaycontainer {
+        width: 10em;
+    }
+
+    > div > li {
+        background: $episode-background;
+        border-bottom: 1px solid $light-gray-color-40;
+        padding: 5px 1em 5px 1em;
+        display: block;
+        position: relative;
+        overflow: hidden;
+        height: 70px;
+
+        .oc--playercontainer {
+            margin-top: 5px;
+        }
+
+        img.oc--previewimage {
+            max-height: 60px;
+        }
+
+        .oc--playbutton {
+            height: 40px;
+        }
+
+        .oc--duration {
+            bottom: 10px;
+            right: 3px;
+        }
+
+        .oc--metadata {
+            h2 {
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+        }
+
+        .oc--metadata--empty {
+            margin-left: 10em;
+        }
+    }
+
+    .oc--sort-options {
+        margin-left: auto;
+        margin-top: auto;
+        margin-bottom: auto;
+
+        img {
+            cursor: pointer;
+        }
     }
 }
 
@@ -355,7 +432,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     input[type=checkbox] {
         margin-right: 1em;
     }
-    
+
     margin-bottom: 1em;
 }
 
@@ -506,6 +583,38 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
         img {
             margin-top: -2px;
+        }
+    }
+}
+
+.oc--loading-spinner {
+    margin-top: 1em;
+    text-align: center;
+
+    .oc--spinner {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+    }
+
+    .oc--spinner:after {
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid $origin-base-color;
+        border-color: $origin-base-color transparent $origin-base-color transparent;
+        animation: oc-spinner 1.2s linear infinite;
+    }
+
+    @keyframes oc-spinner {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
         }
     }
 }

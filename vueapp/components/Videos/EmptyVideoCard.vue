@@ -12,15 +12,13 @@
                 </div>
             </div>
             <div class="oc--metadata oc--metadata--empty">
-                <h2 class="oc--metadata-title oc--loadingbar">
+                <div>
+                    <h2 class="oc--metadata-title oc--loadingbar">
 
-                </h2>
-                <ul class="oc--metadata-content">
-                    <li class="oc--loadingbar" style="width: 320px;"></li>
-                    <li class="oc--loadingbar" style="width: 270px;"></li>
-                    <li class="oc--loadingbar" style="width: 400px;"></li>
-                    <li class="oc--loadingbar" style="width: 150px;"></li>
-                </ul>
+                    </h2>
+                    <div class="oc--loadingbar" style="width: 350px;"></div>
+                    <div class="oc--loadingbar" style="width: 240px;"></div>
+                </div>
             </div>
         </li>
     </div>

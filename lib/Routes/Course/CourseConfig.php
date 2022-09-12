@@ -57,7 +57,7 @@ class CourseConfig extends OpencastController
                 'series_id'  => $series->series_id,
                 'visibility' => $series->visibility
             ],
-            'workflows' => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id)
+            'workflow' => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id)
         ];
 
         return $this->createResponse($results, $response);

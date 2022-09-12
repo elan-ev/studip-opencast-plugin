@@ -46,12 +46,25 @@ window.addEventListener("DOMContentLoaded", function() {
 
     // Catch errors
     Vue.axios.interceptors.response.use((response) => { // intercept the global error
+            store.dispatch('axiosStop');
+
             return response;
         }, function (error) {
+            store.dispatch('axiosStop');
+
             store.dispatch('errorCommit', error.response);
 
             // Do something with response error
             return Promise.reject(error)
+        }
+    );
+
+     // set loading animation
+     Vue.axios.interceptors.request.use(
+        request => {
+            store.dispatch('axiosStart');
+
+            return request;
         }
     );
 
