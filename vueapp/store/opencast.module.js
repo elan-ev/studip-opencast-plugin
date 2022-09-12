@@ -7,7 +7,8 @@ const state = {
     currentPage: 'videos',
     loading: false,
     cid: null,
-    site: null
+    site: null,
+    userCourses: [],
 }
 
 const getters = {
@@ -31,6 +32,9 @@ const getters = {
     },
     loading(state) {
         return state.loading
+    },
+    userCourses(state) {
+        return state.userCourses
     },
 }
 
@@ -71,7 +75,14 @@ const actions = {
             .then(({ data }) => {
                 commit('setCurrentUser', data.data);
             });
-    }
+    },
+
+    async loadUserCourses({ commit, dispatch}) {
+        return ApiService.get('courses')
+            .then(({ data }) => {
+                commit('setUserCourses', data);
+            });
+    },
 }
 
 const mutations = {
@@ -101,7 +112,11 @@ const mutations = {
 
     setLoading(state, loading) {
         state.loading = loading;
-    }
+    },
+
+    setUserCourses(state, data) {
+        state.userCourses = data;
+    },
 }
 
 

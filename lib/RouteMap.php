@@ -45,6 +45,9 @@ class RouteMap
         $this->app->put('/videos/{token}', Routes\Video\VideoUpdate::class);
         $this->app->delete('/videos/{token}', Routes\Video\VideoDelete::class);
 
+        $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class); // TODO: add this route to the API scheme
+        $this->app->post('/videos/{token}/courses', Routes\Video\VideoAddToCourse::class);
+
         // Playlist routes
         $this->app->get('/playlists', Routes\Playlist\PlaylistList::class);
         $this->app->post('/playlists', Routes\Playlist\PlaylistAdd::class);

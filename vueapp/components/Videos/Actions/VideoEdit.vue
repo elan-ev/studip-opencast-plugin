@@ -71,7 +71,9 @@ export default {
                 this.$store.dispatch('addMessage', data.message);
                 let emit_action = data.message.type == 'success' ? 'refresh' : '';
                 this.$emit('done', emit_action);
-            })
+            }).catch(() => {
+                this.$emit('cancel');
+            });
         },
 
         decline() {

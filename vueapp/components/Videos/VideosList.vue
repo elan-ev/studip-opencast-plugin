@@ -202,6 +202,7 @@ export default {
     mounted() {
         this.$store.commit('clearPaging');
         this.$store.dispatch('loadVideos');
+        this.$store.dispatch('loadUserCourses');
     }
 };
 </script>

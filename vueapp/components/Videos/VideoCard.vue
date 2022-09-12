@@ -142,7 +142,7 @@ export default {
             }
 
             menuItems.push({
-                label: this.$gettext('Problem melden'),
+                label: this.$gettext('Technisches Feedback'),
                 icon: 'support',
                 emit: 'performAction',
                 emitArguments: 'VideoReport'

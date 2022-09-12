@@ -2,6 +2,7 @@
 
 namespace Opencast\Models;
 
+use Error;
 use Opencast\Models\Filter;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
@@ -17,6 +18,11 @@ class Videos extends UPMap
 
         $config['has_many']['perms'] = [
             'class_name' => 'Opencast\\Models\\VideosUserPerms',
+            'assoc_foreign_key' => 'video_id',
+        ];
+
+        $config['has_many']['video_seminars'] = [
+            'class_name' => 'Opencast\\Models\\VideoSeminars',
             'assoc_foreign_key' => 'video_id',
         ];
 
@@ -135,8 +141,31 @@ class Videos extends UPMap
         $data['publication'] = json_decode($data['publication'], true);
 
         $data['perm'] = $this->getUserPerm();
+        $data['courses'] = $this->getCourses();
 
         return $data;
+    }
+
+    /**
+     * Gets the list of assigned courses with additional course's infos
+     *
+     * @return string $courses the list of seminars
+     */
+    private function getCourses()
+    {
+        $courses = [];
+        if (!empty($this->video_seminars)) {
+            foreach ($this->video_seminars as $video_seminar) {
+                $course = $video_seminar->course;
+                $courses[] = [
+                    'id' => $course->id,
+                    'name' => $course->getFullname(),
+                    'semester_name' => $course->getFullname('sem-duration-name')
+                ];
+            }
+        }
+
+        return $courses;
     }
 
     /**
@@ -473,5 +502,45 @@ class Videos extends UPMap
     private static function getResolutionString($width, $height)
     {
         return $width . ' * ' . $height . ' px';
+    }
+
+    /**
+     * Sends a video feedback to support along with description
+     *
+     * @param string $description the description
+     * 
+     * @return boolean the result of sending
+     */
+    public function reportVideo($description)
+    {
+        global $UNI_CONTACT, $user;
+
+        try {
+            $opencast_support_email = \Config::get()->OPENCAST_SUPPORT_EMAIL;
+            if (!filter_var($opencast_support_email, FILTER_VALIDATE_EMAIL)) {
+                $opencast_support_email = $UNI_CONTACT;
+            }
+            $subject = '[Opencast] Feedback';
+            $mailbody  = "Beschreibung:" . "\n";
+            $mailbody .= $description . "\n\n";
+            $mailbody .= "Grundinformationen:" . "\n";
+            $mailbody .= sprintf("Video ID: %s", $this->id) . "\n";
+            $mailbody .= sprintf("Opencast Episode ID: %s", $this->episode) . "\n";
+            $mailbody .= sprintf("Opencast Server Config ID: %s", $this->config_id) . "\n";
+
+            $feedback = new \StudipMail();
+
+            $feedback->setSubject($subject)
+                        ->addRecipient($opencast_support_email)
+                        ->setBodyText($mailbody)
+                        ->setSenderEmail($user->email)
+                        ->setSenderName($user->getFullName())
+                        ->setReplyToEmail($user->email);
+
+            return $feedback->send();
+        } catch (\Throwable $th) {
+            throw new Error(_('Unable to send email'), 500);
+        }
+        return false;
     }
 }
