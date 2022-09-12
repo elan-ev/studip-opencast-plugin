@@ -349,6 +349,38 @@
         }
       }
     },
+    "/playlists/{token}/courses": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "description": "ID of the playlist",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "get": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Get courses associated with the passed playlist",
+        "operationId": "getCoursesForPlaylist",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Video"
+              }
+            }
+          }
+        }
+      }
+    },
     "/playlists/{token}/user/{username}": {
       "parameters": [
         {
@@ -382,12 +414,61 @@
         }
       }
     },
+    "/courses": {
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "returns a list of all courses the current user has tutor perms for or higher",
+        "operationId": "getCoursesForUser",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Course"
+            }
+          }
+        }
+      }
+    },
+    "/courses/{course_id}/config": {
+      "parameters": [
+        {
+          "name": "course_id",
+          "in": "path",
+          "description": "ID of course",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "Returns the config settings for this course, like series and configured workflow",
+        "operationId": "getConfigForCourse",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/CourseConfig"
+            }
+          }
+        }
+      }
+    },
     "/courses/{course_id}/playlists": {
       "parameters": [
         {
           "name": "course_id",
           "in": "path",
-          "description": "ID of coursre",
+          "description": "ID of course",
           "required": true,
           "type": "string"
         }
@@ -414,7 +495,7 @@
         }
       }
     },
-    "/courses/{course_id}/playlists/{token}": {
+    "/courses/{course_id}/playlist/{token}": {
       "parameters": [
         {
           "name": "token",
@@ -465,12 +546,19 @@
         }
       }
     },
-    "/courses/{course_id}/schedule": {
+    "/courses/{course_id}/{semester_filter}/schedule": {
       "parameters": [
         {
           "name": "course_id",
           "in": "path",
-          "description": "ID of coursre",
+          "description": "ID of course",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "semester_filter",
+          "in": "path",
+          "description": "ID of the selected semester filter or 'all'",
           "required": true,
           "type": "string"
         }
@@ -575,6 +663,26 @@
               "items": {
                 "$ref": "#/definitions/Video"
               }
+            }
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "Get all available tags for this user",
+        "operationId": "getTagsForUser",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Tag"
             }
           }
         }
@@ -790,6 +898,32 @@
         ],
         "summary": "Get the LTI launch data, signed and ready to send",
         "operationId": "getLTILaunchData",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/lti/launch_data/{context_id}": {
+      "parameters": [
+        {
+          "name": "context_id",
+          "in": "path",
+          "description": "ID of course or institute",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "lti"
+        ],
+        "summary": "Get the LTI launch data, signed and ready to send for the passed context",
+        "operationId": "getLTILaunchDataForContext",
         "produces": [
           "application/json"
         ],
@@ -1143,6 +1277,71 @@
             "type": "string"
           }
         }
+      }
+    },
+    "Course": {
+      "type": "object",
+      "properties": {
+        "start_semester": {
+          "type": "object",
+          "example": "S1234567",
+          "properties": {
+            "end_semester": {
+              "type": "object",
+              "example": "WS2022/23",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "example": {
+        "S12345678": {
+          "unbegrenzt": {
+            "id": 1,
+            "name": "Kurs A"
+          },
+          "WS2022/23": {
+            "id": 2,
+            "name": "Kurs B"
+          }
+        }
+      }
+    },
+    "CourseConfig": {
+      "type": "object",
+      "properties": {
+        "series": {
+          "type": "object",
+          "properties": {
+            "series_id": {
+              "type": "string"
+            },
+            "visibility": {
+              "type": "string",
+              "enum": [
+                "visible",
+                "invisible"
+              ]
+            }
+          }
+        },
+        "workflow": {
+          "type": "string",
+          "example": "upload"
+        }
+      }
+    },
+    "Tag": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     }
   }
