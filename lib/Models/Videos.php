@@ -109,7 +109,9 @@ class Videos extends UPMap
         $order_table = ($field === 'order') ? 'opv' : 'oc_video';
         $sql .= ' ORDER BY ' . $order_table . '.' . $field . ' ' . $order;
 
-        $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
+        if ($filters->getLimit() != -1) {
+            $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
+        }
 
         return [
             'videos' => self::findBySQL($sql, $params),

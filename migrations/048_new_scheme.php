@@ -1,6 +1,10 @@
 <?php
 class NewScheme extends Migration
 {
+    function description()
+    {
+        return 'update database to new table scheme';
+    }
 
     function up()
     {

@@ -38,7 +38,7 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody v-if="Object.keys(playlists).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
+                <tbody v-if="Object.keys(playlists).length === 0 && axios_running" class="oc--episode-list oc--episode-list--empty">
                     <EmptyPlaylistCard />
                 </tbody>
                 <tbody class="oc--playlist" v-else>
@@ -102,7 +102,7 @@ export default {
             "playlists",
             "currentPlaylist",
             "paging",
-            "loading",
+            "axios_running",
             'addPlaylist'
         ]),
 
@@ -148,6 +148,7 @@ export default {
     mounted() {
         this.$store.commit('clearPaging');
         this.$store.dispatch('loadPlaylists');
+        this.$store.commit('setPlaylistForVideos', null);
     }
 };
 </script>

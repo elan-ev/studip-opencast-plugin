@@ -1,5 +1,5 @@
 <template>
-    <div name="oc--episode">
+    <div>
         <li v-if="event.refresh === undefined" :key="event.id" style="display: flex; flex-direction: row;">
             <div class="oc--flex-checkbox" v-if="playlistForVideos">
                  <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
@@ -44,10 +44,23 @@
                         {{ event.description }}
                     </div>
                 </div>
+                <div class="oc--episode-buttons">
+                    <ConfirmDialog v-if="DeleteConfirmDialog"
+                        :title="$gettext('Aufzeichnung entfernen')"
+                        :message="$gettext('Möchten Sie die Aufzeichnung wirklich entfernen?')"
+                        @done="removeVideo"
+                        @cancel="DeleteConfirmDialog = false"
+                    />
+                </div>
             </div>
-            <div v-if="canEdit" class="oc--actions-container">
-                <StudipActionMenu :items="menuItems"
-                    @performAction="performAction"
+            <div class="oc--sort-options">
+                <studip-icon
+                    shape="arr_2up" role="navigation"
+                    :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')"
+                />
+                <studip-icon
+                    shape="arr_2down" role="navigation"
+                    :hidden="!canMoveDown" @click="$emit('moveDown', event.token)" :title="$gettext('Element nach unten verschieben')"
                 />
             </div>
         </li>
@@ -60,15 +73,14 @@ import EmptyVideoCard from "@/components/Videos/EmptyVideoCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
 import StudipIcon from '@/components/Studip/StudipIcon'
-import StudipActionMenu from '@/components/Studip/StudipActionMenu'
+
 
 export default {
     name: "VideoCard",
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyVideoCard, StudipIcon,
-        StudipActionMenu,
+        EmptyVideoCard, StudipIcon
     },
 
     props: {
@@ -87,15 +99,14 @@ export default {
         },
         selectedVideos: {
             type: Object,
-        },
-        isCourse: {
-            type: Boolean,
-            default: false
-        },
+        }
     },
 
     data() {
         return {
+            DeleteConfirmDialog: false,
+            DownloadDialog: false,
+            editDialog: false,
             preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
             play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg'
         }
@@ -129,57 +140,6 @@ export default {
         isChecked() {
             return this.selectedVideos.indexOf(this.event.token)
                 >= 0 ? true : false;
-        },
-
-        menuItems() {
-            let menuItems = [
-                {
-                    label: this.$gettext('Bearbeiten'),
-                    icon: 'edit',
-                    emit: 'performAction',
-                    emitArguments: 'VideoEdit'
-                },
-                {
-                    label: this.$gettext('Hochladen'),
-                    icon: 'download',
-                    emit: 'performAction',
-                    emitArguments: 'VideoDownload'
-                },
-            ];
-
-            if (!this.isCourse) {
-                menuItems.push({
-                    label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToPlaylist'
-                });
-                menuItems.push({
-                    label: this.$gettext('Zu Kurs hinzufügen'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToSeminar'
-                });
-            }
-
-            menuItems.push({
-                label: this.$gettext('Technisches Feedback'),
-                icon: 'support',
-                emit: 'performAction',
-                emitArguments: 'VideoReport'
-            });
-            menuItems.push({
-                label: this.$gettext('Entfernen'),
-                icon: 'trash',
-                emit: 'performAction',
-                emitArguments: 'VideoDelete'
-            });
-
-            return menuItems;
-        },
-
-        canEdit() {
-            return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
         }
 
     }

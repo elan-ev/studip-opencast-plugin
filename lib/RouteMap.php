@@ -62,18 +62,17 @@ class RouteMap
 
         $this->app->put('/playlists/{token}/positions', Routes\Playlist\PlaylistUpdatePositions::class);
 
-        $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);      // TODO: add this route to the API scheme
+        $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);
 
         // Course routes
-        $this->app->get('/courses', Routes\Course\MyCourseList::class);                             // TODO: add this route to the API scheme
-        $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);          // TODO: add this route to the API scheme
-        $this->app->get('/courses/{course_id}/playlist', Routes\Course\CourseListPlaylist::class);
+        $this->app->get('/courses', Routes\Course\MyCourseList::class);
+        $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);
+        $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
         $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         // LTI
-        // TODO: Update docs for new argument in this route
         $this->app->get('/lti/launch_data/{context_id}', Routes\LTI\LaunchData::class);
         $this->app->get('/lti/launch_data', Routes\LTI\LaunchData::class);
 
@@ -84,7 +83,7 @@ class RouteMap
         $this->app->put('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleUpdate::class);
         $this->app->delete('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleDelete::class);
 
-        $this->app->get('/tags', Routes\Tags\TagListForUser::class);    // TODO: add this route to the API scheme
+        $this->app->get('/tags', Routes\Tags\TagListForUser::class);
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);

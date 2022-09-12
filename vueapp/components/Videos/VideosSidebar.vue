@@ -14,7 +14,7 @@
                     </router-link>
                 </li>
                 <li :class="{
-                    active: fragment == 'playlists' || fragment == 'playlistvideos'
+                    active: fragment == 'playlists'
                     }">
                     <router-link :to="{ name: 'playlists' }">
                         Wiedergabelisten
@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <div class="sidebar-widget " id="sidebar-actions">
+    <div class="sidebar-widget" id="sidebar-actions">
         <div class="sidebar-widget-header" v-translate>
             Aktionen
         </div>
@@ -40,6 +40,12 @@
                     Video Aufnehmen
                 </li>
                 -->
+
+                <li @click="addVideosToPlaylist" v-if="fragment == 'playlist_edit'">
+                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                    Videos hinzufügen
+                </li>
+
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     Videos Sortieren
@@ -62,17 +68,20 @@
             </ul>
         </div>
     </div>
+
+    <LoadingSpinner v-if="axios_running"/>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon
+        StudipIcon,     LoadingSpinner
     },
 
     emits: ['uploadVideo', 'recordVideo', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
@@ -95,13 +104,18 @@ export default {
         },
 
         ...mapGetters([
-            'videoSortMode'
+            'videoSortMode', 'playlist', 'axios_running'
         ]),
     },
 
     methods: {
         createPlaylist() {
             this.$store.dispatch('addPlaylistUI', true);
+        },
+
+        addVideosToPlaylist() {
+            this.$store.commit('setPlaylistForVideos', this.playlist);
+            this.$router.push({ name: 'videos'})
         }
     },
 

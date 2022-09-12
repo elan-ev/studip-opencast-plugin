@@ -1,7 +1,7 @@
 import ApiService from "@/common/api.service";
 
 const state = {
-    storedVideos: {},
+    videos: {},
     videoSearch: '',
     videoSort: {
         field: 'mkdate',
@@ -42,17 +42,13 @@ const state = {
         currPage: 0,
         lastPage: 0,
         items: 0
-    }
+    },
+    playlistForVideos: null
 }
 
 const getters = {
-    videos(state, getters, rootState) {
-        let playlist_token = rootState.playlists.currentPlaylist
-        if (state.storedVideos[playlist_token] === undefined ||
-            state.storedVideos[playlist_token][state.paging.currPage] === undefined) {
-            return {};
-        }
-        return state.storedVideos[playlist_token][state.paging.currPage]
+    videos(state) {
+        return state.videos
     },
 
     paging(state) {
@@ -77,50 +73,42 @@ const getters = {
 
     search(state) {
         return state.search
+    },
+
+    playlistForVideos(state) {
+        return state.playlistForVideos
     }
 }
 
 const actions = {
-    async loadVideos({ commit, state, dispatch, rootState }, filters=[]) {
-        let playlist_token = rootState.playlists.currentPlaylist
+    async loadVideos({ commit, state, dispatch, rootState }, filters = []) {
         let $cid = rootState.opencast.cid;
-
-        let page_from = state.paging.currPage
-        let preload = state.videoSortMode
-
-        dispatch('updateLoading', true);
 
         const params = new URLSearchParams();
 
-        params.append('order', state.videoSort.field + "_" + state.videoSort.order)
-        params.append('offset', state.paging.currPage * state.limit)
-
-        if (preload) {
-            if (state.paging.currPage > 0) {
-                page_from--
-                params.append('limit', state.limit*3)
-            }
-            else {
-                params.append('limit', state.limit*2)
-            }
-        } else {
-            params.append('limit', state.limit);
+        if (!filters['order']) {
+            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
         }
 
-        if (playlist_token !== 'all') {
-            filters.push({
-                'type': 'playlist',
-                'value': playlist_token
-            });
-        } else if ($cid) {
+        if (!filters['offset']) {
+            params.append('offset', state.paging.currPage * state.limit);
+        }
+
+        if (!filters['limit']) {
+            params.append('limit',  state.limit);
+        }
+
+        if ($cid) {
             params.append('cid', $cid);
         }
 
-        params.append('filters', JSON.stringify(filters));
+        if (filters.filters) {
+            params.append('filters', JSON.stringify(filters.filters));
+        }
 
         return ApiService.get('videos', { params })
             .then(({ data }) => {
-                commit('addVideos', {'videos': data.videos, 'playlist_token': playlist_token, 'page_from': page_from});
+                commit('setVideos', data.videos);
 
                 if (data.count) {
                     commit('updatePaging', {
@@ -128,8 +116,6 @@ const actions = {
                         items   : data.count
                     });
                 }
-
-                dispatch('updateLoading', false);
             });
     },
 
@@ -175,25 +161,12 @@ const actions = {
             return sort.field === 'order' && sort.order === 'asc';
         }));
         commit('setVideoSortMode', mode);
-    },
-
-    setVideoPosition({commit}, {from, to}) {
-        commit('setVideoPosition', {'from': from, 'to': to})
     }
 }
 
 const mutations = {
-    addVideos(state, payload) {
-        let videos = payload.videos;
-        let playlist_token = payload.playlist_token;
-        let page_from = payload.page_from;
-
-        if (state.storedVideos[playlist_token] === undefined) {
-            state.storedVideos[playlist_token] = {}
-        }
-        for (let i=0; i<videos.length/state.limit; i++) {
-            state.storedVideos[playlist_token][page_from+i] = videos.slice(i*state.limit, (i+1)*state.limit);
-        }
+    setVideos(state, videos) {
+        state.videos = videos;
     },
 
     setVideoSort(state, sort) {
@@ -228,15 +201,8 @@ const mutations = {
         state.paging = paging;
     },
 
-    setVideoPosition(state, {from, to}) {
-        let fromVideo = state.storedVideos[from.playlist][from.page][from.index]
-        let toVideo = state.storedVideos[to.playlist][to.page][to.index]
-
-        state.storedVideos[from.playlist][from.page][from.index] = toVideo
-        state.storedVideos[to.playlist][to.page][to.index] = fromVideo
-
-        state.videoSortList[from.page*state.limit+from.index] = toVideo.token
-        state.videoSortList[to.page*state.limit+to.index] = fromVideo.token
+    setPlaylistForVideos(state, playlist) {
+        state.playlistForVideos = playlist;
     }
 }
 

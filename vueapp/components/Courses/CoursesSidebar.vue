@@ -129,16 +129,12 @@ export default {
         },
 
         recordingLink() {
-            console.log('recordingLink', JSON.stringify(this.course_config));
             if (!this.simple_config_list.settings || !this.course_config) {
                 return;
             }
 
             let config_id = this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
             let server    = this.simple_config_list.server[config_id];
-
-            console.log('getRecordingLink::config_id', config_id);
-            console.log('getRecordingLink::server', JSON.parse(JSON.stringify(server)));
 
             // use the first avai
             return window.STUDIP.URLHelper.getURL(

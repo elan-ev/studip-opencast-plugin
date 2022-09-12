@@ -76,13 +76,11 @@ const getters = {
 
 const actions = {
     async loadPlaylists(context) {
-        context.dispatch('updateLoading', true);
         let $cid = context.rootState.opencast.cid;
-        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlist';
+        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
 
         return ApiService.get($route)
             .then(({ data }) => {
-                context.dispatch('updateLoading', false);
                 context.commit('setPlaylists', data);
             });
     },
@@ -130,6 +128,18 @@ const actions = {
         });
     },
 
+    async addVideosToPlaylist(context, data) {
+        for (let i = 0; i < data.videos.length; i++) {
+            await ApiService.put('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+        }
+    },
+
+    async removeVideosFromPlaylist(context, data) {
+        for (let i = 0; i < data.videos.length; i++) {
+            await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+        }
+    },
+
     addPlaylistUI({ commit }, show) {
         commit('setPlaylistAdd', show);
     },
@@ -139,7 +149,7 @@ const actions = {
         commit('setPlaylistAdd', false);
 
         let $cid = rootState.opencast.cid;
-        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlist';
+        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
 
         return ApiService.post($route, playlist)
             .then(({ data }) => {

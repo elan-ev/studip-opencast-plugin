@@ -55,7 +55,7 @@
              </template>
         </StudipDialog>
 
-        <VideosList/>
+        <PlaylistVideos :playlist_token="token"/>
     </div>
 </template>
 
@@ -66,7 +66,7 @@ import StudipDialog from '@studip/StudipDialog.vue';
 
 import PlaylistTags from '@/components/Playlists/PlaylistTags.vue';
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue';
-import VideosList from "@/components/Videos/VideosList";
+import PlaylistVideos from "@/components/Playlists/PlaylistVideos";
 
 import Tag from '@/components/Tag.vue'
 
@@ -82,7 +82,7 @@ export default {
         StudipIcon,     StudipButton,
         StudipDialog,
         PlaylistTags,   PlaylistVisibility,
-        VideosList,     Tag
+        PlaylistVideos, Tag
     },
 
     data() {
@@ -100,8 +100,12 @@ export default {
 
     mounted() {
         this.$store.dispatch('setCurrentPlaylist', this.token);
-        this.$store.dispatch('loadVideos');
         this.$store.dispatch('loadPlaylist', this.token);
+    },
+
+    unmounted() {
+        this.$store.dispatch('setCurrentPlaylist', null);
+        this.$store.commit('setPlaylist', null);
     },
 
     methods: {

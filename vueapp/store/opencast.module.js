@@ -5,9 +5,9 @@ const state = {
     servers: [],
     currentUser: {},
     currentPage: 'videos',
-    loading: false,
     cid: null,
     site: null,
+    axios_running: false,
     userCourses: [],
 }
 
@@ -30,9 +30,9 @@ const getters = {
     site(state) {
         return state.site;
     },
-    loading(state) {
-        return state.loading
-    },
+    axios_running(state) {
+        return state.axios_running;
+    }
     userCourses(state) {
         return state.userCourses
     },
@@ -50,10 +50,6 @@ const actions = {
 
     updatePage({commit}, page) {
         commit('setPage', page);
-    },
-
-    updateLoading({commit}, loading) {
-        commit('setLoading', loading);
     },
 
     async loadSeries({commit, dispatch}, id) {
@@ -75,6 +71,14 @@ const actions = {
             .then(({ data }) => {
                 commit('setCurrentUser', data.data);
             });
+    },
+
+    axiosStart({ commit }) {
+        commit('setAxiosRunning', true);
+    },
+
+    axiosStop({ commit }) {
+        commit('setAxiosRunning', false);
     },
 
     async loadUserCourses({ commit, dispatch}) {
@@ -110,8 +114,8 @@ const mutations = {
         state.currentUser = data;
     },
 
-    setLoading(state, loading) {
-        state.loading = loading;
+    setAxiosRunning(state, running) {
+        state.axios_running = running;
     },
 
     setUserCourses(state, data) {
