@@ -20,7 +20,7 @@
 
         <label>
             Gefunde Serien
-            <select name="series"
+            <select name="series" required
                     id="series-select"
                     data-placeholder="<?= $_('Wählen Sie eine Series aus.') ?>"
             >

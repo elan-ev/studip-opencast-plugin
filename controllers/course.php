@@ -348,24 +348,28 @@ class CourseController extends OpencastController
         OCPerm::checkEdit($this->course_id);
 
         $series = json_decode(Request::get('series'), true);
-        $episode_counts = OCSeriesModel::setSeriesforCourse(
-            $course_id,
-            $series['config_id'],
-            $series['series_id'],
-            'visible',
-            time()
-        );
-        StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
-
-        $success_message = $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.');
-        if ($episode_counts) {
-            $success_message .= ' ' . sprintf(
-                $this->_('Verarbeitung von %s Video(s), bitte haben Sie etwas Geduld und aktualisieren Sie die Seite gelegentlich!'),
-                htmlReady($episode_counts)
+        if ($series['config_id'] && $series['series_id']) {
+            $episode_counts = OCSeriesModel::setSeriesforCourse(
+                $course_id,
+                $series['config_id'],
+                $series['series_id'],
+                'visible',
+                time()
             );
+            StudipLog::log('OC_CONNECT_SERIES', null, $course_id, json_encode($series));
 
+            $success_message = $this->_('Änderungen wurden erfolgreich übernommen. Es wurde eine Serie für den Kurs verknüpft.');
+            if ($episode_counts) {
+                $success_message .= ' ' . sprintf(
+                    $this->_('Verarbeitung von %s Video(s), bitte haben Sie etwas Geduld und aktualisieren Sie die Seite gelegentlich!'),
+                    htmlReady($episode_counts)
+                );
+
+            }
+            PageLayout::postSuccess($success_message);
+        } else {
+            PageLayout::postError($this->_('Sie haben keine Serie ausgewählt!'));
         }
-        PageLayout::postSuccess($success_message);
         $this->redirect('course/index');
     }
 
