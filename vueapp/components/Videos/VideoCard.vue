@@ -1,6 +1,10 @@
 <template>
     <div name="oc--episode">
-        <li v-if="event.refresh === undefined" :key="event.id">
+        <li v-if="event.refresh === undefined" :key="event.id" style="display: flex; flex-direction: row;">
+            <div class="oc--flex-checkbox" v-if="playlistForVideos">
+                 <input type="checkbox" @change="$emit('toggleVideo', event.id)">
+            </div>
+
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
                     <a v-if="event.publication && event.preview" :href="event.paella" target="_blank">
@@ -84,6 +88,10 @@ export default {
         canMoveDown: {
             type: Boolean,
             default: false
+        },
+        playlistForVideos: {
+            type: Object,
+            default: null
         }
     },
 

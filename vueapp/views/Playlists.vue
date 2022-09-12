@@ -148,6 +148,7 @@ export default {
     mounted() {
         this.$store.commit('clearPaging');
         this.$store.dispatch('loadPlaylists');
+        this.$store.commit('setPlaylistForVideos', null);
     }
 };
 </script>

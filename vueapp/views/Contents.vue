@@ -30,6 +30,7 @@ import { mapGetters } from "vuex";
 
 export default {
     name: "Contents",
+
     components: {
         VideosSidebar,      VideoUpload,
         MessageList

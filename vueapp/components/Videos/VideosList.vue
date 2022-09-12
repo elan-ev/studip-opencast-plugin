@@ -1,7 +1,24 @@
 <template>
     <div>
+        {{ selectedVideos }}
+        <MessageBox type="info" v-if="playlistForVideos">
+            {{ $gettext('Bitte wählen Sie die Videos aus, die zur Wiedergabeliste hinzugefügt werden sollen.') }}
+        </MessageBox>
+        <h3 v-if="playlistForVideos">
+            {{ playlistForVideos.title }}
+            <div class="oc--tags">
+                <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
+            </div>
+        </h3>
         <SearchBar @search="doSearch" v-if="!videoSortMode"/>
         <PaginationButtons @changePage="changePage"/>
+
+        <div v-if="playlistForVideos || true" class="oc--bulk-actions">
+        <input type="checkbox" v-model="selectAll" @change="toggleAll">
+        <select>
+            <option>{{ $gettext('Aktionen') }}</option>
+        </select>
+        </div>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="Object.keys(videos).length === 0 && loading" class="oc--episode-list oc--episode-list--empty">
@@ -29,6 +46,8 @@
                     :canMoveDown="canMoveDown(index)"
                     @moveUp="moveUpVideoCard"
                     @moveDown="moveDownVideoCard"
+                    :playlistForVideos="playlistForVideos"
+                    @toggleVideo="toggleVideo"
                 ></VideoCard>
             </ul>
         </div>
@@ -42,12 +61,30 @@ import EmptyVideoCard from './EmptyVideoCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue'
+import Tag from '@/components/Tag.vue'
 
 export default {
     name: "VideosList",
 
+    props: {
+        'playlist_token': {
+            type: String,
+            default: null
+        }
+    },
+
     components: {
-        VideoCard, EmptyVideoCard, PaginationButtons, MessageBox, SearchBar
+        VideoCard,          EmptyVideoCard,
+        PaginationButtons,  MessageBox,
+        SearchBar,          Tag
+    },
+
+    data() {
+        return {
+            filters: [],
+            selectedVideos: [],
+            selectAll: false
+        }
     },
 
     computed: {
@@ -57,6 +94,17 @@ export default {
             "currentPlaylist",
             "paging",
             "loading"]),
+            "loading",
+            "playlistForVideos"
+        ]),
+
+        visVideos() {
+            if (this.videos[this.currentPlaylist] === undefined ||
+                this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
+                return {};
+            }
+            return this.videos[this.currentPlaylist][this.paging.currPage]
+        }
     },
 
     methods: {
@@ -65,7 +113,31 @@ export default {
             await this.$store.dispatch('loadVideos')
         },
 
+        toggleVideo(id) {
+            let index = this.selectedVideos.indexOf(id);
+
+            console.log(this.selectedVideos, id, index);
+
+            if (index >= 0) {
+                this.selectedVideos.splice(index, 1);
+            } else {
+                this.selectedVideos.push(id);
+            }
+        },
+
+        toggleAll() {
+            if (this.selectAll) {
+                this.selectedVideos = [];
+                for (let id in this.visVideos) {
+
+                }
+            } else {
+                this.selectedVideos = [];
+            }
+        },
+
         doSearch(filters) {
+            filters.concat(this.filters);
             console.log('video list update initiated', filters);
             this.$store.dispatch('loadVideos', filters)
         },
@@ -145,7 +217,16 @@ export default {
 
     mounted() {
         this.$store.commit('clearPaging');
-        this.$store.dispatch('loadVideos');
+
+        if (this.playlist_token) {
+            this.filters.push({
+                type: 'playlist',
+                value: this.playlist_token
+            });
+        }
+
+        this.$store.dispatch('loadVideos', this.filters);
+
     }
 };
 </script>

@@ -40,6 +40,12 @@
                     Video Aufnehmen
                 </li>
                 -->
+
+                <li @click="addVideosToPlaylist" v-if="fragment == 'playlist_edit'">
+                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                    Videos hinzufügen
+                </li>
+
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     Videos Sortieren
@@ -95,13 +101,18 @@ export default {
         },
 
         ...mapGetters([
-            'videoSortMode'
+            'videoSortMode', 'playlist'
         ]),
     },
 
     methods: {
         createPlaylist() {
             this.$store.dispatch('addPlaylistUI', true);
+        },
+
+        addVideosToPlaylist() {
+            this.$store.commit('setPlaylistForVideos', this.playlist);
+            this.$router.push({ name: 'videos'})
         }
     },
 

@@ -36,8 +36,10 @@
 
         <td>
            <StudipActionMenu :items="menuItems"
-                @addToCourse="addToCourse(this.playlist)"
-                @deletePlaylist="deletePlaylist(this.playlist)"
+                @addToCourse="addToCourse(playlist)"
+                @deletePlaylist="deletePlaylist(playlist)"
+                @editPlaylist="$router.push({ name: 'playlist_edit', params: { token: playlist.token } })"
+                @addToPlaylist="addToPlaylist(playlist)"
            />
         </td>
     </tr>
@@ -72,6 +74,12 @@ export default {
                     label: this.$gettext('Bearbeiten'),
                     icon: 'edit',
                     emit: 'editPlaylist'
+                },
+                 {
+                    id: 2,
+                    label: this.$gettext('Videos hinzufügen'),
+                    icon: 'add',
+                    emit: 'addToPlaylist'
                 },
                 {
                     id: 2,
@@ -112,6 +120,11 @@ export default {
 
         deletePlaylist(playlist) {
            this.$emit('deletePlaylist', playlist);
+        },
+
+        addToPlaylist(playlist) {
+            this.$store.commit('setPlaylistForVideos', playlist);
+            this.$router.push({ name: 'videos'})
         }
     }
 }

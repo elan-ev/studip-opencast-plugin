@@ -42,7 +42,8 @@ const state = {
         currPage: 0,
         lastPage: 0,
         items: 0
-    }
+    },
+    playlistForVideos: null
 }
 
 const getters = {
@@ -77,6 +78,10 @@ const getters = {
 
     search(state) {
         return state.search
+    },
+
+    playlistForVideos(state) {
+        return state.playlistForVideos
     }
 }
 
@@ -225,6 +230,10 @@ const mutations = {
 
         state.videoSortList[from.page*state.limit+from.index] = toVideo.token
         state.videoSortList[to.page*state.limit+to.index] = fromVideo.token
+    },
+
+    setPlaylistForVideos(state, playlist) {
+        state.playlistForVideos = playlist;
     }
 }
 

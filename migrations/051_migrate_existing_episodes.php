@@ -32,28 +32,32 @@ class MigrateExistingEpisodes extends Migration
         $db->exec('START TRANSACTION');
 
         // first off, find all distinct episodes and add them to oc_videos
-        while($data = $results->fetch()) {
+        while($data = $results->fetch())
+        {
+            $video = Videos::findOneByEpisode($data['episode_id']);
 
-            $video = new Videos();
-            $video->setData([
-                'episode'     => $data['episode_id'],
-                'config_id'   => $data['config_id'],
-                'visibility'  => $data['visible'] == 'free' ? 'public' : 'internal'                 // if the episode has been world visible, keep it world visible (in the old plugin,
-                                                                                                    // the episodes were world visible in any connected seminar as well, so this should work).
-                                                                                                    // Otherwise we keep it as 'internal', because seminar visibility is handled in the second migration step
-            ]);
-            $video->store();
+            if (empty($video)) {
+                $video = new Videos();
+                $video->setData([
+                    'episode'     => $data['episode_id'],
+                    'config_id'   => $data['config_id'],
+                    'visibility'  => $data['visible'] == 'free' ? 'public' : 'internal'                 // if the episode has been world visible, keep it world visible (in the old plugin,
+                                                                                                        // the episodes were world visible in any connected seminar as well, so this should work).
+                                                                                                        // Otherwise we keep it as 'internal', because seminar visibility is handled in the second migration step
+                ]);
+                $video->store();
 
-            // create task to update permissions and everything else
-            $task = new VideoSync;
+                // create task to update permissions and everything else
+                $task = new VideoSync;
 
-            $task->setData([
-                'video_id'  => $video->id,
-                'state'     => 'scheduled',
-                'scheduled' => date('Y-m-d H:i:s')
-            ]);
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'scheduled' => date('Y-m-d H:i:s')
+                ]);
 
-            $task->store();
+                $task->store();
+            }
         }
 
         $db->exec('COMMIT');

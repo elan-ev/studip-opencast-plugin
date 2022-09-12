@@ -65,6 +65,8 @@ class VideosUserPerms extends \SimpleORMap
                         $perm->store();
                     }
                 }
+
+                // TODO add to oc_video_seminar
             }
         } else {
             // if no series is assigned, try other mappings

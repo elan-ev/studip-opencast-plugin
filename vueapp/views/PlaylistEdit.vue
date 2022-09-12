@@ -55,7 +55,7 @@
              </template>
         </StudipDialog>
 
-        <VideosList/>
+        <VideosList :playlist_token="this.playlist.token"/>
     </div>
 </template>
 
@@ -100,7 +100,6 @@ export default {
 
     mounted() {
         this.$store.dispatch('setCurrentPlaylist', this.token);
-        this.$store.dispatch('loadVideos');
         this.$store.dispatch('loadPlaylist', this.token);
     },
 
