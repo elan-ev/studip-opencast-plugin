@@ -107,6 +107,9 @@ export default {
                 event_id: this.event.token,
                 checked: e.target.checked ? true : false
             });
+        },
+        performAction(action) {
+            this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
         }
     },
 
