@@ -211,7 +211,6 @@ $episode-background: $light-gray-color-20;
     }
 
     > div > li {
-        background: $episode-background;
         border-bottom: 1px solid $light-gray-color-40;
         padding: 5px 1em 5px 1em;
         display: block;
@@ -221,6 +220,7 @@ $episode-background: $light-gray-color-20;
 
         .oc--playercontainer {
             margin-top: 5px;
+            background-color: transparent;
         }
 
         img.oc--previewimage {
