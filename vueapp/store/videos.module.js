@@ -119,11 +119,8 @@ const actions = {
             });
     },
 
-    async uploadSortPositions({ commit, state, dispatch, rootState }, playlist_token) {
-        return ApiService.put('playlists/' + playlist_token + '/positions', state.videoSortList)
-            .then(({ data }) => {
-                //context.commit('setPlaylists', [data]);
-            });
+    async uploadSortPositions({}, data) {
+        return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
     },
 
     async deleteVideo(context, token) {

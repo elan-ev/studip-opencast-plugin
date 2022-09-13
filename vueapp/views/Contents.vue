@@ -53,18 +53,14 @@ export default {
     methods: {
         enableSortMode() {
             this.$store.dispatch('setVideoSortMode', true)
-            this.$store.dispatch('loadVideos')
         },
 
         saveSort() {
-            this.$store.dispatch('uploadSortPositions', this.currentPlaylist)
-            this.$store.dispatch('setVideoSortMode', false)
-            this.$store.dispatch('loadVideos')
+            this.$store.dispatch('setVideoSortMode', 'commit')
         },
 
         cancelSort() {
             this.$store.dispatch('setVideoSortMode', false)
-            this.$store.dispatch('loadVideos')
         },
 
         uploadDone() {
