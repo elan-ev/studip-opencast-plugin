@@ -8,7 +8,7 @@
                 <li :class="{
                     active: fragment == 'videos'
                     }"
-                    v-on:click="this.$store.dispatch('setCurrentPlaylist', 'all'); this.$store.dispatch('loadVideos')">
+                    v-on:click="this.$store.dispatch('loadVideos')">
                     <router-link :to="{ name: 'videos' }">
                         Videos
                     </router-link>

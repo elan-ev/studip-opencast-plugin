@@ -5,7 +5,6 @@ const state = {
     playlists: null,
     playlistSearch: '',
     addPlaylist: false,
-    currentPlaylist: 'all',
     availableTags: [],
     playlistCourses: null,
     myCourses: null
@@ -18,10 +17,6 @@ const getters = {
 
     playlist(state) {
         return state.playlist
-    },
-
-    currentPlaylist(state) {
-        return state.currentPlaylist
     },
 
     addPlaylist(state) {
@@ -129,10 +124,6 @@ const actions = {
         return ApiService.delete('playlists/' + token);
     },
 
-    async setCurrentPlaylist(context, token) {
-        context.commit("setCurrentPlaylist", token);
-    },
-
     async setPlaylistSearch({dispatch, commit}, search) {
         await commit('setPlaylistSearch', search)
         dispatch('loadPlaylists')
@@ -161,10 +152,6 @@ const mutations = {
 
     setPlaylistAdd(state, show) {
         state.addPlaylist = show;
-    },
-
-    setCurrentPlaylist(state, token) {
-        state.currentPlaylist = token;
     },
 
     setAvailableTags(state, availableTags) {

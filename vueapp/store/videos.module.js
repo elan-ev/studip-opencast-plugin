@@ -51,8 +51,6 @@ const getters = {
 
 const actions = {
     async loadVideos({ commit, state, dispatch, rootState }, filters = []) {
-        let $cid = rootState.opencast.cid;
-
         const params = new URLSearchParams();
 
         if (!filters['order']) {
@@ -65,10 +63,6 @@ const actions = {
 
         if (!filters['limit']) {
             params.append('limit',  state.limit);
-        }
-
-        if ($cid) {
-            params.append('cid', $cid);
         }
 
         for (let key in filters) {

@@ -111,12 +111,13 @@ export default {
     data() {
         return {
             showAddDialog: false,
-            semesterFilter: null
+            semesterFilter: null,
+            currentPlaylist: 'all'
         }
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentPlaylist", "currentPage",
+        ...mapGetters(["playlists", "currentPage",
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config']),
 
@@ -150,8 +151,22 @@ export default {
 
     methods: {
         setPlaylist(token) {
-            this.$store.dispatch('setCurrentPlaylist', token);
-            this.$store.dispatch('loadVideos');
+            if (token === 'all') {
+                this.options = {
+                    cid: this.cid
+                }
+            } else {
+                this.options = {
+                     filters: {
+                        'type': 'playlist',
+                        'token': token
+                    }
+                }
+            }
+
+            this.currentPlaylist = token;
+
+            this.$store.dispatch('loadVideos', this.options);
         },
 
         getScheduleList() {
@@ -162,13 +177,18 @@ export default {
 
         setPage(page) {
             this.$store.dispatch('setPage', page);
-            this.$store.dispatch('loadVideos');
+            this.$store.dispatch('loadVideos', this.options);
         }
     },
 
     mounted() {
         this.$store.dispatch('loadPlaylists');
-        this.$store.dispatch('loadVideos');
+        this.options = {
+            cid: this.cid
+        }
+
+        this.$store.dispatch('loadVideos', this.options);
+
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;

@@ -44,7 +44,7 @@ export default new createRouter({
                 {
                     path: "videos",
                     name: "course",
-                    component: () => import("@/views/Videos"),
+                    component: () => import("@/views/CourseVideos"),
                 },
                 {
                     path: "schedule",

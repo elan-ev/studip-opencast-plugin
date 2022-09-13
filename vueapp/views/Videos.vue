@@ -13,6 +13,6 @@ export default {
     name: "Videos",
     components: {
         VideosList
-    },
+    }
 };
 </script>

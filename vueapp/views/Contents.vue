@@ -38,8 +38,7 @@ export default {
 
     computed: {
         ...mapGetters([
-            'currentUser',
-            'currentPlaylist'
+            'currentUser'
         ])
     },
 

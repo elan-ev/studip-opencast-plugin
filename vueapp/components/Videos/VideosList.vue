@@ -92,6 +92,10 @@ export default {
         'playlist_token': {
             type: String,
             default: null
+        },
+        'filters': {
+            type: Object,
+            default: []
         }
     },
 
@@ -107,7 +111,6 @@ export default {
 
     data() {
         return {
-            filters: [],
             selectedVideos: [],
             videos_loading: true,
             actionComponent: null,
@@ -126,7 +129,7 @@ export default {
         ]),
 
         isCourse() {
-            return this?.cid;
+            return this?.cid ? true : false;
         },
 
         selectAll() {
@@ -137,7 +140,7 @@ export default {
     methods: {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
-            await this.$store.dispatch('loadVideos')
+            await this.$store.dispatch('loadVideos', this.filters)
         },
 
         toggleVideo(data) {
@@ -166,7 +169,7 @@ export default {
         },
 
         doSearch(filters) {
-            filters.concat(this.filters);
+            filters = filters.concat(this.filters);
             this.$store.dispatch('loadVideos', filters)
         },
 
@@ -210,9 +213,8 @@ export default {
     mounted() {
         let view = this;
         this.$store.commit('clearPaging');
-        this.$store.dispatch('loadVideos', {
-            filters: this.filters
-        }).then(() => { view.videos_loading = false });
+        this.$store.dispatch('loadVideos', this.filters)
+            .then(() => { view.videos_loading = false });
         this.$store.dispatch('loadUserCourses');
     }
 };

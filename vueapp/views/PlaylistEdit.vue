@@ -99,12 +99,10 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('setCurrentPlaylist', this.token);
         this.$store.dispatch('loadPlaylist', this.token);
     },
 
     unmounted() {
-        this.$store.dispatch('setCurrentPlaylist', null);
         this.$store.commit('setPlaylist', null);
     },
 

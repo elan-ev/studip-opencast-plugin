@@ -100,21 +100,10 @@ export default {
     computed: {
         ...mapGetters([
             "playlists",
-            "currentPlaylist",
             "paging",
             "axios_running",
             'addPlaylist'
-        ]),
-
-        /*
-        visVideos() {
-            if (this.videos[this.currentPlaylist] === undefined ||
-                this.videos[this.currentPlaylist][this.paging.currPage] === undefined) {
-                return {};
-            }
-            return this.videos[this.currentPlaylist][this.paging.currPage]
-        }
-        */
+        ])
     },
 
     methods: {
