@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Videos</h2>
-        <VideosList :filters="filters"></VideosList>
+        <VideosList :filters="getFilters"></VideosList>
     </div>
 </template>
 
@@ -26,6 +26,16 @@ export default {
 
     computed: {
          ...mapGetters(['cid'])
+    },
+
+    methods: {
+        getFilters() {
+            return {
+                filters: {
+                    cid: this.cid
+                }
+            }
+        }
     }
 };
 </script>
