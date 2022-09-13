@@ -30,6 +30,8 @@ class MyCourseList extends OpencastController
         $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
         $results = [];
+        // NOTE: This class is also used in VideoAddToSeminar.vue, in order for dozents to select the courses.
+        // Any changes applied to the result's formation of this class must be also implemented in that component!
         foreach ($courses as $course_id) {
             $course = \Course::find($course_id);
             $results['S'. $course->end_semester->beginn ?: '0'][$course->getFullname('sem-duration-name')][] = [

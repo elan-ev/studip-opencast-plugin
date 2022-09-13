@@ -15,6 +15,11 @@ class VideoSeminars extends \SimpleORMap
             'foreign_key' => 'video_id',
         ];
 
+        $config['belongs_to']['course'] = [
+            'class_name' => 'Course',
+            'foreign_key' => 'seminar_id',
+        ];
+
         parent::configure($config);
     }
 

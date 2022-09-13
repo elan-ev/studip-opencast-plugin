@@ -51,10 +51,21 @@
                     v-bind:key="event.token"
                     :playlistForVideos="playlistForVideos"
                     :selectedVideos="selectedVideos"
+                    :isCourse="isCourse"
                     @toggle="toggleVideo"
+                    @doAction="doAction"
                 ></VideoCard>
             </ul>
         </div>
+
+        <template v-if="showActionDialog">
+            <component :is="actionComponent"
+                @cancel="clearAction"
+                @done="doAfterAction"
+                :event="selectedEvent"
+            >
+            </component>
+        </template>
     </div>
 </template>
 
@@ -65,7 +76,13 @@ import VideoCard from './VideoCard.vue';
 import EmptyVideoCard from './EmptyVideoCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
-import SearchBar from '@/components/SearchBar.vue'
+import SearchBar from '@/components/SearchBar.vue';
+import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
+import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
+import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
+import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
+import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
+import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import Tag from '@/components/Tag.vue'
 
 export default {
@@ -79,17 +96,23 @@ export default {
     },
 
     components: {
-        VideoCard,          EmptyVideoCard,
-        PaginationButtons,  MessageBox,
-        SearchBar,          Tag,
-        StudipButton
+        VideoCard, EmptyVideoCard,
+        PaginationButtons, MessageBox,
+        SearchBar, Tag,
+        StudipButton, VideoAddToPlaylist,
+        VideoAddToSeminar, VideoDelete,
+        VideoDownload, VideoReport,
+        VideoEdit
     },
 
     data() {
         return {
             filters: [],
             selectedVideos: [],
-            videos_loading: true
+            videos_loading: true,
+            actionComponent: null,
+            showActionDialog: false,
+            selectedEvent: null
         }
     },
 
@@ -98,8 +121,13 @@ export default {
             "videos",
             "paging",
             "axios_running",
-            "playlistForVideos"
+            "playlistForVideos",
+            "cid",
         ]),
+
+        isCourse() {
+            return this?.cid;
+        },
 
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
@@ -115,7 +143,6 @@ export default {
         toggleVideo(data) {
             if (data.checked === false) {
                 let index = this.selectedVideos.indexOf(data.event_id);
-
                 if (index >= 0) {
                     this.selectedVideos.splice(index, 1);
                 }
@@ -156,6 +183,27 @@ export default {
                      text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
                 });
             })
+        },
+
+        doAction(args) {
+            if (Object.keys(this.$options.components).includes(args.actionComponent)) {
+                this.actionComponent = args.actionComponent;
+                this.selectedEvent = args.event;
+                this.showActionDialog = true;
+            }
+        },
+
+        async doAfterAction(args) {
+            this.clearAction();
+            if (args == 'refresh') {
+                await this.$store.dispatch('loadVideos');
+            }
+        },
+
+        clearAction() {
+            this.showActionDialog = false;
+            this.actionComponent = null;
+            this.selectedEvent = null;
         }
     },
 
@@ -165,6 +213,7 @@ export default {
         this.$store.dispatch('loadVideos', {
             filters: this.filters
         }).then(() => { view.videos_loading = false });
+        this.$store.dispatch('loadUserCourses');
     }
 };
 </script>

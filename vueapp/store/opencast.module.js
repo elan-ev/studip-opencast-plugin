@@ -7,7 +7,8 @@ const state = {
     currentPage: 'videos',
     cid: null,
     site: null,
-    axios_running: false
+    axios_running: false,
+    userCourses: [],
 }
 
 const getters = {
@@ -31,7 +32,10 @@ const getters = {
     },
     axios_running(state) {
         return state.axios_running;
-    }
+    },
+    userCourses(state) {
+        return state.userCourses
+    },
 }
 
 
@@ -75,7 +79,14 @@ const actions = {
 
     axiosStop({ commit }) {
         commit('setAxiosRunning', false);
-    }
+    },
+
+    async loadUserCourses({ commit, dispatch}) {
+        return ApiService.get('courses')
+            .then(({ data }) => {
+                commit('setUserCourses', data);
+            });
+    },
 }
 
 const mutations = {
@@ -105,7 +116,11 @@ const mutations = {
 
     setAxiosRunning(state, running) {
         state.axios_running = running;
-    }
+    },
+
+    setUserCourses(state, data) {
+        state.userCourses = data;
+    },
 }
 
 

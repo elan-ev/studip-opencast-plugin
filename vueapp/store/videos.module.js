@@ -127,7 +127,19 @@ const actions = {
     },
 
     async deleteVideo(context, token) {
-        // TODO videoSortList
+        return ApiService.delete('videos/' + token);
+    },
+
+    async updateVideo(context, event) {
+        return ApiService.put('videos/' + event.token, {event: event});
+    },
+
+    async reportVideo(context, data) {
+        return ApiService.post('videos/' + data.token + '/report', {description: data.description});
+    },
+
+    async addVideoToCourses(context, data) {
+        return ApiService.post('videos/' + data.token + '/courses', {courses: data.courses});
     },
 
     async setVideoSort({dispatch, commit}, sort) {

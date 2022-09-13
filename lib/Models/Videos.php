@@ -2,11 +2,13 @@
 
 namespace Opencast\Models;
 
+use Error;
 use Opencast\Models\Filter;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\SearchClient;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\REST\ApiWorkflowsClient;
 
 class Videos extends UPMap
 {
@@ -16,6 +18,11 @@ class Videos extends UPMap
 
         $config['has_many']['perms'] = [
             'class_name' => 'Opencast\\Models\\VideosUserPerms',
+            'assoc_foreign_key' => 'video_id',
+        ];
+
+        $config['has_many']['video_seminars'] = [
+            'class_name' => 'Opencast\\Models\\VideoSeminars',
             'assoc_foreign_key' => 'video_id',
         ];
 
@@ -112,6 +119,11 @@ class Videos extends UPMap
         ];
     }
 
+    public static function findByToken($token)
+    {
+        return self::findOneBySQL('token = ?', [$token]);
+    }
+
     public function toSanitizedArray()
     {
         $data = $this->toArray();
@@ -130,7 +142,117 @@ class Videos extends UPMap
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
+        $data['perm'] = $this->getUserPerm();
+        $data['courses'] = $this->getCourses();
+
         return $data;
+    }
+
+    /**
+     * Gets the list of assigned courses with additional course's infos
+     *
+     * @return string $courses the list of seminars
+     */
+    private function getCourses()
+    {
+        $courses = [];
+        if (!empty($this->video_seminars)) {
+            foreach ($this->video_seminars as $video_seminar) {
+                $course = $video_seminar->course;
+                $courses[] = [
+                    'id' => $course->id,
+                    'name' => $course->getFullname(),
+                    'semester_name' => $course->getFullname('sem-duration-name')
+                ];
+            }
+        }
+
+        return $courses;
+    }
+
+    /**
+     * Gets the perm value related to this video for the current user.
+     *
+     * @return string $perm the perm value
+     */
+    public function getUserPerm()
+    {
+        global $user;
+
+        $perm = 'read';
+        foreach ($this->perms as $perm) {
+            if ($perm->user_id == $user->id) {
+                $perm = $perm->perm;
+            }
+        }
+
+        return $perm;
+    }
+
+    /**
+     * Updates the metadata related to this video in both opencast and local and runs republish-metadata workflow
+     *
+     * @param object $event the updated version of the event
+     *
+     * @return boolean the result of updating process
+     */
+    public function updateMetadata($event)
+    {
+        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        $allowed_metadata_fields = ['title', 'contributors', 'subject', 'language', 'description', 'startDate'];
+        $metadata = [];
+        foreach ($allowed_metadata_fields as $field_name) {
+            if (isset($event[$field_name])) {
+                $value = $event[$field_name];
+                $id = $field_name;
+                if ($field_name == 'subject') {
+                    $id = 'subjects';
+                    $value = [$value];
+                }
+                if ($field_name == 'contributors') {
+                    $id = 'contributor';
+                    $value = [$value];
+                }
+
+                $metadata[] = [
+                    'id' => $id,
+                    'value' => $value
+                ];
+            }
+        }
+        $success = false;
+        $response = $api_event_client->updateMetadata($this->episode, $metadata);
+        if ($response) {
+            $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
+            if($api_wf_client->republish($this->episode)) {
+                $success = true;
+                $store_data = [];
+                foreach ($allowed_metadata_fields as $field_name) {
+                    if (isset($event[$field_name])) {
+                        $store_data[$field_name] = $event[$field_name];
+                    }
+                }
+                if (!empty($store_data)) {
+                    $this->setData($store_data);
+                    $success = $this->store() !== false;
+                }
+            }
+        }
+        return $success;
+    }
+
+    /**
+     * Removes a video from both opencsat and local sides.
+     *
+     * @return boolean the result of deletion process
+     */
+    public function removeVideo()
+    {
+        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        if ($api_event_client->deleteEpisode($this->episode)) {
+            return $this->delete();
+        }
+        return false;
     }
 
     private static function filterForEpisode($episode_id, $acl)
@@ -382,5 +504,45 @@ class Videos extends UPMap
     private static function getResolutionString($width, $height)
     {
         return $width . ' * ' . $height . ' px';
+    }
+
+    /**
+     * Sends a video feedback to support along with description
+     *
+     * @param string $description the description
+     * 
+     * @return boolean the result of sending
+     */
+    public function reportVideo($description)
+    {
+        global $UNI_CONTACT, $user;
+
+        try {
+            $opencast_support_email = \Config::get()->OPENCAST_SUPPORT_EMAIL;
+            if (!filter_var($opencast_support_email, FILTER_VALIDATE_EMAIL)) {
+                $opencast_support_email = $UNI_CONTACT;
+            }
+            $subject = '[Opencast] Feedback';
+            $mailbody  = "Beschreibung:" . "\n";
+            $mailbody .= $description . "\n\n";
+            $mailbody .= "Grundinformationen:" . "\n";
+            $mailbody .= sprintf("Video ID: %s", $this->id) . "\n";
+            $mailbody .= sprintf("Opencast Episode ID: %s", $this->episode) . "\n";
+            $mailbody .= sprintf("Opencast Server Config ID: %s", $this->config_id) . "\n";
+
+            $feedback = new \StudipMail();
+
+            $feedback->setSubject($subject)
+                        ->addRecipient($opencast_support_email)
+                        ->setBodyText($mailbody)
+                        ->setSenderEmail($user->email)
+                        ->setSenderName($user->getFullName())
+                        ->setReplyToEmail($user->email);
+
+            return $feedback->send();
+        } catch (\Throwable $th) {
+            throw new Error(_('Unable to send email'), 500);
+        }
+        return false;
     }
 }

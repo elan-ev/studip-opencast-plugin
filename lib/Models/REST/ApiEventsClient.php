@@ -186,4 +186,31 @@ class ApiEventsClient extends RestClient
 
         return $events;
     }
+
+    /**
+     * Updates event metadata
+     *
+     * @param string $episode_id id of episode
+     * @param object $metadata dublin-core metadata
+     *
+     * @return boolean
+     */
+    public function updateMetadata($episode_id, $metadata)
+    {
+        $response = $this->opencastApi->eventsApi->updateMetadata($episode_id, 'dublincore/episode', $metadata);
+        return in_array($response['code'], [200, 204]);
+    }
+
+    /**
+     * Deletes a episode
+     *
+     * @param string $episode_id id of episode
+     *
+     * @return boolean
+     */
+    public function deleteEpisode($episode_id)
+    {
+        $response = $this->opencastApi->eventsApi->delete($episode_id);
+        return $response['code'] < 400;
+    }
 }

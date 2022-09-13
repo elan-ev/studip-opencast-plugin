@@ -10,7 +10,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
 
-class VideoDelete extends OpencastController
+class VideoReport extends OpencastController
 {
     use OpencastTrait;
 
@@ -30,15 +30,18 @@ class VideoDelete extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        $json = $this->getRequestData($request);
+        $description = $json['description'];
+
         $message = [
-            'type' => 'success',
-            'text' => _('Das Video wurde erfolgreich gelöscht')
+            'type' => 'error',
+            'text' => _('Feedback kann nicht gesendet werden')
         ];
 
-        if (!$video->removeVideo()) {
+        if (!empty($description) && $video->reportVideo($description)) {
             $message = [
-                'type' => 'error',
-                'text' => _('Das Video kann nicht gelöscht werden')
+                'type' => 'success',
+                'text' => _('Das Feedback wurde erfolgreich gesendet')
             ];
         }
 

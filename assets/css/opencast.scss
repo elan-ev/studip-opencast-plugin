@@ -62,7 +62,6 @@ $episode-background: $light-gray-color-20;
     }
 }
 
-
 /* * * * * * * * * * * * * * * */
 /*   E P I S O D E   L I S T   */
 /* * * * * * * * * * * * * * * */
@@ -312,6 +311,20 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         display: block;
         margin-left: 2em;
     }
+}
+
+.oc--actions-container {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    top: 0;
+    min-width: 3em;
+    border-left: 1px solid $light-gray-color-40;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * */
