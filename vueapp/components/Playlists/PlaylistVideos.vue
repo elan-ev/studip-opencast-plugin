@@ -9,7 +9,7 @@
                 <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h3>
-        <SearchBar @search="doSearch" v-if="!videoSortMode"/>
+        <SearchBar @search="doSearch" v-if="!videoSortMode" :playlist="playlist" />
 
         <div v-if="playlistForVideos" class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
@@ -74,8 +74,8 @@ export default {
     name: "PlaylistVideos",
 
     props: {
-        'playlist_token': {
-            type: String,
+        'playlist': {
+            type: Object,
             required: true
         }
     },
@@ -100,7 +100,6 @@ export default {
         ...mapGetters([
             "videos",
             "videoSortMode",
-            "currentPlaylist",
             "paging",
             "axios_running",
             "playlistForVideos"
@@ -121,11 +120,6 @@ export default {
     },
 
     methods: {
-        changePage: async function(page) {
-            await this.$store.dispatch('setPage', page)
-            await this.$store.dispatch('loadVideos')
-        },
-
         toggleVideo(data) {
             if (data.checked === false) {
                 let index = this.selectedVideos.indexOf(data.event_id);
@@ -152,9 +146,14 @@ export default {
             }
         },
 
-        doSearch(filters) {
-            filters.concat(this.filters);
-            this.$store.dispatch('loadVideos', filters)
+        doSearch(options) {
+            let view = this;
+
+            options.filters = options.filters.concat(this.filters);
+            options.limit = -1;
+
+            this.$store.dispatch('loadVideos', options)
+                .then(() => { view.videos_loading = false });
         },
 
         canMoveUp(index) {
@@ -215,7 +214,7 @@ export default {
                     this.$store.commit('setVideos', this.sortedVideos);
 
                     this.$store.dispatch('uploadSortPositions', {
-                        playlist_token: this.playlist_token,
+                        playlist_token: this.playlist.token,
                         sortedVideos  : this.sortedVideos.map((elem) => elem.token)
                     });
 
@@ -236,7 +235,7 @@ export default {
 
         this.filters.push({
             type: 'playlist',
-            value: this.playlist_token
+            value: this.playlist.token
         });
 
 

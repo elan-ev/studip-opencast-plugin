@@ -14,7 +14,7 @@
                     </router-link>
                 </li>
                 <li :class="{
-                    active: fragment == 'playlists'
+                    active: fragment == 'playlists' || fragment == 'playlist_edit'
                     }">
                     <router-link :to="{ name: 'playlists' }">
                         Wiedergabelisten

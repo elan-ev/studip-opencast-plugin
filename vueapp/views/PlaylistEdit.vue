@@ -55,7 +55,7 @@
              </template>
         </StudipDialog>
 
-        <PlaylistVideos :playlist_token="token"/>
+        <PlaylistVideos :playlist="playlist"/>
     </div>
 </template>
 

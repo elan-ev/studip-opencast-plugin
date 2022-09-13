@@ -4,30 +4,6 @@ const state = {
     playlists: {},
     playlists: null,
     playlistSearch: '',
-    playlistSort: {
-        field: 'mkdate',
-        order: 'desc',
-        text : 'Datum hochgeladen: Neuste zuerst'
-    },
-    playlistSorts: [
-        {
-            field: 'mkdate',
-            order: 'desc',
-            text : 'Datum hochgeladen: Neuste zuerst'
-        },  {
-            field: 'mkdate',
-            order: 'asc',
-            text : 'Datum hochgeladen: Älteste zuerst'
-        },  {
-            field: 'title',
-            order: 'desc',
-            text : 'Titel: Alphabetisch'
-        }, {
-            field: 'title',
-            order: 'asc',
-            text : 'Titel: Umgekehrt Alphabetisch'
-        }
-    ],
     addPlaylist: false,
     currentPlaylist: 'all',
     availableTags: [],
@@ -54,14 +30,6 @@ const getters = {
 
     availableTags(state) {
         return state.availableTags;
-    },
-
-    playlistSort(state) {
-        return state.playlistSort
-    },
-
-    playlistSorts(state) {
-        return state.playlistSorts
     },
 
     playlistCourses(state) {
@@ -170,15 +138,16 @@ const actions = {
         dispatch('loadPlaylists')
     },
 
-    async setPlaylistSort({dispatch, commit}, sort) {
-        await commit('setPlaylistSort', sort)
-        dispatch('loadPlaylists')
-    },
-
     async setPlaylistSearch({dispatch, commit}, search) {
         await commit('setPlaylistSearch', search)
         dispatch('loadPlaylists')
     },
+
+    async setPlaylistSort({}, data) {
+        return ApiService.put('/playlists/' + data.token, {
+            sort_order: data.sort.field + '_' + data.sort.order
+        });
+    }
 }
 
 const mutations = {
@@ -204,10 +173,6 @@ const mutations = {
 
     setPlaylistSearch(state, search) {
         state.playlistSearch = search;
-    },
-
-    setPlaylistSort(state, sort) {
-        state.playlistSort = sort
     },
 
     setPlaylistCourses(state, courses) {

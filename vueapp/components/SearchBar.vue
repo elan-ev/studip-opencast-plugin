@@ -43,7 +43,7 @@
                 <li @click="selectToken('tag')" v-if="availableTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="playlists.length">
+                <li @click="selectToken('playlist')" v-if="!playlist && playlists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
@@ -79,12 +79,17 @@ export default {
         StudipIcon
     },
 
+    props: {
+        'playlist' : {
+            type: Object,
+            default: null
+        }
+    },
+
     data() {
         return {
             inputSort: null,
             inputSearch: '',
-            searchRoute: '',
-            sortRoute: '',
             searchTokens: [],
             showTS: false,
             tokenState: 'main',
@@ -98,30 +103,59 @@ export default {
     computed: {
         ...mapGetters([
             'videoSort',
-            'videoSorts',
-            'playlistSort',
-            'playlistSorts',
             'availableTags',
-            'playlists',
-            'currentPlaylist'
+            'playlists'
         ]),
 
         availableSortOrders() {
-            if (this.$route.name == 'playlists') {
-                return this.playlistSorts
-            }
-            if (this.currentPlaylist == 'all') {
-                return this.videoSorts.filter(element => {
-                    return element['field'] !== 'order';
+            let sortOrders = [
+                {
+                    field: 'mkdate',
+                    order: 'desc',
+                    text : 'Datum hochgeladen: Neuste zuerst'
+                },  {
+                    field: 'mkdate',
+                    order: 'asc',
+                    text : 'Datum hochgeladen: Älteste zuerst'
+                },  {
+                    field: 'title',
+                    order: 'asc',
+                    text : 'Titel: Alphabetisch'
+                }, {
+                    field: 'title',
+                    order: 'desc',
+                    text : 'Titel: Umgekehrt Alphabetisch'
+                }
+            ];
+
+            if (this.playlist) {
+                sortOrders.push({
+                    field: 'order',
+                    order: 'asc',
+                    text : 'Benutzerdefiniert'
+                }, {
+                    field: 'order',
+                    order: 'desc',
+                    text : 'Benutzerdefiniert Umgekehrt'
                 });
             }
-            return this.videoSorts;
+
+            return sortOrders;
         }
     },
 
     methods: {
         setSort() {
-            this.$store.dispatch(this.sortRoute, this.inputSort)
+            if (this.playlist) {
+                this.$store.dispatch('setPlaylistSort', {
+                    token: this.playlist.token,
+                    sort:  this.inputSort
+                });
+            } else {
+                this.$store.dispatch('setVideoSort', this.inputSort)
+            }
+
+            this.doSearch();
         },
 
         showTokenSelector() {
@@ -202,16 +236,19 @@ export default {
         },
 
         doSearch() {
-            let filter = JSON.parse(JSON.stringify(this.searchTokens));
+            let filters = JSON.parse(JSON.stringify(this.searchTokens));
 
             if (this.inputSearch) {
-                filter.push({
+                filters.push({
                     type: 'text',
                     value: this.inputSearch
                 });
             }
 
-            this.$emit('search', filter)
+            this.$emit('search', {
+                filters: filters,
+                order:  this.inputSort.field + '_' + this.inputSort.order
+            });
         }
 
     },
@@ -226,15 +263,14 @@ export default {
         this.$store.dispatch('updateAvailableTags');
         this.$store.dispatch('loadPlaylists');
 
-        if (this.$route.name == 'playlists') {
-            this.inputSort = this.playlistSort
-            this.sortRoute = 'setPlaylistSort'
-            this.searchRoute = 'setPlaylistSearch'
+        if (this.playlist) {
+            // find sort order for current playlist
+            let [sort, order] = this.playlist.sort_order.split('_');
+
+            this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
         }
         else {
             this.inputSort = this.videoSort
-            this.sortRoute = 'setVideoSort'
-            this.searchRoute = 'setVideoSearch'
         }
     }
 }

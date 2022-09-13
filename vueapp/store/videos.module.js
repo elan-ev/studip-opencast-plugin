@@ -8,33 +8,6 @@ const state = {
         order: 'desc',
         text : 'Datum hochgeladen: Neuste zuerst'
     },
-    videoSorts: [
-        {
-            field: 'mkdate',
-            order: 'desc',
-            text : 'Datum hochgeladen: Neuste zuerst'
-        },  {
-            field: 'mkdate',
-            order: 'asc',
-            text : 'Datum hochgeladen: Älteste zuerst'
-        },  {
-            field: 'title',
-            order: 'asc',
-            text : 'Titel: Alphabetisch'
-        }, {
-            field: 'title',
-            order: 'desc',
-            text : 'Titel: Umgekehrt Alphabetisch'
-        }, {
-            field: 'order',
-            order: 'asc',
-            text : 'Benutzerdefiniert'
-        }, {
-            field: 'order',
-            order: 'desc',
-            text : 'Benutzerdefiniert Umgekehrt'
-        }
-    ],
     videoSortMode: false,
     videoSortList: {},
     limit: 5,
@@ -61,10 +34,6 @@ const getters = {
 
     videoSort(state) {
         return state.videoSort
-    },
-
-    videoSorts(state) {
-        return state.videoSorts
     },
 
     videoSortMode(state) {
@@ -102,8 +71,12 @@ const actions = {
             params.append('cid', $cid);
         }
 
-        if (filters.filters) {
-            params.append('filters', JSON.stringify(filters.filters));
+        for (let key in filters) {
+            if (key === 'filters') {
+                params.append('filters', JSON.stringify(filters.filters));
+            } else {
+                params.append(key,  filters[key]);
+            }
         }
 
         return ApiService.get('videos', { params })
@@ -154,9 +127,12 @@ const actions = {
     },
 
     setVideoSortMode({dispatch, state, commit}, mode) {
-        commit('setVideoSort', state.videoSorts.find(sort => {
-            return sort.field === 'order' && sort.order === 'asc';
-        }));
+        commit('setVideoSort', {
+            field: 'order',
+            order: 'asc',
+            text : 'Benutzerdefiniert'
+        });
+
         commit('setVideoSortMode', mode);
     }
 }
