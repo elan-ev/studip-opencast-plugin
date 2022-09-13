@@ -106,8 +106,14 @@ class Videos extends UPMap
 
         // TODO implement custom order
         [$field, $order] = explode("_", $filters->getOrder());
-        $order_table = ($field === 'order') ? 'opv' : 'oc_video';
-        $sql .= ' ORDER BY ' . $order_table . '.' . $field . ' ' . $order;
+
+        if ($field === 'order') {
+            if (!empty($playlist_ids)) {
+                $sql .= ' ORDER BY opv.' . $field . ' ' . $order;
+            }
+        } else {
+            $sql .= ' ORDER BY oc_video.' . $field . ' ' . $order;
+        }
 
         if ($filters->getLimit() != -1) {
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
@@ -510,7 +516,7 @@ class Videos extends UPMap
      * Sends a video feedback to support along with description
      *
      * @param string $description the description
-     * 
+     *
      * @return boolean the result of sending
      */
     public function reportVideo($description)
