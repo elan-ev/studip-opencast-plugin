@@ -27,6 +27,7 @@ $episode-background: $light-gray-color-20;
     margin: 0 1px;
     float: left;
     width: $item-width;
+    min-width: $item-width;
     height: $item-height;
 }
 
@@ -137,7 +138,8 @@ $episode-background: $light-gray-color-20;
 }
 
 .oc--metadata {
-    display: block;
+    margin-right: 1em;
+    flex-basis: 100%;
 
     .oc--metdata-title {
         margin-top: 10px;
@@ -153,6 +155,7 @@ $episode-background: $light-gray-color-20;
 .oc--metadata-description {
     margin-top: 0.5em;
 }
+
 
 .oc--episode-buttons {
     display: inline-flex;
@@ -171,14 +174,14 @@ $episode-background: $light-gray-color-20;
     overflow: auto;
     height: auto;
 
-    > div > li {
+    .oc--flex-episode {
         background: $episode-background;
         border-right-width: 1px;
         border-left-width: 1px;
         border-width: 1px 0 0;
         margin-bottom: 1em;
         padding: 0.5em 1em 0.5em 1em;
-        display: block;
+        display: flex;
         position: relative;
         overflow: hidden;
         border-color: #ddd;
@@ -192,10 +195,6 @@ $episode-background: $light-gray-color-20;
         bottom: 1em;
         right: 1em;
     }
-
-    .oc--metadata--empty {
-        margin-left: $item-width;
-    }
 }
 
 
@@ -208,12 +207,13 @@ $episode-background: $light-gray-color-20;
 
     .oc--flexplaycontainer {
         width: 10em;
+        min-width: 10em;
     }
 
-    > div > li {
+    .oc--flex-episode {
         border-bottom: 1px solid $light-gray-color-40;
         padding: 5px 1em 5px 1em;
-        display: block;
+        display: flex;
         position: relative;
         overflow: hidden;
         height: 70px;
@@ -242,16 +242,11 @@ $episode-background: $light-gray-color-20;
                 margin-bottom: 5px;
             }
         }
-
-        .oc--metadata--empty {
-            margin-left: 10em;
-        }
     }
 
     .oc--sort-options {
-        margin-left: auto;
-        margin-top: auto;
-        margin-bottom: auto;
+        align-self: center;
+        white-space: nowrap;
 
         img {
             cursor: pointer;
@@ -314,11 +309,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 }
 
 .oc--actions-container {
-    position: absolute;
-    right: 0;
-    height: 100%;
-    top: 0;
-    min-width: 3em;
+    min-width: 2em;
     border-left: 1px solid $light-gray-color-40;
     padding: 0;
     margin: 0;

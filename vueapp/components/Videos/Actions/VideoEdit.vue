@@ -13,7 +13,7 @@
         >
             <template v-slot:dialogContent>
                 <form class="default" style="max-width: 50em;" @submit="editVideo">
-                    <fieldset v-if="!uploadProgress">
+                    <fieldset>
                         <label>
                             <span class="required" v-translate>
                                 Titel

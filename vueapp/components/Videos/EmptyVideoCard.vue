@@ -1,6 +1,6 @@
 <template>
     <div>
-        <li>
+        <li class="oc--flex-episode">
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
                     <a>
