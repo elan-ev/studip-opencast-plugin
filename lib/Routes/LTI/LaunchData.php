@@ -26,7 +26,7 @@ class LaunchData extends OpencastController
         if (!empty($configs)) {
             $links = [];
             foreach ($configs as $config) {
-                if ($context_id && $perm->studip_perm('user', $context_id)) {
+                if ($context_id && $perm->have_studip_perm('user', $context_id)) {
                     $links = array_merge($links, LtiHelper::getLaunchDataForCourse($config->id, $context_id));
                 } else {
                     $links = array_merge($links, LtiHelper::getLaunchData($config->id));
