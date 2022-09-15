@@ -37,6 +37,7 @@
                 <?= $_('Infotext auf der Hochladeseite (Überschrift)') ?>
                 <?= I18N::textarea('upload_info_heading', new I18NString(\Config::get()->OPENCAST_UPLOAD_INFO_TEXT_HEADING, null, [
                         'object_id' => 2,
+                        'table' => 'oc_config',
                         'field' => 'upload_info_heading'
                     ]), ['class' => 'add_toolbar wysiwyg']) ?>
             </label>
@@ -45,6 +46,7 @@
                 <?= $_('Infotext auf der Hochladeseite') ?>
                 <?= I18N::textarea('upload_info_body', new I18NString(\Config::get()->OPENCAST_UPLOAD_INFO_TEXT_BODY, null, [
                         'object_id' => 3,
+                        'table' => 'oc_config',
                         'field' => 'upload_info_body'
                     ]), ['class' => 'add_toolbar wysiwyg']) ?>
             </label>
