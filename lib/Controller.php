@@ -17,6 +17,11 @@ class Controller extends PluginController
 
     public function before_filter(&$action, &$args)
     {
+        global $user;
+
+        if ($user->id == 'nobody') {
+            $this->redirect(URLHelper::getURL('index.php'));
+        }
         parent::before_filter($action, $args);
 
         $this->plugin = $this->dispatcher->current_plugin;
