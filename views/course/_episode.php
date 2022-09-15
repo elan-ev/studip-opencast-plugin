@@ -98,7 +98,7 @@ $sort_orders = Pager::getSortOptions();
                                          style="filter: grayscale(100%);">
                                 </span>
                             <? elseif ($mayWatchEpisodes && (!$live || $isOnAir)) : ?>
-                                <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                <a href="<?= $video_url . $item['id'] ?>" target="_blank">
                                     <span class="previewimage">
                                         <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                              data-src="<?= $image ?>" height="200">
