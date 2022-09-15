@@ -43,20 +43,23 @@
                 </MessageBox>
             </ul>
 
-            <ul class="oc--episode-list--small" v-else>
-                <PlaylistVideoCard
-                    v-for="(event, index) in videos_list"
-                    v-bind:event="event"
-                    v-bind:key="event.token"
-                    :canMoveUp="canMoveUp(index)"
-                    :canMoveDown="canMoveDown(index)"
-                    @moveUp="moveUpVideoCard"
-                    @moveDown="moveDownVideoCard"
-                    :playlistForVideos="playlistForVideos"
-                    :selectedVideos="selectedVideos"
-                    @toggle="toggleVideo"
-                ></PlaylistVideoCard>
-            </ul>
+            <draggable class="oc--episode-list--small" v-else
+                :disabled="!videoSortMode"
+                v-model="videos_list"
+                item-key="id">
+                <template #item="{element, index}">
+                    <PlaylistVideoCard
+                        :event="element"
+                        :canMoveUp="canMoveUp(index)"
+                        :canMoveDown="canMoveDown(index)"
+                        @moveUp="moveUpVideoCard"
+                        @moveDown="moveDownVideoCard"
+                        :playlistForVideos="playlistForVideos"
+                        :selectedVideos="selectedVideos"
+                        @toggle="toggleVideo"
+                    ></PlaylistVideoCard>
+                </template>
+            </draggable>
         </div>
     </div>
 </template>
@@ -69,6 +72,8 @@ import EmptyVideoCard from '../Videos/EmptyVideoCard.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue'
 import Tag from '@/components/Tag.vue'
+
+import draggable from 'vuedraggable'
 
 export default {
     name: "PlaylistVideos",
@@ -84,7 +89,8 @@ export default {
         PlaylistVideoCard,  EmptyVideoCard,
         MessageBox,
         SearchBar,          Tag,
-        StudipButton
+        StudipButton,
+        draggable
     },
 
     data() {
@@ -109,11 +115,19 @@ export default {
             return this.videos.length == this.selectedVideos.length;
         },
 
-        videos_list() {
-            if (this.videoSortMode === true) {
-                return this.sortedVideos;
-            } else {
-                return this.videos;
+        videos_list: {
+            get() {
+                if (this.videoSortMode === true) {
+                    return this.sortedVideos;
+                } else {
+                    return this.videos;
+                }
+            },
+
+            set(new_video_list) {
+                if (this.videoSortMode === true) {
+                    this.sortedVideos = new_video_list;
+                }
             }
         }
 
