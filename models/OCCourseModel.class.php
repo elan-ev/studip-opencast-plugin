@@ -126,7 +126,8 @@ class OCCourseModel
                 NotificationCenter::postNotification('NewEpisodeForCourse', [
                     'episode_id'    => $oc_episode['id'],
                     'course_id'     => $this->getCourseID(),
-                    'episode_title' => $oc_episode->title
+                    'episode_title' => $oc_episode['title'],
+                    'visibility'    => $oc_episode['visibility']
                 ]);
             } else {
                 $oc_episode['visibility']    = $l_episode['visible'];

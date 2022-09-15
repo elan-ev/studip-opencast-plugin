@@ -384,7 +384,10 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     public function NotifyUserOnNewEpisode($x, $data)
     {
         $ocmodel = new OCCourseModel($data['course_id']);
-        if ($ocmodel->getSeriesVisibility() == 'visible' && !empty($data['episode_id'])) {
+        if ($ocmodel->getSeriesVisibility() == 'visible'
+            && !empty($data['episode_id'])
+            && $data['visibility'] != 'invisible'
+        ) {
             $course  = Course::find($data['course_id']);
             $members = $course->members;
 
@@ -393,7 +396,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 $users[] = $member->user_id;
             }
 
-            $notification = sprintf($this->_('Neue Vorlesungsaufzeichnung  "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
+            $notification = sprintf($this->_('Neue Vorlesungsaufzeichnung "%s" im Kurs "%s"'), $data['episode_title'], $course->name);
             PersonalNotifications::add(
                 $users,
                 PluginEngine::getLink($this, [], 'course/index/' . $data['episode_id']),
