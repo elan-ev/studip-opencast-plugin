@@ -202,7 +202,7 @@ class AjaxController extends OpencastController
         // search on every oc-server for the series with this name
         foreach ($configs as $id => $config) {
             $apiseries_client = ApiSeriesClient::getInstance($id);
-            $series = $apiseries_client->search(Request::option('search_term'));
+            $series = $apiseries_client->search('"'. Request::get('search_term') .'"');
 
             if (!empty($series)) {
                 if (!$is_admin) {
