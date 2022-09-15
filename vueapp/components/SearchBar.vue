@@ -112,7 +112,7 @@ export default {
                 {
                     field: 'mkdate',
                     order: 'desc',
-                    text : 'Datum hochgeladen: Neuste zuerst'
+                    text : 'Datum hochgeladen: Neueste zuerst'
                 },  {
                     field: 'mkdate',
                     order: 'asc',

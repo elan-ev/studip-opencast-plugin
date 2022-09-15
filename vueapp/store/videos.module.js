@@ -6,7 +6,7 @@ const state = {
     videoSort: {
         field: 'mkdate',
         order: 'desc',
-        text : 'Datum hochgeladen: Neuste zuerst'
+        text : 'Datum hochgeladen: Neueste zuerst'
     },
     videoSortMode: false,
     videoSortList: {},

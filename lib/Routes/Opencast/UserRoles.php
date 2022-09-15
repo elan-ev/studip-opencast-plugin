@@ -19,7 +19,8 @@ class UserRoles extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $user_id = get_userid($args['username']);
+        // parse username, they are of the type lti:instid:1234567890acbdef
+        $user_id = end(explode(':', $args['username']));
         $roles = [];
 
         if ($user_id) {

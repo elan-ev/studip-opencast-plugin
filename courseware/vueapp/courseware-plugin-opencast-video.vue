@@ -110,7 +110,7 @@ export default {
                 {
                     field: 'mkdate',
                     order: 'desc',
-                    text : 'Datum hochgeladen: Neuste zuerst'
+                    text : 'Datum hochgeladen: Neueste zuerst'
                 },  {
                     field: 'mkdate',
                     order: 'asc',
@@ -262,7 +262,7 @@ export default {
                             authenticated: false
                         }));
                         view.ltiConnections.forEach(connection => view.checkConnection(connection));
-                    } else {        
+                    } else {
                         console.log('No LTI data found');
                     }
                 });

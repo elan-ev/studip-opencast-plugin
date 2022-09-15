@@ -213,8 +213,10 @@ export default {
     mounted() {
         let view = this;
         this.$store.commit('clearPaging');
-        this.$store.dispatch('loadVideos', this.filters)
-            .then(() => { view.videos_loading = false });
+        this.$store.dispatch('authenticateLti').then(() => {
+            view.$store.dispatch('loadVideos', view.filters)
+                .then(() => { view.videos_loading = false });
+        })
         this.$store.dispatch('loadUserCourses');
     }
 };
