@@ -135,7 +135,7 @@ export default {
                     emitArguments: 'VideoEdit'
                 },
                 {
-                    label: this.$gettext('Hochladen'),
+                    label: this.$gettext('Medien runterladen'),
                     icon: 'download',
                     emit: 'performAction',
                     emitArguments: 'VideoDownload'

@@ -1,13 +1,16 @@
 <template>
-    <div>
-        <div class="messagebox messagebox_error" v-for="error in errors">
+    <div v-if="errors.length">
+        <div class="messagebox messagebox_error"
+            v-for="error in errors"
+            v-bind:key="error">
             <div class="messagebox_buttons">
                 <a class="close" href="#" title="Nachrichtenbox schliessen">
                     <span>Nachrichtenbox schliessen</span>
                 </a>
             </div>
-            <span v-if="error.data">
-                <div v-if="error.data.errors" v-for="err in error.data.errors">
+            <span v-if="error && error.data">
+                <div v-if="error.data.errors"
+                    v-for="err in error.data.errors">
                     {{ err.code }}: {{ err.title }}
                 </div>
 
@@ -21,9 +24,15 @@
                 </div>
             </span>
 
-            <span v-else>
+            <span v-else-if="error">
                 <div>
                     {{ error }}
+                </div>
+            </span>
+
+            <span v-else>
+                <div>
+                    {{ $gettext('Es ist ein unbekannter Fehler aufgetreten') }}
                 </div>
             </span>
         </div>
