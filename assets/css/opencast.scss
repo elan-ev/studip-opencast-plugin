@@ -252,6 +252,11 @@ $episode-background: $light-gray-color-20;
             cursor: pointer;
         }
     }
+
+    .oc--ghost {
+        opacity: 0.5;
+        background: dodgerblue;
+    }
 }
 
 .oc--episode-list--empty {

@@ -46,7 +46,8 @@
             <draggable class="oc--episode-list--small" v-else
                 :disabled="!videoSortMode"
                 v-model="videos_list"
-                item-key="id">
+                item-key="id"
+                ghost-class="oc--ghost">
                 <template #item="{element, index}">
                     <PlaylistVideoCard
                         :event="element"
