@@ -9,7 +9,7 @@
     "require": {
         "slim/slim": "^3.12",
         "webonyx/graphql-php": "^14.11",
-        "elan-ev/opencast-api": "^1.1.1"
+        "elan-ev/opencast-api": "^1.2"
     },
     "autoload": {
         "psr-4": {
