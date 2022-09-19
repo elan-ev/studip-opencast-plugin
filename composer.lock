@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "66b69ac29ea147e0bcdb8c66c9d0f401",
+    "content-hash": "d36a80b065320d9be9ec11e8c9c00e1f",
     "packages": [
         {
             "name": "elan-ev/opencast-api",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elan-ev/opencast-php-library.git",
-                "reference": "72b526e40ed4dcf821dbee7d4a2d1faff278663c"
+                "reference": "ca37ebdb1aa2e2b24837e6c5ec5f4b90125484f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elan-ev/opencast-php-library/zipball/72b526e40ed4dcf821dbee7d4a2d1faff278663c",
-                "reference": "72b526e40ed4dcf821dbee7d4a2d1faff278663c",
+                "url": "https://api.github.com/repos/elan-ev/opencast-php-library/zipball/ca37ebdb1aa2e2b24837e6c5ec5f4b90125484f8",
+                "reference": "ca37ebdb1aa2e2b24837e6c5ec5f4b90125484f8",
                 "shasum": ""
             },
             "require": {
@@ -58,9 +58,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elan-ev/opencast-php-library/issues",
-                "source": "https://github.com/elan-ev/opencast-php-library/tree/1.1.1"
+                "source": "https://github.com/elan-ev/opencast-php-library/tree/1.2.0"
             },
-            "time": "2022-06-22T11:20:29+00:00"
+            "time": "2022-09-16T15:58:19+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -4646,5 +4646,5 @@
     "platform-overrides": {
         "php": "7.2.5"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
