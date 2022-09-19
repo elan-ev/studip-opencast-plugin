@@ -23,9 +23,9 @@ class ScheduleHelper
     /**
      * Gets the list of semesters for the course to be repsresented in the semster filter dropdown
      * NOTE: expired semesters are rejected!
-     * 
+     *
      * @param string $seminar_id id of course
-     * 
+     *
      * @return array
      */
     public static function getSemesterList($seminar_id)
@@ -35,10 +35,18 @@ class ScheduleHelper
         $start = $course->start_time;
         $end = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
         $selectable_semesters = $selectable_semesters->findBy('beginn', [$start, $end], '>=<=')->toArray();
-        if (count($selectable_semesters) > 1 || (count($selectable_semesters) == 1 && $course->hasDatesOutOfDuration())) {
-            $selectable_semesters[] = ['name' => 'Alle Semester', 'id' => 'all'];
-        }
+
+        $selectable_semesters[] = ['name' => 'Alle Semester', 'id' => 'all'];
+
         $selectable_semesters = array_values(array_reverse($selectable_semesters));
+
+        array_walk($selectable_semesters, function(&$semester) {
+            array_walk($semester, function(&$value, $key) {
+                if ($key == 'name' || $key == 'description') {
+                    $value = (string)$value;
+                }
+            });
+        });
 
         return $selectable_semesters;
     }
@@ -47,7 +55,7 @@ class ScheduleHelper
      * Prepares the config scheduling table
      *
      * @param array $config_list the list of configure oc servers
-     * @param array $resources the list studip resources 
+     * @param array $resources the list studip resources
      *
      * @return array $scheduling the data to be displayed in scheduling config
      */
@@ -94,7 +102,7 @@ class ScheduleHelper
         $scheduling['resources'] = $resourse_list;
         $scheduling['capture_agents'] = $capture_agents;
         $scheduling['workflow_definitions'] = $workflow_definitions;
-        
+
         return $scheduling;
     }
 
@@ -124,7 +132,7 @@ class ScheduleHelper
     }
 
     /**
-     * Gets the list of capture agent configs to be consumed when displaying info in scheduling config 
+     * Gets the list of capture agent configs to be consumed when displaying info in scheduling config
      *
      * @param array $config_list the list of configure oc servers
      *
@@ -147,7 +155,7 @@ class ScheduleHelper
                 }
             } catch (\Throwable $th) {
             }
-            
+
         }
         return $capture_agents;
     }
@@ -170,7 +178,7 @@ class ScheduleHelper
                         if (is_object($definition->tags)) {
                             if (is_array($definition->tags->tag) &&
                                 (in_array('schedule', $definition->tags->tag) ||
-                                in_array('schedule-ng', $definition->tags->tag))) 
+                                in_array('schedule-ng', $definition->tags->tag)))
                             {
                                 $resources_workflow_def = new \stdClass();
                                 $resources_workflow_def->config_id = $config['id'];
@@ -195,10 +203,10 @@ class ScheduleHelper
 
     /**
      * Checks if a capture agent exists for a specific oc server
-     * 
+     *
      * @param int $config_id the id of oc server config
      * @param string $capture_agent the name of capture agent
-     * 
+     *
      * @return bool
      */
     private static function checkCaptureAgent($config_id, $capture_agent)
@@ -216,29 +224,29 @@ class ScheduleHelper
 
     /**
      * Creates an xml representation for a new Scheduled Event
-     * 
+     *
      * @param string course_id course id
      * @param string resource_id resource id
      * @param string $termin_id termin id
      * @param string $event_id oc event id
      * @param int $buffer the buffer range
-     * 
+     *
      * @return string xml - the xml representation of the string
      */
     public static function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $buffer)
     {
         date_default_timezone_set("Europe/Berlin");
-        
+
         $course = Seminar::getInstance($course_id);
         $date = new \SingleDate($termin_id);
-        
+
         // if event_id is null, there is not yet an event which could have other start or end-times
         if ($event_id) {
             $event = ScheduledRecordings::find($event_id);
         }
-        
+
         $issues = $date->getIssueIDs();
-        
+
         $issue_titles = array();
         if(is_array($issues)) {
             foreach($issues as $is) {
@@ -251,13 +259,13 @@ class ScheduleHelper
                 $issue_titles = _("Themen: ") . my_substr(implode(', ', $issue_titles), 0 ,80 );
             }
         }
-        
-        
+
+
         $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
-        
+
         $ca = Resources::findByResource_id($resource_id);
-        
+
         $creator = 'unknown';
 
         if ($GLOBALS['perm']->have_perm('admin')) {
@@ -267,33 +275,33 @@ class ScheduleHelper
         } else {
             $creator    = get_fullname();
         }
-        
+
         $inst_data = \Institute::find($course->institut_id);
-        
+
         $start_time = $event_id ? $event->start : $date->getStartTime();
-        
+
         if ($buffer) {
             $end_time = strtotime("-$buffer seconds ", intval($event_id ? $event->end : $date->getEndTime()));
         } else {
             $end_time = $event_id ? $event->end : $date->getEndTime();
         }
-        
+
         $contributor = $inst_data['name'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
-        
+
         $language = "de";
         $seriesId = $serie['series_id'];
-        
+
         if (!$issue->title) {
             $name = $course->getName();
             $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
         } else $title = $issue_titles;
-        
-        
+
+
         // Additional Metadata
         $abstract = $course->description;
-        
+
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <dcterms:creator><![CDATA[' . $creator . ']]></dcterms:creator>
@@ -307,16 +315,16 @@ class ScheduleHelper
         <dcterms:title><![CDATA[' . $title . ']]></dcterms:title>
         <dcterms:isPartOf>'. $seriesId . '</dcterms:isPartOf>
         </dublincore>';
-        
+
         return $dublincore;
 
     }
 
     /**
      * Gets datetime in Dublincore format.
-     * 
+     *
      * @param int $timestamp the timestamp
-     * 
+     *
      * @return string|bool
      */
     private static function getDCTime($timestamp)
@@ -372,11 +380,11 @@ class ScheduleHelper
     }
 
     /**
-     * Checks if a course server config matches the resource server config 
-     * 
+     * Checks if a course server config matches the resource server config
+     *
      * @param string $course_id course id
      * @param int $resource_config_id resource config id
-     * 
+     *
      * @return bool
      */
     public static function validateCourseAndResource($course_id, $resource_config_id)
@@ -392,7 +400,7 @@ class ScheduleHelper
      * @param string $resource_id
      * @param string $date_id - Stud.IP Identifier for the event
      * @param string $event_id  - Opencast Identifier for the event
-     * 
+     *
      * @return boolean success
      */
     private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
@@ -423,19 +431,19 @@ class ScheduleHelper
 
     /**
      * Creates event recording metadata
-     * 
+     *
      * @param string $course_id course id
      * @param string $resource_id resource id
      * @param string $config_id server config id
      * @param string $termin_id termin id
      * @param string $event_id event id
-     * 
+     *
      * @return array event recording metadata
      */
     private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id)
     {
         $config = Config::find($config_id);
-        
+
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
         $dublincore = self::createScheduleEventXML(
             $course_id, $resource_id, $termin_id, $event_id, $buffer
@@ -526,7 +534,7 @@ class ScheduleHelper
         }
 
         $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
-        
+
         if (!$scheduled_recording_obj) {
             return false;
         }
@@ -591,7 +599,7 @@ class ScheduleHelper
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
 
         $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
-        
+
         if (!$scheduled_recording_obj) {
             return false;
         }
@@ -673,9 +681,9 @@ class ScheduleHelper
 
     /**
      * Gets the livestream parameter of the course's server config (if any)
-     * 
+     *
      * @param string $course_id course id
-     * 
+     *
      * @return bool
      */
     public static function checkCourseConfigLivestream($course_id)
@@ -690,10 +698,10 @@ class ScheduleHelper
 
     /**
      * Gets the list of scheduling dates for a course to be displayed in the scheduling list in a course
-     * 
+     *
      * @param string $course_id course id
      * @param string $semester_filter semester id
-     * 
+     *
      * @return array the scheudling list to be displayed in a course
      */
     public static function getScheduleList($course_id, $semester_filter)
@@ -785,7 +793,7 @@ class ScheduleHelper
                 }
             }
             $date_obj['status'] = $status;
-            
+
             $actions = [];
             if (!empty($resource_obj)) {
                 if ($scheduled && (int)date($d['date']) > time()) {
@@ -833,10 +841,10 @@ class ScheduleHelper
 
     /**
      * Gets the scheduled course dates based on a semester
-     * 
+     *
      * @param string $seminar_id course id
      * @param string $semester_id semester id
-     * 
+     *
      * @return array course dates list
      */
     private static function getDatesForSemester($seminar_id, $semester_id = null)
@@ -866,9 +874,9 @@ class ScheduleHelper
 
     /**
      * Gets a list of all oc events for a course (based on its related series id)
-     * 
+     *
      * @param string $course_id course id
-     * 
+     *
      * @return array $course_events oc events of the course
      */
     private static function getCourseEvents($course_id)
@@ -895,12 +903,12 @@ class ScheduleHelper
 
     /**
      * Adds or updates a resource and takes care of updating other parts
-     * 
+     *
      * @param string $resource_id id of resource
      * @param string $config_id id of server config
      * @param string $capture_agent name of capture agent
      * @param string $workflow_id name of workflow
-     * 
+     *
      * @return bool
      */
     public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id)
@@ -929,9 +937,9 @@ class ScheduleHelper
 
     /**
      * Removes a resource and takes care of the cleaning other parts
-     * 
+     *
      * @param string $resource_id id of resource
-     * 
+     *
      * @return bool
      */
     public static function deleteResource($resource_id)
@@ -950,7 +958,7 @@ class ScheduleHelper
                 }
             }
         }
-        
+
         return $success;
     }
 }
