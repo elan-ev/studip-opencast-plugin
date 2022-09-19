@@ -143,12 +143,14 @@ export default {
             ];
 
             if (!this.isCourse) {
+                /*
                 menuItems.push({
                     label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
                     icon: 'add',
                     emit: 'performAction',
                     emitArguments: 'VideoAddToPlaylist'
                 });
+                */
                 menuItems.push({
                     label: this.$gettext('Zu Kurs hinzufügen'),
                     icon: 'add',
