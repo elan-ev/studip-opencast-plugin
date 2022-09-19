@@ -20,6 +20,7 @@
                         >
                     </label>
 
+                    <!--
                     <label>
                         Sichtbarkeit
                         <select class="size-s" v-model="playlist.visibility">
@@ -34,6 +35,7 @@
                             </option>
                         </select>
                     </label>
+                    -->
                 </form>
             </template>
         </StudipDialog>

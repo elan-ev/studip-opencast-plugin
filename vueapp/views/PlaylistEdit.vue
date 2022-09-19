@@ -1,8 +1,8 @@
 <template>
     <div v-if="playlist">
         <h2>
-            <PlaylistVisibility
-                :showText="false" :visibility="playlist.visibility"/>
+            <!-- <PlaylistVisibility
+                :showText="false" :visibility="playlist.visibility"/> -->
 
             {{ playlist.title }}
             <StudipIcon shape="edit" role="clickable" @click="editPlaylist"/>
@@ -32,6 +32,7 @@
                         <input type="text" v-model="eplaylist.title">
                     </label>
 
+                    <!--
                     <label>
                         Sichtbarkeit
                         <select v-model="eplaylist.visibility">
@@ -46,6 +47,7 @@
                             </option>
                         </select>
                     </label>
+                    -->
 
                     <label>
                         Tags
