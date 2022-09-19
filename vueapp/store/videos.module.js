@@ -51,6 +51,7 @@ const getters = {
 
 const actions = {
     async loadVideos({ commit, state, dispatch, rootState }, filters = []) {
+        console.trace();
         const params = new URLSearchParams();
 
         if (!filters['order']) {
@@ -111,11 +112,6 @@ const actions = {
         dispatch('loadVideos')
     },
 
-    async setVideoSearch({dispatch, commit}, search) {
-        await commit('setVideoSearch', search)
-        dispatch('loadVideos')
-    },
-
     setPage({commit}, page) {
         commit('setPage', page);
     },
@@ -157,10 +153,6 @@ const mutations = {
             lastPage: 0,
             items: 0
         }
-    },
-
-    setVideoSearch(state, search) {
-        state.videoSearch = search
     },
 
     updatePaging(state, paging) {

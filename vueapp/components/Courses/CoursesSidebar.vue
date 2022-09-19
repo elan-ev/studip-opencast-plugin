@@ -32,12 +32,20 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
+                 <li :class="{
+                    active: !currentPlaylist
+                    }"
+                    v-on:click="setPlaylist(null)">
+                    <router-link :to="{ name: 'course' }">
+                        Alle Videos
+                    </router-link>
+                </li>
                 <li :class="{
                     active: currentPlaylist == 'all'
                     }"
                     v-on:click="setPlaylist('all')">
                     <router-link :to="{ name: 'course' }">
-                        Alle Videos
+                        Videos ohne Wiedergabeliste
                     </router-link>
                 </li>
                 <li :class="{
@@ -112,7 +120,7 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
-            currentPlaylist: 'all'
+            currentPlaylist: null
         }
     },
 
@@ -151,7 +159,7 @@ export default {
 
     methods: {
         setPlaylist(token) {
-            if (token === 'all') {
+            if (token === 'all' || token === null) {
                 this.options = {
                     cid: this.cid
                 }
@@ -187,7 +195,7 @@ export default {
             cid: this.cid
         }
 
-        this.$store.dispatch('loadVideos', this.options);
+        //this.$store.dispatch('loadVideos', this.options);
 
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);

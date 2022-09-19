@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Videos</h2>
-        <VideosList :filters="getFilters"></VideosList>
+        <VideosList :filters="getFilters()"></VideosList>
     </div>
 </template>
 
@@ -31,9 +31,7 @@ export default {
     methods: {
         getFilters() {
             return {
-                filters: {
-                    cid: this.cid
-                }
+                cid: this.cid
             }
         }
     }

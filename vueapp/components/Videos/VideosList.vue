@@ -214,6 +214,7 @@ export default {
         let view = this;
         this.$store.commit('clearPaging');
         this.$store.dispatch('authenticateLti').then(() => {
+            console.log(JSON.stringify(view.filters));
             view.$store.dispatch('loadVideos', view.filters)
                 .then(() => { view.videos_loading = false });
         })
