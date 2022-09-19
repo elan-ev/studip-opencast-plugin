@@ -18,18 +18,63 @@ class MyCourseList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user;
+        global $user, $perm;
 
-        $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
-            WHERE user_id = :user_id
-                AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
-        ");
+        if (!$perm->have_perm('admin')) {
+            $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
+                WHERE user_id = :user_id
+                    AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
+            ");
 
-        $stmt->execute([':user_id' => $user->id]);
+            $stmt->execute([':user_id' => $user->id]);
 
-        $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        } else if (!$perm->have_perm('root')) {
+            $params = $request->getQueryParams();
+
+            if (!$params['search']) {
+                $params['search'] = '%%%';
+                //return $this->createResponse([], $response);
+            }
+
+            $institute_ids = [];
+            $institutes = new \SimpleCollection(\Institute::getMyInstitutes($user->id));
+            $institutes->filter(function ($a) use (&$institute_ids) {
+                $institute_ids[] = $a->Institut_id;
+            });
+
+            // get courses for admins
+            $stmt = \DBManager::get()->prepare("
+                SELECT DISTINCT seminare.Seminar_id FROM seminare
+                INNER JOIN seminar_inst ON (seminare.Seminar_id = seminar_inst.seminar_id)
+                INNER JOIN Institute ON (seminar_inst.institut_id = Institute.Institut_id)
+                LEFT JOIN sem_types ON (sem_types.id = seminare.status)
+                LEFT JOIN sem_classes ON (sem_classes.id = sem_types.class)
+                INNER JOIN seminar_user AS dozenten ON (dozenten.Seminar_id = seminare.Seminar_id AND dozenten.status = 'dozent')
+                INNER JOIN auth_user_md5 AS dozentendata ON (dozenten.user_id = dozentendata.user_id)
+                WHERE sem_classes.studygroup_mode = '0'
+                    AND (
+                        CONCAT_WS(' ', seminare.VeranstaltungsNummer, seminare.name, seminare.Untertitel, dozentendata.Nachname) LIKE :search
+                        OR CONCAT(dozentendata.Nachname, ', ', dozentendata.Vorname) LIKE :search
+                        OR CONCAT_WS(' ', dozentendata.Vorname, dozentendata.Nachname) LIKE :search
+                        OR dozentendata.Vorname LIKE :search OR dozentendata.Nachname LIKE :search
+                    )
+                    AND seminar_inst.institut_id IN (:institute_ids)
+            ");
+
+            $stmt->execute([
+                ':search'        => $params['search'],
+                ':institute_ids' => $institute_ids
+            ]);
+
+            $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        } else {
+            // get courses for root
+        }
+
 
         $results = [];
+
         // NOTE: This class is also used in VideoAddToSeminar.vue, in order for dozents to select the courses.
         // Any changes applied to the result's formation of this class must be also implemented in that component!
         foreach ($courses as $course_id) {
@@ -38,6 +83,7 @@ class MyCourseList extends OpencastController
                 'id'       => $course->id,
                 'name'     => $course->getFullname()
             ];
+
         }
 
         krsort($results);

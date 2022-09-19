@@ -51,7 +51,6 @@ const getters = {
 
 const actions = {
     async loadVideos({ commit, state, dispatch, rootState }, filters = []) {
-        console.trace();
         const params = new URLSearchParams();
 
         if (!filters['order']) {

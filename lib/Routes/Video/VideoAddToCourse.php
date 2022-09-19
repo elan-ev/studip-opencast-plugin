@@ -17,6 +17,8 @@ class VideoAddToCourse extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $perm;
+
         $token = $args['token'];
         $video = Videos::findByToken($token);
 
@@ -24,9 +26,9 @@ class VideoAddToCourse extends OpencastController
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
-        $perm = $video->getUserPerm();
-        if (empty($perm) || 
-            ($perm != 'owner' && $perm != 'write'))
+        $user_perm = $video->getUserPerm();
+        if (empty($user_perm) ||
+            ($user_perm != 'owner' && $user_perm != 'write'))
         {
             throw new \AccessDeniedException();
         }
@@ -43,22 +45,24 @@ class VideoAddToCourse extends OpencastController
             // Add record to the VideoSeminars based on courses
             if (!empty($courses)) {
                 foreach ($courses as $course) {
-                    $video_seminar = new VideoSeminars;
-                    $video_seminar->video_id = $video->id;
-                    $video_seminar->seminar_id = $course['id'];
-                    $video_seminar->visibility = $video->visibility ? $video->visibility : 'visible';
-                    $video_seminar->store();
+                    if ($perm->have_studip_perm('tutor', $course['id'])) {
+                        $video_seminar = new VideoSeminars;
+                        $video_seminar->video_id = $video->id;
+                        $video_seminar->seminar_id = $course['id'];
+                        $video_seminar->visibility = $video->visibility ? $video->visibility : 'visible';
+                        $video_seminar->store();
+                    }
                 }
             }
 
             $message = [
                 'type' => 'success',
-                'text' => _('Der Kurs-Verknüpfung des Videos wurde aktualisiert.')
+                'text' => _('Die Kurs-Verknüpfungen des Videos wurden aktualisiert.')
             ];
         } catch (\Throwable $th) {
             $message = [
                 'type' => 'error',
-                'text' => _('Der Kurs-Verknüpfung des Videos konnte nicht aktualisiert werden')
+                'text' => _('Die Kurs-Verknüpfungen des Videos konnten nicht aktualisiert werden!')
             ];
         }
 

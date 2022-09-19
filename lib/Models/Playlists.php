@@ -49,6 +49,27 @@ class Playlists extends UPMap
             WHERE ocps.seminar_id = ?', [$course_id]);
     }
 
+
+    /**
+     * Gets the perm value related to this video for the current user.
+     *
+     * @return string $perm the perm value
+     */
+    public function getUserPerm()
+    {
+        global $user;
+
+        $ret_perm = 'read';
+
+        foreach ($this->perms as $perm) {
+            if ($perm->user_id == $user->id) {
+                $ret_perm = $perm->perm;
+            }
+        }
+
+        return $ret_perm;
+    }
+
     /**
      * Get sanitized array to send to the frontend
      */

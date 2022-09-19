@@ -76,6 +76,7 @@
             @key="playlistCourse.token"
             v-if="playlistCourse"
             @cancel="playlistCourse = null"
+            @done="playlistCourse = null"
         />
     </div>
 </template>

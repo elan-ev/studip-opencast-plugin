@@ -6,8 +6,7 @@ const state = {
     playlistSearch: '',
     addPlaylist: false,
     availableTags: [],
-    playlistCourses: null,
-    myCourses: null
+    playlistCourses: null
 }
 
 const getters = {
@@ -29,11 +28,7 @@ const getters = {
 
     playlistCourses(state) {
         return state.playlistCourses
-    },
-
-    myCourses(state) {
-        return state.myCourses
-    },
+    }
 }
 
 
@@ -80,15 +75,12 @@ const actions = {
         return ApiService.put('courses/' + params.course + '/playlist/' + params.token)
     },
 
-    async removePlaylistFromCourse(context, params) {
-        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
+    async addPlaylistToCourses(context, params) {
+        return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
     },
 
-    async loadMyCourses(context, token) {
-        return ApiService.get('courses')
-        .then(({ data }) => {
-            context.commit('setMyCourses', data);
-        });
+    async removePlaylistFromCourse(context, params) {
+        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
     },
 
     async addVideosToPlaylist(context, data) {
@@ -164,11 +156,7 @@ const mutations = {
 
     setPlaylistCourses(state, courses) {
         state.playlistCourses = courses
-    },
-
-    setMyCourses(state, courses) {
-        state.myCourses = courses
-    },
+    }
 }
 
 

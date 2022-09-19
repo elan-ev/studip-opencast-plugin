@@ -185,14 +185,15 @@ class Videos extends UPMap
     {
         global $user;
 
-        $perm = 'read';
+        $ret_perm = 'read';
+
         foreach ($this->perms as $perm) {
             if ($perm->user_id == $user->id) {
-                $perm = $perm->perm;
+                $ret_perm = $perm->perm;
             }
         }
 
-        return $perm;
+        return $ret_perm;
     }
 
     /**

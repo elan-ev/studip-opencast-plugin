@@ -2,13 +2,16 @@
     <div>
         <StudipDialog
             :title="title"
+            :confirmText="$gettext('Speichern')"
+            :confirmClass="'accept'"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="500"
             @close="$emit('cancel')"
+            @confirm="addToCourse"
         >
             <template v-slot:dialogContent>
-                <table class="default" v-if="playlistCourses">
+                <table class="default" v-if="selectedCourses.length > 0">
                     <thead>
                         <tr>
                             <th>
@@ -18,41 +21,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="course in playlistCourses" v-bind:key="course.id">
+                        <tr v-for="(course, index) in playlistCourses" v-bind:key="course.id">
                             <td>
                                 <a :href="getCourseLink(course)" target="_blank">
                                     {{ course.name }}
                                 </a>
                             </td>
                             <td>
-                                <studip-icon shape="trash" role="clickable" @click="removeFromCourse(course.id)" style="cursor: pointer"/>
+                                <studip-icon shape="trash" role="clickable" @click="removeFromCourse(index)" style="cursor: pointer"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                <form class="default">
-                    <fieldset>
-                        <legend>Zu neuem Kurs hinzufügen</legend>
-
-                        <label>
-                            <select v-model="currentCourse">
-                                <template v-for="course_sem in myCourses">
-                                <optgroup v-for="(courses, semester) in course_sem" v-bind:key="semester" :label="semester">
-                                    <option v-for="course in courses" :value="course.id" v-bind:key="course.id">
-                                        {{ course.name }}
-                                    </option>
-                                </optgroup>
-                                </template>
-                            </select>
-                        </label>
-                    </fieldset>
-                    <footer>
-                         <StudipButton icon="accept" @click.prevent="addToCourse">
-                            <span v-translate>Playlist zu Kurs hinzufügen</span>
-                        </StudipButton>
-                    </footer>
-                </form>
+                <UserCourseSelectable @add="addCourseToList"
+                    :courses="userCourses"
+                    :selectedCourses="selectedCourses"
+                />
             </template>
         </StudipDialog>
     </div>
@@ -63,56 +48,66 @@ import { mapGetters } from "vuex";
 
 import StudipDialog from '@studip/StudipDialog'
 import StudipIcon from '@studip/StudipIcon'
-import StudipButton from '@studip/StudipButton'
+
+import UserCourseSelectable from '@/components/UserCourseSelectable';
 
 export default {
     name: 'PlaylistAddToCourseDialog',
 
     components: {
-        StudipDialog,       StudipIcon,
-        StudipButton
+        StudipDialog, StudipIcon,
+        UserCourseSelectable
     },
 
     props: ['title', 'playlist'],
 
     data() {
         return {
-            currentCourse: null
+            selectedCourses: []
         }
     },
 
     computed: {
-        ...mapGetters(['playlistCourses', 'myCourses'])
+        ...mapGetters(['playlistCourses', 'userCourses'])
     },
 
     mounted() {
+        let view = this;
+
         this.$store.commit('setPlaylistCourses', null);
-        this.$store.dispatch('loadPlaylistCourses', this.playlist.token);
-        this.$store.dispatch('loadMyCourses');
+        this.$store.dispatch('loadPlaylistCourses', this.playlist.token)
+            .then(() => {
+                view.selectedCourses = this.playlistCourses;
+            });
+
+        this.$store.dispatch('loadUserCourses');
     },
 
     methods: {
         getCourseLink(course) {
-            window.STUDIP.URLHelper.getURL('/dispatch.php/course/details/index/' + course.id)
+            return window.STUDIP.URLHelper.getURL('dispatch.php/course/details/index/' + course.id)
+        },
+
+        addCourseToList(course) {
+            this.selectedCourses.push(course);
         },
 
         addToCourse() {
-            this.$store.dispatch('addPlaylistToCourse', {
+            this.$store.dispatch('addPlaylistToCourses', {
                 token: this.playlist.token,
-                course: this.currentCourse
-            }).then(({ data }) => {
-                this.$store.dispatch('loadPlaylistCourses', this.playlist.token);
+                courses: this.selectedCourses
+            })
+            .then(({ data }) => {
+                this.$store.dispatch('addMessage', data.message);
+                this.$emit('done', 'refresh');
+            }).catch(() => {
+                this.$emit('cancel');
             });
         },
 
-        removeFromCourse(id) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Playlist aus dem gewählten Kurs entfernen möchten?'))) {
-                this.$store.dispatch('removePlaylistFromCourse', {
-                    token: this.playlist.token,
-                    course: id
-                }).then(({ data }) => {
-                    this.$store.dispatch('loadPlaylistCourses', this.playlist.token);
-                });
+        removeFromCourse(course_index) {
+            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?'))) {
+                this.selectedCourses.splice(course_index, 1);
             }
         }
     }
