@@ -22,6 +22,41 @@ $episode-background: $light-gray-color-20;
     }
 }
 
+/* * * * * * * * * */
+/*   P A G I N G   */
+/* * * * * * * * * */
+
+.oc--pagination {
+    margin-bottom: 1em;
+    display: flex;
+
+    button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        float: left;
+        cursor: pointer;
+
+        &:disabled {
+            cursor: default
+        }
+
+        &.oc--paging-arrow {
+            padding: 8px 8px;
+
+            img {
+                vertical-align: middle;
+                width: 24px;
+                height: 24px;
+            }
+        }
+    }
+
+    .active {
+        background-color: dodgerblue;
+        color: white;
+        cursor: default
+    }
+}
 
 /* * * * * * * * * * * * * * * * * * * */
 /*   F L E X   E P I S O D E   L I S T */
@@ -55,28 +90,6 @@ $episode-background: $light-gray-color-20;
 .oc--flex-checkbox {
     padding-right: 10px;
     margin-top: 1.5em;
-}
-
-.oc--pagination {
-    margin-bottom: 1em;
-    display: flex;
-
-    button {
-        padding: 8px 16px;
-        border: 1px solid #ddd;
-        float: left;
-        cursor: pointer;
-
-        &:disabled {
-            cursor: default
-        }
-    }
-
-    .active {
-        background-color: dodgerblue;
-        color: white;
-        cursor: default
-    }
 }
 
 /* * * * * * * * * * * * * * * */

@@ -17,7 +17,7 @@ const state = {
         items: 0
     },
     playlistForVideos: null,
-    filters: null
+    filters: []
 }
 
 const getters = {

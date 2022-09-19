@@ -3,8 +3,11 @@
         <button v-if="paging.lastPage > 0"
             v-bind:disabled="paging.currPage <= 0"
             @click="setPage(paging.currPage-1)"
+            class="oc--paging-arrow"
         >
-            &laquo;
+            <studip-icon
+                shape="arr_1left" :role="paging.currPage <= 0 ? 'info' : 'clickable'"
+            />
         </button>
 
         <button v-if="paging.lastPage > 0"
@@ -32,8 +35,11 @@
         <button v-if="paging.lastPage > 0"
             v-bind:disabled="paging.currPage >= paging.lastPage"
             @click="setPage(paging.currPage + 1)"
+            class="oc--paging-arrow"
         >
-            &raquo;
+             <studip-icon
+                shape="arr_1right" :role="paging.currPage >= paging.lastPage ? 'info' : 'clickable'"
+            />
         </button>
     </div>
 </template>

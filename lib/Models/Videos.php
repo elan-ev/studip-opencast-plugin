@@ -39,15 +39,20 @@ class Videos extends UPMap
     public static function findByFilter($filters)
     {
 
-        global $user;
+        global $user, $perm;
 
-        $params = [
-            ':user_id'=> $user->id
-        ];
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
+        $params = [];
 
-        $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+        if (!$perm->have_perm('root')) {
+            $params = [
+                ':user_id'=> $user->id
+            ];
 
-        $where = ' WHERE 1 ';
+            $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+            $where = ' WHERE 1 ';
+        }
+
         $tag_ids      = [];
         $playlist_ids = [];
 
@@ -126,6 +131,7 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
+        //var_dump($sql, $params);
         return [
             'videos' => self::findBySQL($sql, $params),
             'count'  => $count
