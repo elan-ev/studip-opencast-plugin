@@ -115,13 +115,6 @@ export default {
                     placeholder: 'CONSUMERSECRET',
                     required: true
                 },
-                {
-                    description: this.$gettext('GET-Requests mit fortgeschrittener Suchfunktion ausführen (Lucene/Search-Endpunkte)?'),
-                    name: 'advance_search',
-                    value: this.currentConfig.advance_search,
-                    type: 'boolean',
-                    required: false
-                },
                 /* { # this option is currently not safe to be used
                     description: this.$gettext('Soll das Live-Streaming aktiviert werden?'),
                     name: 'livestream',
