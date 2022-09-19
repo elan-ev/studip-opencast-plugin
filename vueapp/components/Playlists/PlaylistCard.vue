@@ -1,8 +1,9 @@
 <template>
     <tr :key="playlist.id">
-        <td>
+        <!-- <td>
              <input type="checkbox">
         </td>
+        -->
 
         <td>
             <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token } }">

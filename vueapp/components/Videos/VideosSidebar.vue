@@ -86,12 +86,6 @@ export default {
 
     emits: ['uploadVideo', 'recordVideo', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
 
-    watch: {
-        $route(to) {
-            //console.log('Route:', to);
-        },
-    },
-
     data() {
         return {
             showAddDialog: false
@@ -117,10 +111,6 @@ export default {
             this.$store.commit('setPlaylistForVideos', this.playlist);
             this.$router.push({ name: 'videos'})
         }
-    },
-
-    mounted() {
-        this.$store.dispatch('loadVideos');
     }
 }
 </script>

@@ -2,12 +2,12 @@
     <div>
         <h2>Wiedergabelisten</h2>
 
-        <PaginationButtons @changePage="changePage" v-if="Object.keys(playlists).length !== 0"/>
-
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <table class="default">
                 <colgroup>
-                    <col style="width: 2%">
+                    <!--
+                        <col style="width: 2%">
+                    -->
                     <col style="width: 50%">
                     <col style="width: 2%">
                     <col style="width: 20%">
@@ -17,9 +17,11 @@
                 </colgroup>
                 <thead>
                     <tr>
+                        <!--
                         <th>
                             <input type="checkbox">
                         </th>
+                        -->
                         <th>
                             {{ $gettext('Name') }}
                         </th>

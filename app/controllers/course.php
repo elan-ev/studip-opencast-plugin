@@ -31,6 +31,7 @@ class CourseController extends Opencast\Controller
         Navigation::activateItem('/course/opencast');
 
         PageLayout::setTitle($this->_('Videos'));
+        PageLayout::setBodyElementId('opencast-plugin');
 
         $this->studip_version = $this->getStudIPVersion();
 

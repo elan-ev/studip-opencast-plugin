@@ -24,5 +24,6 @@ class AdminController extends Opencast\Controller
     public function index_action()
     {
         Navigation::activateItem('/admin/config/oc-config');
+        PageLayout::setBodyElementId('opencast-plugin');
     }
 }

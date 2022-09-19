@@ -7,6 +7,22 @@ $item-height-small: auto;
 $item-width-small : 16em;
 $episode-background: $light-gray-color-20;
 
+/* * * * * * * * * * * * * * * * * */
+/*   G L O B A L E   K L A S S E N */
+/* * * * * * * * * * * * * * * * * */
+
+#opencast-plugin {
+    h2 {
+        background-color: transparent;
+        color: $headings-color;
+        font-size: 1.4em;
+        font-weight: normal;
+        padding-top: 0px;
+        margin-top: 0px;
+    }
+}
+
+
 /* * * * * * * * * * * * * * * * * * * */
 /*   F L E X   E P I S O D E   L I S T */
 /* * * * * * * * * * * * * * * * * * * */

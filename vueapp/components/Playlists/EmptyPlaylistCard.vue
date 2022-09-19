@@ -1,6 +1,6 @@
 <template>
     <tr>
-        <td></td>
+        <!-- <td></td> -->
         <td><span class="oc--loadingbar oc--loadingbar-title"></span></td>
         <td><span class="oc--loadingbar"></span></td>
         <td><span class="oc--loadingbar"></span></td>
