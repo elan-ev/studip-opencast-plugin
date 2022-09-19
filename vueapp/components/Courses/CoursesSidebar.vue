@@ -32,14 +32,6 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
-                 <li :class="{
-                    active: !currentPlaylist
-                    }"
-                    v-on:click="setPlaylist(null)">
-                    <router-link :to="{ name: 'course' }">
-                        Alle Videos
-                    </router-link>
-                </li>
                 <li :class="{
                     active: currentPlaylist == 'all'
                     }"
@@ -120,7 +112,7 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
-            currentPlaylist: null
+            currentPlaylist: 'all'
         }
     },
 

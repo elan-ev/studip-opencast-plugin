@@ -14,9 +14,7 @@
 
             <ul v-else-if="Object.keys(videos).length === 0" class="oc--episode-list oc--episode-list--empty">
                 <MessageBox type="info">
-                    <translate>
-                        Es gibt bisher keine Aufzeichnungen.
-                    </translate>
+                    {{ $gettext('Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden.') }}
                 </MessageBox>
             </ul>
 
