@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Videos</h2>
-        <VideosList :filters="getFilters()"></VideosList>
+        <VideosList></VideosList>
     </div>
 </template>
 
@@ -16,24 +16,14 @@ export default {
         VideosList
     },
 
-    data() {
-        return {
-            filters: {
-                cid: this.cid
-            }
-        }
-    },
-
     computed: {
          ...mapGetters(['cid'])
     },
 
-    methods: {
-        getFilters() {
-            return {
-                cid: this.cid
-            }
-        }
+    mounted() {
+        this.$store.commit('setFilters', {
+            cid: this.cid
+        })
     }
 };
 </script>

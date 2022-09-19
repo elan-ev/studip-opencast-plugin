@@ -60,16 +60,12 @@ import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import Tag from '@/components/Tag.vue'
 
 export default {
-    name: "VideosList",
+    name: "CoursesVideosList",
 
     props: {
         'playlist_token': {
             type: String,
             default: null
-        },
-        'filters': {
-            type: Object,
-            default: []
         }
     },
 
@@ -100,6 +96,7 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
+            'filters'
         ]),
 
         isCourse() {

@@ -91,7 +91,7 @@ export default {
             view.wysiwyg_editor = CKEDITOR.instances[textarea.id];
 
             view.wysiwyg_editor.on('blur', function() {
-                //console.log('cke blur');
+
             });
 
             view.wysiwyg_editor.on('change', function() {

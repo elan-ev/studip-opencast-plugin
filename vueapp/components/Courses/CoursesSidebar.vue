@@ -6,15 +6,15 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
-                    active: currentPage == 'videos'
+                    active: currentView == 'videos'
                     }"
-                    v-on:click="setPage('videos')">
+                    v-on:click="setView('videos')">
                     <router-link :to="{ name: 'course' }">
                         Videos
                     </router-link>
                 </li>
                 <li :class="{
-                    active: currentPage == 'schedule'
+                    active: currentView == 'schedule'
                     }"
                     v-if="can_schedule"
                     v-on:click="getScheduleList">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="sidebar-widget" v-if="currentPage == 'videos'">
+    <div class="sidebar-widget" v-if="currentView == 'videos'">
         <div class="sidebar-widget-header" v-translate>
             Wiedergabelisten
         </div>
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <template v-if="currentPage == 'schedule'">
+    <template v-if="currentView == 'schedule'">
         <div v-if="semester_list.length" class="sidebar-widget " id="sidebar-actions">
             <div class="sidebar-widget-header" v-translate>
                 Semesterfilter
@@ -112,12 +112,13 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
-            currentPlaylist: 'all'
+            currentPlaylist: 'all',
+            options: {}
         }
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentPage",
+        ...mapGetters(["playlists", "currentView",
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config']),
 
@@ -166,17 +167,19 @@ export default {
 
             this.currentPlaylist = token;
 
+            this.$store.commit('setFilters', this.options);
+            this.$store.commit('clearPaging')
             this.$store.dispatch('loadVideos', this.options);
         },
 
         getScheduleList() {
-            this.$store.dispatch('setPage', 'schedule');
+            this.$store.dispatch('updateView', 'schedule');
             this.$store.dispatch('clearMessages');
             this.$store.dispatch('getScheduleList');
         },
 
-        setPage(page) {
-            this.$store.dispatch('setPage', page);
+        setView(page) {
+            this.$store.dispatch('updateView', page);
             this.$store.dispatch('loadVideos', this.options);
         }
     },

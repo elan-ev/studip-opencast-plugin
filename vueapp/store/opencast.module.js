@@ -4,7 +4,7 @@ const state = {
     series: [],
     servers: [],
     currentUser: {},
-    currentPage: 'videos',
+    currentView: 'videos',
     cid: null,
     site: null,
     axios_running: false,
@@ -21,8 +21,8 @@ const getters = {
     currentUser(state) {
         return state.currentUser
     },
-    currentPage(state) {
-        return state.currentPage
+    currentView(state) {
+        return state.currentView
     },
     cid(state) {
         return state.cid;
@@ -87,6 +87,11 @@ const actions = {
                 commit('setUserCourses', data);
             });
     },
+
+    updateView({ commit, dispatch }, view) {
+        commit('setView', view);
+        commit('clearPaging');
+    }
 }
 
 const mutations = {
@@ -98,8 +103,8 @@ const mutations = {
         state.site = site;
     },
 
-    setPage(state, page) {
-        state.currentPage = page;
+    setView(state, view) {
+        state.currentView = view;
     },
 
     setSeries(state, data) {

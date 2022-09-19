@@ -16,7 +16,8 @@ const state = {
         lastPage: 0,
         items: 0
     },
-    playlistForVideos: null
+    playlistForVideos: null,
+    filters: null
 }
 
 const getters = {
@@ -46,6 +47,10 @@ const getters = {
 
     playlistForVideos(state) {
         return state.playlistForVideos
+    },
+
+    filters(state) {
+        return state.filters;
     }
 }
 
@@ -151,7 +156,8 @@ const mutations = {
             currPage: 0,
             lastPage: 0,
             items: 0
-        }
+        };
+        state.currentPage = 1;
     },
 
     updatePaging(state, paging) {
@@ -161,6 +167,10 @@ const mutations = {
 
     setPlaylistForVideos(state, playlist) {
         state.playlistForVideos = playlist;
+    },
+
+    setFilters(state, filters) {
+        state.filters = filters;
     }
 }
 

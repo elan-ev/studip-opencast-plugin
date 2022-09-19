@@ -90,10 +90,6 @@ export default {
         'playlist_token': {
             type: String,
             default: null
-        },
-        'filters': {
-            type: Object,
-            default: []
         }
     },
 
@@ -124,6 +120,7 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
+            'filters'
         ]),
 
         isCourse() {
@@ -216,6 +213,7 @@ export default {
                 .then(() => { view.videos_loading = false });
         })
         this.$store.dispatch('loadUserCourses');
+
     }
 };
 </script>
