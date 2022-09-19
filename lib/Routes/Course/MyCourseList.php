@@ -20,13 +20,26 @@ class MyCourseList extends OpencastController
     {
         global $user, $perm;
 
+        // get id of opencast plugin to check if it is activated for selected courses
+        $plugin_id = \DBManager::get()->query("SELECT pluginid
+            FROM plugins WHERE pluginname = 'OpenCast'")->fetchColumn();
+
         if (!$perm->have_perm('admin')) {
-            $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
+            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
+                JOIN plugins_activated ON (
+                    plugins_activated.range_id = seminar_id
+                    AND plugins_activated.state = 1
+                    AND plugins_activated.pluginid = :plugin_id
+                )
                 WHERE user_id = :user_id
                     AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
+
             ");
 
-            $stmt->execute([':user_id' => $user->id]);
+            $stmt->execute([
+                ':user_id'   => $user->id,
+                ':plugin_id' => $plugin_id
+            ]);
 
             $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         } else if (!$perm->have_perm('root')) {
@@ -44,8 +57,12 @@ class MyCourseList extends OpencastController
             });
 
             // get courses for admins
-            $stmt = \DBManager::get()->prepare("
-                SELECT DISTINCT seminare.Seminar_id FROM seminare
+            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminare.Seminar_id FROM seminare
+                JOIN plugins_activated ON (
+                    plugins_activated.range_id = seminar_id
+                    AND plugins_activated.state = 1
+                    AND plugins_activated.pluginid = :plugin_id
+                )
                 INNER JOIN seminar_inst ON (seminare.Seminar_id = seminar_inst.seminar_id)
                 INNER JOIN Institute ON (seminar_inst.institut_id = Institute.Institut_id)
                 LEFT JOIN sem_types ON (sem_types.id = seminare.status)
@@ -64,12 +81,26 @@ class MyCourseList extends OpencastController
 
             $stmt->execute([
                 ':search'        => $params['search'],
-                ':institute_ids' => $institute_ids
+                ':institute_ids' => $institute_ids,
+                ':plugin_id'     => $plugin_id
             ]);
 
             $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         } else {
-            // get courses for root
+            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
+                JOIN plugins_activated ON (
+                    plugins_activated.range_id = seminar_id
+                    AND plugins_activated.state = 1
+                    AND plugins_activated.pluginid = :plugin_id
+                )
+                WHERE 1
+            ");
+
+            $stmt->execute([
+                ':plugin_id' => $plugin_id
+            ]);
+
+            $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
 
 
