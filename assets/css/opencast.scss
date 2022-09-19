@@ -52,7 +52,7 @@ $episode-background: $light-gray-color-20;
     }
 
     .active {
-        background-color: dodgerblue;
+        background-color: $base_color;
         color: white;
         cursor: default
     }
@@ -449,21 +449,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
             vertical-align: middle;
         }
     }
-
-    /*
-    button.submit {
-        padding: 8px;
-        background: dodgerblue;
-        color: white;
-        font-size: 16px;
-        border: 1px solid $light-gray-color-40;
-        border-left: none; // Prevent double borders
-        cursor: pointer;
-        &:hover {
-            opacity: 0.9;
-        }
-    }
-    */
 }
 
 .oc--bulk-actions {

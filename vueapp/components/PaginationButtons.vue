@@ -6,7 +6,7 @@
             class="oc--paging-arrow"
         >
             <studip-icon
-                shape="arr_1left" :role="paging.currPage <= 0 ? 'info' : 'clickable'"
+                shape="arr_1left" :role="paging.currPage <= 0 ? 'inactive' : 'clickable'"
             />
         </button>
 
@@ -38,7 +38,7 @@
             class="oc--paging-arrow"
         >
              <studip-icon
-                shape="arr_1right" :role="paging.currPage >= paging.lastPage ? 'info' : 'clickable'"
+                shape="arr_1right" :role="paging.currPage >= paging.lastPage ? 'inactive' : 'clickable'"
             />
         </button>
     </div>
