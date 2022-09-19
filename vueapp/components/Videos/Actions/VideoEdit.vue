@@ -43,6 +43,11 @@
                             </span>
                             <textarea cols="50" rows="5" name="description" v-model="event.description"></textarea>
                         </label>
+
+                        <label>
+                            Tags
+                            <TagBar :taggable="event" @update="updateTags" />
+                        </label>
                     </fieldset>
                 </form>
             </template>
@@ -52,12 +57,13 @@
 
 <script>
 import StudipDialog from '@studip/StudipDialog';
+import TagBar from '@/components/TagBar.vue';
 
 export default {
     name: "VideoEdit",
 
     components: {
-        StudipDialog
+        StudipDialog, TagBar
     },
 
     props: ['event'],

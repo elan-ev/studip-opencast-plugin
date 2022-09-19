@@ -1,6 +1,6 @@
 <template>
     <div>
-        <studip-select :options="availableTags" v-model="playlist.tags"
+        <studip-select :options="availableTags" v-model="taggable.tags"
             multiple taggable
             label="tag"
             @option:selected="$emit('update');"
@@ -38,13 +38,13 @@ import StudipIcon from '@studip/StudipIcon';
 import { mapGetters } from "vuex";
 
 export default {
-    name: "PlaylistTags",
+    name: "TagBar",
 
     components: {
         StudipSelect,   StudipIcon
     },
 
-    props: ['playlist'],
+    props: ['taggable'],
 
     data() {
         return {

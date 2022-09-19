@@ -9,6 +9,8 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
+use Opencast\Models\VideoTags;
+use Opencast\Models\Tags;
 
 class VideoUpdate extends OpencastController
 {
@@ -16,6 +18,8 @@ class VideoUpdate extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $user;
+        
         $token = $args['token'];
         $video = Videos::findByToken($token);
 
@@ -32,6 +36,36 @@ class VideoUpdate extends OpencastController
 
         $json = $this->getRequestData($request);
         $event = $json['event'];
+
+        if (isset($event['tags'])) {
+            // delete all existing tags from the playlist
+            VideoTags::deleteByVideo_id($video->id);
+
+            // readd the new ones
+            foreach ($event['tags'] as $new_tag) {
+                // check if tag already exists in oc_tags
+
+                if ($new_tag['id']) {
+                    $tag = Tags::find($new_tag['id']);
+                } else {
+                    $tag = Tags::findOneBySQL('tag = ? AND user_id = ?', [$new_tag['tag'], $user->id]);
+                }
+
+                if (empty($tag)) {
+                    $tag = new Tags();
+                    $tag->tag     = $new_tag['tag'];
+                    $tag->user_id = $user->id;
+                    $tag->store();
+                }
+
+                $vltag = new VideoTags();
+                $vltag->video_id = $video->id;
+                $vltag->tag_id      = $tag->id;
+                $vltag->store();
+            }
+
+            unset($event['tags']);
+        }
 
         $message = [
             'type' => 'success',

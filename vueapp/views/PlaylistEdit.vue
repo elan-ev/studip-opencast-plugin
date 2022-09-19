@@ -51,7 +51,7 @@
 
                     <label>
                         Tags
-                        <PlaylistTags :playlist="eplaylist" @update="updateTags" />
+                        <TagBar :taggable="eplaylist" @update="updateTags" />
                     </label>
                 </form>
              </template>
@@ -66,7 +66,7 @@ import StudipIcon from '@studip/StudipIcon.vue';
 import StudipButton from '@studip/StudipButton.vue';
 import StudipDialog from '@studip/StudipDialog.vue';
 
-import PlaylistTags from '@/components/Playlists/PlaylistTags.vue';
+import TagBar from '@/components/TagBar.vue';
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue';
 import PlaylistVideos from "@/components/Playlists/PlaylistVideos";
 
@@ -83,7 +83,7 @@ export default {
     components: {
         StudipIcon,     StudipButton,
         StudipDialog,
-        PlaylistTags,   PlaylistVisibility,
+        TagBar,   PlaylistVisibility,
         PlaylistVideos, Tag
     },
 

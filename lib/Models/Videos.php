@@ -26,6 +26,13 @@ class Videos extends UPMap
             'assoc_foreign_key' => 'video_id',
         ];
 
+        $config['has_and_belongs_to_many']['tags'] = [
+            'class_name'     => 'Opencast\\Models\\Tags',
+            'thru_table'     => 'oc_video_tags',
+            'thru_key'       => 'video_id',
+            'thru_assoc_key' => 'tag_id'
+        ];
+
         parent::configure($config);
     }
 
@@ -150,6 +157,8 @@ class Videos extends UPMap
 
         $data['perm'] = $this->getUserPerm();
         $data['courses'] = $this->getCourses();
+
+        $data['tags'] = $this->tags->toArray();
 
         return $data;
     }
