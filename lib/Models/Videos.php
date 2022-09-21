@@ -214,9 +214,9 @@ class Videos extends UPMap
 
         $ret_perm = 'read';
 
-        foreach ($this->perms as $perm) {
-            if ($perm->user_id == $user_id) {
-                $ret_perm = $perm->perm;
+        foreach ($this->perms as $uperm) {
+            if ($uperm->user_id == $user_id) {
+                $ret_perm = $uperm->perm;
             }
         }
 

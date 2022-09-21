@@ -61,8 +61,16 @@ export default {
     computed: {
 
         filteredUserCourses() {
+            let noCoursesFound = {};
+            noCoursesFound['0'] = {}
+            noCoursesFound['0'][this.$gettext('Keine Treffer')] = [{
+                id: 0,
+                name: this.$gettext('Keine Kurse gefunden.')
+            }];
+
             if (this.courses.length == 0) {
-                return null
+                this.currentCourse = 0;
+                return noCoursesFound;
             }
 
             /*
@@ -95,11 +103,8 @@ export default {
             }
 
             if (Object.keys(course_list).length == 0) {
-                course_list['0'] = {}
-                course_list['0'][this.$gettext('Keine Treffer')] = [{
-                    id: 0,
-                    name: this.$gettext('Keine Kurse gefunden.')
-                }];
+                this.currentCourse = 0;
+                return noCoursesFound;
             }
 
             this.currentCourse = Object.values(Object.values(course_list)[0])[0][0].id;
