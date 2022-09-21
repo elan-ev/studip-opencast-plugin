@@ -9,6 +9,7 @@ const state = {
     site: null,
     axios_running: false,
     userCourses: [],
+    currentPlaylist: 'all'
 }
 
 const getters = {
@@ -34,8 +35,11 @@ const getters = {
         return state.axios_running;
     },
     userCourses(state) {
-        return state.userCourses
+        return state.userCourses;
     },
+    currentPlaylist(state) {
+        return state.currentPlaylist;
+    }
 }
 
 
@@ -125,6 +129,10 @@ const mutations = {
 
     setUserCourses(state, data) {
         state.userCourses = data;
+    },
+
+    setCurrentPlaylist(state, data) {
+        state.currentPlaylist = data;
     },
 }
 

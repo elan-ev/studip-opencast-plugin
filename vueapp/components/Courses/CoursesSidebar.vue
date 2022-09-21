@@ -73,7 +73,7 @@
         </div>
     </template>
     <template v-else>
-        <div class="sidebar-widget " id="sidebar-actions">
+        <div class="sidebar-widget " id="sidebar-actions" v-if="canEdit">
             <div class="sidebar-widget-header" v-translate>
                 Aktionen
             </div>
@@ -112,7 +112,6 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
-            currentPlaylist: 'all',
             options: {}
         }
     },
@@ -120,7 +119,7 @@ export default {
     computed: {
         ...mapGetters(["playlists", "currentView",
             "cid", "semester_list", "semester_filter", 'currentUser',
-            'simple_config_list', 'course_config']),
+            'simple_config_list', 'course_config', 'currentPlaylist']),
 
         fragment() {
             return this.$route.name;
@@ -165,8 +164,7 @@ export default {
                 }
             }
 
-            this.currentPlaylist = token;
-
+            this.$store.commit('setCurrentPlaylist', token);
             this.$store.commit('setFilters', this.options);
             this.$store.commit('clearPaging')
             this.$store.dispatch('loadVideos', this.options);
@@ -181,6 +179,13 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
             this.$store.dispatch('loadVideos', this.options);
+        },
+
+        canEdit() {
+            return (
+                this.course_config.course_perms == 'tutor' ||
+                this.course_config.course_perms == 'dozent'
+            )
         }
     },
 
@@ -203,6 +208,12 @@ export default {
                 this.$store.dispatch('setSemesterFilter', newValue);
                 this.$store.dispatch('clearMessages');
                 this.$store.dispatch('getScheduleList');
+            }
+        },
+
+        currentPlaylist(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                this.setPlaylist(newValue);
             }
         }
     },

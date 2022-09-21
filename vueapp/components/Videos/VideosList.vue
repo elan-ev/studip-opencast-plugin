@@ -12,6 +12,13 @@
         <SearchBar @search="doSearch"/>
         <PaginationButtons @changePage="changePage"/>
 
+        <StudipButton
+            icon="trash" v-if="playlist_token"
+            @click.prevent="removePlaylistFromCourse(playlist_token, cid)"
+        >
+            {{ $gettext('Wiedergabeliste aus diesem Kurs entferne') }}
+        </StudipButton>
+
         <div v-if="playlistForVideos" class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
             <StudipButton icon="add" @click.stop="addVideosToPlaylist">
@@ -19,13 +26,6 @@
             </StudipButton>
 
         </div>
-
-        <!--
-
-             <select>
-                <option>{{ $gettext('Aktionen') }}</option>
-            </select>
-            -->
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="Object.keys(videos).length === 0 && (axios_running || videos_loading)" class="oc--episode-list oc--episode-list--empty">
@@ -86,13 +86,6 @@ import Tag from '@/components/Tag.vue'
 export default {
     name: "VideosList",
 
-    props: {
-        'playlist_token': {
-            type: String,
-            default: null
-        }
-    },
-
     components: {
         VideoCard, EmptyVideoCard,
         PaginationButtons, MessageBox,
@@ -129,6 +122,14 @@ export default {
 
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
+        },
+
+        playlist_token() {
+            for (let id in this.filters) {
+                if (this.filters[id]['type'] == 'playlist') {
+                    return this.filters[id]['token']
+                }
+            }
         }
     },
 
@@ -202,6 +203,18 @@ export default {
             this.showActionDialog = false;
             this.actionComponent = null;
             this.selectedEvent = null;
+        },
+
+        removePlaylistFromCourse(token, cid) {
+            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen möchten?'))) {
+                this.$store.commit('setCurrentPlaylist', 'all');
+                this.$store.dispatch('removePlaylistFromCourse', {
+                    token: token,
+                    course: cid
+                }).then(() => {
+                    this.$store.dispatch('loadPlaylists');
+                });
+            }
         }
     },
 
