@@ -1,7 +1,7 @@
 <template>
     <div>
         <li v-if="event.refresh === undefined" :key="event.id" class="oc--flex-episode">
-            <div class="oc--flex-checkbox" v-if="playlistForVideos">
+            <div class="oc--flex-checkbox">
                  <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
             </div>
 

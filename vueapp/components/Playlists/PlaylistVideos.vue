@@ -1,30 +1,14 @@
 <template>
     <div>
-        <MessageBox type="info" v-if="playlistForVideos">
-            {{ $gettext('Bitte wählen Sie die Videos aus, die zur Wiedergabeliste hinzugefügt werden sollen.') }}
-        </MessageBox>
-        <h3 v-if="playlistForVideos">
-            {{ playlistForVideos.title }}
-            <div class="oc--tags">
-                <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
-            </div>
-        </h3>
         <SearchBar @search="doSearch" v-if="!videoSortMode" :playlist="playlist" />
 
-        <div v-if="playlistForVideos" class="oc--bulk-actions">
+        <div class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
-            <StudipButton icon="add" @click.stop="addVideosToPlaylist">
-                {{ $gettext('Zur Wiedergabeliste hinzufügen') }}
+
+            <StudipButton icon="trash" @click.prevent="removeVideosFromPlaylist">
+                {{ $gettext('Videos aus der Wiedergabeliste löschen') }}
             </StudipButton>
-
         </div>
-
-        <!--
-
-             <select>
-                <option>{{ $gettext('Aktionen') }}</option>
-            </select>
-            -->
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="Object.keys(videos_list).length === 0 && (axios_running || videos_loading)" class="oc--episode-list--small oc--episode-list--empty">
@@ -201,18 +185,23 @@ export default {
             }
         },
 
-        addVideosToPlaylist() {
+        removeVideosFromPlaylist() {
             let view = this;
 
-            this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlistForVideos.token,
+            this.$store.dispatch('removeVideosFromPlaylist', {
+                playlist: this.playlist.token,
                 videos:   this.selectedVideos
             }).then(() => {
                 this.selectedVideos = [];
                 view.$store.dispatch('addMessage', {
                      type: 'success',
-                     text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
+                     text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
+
+                this.$store.dispatch('loadVideos', {
+                    filters: this.filters,
+                    limit: -1
+                })
             })
         }
     },
