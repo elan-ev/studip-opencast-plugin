@@ -169,7 +169,7 @@ export default {
         },
 
         deleteConfig() {
-            if (confirm(this.$gettext('Sind sie, dass sie diese Serverkonfiguration löschen möchten?'))) {
+            if (confirm(this.$gettext('Sind sie, dass sie diese Serverkonfiguration löschen möchten? Es werden auch alle Videos aus Stud.IP rausgelöscht, die zu diesem Server gehören!'))) {
                 if (this.id == 'new') {
                     this.currentConfig = {}
                 } else {
