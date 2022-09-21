@@ -1,10 +1,15 @@
 <template>
     <form class="default">
         <fieldset>
-            <legend>Zu neuem Kurs hinzufügen</legend>
+            <legend>
+                {{ $gettext('Zu neuem Kurs hinzufügen') }}
+                <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!')"
+                    title="" tabindex="0"
+                ></span>
+            </legend>
 
             <label>
-                <input type="text" placeholder="In Veranstaltungen suchen" v-model="search">
+                <input type="text" :placeholder="$gettext('In Veranstaltungen suchen')" v-model="search">
                 <select v-model="currentCourse" v-if="filteredUserCourses">
                     <template v-for="course_sem in filteredUserCourses">
                     <optgroup v-for="(courses, semester) in course_sem" v-bind:key="semester" :label="semester">
