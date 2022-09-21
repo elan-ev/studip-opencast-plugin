@@ -9,6 +9,8 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\VideosUserPerms;
+use Opencast\Models\Videos;
+
 
 /**
  * This route is used by opencast itself and secured via an API token
@@ -24,12 +26,19 @@ class UserRoles extends OpencastController
         $roles = [];
 
         if ($user_id) {
-            // get all videos the user has permissions on
-            foreach(VideosUserPerms::findByUser_id($user_id) as $vperm) {
-                if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
-                    $roles[] = 'STUDIP_' . $vperm->video->episode . '_write';
-                } else {
-                    $roles[] = 'STUDIP_' . $vperm->video->episode . '_read';
+            // Stud.IP-root has access to all videos
+            if ($GLOBALS['perm']->have_perm('root', $user_id)) {
+                foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
+                    $roles[] = 'STUDIP_' . $video->episode . '_write';
+                }
+            } else {
+                // get all videos the user has permissions on
+                foreach(VideosUserPerms::findByUser_id($user_id) as $vperm) {
+                    if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
+                        $roles[] = 'STUDIP_' . $vperm->video->episode . '_write';
+                    } else {
+                        $roles[] = 'STUDIP_' . $vperm->video->episode . '_read';
+                    }
                 }
             }
         }

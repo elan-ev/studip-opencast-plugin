@@ -26,10 +26,9 @@ class MyCourseList extends OpencastController
 
         if (!$perm->have_perm('admin')) {
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
-                JOIN plugins_activated ON (
-                    plugins_activated.range_id = seminar_id
-                    AND plugins_activated.state = 1
-                    AND plugins_activated.pluginid = :plugin_id
+                JOIN tools_activated ON (
+                    tools_activated.range_id = seminar_id
+                    AND tools_activated.plugin_id = :plugin_id
                 )
                 WHERE user_id = :user_id
                     AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
@@ -58,10 +57,9 @@ class MyCourseList extends OpencastController
 
             // get courses for admins
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminare.Seminar_id FROM seminare
-                JOIN plugins_activated ON (
-                    plugins_activated.range_id = seminar_id
-                    AND plugins_activated.state = 1
-                    AND plugins_activated.pluginid = :plugin_id
+                JOIN tools_activated ON (
+                    tools_activated.range_id = seminar_id
+                    AND tools_activated.plugin_id = :plugin_id
                 )
                 INNER JOIN seminar_inst ON (seminare.Seminar_id = seminar_inst.seminar_id)
                 INNER JOIN Institute ON (seminar_inst.institut_id = Institute.Institut_id)
@@ -88,10 +86,9 @@ class MyCourseList extends OpencastController
             $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         } else {
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
-                JOIN plugins_activated ON (
-                    plugins_activated.range_id = seminar_id
-                    AND plugins_activated.state = 1
-                    AND plugins_activated.pluginid = :plugin_id
+                 JOIN tools_activated ON (
+                    tools_activated.range_id = seminar_id
+                    AND tools_activated.plugin_id = :plugin_id
                 )
                 WHERE 1
             ");

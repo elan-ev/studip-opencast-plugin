@@ -36,17 +36,21 @@ class Videos extends UPMap
         parent::configure($config);
     }
 
-    public static function findByFilter($filters)
+    public static function findByFilter($filters, $user_id = null)
     {
 
         global $user, $perm;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
 
         $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
         $params = [];
 
         if (!$perm->have_perm('root')) {
             $params = [
-                ':user_id'=> $user->id
+                ':user_id'=> $user_id
             ];
 
             $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
@@ -161,7 +165,7 @@ class Videos extends UPMap
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
-        $data['perm'] = $this->getUserPerm();
+        $data['perm'] = $this->getUserPerm($user_id);
         $data['courses'] = $this->getCourses();
 
         $data['tags'] = $this->tags->toArray();
@@ -196,14 +200,22 @@ class Videos extends UPMap
      *
      * @return string $perm the perm value
      */
-    public function getUserPerm()
+    public function getUserPerm($user_id = null)
     {
-        global $user;
+        global $user, $perm;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
+
+        if ($perm->have_perm('root', $user_id)) {
+            return 'owner';
+        }
 
         $ret_perm = 'read';
 
         foreach ($this->perms as $perm) {
-            if ($perm->user_id == $user->id) {
+            if ($perm->user_id == $user_id) {
                 $ret_perm = $perm->perm;
             }
         }
