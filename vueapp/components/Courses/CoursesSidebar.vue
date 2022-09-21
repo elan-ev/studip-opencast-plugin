@@ -146,6 +146,17 @@ export default {
                     'return.label'    : 'Stud.IP'
                 }
             );
+        },
+
+        canEdit() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return (
+                this.course_config.course_perms == 'tutor' ||
+                this.course_config.course_perms == 'dozent'
+            )
         }
     },
 
@@ -179,13 +190,6 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
             this.$store.dispatch('loadVideos', this.options);
-        },
-
-        canEdit() {
-            return (
-                this.course_config.course_perms == 'tutor' ||
-                this.course_config.course_perms == 'dozent'
-            )
         }
     },
 
