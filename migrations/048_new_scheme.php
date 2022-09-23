@@ -48,6 +48,30 @@ class NewScheme extends Migration
           ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ";
 
+        $sql[] = "CREATE TABLE `oc_video` (
+          `id` int NOT NULL AUTO_INCREMENT,
+          `token` varchar(12),
+          `config_id` int,
+          `episode` varchar(64) UNIQUE,
+          `title` text,
+          `description` text,
+          `duration` int,
+          `views` int,
+          `preview` text,
+          `publication` text,
+          `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
+          `created` timestamp,
+          `author` varchar(255),
+          `contributors` varchar(1000),
+          `chdate` timestamp,
+          `mkdate` timestamp,
+          PRIMARY KEY (`id`),
+          FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,   # disallow deletion of config if videos are assigned to that config
+          KEY `U.1` (`token`),
+          KEY `U.2` (`config_id`, `episode`)
+        );
+        ";
+
         $sql[] = "CREATE TABLE `oc_video_sync` (
             `id` int NOT NULL AUTO_INCREMENT,
             `video_id` int,
@@ -59,30 +83,6 @@ class NewScheme extends Migration
             PRIMARY KEY (`id`),
             KEY `U.1` (`video_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-          );
-        ";
-
-        $sql[] = "CREATE TABLE `oc_video` (
-            `id` int NOT NULL AUTO_INCREMENT,
-            `token` varchar(12),
-            `config_id` int,
-            `episode` varchar(64) UNIQUE,
-            `title` text,
-            `description` text,
-            `duration` int,
-            `views` int,
-            `preview` text,
-            `publication` text,
-            `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
-            `created` timestamp,
-            `author` varchar(255),
-            `contributors` varchar(1000),
-            `chdate` timestamp,
-            `mkdate` timestamp,
-            PRIMARY KEY (`id`),
-            FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,   # disallow deletion of config if videos are assigned to that config
-            KEY `U.1` (`token`),
-            KEY `U.2` (`config_id`, `episode`)
           );
         ";
 
