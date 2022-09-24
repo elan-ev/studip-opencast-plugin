@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Zu Kurs hinzufügen')"
+            :title="$gettext('Verknüpfte Kurse')"
             :confirmText="$gettext('Speichern')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"

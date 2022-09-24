@@ -152,7 +152,7 @@ export default {
                 });
                 */
                 menuItems.push({
-                    label: this.$gettext('Zu Kurs hinzufügen'),
+                    label: this.$gettext('Verknüpfte Kurse'),
                     icon: 'add',
                     emit: 'performAction',
                     emitArguments: 'VideoAddToSeminar'
