@@ -111,7 +111,8 @@ class Perm
 
         foreach ($check_user->getRoles() as $role) {
             if ($role->rolename == $check_role) {
-                return \RolePersistence::getAssignedRoleInstitutes($user_id, $role->roleid);
+                // array_filter is used to remove empty institute entries
+                return array_filter(\RolePersistence::getAssignedRoleInstitutes($user_id, $role->roleid));
             }
         }
 

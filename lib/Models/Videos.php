@@ -9,6 +9,8 @@ use Opencast\Models\Playlists;
 use Opencast\Models\REST\SearchClient;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\ApiWorkflowsClient;
+use Opencast\Providers\Perm;
+use Opencast\Models\Helpers;
 
 class Videos extends UPMap
 {
@@ -36,6 +38,48 @@ class Videos extends UPMap
         parent::configure($config);
     }
 
+    /**
+     * Returns the list of videos that are accessable. These can then be used to narrow it down by search filters
+     *
+     * @param string $user_id
+     *
+     * @return array the video ids
+     */
+    private static function getFilteredVideoIDs($user_id)
+    {
+        global $perm;
+
+        if ($perm->have_perm('admin', $user_id)) {
+            // get all courses and their playlists this user has access to. Only courses with activated OC plugin are included
+            $courses = Helpers::getMyCourses($user_id);
+
+            $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
+                JOIN oc_video_seminar    ON (oc_video_seminar.video_id = oc_video.id AND oc_video_seminar.seminar_id IN (:courses))
+                JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
+                JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
+                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id)
+                WHERE 1
+            ');
+
+            $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        }
+    }
+
+    /**
+     * Get the list of accessible videos, faceted by the passed filters
+     *
+     * @param [type] $filters
+     * @param [type] $user_id
+     *
+     * @return array
+     *   [
+     *       'videos' => [Opencast\Models\Videos],
+     *       'count'  => int
+     *   ];
+     */
     public static function findByFilter($filters, $user_id = null)
     {
 
@@ -48,13 +92,20 @@ class Videos extends UPMap
         $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
         $params = [];
 
+
+        // root can access all videos, no further checking for perms is necessary
         if (!$perm->have_perm('root')) {
             $params = [
                 ':user_id'=> $user_id
             ];
 
-            $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
-            $where = ' WHERE 1 ';
+            if ($perm->have_perm('admin', $user_id)) {
+                $where = ' WHERE oc_video.id IN (:video_ids) ';
+                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
+            } else {
+                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                $where = ' WHERE 1 ';
+            }
         }
 
         $tag_ids      = [];
@@ -135,7 +186,6 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
-        //var_dump($sql, $params);
         return [
             'videos' => self::findBySQL($sql, $params),
             'count'  => $count
