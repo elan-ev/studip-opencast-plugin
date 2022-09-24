@@ -17,8 +17,10 @@ class VideoList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        $params = $request->getQueryParams();
+
         // select all videos the current user has perms on
-        $videos = Videos::findByFilter(new Filter($request));
+        $videos = Videos::findByFilter(new Filter($params));
 
         $ret = [];
         foreach ($videos['videos'] as $video) {

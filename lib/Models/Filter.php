@@ -21,10 +21,8 @@ class Filter
         'text', 'playlist', 'tag', 'order'
     ];
 
-    public function __construct(Request $request)
+    public function __construct($params)
     {
-        $params = $request->getQueryParams();
-
         if (!empty($params['offset']) && $params['offset'] > 0) {
             $this->offset = $params['offset'];
         } else {

@@ -90,7 +90,15 @@ class VersionHelper46 implements VersionHelperInterface
 
     function registerCoursewareBlock(\StudipPlugin $plugin)
     {
+        // load compatibility JS-script
+        \PageLayout::addScript($plugin->getPluginUrl() . '/assets/javascript/oc46.js');
 
+        // load classes need for the old Courseware OC block
+        require_once(__DIR__ . '/Versions/4.6/OCConfig.php');
+        require_once(__DIR__ . '/Versions/4.6/OpencastLTI.php');
+        require_once(__DIR__ . '/Versions/4.6/LtiLink.php');
+        require_once(__DIR__ . '/Versions/4.6/OCCourseModel.php');
+        require_once(__DIR__ . '/Versions/4.6/SearchClient.php');
     }
 }
 
