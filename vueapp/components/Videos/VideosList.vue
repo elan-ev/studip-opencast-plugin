@@ -16,7 +16,7 @@
             icon="trash" v-if="playlist_token"
             @click.prevent="removePlaylistFromCourse(playlist_token, cid)"
         >
-            {{ $gettext('Wiedergabeliste aus diesem Kurs entferne') }}
+            {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
         </StudipButton>
 
         <div v-if="playlistForVideos" class="oc--bulk-actions">
@@ -125,9 +125,13 @@ export default {
         },
 
         playlist_token() {
-            for (let id in this.filters) {
-                if (this.filters[id]['type'] == 'playlist') {
-                    return this.filters[id]['token']
+            if (!this.filters || !this.filters.filters) {
+                return null;
+            }
+
+            for (let i = 0; i < this.filters.filters.length; i++) {
+                if (this.filters.filters[i]['type'] == 'playlist') {
+                    return this.filters.filters[i]['value']
                 }
             }
         }

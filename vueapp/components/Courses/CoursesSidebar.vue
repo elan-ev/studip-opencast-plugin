@@ -170,10 +170,10 @@ export default {
                 }
             } else {
                 this.options = {
-                     filters: {
+                     filters: [{
                         'type': 'playlist',
-                        'token': token
-                    }
+                        'value': token
+                    }]
                 }
             }
 

@@ -19,7 +19,7 @@ export default {
         icon: {
             type: String,
             validator(value) {
-                return ['', 'accept', 'cancel', 'edit', 'move-up', 'move-down', 'add', 'download', 'search'].includes(value)
+                return ['', 'accept', 'cancel', 'edit', 'move-up', 'move-down', 'add', 'download', 'search', 'trash'].includes(value)
             },
             default: ''
         }

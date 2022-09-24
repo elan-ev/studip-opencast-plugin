@@ -74,7 +74,7 @@ const actions = {
             if (key === 'filters') {
                 params.append('filters', JSON.stringify(filters.filters));
             } else {
-                params.append(key,  filters[key]);
+                params.append(key, filters[key]);
             }
         }
 
