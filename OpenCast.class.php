@@ -9,6 +9,7 @@ use Opencast\Models\Helpers;
 
 use Opencast\AppFactory;
 use Opencast\RouteMap;
+use Opencast\VersionHelper;
 
 use Courseware\CoursewarePlugin;
 
@@ -16,7 +17,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 {
     const GETTEXT_DOMAIN = 'opencast';
 
-    private $assetsUrl;
+    public $assetsUrl;
 
     /**
      * Initialize a new instance of the plugin.
@@ -42,16 +43,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $videos->setImage(Icon::create('video2'));
             $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
 
-            Navigation::addItem('/contents/opencast', $videos);
+            // use correct navigation for Stud.IP Versions below 5
+            VersionHelper::get()->addMainNavigation($videos);
         }
 
-        $icon = new Icon($this->assetsUrl . '/images/opencast-courseware.svg');
-
-        PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
-            background-image:url(' . $icon->asImagePath() . ')
-        }');
-
-        PageLayout::addScript($this->getPluginUrl() . '/static/register.js');
+        VersionHelper::get()->registerCoursewareBlock($this);
     }
 
     /**
@@ -240,6 +236,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $app->run();
         } else {
             $this->addStylesheet("assets/css/opencast.scss");
+            $css = VersionHelper::get()->getVersionSpecificStylesheet();
+
+            if ($css) {
+                $this->addStylesheet($css);
+            }
 
             $trails_root = $this->getPluginPath() . '/app';
             $dispatcher  = new Trails_Dispatcher(

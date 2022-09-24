@@ -1,7 +1,6 @@
 <?php
-/*
- * course.php - course controller
- */
+
+use Opencast\VersionHelper;
 
 class ContentsController extends Opencast\Controller
 {
@@ -28,7 +27,8 @@ class ContentsController extends Opencast\Controller
      */
     public function index_action()
     {
-        Navigation::activateItem('/contents/opencast');
+        VersionHelper::get()->activateContentNavigation();
+
         PageLayout::setTitle($this->_('Videos'));
         PageLayout::setBodyElementId('opencast-plugin');
 

@@ -16,7 +16,6 @@ class NewCoursewareBlock extends Migration
             `seminar_id` char(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
             PRIMARY KEY (`video_id`, `block_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE,
-            FOREIGN KEY (`block_id`) REFERENCES `cw_blocks` (`id`) ON DELETE CASCADE,
             FOREIGN KEY (`seminar_id`) REFERENCES `seminare` (`Seminar_id`) ON DELETE CASCADE
         );");
 

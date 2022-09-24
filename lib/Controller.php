@@ -67,6 +67,24 @@ class Controller extends PluginController
     }
 
     /**
+     * Intercepts all non-resolvable method calls in order to correctly handle
+     * calls to _ and _n.
+     *
+     * @param string $method
+     * @param array $arguments
+     * @return mixed
+     * @throws RuntimeException when method is not found
+     */
+    public function __call($method, $arguments)
+    {
+        $variables = get_object_vars($this);
+        if (isset($variables[$method]) && is_callable($variables[$method])) {
+            return call_user_func_array($variables[$method], $arguments);
+        }
+        throw new RuntimeException("Method {$method} does not exist");
+    }
+
+    /**
      * Throw an array at this function and it will call render_text to output
      * the json-version of that array while setting an appropriate http-header
      * @param array $data

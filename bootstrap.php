@@ -10,8 +10,14 @@ require_once 'vendor/trails/trails.php';
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
 
-// Courseware Block
-require_once 'lib/BlockTypes/OpencastBlock.php';
+/* Courseware Block */
+if (\StudipVersion::newerThan('4.6')) {
+    require_once 'lib/BlockTypes/OpencastBlock.php';
+} else {
+    if (!interface_exists('Courseware\CoursewarePlugin')) {
+        require_once 'lib/FakeCoursewareInterface.php';
+    }
+}
 
 // adding observer
 NotificationCenter::addObserver('Opencast\Models\Videos', 'parseEvent', 'OpencastVideoSync');

@@ -8,6 +8,7 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
+use Opencast\VersionHelper;
 
 /**
  * Find the playlists for the passed course
@@ -20,16 +21,15 @@ class MyCourseList extends OpencastController
     {
         global $user, $perm;
 
+        $p_sql = VersionHelper::get()->getPluginActivatedSQL();
+
         // get id of opencast plugin to check if it is activated for selected courses
         $plugin_id = \DBManager::get()->query("SELECT pluginid
             FROM plugins WHERE pluginname = 'OpenCast'")->fetchColumn();
 
         if (!$perm->have_perm('admin')) {
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
-                JOIN tools_activated ON (
-                    tools_activated.range_id = seminar_id
-                    AND tools_activated.plugin_id = :plugin_id
-                )
+                $p_sql
                 WHERE user_id = :user_id
                     AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
 
@@ -57,10 +57,7 @@ class MyCourseList extends OpencastController
 
             // get courses for admins
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminare.Seminar_id FROM seminare
-                JOIN tools_activated ON (
-                    tools_activated.range_id = seminar_id
-                    AND tools_activated.plugin_id = :plugin_id
-                )
+                $p_sql
                 INNER JOIN seminar_inst ON (seminare.Seminar_id = seminar_inst.seminar_id)
                 INNER JOIN Institute ON (seminar_inst.institut_id = Institute.Institut_id)
                 LEFT JOIN sem_types ON (sem_types.id = seminare.status)
@@ -86,11 +83,7 @@ class MyCourseList extends OpencastController
             $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         } else {
             $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
-                 JOIN tools_activated ON (
-                    tools_activated.range_id = seminar_id
-                    AND tools_activated.plugin_id = :plugin_id
-                )
-                WHERE 1
+                $p_sql WHERE 1
             ");
 
             $stmt->execute([

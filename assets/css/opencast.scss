@@ -558,7 +558,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 .oc--admin--server-card-grid {
     margin: 10px 0px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, min(405px,100%));
+    grid-template-columns: repeat(auto-fit, 405px);
     grid-gap: 10px;
 }
 
