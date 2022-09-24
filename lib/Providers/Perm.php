@@ -22,7 +22,7 @@ class Perm
         $requiredPerm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
 
         if (\Config::get()->OPENCAST_MEDIA_ROLES) {
-            if (self::hasRole('Medientutor', $user_id)) {
+            if (self::hasRole('Medientutor', $user_id) || self::hasRole('Medienadmin', $user_id)) {
                 $requiredPerm = 'tutor';
             }
         }
