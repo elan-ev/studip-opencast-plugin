@@ -153,12 +153,7 @@ export default {
                 return false;
             }
 
-            return (
-                this.course_config.course_perms == 'tutor'  ||
-                this.course_config.course_perms == 'dozent' ||
-                this.course_config.course_perms == 'admin'  ||
-                this.course_config.course_perms == 'root'
-            )
+            return this.course_config.edit_allowed;
         }
     },
 

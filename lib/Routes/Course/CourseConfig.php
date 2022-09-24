@@ -11,6 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\SeminarSeries;
 use Opencast\Models\SeminarWorkflowConfiguration;
 use Opencast\Models\REST\SeriesClient;
+use Opencast\Providers\Perm;
 
 
 /**
@@ -58,7 +59,7 @@ class CourseConfig extends OpencastController
                 'visibility' => $series->visibility
             ],
             'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
-            'course_perms'   => $perm->get_studip_perm($course_id)
+            'edit_allowed'   => Perm::editAllowed($course_id)
         ];
 
         return $this->createResponse($results, $response);
