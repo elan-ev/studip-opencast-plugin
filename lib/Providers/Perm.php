@@ -22,8 +22,22 @@ class Perm
         $requiredPerm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
 
         if (\Config::get()->OPENCAST_MEDIA_ROLES) {
-            if (self::hasRole('Medientutor', $user_id) || self::hasRole('Medienadmin', $user_id)) {
+            // media tutors are allowed to upload videos in any seminar where they are tutor
+            if (self::hasRole('Medientutor', $user_id)) {
                 $requiredPerm = 'tutor';
+            }
+
+            // if the user is a media admin, check if the current course is under an institute the user has role perms on
+            if (self::hasRole('Medienadmin', $user_id)) {
+                $institutes = self::getRoleInstitutes('Medienadmin', $user_id);
+
+                foreach ($institutes as $inst_id) {
+                    if ($inst_id && self::courseBelongsToInstitute($context_id, $inst_id)) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
 
@@ -48,6 +62,14 @@ class Perm
         }
     }
 
+    /**
+     * Check if the user has the passed role
+     *
+     * @param string $check_role
+     * @param string $user_id
+     *
+     * @return boolean
+     */
     public static function hasRole($check_role, $user_id = null)
     {
         global $user;
@@ -60,8 +82,64 @@ class Perm
         $check_user = \User::find($user_id);
 
         foreach ($check_user->getRoles() as $role) {
-            // media tutors are allowed to upload videos in any seminar where they are tutor
             if ($role->rolename == $check_role) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get institutes to assigned to the passed role (if any)
+     *
+     * @param string $check_role
+     * @param string $user_id
+     *
+     * @return boolean
+     */
+    public static function getRoleInstitutes($check_role, $user_id)
+    {
+        global $user;
+
+        if (is_null($user_id)) {
+            $user_id = $user->id;
+        }
+
+        // check, if current user has role "Medientutor"
+        $check_user = \User::find($user_id);
+
+        foreach ($check_user->getRoles() as $role) {
+            if ($role->rolename == $check_role) {
+                return \RolePersistence::getAssignedRoleInstitutes($user_id, $role->roleid);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the passed course belongs to the passed institute
+     *
+     * @param string $course_id
+     * @param string $inst_id
+     *
+     * @return boolean
+     */
+    public static function courseBelongsToInstitute($course_id, $inst_id)
+    {
+        static $course;
+        if (!$course[$course_id]) {
+            $course[$course_id] = \Course::find($course_id);
+        }
+
+        if ($course[$course_id]->home_institut->institut_id == $inst_id) {
+            return true;
+        }
+
+        foreach ($course[$course_id]->institutes as $inst) {
+            //var_dump($inst->institut_id);
+            if ($inst->institut_id == $inst_id) {
                 return true;
             }
         }
