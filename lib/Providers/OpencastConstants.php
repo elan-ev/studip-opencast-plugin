@@ -35,6 +35,7 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'OPENCAST_ALLOW_ALTERNATE_SCHEDULE' ,
                 'OPENCAST_ALLOW_MEDIADOWNLOAD' ,
                 'OPENCAST_ALLOW_STUDIO',
+                'OPENCAST_ALLOW_SCHEDULER',
                 'OPENCAST_HIDE_EPISODES',
                 'OPENCAST_TUTOR_EPISODE_PERM',
                 'OPENCAST_MEDIA_ROLES',
