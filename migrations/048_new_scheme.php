@@ -12,20 +12,20 @@ class NewScheme extends Migration
 
         $sql[] = 'SET foreign_key_checks = 0';
 
-        $sql[] = "CREATE TABLE `oc_playlist` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist` (
             `id` int NOT NULL AUTO_INCREMENT,
             `token` varchar(8),
             `title` varchar(255),
             `visibility` enum('internal','free','public'),
-            `chdate` timestamp,
-            `mkdate` timestamp,
+            `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             `sort_order` varchar(30) NOT NULL DEFAULT 'mkdate_desc',
             PRIMARY KEY (`id`),
             KEY `U.1` (`token`)
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_workflow_config` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_workflow_config` (
             `id` int NOT NULL AUTO_INCREMENT,
             `config_id` int,
             `workflow` varchar(255),
@@ -48,7 +48,7 @@ class NewScheme extends Migration
           ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ";
 
-        $sql[] = "CREATE TABLE `oc_video` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video` (
           `id` int NOT NULL AUTO_INCREMENT,
           `token` varchar(12),
           `config_id` int,
@@ -63,8 +63,8 @@ class NewScheme extends Migration
           `created` timestamp,
           `author` varchar(255),
           `contributors` varchar(1000),
-          `chdate` timestamp,
-          `mkdate` timestamp,
+          `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+          `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
           PRIMARY KEY (`id`),
           FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,   # disallow deletion of config if videos are assigned to that config
           KEY `U.1` (`token`),
@@ -72,21 +72,21 @@ class NewScheme extends Migration
         );
         ";
 
-        $sql[] = "CREATE TABLE `oc_video_sync` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_sync` (
             `id` int NOT NULL AUTO_INCREMENT,
             `video_id` int,
             `state` enum('running','scheduled','failed'),
             `scheduled` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP,
             `trys` int,
-            `chdate` timestamp,
-            `mkdate` timestamp,
+            `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             PRIMARY KEY (`id`),
             KEY `U.1` (`video_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_playlist_video` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_video` (
             `playlist_id` int,
             `video_id` int,
             `order` int,
@@ -97,7 +97,7 @@ class NewScheme extends Migration
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_tags` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_tags` (
             `id` int NOT NULL AUTO_INCREMENT,
             `user_id` VARCHAR(32) NOT NULL,
             `tag` varchar(255) NOT NULL,
@@ -106,7 +106,7 @@ class NewScheme extends Migration
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_playlist_tags` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_tags` (
             `playlist_id` int,
             `tag_id` int,
             PRIMARY KEY (`playlist_id`, `tag_id`),
@@ -115,15 +115,19 @@ class NewScheme extends Migration
           );
         ";
 
+        $sql[] = "ALTER TABLE `oc_seminar_series`
+          ADD COLUMN `mkdate2` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP();";
+        $sql[] = "UPDATE `oc_seminar_series` SET `mkdate2` = FROM_UNIXTIME(`mkdate`);";
+        $sql[] = "ALTER TABLE `oc_seminar_series` DROP COLUMN `mkdate`;";
+        $sql[] = "ALTER TABLE `oc_seminar_series` CHANGE `mkdate2` `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP();";
         $sql[] ="ALTER TABLE `oc_seminar_series`
-            DROP IF EXISTS schedule,
-            ADD `chdate` timestamp,
-            CHANGE `mkdate` `mkdate` timestamp,
+            DROP `schedule`,
+            ADD `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
             ADD KEY `U.1` (`series_id`, `config_id`);
         ";
 
-        $sql[] = "CREATE TABLE `oc_playlist_seminar` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_seminar` (
             `id` int NOT NULL AUTO_INCREMENT,
             `playlist_id` int,
             `seminar_id` varchar(32),
@@ -135,7 +139,7 @@ class NewScheme extends Migration
         ";
 
         // Allows setting the visibility for videos in playlists in seminars
-        $sql[] = "CREATE TABLE `oc_playlist_seminar_video` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_seminar_video` (
             `playlist_seminar_id` int,
             `video_id` int,
             `visibility` enum('hidden','visible'),
@@ -146,7 +150,7 @@ class NewScheme extends Migration
         ";
 
         // video directlu associated to a seminar - without playlist
-        $sql[] = "CREATE TABLE `oc_video_seminar` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_seminar` (
             `video_id` int,
             `seminar_id` varchar(32),
             `visibility` enum('hidden','visible'),
@@ -157,12 +161,12 @@ class NewScheme extends Migration
 
         $sql[] = "ALTER TABLE `oc_tos`
             DROP `seminar_id`,
-            ADD  `mkdate` timestamp,
+            ADD  `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             DROP PRIMARY KEY,
             ADD PRIMARY KEY (`user_id`);
         ";
 
-        $sql[] = "CREATE TABLE `oc_video_user_perms` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_user_perms` (
             `video_id` int,
             `user_id` varchar(32),
             `perm` enum('owner','write','read','share'),
@@ -171,7 +175,7 @@ class NewScheme extends Migration
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_video_tags` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_tags` (
             `video_id` int,
             `tag_id` int,
             PRIMARY KEY (`video_id`, `tag_id`),
@@ -180,7 +184,7 @@ class NewScheme extends Migration
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_playlist_user_perms` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_user_perms` (
             `playlist_id` int,
             `user_id` varchar(32),
             `perm` enum('owner','write','read','share'),
@@ -189,7 +193,7 @@ class NewScheme extends Migration
           );
         ";
 
-        $sql[] = "CREATE TABLE `oc_workflow_config_scope` (
+        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_workflow_config_scope` (
             `workflow_config_id` int,
             `scope` enum('schedule','upload'),
             PRIMARY KEY (`workflow_config_id`, `scope`),
