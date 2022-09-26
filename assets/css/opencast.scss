@@ -170,8 +170,9 @@ $episode-background: $light-gray-color-20;
     margin-right: 1em;
     flex-basis: 100%;
 
-    .oc--metdata-title {
+    &-title {
         margin-top: 10px;
+        margin-bottom: 2px;
     }
 }
 
@@ -713,12 +714,24 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
 .oc--tags {
 
+    &-video {
+        margin-bottom: 10px;
+        
+        & > span {
+            background-color: $light-gray-color-40;
+        }
+    }
+    &-playlist {
+        & > span {
+            background-color: $light-gray-color-20;
+        }
+    }
+
     & > span {
         display: inline-block;
         align-items: center;
         border-radius: 3px;
         margin-right: 5px;
-        background-color: $light-gray-color-20;
         padding-right: 4px;
 
         img {

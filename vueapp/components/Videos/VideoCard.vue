@@ -28,6 +28,9 @@
                     <h2 class="oc--metadata-title">
                         {{event.title}}
                     </h2>
+                    <div class="oc--tags oc--tags-video">
+                        <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
+                    </div>
                     <div>
                         {{ event.author }}
                         <span v-if="event.created && $filters.datetime(event.created)">
@@ -62,13 +65,15 @@ import StudipButton from '@/components/Studip/StudipButton'
 import StudipIcon from '@/components/Studip/StudipIcon'
 import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 
+import Tag from '@/components/Tag.vue'
+
 export default {
     name: "VideoCard",
 
     components: {
         StudipButton, ConfirmDialog,
         EmptyVideoCard, StudipIcon,
-        StudipActionMenu,
+        StudipActionMenu, Tag
     },
 
     props: {

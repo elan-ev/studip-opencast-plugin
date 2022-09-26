@@ -8,7 +8,7 @@
             <StudipIcon shape="edit" role="clickable" @click="editPlaylist"/>
 
             <br>
-            <div class="oc--tags">
+            <div class="oc--tags oc--tags-playlist">
             <Tag v-for="tag in playlist.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h2>
