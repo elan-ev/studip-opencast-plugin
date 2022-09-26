@@ -10,6 +10,8 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\VideosUserPerms;
 use Opencast\Models\Videos;
+use Opencast\Models\Filter;
+
 
 
 /**
@@ -40,6 +42,13 @@ class UserRoles extends OpencastController
                         $roles[] = 'STUDIP_' . $vperm->video->episode . '_read';
                     }
                 }
+
+                foreach (Videos::findByFilter(new Filter([
+                    'limit'  => -1
+                ])) as $video) {
+                    $roles[] = 'STUDIP_' . $vperm->video->episode . '_read';
+                }
+
             }
         }
 

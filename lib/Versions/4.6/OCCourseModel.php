@@ -18,8 +18,7 @@ class OCCourseModel
     {
         // fake filter request, use course id
         $request = [
-            'offset' => 0,
-            'limit'  => 500,
+            'limit'  => -1,
             'order'  => 'mkdate_desc',
             'cid'    => $this->context_id
         ];
