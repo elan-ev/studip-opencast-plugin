@@ -84,7 +84,7 @@ class Helpers
                 });
             }
 
-            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_id FROM seminar_user
+            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_user.seminar_id  FROM seminar_user
                 $p_sql
                 INNER JOIN seminar_inst ON (seminar_inst.seminar_id = seminar_user.seminar_id
                     AND seminar_inst.institut_id IN (:inst_ids))
