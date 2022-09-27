@@ -63,7 +63,8 @@ class RedirectController extends Opencast\Controller
             case 'annotation':
                 $publication = $video->publication ? json_decode($video->publication, true) : null;
                 if (!empty($publication) && $publication['annotation_tool']) {
-                    $custom_tool = $publication['annotation_tool'];
+                    // $custom_tool = $publication['annotation_tool'];
+                    $custom_tool = "/annotation-tool/index.html?id={$video->episode}"
                 }
                 break;
             
