@@ -52,6 +52,7 @@
                     :isCourse="isCourse"
                     @toggle="toggleVideo"
                     @doAction="doAction"
+                    @redirectAction="redirectAction"
                 ></VideoCard>
             </ul>
         </div>
@@ -193,6 +194,15 @@ export default {
                 this.actionComponent = args.actionComponent;
                 this.selectedEvent = args.event;
                 this.showActionDialog = true;
+            }
+        },
+
+        redirectAction(action) {
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
+            console.log(redirectUrl);
+            if (redirectUrl) {
+                redirectUrl = redirectUrl + action;
+                window.open(redirectUrl, '_blank');
             }
         },
 

@@ -59,7 +59,7 @@ class LtiHelper
      * @param  int  $config_id   config to check
      * @return Array             array of LtiLink
      */
-    public static function getLaunchData($config_id)
+    public static function getLaunchData($config_id, $custom_tool = '')
     {
         global $user;
 
@@ -68,6 +68,9 @@ class LtiHelper
         foreach(self::getLtiLinks($config_id) as $lti) {
             $lti['link']->setUser($user->id, 'Instructor', true);
 
+            if (!empty($custom_tool)) {
+                $lti['link']->addCustomParameter('tool', urlencode($custom_tool));
+            }
             $launch_data = $lti['link']->getBasicLaunchData();
             $signature   = $lti['link']->getLaunchSignature($launch_data);
 

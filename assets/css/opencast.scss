@@ -614,6 +614,15 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     margin-top: 1em;
     text-align: center;
 
+    &.oc--loading-redirect {
+        margin: 0;
+        text-align: left;
+
+        .oc--spinner {
+            transform: scale(0.5);
+        }
+    }
+
     .oc--spinner {
         display: inline-block;
         width: 80px;

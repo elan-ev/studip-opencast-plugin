@@ -51,6 +51,7 @@
             <div v-if="canEdit" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
                     @performAction="performAction"
+                    @redirectAction="redirectAction"
                 />
             </div>
         </li>
@@ -115,6 +116,9 @@ export default {
         },
         performAction(action) {
             this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+        },
+        redirectAction(action) {
+            this.$emit('redirectAction', action);
         }
     },
 
@@ -161,6 +165,25 @@ export default {
                     icon: 'add',
                     emit: 'performAction',
                     emitArguments: 'VideoAddToSeminar'
+                });
+
+            }
+
+            if (this.event?.preview?.has_previews) {
+                menuItems.push({
+                    label: this.$gettext('Schnitteditor öffnen'),
+                    icon: 'knife',
+                    emit: 'redirectAction',
+                    emitArguments: '/editor/' + this.event.token
+                });
+            }
+           
+            if (this.event?.publication?.annotation_tool) {
+                menuItems.push({
+                    label: this.$gettext('Anmerkungen hinzufügen'),
+                    icon: 'knife',
+                    emit: 'redirectAction',
+                    emitArguments: '/annotation/' + this.event.token
                 });
             }
 

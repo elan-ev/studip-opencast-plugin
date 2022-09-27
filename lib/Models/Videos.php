@@ -542,7 +542,8 @@ class Videos extends UPMap
 
             $video->preview = json_encode([
                 'search' => $preview,
-                'player' => $presentation_preview
+                'player' => $presentation_preview,
+                'has_previews' => $episode->has_previews ?: false
             ]);
 
             $video->publication = json_encode([
