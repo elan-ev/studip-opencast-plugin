@@ -61,14 +61,6 @@ $sort_orders = Pager::getSortOptions();
                 $now = time();
                 $startTime = strtotime($item['start']);
                 $endTime = strtotime($item['start']) + $item['duration'] / 1000;
-                $live = $now < $endTime;
-                $isOnAir = $startTime <= $now && $now <= $endTime;
-
-                /* today and the next full 7 days */;
-                $isUpcoming = $startTime <= (strtotime("tomorrow") + 7 * 24 * 60 * 60);
-                if ($live && !$isUpcoming) {
-                    continue;
-                }
                 ?>
 
                 <? $image = $item['presentation_preview']; ?>
@@ -97,28 +89,20 @@ $sort_orders = Pager::getSortOptions();
                                          data-src="<?= $image ?>" height="200"
                                          style="filter: grayscale(100%);">
                                 </span>
-                            <? elseif ($mayWatchEpisodes && (!$live || $isOnAir)) : ?>
+                            <? elseif ($mayWatchEpisodes) : ?>
                                 <a href="<?= $video_url . $item['id'] ?>" target="_blank">
                                     <span class="previewimage">
                                         <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                              data-src="<?= $image ?>" height="200">
 
-                                        <? if ($live) : ?>
-                                            <img class="livebutton"
-                                                 src="<?= $plugin->getPluginURL() . '/images/live.svg' ?>">
-                                        <? else: ?>
-                                            <img class="playbutton"
-                                                 src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
-                                        <? endif ?>
+                                        <img class="playbutton"
+                                            src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                                     </span>
                                 </a>
                             <? else : ?>
                                 <span class="previewimage">
                                     <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                          data-src="<?= $image ?>" height="200">
-                                    <? if ($live) : ?>
-                                        <img class="livebutton disabled" src="<?= $plugin->getPluginURL() . '/images/live.svg' ?>" style="filter: grayscale(100%);">
-                                    <? endif ?>
                                 </span>
                             <? endif ?>
                         </div>
@@ -138,17 +122,8 @@ $sort_orders = Pager::getSortOptions();
                             </h2>
                             <ul class="oce_contentlist">
                                 <li class="oce_list_date">
-                                    <? if ($live) : ?>
-                                        <h3>
-                                        <?= sprintf($_('Dies ist ein Livestream! Geplant: %s - %s Uhr'),
-                                            date("d.m.Y H:i", strtotime($item['start'])),
-                                            date('H:i', strtotime($item['start']) + ($item['duration'] / 1000))
-                                        ) ?>
-                                    </h3>
-                                    <? else : ?>
-                                        <?= $_('Aufnahmezeitpunkt') ?>:
-                                        <?= date("d.m.Y H:i", strtotime($item['start'])) ?> <?= $_("Uhr") ?>
-                                    <? endif ?>
+                                    <?= $_('Aufnahmezeitpunkt') ?>:
+                                    <?= date("d.m.Y H:i", strtotime($item['start'])) ?> <?= $_("Uhr") ?>
                                 </li>
                                 <li>
                                     <?= $_('Vortragende:') ?>
@@ -180,7 +155,7 @@ $sort_orders = Pager::getSortOptions();
                                 <? URLHelper::setBaseURL($base); ?>
 
                                 <? if (OCPerm::editAllowed($course_id)) : ?>
-                                    <?= $live ? '' : Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
+                                    <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?: $_('Unbekannte Sichtbarkeit')),
                                         '', [
                                             'class'           => 'oc-togglevis ocspecial oc' . ($item['visibility'] ?: 'free'),
                                             'data-episode-id' => $item['id'],
@@ -188,7 +163,7 @@ $sort_orders = Pager::getSortOptions();
                                             'title'           => $_('Sichtbarkeit für dieses Video ändern')
                                         ]); ?>
 
-                                    <? if (!$live && $item['has_previews']) : ?>
+                                    <? if ($item['has_previews']) : ?>
 
                                         <?= Studip\LinkButton::create(
                                             $_('Schnitteditor öffnen'),
@@ -259,7 +234,7 @@ $sort_orders = Pager::getSortOptions();
 
 
                                 <? if (OCPerm::editAllowed($course_id)) : ?>
-                                    <?= $live ? '' : Studip\LinkButton::create(
+                                    <?= Studip\LinkButton::create(
                                         $_('Entfernen'),
                                         $controller->url_for('course/remove_episode/' . get_ticket() . '/' . $item['id']),
                                         [
