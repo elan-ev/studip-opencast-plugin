@@ -7,18 +7,21 @@
         </div>
         <div class="clearfix"></div>
         <p></p>
+
+        <LtiAuth />
     </div>
 
 </template>
 
 <script>
 import Error from "@/components/Error";
+import LtiAuth from "@/components/LtiAuth";
 import { mapGetters } from "vuex";
 
 export default {
     name: "App",
     components: {
-        Error
+        Error,  LtiAuth
     },
 
     computed: {

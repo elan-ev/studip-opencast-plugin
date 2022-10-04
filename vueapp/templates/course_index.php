@@ -11,7 +11,8 @@
         ASSETS_URL : '<?= Assets::url('') ?>',
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
         ROUTE      : 'course',
-        REDIRECT_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/perform', true) ?>'
+        REDIRECT_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/perform', true) ?>',
+        AUTH_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/authenticate', true) ?>'
     };
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;
 </script>

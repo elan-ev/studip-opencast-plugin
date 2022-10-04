@@ -3,7 +3,8 @@ import ApiService from "@/common/api.service";
 
 const state = {
     lti_connections: [],
-    launch_data: null
+    launch_data: null,
+    authQueue: []
 }
 
 const getters = {
@@ -13,6 +14,10 @@ const getters = {
 
     launch_data(state) {
         return state.launch_data
+    },
+
+    authQueue(state) {
+        return state.authQueue;
     }
 }
 
@@ -54,14 +59,14 @@ const actions = {
         if (reauth_necessary) {
             let lti_connections = [];
             await context.dispatch('loadLaunchData');
+            context.commit('setLti', []);
 
             for (let id in context.state.launch_data) {
                 let data = context.state.launch_data[id];
 
-                context.commit('setLti', []);
                 let lti = new LtiService(data.config_id, data.endpoints);
                 lti.setLaunchData(data);
-                lti.authenticate();
+                context.commit('addToAuthQueue', lti)
 
                 lti_connections.push(lti);
             }
@@ -79,6 +84,14 @@ const mutations = {
     setLaunchData(state, data) {
         state.launch_data = data;
     },
+
+    addToAuthQueue(state, data) {
+        state.authQueue.push(data);
+    },
+
+    setAuthQueue(state, data) {
+        state.authQueue = [];
+    }
 }
 
 

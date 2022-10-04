@@ -22,6 +22,13 @@ $episode-background: $light-gray-color-20;
     }
 }
 
+.oc--ltiauth {
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    visibility: none;
+}
+
 /* * * * * * * * * */
 /*   P A G I N G   */
 /* * * * * * * * * */

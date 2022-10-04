@@ -32,7 +32,7 @@ class RedirectController extends Opencast\Controller
         }
 
         $perm = $video->getUserPerm();
-        if (empty($perm) || 
+        if (empty($perm) ||
             ($perm != 'owner' && $perm != 'write'))
         {
             throw new \AccessDeniedException();
@@ -45,12 +45,26 @@ class RedirectController extends Opencast\Controller
         }
 
         $lti = $lti[0];
-        $this->launch_data =  $lti['launch_data'];
-        $this->launch_url =  $lti['launch_url'];
+        $this->launch_data = $lti['launch_data'];
+        $this->launch_url  = $lti['launch_url'];
     }
 
     /**
-     * Returns the custom_tool parameter based on the requested action, whether edit or annotation 
+     * Directly redirect to passed LTI endpoint
+     *
+     * @param [type] $launch_url
+     * @param [type] $launch_data
+     *
+     * @return void
+     */
+    public function authenticate_action()
+    {
+        $this->launch_data = json_decode(Request::get('launch_data'), true);
+        $this->launch_url  = Request::get('launch_url');
+    }
+
+    /**
+     * Returns the custom_tool parameter based on the requested action, whether edit or annotation
      *
      * @param object $video video object
      * @param string $action the action
@@ -58,16 +72,16 @@ class RedirectController extends Opencast\Controller
      */
     private function getLtiCustomTool($video, $action) {
         $custom_tool = '';
-        
+
         switch ($action) {
             case 'annotation':
                 $publication = $video->publication ? json_decode($video->publication, true) : null;
                 if (!empty($publication) && $publication['annotation_tool']) {
                     // $custom_tool = $publication['annotation_tool'];
-                    $custom_tool = "/annotation-tool/index.html?id={$video->episode}"
+                    $custom_tool = "/annotation-tool/index.html?id={$video->episode}";
                 }
                 break;
-            
+
             case 'editor':
                 $preview = $video->preview ? json_decode($video->preview, true) : null;
                 if (!empty($preview) && isset($preview['has_previews']) && $preview['has_previews']) {
