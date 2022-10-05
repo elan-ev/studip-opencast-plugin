@@ -40,7 +40,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         if ($GLOBALS['perm']->have_perm('autor') && Helpers::getConfigurationstate()) {
             $videos = new Navigation($this->_('Videos'));
             $videos->setDescription($this->_('Opencast Aufzeichnungen'));
-            $videos->setImage(Icon::create('video2'));
+            $videos->setImage(Icon::create($this->assetsUrl . '/images/opencast-courseware.svg'));
             $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
 
             // use correct navigation for Stud.IP Versions below 5
