@@ -9,7 +9,12 @@
                 <div class="oc--playercontainer">
                     <a v-if="event.publication && event.preview" :href="event.paella" target="_blank">
                         <span class="oc--previewimage">
-                            <img class="oc--previewimage" :src="event.preview.player ? event.preview.player : event.preview.search" height="200"/>
+                            <img class="oc--previewimage"
+                                :src="event.preview.player ? event.preview.player : event.preview.search"
+                                @error="setDefaultImage(event)"
+                                height="200"
+                                :ref="event.id"
+                            />
                             <img class="oc--playbutton" :src="play">
                             <span class="oc--duration">
                                 {{ getDuration }}
@@ -119,6 +124,11 @@ export default {
         },
         redirectAction(action) {
             this.$emit('redirectAction', action);
+        },
+
+        setDefaultImage(event) {
+            let image = this.$refs[event.id];
+            image.src = window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
         }
     },
 
@@ -177,7 +187,7 @@ export default {
                     emitArguments: '/editor/' + this.event.token
                 });
             }
-           
+
             if (this.event?.publication?.annotation_tool) {
                 menuItems.push({
                     label: this.$gettext('Anmerkungen hinzufügen'),

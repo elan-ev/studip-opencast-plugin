@@ -95,7 +95,6 @@ class RedirectController extends Opencast\Controller
             case 'annotation':
                 $publication = $video->publication ? json_decode($video->publication, true) : null;
                 if (!empty($publication) && $publication['annotation_tool']) {
-                    // $custom_tool = $publication['annotation_tool'];
                     $custom_tool = "/annotation-tool/index.html?id={$video->episode}";
                 }
                 break;
@@ -104,7 +103,13 @@ class RedirectController extends Opencast\Controller
                 $preview = $video->preview ? json_decode($video->preview, true) : null;
                 if (!empty($preview) && isset($preview['has_previews']) && $preview['has_previews']) {
                     $custom_tool = "/editor-ui/index.html?id={$video->episode}";
-                    // $custom_tool = "/admin-ng/index.html#!/events/events/{$video->episode}/tools/editor";
+                }
+                break;
+
+            case 'video':
+                $preview = $video->preview ? json_decode($video->preview, true) : null;
+                if (!empty($preview)) {
+                    $custom_tool = "/paella/ui/watch.html?id={$video->episode}";
                 }
                 break;
         }
