@@ -59,8 +59,26 @@ class RedirectController extends Opencast\Controller
      */
     public function authenticate_action()
     {
-        $this->launch_data = json_decode(Request::get('launch_data'), true);
-        $this->launch_url  = Request::get('launch_url');
+        $course_id = Context::getId();
+        $config_id = Request::int('config_id');
+
+        if (empty($config_id)) {
+            throw new \Exception('missing or wrong config id!');
+        }
+
+        if ($course_id) {
+            $lti = LtiHelper::getLaunchDataForCourse($config_id, $context_id);
+
+        } else {
+            $lti = LtiHelper::getLaunchData($config_id);
+        }
+
+        if (empty($lti[0])) {
+            throw new \Exception('error creating lti call');
+        }
+
+        $this->launch_data = $lti[0]['launch_data'];
+        $this->launch_url  = $lti[0]['launch_url'];
     }
 
     /**

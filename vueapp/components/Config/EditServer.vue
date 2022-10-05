@@ -44,7 +44,6 @@ import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
-import { LtiService, LtiException } from "@/common/lti.service";
 
 export default {
     name: "EditServer",
@@ -211,18 +210,10 @@ export default {
         },
 
         async checkLti(data) {
+            return;
             let view = this;
 
             let check_successful = true;
-
-            for (let i = 0; i < data.length; i++) {
-                let lti = new LtiService(this.currentConfig.id, data.endpoints);
-                lti.setLaunchData(data[i]);
-                await lti.authenticate();
-                if (!lti.isAuthenticated()) {
-                    check_successful = false;
-                }
-            }
 
             if (check_successful) {
                 view.$store.dispatch('addMessage', {

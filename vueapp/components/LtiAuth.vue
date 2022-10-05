@@ -1,7 +1,9 @@
 <template>
-    <div class="oc--litauth">
-        <iframe v-for="lti in authQueue" v-bind:key="lti.lti.launch_url"
-            :src="authUrl(lti)">
+    <div class="oc--ltiauth">
+        <iframe
+            v-for="server in simple_config_list.server"
+            v-bind:key="server.id"
+            :src="authUrl(server.id)">
         </iframe>
     </div>
 </template>
@@ -14,14 +16,24 @@ export default {
     name: "LtiAuth",
 
     computed: {
-        ...mapGetters(['authQueue'])
+        ...mapGetters(['simple_config_list', 'cid', 'ltiReauthenticate']),
     },
 
     methods: {
-        authUrl(lti) {
-            console.log(JSON.parse(JSON.stringify(lti)));
-            return window.OpencastPlugin.AUTH_URL + '?launch_url=' + lti.lti.launch_url + '&launch_data=' + JSON.stringify(lti.lti.launch_data);
+        authUrl(config_id) {
+            console.log('authUrl', config_id, this.simple_config_list);
+
+            // check, if we are in a course
+            if (this.cid) {
+                return window.OpencastPlugin.AUTH_URL + '?config_id=' + config_id + '&cid=' + this.cid;
+            } else {
+                return window.OpencastPlugin.AUTH_URL + '?config_id=' + config_id;
+            }
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('simpleConfigListRead');
     }
 }
 </script>

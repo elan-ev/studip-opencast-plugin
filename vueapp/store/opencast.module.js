@@ -95,6 +95,11 @@ const actions = {
     updateView({ commit, dispatch }, view) {
         commit('setView', view);
         commit('clearPaging');
+    },
+
+    async authenticateLti({ dispatch }) {
+        // by reloading the simple config, LtiAuth.vue reloads the iframe for lti authentication
+        return dispatch('simpleConfigListRead');
     }
 }
 
