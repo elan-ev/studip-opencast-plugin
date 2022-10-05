@@ -57,7 +57,7 @@ class RedirectController extends Opencast\Controller
      *
      * @return void
      */
-    public function authenticate_action()
+    public function authenticate_action($num)
     {
         $course_id = Context::getId();
         $config_id = Request::int('config_id');
@@ -73,12 +73,12 @@ class RedirectController extends Opencast\Controller
             $lti = LtiHelper::getLaunchData($config_id);
         }
 
-        if (empty($lti[0])) {
+        if (empty($lti[$num])) {
             throw new \Exception('error creating lti call');
         }
 
-        $this->launch_data = $lti[0]['launch_data'];
-        $this->launch_url  = $lti[0]['launch_url'];
+        $this->launch_data = $lti[$num]['launch_data'];
+        $this->launch_url  = $lti[$num]['launch_url'];
     }
 
     /**

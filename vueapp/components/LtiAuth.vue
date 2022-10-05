@@ -1,10 +1,16 @@
 <template>
     <div class="oc--ltiauth">
-        <iframe
+        <template
             v-for="server in simple_config_list.server"
             v-bind:key="server.id"
-            :src="authUrl(server.id)">
-        </iframe>
+        >
+            <!-- iterate over all opencast nodes for this server as well -->
+            <iframe
+                v-for="i in server.lti_num"
+                v-bind:key="i"
+                :src="authUrl(server.id, i - 1)">
+            </iframe>
+        </template>
     </div>
 </template>
 
@@ -20,14 +26,14 @@ export default {
     },
 
     methods: {
-        authUrl(config_id) {
+        authUrl(config_id, num) {
             console.log('authUrl', config_id, this.simple_config_list);
 
             // check, if we are in a course
             if (this.cid) {
-                return window.OpencastPlugin.AUTH_URL + '?config_id=' + config_id + '&cid=' + this.cid;
+                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + '&cid=' + this.cid;
             } else {
-                return window.OpencastPlugin.AUTH_URL + '?config_id=' + config_id;
+                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id;
             }
         }
     },
