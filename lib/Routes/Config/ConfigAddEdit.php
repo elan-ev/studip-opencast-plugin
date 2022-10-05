@@ -80,7 +80,7 @@ class ConfigAddEdit extends OpencastController
 
                 Endpoints::deleteBySql('config_id = ?', [$config->id]);
 
-                $config->service_version = explode('.', $version)[0];
+                $config->service_version = $version;
                 $config->store();
 
                 Endpoints::setEndpoint($config->id, $service_host .'/services', 'services');

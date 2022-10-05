@@ -12,6 +12,11 @@
             <template v-slot:dialogContent ref="editServer-dialog">
                 <form class="default" v-if="currentConfig">
                     <fieldset>
+                        <label v-if="config?.service_version">
+                            <b> {{ $gettext('Opencast Version') }} </b><br />
+                            {{ config.service_version }}
+                        </label>
+
                         <ConfigOption v-for="setting in settings"
                             :setting="setting" :key="setting.name"
                             @updateValue="updateValue" />
@@ -157,12 +162,13 @@ export default {
             if (this.id == 'new') {
                 this.$store.dispatch('configCreate', this.currentConfig)
                 .then(({ data }) => {
-                    this.$store.commit('configSet', data.config);
+                    this.$store.dispatch('configListRead', data.config);
                     this.checkConfigResponse(data);
                 });
             } else {
                 this.$store.dispatch('configUpdate', this.currentConfig)
                 .then(({ data }) => {
+                    this.$store.dispatch('configListRead', data.config);
                     this.checkConfigResponse(data);
                 });
             }

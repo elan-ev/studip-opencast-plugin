@@ -8,9 +8,9 @@ class Config
 {
     /**
      * Get the connected opencast instance version
-     * 
+     *
      * @param string $config_id the config id
-     * 
+     *
      * @return string|boolean the opencast version, or false if unable to get
      */
     public static function getOCBaseVersion($config_id)
@@ -18,16 +18,20 @@ class Config
         $config = ConfigModel::getBaseServerConf($config_id);
         $oc = new RestClient($config);
 
-        // for versions < 5
-        $response = $oc->opencastApi->sysinfo->getVersion('matterhorn');
-        if ($response['code'] == 200 && isset($response['body']->version)) {
-            return $response['body']->version;
-        }
-
-        // for versions > 4 (name was changed to opencast after that)
         $response = $oc->opencastApi->sysinfo->getVersion('opencast');
-        if ($response['code'] == 200 && isset($response['body']->version)) {
-            return $response['body']->version;
+        if ($response['code'] == 200) {
+            if (isset($response['body']->version)) {
+                return $response['body']->version;
+            } else if (is_array($response['body']->versions)) {
+                return array_reduce($response['body']->versions, function($carry, $item) {
+                    if (empty($carry)) {
+                        $carry = $item->version;
+                    } else {
+                        $carry .= ', ' . $item->version;
+                    }
+                    return $carry;
+                });
+            }
         }
 
         return false;
