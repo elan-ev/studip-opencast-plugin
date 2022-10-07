@@ -10,7 +10,7 @@ const state = {
     },
     videoSortMode: false,
     videoSortList: {},
-    limit: 5,
+    limit: 15,
     paging: {
         currPage: 0,
         lastPage: 0,

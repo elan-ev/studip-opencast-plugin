@@ -82,7 +82,7 @@ export default {
         return {
             searchText: '',
             sortObj: null,
-            limit: 5,
+            limit: 15,
             paging: {
                     currPage: 0,
                     lastPage: 0,

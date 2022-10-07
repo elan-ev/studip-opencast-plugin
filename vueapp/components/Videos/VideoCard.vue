@@ -1,7 +1,7 @@
 <template>
     <div name="oc--episode">
         <li v-if="event.refresh === undefined" :key="event.id" class="oc--flex-episode">
-            <div class="oc--flex-checkbox" v-if="playlistForVideos">
+            <div class="oc--flex-checkbox" v-if="playlistForVideos || playlistMode">
                  <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
             </div>
 
@@ -53,10 +53,21 @@
                     </div>
                 </div>
             </div>
-            <div v-if="canEdit" class="oc--actions-container">
+            <div v-if="canEdit && !playlistMode" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
                     @performAction="performAction"
                     @redirectAction="redirectAction"
+                />
+            </div>
+
+             <div v-if="playlistMode" class="oc--sort-options">
+                <studip-icon
+                    shape="arr_2up" role="navigation"
+                    :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')"
+                />
+                <studip-icon
+                    shape="arr_2down" role="navigation"
+                    :hidden="!canMoveDown" @click="$emit('moveDown', event.token)" :title="$gettext('Element nach unten verschieben')"
                 />
             </div>
         </li>
@@ -103,16 +114,31 @@ export default {
             type: Boolean,
             default: false
         },
+        playlistMode: {
+            type: Boolean,
+            default: false
+        }
     },
 
     data() {
         return {
             preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
-            play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg'
+            play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
+            DeleteConfirmDialog: false,
+            DownloadDialog: false,
+            editDialog: false,
         }
     },
 
     methods: {
+         removeVideo() {
+            let view = this;
+            this.$store.dispatch('deleteVideo', this.event.token)
+            .then(() => {
+                view.DeleteConfirmDialog = false;
+            });
+        },
+
         toggleVideo(e) {
             this.$emit("toggle", {
                 event_id: this.event.token,

@@ -31,7 +31,7 @@
                 item-key="id"
                 ghost-class="oc--ghost">
                 <template #item="{element, index}">
-                    <PlaylistVideoCard
+                    <VideoCard
                         :event="element"
                         :canMoveUp="canMoveUp(index)"
                         :canMoveDown="canMoveDown(index)"
@@ -40,7 +40,8 @@
                         :playlistForVideos="playlistForVideos"
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
-                    ></PlaylistVideoCard>
+                        :playlistMode="true"
+                    ></VideoCard>
                 </template>
             </draggable>
         </div>
@@ -50,7 +51,7 @@
 <script>
 import { mapGetters } from "vuex";
 import StudipButton from "@studip/StudipButton";
-import PlaylistVideoCard from '../Playlists/PlaylistVideoCard.vue';
+import VideoCard from '../Videos/VideoCard.vue';
 import EmptyVideoCard from '../Videos/EmptyVideoCard.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue'
@@ -69,7 +70,7 @@ export default {
     },
 
     components: {
-        PlaylistVideoCard,  EmptyVideoCard,
+        VideoCard,          EmptyVideoCard,
         MessageBox,
         SearchBar,          Tag,
         StudipButton,

@@ -42,7 +42,7 @@
                 </MessageBox>
             </ul>
 
-            <ul class="oc--episode-list" v-else>
+            <ul class="oc--episode-list--small" v-else>
                 <VideoCard
                     v-for="event in videos"
                     v-bind:event="event"

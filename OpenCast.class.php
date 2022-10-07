@@ -10,6 +10,7 @@ use Opencast\Models\Helpers;
 use Opencast\AppFactory;
 use Opencast\RouteMap;
 use Opencast\VersionHelper;
+use Opencast\Providers\Perm;
 
 use Courseware\CoursewarePlugin;
 
@@ -38,13 +39,22 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         if ($GLOBALS['perm']->have_perm('autor') && Helpers::getConfigurationstate()) {
-            $videos = new Navigation($this->_('Videos'));
-            $videos->setDescription($this->_('Opencast Aufzeichnungen'));
-            $videos->setImage(Icon::create($this->assetsUrl . '/images/opencast-courseware.svg'));
-            $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
+            if (!\Config::get()->OPENCAST_MEDIA_ROLES || (
+                \Config::get()->OPENCAST_MEDIA_ROLES && (
+                    Perm::hasRole('Medienadmin')
+                    || Perm::hasRole('Medientutor')
+                    || $GLOBALS['perm']->have_perm('root')
+                )
+            )) {
+                // only show main navigation, if media roles are disabled or user has a media role
+                $videos = new Navigation($this->_('Videos'));
+                $videos->setDescription($this->_('Opencast Aufzeichnungen'));
+                $videos->setImage(Icon::create($this->assetsUrl . '/images/opencast-courseware.svg'));
+                $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
 
-            // use correct navigation for Stud.IP Versions below 5
-            VersionHelper::get()->addMainNavigation($videos);
+                // use correct navigation for Stud.IP Versions below 5
+                VersionHelper::get()->addMainNavigation($videos);
+            }
         }
 
         VersionHelper::get()->registerCoursewareBlock($this);
