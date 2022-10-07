@@ -203,6 +203,14 @@ export default {
                     emitArguments: 'VideoAddToSeminar'
                 });
 
+                /*
+                menuItems.push({
+                    label: this.$gettext('Video freigeben'),
+                    icon: 'share',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAccess'
+                });
+                */
             }
 
             if (this.event?.preview?.has_previews) {

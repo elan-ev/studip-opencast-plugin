@@ -78,6 +78,7 @@ import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
 import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
+import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
@@ -89,11 +90,12 @@ export default {
 
     components: {
         VideoCard, EmptyVideoCard,
-        PaginationButtons, MessageBox,
-        SearchBar, Tag,
-        StudipButton, VideoAddToPlaylist,
-        VideoAddToSeminar, VideoDelete,
-        VideoDownload, VideoReport,
+        PaginationButtons,      MessageBox,
+        SearchBar,              Tag,
+        StudipButton,           VideoAddToPlaylist,
+        VideoAccess,
+        VideoAddToSeminar,      VideoDelete,
+        VideoDownload,           VideoReport,
         VideoEdit
     },
 

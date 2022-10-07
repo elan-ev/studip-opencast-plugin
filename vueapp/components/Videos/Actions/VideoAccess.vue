@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Verknüpfte Kurse')"
+            :title="$gettext('Video freigeben')"
             :confirmText="$gettext('Speichern')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
@@ -35,10 +35,12 @@
                     </tbody>
                 </table>
 
-                <UserCourseSelectable
-                    @add="addCourseToList"
-                    :courses="userCourses"
-                    :selectedCourses="this.event.courses"
+                {{ event }}
+
+                <ShareWithUsers
+                    @add="addUserToList"
+                    :users="sharedUsers"
+                    :selectedUsers="event.courses"
                 />
 
             </template>
@@ -51,14 +53,14 @@ import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog'
 import StudipIcon from '@studip/StudipIcon';
 
-import UserCourseSelectable from '@/components/UserCourseSelectable';
+import ShareWithUsers from './VideoAccess/ShareWithUsers';
 
 export default {
-    name: 'VideoAddToSeminar',
+    name: 'VideoAccess',
 
     components: {
         StudipDialog, StudipIcon,
-        UserCourseSelectable
+        ShareWithUsers
     },
 
     props: ['event'],
@@ -75,7 +77,8 @@ export default {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + course.id)
         },
 
-        addCourseToList(course) {
+        addUserToList(course) {
+            console.log('addUserToList', course);
             this.event.courses.push(course);
         },
 

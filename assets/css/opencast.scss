@@ -126,6 +126,11 @@ $episode-background: $light-gray-color-20;
     padding-right: 1.5em;
     z-index: 1999;
     height: $item-height;
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.7;
+    }
 
     .oc_playerframe {
         display: block;
