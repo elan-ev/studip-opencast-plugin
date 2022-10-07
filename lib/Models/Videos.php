@@ -91,6 +91,7 @@ class Videos extends UPMap
 
         $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
         $params = [];
+        $where  = ' WHERE 1 ';
 
 
         // root can access all videos, no further checking for perms is necessary
@@ -186,8 +187,14 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
+        $parsed_sql = 'SELECT * FROM oc_video '. $sql;
+        foreach ($params as $key => $value) {
+            $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
+        }
+
         return [
             'videos' => self::findBySQL($sql, $params),
+            'sql'    => $parsed_sql,
             'count'  => $count
         ];
     }

@@ -29,7 +29,8 @@ class VideoList extends OpencastController
 
         return $this->createResponse([
             'videos' => $ret,
-            'count'  => $videos['count']
+            'count'  => $videos['count'],
+            'sql'    => $videos['sql']
         ], $response);
     }
 }
