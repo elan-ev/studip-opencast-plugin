@@ -40,7 +40,7 @@
             :style="`left:` + tokenSelectorPos.left + `px; top:` + tokenSelectorPos.top + `px;`"
         >
             <ul v-if="tokenState == 'main'">
-                <li @click="selectToken('tag')" v-if="availableTags.length">
+                <li @click="selectToken('tag')" v-if="filteredTags.length">
                     {{ $gettext('Tag') }}
                 </li>
                 <li @click="selectToken('playlist')" v-if="playlist && playlists.length">
@@ -54,7 +54,7 @@
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'tag'">
-                <li v-for="tag in availableTags" v-bind:key="tag.id" @click="selectToken(tag)">
+                <li v-for="tag in filteredTags" v-bind:key="tag.id" @click="selectToken(tag)">
                     {{ tag.tag }}
                 </li>
             </ul>
@@ -106,6 +106,18 @@ export default {
             'availableTags',
             'playlists'
         ]),
+
+        filteredTags() {
+            let filteredTags = [];
+
+            for (let i = 0; i < this.availableTags.length; i++) {
+                 if (!this.searchTokens.find(token => token.value == this.availableTags[i].tag)
+                ) {
+                    filteredTags.push(this.availableTags[i]);
+                }
+            }
+            return filteredTags;
+        },
 
         availableSortOrders() {
             let sortOrders = [
@@ -213,7 +225,7 @@ export default {
             } else if (this.tokenState == 'value')
             {
                 if (this.token.type == 'tag') {
-                    this.token.value      = content.id;
+                    this.token.value      = content.tag;
                     this.token.value_name = content.tag;
                 } else if (this.token.type == 'playlist') {
                     this.token.value      = content.token;

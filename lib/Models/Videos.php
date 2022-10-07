@@ -123,11 +123,14 @@ class Videos extends UPMap
                 case 'tag':
                     // get id of this tag (if any)
                     if (!empty($filter['value'])) {
-                        $tags = Tags::findBySQL($sq = 'tag LIKE ?',  $pr = ['%'. $filter['value'] .'%']);
+                        $tags = Tags::findBySQL($sq = 'tag LIKE ?',  [$filter['value']]);
 
                         if (!empty($tags)) {
                             foreach ($tags as $tag) {
-                                $tag_ids[] = $tag->id;
+                                $tag_ids[$tag->id] = [
+                                    'id'      => $tag->id,
+                                    'compare' => $filter['compare']
+                                ];
                             }
                         } else {
                             $tag_ids[] = '-1';
@@ -151,7 +154,17 @@ class Videos extends UPMap
         }
 
         if (!empty($tag_ids)) {
-            $sql .= ' INNER JOIN oc_video_tags AS t ON (t.tag_id IN('. implode(',', $tag_ids) .'))';
+            foreach ($tag_ids as $tag) {
+                if ($tag['compare'] == '=') {
+                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                        .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
+                } else {
+                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                        .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
+
+                    $where .= ' AND t'. $tag['id'] . '.tag_id IS NULL ';
+                }
+            }
         }
 
         if (!empty($playlist_ids)) {

@@ -50,8 +50,9 @@ class Filter
             foreach($filters as $filter) {
                 if (in_array($filter['type'], self::$ALLOWED_FILTERS)) {
                     $this->filters[] = [
-                        'type'  => $filter['type'],
-                        'value' => preg_replace('/[^0-9a-zA-Z\w\ ]/', '', $filter['value'])
+                        'type'    => $filter['type'],
+                        'value'   => preg_replace('/[^0-9a-zA-Z\w\ ]/', '', $filter['value']),
+                        'compare'  => $filter['compare'] == '=' ? '=' : '!='
                     ];
                 }
             }
