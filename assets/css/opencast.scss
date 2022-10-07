@@ -37,6 +37,12 @@ $episode-background: $light-gray-color-20;
     margin-bottom: 1em;
     display: flex;
 
+    select.oc--pagination--limit {
+        margin-left: 1em;
+        height: 42px;
+        font-size: 1.2em;
+    }
+
     button {
         padding: 8px 16px;
         border: 1px solid #ddd;

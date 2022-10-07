@@ -1,6 +1,6 @@
 <template>
     <div class="oc--pagination">
-        <button v-if="paging.lastPage > 0"
+        <button v-if="paging.lastPage >= 0"
             v-bind:disabled="paging.currPage <= 0"
             @click="setPage(paging.currPage-1)"
             class="oc--paging-arrow"
@@ -10,7 +10,7 @@
             />
         </button>
 
-        <button v-if="paging.lastPage > 0"
+        <button v-if="paging.lastPage >= 0"
             v-bind:class="{active : paging.currPage == 0}"
             v-bind:disabled="paging.currPage == 0"
             @click="setPage(0)"
@@ -32,7 +32,7 @@
             {{ paging.lastPage + 1}}
         </button>
 
-        <button v-if="paging.lastPage > 0"
+        <button v-if="paging.lastPage >= 0"
             v-bind:disabled="paging.currPage >= paging.lastPage"
             @click="setPage(paging.currPage + 1)"
             class="oc--paging-arrow"
@@ -41,6 +41,16 @@
                 shape="arr_1right" :role="paging.currPage >= paging.lastPage ? 'inactive' : 'clickable'"
             />
         </button>
+
+        <select class="oc--pagination--limit"
+            v-model="limit"
+            :title="$gettext('Videos pro Seite')"
+        >
+            <option value="5">5</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
     </div>
 </template>
 
@@ -54,6 +64,12 @@ export default {
 
     components: {
         StudipIcon
+    },
+
+    data() {
+        return {
+            limit: 15
+        }
     },
 
     computed: {
@@ -110,6 +126,13 @@ export default {
             }
 
             return numbers;
+        }
+    },
+
+    watch: {
+        limit(newLimit, oldLimit) {
+            this.$store.commit('setLimit', newLimit);
+            this.$emit('changePage', 0);
         }
     },
 

@@ -171,6 +171,10 @@ const mutations = {
 
     setFilters(state, filters) {
         state.filters = filters;
+    },
+
+    setLimit(state, limit) {
+        state.limit = limit;
     }
 }
 
