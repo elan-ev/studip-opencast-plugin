@@ -56,6 +56,18 @@ class SeriesClient extends RestClient
                 'allow'  => true,
                 'role'   => 'ROLE_ADMIN',
                 'action' => 'write'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => $course_id . '_Instructor',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => $course_id . '_Instructor',
+                'action' => 'write'
             ]
         ];
 

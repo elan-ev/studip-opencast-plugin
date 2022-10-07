@@ -8,6 +8,7 @@ use \Configuration as StudipConfiguration;
 
 use Opencast\LTI\OpencastLTI;
 use Opencast\VersionHelper;
+use Opencast\Providers\Perm;
 
 class Helpers
 {

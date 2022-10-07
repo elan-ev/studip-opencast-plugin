@@ -243,7 +243,9 @@ export default {
 
     computed: {
         ...mapGetters({
-            'config' : 'simple_config_list',
+            'config'       : 'simple_config_list',
+            'course_config': 'course_config',
+            'cid'          : 'cid'
         }),
 
         upload_workflows() {
@@ -299,10 +301,14 @@ export default {
 
             let uploadData         = this.upload;
 
+            if (this.cid) {
+                uploadData['seriesId'] = this.course_config['series']['series_id'];
+            }
+
             uploadData['created']  = new Date(this.upload.recordDate).toISOString(),
             delete uploadData['recordDate'];
 
-            uploadData['oc_acl']   = this.uploadService.uploadACL().replace(/\+/g," ");
+            uploadData['oc_acl']   = this.uploadService.uploadACL();
 
             //console.log('uploadData', uploadData);
 
@@ -377,8 +383,15 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
-
         })
+
+        if (this.cid) {
+            console.log('Kurs ID gefunden!', this.cid);
+            this.$store.dispatch('loadCourseConfig', this.cid)
+            .then(() => {
+                console.log('Kurs Konfiguration geladen!', this.course_config);
+            })
+        }
     }
 }
 </script>

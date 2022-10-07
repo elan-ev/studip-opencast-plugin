@@ -20,8 +20,6 @@ class OpencastWorker extends CronJob
 
     public function execute($last_result, $parameters = array())
     {
-        // create 10 threads (if possible) doing the work to speed things up
-
         $start_time = time();
         // get next task and run it
         // if a minute has already passed, stop executing tasks and finish the cronjob
@@ -45,7 +43,7 @@ class OpencastWorker extends CronJob
                 $api_client = ApiEventsClient::getInstance($video->config_id);
                 $event = $api_client->getEpisode($video->episode, ['withpublications' => 'true']);
 
-                if ($event) {
+                if ($event && !empty($event->publications)) {
                     $video->title       = $event->title;
                     $video->description = $event->description;
                     $video->duration    = $event->duration;
@@ -57,15 +55,34 @@ class OpencastWorker extends CronJob
 
                     $video->store();
 
+                    // task is done, delete it
+                    $task->delete();
+
                     // send out Notification for video discovery plugins to react
                     NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
                 } else {
-                    // event seems to be missing in opencast!
-                    $video->delete();
+                    // event is missing or has no publications.
+                    if ($task->trys >= 10) {
+                        // if we tried 10 times, we give up, event seems to be missing/broken in opencast!
+                        $task->state = 'failed';
+                        $task->store();
+                    } else {
+                        // reschedule task to be run again in 3 minutes
+                        $task->state = 'scheduled';
+                        $task->scheduled = date('Y-m-d H:i:s', strtotime('+3 minutes'));
+                        $task->store();
+                    }
+
+                    //$video->delete();
                 }
             }
 
-            $task->delete();
+            // something went wrong, try again next time
+            if ($task->state == 'running') {
+                $task->state = 'scheduled';
+                $task->store();
+            }
+
         }
     }
 

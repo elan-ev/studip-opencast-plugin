@@ -41,8 +41,11 @@ class OpencastDiscoverVideos extends CronJob
             $events = [];
 
             foreach ($api_client->getAll() as $event) {
-                $event_ids[] = $event->identifier;
-                $events[$event->identifier] = $event;
+                // only add videos / reinspect videos if they are readily processed
+                if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
+                    $event_ids[] = $event->identifier;
+                    $events[$event->identifier] = $event;
+                }
             }
 
             // check if these event_ids have a corresponding entry in Stud.IP
