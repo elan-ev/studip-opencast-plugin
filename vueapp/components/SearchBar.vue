@@ -43,7 +43,7 @@
                 <li @click="selectToken('tag')" v-if="availableTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="!playlist && playlists.length">
+                <li @click="selectToken('playlist')" v-if="playlist && playlists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>

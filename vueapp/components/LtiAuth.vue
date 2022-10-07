@@ -27,8 +27,6 @@ export default {
 
     methods: {
         authUrl(config_id, num) {
-            console.log('authUrl', config_id, this.simple_config_list);
-
             // check, if we are in a course
             if (this.cid) {
                 return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + '&cid=' + this.cid;
