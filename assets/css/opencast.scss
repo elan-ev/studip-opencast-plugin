@@ -20,6 +20,17 @@ $episode-background: $light-gray-color-20;
         padding-top: 0px;
         margin-top: 0px;
     }
+
+    .vs__search {
+        font-size: inherit ! important;
+        line-height: inherit ! important;
+    }
+    
+    .vs__option-with-icon {
+        vertical-align: top;
+        display: inline-block;
+        margin-top: -2px;
+    }
 }
 
 .oc--ltiauth {
@@ -766,6 +777,50 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         }
     }
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/*   S T U D I P   S T Y L E S   B A C K P O R T E D   F O R   4 . 6   */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+.studip-v-select, .studip-v-select-detachted-ul {
+    max-width: 48em;
+
+    .vs__option-with-icon{
+        padding-left: 8px;
+    }
+
+    .vs__option-color {
+        border: solid thin $content-color-40;
+        padding-left: 20px;
+        height: 20px;
+        margin-right: 4px;
+    }
+
+    .vs__dropdown-toggle {
+        border: solid thin $content-color-40;
+        border-radius: 0;
+    }
+
+    .vs__dropdown-menu, &.vs__dropdown-menu {
+        border-radius: 0;
+    }
+
+    &.studip-v-select-drop-up {
+        border-bottom: solid thin $content-color-40;
+        border-top: none;
+    }
+
+    &.studip-v-select-ul-drop-up {
+        border-bottom: none;
+        border-top: solid thin $content-color-40;
+        box-shadow: 0px -3px 6px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    &.studip-v-select-ul-dialog {
+        z-index: 3002;
+    }
+}
+
 
 
 /* * * * * * * * * * * * */

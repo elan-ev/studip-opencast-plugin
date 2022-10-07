@@ -28,7 +28,7 @@
         </div>
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
-            <ul v-if="Object.keys(videos).length === 0 && (axios_running || videos_loading)" class="oc--episode-list oc--episode-list--empty">
+            <ul v-if="Object.keys(videos).length === 0 && (axios_running || videos_loading)" class="oc--episode-list--small oc--episode-list--empty">
                 <EmptyVideoCard />
                 <EmptyVideoCard />
                 <EmptyVideoCard />

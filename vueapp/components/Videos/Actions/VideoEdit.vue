@@ -46,7 +46,7 @@
 
                         <label>
                             Tags
-                            <TagBar :taggable="event" @update="updateTags" />
+                            <TagBar :taggable="event" />
                         </label>
                     </fieldset>
                 </form>
@@ -85,6 +85,6 @@ export default {
         decline() {
             this.$emit('cancel');
         }
-    },
+    }
 }
 </script>
