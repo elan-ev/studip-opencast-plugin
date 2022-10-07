@@ -7,7 +7,7 @@
 
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication && event.preview" :href="event.paella" target="_blank">
+                    <a v-if="event.publication && event.preview" @click="redirectAction(`/video/` + event.token)" target="_blank">
                         <span class="oc--previewimage">
                             <img class="oc--previewimage"
                                 :src="event.preview.player ? event.preview.player : event.preview.search"
