@@ -116,6 +116,11 @@ const actions = {
         dispatch('loadVideos')
     },
 
+    incrementViews({dispatch}, event) {
+        event.views = parseInt(event.views) + 1;
+        dispatch('updateVideo', event);
+    },
+
     setPage({commit}, page) {
         commit('setPage', page);
     },

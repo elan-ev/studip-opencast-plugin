@@ -19,6 +19,9 @@
                             <span class="oc--duration">
                                 {{ getDuration }}
                             </span>
+                            <span v-if="canEdit">
+                                {{ event.views }}
+                            </span>
                         </span>
                     </a>
                     <span v-else class="oc--previewimage">
@@ -149,6 +152,7 @@ export default {
             this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
         },
         redirectAction(action) {
+            this.$store.dispatch('incrementViews', this.event);
             this.$emit('redirectAction', action);
         },
 
