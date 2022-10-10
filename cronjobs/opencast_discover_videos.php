@@ -4,6 +4,7 @@ require_once __DIR__.'/../bootstrap.php';
 
 use Opencast\Models\Config;
 use Opencast\Models\Videos;
+use Opencast\Models\VideosArchive;
 use Opencast\Models\VideoSync;
 use Opencast\Models\REST\ApiEventsClient;
 
@@ -55,7 +56,7 @@ class OpencastDiscoverVideos extends CronJob
             $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
 
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
-                echo 'found new video in Opencasti #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
+                echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
                 $video = new Videos;
 
                 $video->setData([
@@ -77,6 +78,27 @@ class OpencastDiscoverVideos extends CronJob
                 ]);
 
                 $task->store();
+            }
+
+            // hide all videos, which are not present in opencast anymore
+            foreach (array_diff($local_event_ids, $event_ids) as $old_event_id) {
+                $video = Videos::findOneByEpisode($old_event_id);
+
+
+
+                if (!empty($video)) {
+                    echo 'found video MISSING in Opencast #'. $config['id'] .': ' . $old_event_id . ' ('.  $video->title .")\n";
+
+                    $archive = new VideosArchive();
+                    $archive->setData($video->toArray());
+                    try {
+                        $archive->store();
+                    } catch (PDOException $p) {
+                        echo ' -> error during archiving: '. $p->getMessage() ."\n";
+                    }
+
+                    $video->delete();
+                }
             }
         }
 
