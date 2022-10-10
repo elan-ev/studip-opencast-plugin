@@ -44,9 +44,15 @@ class RedirectController extends Opencast\Controller
             throw new Error('Es fehlen Parameter!', 422);
         }
 
-        $lti = $lti[0];
-        $this->launch_data = $lti['launch_data'];
-        $this->launch_url  = $lti['launch_url'];
+        // get correct endpoint for redirect type
+        if ($action == 'video') {
+            $ltilink = self::getLtiLinkFor($lti, 'search');
+        } else {
+            $ltilink = self::getLtiLinkFor($lti, 'apievents');
+        }
+
+        $this->launch_data = $ltilink['launch_data'];
+        $this->launch_url  = $ltilink['launch_url'];
     }
 
     /**
@@ -114,5 +120,29 @@ class RedirectController extends Opencast\Controller
                 break;
         }
         return $custom_tool;
+    }
+
+    /**
+     * Get lti link for the passed endpoint
+     *
+     * @param mixed $lti
+     * @param mixed $endpoint
+     * @return void
+     */
+    private function getLtiLinkFor($lti, $endpoint)
+    {
+        // if there is only one node, use it for all calls
+        if (sizeof($lti) == 1) {
+            return reset($lti);
+        }
+
+        foreach ($lti as $entry) {
+            if (in_array($endpoint, $entry['endpoints']) !== false) {
+                return $lti;
+            }
+        }
+
+        // if nothing has been found, at least try to use the first found link
+        return reset($lti);
     }
 }
