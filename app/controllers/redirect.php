@@ -138,7 +138,7 @@ class RedirectController extends Opencast\Controller
 
         foreach ($lti as $entry) {
             if (in_array($endpoint, $entry['endpoints']) !== false) {
-                return $lti;
+                return $entry;
             }
         }
 
