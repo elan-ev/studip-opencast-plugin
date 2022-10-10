@@ -53,4 +53,15 @@ class SeminarSeries extends \SimpleORMap
 
         return $return;
     }
+
+    public static function getVisibilityForCourse($course_id)
+    {
+        $visibility = 'invisible';
+        $series     = self::getSeries($course_id);
+        if ($series) {
+            $visibility = $series[0]['visibility'];
+        }
+
+        return $visibility;
+    }
 }

@@ -89,6 +89,16 @@
                             Video Aufnehmen
                         </a>
                     </li>
+                    <li v-if="canToggleVisibility">
+                        <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
+                            Reiter sichtbar schalten
+                        </a>
+                        <a v-else @click="setVisibility('invisible')" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
+                            Reiter verbergen
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -158,6 +168,10 @@ export default {
             }
 
             return this.course_config.edit_allowed;
+        },
+
+        canToggleVisibility() {
+            return window.OpencastPlugin.STUDIP_VERSION == '4.6';
         }
     },
 
@@ -191,6 +205,11 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
             this.$store.dispatch('loadVideos', this.options);
+        },
+
+        async setVisibility(visibility) {
+            await this.$store.dispatch('setVisibility', {'cid': this.cid, 'visibility': visibility});
+            this.$router.go(); // Reload page to make changes visible in navigation tab
         }
     },
 

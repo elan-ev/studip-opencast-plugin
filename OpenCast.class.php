@@ -6,6 +6,7 @@
 require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\Models\Helpers;
+use Opencast\Models\SeminarSeries;
 
 use Opencast\AppFactory;
 use Opencast\RouteMap;
@@ -159,8 +160,13 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             return;
         }
 
+        $title      = 'Videos';
+        if (SeminarSeries::getVisibilityForCourse($course_id) == 'invisible') {
+            $title .= " (" . $this->_('versteckt') . ")";
+        }
+
         $main = new Navigation(
-            $this->_('Videos'),
+            $this->_($title),
             PluginEngine::getURL($this, [], 'course')
         );
         $main->setImage(Icon::create('video2'));

@@ -70,6 +70,7 @@ class RouteMap
         $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
         $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
+        $this->app->put('/courses/{course_id}/{visibility}', Routes\Course\CourseSetVisibility::class);
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         // Schedule

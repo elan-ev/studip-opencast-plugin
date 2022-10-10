@@ -100,6 +100,10 @@ const actions = {
     async authenticateLti({ dispatch }) {
         // by reloading the simple config, LtiAuth.vue reloads the iframe for lti authentication
         return dispatch('simpleConfigListRead');
+    },
+
+    setVisibility({ commit }, data) {
+        return ApiService.put('courses/' + data.cid + '/' + data.visibility);
     }
 }
 
