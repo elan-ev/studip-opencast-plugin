@@ -56,28 +56,33 @@ class OpencastDiscoverVideos extends CronJob
             $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
 
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
-                echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
-                $video = new Videos;
+                // check, if an entry for this episode_id exists in the archive and skip it if found
+                $archive = VideosArchive::findOneByEpisode($new_event_id);
 
-                $video->setData([
-                    'episode'     => $new_event_id,
-                    'config_id'   => $config['id'],
-                    'title'       => $events[$new_event_id]->title,
-                    'description' => $events[$new_event_id]->description,
-                    'duration'    => $events[$new_event_id]->duration
-                ]);
-                $video->store();
+                if (empty($archive)) {
+                    echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
+                    $video = new Videos;
 
-                // create task to update permissions and everything else
-                $task = new VideoSync;
+                    $video->setData([
+                        'episode'     => $new_event_id,
+                        'config_id'   => $config['id'],
+                        'title'       => $events[$new_event_id]->title,
+                        'description' => $events[$new_event_id]->description,
+                        'duration'    => $events[$new_event_id]->duration
+                    ]);
+                    $video->store();
 
-                $task->setData([
-                    'video_id'  => $video->id,
-                    'state'     => 'scheduled',
-                    'scheduled' => date('Y-m-d H:i:s')
-                ]);
+                    // create task to update permissions and everything else
+                    $task = new VideoSync;
 
-                $task->store();
+                    $task->setData([
+                        'video_id'  => $video->id,
+                        'state'     => 'scheduled',
+                        'scheduled' => date('Y-m-d H:i:s')
+                    ]);
+
+                    $task->store();
+                }
             }
 
             // hide all videos, which are not present in opencast anymore

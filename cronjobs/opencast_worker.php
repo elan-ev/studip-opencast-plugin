@@ -38,6 +38,12 @@ class OpencastWorker extends CronJob
 
             $video = Videos::find($task->video_id);
 
+            // always make sure the video token is set
+            if (!$video->token) {
+                $video->token = bin2hex(random_bytes(8));
+                $video->store();
+            }
+
             if (!empty($video)) {
                 echo 'updating video: ' . $video->id . "\n";
                 $api_client = ApiEventsClient::getInstance($video->config_id);
@@ -48,10 +54,6 @@ class OpencastWorker extends CronJob
                     $video->description = $event->description;
                     $video->duration    = $event->duration;
                     $video->publication = json_encode($event->publications);
-
-                    if (!$video->token) {
-                        $video->token = bin2hex(random_bytes(8));   // TODO: How to connect this with Providers/Tokens?
-                    }
 
                     $video->store();
 

@@ -9,6 +9,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
+use Opencast\Models\VideosArchive;
 
 class VideoDelete extends OpencastController
 {
@@ -24,7 +25,7 @@ class VideoDelete extends OpencastController
         }
 
         $perm = $video->getUserPerm();
-        if (empty($perm) || 
+        if (empty($perm) ||
             ($perm != 'owner' && $perm != 'write'))
         {
             throw new \AccessDeniedException();
@@ -35,12 +36,28 @@ class VideoDelete extends OpencastController
             'text' => _('Das Video wurde erfolgreich gelöscht')
         ];
 
+
+
+        // do not really delete the videos, put them into an archive first
+        $archive = VideosArchive::findOneByEpisode($video->episode);
+
+        if (empty($archive)) {
+            $archive = new VideosArchive();
+            $archive->setData($video->toArray());
+            $archive->store();
+        }
+
+        // only delete the db-entry
+        $video->delete();
+
+        /*
         if (!$video->removeVideo()) {
             $message = [
                 'type' => 'error',
                 'text' => _('Das Video kann nicht gelöscht werden')
             ];
         }
+        */
 
         return $this->createResponse([
             'message' => $message,
