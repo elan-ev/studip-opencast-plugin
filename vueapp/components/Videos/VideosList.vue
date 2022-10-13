@@ -172,7 +172,14 @@ export default {
         },
 
         doSearch(filters) {
-            filters.filters = filters.filters.concat(this.filters);
+            if (this.filters.filters) {
+                filters.filters = filters.filters.concat(this.filters.filters);
+            }
+
+            if (this.filters.cid) {
+                filters.cid = this.filters.cid
+            }
+
             this.$store.dispatch('loadVideos', filters)
         },
 

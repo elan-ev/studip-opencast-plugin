@@ -113,7 +113,6 @@ const actions = {
 
     async setVideoSort({dispatch, commit}, sort) {
         await commit('setVideoSort', sort)
-        dispatch('loadVideos')
     },
 
     incrementViews({dispatch}, event) {
