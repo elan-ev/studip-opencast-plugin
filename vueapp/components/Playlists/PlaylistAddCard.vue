@@ -9,6 +9,7 @@
             height="500"
             @close="$emit('cancel')"
             @confirm="createPlaylist"
+            @keyup.enter="createPlaylist"
         >
             <template v-slot:dialogContent>
                 <form class="default">
