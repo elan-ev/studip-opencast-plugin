@@ -46,7 +46,7 @@
 
                         <label>
                             Tags
-                            <TagBar :taggable="event" />
+                            <TagBar :taggable="event" @update="updatedTags"/>
                         </label>
                     </fieldset>
                 </form>
@@ -84,6 +84,18 @@ export default {
 
         decline() {
             this.$emit('cancel');
+        },
+
+        updatedTags() {
+            for (let i = 0; i < this.event.tags.length; i++) {
+                if (typeof this.event.tags[i] !== 'object') {
+                    // fix tag, because vue-select seems to have an incosistent behaviour
+                    this.event.tags[i] = {
+                        tag:  this.event.tags[i]
+                    }
+                }
+            }
+            console.log('updatedTags', this.event);
         }
     }
 }
