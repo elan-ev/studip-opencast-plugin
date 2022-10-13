@@ -64,7 +64,7 @@ class LtiLink
             'tool_consumer_info_version' => $GLOBALS['SOFTWARE_VERSION'],
             'tool_consumer_instance_guid' => Config::get()->STUDIP_INSTALLATION_ID,
             'tool_consumer_instance_name' => Config::get()->UNI_NAME_CLEAN,
-            'tool_consumer_instance_description' => $GLOBALS['UNI_INFO'],
+            'tool_consumer_instance_description' => substr(str_replace("\r", '', str_replace("\n", '', $GLOBALS['UNI_INFO'])), 0, 30),
             'tool_consumer_instance_url' => $GLOBALS['ABSOLUTE_URI_STUDIP'],
             'tool_consumer_instance_contact_email' => $GLOBALS['UNI_CONTACT']
         ]);
