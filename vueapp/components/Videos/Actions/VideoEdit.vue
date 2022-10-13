@@ -3,7 +3,7 @@
         <StudipDialog
             :title="$gettext('Episode bearbeiten')"
             :closeText="$gettext('Abbrechen')"
-            :confirmText="$gettext('Bearbeiten')"
+            :confirmText="$gettext('Speichern')"
             confirmClass="accept"
             :closeClass="'cancel'"
             height="600"
