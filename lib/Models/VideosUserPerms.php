@@ -23,6 +23,16 @@ class VideosUserPerms extends \SimpleORMap
         parent::configure($config);
     }
 
+    public function toSanitizedArray()
+    {
+        $data = $this->toArray();
+
+        $data['fullname'] = get_fullname($data['user_id']);
+
+        return $data;
+
+    }
+
     /**
      * Set permissions for users who have rights on the passed video. Extracts
      * lecturers if this Video belongs to a series in a course, otherwise tries to map the presenter

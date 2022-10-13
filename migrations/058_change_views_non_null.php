@@ -3,7 +3,7 @@ class ChangeViewsNonNull extends Migration
 {
     public function description()
     {
-        return 'Add config to show or hide the scheduler functionality';
+        return 'change view counter type';
     }
 
     public function up()

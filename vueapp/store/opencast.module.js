@@ -9,7 +9,8 @@ const state = {
     site: null,
     axios_running: false,
     userCourses: [],
-    currentPlaylist: 'all'
+    currentPlaylist: 'all',
+    userList: []
 }
 
 const getters = {
@@ -39,6 +40,10 @@ const getters = {
     },
     currentPlaylist(state) {
         return state.currentPlaylist;
+    },
+
+    userList(state) {
+        return state.userList;
     }
 }
 
@@ -56,24 +61,31 @@ const actions = {
         commit('setPage', page);
     },
 
-    async loadSeries({commit, dispatch}, id) {
+    async loadSeries({commit }, id) {
         return ApiService.get('opencast/allseries/' + id)
             .then(({ data }) => {
                 commit('setSeries', data.series);
             });
     },
 
-    async loadServers({ commit, dispatch}) {
+    async loadServers({ commit }) {
         return ApiService.get('opencast/servers')
             .then(({ data }) => {
                 commit('setServers', data.servers);
             });
     },
 
-    async loadCurrentUser({ commit, dispatch}) {
+    async loadCurrentUser({ commit }) {
         return ApiService.get('user')
             .then(({ data }) => {
                 commit('setCurrentUser', data.data);
+            });
+    },
+
+    async loadUserList({ commit }, search_term) {
+        return ApiService.get('user/search/' + encodeURIComponent(search_term))
+            .then(({ data }) => {
+                commit('setUserList', data.users);
             });
     },
 
@@ -142,6 +154,10 @@ const mutations = {
 
     setCurrentPlaylist(state, data) {
         state.currentPlaylist = data;
+    },
+
+    setUserList(state, data) {
+        state.userList = data;
     },
 }
 

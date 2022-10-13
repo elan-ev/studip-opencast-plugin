@@ -38,6 +38,7 @@ class RouteMap
     {
         // User routes
         $this->app->get('/user', Routes\User\UserShow::class);
+        $this->app->get('/user/search/{search_term}', Routes\User\UserList::class);  // TODO: add this route to the API scheme
 
         // Video routes
         $this->app->get('/videos', Routes\Video\VideoList::class);
@@ -46,6 +47,9 @@ class RouteMap
 
         $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class); // TODO: add this route to the API scheme
         $this->app->post('/videos/{token}/courses', Routes\Video\VideoAddToCourse::class);
+
+        $this->app->get('/videos/{token}/shares', Routes\Video\VideoSharesList::class); // TODO: add this route to the API scheme
+        $this->app->put('/videos/{token}/shares', Routes\Video\VideoSharesUpdate::class);
 
         // Playlist routes
         $this->app->get('/playlists', Routes\Playlist\PlaylistList::class);

@@ -17,7 +17,8 @@ const state = {
         items: 0
     },
     playlistForVideos: null,
-    filters: []
+    filters: [],
+    videoShares: {}
 }
 
 const getters = {
@@ -51,6 +52,10 @@ const getters = {
 
     filters(state) {
         return state.filters;
+    },
+
+    videoShares(state) {
+        return state.videoShares;
     }
 }
 
@@ -113,6 +118,17 @@ const actions = {
 
     async setVideoSort({dispatch, commit}, sort) {
         await commit('setVideoSort', sort)
+    },
+
+    async loadVideoShares({ commit }, token) {
+        return ApiService.get('videos/' + token + '/shares')
+            .then(({ data }) => {
+                commit('setShares', data)
+            });
+    },
+
+    async updateVideoShares({}, data) {
+        return ApiService.put('videos/' + data.token + '/shares', data.shares);
     },
 
     incrementViews({dispatch}, event) {
@@ -179,6 +195,10 @@ const mutations = {
 
     setLimit(state, limit) {
         state.limit = limit;
+    },
+
+    setShares(state, data) {
+        state.videoShares = data;
     }
 }
 

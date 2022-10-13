@@ -1,152 +1,132 @@
 <template>
-    <form class="default">
+    <!--
+    <pre>
+        selectedUsers {{ selectedUsers }}
+    </pre>
+    -->
+    <form class="default" v-if="shareUsers">
         <fieldset>
             <legend>
                 {{ $gettext('Für Nutzende freigeben') }}
-                <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!')"
-                    title="" tabindex="0"
-                ></span>
             </legend>
 
             <label>
-                <input type="text" :placeholder="$gettext('In Veranstaltungen suchen')" v-model="search">
-                <select v-model="currentCourse" v-if="filteredUserCourses">
-                    <template v-for="course_sem in filteredUserCourses">
-                    <optgroup v-for="(courses, semester) in course_sem" v-bind:key="semester" :label="semester">
-                        <option v-for="course in courses"
-                            :value="course.id" v-bind:key="course.id"
-                        >
-                            {{ course.name }}
-                        </option>
-                    </optgroup>
+                <studip-select :options="shareUsers" v-model="selectedUser"
+                    label="user"
+                    @option:selected="setSelectedUser"
+                    @search="updateUserList"
+                >
+                    <template #list-header>
+                        <li style="text-align: center">
+                            <b>{{ $gettext('Nutzer/innen') }}</b>
+                        </li>
                     </template>
+                    <template #no-options="{ search, searching, loading }">
+                        {{ $gettext('Keine Nutzenden gefunden!')}}
+                    </template>
+                    <template #selected-option="option">
+                        <span class="vs__option">
+                            {{ option.title_front }}
+                            {{ option.Nachname }},
+                            {{ option.Vorname }}
+                            {{ option.title_rear }}
+                        </span>
+                    </template>
+                    <template #option="option">
+                        <span class="vs__option">
+                            {{ option.title_front }}
+                            {{ option.Nachname }},
+                            {{ option.Vorname }}
+                            {{ option.title_rear }}
+                        </span>
+                    </template>
+                </studip-select>
+            </label>
+
+            <label>
+                {{ $gettext('Berechtigung') }}
+                <select v-model="selectedUser.perm">
+                    <option value="onwer">
+                        {{ $gettext('Besitzer/in') }}
+                    </option>
+
+                    <option value="write">
+                        {{ $gettext('Schreibrechte') }}
+                    </option>
+
+                    <option value="read">
+                        {{ $gettext('Leserechte') }}
+                    </option>
                 </select>
             </label>
         </fieldset>
         <footer>
             <StudipButton
-                :disabled="currentCourse == null"
+                :disabled="selectedUser == null"
                 icon="accept"
-                @click.prevent="returnSelectedCourse()"
+                @click.prevent=" this.$emit('add', selectedUser)"
             >
-                {{ $gettext('Verknüpfte Kurse') }}
+                {{ $gettext('Für Nutzer/in freigeben') }}
             </StudipButton>
         </footer>
     </form>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 import StudipButton from "@studip/StudipButton";
+import StudipIcon from '@studip/StudipIcon';
+import StudipSelect from '@studip/StudipSelect';
 
 export default {
-    name: 'UserCourseSelectable',
+    name: 'ShareWithUsers',
 
     components: {
-        StudipButton
+        StudipButton,    StudipIcon,
+        StudipSelect
     },
 
     props: {
-        courses: {
+        selectedUsers: {
             type: Object,
-            required: true
-        },
-
-        selectedCourses: {
-            type: Array
+            default: []
         }
     },
 
     data() {
         return {
-            currentCourse: null,
-            search: null
+            selectedUser: {
+                'perm': 'read'
+            },
         }
     },
 
     computed: {
+        ...mapGetters(['userList', 'currentUser']),
 
-        filteredUserCourses() {
-            let noCoursesFound = {};
-            noCoursesFound['0'] = {}
-            noCoursesFound['0'][this.$gettext('Keine Treffer')] = [{
-                id: 0,
-                name: this.$gettext('Keine Kurse gefunden.')
-            }];
-
-            if (this.courses.length == 0) {
-                this.currentCourse = 0;
-                return noCoursesFound;
-            }
-
-            /*
-            if (!this.search) {
-                this.currentCourse = Object.values(Object.values(this.courses)[0])[0][0].id;
-                return this.courses;
-            }
-            */
-
-            let course_list = {};
-            let search      = this.search ? this.search.toLowerCase() : null;
-
-            for (let id in this.courses) {
-                let courses = this.courses[id];
-                let sem     = Object.keys(courses)[0];
-                courses = courses[sem];
-
-                courses = courses.filter((course) => {
-                    return (
-                        (!this.search || course['name'].toLowerCase().indexOf(search) >= 0)
-                        &&
-                        (!this.selectedCoursesList || !this.selectedCoursesList[course['id']])
-                    );
-                });
-
-                if (courses.length > 0) {
-                    course_list[id] = {}
-                    course_list[id][sem] = courses
-                }
-            }
-
-            if (Object.keys(course_list).length == 0) {
-                this.currentCourse = 0;
-                return noCoursesFound;
-            }
-
-            this.currentCourse = Object.values(Object.values(course_list)[0])[0][0].id;
-
-            return course_list;
+        shareUsers() {
+            return this.userList.filter((perm) => {
+                return this.selectedUsers.find(user => user.user_id == perm.user_id) === undefined
+                    && this.currentUser.id !== perm.user_id;
+            });
         },
 
-        selectedCoursesList() {
-            let courses = {};
-
-            for (let i = 0; i < this.selectedCourses.length; i++) {
-                courses[this.selectedCourses[i].id] = true;
-            }
-
-            return courses;
+        setSelectedUser(user) {
+            console.log('setCurrentUser', user);
+            this.selectedUser.user_id = user.user_id;
         }
     },
 
     methods: {
-        returnSelectedCourse() {
-            let course = () => {
-                let course;
-
-                for (let id1 in this.courses) {
-                    for (let id2 in this.courses[id1]) {
-                        for (let i = 0; i < this.courses[id1][id2].length; i++) {
-                            course = this.courses[id1][id2][i];
-                            if (course.id == this.currentCourse) {
-                               return course;
-                            }
-                        }
-                    }
-                }
-            }
-
-            this.$emit('add', course());
+        updateUserList(search, loading)
+        {
+            this.$store.dispatch('loadUserList', search ? search : '%');
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('loadUserList', '%');
     }
 }
 </script>

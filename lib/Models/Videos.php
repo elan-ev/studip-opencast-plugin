@@ -23,6 +23,11 @@ class Videos extends UPMap
             'assoc_foreign_key' => 'video_id',
         ];
 
+        $config['has_many']['shares'] = [
+            'class_name' => 'Opencast\\Models\\VideosShares',
+            'assoc_foreign_key' => 'video_id',
+        ];
+
         $config['has_many']['video_seminars'] = [
             'class_name' => 'Opencast\\Models\\VideoSeminars',
             'assoc_foreign_key' => 'video_id',
@@ -282,7 +287,7 @@ class Videos extends UPMap
             return 'owner';
         }
 
-        $ret_perm = 'read';
+        $ret_perm = false;
 
         foreach ($this->perms as $uperm) {
             if ($uperm->user_id == $user_id) {

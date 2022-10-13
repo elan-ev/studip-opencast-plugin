@@ -9,38 +9,40 @@
             height="600"
             width="600"
             @close="decline"
-            @confirm="addToCourse"
+            @confirm="updateShares"
         >
             <template v-slot:dialogContent>
-                <table class="default" v-if="event.courses.length > 0">
+                <table class="default" v-if="videoShares.perms?.length > 0">
                     <thead>
                         <tr>
                             <th>
-                                {{ $gettext('Veranstaltung') }}
+                                {{ $gettext('Nutzer/in') }}
+                            </th>
+                            <th>
+                                {{ $gettext('Rechte') }}
                             </th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(course, index) in event.courses" v-bind:key="course.id">
+                        <tr v-for="share in videoShares.perms" v-bind:key="share.id">
                             <td>
-                                <a :href="getCourseLink(course)" target="_blank">
-                                    {{ course.name }}
-                                </a>
+
+                                {{ share.fullname }}
                             </td>
                             <td>
-                                <studip-icon shape="trash" role="clickable" @click="confirmDelete(index)" style="cursor: pointer"/>
+                                {{ permToText(share.perm) }}
+                            </td>
+                            <td>
+                                <studip-icon shape="trash" role="clickable" @click="removePerm(index)" style="cursor: pointer"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                {{ event }}
-
                 <ShareWithUsers
                     @add="addUserToList"
-                    :users="sharedUsers"
-                    :selectedUsers="event.courses"
+                    :selectedUsers="videoShares.perms"
                 />
 
             </template>
@@ -68,47 +70,54 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-    ...mapGetters(['userCourses'])
+        ...mapGetters(['videoShares'])
     },
 
     methods: {
 
-        getCourseLink(course) {
-            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + course.id)
+        addUserToList() {
+
         },
 
-        addUserToList(course) {
-            console.log('addUserToList', course);
-            this.event.courses.push(course);
+        addLinkShare() {
+
         },
 
-        confirmDelete(course_index) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie dieses Video aus dem Kurs entfernen möchten?'))) {
-                this.event.courses.splice(course_index, 1);
+        removePerm(index) {
+            this.videoShares.perms.splice(index, 1);
+        },
+
+        decline() {
+            this.$emit('cancel');
+        },
+
+        permToText(perm) {
+            let translations = {
+                'owner': this.$gettext('Besitzer/in'),
+                'write': this.$gettext('Schreibrechte'),
+                'read':  this.$gettext('Leserechte'),
+                'share': this.$gettext('Kann weiterteilen')
             }
+
+            return translations[perm];
         },
 
-        async addToCourse() {
-            let data = {
+        updateShares() {
+            this.$store.dispatch('updateVideoShares', {
                 token: this.event.token,
-                courses: this.event.courses,
-            };
-            await this.$store.dispatch('addVideoToCourses', data)
+                shares: this.videoShares
+            })
             .then(({ data }) => {
-                this.$store.dispatch('addMessage', data.message);
+                this.$store.dispatch('addMessage', this.$gettext('Freigaben gespeichert!'));
                 this.$emit('done', 'refresh');
             }).catch(() => {
                 this.$emit('cancel');
             });
         },
-
-        decline() {
-            this.$emit('cancel');
-        }
     },
 
     mounted () {
-        this.$store.dispatch('loadUserCourses');
+        this.$store.dispatch('loadVideoShares', this.event.token);
     },
 }
 </script>
