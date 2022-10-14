@@ -232,6 +232,14 @@ $sort_orders = Pager::getSortOptions();
                                     </div>
                                 <? endif ?>
 
+                                <?= Studip\LinkButton::create(
+                                    $_('Metadaten neu laden'),
+                                    $controller->url_for('course/refresh_episode/' . get_ticket() . '/' . $item['id']),
+                                    [
+                                        'class'   => 'oc_refresh',
+                                        'title'   => $_('Metadaten von Opencast aktualisieren')
+                                    ]
+                                ); ?>
 
                                 <? if (OCPerm::editAllowed($course_id)) : ?>
                                     <?= Studip\LinkButton::create(
