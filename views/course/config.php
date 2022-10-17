@@ -36,7 +36,7 @@
 
 
     <footer data-dialog-button>
-        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+        <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen'), 'class' => 'oc-debounce']); ?>
         <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('course/index')); ?>
     </footer>
 </form>
