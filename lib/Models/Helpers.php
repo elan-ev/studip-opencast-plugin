@@ -49,9 +49,6 @@ class Helpers
 
     static function getConfigurationstate()
     {
-        // TODO
-        return true;
-
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config");
         $stmt->execute();
 
