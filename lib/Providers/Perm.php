@@ -81,11 +81,13 @@ class Perm
         // check, if current user has role "Medientutor"
         $check_user = \User::find($user_id);
 
-        foreach ($check_user->getRoles() as $role) {
-            if ($role->rolename == $check_role) {
-                return true;
+        if ($check_user) {
+            foreach ($check_user->getRoles() as $role) {
+                if ($role->rolename == $check_role) {
+                    return true;
+                }
             }
-        }
+    }
 
         return false;
     }
@@ -109,10 +111,12 @@ class Perm
         // check, if current user has role "Medientutor"
         $check_user = \User::find($user_id);
 
-        foreach ($check_user->getRoles() as $role) {
-            if ($role->rolename == $check_role) {
-                // array_filter is used to remove empty institute entries
-                return array_filter(\RolePersistence::getAssignedRoleInstitutes($user_id, $role->roleid));
+        if ($check_user) {
+            foreach ($check_user->getRoles() as $role) {
+                if ($role->rolename == $check_role) {
+                    // array_filter is used to remove empty institute entries
+                    return array_filter(\RolePersistence::getAssignedRoleInstitutes($user_id, $role->roleid));
+                }
             }
         }
 
@@ -130,8 +134,14 @@ class Perm
     public static function courseBelongsToInstitute($course_id, $inst_id)
     {
         static $course;
+
         if (!$course[$course_id]) {
             $course[$course_id] = \Course::find($course_id);
+        }
+
+        // still no course found?
+        if (!$course[$course_id]) {
+            return false;
         }
 
         if ($course[$course_id]->home_institut->institut_id == $inst_id) {
