@@ -277,9 +277,15 @@ export default {
 
         if (this.playlist) {
             // find sort order for current playlist
-            let [sort, order] = this.playlist.sort_order.split('_');
+            let sort, order;
 
-            this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
+            if (!this.playlist.sort_order) {
+                sort = 'mkdate';
+                order = 'desc';
+            } else {
+                [sort, order] = this.playlist.sort_order.split('_');
+            }
+                this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
         }
         else {
             this.inputSort = this.videoSort
