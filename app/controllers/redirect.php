@@ -115,6 +115,8 @@ class RedirectController extends Opencast\Controller
             case 'video':
                 $preview = $video->preview ? json_decode($video->preview, true) : null;
                 if (!empty($preview)) {
+                    $video->views += 1;
+                    $video->store();
                     $custom_tool = "/paella/ui/watch.html?id={$video->episode}";
                 }
                 break;
