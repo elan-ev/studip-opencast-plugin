@@ -101,7 +101,6 @@ const actions = {
 
     async loadMyVideos({ commit, state, dispatch, rootState }, data = [])
     {
-        console.log('loadMyVideos', data);
         return dispatch('loadVideos', {
             route: 'videos',
             filters: data,
@@ -110,7 +109,6 @@ const actions = {
 
     async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
     {
-        console.log('loadPlaylistVideos', data);
         return dispatch('loadVideos', {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
@@ -119,7 +117,6 @@ const actions = {
 
     async loadCourseVideos({ commit, state, dispatch, rootState }, data)
     {
-        console.log('loadCourseVideos', data);
         return dispatch('loadVideos', {
             route: 'courses/' + data.cid + '/videos',
             filters: data,
@@ -128,7 +125,6 @@ const actions = {
 
     async loadPlaylistCourseVideos({ commit, state, dispatch, rootState }, data)
     {
-        console.log('loadPlaylistCourseVideos', data);
         return dispatch('loadVideos', {
             route: 'playlists/' + data.token + '/videos/?cid=' + data.cid,
             filters: data,

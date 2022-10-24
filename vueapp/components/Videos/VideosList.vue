@@ -143,7 +143,12 @@ export default {
     methods: {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
-            await this.$store.dispatch('loadMyVideos', this.filters)
+
+            if (this.isCourse) {
+                await this.$store.dispatch('loadCourseVideos', this.filters)
+            } else {
+                await this.$store.dispatch('loadMyVideos', this.filters)
+            }
         },
 
         toggleVideo(data) {
@@ -180,7 +185,11 @@ export default {
                 filters.cid = this.filters.cid
             }
 
-            this.$store.dispatch('loadMyVideos', filters)
+            if (this.isCourse) {
+                this.$store.dispatch('loadCourseVideos', this.filters)
+            } else {
+                this.$store.dispatch('loadMyVideos', this.filters)
+            }
         },
 
         addVideosToPlaylist() {
@@ -218,7 +227,11 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
-                await this.$store.dispatch('loadMyVideos');
+                if (this.isCourse) {
+                    this.$store.dispatch('loadCourseVideos', this.filters)
+                } else {
+                    this.$store.dispatch('loadMyVideos', this.filters)
+                }
             }
         },
 
@@ -245,8 +258,13 @@ export default {
         let view = this;
         this.$store.commit('clearPaging');
         this.$store.dispatch('authenticateLti').then(() => {
-            view.$store.dispatch('loadMyVideos', view.filters)
-                .then(() => { view.videos_loading = false });
+            if (view.isCourse) {
+                view.$store.dispatch('loadCourseVideos', this.filters)
+                    .then(() => { view.videos_loading = false });
+            } else {
+                view.$store.dispatch('loadMyVideos', this.filters)
+                    .then(() => { view.videos_loading = false });
+            }
         })
         this.$store.dispatch('loadUserCourses');
 
