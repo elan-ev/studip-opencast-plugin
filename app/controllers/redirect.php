@@ -31,12 +31,14 @@ class RedirectController extends Opencast\Controller
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
+        /*
         $perm = $video->getUserPerm();
         if (empty($perm) ||
             ($perm != 'owner' && $perm != 'write'))
         {
             throw new \AccessDeniedException();
         }
+        */
 
         $customtool = $this->getLtiCustomTool($video, $action);
         $lti = LtiHelper::getLaunchData($video->config_id, $customtool);
