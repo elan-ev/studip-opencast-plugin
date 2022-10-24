@@ -19,11 +19,5 @@ export default {
     computed: {
          ...mapGetters(['cid'])
     },
-
-    mounted() {
-        this.$store.commit('setFilters', {
-            cid: this.cid
-        })
-    }
 };
 </script>

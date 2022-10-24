@@ -122,7 +122,6 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
-            options: {}
         }
     },
 
@@ -178,7 +177,6 @@ export default {
     methods: {
         setPlaylist(token) {
             this.$store.commit('setCurrentPlaylist', token);
-            this.$store.commit('setFilters', this.options);
             this.$store.commit('clearPaging');
 
             if (token === 'all' || token === null) {
@@ -203,7 +201,7 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
 
-             if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+            if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
                  this.$store.dispatch('loadCourseVideos', {
                     cid: this.cid,
                 });
@@ -223,9 +221,6 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadPlaylists');
-        this.options = {
-            cid: this.cid
-        }
 
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);

@@ -105,7 +105,8 @@ export default {
             videos_loading: true,
             actionComponent: null,
             showActionDialog: false,
-            selectedEvent: null
+            selectedEvent: null,
+            filters: []
         }
     },
 
@@ -116,7 +117,7 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
-            'filters'
+            'currentPlaylist'
         ]),
 
         isCourse() {
@@ -145,7 +146,14 @@ export default {
             await this.$store.dispatch('setPage', page)
 
             if (this.isCourse) {
-                await this.$store.dispatch('loadCourseVideos', this.filters)
+                if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+                    await this.$store.dispatch('loadCourseVideos', this.filters)
+                } else {
+
+                    let filters = this.filters;
+                    filters.token = this.currentPlaylist;
+                    this.$store.dispatch('loadPlaylistCourseVideos', filters);
+                }
             } else {
                 await this.$store.dispatch('loadMyVideos', this.filters)
             }
@@ -177,16 +185,21 @@ export default {
         },
 
         doSearch(filters) {
-            if (this.filters.filters) {
-                filters.filters = filters.filters.concat(this.filters.filters);
-            }
+            this.filters = filters;
 
-            if (this.filters.cid) {
-                filters.cid = this.filters.cid
-            }
-
-            if (this.isCourse) {
-                this.$store.dispatch('loadCourseVideos', this.filters)
+             if (this.isCourse) {
+                if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+                    this.$store.dispatch('loadCourseVideos', {
+                        ...filters,
+                        cid: this.cid
+                    })
+                } else {
+                    this.$store.dispatch('loadPlaylistCourseVideos', {
+                        ...filters,
+                        cid: this.cid,
+                        token: this.currentPlaylist
+                    });
+                }
             } else {
                 this.$store.dispatch('loadMyVideos', this.filters)
             }
@@ -228,7 +241,18 @@ export default {
             this.clearAction();
             if (args == 'refresh') {
                 if (this.isCourse) {
-                    this.$store.dispatch('loadCourseVideos', this.filters)
+                    if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+                        this.$store.dispatch('loadCourseVideos', {
+                            ...this.filters,
+                            cid: this.cid
+                        })
+                    } else {
+                        this.$store.dispatch('loadPlaylistCourseVideos', {
+                            ...this.filters,
+                            cid: this.cid,
+                            token: this.currentPlaylist
+                        });
+                    }
                 } else {
                     this.$store.dispatch('loadMyVideos', this.filters)
                 }
@@ -254,12 +278,14 @@ export default {
         }
     },
 
-    mounted() {
+    async mounted() {
         let view = this;
         this.$store.commit('clearPaging');
-        this.$store.dispatch('authenticateLti').then(() => {
+        await this.$store.dispatch('authenticateLti').then(() => {
             if (view.isCourse) {
-                view.$store.dispatch('loadCourseVideos', this.filters)
+                view.$store.dispatch('loadCourseVideos', {
+                    cid: this.cid
+                })
                     .then(() => { view.videos_loading = false });
             } else {
                 view.$store.dispatch('loadMyVideos', this.filters)

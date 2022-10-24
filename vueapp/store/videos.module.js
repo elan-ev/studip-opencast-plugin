@@ -17,7 +17,6 @@ const state = {
         items: 0
     },
     playlistForVideos: null,
-    filters: [],
     videoShares: {}
 }
 
@@ -48,10 +47,6 @@ const getters = {
 
     playlistForVideos(state) {
         return state.playlistForVideos
-    },
-
-    filters(state) {
-        return state.filters;
     },
 
     videoShares(state) {
@@ -217,10 +212,6 @@ const mutations = {
 
     setPlaylistForVideos(state, playlist) {
         state.playlistForVideos = playlist;
-    },
-
-    setFilters(state, filters) {
-        state.filters = filters;
     },
 
     setLimit(state, limit) {
