@@ -59,11 +59,20 @@ class Playlists extends UPMap
     {
         global $user;
 
-        $ret_perm = 'read';
+        $ret_perm = false;
 
         foreach ($this->perms as $perm) {
             if ($perm->user_id == $user->id) {
                 $ret_perm = $perm->perm;
+            }
+        }
+
+        if (!$ret_perm) {
+            // check if user has read access through a linked course
+            foreach ($this->courses as $course) {
+                if ($course->getParticipantStatus($user->id)) {
+                    return 'read';
+                }
             }
         }
 

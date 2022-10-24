@@ -94,26 +94,6 @@ class Videos extends UPMap
             $user_id = $user->id;
         }
 
-        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
-        $params = [];
-        $where  = ' WHERE 1 ';
-
-
-        // root can access all videos, no further checking for perms is necessary
-        if (!$perm->have_perm('root')) {
-            $params = [
-                ':user_id'=> $user_id
-            ];
-
-            if ($perm->have_perm('admin', $user_id)) {
-                $where = ' WHERE oc_video.id IN (:video_ids) ';
-                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
-            } else {
-                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
-                $where = ' WHERE 1 ';
-            }
-        }
-
         $tag_ids      = [];
         $playlist_ids = [];
 
@@ -144,17 +124,41 @@ class Videos extends UPMap
                     break;
 
                 case 'playlist':
-                    $playlists = Playlists::findByToken($filter['value']);
+                    $playlist = Playlists::findOneByToken($filter['value']);
 
-                    if (!empty($playlists)) {
-                        foreach ($playlists as $playlist) {
-                            $playlist_ids[] = $playlist->id;
-                        }
+                    // check, if user can access this playlist
+                    if (!empty($playlist) && $playlist->getUserPerm()) {
+                        $playlist_ids[] = $playlist->id;
                     } else {
                         $playlist_ids[] = '-1';
                     }
 
                     break;
+            }
+        }
+
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
+        $params = [];
+        $where  = ' WHERE 1 ';
+
+        // root can access all videos, no further checking for perms is necessary
+        if (!$perm->have_perm('root')) {
+            $params = [
+                ':user_id'=> $user_id
+            ];
+
+            if ($perm->have_perm('admin', $user_id)) {
+                $where = ' WHERE oc_video.id IN (:video_ids) ';
+                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
+            } else {
+                if (!empty($playlist_id)) {
+                    $sql = ' ';
+                    $where = ' WHERE 1 ';
+                } else {
+                    // if we have a playlist id, do not check perms for single videos, user only has indirect perms through playlist
+                    $sql  = ' LEFT JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                    $where = ' WHERE 1 ';
+                }
             }
         }
 
