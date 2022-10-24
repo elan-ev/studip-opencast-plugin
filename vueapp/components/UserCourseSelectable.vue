@@ -29,7 +29,7 @@
                 icon="accept"
                 @click.prevent="returnSelectedCourse()"
             >
-                {{ $gettext('Verknüpfte Kurse') }}
+                {{ $gettext('Kurse verknüpfen') }}
             </StudipButton>
         </footer>
     </form>

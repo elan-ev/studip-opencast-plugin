@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Routes\Video;
+namespace Opencast\Routes\Course;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -11,16 +11,22 @@ use Opencast\OpencastController;
 use Opencast\Models\Filter;
 use Opencast\Models\Videos;
 
-class VideoList extends OpencastController
+class CourseVideoList extends OpencastController
 {
     use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $perm;
+
         $params = $request->getQueryParams();
 
-        // select all videos the current user has perms on
-        $videos = Videos::getUserVideos(new Filter($params));
+        if (!$args['course_id'] || !$perm->have_studip_perm('user', $args['course_id'])) {
+            throw new \AccessDeniedException();
+        }
+
+        // show videos for this playlist and filter them with optional additional filters
+        $videos = Videos::getCourseVideos($args['course_id'], new Filter($params));
 
         $ret = [];
         foreach ($videos['videos'] as $video) {

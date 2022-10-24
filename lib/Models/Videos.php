@@ -14,6 +14,9 @@ use Opencast\Models\Helpers;
 
 class Videos extends UPMap
 {
+    /**
+     * @inheritDoc
+     */
     protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_video';
@@ -74,10 +77,64 @@ class Videos extends UPMap
     }
 
     /**
+     * Get videos for the passed playlist narrowed down by optional filters.
+     * This method does no further check for permissions and assumes the current user has access to the playlist!
+     *
+     * @param string $playlist_id
+     * @param Opencast\Models\Filter $filters
+     *
+     * @return array
+     *    [
+     *        'videos' => [Opencast\Models\Videos],
+     *        'sql'    => '...,
+     *        'count'  => 123
+     *    ];
+     */
+    public static function getPlaylistVideos($playlist_id, $filters)
+    {
+        $query = [
+            'sql'   => ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = id)',
+            'where' => ' WHERE 1 ',
+            'params' => [
+                ':playlist_id' => $playlist_id
+            ]
+        ];
+
+        return self::getFilteredVideos($query, $filters);
+    }
+
+    /**
+     * Get videos for the passed course narrowed down by optional filters.
+     * This method does no further check for permissions and assumes the current user has access to the course!
+     *
+     * @param string $playlist_id
+     * @param Opencast\Models\Filter $filters
+     *
+     * @return array
+     *    [
+     *        'videos' => [Opencast\Models\Videos],
+     *        'sql'    => '...,
+     *        'count'  => 123
+     *    ];
+     */
+    public static function getCourseVideos($course_id, $filters)
+    {
+        $query = [
+            'sql'   => ' INNER JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id)',
+            'where' => ' WHERE 1 ',
+            'params' => [
+                ':seminar_id' => $course_id
+            ]
+        ];
+
+        return self::getFilteredVideos($query, $filters);
+    }
+
+    /**
      * Get the list of accessible videos, faceted by the passed filters
      *
-     * @param [type] $filters
-     * @param [type] $user_id
+     * @param Opencast\Models\Filter $filters
+     * @param string $user_id
      *
      * @return array
      *   [
@@ -85,14 +142,63 @@ class Videos extends UPMap
      *       'count'  => int
      *   ];
      */
-    public static function findByFilter($filters, $user_id = null)
+    public static function getUserVideos($filters, $user_id = null)
     {
-
         global $user, $perm;
 
         if (!$user_id) {
             $user_id = $user->id;
         }
+
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
+        $params = [];
+        $where  = ' WHERE 1 ';
+
+        // root can access all videos, no further checking for perms is necessary
+        if (!$perm->have_perm('root')) {
+            $params = [
+                ':user_id'=> $user_id
+            ];
+
+            if ($perm->have_perm('admin', $user_id)) {
+                $where = ' WHERE oc_video.id IN (:video_ids) ';
+                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
+            } else {
+                $sql  = ' LEFT JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                $where = ' WHERE 1 ';
+            }
+        }
+
+        return self::getFilteredVideos([
+            'sql'    => $sql,
+            'where'  => $where,
+            'params' => $params
+        ], $filters);
+    }
+
+    /**
+     * Add filters to the passed data and return videos.
+     *
+     * @param array $query
+     *    [
+     *        'sql'   => '',
+     *        'where' => '',
+     *        'params' => ''
+     *    ];
+     * @param Opencast\Models\Filter $filters
+     *
+     * @return array
+     *    [
+     *        'videos' => [Opencast\Models\Videos],
+     *        'sql'    => '...,
+     *        'count'  => 123
+     *    ];
+     */
+    protected static function getFilteredVideos($query, $filters)
+    {
+        $sql    = $query['sql'];
+        $where  = $query['where'];
+        $params = $query['params'];
 
         $tag_ids      = [];
         $playlist_ids = [];
@@ -137,30 +243,6 @@ class Videos extends UPMap
             }
         }
 
-        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
-        $params = [];
-        $where  = ' WHERE 1 ';
-
-        // root can access all videos, no further checking for perms is necessary
-        if (!$perm->have_perm('root')) {
-            $params = [
-                ':user_id'=> $user_id
-            ];
-
-            if ($perm->have_perm('admin', $user_id)) {
-                $where = ' WHERE oc_video.id IN (:video_ids) ';
-                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
-            } else {
-                if (!empty($playlist_id)) {
-                    $sql = ' ';
-                    $where = ' WHERE 1 ';
-                } else {
-                    // if we have a playlist id, do not check perms for single videos, user only has indirect perms through playlist
-                    $sql  = ' LEFT JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
-                    $where = ' WHERE 1 ';
-                }
-            }
-        }
 
         if (!empty($tag_ids)) {
             foreach ($tag_ids as $tag) {
@@ -179,11 +261,6 @@ class Videos extends UPMap
         if (!empty($playlist_ids)) {
             $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
             $where .= ' AND opv.video_id = id';
-        }
-
-        if ($course_id = $filters->getCourseId()) {
-            $sql .= ' INNER JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id)';
-            $params[':seminar_id'] = $course_id;
         }
 
         $sql .= $where;
@@ -209,7 +286,7 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
-        $parsed_sql = 'SELECT * FROM oc_video '. $sql;
+        $parsed_sql = 'SELECT * FROM oc_video '. $query['sql'] .' '. $query['where'];
         foreach ($params as $key => $value) {
             $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
         }

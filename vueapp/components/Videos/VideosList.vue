@@ -143,7 +143,7 @@ export default {
     methods: {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
-            await this.$store.dispatch('loadVideos', this.filters)
+            await this.$store.dispatch('loadMyVideos', this.filters)
         },
 
         toggleVideo(data) {
@@ -180,7 +180,7 @@ export default {
                 filters.cid = this.filters.cid
             }
 
-            this.$store.dispatch('loadVideos', filters)
+            this.$store.dispatch('loadMyVideos', filters)
         },
 
         addVideosToPlaylist() {
@@ -218,7 +218,7 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
-                await this.$store.dispatch('loadVideos');
+                await this.$store.dispatch('loadMyVideos');
             }
         },
 
@@ -245,7 +245,7 @@ export default {
         let view = this;
         this.$store.commit('clearPaging');
         this.$store.dispatch('authenticateLti').then(() => {
-            view.$store.dispatch('loadVideos', view.filters)
+            view.$store.dispatch('loadMyVideos', view.filters)
                 .then(() => { view.videos_loading = false });
         })
         this.$store.dispatch('loadUserCourses');

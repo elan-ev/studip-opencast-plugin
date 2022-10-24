@@ -177,23 +177,21 @@ export default {
 
     methods: {
         setPlaylist(token) {
-            if (token === 'all' || token === null) {
-                this.options = {
-                    cid: this.cid
-                }
-            } else {
-                this.options = {
-                     filters: [{
-                        'type': 'playlist',
-                        'value': token
-                    }]
-                }
-            }
-
             this.$store.commit('setCurrentPlaylist', token);
             this.$store.commit('setFilters', this.options);
-            this.$store.commit('clearPaging')
-            this.$store.dispatch('loadVideos', this.options);
+            this.$store.commit('clearPaging');
+
+            if (token === 'all' || token === null) {
+                 this.$store.dispatch('loadCourseVideos', {
+                    cid: this.cid,
+                });
+            } else {
+                this.$store.dispatch('loadPlaylistCourseVideos', {
+                    cid: this.cid,
+                    token: token
+                });
+            }
+
         },
 
         getScheduleList() {
@@ -204,7 +202,17 @@ export default {
 
         setView(page) {
             this.$store.dispatch('updateView', page);
-            this.$store.dispatch('loadVideos', this.options);
+
+             if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+                 this.$store.dispatch('loadCourseVideos', {
+                    cid: this.cid,
+                });
+            } else {
+                this.$store.dispatch('loadPlaylistCourseVideos', {
+                    cid: this.cid,
+                    token: this.currentPlaylist
+                });
+            }
         },
 
         async setVisibility(visibility) {
@@ -218,8 +226,6 @@ export default {
         this.options = {
             cid: this.cid
         }
-
-        //this.$store.dispatch('loadVideos', this.options);
 
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);

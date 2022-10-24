@@ -24,11 +24,11 @@ class PlaylistAddVideo extends OpencastController
         $video = Videos::findOneByToken($args['vid_token']);
 
         // check what permissions the current user has on the playlist and video
-        $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
+        $perm_playlist = $playlist->getUserPerm();
         $perm_video = reset($video->perms->findBy('user_id', $user->id)->toArray());
 
         if (!$perm->have_perm('root') && (
-            (empty($perm_playlist) || ($perm_playlist['perm'] != 'owner' && $perm_playlist['perm'] != 'write')) ||
+            (empty($perm_playlist) || ($perm_playlist != 'owner' && $perm_playlist != 'write')) ||
             (empty($perm_video) || ($perm_video['perm'] != 'owner' && $perm_video['perm'] != 'write'))
         )) {
             throw new \AccessDeniedException();

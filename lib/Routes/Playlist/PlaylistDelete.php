@@ -22,9 +22,9 @@ class PlaylistDelete extends OpencastController
         $playlist = Playlists::findOneByToken($args['token']);
 
         // check what permissions the current user has on the playlist
-        $perm = $playlist->perms->findBy('user_id', $user->id)->toArray();
+        $perm = $playlist->getUserPerm();
 
-        if (empty($perm) || !$perm[0] || $perm[0]['perm'] != 'owner') {
+        if (empty($perm) || $perm != 'owner') {
             throw new \AccessDeniedException();
         }
 

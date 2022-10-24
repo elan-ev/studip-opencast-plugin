@@ -60,7 +60,10 @@ const getters = {
 }
 
 const actions = {
-    async loadVideos({ commit, state, dispatch, rootState }, filters = []) {
+    async loadVideos({ commit, state, dispatch, rootState }, data)
+    {
+        let filters = data.filters;
+
         const params = new URLSearchParams();
 
         if (!filters['order']) {
@@ -83,7 +86,7 @@ const actions = {
             }
         }
 
-        return ApiService.get('videos', { params })
+        return ApiService.get(data.route, { params })
             .then(({ data }) => {
                 commit('setVideos', data.videos);
 
@@ -94,6 +97,42 @@ const actions = {
                     });
                 }
             });
+    },
+
+    async loadMyVideos({ commit, state, dispatch, rootState }, data = [])
+    {
+        console.log('loadMyVideos', data);
+        return dispatch('loadVideos', {
+            route: 'videos',
+            filters: data,
+        })
+    },
+
+    async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
+    {
+        console.log('loadPlaylistVideos', data);
+        return dispatch('loadVideos', {
+            route: 'playlists/' + data.token + '/videos',
+            filters: data,
+        })
+    },
+
+    async loadCourseVideos({ commit, state, dispatch, rootState }, data)
+    {
+        console.log('loadCourseVideos', data);
+        return dispatch('loadVideos', {
+            route: 'courses/' + data.cid + '/videos',
+            filters: data,
+        })
+    },
+
+    async loadPlaylistCourseVideos({ commit, state, dispatch, rootState }, data)
+    {
+        console.log('loadPlaylistCourseVideos', data);
+        return dispatch('loadVideos', {
+            route: 'playlists/' + data.token + '/videos/?cid=' + data.cid,
+            filters: data,
+        })
     },
 
     async uploadSortPositions({}, data) {

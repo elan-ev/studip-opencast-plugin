@@ -60,7 +60,7 @@ class RouteMap
         $this->app->delete('/playlists/{token}', Routes\Playlist\PlaylistDelete::class);
 
 
-        $this->app->get('/playlists/{token}/videos', Routes\Playlist\PlaylistVideosList::class);    // TODO
+        $this->app->get('/playlists/{token}/videos', Routes\Playlist\PlaylistVideoList::class);
 
         $this->app->put('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistAddVideo::class);
         $this->app->delete('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistRemoveVideo::class);
@@ -76,7 +76,7 @@ class RouteMap
         // Course routes
         $this->app->get('/courses', Routes\Course\MyCourseList::class);
 
-        $this->app->get('/courses/{course_id}/videos', Routes\Playlist\CourseVideosList::class);    // TODO
+        $this->app->get('/courses/{course_id}/videos', Routes\Course\CourseVideoList::class);
         $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);
         $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
 

@@ -149,8 +149,9 @@ export default {
 
             options.filters = options.filters.concat(this.filters);
             options.limit = -1;
+            options.token = this.playlist.token;
 
-            this.$store.dispatch('loadVideos', options)
+            this.$store.dispatch('loadPlaylistVideos', options)
                 .then(() => { view.videos_loading = false });
         },
 
@@ -199,9 +200,10 @@ export default {
                      text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
 
-                this.$store.dispatch('loadVideos', {
+                this.$store.dispatch('loadPlaylistVideos', {
                     filters: this.filters,
-                    limit: -1
+                    token:   this.playlist.token,
+                    limit:   -1
                 })
             })
         }
@@ -236,14 +238,9 @@ export default {
         this.$store.commit('clearPaging');
         this.$store.commit('setVideos', {});
 
-        this.filters.push({
-            type: 'playlist',
-            value: this.playlist.token
-        });
-
-
-        this.$store.dispatch('loadVideos', {
+        this.$store.dispatch('loadPlaylistVideos', {
             filters: this.filters,
+            token: this.playlist.token,
             limit: -1
         }).then(() => { view.videos_loading = false });
     }
