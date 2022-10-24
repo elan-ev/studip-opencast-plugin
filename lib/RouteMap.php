@@ -38,14 +38,15 @@ class RouteMap
     {
         // User routes
         $this->app->get('/user', Routes\User\UserShow::class);
-        $this->app->get('/user/search/{search_term}', Routes\User\UserList::class);  // TODO: add this route to the API scheme
+        $this->app->get('/user/search/{search_term}', Routes\User\UserList::class);
 
         // Video routes
         $this->app->get('/videos', Routes\Video\VideoList::class);
+
         $this->app->put('/videos/{token}', Routes\Video\VideoUpdate::class);
         $this->app->delete('/videos/{token}', Routes\Video\VideoDelete::class);
 
-        $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class); // TODO: add this route to the API scheme
+        $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class);
         $this->app->post('/videos/{token}/courses', Routes\Video\VideoAddToCourse::class);
 
         $this->app->get('/videos/{token}/shares', Routes\Video\VideoSharesList::class); // TODO: add this route to the API scheme
@@ -58,8 +59,12 @@ class RouteMap
         $this->app->put('/playlists/{token}', Routes\Playlist\PlaylistUpdate::class);
         $this->app->delete('/playlists/{token}', Routes\Playlist\PlaylistDelete::class);
 
+
+        $this->app->get('/playlists/{token}/videos', Routes\Playlist\PlaylistVideosList::class);    // TODO
+
         $this->app->put('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistAddVideo::class);
         $this->app->delete('/playlists/{token}/video/{vid_token}', Routes\Playlist\PlaylistRemoveVideo::class);
+
         $this->app->put('/playlists/{token}/user', Routes\Playlist\PlaylistAddUser::class);
         $this->app->delete('/playlists/{token}/user/{username}', Routes\Playlist\PlaylistRemoveUser::class);
 
@@ -70,12 +75,17 @@ class RouteMap
 
         // Course routes
         $this->app->get('/courses', Routes\Course\MyCourseList::class);
+
+        $this->app->get('/courses/{course_id}/videos', Routes\Playlist\CourseVideosList::class);    // TODO
         $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);
         $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
+
         $this->app->get('/courses/{course_id}/{semester_filter}/schedule', Routes\Course\CourseListSchedule::class);
+
         $this->app->put('/courses/{course_id}/playlist/{token}', Routes\Course\CourseAddPlaylist::class);
-        $this->app->put('/courses/{course_id}/{visibility}', Routes\Course\CourseSetVisibility::class);
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
+
+        $this->app->put('/courses/{course_id}/visibility/{visibility}', Routes\Course\CourseSetVisibility::class);
 
         // Schedule
         $this->app->get('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleShow::class);

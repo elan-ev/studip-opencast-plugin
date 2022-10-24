@@ -115,7 +115,7 @@ const actions = {
     },
 
     setVisibility({ commit }, data) {
-        return ApiService.put('courses/' + data.cid + '/' + data.visibility);
+        return ApiService.put('courses/' + data.cid + '/visibility/' + data.visibility);
     }
 }
 
