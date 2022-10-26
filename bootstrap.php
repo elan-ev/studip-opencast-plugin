@@ -1,7 +1,4 @@
 <?php
-/* Composer autoloader */
-require_once __DIR__ .'/vendor/autoload.php';
-
 /* Stud.IP dependencies*/
 require_once 'lib/models/Institute.class.php';
 require_once 'lib/raumzeit/raumzeit_functions.inc.php';
@@ -18,6 +15,9 @@ if (\StudipVersion::newerThan('4.6')) {
         require_once 'lib/FakeCoursewareInterface.php';
     }
 }
+
+StudipAutoloader::addAutoloadPath(__DIR__, 'ElanEv');
+StudipAutoloader::addAutoloadPath(__DIR__ . '/lib', 'Opencast');
 
 // adding observer
 NotificationCenter::addObserver('Opencast\Models\Videos', 'parseEvent', 'OpencastVideoSync');
