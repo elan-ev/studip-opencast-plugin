@@ -20,15 +20,16 @@ class ApiWorkflowsClient extends RestClient
 
     /**
      * Perform the "retract" workflow for an episode
-     * 
+     *
      * @param string $episode_id episode id
-     * 
+     *
      * @return boolean the status of the performed workflow
      */
     public function retract($episode_id)
     {
+        // TODO: configurable workflow for retracting
         $response = $this->opencastApi->workflowsApi->run($episode_id, 'retract');
-        
+
         if ($response['code'] == 201) {
             return true;
         }
@@ -45,6 +46,7 @@ class ApiWorkflowsClient extends RestClient
      */
     public function republish($episode_id)
     {
+        // TODO: configurable workflow for republishing
         $response = $this->opencastApi->workflowsApi->run($episode_id, 'republish-metadata');
 
         if ($response['code'] == 201) {

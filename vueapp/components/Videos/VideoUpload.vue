@@ -228,7 +228,7 @@ export default {
             upload: {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
-                workflow: 'upload',
+                workflow: 'upload',     // TODO: use globally configured workflow
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
@@ -249,7 +249,7 @@ export default {
         }),
 
         upload_workflows() {
-            // TODO
+            // TODO: get list of applicaple workflows
             return [{
                 id:   'upload',
                 name: 'Standard'
