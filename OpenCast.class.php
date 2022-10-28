@@ -40,13 +40,15 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         if ($GLOBALS['perm']->have_perm('autor') && Helpers::getConfigurationstate()) {
+            /*
             if (!\Config::get()->OPENCAST_MEDIA_ROLES || (
                 \Config::get()->OPENCAST_MEDIA_ROLES && (
                     Perm::hasRole('Medienadmin')
                     || Perm::hasRole('Medientutor')
-                    || $GLOBALS['perm']->have_perm('root')
+                    || $GLOBALS['perm']->have_perm('dozent')
                 )
             )) {
+            */
                 // only show main navigation, if media roles are disabled or user has a media role
                 $videos = new Navigation($this->_('Videos'));
                 $videos->setDescription($this->_('Opencast Aufzeichnungen'));
@@ -55,7 +57,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
                 // use correct navigation for Stud.IP Versions below 5
                 VersionHelper::get()->addMainNavigation($videos);
-            }
+            // }
         }
 
         VersionHelper::get()->registerCoursewareBlock($this);
@@ -201,20 +203,27 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     {
         $metadata = parent::getMetadata();
 
-        $metadata['pluginname'] = $this->_("Opencast");
-        $metadata['displayname'] = $this->_("Opencast");
+        $metadata['pluginname'] = $this->_("Videos");
+        $metadata['displayname'] = $this->_("Videos");
 
-        $metadata['description'] = $this->_(
+        $description =  $this->_(
             "Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
-                . "(Opencast) mit einer Stud.IP-Veranstaltung verknüpft werden. Die Aufzeichnungen werden in "
-                . "einem eingebetteten Player in Stud.IP zur Verfügung gestellt. Darüberhinaus ist es mit "
-                . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
-                . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
-                . "gebuchte Ressource mit einem Opencast-Capture-Agent. Vorhandene Medien können bei "
-                . "Bedarf nachträglich über die Hochladen-Funktion zur verknüpften Serie hinzugefügt werden."
+                . "(Opencast) in einer Stud.IP-Veranstaltung angezeigt werden. Die Videos können aus dem eigenen "
+                . "Videobereich der Veranstaltung hinzugefügt, direkt in der Veranstaltung hochgeladen oder "
+                . "mit dem Online-Tool Opencast Studio auch direkt selbst erstellt werden. "
+                . "Auch auch komplette Wiedergabelisten können eingebunden werden. "
         );
 
-        $metadata['summary'] = $this->_("Vorlesungsaufzeichnung");
+        if (Config::get()->OPENCAST_ALLOW_SCHEDULER) {
+            $description .= $this->_("Darüberhinaus ist es mit "
+                . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
+                . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
+                . "gebuchte Ressource mit einem Opencast-Capture-Agent."
+            );
+        }
+
+        $metadata['description'] = $description;
+        $metadata['summary'] = $this->_("Videos & Vorlesungsaufzeichnung");
 
         return $metadata;
     }
