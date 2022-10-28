@@ -87,7 +87,6 @@ export default {
 
         removePerm(index)
         {
-            console.log('removePerm', index, JSON.parse(JSON.stringify(this.videoShares)));
             this.videoShares.perms.splice(index, 1);
         },
 

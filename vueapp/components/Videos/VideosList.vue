@@ -230,7 +230,7 @@ export default {
 
         redirectAction(action) {
             let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
-            console.log(redirectUrl);
+
             if (redirectUrl) {
                 redirectUrl = redirectUrl + action;
                 window.open(redirectUrl, '_blank');

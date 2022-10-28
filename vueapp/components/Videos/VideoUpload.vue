@@ -310,8 +310,6 @@ export default {
 
             uploadData['oc_acl']   = this.uploadService.uploadACL();
 
-            //console.log('uploadData', uploadData);
-
             let files = [];
             if (this.files['presenter/source'].length) {
                 files.push({
@@ -345,7 +343,6 @@ export default {
                     }
                 },
                 uploadDone: (episode_id, workflow_id) => {
-                    console.log('logUpload', episode_id, workflow_id);
                     view.$emit('done');
                     view.$store.dispatch('createLogEvent', {
                         event: 'upload',
@@ -386,11 +383,7 @@ export default {
         })
 
         if (this.cid) {
-            console.log('Kurs ID gefunden!', this.cid);
-            this.$store.dispatch('loadCourseConfig', this.cid)
-            .then(() => {
-                console.log('Kurs Konfiguration geladen!', this.course_config);
-            })
+            this.$store.dispatch('loadCourseConfig', this.cid);
         }
     }
 }

@@ -95,7 +95,6 @@ export default {
                     }
                 }
             }
-            console.log('updatedTags', this.event);
         }
     }
 }
