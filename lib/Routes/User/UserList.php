@@ -21,6 +21,10 @@ class UserList extends OpencastController
 
         $users = \DBManager::get()->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
 
+        foreach ($users as &$user) {
+            $user['fullname'] = get_fullname($user['user_id']);
+        }
+
         return $this->createResponse([
             'users' => $users
         ], $response);
