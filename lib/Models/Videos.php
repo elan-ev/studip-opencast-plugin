@@ -6,7 +6,6 @@ use Error;
 use Opencast\Models\Filter;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
-use Opencast\Models\REST\SearchClient;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\ApiWorkflowsClient;
 use Opencast\Providers\Perm;
@@ -314,8 +313,10 @@ class Videos extends UPMap
             ? 0 : \strtotime($data['mkdate']);
 
         if ($data['episode']) {
-            $search_client = SearchClient::getInstance($data['config_id']);
-            $data['paella'] = $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $data['episode'];
+            $config = Config::getConfigForService('search', $data['config_id']);
+            $url    = preg_replace('/\/search/', '', $config['service_url']);
+
+            $data['paella'] = $url . "/paella/ui/watch.html?id=" . $data['episode'];
         }
 
         $data['preview']     = json_decode($data['preview'], true);

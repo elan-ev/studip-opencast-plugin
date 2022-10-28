@@ -31,9 +31,9 @@ class OCCourseModel
 
         $videos = Videos::findBySQL($sql = 'LEFT JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id) '
             . (!empty($playlist_ids) ? ' LEFT JOIN oc_playlist_video AS opv ON (opv.video_id = id AND opv.playlist_id IN ('. implode(', ', $playlist_ids) .')) ' : '')
-            . ' WHERE vs.video_id IS NOT NULL
-                OR opv.playlist_id IS NOT NULL
-                GROUP BY oc_video.id ORDER BY oc_video.mkdate desc',
+            . ' WHERE vs.video_id IS NOT NULL '
+            .  (!empty($playlist_ids) ? ' OR opv.playlist_id IS NOT NULL ' : '')
+            . ' GROUP BY oc_video.id ORDER BY oc_video.mkdate desc',
             [
                 ':seminar_id' => $this->context_id
             ]
