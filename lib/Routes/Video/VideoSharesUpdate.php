@@ -57,11 +57,13 @@ class VideoSharesUpdate extends OpencastController
             }
         }
 
+
         // clear out all perms and set the new perms
-        VideosUserPerms::deletBySQL('video_id = ?', $video->id);
+        VideosUserPerms::deleteBySQL('video_id = ?', [$video->id]);
 
         foreach ($new_perms as $perm) {
             $uperm = new VideosUserPerms();
+            $uperm->video_id = $video->id;
             $uperm->setData($perm);
             $uperm->store();
         }
@@ -71,7 +73,7 @@ class VideoSharesUpdate extends OpencastController
          * * * * * * * * * * * * * * * * * * * */
 
         // clear out all links
-        VideosShares::deleteBySQL('video_id = ?', $video->id);
+        VideosShares::deleteBySQL('video_id = ?', [$video->id]);
 
         // set new links
         foreach ($json['shares'] as $share) {

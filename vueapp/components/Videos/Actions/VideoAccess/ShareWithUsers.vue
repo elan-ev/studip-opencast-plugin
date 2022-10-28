@@ -27,7 +27,7 @@
                     <template #selected-option="option">
                         <span class="vs__option">
                             {{ option.title_front }}
-                            {{ option.Nachname }},
+                            {{ option.Nachname ? option.Nachname + `, ` : `` }}
                             {{ option.Vorname }}
                             {{ option.title_rear }}
                         </span>
@@ -35,7 +35,7 @@
                     <template #option="option">
                         <span class="vs__option">
                             {{ option.title_front }}
-                            {{ option.Nachname }},
+                            {{ option.Nachname ? option.Nachname + `, ` : `` }}
                             {{ option.Vorname }}
                             {{ option.title_rear }}
                         </span>
@@ -64,7 +64,7 @@
             <StudipButton
                 :disabled="selectedUser == null"
                 icon="accept"
-                @click.prevent=" this.$emit('add', selectedUser)"
+                @click.prevent="addShareUser()"
             >
                 {{ $gettext('Für Nutzer/in freigeben') }}
             </StudipButton>
@@ -82,50 +82,84 @@ import StudipSelect from '@studip/StudipSelect';
 export default {
     name: 'ShareWithUsers',
 
-    components: {
+    components:
+    {
         StudipButton,    StudipIcon,
         StudipSelect
     },
 
-    props: {
+    props:
+    {
         selectedUsers: {
             type: Object,
             default: []
         }
     },
 
-    data() {
+    data()
+    {
         return {
-            selectedUser: {
-                'perm': 'read'
-            },
+            selectedUser: {},
         }
     },
 
     computed: {
         ...mapGetters(['userList', 'currentUser']),
 
-        shareUsers() {
+        shareUsers()
+        {
+            // if there are no users to be added, hide list completely
+            if (this.userList.legth == 0) {
+                return;
+            }
+
+            // if no users been selected yet, return complete userlist
+            if (this.selectedUsers.length == 0) {
+                return this.userList;
+            }
+
+            // otherwise, remove already selected users from userlist to prevent trying to add them multiple times
             return this.userList.filter((perm) => {
-                return this.selectedUsers.find(user => user.user_id == perm.user_id) === undefined
+                return this.selectedUsers.find(user => {
+                    return user.user_id == perm.user_id
+                }) === undefined
                     && this.currentUser.id !== perm.user_id;
             });
         },
 
-        setSelectedUser(user) {
-            console.log('setCurrentUser', user);
+        setSelectedUser(user)
+        {
+            if (!user.user_id) {
+                return;
+            }
+
             this.selectedUser.user_id = user.user_id;
         }
     },
 
-    methods: {
+    methods:
+    {
         updateUserList(search, loading)
         {
             this.$store.dispatch('loadUserList', search ? search : '%');
+        },
+
+
+        addShareUser()
+        {
+            if (Object.keys(this.selectedUser).length > 0
+                && this.selectedUser.perm
+                && this.selectedUser.user_id
+            ) {
+                this.$emit('add', this.selectedUser);
+
+                this.selectedUser = {};
+            }
         }
     },
 
-    mounted() {
+    mounted()
+    {
         this.$store.dispatch('loadUserList', '%');
     }
 }

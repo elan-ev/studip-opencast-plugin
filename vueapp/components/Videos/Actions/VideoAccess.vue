@@ -25,7 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="share in videoShares.perms" v-bind:key="share.id">
+                        <tr v-for="(share, index) in videoShares.perms" v-bind:key="share.id">
                             <td>
 
                                 {{ share.fullname }}
@@ -41,8 +41,8 @@
                 </table>
 
                 <ShareWithUsers
-                    @add="addUserToList"
-                    :selectedUsers="videoShares.perms"
+                    @add="addPerm"
+                    :selectedUsers="shareUsers"
                 />
 
             </template>
@@ -69,22 +69,36 @@ export default {
 
     emits: ['done', 'cancel'],
 
+    data() {
+        return {
+            shareUsers: []
+        }
+    },
+
     computed: {
         ...mapGetters(['videoShares'])
     },
 
     methods: {
-
-        addUserToList() {
-
+        addPerm(user)
+        {
+            this.shareUsers.push(user);
         },
 
-        addLinkShare() {
-
-        },
-
-        removePerm(index) {
+        removePerm(index)
+        {
+            console.log('removePerm', index, JSON.parse(JSON.stringify(this.videoShares)));
             this.videoShares.perms.splice(index, 1);
+        },
+
+        addLinkShare()
+        {
+
+        },
+
+        removeLinkShare()
+        {
+
         },
 
         decline() {
@@ -117,7 +131,10 @@ export default {
     },
 
     mounted () {
-        this.$store.dispatch('loadVideoShares', this.event.token);
+        this.$store.dispatch('loadVideoShares', this.event.token)
+            .then(() => {
+                this.shareUsers = this.videoShares.perms
+            });
     },
 }
 </script>
