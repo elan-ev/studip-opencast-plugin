@@ -19,7 +19,7 @@ class VideoUpdate extends OpencastController
     public function __invoke(Request $request, Response $response, $args)
     {
         global $user;
-        
+
         $token = $args['token'];
         $video = Videos::findByToken($token);
 
@@ -28,7 +28,7 @@ class VideoUpdate extends OpencastController
         }
 
         $perm = $video->getUserPerm();
-        if (empty($perm) || 
+        if (empty($perm) ||
             ($perm != 'owner' && $perm != 'write'))
         {
             throw new \AccessDeniedException();
@@ -69,13 +69,13 @@ class VideoUpdate extends OpencastController
 
         $message = [
             'type' => 'success',
-            'text' => _('Das Video wurde erfolgreich aktualisiert')
+            'text' => _('Das Video wurde erfolgreich aktualisiert.')
         ];
 
         if (!$video->updateMetadata($event)) {
             $message = [
                 'type' => 'error',
-                'text' => _('Das Video konnte nicht bearbeitet werden')
+                'text' => _('Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
             ];
         }
 

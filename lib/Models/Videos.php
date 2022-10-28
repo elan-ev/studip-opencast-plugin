@@ -391,6 +391,7 @@ class Videos extends UPMap
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
         $allowed_metadata_fields = ['title', 'contributors', 'subject', 'language', 'description', 'startDate'];
         $metadata = [];
+
         foreach ($allowed_metadata_fields as $field_name) {
             if (isset($event[$field_name])) {
                 $value = $event[$field_name];
@@ -410,8 +411,10 @@ class Videos extends UPMap
                 ];
             }
         }
+
         $success = false;
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
+
         if ($response) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
             if($api_wf_client->republish($this->episode)) {
@@ -428,6 +431,7 @@ class Videos extends UPMap
                 }
             }
         }
+
         return $success;
     }
 
