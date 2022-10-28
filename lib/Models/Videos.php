@@ -164,7 +164,7 @@ class Videos extends UPMap
                 $where = ' WHERE oc_video.id IN (:video_ids) ';
                 $params[':video_ids'] = self::getFilteredVideoIds($user_id);
             } else {
-                $sql  = ' LEFT JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
                 $where = ' WHERE 1 ';
             }
         }
