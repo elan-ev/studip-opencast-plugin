@@ -12,6 +12,7 @@ import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";
 import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
+import HelpUrlFilter from "@/common/helpurl.filter";
 
 import vSelect from "vue-select";
 
@@ -32,7 +33,8 @@ window.addEventListener("DOMContentLoaded", function() {
         date: DateFilter,
         datetime: DateTimeFilter,
         error: ErrorFilter,
-        filesize: FileSizeFilter
+        filesize: FileSizeFilter,
+        helpurl: HelpUrlFilter
     };
 
     let oc_axios = axios.create({
