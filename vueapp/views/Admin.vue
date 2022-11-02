@@ -34,7 +34,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config', 'config_list'])
+        ...mapGetters(['config_list'])
     },
 
     methods: {

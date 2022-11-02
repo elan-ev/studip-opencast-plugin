@@ -1,23 +1,26 @@
 <template>
   <div>
     <form class="default">
-        <GlobalOptions :config_list="config_list"/>
-
-        <SchedulingOptions v-if="is_scheduling_enabled" :config_list="config_list"/>
-        <footer>
-            <StudipButton icon="accept" @click.prevent="storeAdminConfig($event)">
-                <span v-translate>Einstellungen speichern</span>
-            </StudipButton>
-        </footer>
-
-        <MessageBox type="info" v-if="!is_scheduling_enabled && is_scheduling_configured">
-            {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnugstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
+        <MessageBox type="info" v-if="true || !is_scheduling_enabled && is_scheduling_configured">
+            {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
             <a :href="$filters.helpurl('OpencastV3Administration#toc2')"
                 target="_blank"
             >
                 {{ $gettext('Aufzeichnungsplanung konfigurieren') }}
             </a>
         </MessageBox>
+
+        <GlobalOptions :config_list="config_list"/>
+
+        <WorkflowOptions :workflows="config_workflows" />
+
+        <SchedulingOptions v-if="is_scheduling_enabled" :config_list="config_list"/>
+
+        <footer>
+            <StudipButton icon="accept" @click.prevent="storeAdminConfig($event)">
+                <span v-translate>Einstellungen speichern</span>
+            </StudipButton>
+        </footer>
     </form>
   </div>
 </template>
@@ -30,17 +33,15 @@ import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import GlobalOptions from "@/components/Config/GlobalOptions";
 import SchedulingOptions from "@/components/Config/SchedulingOptions";
+import WorkflowOptions from "@/components/Config/WorkflowOptions";
 import MessageBox from "@/components/MessageBox";
 
 export default {
     name: "AdminConfigs",
     components: {
-        StudipButton,
-        StudipIcon,
-        MessageList,
-        GlobalOptions,
-        SchedulingOptions,
-        MessageBox
+        StudipButton,       StudipIcon,
+        MessageList,        MessageBox,
+        GlobalOptions,      SchedulingOptions,      WorkflowOptions
     },
 
     data() {
@@ -50,7 +51,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config', 'config_list']),
+        ...mapGetters(['config_list', 'config_workflows']),
 
         is_scheduling_enabled() {
             return this.config_list?.scheduling && this.is_scheduling_configured;
