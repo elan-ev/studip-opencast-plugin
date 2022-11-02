@@ -16,8 +16,7 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
     {
         $container['opencast'] = [
             'services' => [
-                'archive',              // alles admin-node
-                'apievents',
+                'apievents',            // alles admin-node
                 'apiseries',
                 'apiworkflows',
                 'capture-admin',
