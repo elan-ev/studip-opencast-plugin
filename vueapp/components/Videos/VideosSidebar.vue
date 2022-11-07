@@ -46,6 +46,18 @@
                     Videos hinzufügen
                 </li>
 
+                <li @click="$emit('allowDownloadForPlaylist')" 
+                    v-if="fragment == 'playlist_edit' && isDownloadAllowed && !isDownloadAllowedForPlaylist">
+                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                    Mediendownloads erlauben
+                </li>
+
+                <li @click="$emit('disallowDownloadForPlaylist')" 
+                    v-if="fragment == 'playlist_edit' && isDownloadAllowed && isDownloadAllowedForPlaylist">
+                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                    Mediendownloads verbieten
+                </li>
+
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     Videos Sortieren
@@ -84,7 +96,10 @@ export default {
         StudipIcon,     LoadingSpinner
     },
 
-    emits: ['uploadVideo', 'recordVideo', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
+    emits: ['uploadVideo', 'recordVideo', 
+            'sortVideo', 'saveSortVideo', 'cancelSortVideo', 
+            'allowDownloadForPlaylist', 'disallowDownloadForPlaylist'
+            ],
 
     data() {
         return {
@@ -98,8 +113,23 @@ export default {
         },
 
         ...mapGetters([
-            'videoSortMode', 'playlist', 'axios_running'
+            'videoSortMode', 'playlist', 
+            'axios_running', 'isDownloadAllowed',
+            'customDownloadDefault'
         ]),
+
+        isDownloadAllowedForPlaylist() {
+            if (this.playlist) {
+                if (this.playlist['allow_download'] === null) {
+                    console.log(this.customDownloadDefault)
+                    return this.customDownloadDefault;
+                }
+                else {
+                    return this.playlist['allow_download'];
+                }
+            }
+            return false;
+        }
     },
 
     methods: {

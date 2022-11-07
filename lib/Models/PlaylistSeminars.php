@@ -30,6 +30,13 @@ class PlaylistSeminars extends \SimpleORMap
         $playlist_data['videos_count'] = count($this->seminar_videos);
         $playlist_data['visibility'] = $this->visibility;
 
+        if (!is_null($playlist_data['allow_download'])) {
+            $playlist_data['allow_download'] = filter_var(
+                $playlist_data['allow_download'], 
+                FILTER_VALIDATE_BOOLEAN
+            );
+        }
+
         return $playlist_data;
     }
 }

@@ -90,6 +90,13 @@ class Playlists extends UPMap
 
         $data['tags'] = $this->tags->toArray();
 
+        if (!is_null($data['allow_download'])) {
+            $data['allow_download'] = filter_var(
+                $data['allow_download'], 
+                FILTER_VALIDATE_BOOLEAN
+            );
+        }
+        
         return $data;
     }
 }

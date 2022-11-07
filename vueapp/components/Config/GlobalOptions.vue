@@ -6,6 +6,10 @@
                 Globale Einstellungen
             </legend>
 
+            <ConfigOptionSelect :options="downloadOptions"
+                description="Mediendownloads verwalten:"
+                @updateValue="updateValue"/>
+
             <ConfigOption v-for="setting in global_settings"
                 :key="setting.name" :setting="setting"
                 @updateValue="updateValue"/>
@@ -32,6 +36,7 @@ import StudipIcon from "@studip/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 import OpencastIcon from "@/components/OpencastIcon";
 import ConfigOption from "@/components/Config/ConfigOption";
+import ConfigOptionSelect from "@/components/Config/ConfigOptionSelect";
 import I18NText from "@/components/Config/I18NText";
 
 export default {
@@ -43,13 +48,14 @@ export default {
         MessageBox,
         OpencastIcon,
         ConfigOption,
+        ConfigOptionSelect,
         I18NText,
     },
 
     props: ['config_list'],
 
     computed: {
-        ...mapGetters(['config']),
+        ...mapGetters(['config', 'downloadOptions']),
 
         /**
          * The list of global settings, cleaned by settings which should not be displayed directly
@@ -59,7 +65,10 @@ export default {
         global_settings() {
             let settings = [];
             for (let id in this.config_list.settings) {
-                if (this.config_list.settings[id].name != 'OPENCAST_TOS') {
+                if (this.config_list.settings[id].name != 'OPENCAST_TOS' &&
+                    this.config_list.settings[id].name != 'OPENCAST_MEDIADOWNLOAD_NEVER' &&
+                    this.config_list.settings[id].name != 'OPENCAST_MEDIADOWNLOAD_ALLOWED' &&
+                    this.config_list.settings[id].name != 'OPENCAST_MEDIADOWNLOAD_DISALLOWED') {
                     settings.push(this.config_list.settings[id]);
                 }
             }
@@ -75,6 +84,18 @@ export default {
             }
 
             return false;
+        },
+
+        downloadOptions() {
+            let options = [];
+            for (let id in this.config_list.settings) {
+                if (this.config_list.settings[id].name == 'OPENCAST_MEDIADOWNLOAD_NEVER' ||
+                    this.config_list.settings[id].name == 'OPENCAST_MEDIADOWNLOAD_ALLOWED' ||
+                    this.config_list.settings[id].name == 'OPENCAST_MEDIADOWNLOAD_DISALLOWED') {
+                    options.push(this.config_list.settings[id])
+                }
+            }
+            return options;
         },
 
         opencastTos() {

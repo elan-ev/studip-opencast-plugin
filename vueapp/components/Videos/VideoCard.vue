@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex"
 import EmptyVideoCard from "@/components/Videos/EmptyVideoCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
@@ -164,6 +165,34 @@ export default {
     },
 
     computed: {
+        ...mapGetters([
+            'currentPlaylist',
+            'playlists',
+            'isDownloadAllowed',
+            'customDownloadDefault',
+        ]),
+
+        downloadAllowed() {
+            if (this.isDownloadAllowed) {
+                if (this.canEdit) {
+                    return true;
+                }
+                if (this.currentPlaylist === 'all') {
+                    return this.customDownloadDefault;
+                }
+
+                let playlist_download = this.playlists.find(p => p['token'] === this.currentPlaylist)['allow_download'];
+                console.log(playlist_download)
+                if (playlist_download === null) {
+                    return this.customDownloadDefault;
+                }
+                else {
+                    return playlist_download;
+                }
+            }
+            return false;
+        },
+
         getDuration() {
             var sec = parseInt(this.event.duration / 1000)
             var min = parseInt(sec / 60)
@@ -184,13 +213,16 @@ export default {
                     emit: 'performAction',
                     emitArguments: 'VideoEdit'
                 },
-                {
+            ];
+
+            if (this.downloadAllowed) {
+                menuItems.push({
                     label: this.$gettext('Medien runterladen'),
                     icon: 'download',
                     emit: 'performAction',
                     emitArguments: 'VideoDownload'
-                },
-            ];
+                });
+            }
 
             if (!this.isCourse) {
                 /*

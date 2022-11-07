@@ -130,6 +130,13 @@ const actions = {
         return ApiService.put('/playlists/' + data.token, {
             sort_order: data.sort.field + '_' + data.sort.order
         });
+    },
+
+    async setAllowDownloadForPlaylist({dispatch, commit, state}, allowed) {
+        if (state.playlist) {
+            await commit('setAllowDownload', allowed);
+            dispatch('updatePlaylist', state.playlist);
+        }
     }
 }
 
@@ -156,6 +163,10 @@ const mutations = {
 
     setPlaylistCourses(state, courses) {
         state.playlistCourses = courses
+    },
+
+    setAllowDownload(state, allowed) {
+        state.playlist.allow_download = allowed;
     }
 }
 

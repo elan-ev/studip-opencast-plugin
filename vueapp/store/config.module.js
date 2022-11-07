@@ -33,6 +33,16 @@ const getters = {
 
     config(state) {
         return state.config;
+    },
+
+    isDownloadAllowed(state) {
+        return !state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD_NEVER'];
+    },
+
+    customDownloadDefault(state) {
+        return !state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD_NEVER'] &&
+                state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD_ALLOWED'] && 
+               !state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD_DISALLOWED'];
     }
 };
 

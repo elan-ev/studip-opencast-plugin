@@ -3,6 +3,8 @@
         <Teleport to="#layout-sidebar > section.sidebar">
             <VideosSidebar
                 @uploadVideo="uploadDialog = true"
+                @allowDownloadForPlaylist="allowDownload"
+                @disallowDownloadForPlaylist="disallowDownload"
                 @sortVideo="enableSortMode"
                 @saveSortVideo="saveSort"
                 @cancelSortVideo="cancelSort">
@@ -52,6 +54,14 @@ export default {
     methods: {
         enableSortMode() {
             this.$store.dispatch('setVideoSortMode', true)
+        },
+
+        allowDownload() {
+            this.$store.dispatch('setAllowDownloadForPlaylist', true)
+        },
+
+        disallowDownload() {
+            this.$store.dispatch('setAllowDownloadForPlaylist', false)
         },
 
         saveSort() {
