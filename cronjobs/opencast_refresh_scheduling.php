@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__.'/../vendor/autoload.php';
+
 
 use \Config as StudipConfig;
 use Opencast\Models\Config;
@@ -58,7 +60,7 @@ class OpencastRefreshScheduling extends CronJob
         // 2. Get all scheduled recordings stored in StudIP.
         $sop_scheduled_events = ScheduledRecordings::findBySql(1);
         echo 'In SOP geplante Events: ' . sizeof($sop_scheduled_events) . "\n";
-        
+
         $time = time();
         // 3. Loop through every SOP records, to validate the record.
         foreach ($sop_scheduled_events as $scheduled_events) {
@@ -75,7 +77,7 @@ class OpencastRefreshScheduling extends CronJob
                     || $cd->room_booking->resource_id != $scheduled_events['resource_id']                                       // The resource of the record and course date does not match
                     /* || intval($cd->end_time) < $time */                                                                      // TODO: decide whether to remove those records that are expired!
                     ) {
-        
+
                     // Try to delete the record because it couldn't pass the validation!
                     $print_date = $cd ? "am {$cd->getFullname()}" : "mit termin_id: {$scheduled_events['date_id']}";
                     $print_course = $course ? $course->name : "mit id: {$scheduled_events['seminar_id']}";
@@ -89,7 +91,7 @@ class OpencastRefreshScheduling extends CronJob
 
                     // Delete the record in SOP.
                     ScheduledRecordings::unscheduleRecording($oc_event_id, $scheduled_events['resource_id'], $scheduled_events['date_id']);
-                    
+
                     // Delete the record in OC.
                     if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
                         $oc_config_id = $resource_obj['config_id'];

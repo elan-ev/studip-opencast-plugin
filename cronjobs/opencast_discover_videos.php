@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
 use Opencast\Models\Videos;
@@ -35,8 +36,10 @@ class OpencastDiscoverVideos extends CronJob
 
 
         foreach ($configs as $config) {
+            echo 'working on config '. $config->id ."\n";
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
+            echo 'instantiated api_client' . "\n";
 
             $event_ids = [];
             $events = [];
@@ -54,6 +57,11 @@ class OpencastDiscoverVideos extends CronJob
             $stmt_ids->execute([':config_id' => $config['id']]);
 
             $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
+            echo 'found oc events:' . "\n";
+            print_r($events);
+
+            echo 'found local events:' . "\n";
+            print_r($local_event_ids);
 
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
                 // check, if an entry for this episode_id exists in the archive and skip it if found

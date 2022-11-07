@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/../bootstrap.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\CoursewareBlockMappings;
 use Opencast\Models\VideoCoursewareBlocks;
