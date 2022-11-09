@@ -27,8 +27,6 @@ class RouteMap
         $this->app->group('/opencast', [$this, 'opencastRoutes'])
             ->add(new Middlewares\TokenAuthentication($container['api-token']))
             ->add(new Middlewares\RemoveTrailingSlashes);
-
-        $this->app->get('/discovery', Routes\DiscoveryIndex::class);
     }
 
     /**
@@ -98,6 +96,8 @@ class RouteMap
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);
+
+        $this->app->get('/discovery', Routes\DiscoveryIndex::class);
     }
 
     /**
