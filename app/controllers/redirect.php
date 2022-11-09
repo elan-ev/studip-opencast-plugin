@@ -75,7 +75,7 @@ class RedirectController extends Opencast\Controller
         }
 
         if ($course_id) {
-            $lti = LtiHelper::getLaunchDataForCourse($config_id, $context_id);
+            $lti = LtiHelper::getLaunchDataForCourse($config_id, $course_id);
 
         } else {
             $lti = LtiHelper::getLaunchData($config_id);
