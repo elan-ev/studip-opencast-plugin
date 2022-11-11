@@ -47,13 +47,13 @@
                 </li>
 
                 <li @click="$emit('allowDownloadForPlaylist')" 
-                    v-if="fragment == 'playlist_edit' && isDownloadAllowed && !isDownloadAllowedForPlaylist">
+                    v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Mediendownloads erlauben
                 </li>
 
                 <li @click="$emit('disallowDownloadForPlaylist')" 
-                    v-if="fragment == 'playlist_edit' && isDownloadAllowed && isDownloadAllowedForPlaylist">
+                    v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     Mediendownloads verbieten
                 </li>
@@ -114,15 +114,13 @@ export default {
 
         ...mapGetters([
             'videoSortMode', 'playlist', 
-            'axios_running', 'isDownloadAllowed',
-            'customDownloadDefault'
+            'axios_running', 'downloadSetting',
         ]),
 
         isDownloadAllowedForPlaylist() {
             if (this.playlist) {
                 if (this.playlist['allow_download'] === null) {
-                    console.log(this.customDownloadDefault)
-                    return this.customDownloadDefault;
+                    return this.downloadSetting === 'allow';
                 }
                 else {
                     return this.playlist['allow_download'];

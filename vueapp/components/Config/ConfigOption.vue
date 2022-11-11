@@ -34,7 +34,7 @@
             </section>
         </span>
 
-        <label v-if="setting.type == 'string'">
+        <label v-if="setting.type == 'string' && !setting.options">
             <span :class="{
                 required: setting.required
             }">
@@ -45,6 +45,20 @@
                 :placeholder="setting.placeholder"
                 v-model="setting.value"
                 @change="setValue(setting.value)">
+        </label>
+
+        <label v-if="setting.type == 'string' && setting.options">
+            <span :class="{
+                required: setting.required
+            }">
+                {{ setting.description }}
+            </span>
+            <studip-select
+                v-model="setting.value"
+                :options="setting.options"
+                :reduce="(option) => option.value"
+                label="description"
+                @option:selected="setValue(setting.value)"/>
         </label>
 
         <label v-if="setting.type == 'integer'">
@@ -89,6 +103,7 @@
 
 <script>
 import StudipIcon from '@studip/StudipIcon.vue';
+import StudipSelect from '@studip/StudipSelect';
 
 export default {
     name: "ConfigOption",
@@ -96,7 +111,7 @@ export default {
     props: ['setting'],
 
     components: {
-        StudipIcon
+        StudipIcon, StudipSelect
     },
 
     data() {

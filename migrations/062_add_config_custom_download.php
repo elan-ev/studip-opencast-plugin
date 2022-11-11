@@ -20,27 +20,12 @@ class AddConfigCustomDownload extends Migration
         $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
                               VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
         $stmt->execute([
-            'name'        => 'OPENCAST_MEDIADOWNLOAD_NEVER',
+            'name'        => 'OPENCAST_MEDIADOWNLOAD',
             'section'     => 'opencast',
-            'description' => 'Mediendownloads werden niemals angeboten',
+            'description' => 'Erlaubnis für Mediendownloads verwalten.',
             'range'       => 'global',
-            'type'        => 'boolean',
-            'value'       => true
-        ]);
-        $stmt->execute([
-            'name'        => 'OPENCAST_MEDIADOWNLOAD_ALLOWED',
-            'section'     => 'opencast',
-            'description' => 'Mediendownloads sind erlaubt - für einzelne Wiedergabelisten und Videos abschaltbar',
-            'range'       => 'global',
-            'type'        => 'boolean',
-            'value'       => false
-        ]);
-        $stmt->execute([
-            'name'        => 'OPENCAST_MEDIADOWNLOAD_DISALLOWED',
-            'section'     => 'opencast',
-            'description' => 'Mediendownloads sind verboten - für einzelne Wiedergabelisten und Videos einschaltbar',
-            'type'        => 'boolean',
-            'value'       => false
+            'type'        => 'string',
+            'value'       => 'never'
         ]);
 
         SimpleOrMap::expireTableScheme();
@@ -50,9 +35,7 @@ class AddConfigCustomDownload extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_MEDIADOWNLOAD_NEVER'");
-        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_MEDIADOWNLOAD_ALLOWED'");
-        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_MEDIADOWNLOAD_DISALLOWED'");
+        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_MEDIADOWNLOAD'");
         $db->exec("ALTER TABLE `oc_playlist` DROP COLUMN `allow_download`");
         $db->exec("ALTER TABLE `oc_video` DROP COLUMN `allow_download`");
 

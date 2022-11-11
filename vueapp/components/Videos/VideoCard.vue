@@ -168,23 +168,21 @@ export default {
         ...mapGetters([
             'currentPlaylist',
             'playlists',
-            'isDownloadAllowed',
-            'customDownloadDefault',
+            'downloadSetting',
         ]),
 
         downloadAllowed() {
-            if (this.isDownloadAllowed) {
+            if (this.downloadSetting !== 'never') {
                 if (this.canEdit) {
                     return true;
                 }
                 if (this.currentPlaylist === 'all') {
-                    return this.customDownloadDefault;
+                    return this.downloadSetting === 'allow';
                 }
 
                 let playlist_download = this.playlists.find(p => p['token'] === this.currentPlaylist)['allow_download'];
-                console.log(playlist_download)
                 if (playlist_download === null) {
-                    return this.customDownloadDefault;
+                    return this.downloadSetting === 'allow';
                 }
                 else {
                     return playlist_download;
