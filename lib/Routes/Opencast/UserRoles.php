@@ -93,9 +93,11 @@ class UserRoles extends OpencastController
             }
         }
 
+
+
         return $this->createResponse([
             'username' => $args['username'],
-            'roles'    => $roles
+            'roles'    => array_values($roles)
         ], $response);
     }
 }
