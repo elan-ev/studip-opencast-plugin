@@ -213,6 +213,7 @@ $episode-background: $light-gray-color-20;
 
 .oc--metadata-title {
     border-bottom: none;
+    display: inline-flex;
 }
 
 .oc--metadata-description {
@@ -279,7 +280,7 @@ $episode-background: $light-gray-color-20;
         display: flex;
         position: relative;
         overflow: hidden;
-        height: 70px;
+        max-height: 120px;
 
         .oc--playercontainer {
             margin-top: 5px;
@@ -287,7 +288,7 @@ $episode-background: $light-gray-color-20;
         }
 
         img.oc--previewimage {
-            max-height: 60px;
+            max-height: 80px;
         }
 
         .oc--playbutton {
@@ -295,8 +296,19 @@ $episode-background: $light-gray-color-20;
         }
 
         .oc--duration {
-            bottom: 10px;
-            right: 3px;
+            margin-left: 8px;
+            line-height: 0.9;
+            word-spacing: 9px;
+            font-size: 12px;
+        }
+
+        .oc--views {
+            margin-left: 8px;
+            font-size: 12px;
+        }
+
+        .oc--date {
+            margin-top: 1px;
         }
 
         .oc--metadata {

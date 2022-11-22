@@ -16,9 +16,6 @@
                                 :ref="event.id"
                             />
                             <img class="oc--playbutton" :src="play">
-                            <span class="oc--duration">
-                                {{ getDuration }}
-                            </span>
                         </span>
                     </a>
                     <span v-else class="oc--previewimage">
@@ -26,31 +23,39 @@
                         <!-- <p>No video uploaded</p> -->
                     </span>
                 </div>
+                <div class="oc--metadata">
+                    <div class="oc--duration">
+                        {{ $gettext('Dauer:') }}
+                        {{ getDuration }}
+                    </div>
+
+                    <div v-if="canEdit" class="oc--views">
+                        {{ $gettext('Aufrufe:') }}
+                        {{ event.views }}
+                    </div>
+                </div>
             </div>
 
             <div class="oc--metadata" :key="event.id">
                 <div>
-                    <h2 class="oc--metadata-title">
-                        {{event.title}}
-                    </h2>
+                    <div class="oc--metadata-title">
+                        <h2>
+                            {{event.title}}
+                        </h2>
+                        <div v-if="event.created && $filters.datetime(event.created)" class="oc--date">
+                            &nbsp;- {{ $filters.datetime(event.created) }} Uhr
+                        </div>
+                    </div>
                     <div class="oc--tags oc--tags-video">
                         <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
                     </div>
-                    <div>
-                        {{ event.author }}
-                        <span v-if="event.created && $filters.datetime(event.created)">
-                            - {{ $filters.datetime(event.created) }} Uhr
-                        </span>
-                    </div>
-
-                    <span v-if="canEdit">
-                        {{ $gettext('Aufrufe:') }}
-                        {{ event.views }}
-                    </span>
-
                     <div v-if="event.contributors">
+                        {{ event.author }} -
                         {{ $gettext('Mitwirkende:') }}
                         {{ event.contributors }}
+                    </div>
+                    <div v-else>
+                        {{ event.author }}
                     </div>
 
                     <div class="oc--metadata-description">
