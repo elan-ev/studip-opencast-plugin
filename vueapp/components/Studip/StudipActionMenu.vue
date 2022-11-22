@@ -26,10 +26,14 @@
             </ul>
         </div>
     </nav>
-    <nav v-else>
-        <a v-for="item in navigationItems" :key="item.id" v-bind="linkAttributes(item)" v-on="linkEvents(item)">
-            <studip-icon :title="item.label" :shape="item.icon.shape" :role="item.icon.role" :size="20"></studip-icon>
-        </a>
+    <nav v-else class="action-menu">
+        <ul class="action-menu-list">
+            <li v-for="item in navigationItems" :key="item.id" class="action-menu-item">
+                <a v-bind="linkAttributes(item)" v-on="linkEvents(item)">
+                    <studip-icon :title="item.label" :shape="item.icon.shape" :role="item.icon.role" :size="20"></studip-icon>
+                </a>
+            </li>
+        </ul>
     </nav>
 </template>
 

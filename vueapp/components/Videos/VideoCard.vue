@@ -58,8 +58,9 @@
                     </div>
                 </div>
             </div>
-            <div v-if="canEdit && !playlistMode" class="oc--actions-container">
+            <div v-if="!playlistMode && menuItems.length > 0" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
+                    :collapseAt="menuItems.length > 1"
                     @performAction="performAction"
                     @redirectAction="redirectAction"
                 />
@@ -204,17 +205,75 @@ export default {
         },
 
         menuItems() {
-            let menuItems = [
-                {
-                    label: this.$gettext('Bearbeiten'),
-                    icon: 'edit',
+            let menuItems = [];
+
+            if (this.canEdit) {
+                menuItems.push({
+                        id: 0,
+                        label: this.$gettext('Bearbeiten'),
+                        icon: 'edit',
+                        emit: 'performAction',
+                        emitArguments: 'VideoEdit'
+                    });
+
+                if (!this.isCourse) {
+                    /*
+                    menuItems.push({
+                        label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
+                        icon: 'add',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAddToPlaylist'
+                    });
+                    */
+                    menuItems.push({
+                        id: 2,
+                        label: this.$gettext('Verknüpfte Kurse'),
+                        icon: 'add',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAddToSeminar'
+                    });
+
+                    menuItems.push({
+                        id: 3,
+                        label: this.$gettext('Video freigeben'),
+                        icon: 'share',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAccess'
+                    });
+                }
+
+                if (this.event?.preview?.has_previews) {
+                    menuItems.push({
+                        id: 4,
+                        label: this.$gettext('Schnitteditor öffnen'),
+                        icon: 'knife',
+                        emit: 'redirectAction',
+                        emitArguments: '/editor/' + this.event.token
+                    });
+                }
+
+                if (this.event?.publication?.annotation_tool) {
+                    menuItems.push({
+                        id: 5,
+                        label: this.$gettext('Anmerkungen hinzufügen'),
+                        icon: 'knife',
+                        emit: 'redirectAction',
+                        emitArguments: '/annotation/' + this.event.token
+                    });
+                }
+
+                menuItems.push({
+                    id: 7,
+                    label: this.$gettext('Entfernen'),
+                    icon: 'trash',
                     emit: 'performAction',
-                    emitArguments: 'VideoEdit'
-                },
-            ];
+                    emitArguments: 'VideoDelete'
+                });
+            }
 
             if (this.downloadAllowed) {
                 menuItems.push({
+                    id: 1,
                     label: this.$gettext('Medien runterladen'),
                     icon: 'download',
                     emit: 'performAction',
@@ -222,59 +281,16 @@ export default {
                 });
             }
 
-            if (!this.isCourse) {
-                /*
-                menuItems.push({
-                    label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToPlaylist'
-                });
-                */
-                menuItems.push({
-                    label: this.$gettext('Verknüpfte Kurse'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToSeminar'
-                });
-
-                menuItems.push({
-                    label: this.$gettext('Video freigeben'),
-                    icon: 'share',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAccess'
-                });
-            }
-
-            if (this.event?.preview?.has_previews) {
-                menuItems.push({
-                    label: this.$gettext('Schnitteditor öffnen'),
-                    icon: 'knife',
-                    emit: 'redirectAction',
-                    emitArguments: '/editor/' + this.event.token
-                });
-            }
-
-            if (this.event?.publication?.annotation_tool) {
-                menuItems.push({
-                    label: this.$gettext('Anmerkungen hinzufügen'),
-                    icon: 'knife',
-                    emit: 'redirectAction',
-                    emitArguments: '/annotation/' + this.event.token
-                });
-            }
-
             menuItems.push({
+                id: 6,
                 label: this.$gettext('Technisches Feedback'),
                 icon: 'support',
                 emit: 'performAction',
                 emitArguments: 'VideoReport'
             });
-            menuItems.push({
-                label: this.$gettext('Entfernen'),
-                icon: 'trash',
-                emit: 'performAction',
-                emitArguments: 'VideoDelete'
+
+            menuItems.sort((a, b) => {
+                return a.id - b.id;
             });
 
             return menuItems;
