@@ -376,6 +376,9 @@ Helpbar::get()->addLink('Bei Problemen: ' . Config::get()->OPENCAST_SUPPORT_EMAI
         <?= MessageBox::info($_('Es wurden keine Videos gefunden, die den gewählten Suchbegriff beinhalten.')); ?>
     <? else : ?>
         <?= MessageBox::info($_('Es wurden bislang keine Videos bereitgestellt.')); ?>
+	<? if (OCPerm::editAllowed($course_id) && !empty($eventsInProcessing)) : ?>
+	    <?= $this->render_partial('course/_wip_episode') ?>
+	<? endif ?>
     <? endif; ?>
 <? endif; ?>
 
