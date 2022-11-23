@@ -59,16 +59,6 @@ class WorkflowClient extends OCRestClient
         return false;
     }
 
-    public function removeInstanceComplete($id)
-    {
-        $result      = $this->deleteJSON("/remove/{$id}", true);
-        if (in_array($result[1], [204, 404])) {
-            return true;
-        }
-
-        return false;
-    }
-
     ####################
     # HELPER FUNCTIONS #
     ####################
