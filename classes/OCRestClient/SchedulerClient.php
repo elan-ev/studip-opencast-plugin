@@ -103,12 +103,12 @@ class SchedulerClient extends OCRestClient
         $event = OCScheduledRecordings::find($event_id);
         $date  = CourseDate::find($termin_id);
 
-        if ($date->date > $event->start) {
+        if ($date->date != $event->start) {
             $event->start = $date->date;
             $event->store();
         }
 
-        if ($date->end_time < $event->end) {
+        if ($date->end_time != $event->end) {
             $event->end = $date->end_time;
             $event->store();
         }

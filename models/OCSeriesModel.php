@@ -147,6 +147,14 @@ class OCSeriesModel
      */
     public static function removeSeriesforCourse($course_id)
     {
+        $scheduled_episodes = self::getScheduledEpisodes($course_id);
+        $scheduler_client = SchedulerClient::getInstance();
+
+        foreach ($scheduled_episodes as $episode) {
+            $scheduler_client->deleteEventForSeminar($course_id, $episode['resource_id'], $episode['date_id']);
+            StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $episode['date_id'], $course_id);
+        }
+
         // Delete series from studip db
         $stmt = DBManager::get()->prepare("DELETE FROM
             oc_seminar_series
