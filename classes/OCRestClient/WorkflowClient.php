@@ -18,23 +18,6 @@ class WorkflowClient extends OCRestClient
     }
 
     /**
-     * getWorkflowInstance - Get a specific workflow instance
-     *
-     * @param $id The workflow instance identifier
-     *
-     * @return $result A JSON representation of a workflow instance
-     */
-    public function getWorkflowInstance($id)
-    {
-        $service_url = "/instance/{$id}.json";
-        if ($result = $this->getJSON($service_url)) {
-            return $result->workflow;
-        }
-
-        return false;
-    }
-
-    /**
      * getInstances() - returns all Workflow instances for a given SeriesID
      *
      * @return array Workflow Instances
