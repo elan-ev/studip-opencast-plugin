@@ -713,7 +713,7 @@ class CourseController extends OpencastController
             $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
             StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
         } else {
-            self::schedule($resource_id, $termin_id, $course_id);
+            self::schedule($resource_id, false, $termin_id, $course_id);
         }
     }
 
