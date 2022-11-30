@@ -184,16 +184,14 @@ class ApiEventsClient extends OCRestClient
                 'allow'  => true,
                 'role'   => $course_id . '_Instructor',
                 'action' => 'write'
-            ]
-        ];
+            ],
 
-        if ($visibility == 'visible' || $visibility == 'free') {
-            $acl[] = [
-                'allow'  => true,
+            [
+                'allow'  => $visibility == 'visible' || $visibility == 'free',
                 'role'   => $course_id . '_Learner',
                 'action' => 'read'
-            ];
-        }
+            ]
+        ];
 
         if ($visibility == 'free') {
             $acl[] = [
