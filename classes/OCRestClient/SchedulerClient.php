@@ -35,6 +35,14 @@ class SchedulerClient extends OCRestClient
         $media_package = $ingest_client->createMediaPackage();
         $metadata      = self::createEventMetadata($course_id, $resource_id, $termin_id, null);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
+        $tmp_event_id  = $this->gen_uuid();
+
+        try {
+            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $tmp_event_id);
+        } catch (PDOException $error) {
+            // assume that scheduling is already under way - so just return false
+            return false;
+        }
 
         $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $publishLive, $metadata['workflow']);
 
@@ -43,15 +51,41 @@ class SchedulerClient extends OCRestClient
             && $result[1] != 409) {
 
             $xml = simplexml_load_string($media_package);
-            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, (string)$xml['id']);
+            OCModel::updateScheduledRecording($tmp_event_id, (string)$xml['id']);
 
             return true;
         } else {
+            OCModel::unscheduleRecording($tmp_event_id);
             return false;
             // throw new Exception('Could not schedule: ' . $result[0]);
         }
     }
 
+    /**
+     * UUID generator, copied from https://www.php.net/manual/en/function.uniqid.php
+     */
+    private function gen_uuid()
+    {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            // 32 bits for "time_low"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_mid"
+            mt_rand( 0, 0xffff ),
+
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand( 0, 0x0fff ) | 0x4000,
+
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand( 0, 0x3fff ) | 0x8000,
+
+            // 48 bits for "node"
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+        );
+    }
 
     /**
      * delelteEventForSeminar -  deletes a scheduled event

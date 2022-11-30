@@ -168,7 +168,7 @@ class OCModel
 
         $date = CourseDate::find($date_id);
 
-        $stmt = DBManager::get()->prepare("REPLACE INTO
+        $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_scheduled_recordings (seminar_id, series_id, date_id,
                     resource_id, start, end, capture_agent, event_id, status,
                     mktime)
@@ -211,6 +211,22 @@ class OCModel
         $stmt->execute([$course_id, $serie['series_id'], $date_id, $resource_id]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * updateScheduledRecording - update the event_id for a scheduled recording
+     *
+     * @param string $event_id
+     * @param string $new_event_id
+     * @return boolean success
+     */
+    public static function updateScheduledRecording($event_id, $new_event_id)
+    {
+        $stmt = DBManager::get()->prepare("UPDATE oc_scheduled_recordings
+                SET event_id = ? WHERE event_id = ?");
+        $success = $stmt->execute([$new_event_id, $event_id]);
+
+        return $success;
     }
 
     /**
