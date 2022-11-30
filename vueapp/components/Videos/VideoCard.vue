@@ -16,23 +16,19 @@
                                 :ref="event.id"
                             />
                             <img class="oc--playbutton" :src="play">
+                            <span class="oc--views">
+                                <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
+                                {{ event.views }}
+                            </span>
+                            <span class="oc--duration">
+                                {{ getDuration }}
+                            </span>
                         </span>
                     </a>
                     <span v-else class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
                         <!-- <p>No video uploaded</p> -->
                     </span>
-                </div>
-                <div class="oc--metadata">
-                    <div class="oc--duration">
-                        {{ $gettext('Dauer:') }}
-                        {{ getDuration }}
-                    </div>
-
-                    <div v-if="canEdit" class="oc--views">
-                        {{ $gettext('Aufrufe:') }}
-                        {{ event.views }}
-                    </div>
                 </div>
             </div>
 
@@ -46,9 +42,14 @@
                             &nbsp;- {{ $filters.datetime(event.created) }} Uhr
                         </div>
                     </div>
+                    <div data-tooltip class="tooltip">
+                        <span class="tooltip-content" v-html="getInfoText"></span>
+                        <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
+                    </div>
                     <div class="oc--tags oc--tags-video">
                         <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
                     </div>
+                    <!--
                     <div v-if="event.contributors">
                         {{ event.author }} -
                         {{ $gettext('Mitwirkende:') }}
@@ -61,6 +62,7 @@
                     <div class="oc--metadata-description">
                         {{ event.description }}
                     </div>
+                    -->
                 </div>
             </div>
             <div v-if="!playlistMode && menuItems.length > 0" class="oc--actions-container">
@@ -207,6 +209,23 @@ export default {
         isChecked() {
             return this.selectedVideos.indexOf(this.event.token)
                 >= 0 ? true : false;
+        },
+
+        getInfoText() {
+            var txt = '';
+            if (this.event.author) {
+                txt += '<div>Author: ' + this.event.author + '</div>';
+            }
+            if (this.event.contributors) {
+                txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';
+            }
+            if (this.event.description) {
+                if (txt.length > 0) {
+                    txt += '<br>'
+                }
+                txt += '<div>' + this.event.description + '</div>';
+            }
+            return txt;
         },
 
         menuItems() {
