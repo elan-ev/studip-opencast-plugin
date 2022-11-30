@@ -49,7 +49,6 @@
             .then((response) => response.json())
             .then((data) => {
                 for (let config_id in data) {
-                    console.log(data[config_id], $('#oc_server_' + config_id));
                     $('#oc_server_' + config_id).replaceOptions(data[config_id], config_id);
                 }
 

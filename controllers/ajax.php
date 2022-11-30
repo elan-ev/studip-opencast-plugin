@@ -206,19 +206,17 @@ class AjaxController extends OpencastController
             $search_term = preg_replace('/\s+/', '* AND *', trim(Request::get('search_term')));
             $series = $apiseries_client->search($search_term);
 
-            if (!empty($series)) {
-                if (!$is_admin) {
-                    $filtered_series = [];
-                    foreach ($series as $series_id => $title) {
-                        if (in_array($series_id, $user_series)) {
-                            $filtered_series[$series_id] = $title;
-                        }
+            if (!$is_admin) {
+                $filtered_series = [];
+                foreach ($series as $series_id => $title) {
+                    if (in_array($series_id, $user_series)) {
+                        $filtered_series[$series_id] = $title;
                     }
-
-                    $all_series[$id] = $filtered_series;
-                } else {
-                    $all_series[$id] = $series;
                 }
+
+                $all_series[$id] = $filtered_series;
+            } else {
+                $all_series[$id] = $series;
             }
         }
 
