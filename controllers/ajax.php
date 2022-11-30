@@ -202,7 +202,9 @@ class AjaxController extends OpencastController
         // search on every oc-server for the series with this name
         foreach ($configs as $id => $config) {
             $apiseries_client = ApiSeriesClient::getInstance($id);
-            $series = $apiseries_client->search('"'. Request::get('search_term') .'"');
+            // elasticsearch uses OR as the default_operator, force AND
+            $search_term = preg_replace('/\s+/', '* AND *', trim(Request::get('search_term')));
+            $series = $apiseries_client->search($search_term);
 
             if (!empty($series)) {
                 if (!$is_admin) {
