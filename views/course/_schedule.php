@@ -215,7 +215,7 @@
             </tfoot>
         </table>
         <div>
-            <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen')]); ?>
+            <?= Button::createAccept($_('Übernehmen'), ['title' => $_('Änderungen übernehmen'), 'class' => 'oc-debounce']); ?>
             <?= LinkButton::createCancel($_('Abbrechen'), $controller->url_for('course/scheduler')); ?>
         </div>
     </form>
