@@ -18,49 +18,6 @@ class WorkflowClient extends OCRestClient
     }
 
     /**
-     * getWorkflowInstance - Get a specific workflow instance
-     *
-     * @param $id The workflow instance identifier
-     *
-     * @return $result A JSON representation of a workflow instance
-     */
-    public function getWorkflowInstance($id)
-    {
-        $service_url = "/instance/{$id}.json";
-        if ($result = $this->getJSON($service_url)) {
-            return $result->workflow;
-        }
-
-        return false;
-    }
-
-    /**
-     * getInstances() - returns all Workflow instances for a given SeriesID
-     *
-     * @return array Workflow Instances
-     */
-    public function getRunningInstances($seriesID)
-    {
-        $service_url = sprintf("/instances.json?state=&q=&seriesId=%s&seriesTitle=&creator=&contributor=&fromdate=&todate=&language="
-            . "&license=&title=&subject=&workflowdefinition=&mp=&op=&sort=&startPage=0&count=1000&compact=true", $seriesID);
-
-        $ret = [];
-        $instances = $this->getJSON($service_url);
-        if ($instances && !empty($instances->workflows->workflow) ) {
-            $workflows = is_array($instances->workflows->workflow)
-                ? $instances->workflows->workflow
-                : [$instances->workflows->workflow];
-
-            foreach ($workflows as $wf) {
-                if ($wf->state == 'RUNNING') {
-                    $ret[$wf->mediapackage->id] = $wf;
-                }
-            }
-        }
-        return $ret;
-    }
-
-    /**
      * getDefinitions() - returns all Workflow definitions
      *
      * @return array Workflow Instances
@@ -71,16 +28,6 @@ class WorkflowClient extends OCRestClient
 
         if ($definitions = $this->getJSON($service_url)) {
             return $definitions;
-        }
-
-        return false;
-    }
-
-    public function removeInstanceComplete($id)
-    {
-        $result      = $this->deleteJSON("/remove/{$id}", true);
-        if (in_array($result[1], [204, 404])) {
-            return true;
         }
 
         return false;

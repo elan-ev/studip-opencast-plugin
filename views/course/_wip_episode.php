@@ -1,16 +1,16 @@
-<? if (!empty($instances)) : ?>
+<? if (!empty($eventsInProcessing)) : ?>
 
     <form class="default collapsable" action="">
         <fieldset class="collapsed">
             <legend>
-                <?= sizeof($instances) ?> <?= $_('Aufzeichnungen in Bearbeitung') ?>
+                <?= sizeof($eventsInProcessing) ?> <?= $_('Aufzeichnungen in Bearbeitung') ?>
             </legend>
 
             <div id="episodes">
                 <ul class="oce_list list">
-                    <? foreach ($instances as $episode) : ?>
+                    <? foreach ($eventsInProcessing as $episode) : ?>
                         <li class="uploaded oce_item">
-                            <div class="oce_wip" id="<?= $workflow_id ?>" title="<?= $_('Aktueller Arbeitsschritt:')
+                            <div class="oce_wip" title="<?= $_('Aktueller Arbeitsschritt:')
                             . ' ' . $episode->title ?>"
                             >
                                 <div class="oce_wip_preview">
@@ -21,8 +21,7 @@
                             </div>
                             <div class="oce_metadatacontainer">
                                 <h2 class="oce_list_title">
-                                    <?= htmlready($episode->mediapackage->title) ?>
-                                    <?= tooltipIcon($_('Aktueller Arbeitsschritt:') . ' ' . $episode->title) ?>
+                                    <?= htmlready($episode->title) ?>
                                 </h2>
 
                                 <ul class="oce_contentlist">
@@ -31,16 +30,16 @@
                                     </li>
                                     <li>
                                         <?= $_('Vortragende:') ?>
-                                        <?= $episode->mediapackage->creators->creator ?>
+                                        <?= implode(', ', $episode->presenter) ?>
                                     </li>
                                     <li class="oce_list_date">
                                         <?= $_('Aufnahemezeitpunkt:') ?>
-                                        <?= date('d.m.Y H:i', strtotime($episode->mediapackage->start)) ?>
+                                        <?= date('d.m.Y H:i', strtotime($episode->start)) ?>
                                         <?= $_("Uhr") ?>
                                     </li>
                                     <li>
                                         <?= $_('Beschreibung:') ?>
-                                        <?= $episode->mediapackage->description ? htmlReady($episode->mediapackage->description) : 'Keine Beschreibung vorhanden' ?>
+                                        <?= $episode->description ? htmlReady($episode->description) : 'Keine Beschreibung vorhanden' ?>
                                     </li>
                                     <li>
                                     </li>

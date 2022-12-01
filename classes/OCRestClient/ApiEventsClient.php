@@ -171,6 +171,27 @@ class ApiEventsClient extends OCRestClient
         return $events;
     }
 
+
+    /**
+     * getEventsInProcessing() - returns all events in status processing for a given SeriesID
+     *
+     * @return array API Events
+     */
+    public function getEventsInProcessing($seriesID)
+    {
+        static $events;
+
+        if (!$events) {
+            $params = [
+                'filter' => "status:EVENTS.EVENTS.STATUS.PROCESSING,series:$seriesID",
+            ];
+
+            $events = $this->getJSON('?' . http_build_query($params));
+        }
+
+        return $events;
+    }
+
     public function setVisibility($course_id, $episode_id, $visibility)
     {
         $acl = [

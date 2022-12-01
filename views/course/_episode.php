@@ -37,7 +37,7 @@ $sort_orders = Pager::getSortOptions();
 
 </form>
 
-<? if (OCPerm::editAllowed($course_id) && !empty($instances)) : ?>
+<? if (OCPerm::editAllowed($course_id) && !empty($eventsInProcessing)) : ?>
     <?= $this->render_partial('course/_wip_episode') ?>
 <? endif ?>
 

@@ -138,7 +138,7 @@ class CourseController extends OpencastController
         }
 
         $this->connectedSeries = OCSeminarSeries::getSeries($this->course_id);
-        $this->instances = [];
+        $this->eventsInProcessing = [];
         $this->multiconnected = false;
 
         if (!empty($this->connectedSeries)) {
@@ -171,9 +171,9 @@ class CourseController extends OpencastController
                     $oc_series = OCSeriesModel::getSeriesFromOpencast($series['series_id'], $series['seminar_id']);
                     $this->connectedSeries[$key] = array_merge($series->toArray(), $oc_series);
 
-                    $this->instances = array_merge(
-                        $this->workflow_client->getRunningInstances($series['series_id']),
-                        $this->instances
+                    $this->eventsInProcessing = array_merge(
+                        $api_client->getEventsInProcessing($series['series_id']),
+                        $this->eventsInProcessing
                     );
 
                     // is this series connected to more than one seminar?
@@ -181,10 +181,6 @@ class CourseController extends OpencastController
                         $this->multiconnected = true;
                     }
                 }
-
-                $this->instances = array_filter($this->instances, function ($element) {
-                    return ($element->state == 'RUNNING');
-                });
 
                 //workflow
 
