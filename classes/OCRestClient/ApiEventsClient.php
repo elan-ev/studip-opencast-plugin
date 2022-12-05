@@ -303,8 +303,14 @@ class ApiEventsClient extends OCRestClient
             'author'        => is_array($episode->presenter) ? implode(', ', $episode->presenter) : $episode->creator,
             'has_previews'  => false
         ];
+        $engage_publication = null;
+        foreach ($episode->publications as $publication) {
+            if ($publication->channel === 'engage-player') {
+                $engage_publication = $publication;
+            }
+        }
 
-        if (!empty($episode->publications[0]->attachments)) {
+        if (!empty($engage_publication->attachments)) {
             $presentation_preview  = false;
             $preview               = false;
             $presenter_download    = [];
@@ -315,7 +321,7 @@ class ApiEventsClient extends OCRestClient
             $annotation_tool       = false;
             $duration              = 0;
 
-            foreach ((array) $episode->publications[0]->attachments as $attachment) {
+            foreach ((array) $engage_publication->attachments as $attachment) {
                 if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
                     $preview = $attachment->url;
                 }
@@ -355,7 +361,7 @@ class ApiEventsClient extends OCRestClient
                 }
             }
 
-            foreach ($episode->publications[0]->media as $track) {
+            foreach ($engage_publication->media as $track) {
                 $parsed_url = parse_url($track->url);
 
                 if ($track->flavor === 'presenter/delivery') {
