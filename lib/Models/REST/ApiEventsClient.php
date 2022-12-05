@@ -197,8 +197,7 @@ class ApiEventsClient extends RestClient
      */
     public function updateMetadata($episode_id, $metadata)
     {
-        $response = $this->opencastApi->eventsApi->updateMetadata($episode_id, 'dublincore/episode', $metadata);
-        return in_array($response['code'], [200, 204]);
+        return $this->opencastApi->eventsApi->updateMetadata($episode_id, 'dublincore/episode', $metadata);
     }
 
     /**

@@ -72,10 +72,13 @@ class VideoUpdate extends OpencastController
             'text' => _('Das Video wurde erfolgreich aktualisiert.')
         ];
 
-        if (!$video->updateMetadata($event)) {
+        $update = $video->updateMetadata($event);
+
+        if ($update !== true) {
             $message = [
                 'type' => 'error',
                 'text' => _('Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
+                    . ': '. $response['code'] . ' - '. $response['message']
             ];
         }
 

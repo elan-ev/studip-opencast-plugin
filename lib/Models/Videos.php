@@ -416,7 +416,7 @@ class Videos extends UPMap
         $success = false;
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
 
-        if ($response) {
+        if (in_array($response['code'], [200, 204]) === true) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
             if($api_wf_client->republish($this->episode)) {
                 $success = true;
@@ -431,6 +431,10 @@ class Videos extends UPMap
                     $success = $this->store() !== false;
                 }
             }
+        }
+
+        if (!$success) {
+            return $response;
         }
 
         return $success;
