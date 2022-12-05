@@ -200,10 +200,20 @@ export default {
         },
 
         getDuration() {
-            var sec = parseInt(this.event.duration / 1000)
-            var min = parseInt(sec / 60)
-            var h = parseInt(min / 60)
-            return ("0" + h).substr(-2) + ":" + ("0" + min%60).substr(-2) + ":" + ("0" + sec%60).substr(-2)
+            let sec = parseInt(this.event.duration / 1000)
+            let min = parseInt(sec / 60)
+            let h = parseInt(min / 60)
+
+            let duration = '';
+            if (h && min) {
+                // if minutes AND hours are present, add a leading zero to minutes
+                duration = h + ":" + ("0" + min%60).substr(-2);
+            } else {
+                // if only minutes are present, to NOT add a leading zero
+                duration = min%60;
+            }
+
+            return duration + ":" + ("0" + sec%60).substr(-2);
         },
 
         isChecked() {

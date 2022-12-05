@@ -187,15 +187,19 @@ $episode-background: $light-gray-color-20;
 
         span.oc--duration {
             position: absolute;
-            background-color: black;
+            background-color: $base_color;
             color: white;
             padding: 0 5px;
             font-weight: bold;
         }
 
         span.oc--views {
+            img {
+                margin-bottom: -3px;
+            }
+            
             position: absolute;
-            background-color: black;
+            background-color: $base_color;
             color: white;
             padding: 0 5px;
             font-weight: bold;
@@ -305,12 +309,13 @@ $episode-background: $light-gray-color-20;
         }
 
         .oc--duration{
-            bottom: 10px;
-            right: 3px;
+            bottom: 0px;
+            right: 0px;
         }
 
         .oc--views {
-            right: 3px;
+            left: 0px;
+            bottom: 0px;
         }
 
         .oc--playbutton {
