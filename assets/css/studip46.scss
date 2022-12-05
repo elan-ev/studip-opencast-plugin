@@ -1,0 +1,108 @@
+/* * * * * *
+d i a l o g
+* * * * * */
+
+.studip-dialog-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: fade-out($base-color, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3001;
+}
+.studip-dialog-body {
+    position: absolute;
+    background: $white;
+    box-shadow: 0 0 8px fade-out($black, 0.5);
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    margin: 3px;
+    max-height: 98vh;
+
+    .studip-dialog-header,
+    .studip-dialog-footer {
+        padding: 7px;
+        display: flex;
+    }
+    .studip-dialog-header {
+        background: $base-color none repeat scroll 0 0;
+        border-bottom: 1px solid $dark-gray-color-10;
+        color: $white;
+        justify-content: space-between;
+        font-size: 1.3em;
+        padding: 0.5em 1em;
+        cursor: grab;
+
+        &.drag-active {
+            cursor: grabbing;
+        }
+    }
+    .studip-dialog-close-button {
+        @include background-icon(decline, info-alt);
+        background-repeat: no-repeat;
+        background-position-y: center;
+        background-color: transparent;
+        border: none;
+
+        width: 22px;
+        height: 22px;
+        margin-right: -10px;
+        margin-left: 2em;
+        cursor: pointer;
+    }
+    .studip-dialog-content {
+        color: $black;
+        position: relative;
+        padding: 15px;
+        overflow-y: auto;
+        min-width: 100%;
+        // resize: both;
+        box-sizing: border-box;
+    }
+    .studip-dialog-footer {
+        border-top: 1px solid $dark-gray-color-10;
+        justify-content: center;
+    }
+
+    &.studip-dialog-warning,
+    &.studip-dialog-alert {
+        .studip-dialog-content {
+            padding: 15px 15px 15px 62px;
+            background-position: 12px center;
+            background-repeat: no-repeat;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    &.studip-dialog-alert {
+        .studip-dialog-header {
+            background: $active-color none repeat scroll 0 0;
+        }
+        .studip-dialog-content {
+            @include background-icon(question-circle-full, attention, 32);
+        }
+    }
+    &.studip-dialog-warning {
+        .studip-dialog-header {
+            color: $black;
+            background: $activity-color none repeat scroll 0 0;
+        }
+        .studip-dialog-close-button {
+            @include background-icon(decline, clickable);
+            border: none;
+            background-color: transparent;
+        }
+        .studip-dialog-content {
+            @include background-icon(question-circle-full, status-yellow, 32);
+        }
+    }
+
+}

@@ -1,0 +1,1320 @@
+openapi: 3.0.1
+info:
+  title: Opencast V3 Routes
+  description: JSON Routes for Opencast V3
+  license:
+    name: GPL v2
+    url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.de.html
+  version: 1.0.0
+servers:
+- url: https://demo.studip.de/plugins.php/opencast/api
+paths:
+  /videos:
+    get:
+      tags:
+      - videos
+      summary: Get the videos the session user has rights on
+      operationId: getVideosForUser
+      parameters:
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result
+          set
+        schema:
+          minimum: 0
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        schema:
+          minimum: 20
+          type: integer
+          default: 20
+      - name: filter
+        in: query
+        description: Pass some filters to narrow down the list of videos
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+
+        required: false
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Video'
+  /playlists:
+    get:
+      tags:
+      - playlists
+      summary: Get the playlists for the session user
+      operationId: getPlaylistsForUser
+      parameters:
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result
+          set
+        schema:
+          minimum: 0
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        schema:
+          minimum: 20
+          type: integer
+          default: 20
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Playlist'
+    post:
+      tags:
+      - playlists
+      summary: Add a new playlist for the current user
+      operationId: addPlaylistsForUser
+      requestBody:
+        description: Playlist object to be added for the current user
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Playlist'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+  /playlists/{token}:
+    get:
+      tags:
+      - playlists
+      summary: Get the playlist with the passed id
+      operationId: getPlaylistsForId
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+      - playlists
+      summary: Update the playlist with the passed id
+      operationId: putPlaylistsForId
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Playlist object to be updated
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Playlist'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - playlists
+      summary: Delete the playlist with the passed id (if current user has permissions
+        to do so)
+      operationId: deletePlaylistsForId
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /playlists/{token}/video/{token}:
+    put:
+      tags:
+      - playlists
+      summary: Add video to playlist
+      operationId: addVideoToPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: token reference for playlist or video
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - playlists
+      summary: Delete video from playlist
+      operationId: deleteVideoFromPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: token reference for playlist or video
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /playlists/{token}/user:
+    put:
+      tags:
+      - playlists
+      summary: Add user with perms to playlist
+      operationId: addPermsToPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+              - perm
+              - username
+              properties:
+                username:
+                  type: string
+                  description: User to add/modify perms for the playlist
+                perm:
+                  type: string
+                  description: The perm the user shall have
+                  enum:
+                  - owner
+                  - write
+                  - read
+                  - share
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /playlists/{token}/videos:
+    get:
+      tags:
+      - playlists
+      summary: Get videos for the passed playlist
+      operationId: getVideosForPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      - name: cid
+        in: query
+        description: Course ID as context for the playlist
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Video'
+  /playlists/{token}/courses:
+    get:
+      tags:
+      - playlists
+      summary: Get courses associated with the passed playlist
+      operationId: getCoursesForPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+      - playlists
+      summary: Set course link
+      description: Set course links for the playlist with the passed token, clearing out all not passed course links
+      operationId: linkPlaylistToCourses
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of courses to link to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      x-codegen-request-body-name: body
+  /playlists/{token}/user/{username}:
+    delete:
+      tags:
+      - playlists
+      summary: Remove perms for user from playlist
+      operationId: removePermsFromPlaylist
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      - name: username
+        in: path
+        description: Username of the user
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /playlist/{token}/positions:
+    put:
+      tags:
+      - playlists
+      summary: Set order of videos
+      description: Set order of videos for the playlist with the passed token, giving each video a defined position
+      operationId: setPlaylistVideoPositions
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of courses to link to
+        content:
+          application/json:
+            schema:
+              type: array
+              example:
+              - video_token_1
+              - video_token_2
+              items:
+                type: string
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      x-codegen-request-body-name: body
+  /courses:
+    get:
+      tags:
+      - courses
+      summary: returns a list of all courses the current user has tutor perms for
+        or higher
+      operationId: getCoursesForUser
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+  /courses/{course_id}/videos:
+    get:
+      tags:
+      - courses
+      summary: Returns videos directly associated to this course
+      operationId: getVideosForCourse
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Video'
+  /courses/{course_id}/config:
+    get:
+      tags:
+      - courses
+      summary: Returns the config settings for this course, like series and configured
+        workflow
+      operationId: getConfigForCourse
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseConfig'
+  /courses/{course_id}/playlists:
+    get:
+      tags:
+      - courses
+      summary: Returns playlists for this course. Videos without explicit playlist
+        in this course are mapped to a virtual playlist which can be accessed via
+        the standard playlist routes
+      operationId: getPlaylistsForCourse
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /courses/{course_id}/playlist/{token}:
+    put:
+      tags:
+      - courses
+      summary: Add playlist to course
+      operationId: addPlaylistToCourse
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playlist'
+    delete:
+      tags:
+      - courses
+      summary: Remove Playlist from course
+      operationId: removePlaylistFromCourse
+      parameters:
+      - name: token
+        in: path
+        description: ID of the playlist
+        required: true
+        schema:
+          type: string
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /courses/{course_id}/{semester_filter}/schedule:
+    get:
+      tags:
+      - courses
+      summary: Get list of scheduled events for this course
+      operationId: getListOfScheduleEvents
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      - name: semester_filter
+        in: path
+        description: ID of the selected semester filter or 'all'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledEvent'
+  /courses/{course_id}/visibility/{visibility}:
+    get:
+      tags:
+      - courses
+      summary: Set visibility for course tab
+      description: Sets, if the course tab is visible for non-privileged users in the passed course
+      operationId: setCourseVisibility
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      - name: visibility
+        in: path
+        description: Visibility for the course
+        required: true
+        schema:
+          type: string
+          enum: ['free', 'public', 'internal']
+      responses:
+        204:
+          description: successful operation
+  /videos/{token}:
+    put:
+      tags:
+      - videos
+      summary: Update Video with ID
+      operationId: updateVideo
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Video object to be updated
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Video'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - videos
+      summary: Remove the video from Stud.IP and from Opencast!
+      description: '**This operation is used to completely remove a video. It will
+        remove the entry from Stud.IP and retract and delete the event completely
+        in Opencast, so use with care!**'
+      operationId: deleteVideo
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/{token}/report:
+    put:
+      tags:
+      - videos
+      summary: Send technical feedback
+      description: Sends a technical feedback for the video with the passed token to the configured OPENCAST_SUPPORT_EMAIL
+      operationId: sendReportForVideo
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Video object to be updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      x-codegen-request-body-name: body
+  /videos/{token}/courses:
+    put:
+      tags:
+      - videos
+      summary: Set course link
+      description: Set course links for the video with the passed token, clearing out all not passed course links
+      operationId: linkVideoToCourses
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: List of courses to link to
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      x-codegen-request-body-name: body
+  /tags:
+    get:
+      tags:
+      - tags
+      summary: Get all available tags for this user
+      operationId: getTagsForUser
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+  /config:
+    get:
+      tags:
+      - config
+      summary: Get opencast configuration with all servers
+      operationId: getOpencastConfig
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                - id: "1"
+                  service_url: https://opencast.example.com
+                  service_user: user
+                  service_password: password
+                  service_version: "11"
+                  settings:
+                    upload_chunk_size: "5000000"
+                    number_of_configs: "1"
+                    time_buffer_overlap: "60"
+                    ssl_verify_peer: true
+                    ssl_verify_host: true
+                    ssl_cipher_list: none
+                    lti_consumerkey: CONSUMERKEY
+                    lti_consumersecret: CONSUMERSECRET
+                    paella: true
+                    livestream: false
+                    service_url: https://opencast.example.com
+                    service_user: user
+                    service_password: password
+                - settings:
+                  - name: OPENCAST_TOS
+                    description: Terms of service
+                    value: ""
+                    type: string
+                  - name: OPENCAST_SHOW_TOS
+                    description: Müssen Lehrende einem Datenschutztext zustimmen,
+                      bevor sie das Opencast-Plugin in einer Veranstaltung verwenden
+                      können?
+                    value: false
+                    type: boolean
+                  - name: OPENCAST_ALLOW_ALTERNATE_SCHEDULE
+                    description: Dürfen Lehrende abweichende Aufzeichnungszeiten einstellen?
+                    value: false
+                    type: boolean
+                  - name: OPENCAST_ALLOW_MEDIADOWNLOAD
+                    description: Wird Nutzern angeboten, Aufzeichnungen herunterzuladen?
+                    value: true
+                    type: boolean
+                  - name: OPENCAST_ALLOW_STUDIO
+                    description: Wird Nutzern angeboten, Aufzeichnungen mit Opencast
+                      Studio zu erstellen?
+                    value: true
+                    type: boolean
+                  - name: OPENCAST_HIDE_EPISODES
+                    description: Sollen Videos standardmäßig nur für Lehrende sichtbar
+                      sein?
+                    value: false
+                    type: boolean
+                  - name: OPENCAST_TUTOR_EPISODE_PERM
+                    description: Sollen Tutor/innen im Opencast-Plugin die gleichen
+                      Rechte haben wie Dozent/innen?
+                    value: true
+                    type: boolean
+                - de_DE:
+                    id: de_DE
+                    picture: lang_de.gif
+                    name: Deutsch
+    put:
+      tags:
+      - config
+      summary: Update global configuration settings
+      operationId: updateOpencastConfig
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              required:
+              - settings
+              properties:
+                settings:
+                  type: string
+                  description: User to add/modify perms for the playlist
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /config/{config_id}:
+    get:
+      tags:
+      - config
+      summary: Get opencast configuration for server
+      operationId: getOpencastServerConfig
+      parameters:
+      - name: config_id
+        in: path
+        description: ID of the server config
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+          content: {}
+    put:
+      tags:
+      - config
+      summary: Add or Update opencast configuration for server
+      operationId: addOrUpdateOpencastServerConfig
+      parameters:
+      - name: config_id
+        in: path
+        description: ID of the server config
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+          content: {}
+    delete:
+      tags:
+      - config
+      summary: Delete opencast configuration for server
+      operationId: deleteOpencastServerConfig
+      parameters:
+      - name: config_id
+        in: path
+        description: ID of the server config
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /config/simple:
+    get:
+      tags:
+      - config
+      summary: Get the list of configured Opencast servers and the global config options,
+        without any credentials or unsafe config options
+      operationId: getSimpleOpencastServerConfig
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /lti/launch_data:
+    get:
+      tags:
+      - lti
+      summary: Get the LTI launch data, signed and ready to send
+      operationId: getLTILaunchData
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /lti/launch_data/{context_id}:
+    get:
+      tags:
+      - lti
+      summary: Get the LTI launch data, signed and ready to send for the passed context
+      operationId: getLTILaunchDataForContext
+      parameters:
+      - name: context_id
+        in: path
+        description: ID of course or institute
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /schedule/{course_id}/{termin_id}:
+    parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      - name: termin_id
+        in: path
+        description: ID of scheduled event
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+      - schedule
+      summary: Get scheduled event
+      operationId: getScheduledEvent
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledEvent'
+    put:
+      tags:
+      - schedule
+      summary: Update a scheduled event
+      operationId: updateScheduledEvent
+      requestBody:
+        description: Update an existing scheduled event
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ScheduledEvent'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledEvent'
+      x-codegen-request-body-name: body
+    post:
+      tags:
+      - schedule
+      summary: Add a new scheduled event
+      operationId: addScheduledEvent
+      requestBody:
+        description: ScheduledEvent object to be added, course is determined by date_id
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ScheduledEvent'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - schedule
+      summary: Delete a scheduled event
+      operationId: deleteScheduledEvent
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /schedulebulk/{course_id}:
+    parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+      - schedule
+      summary: Modify multiple scheduled events
+      description: Pass a bulk operation type and a list of events to apply the bulk operation to
+      operationId: bulkOperationForScheduledEvents
+      requestBody:
+        description: Schedule events to bulk operate on
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: ['schedule', 'unschedule', 'update', 'live']
+                termin_ids:
+                  type: array
+                  items:
+                    type: string
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+  /opencast/user/{username}:
+    get:
+      tags:
+      - opencast
+      summary: Get user and roles by user name
+      description: Returns the user with all necessary role ids
+      operationId: getUserByName
+      parameters:
+      - name: token
+        in: query
+        description: API Key to use for the call
+        required: true
+        schema:
+          type: string
+      - name: username
+        in: path
+        description: The name that needs to be fetched.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoles'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+  /user:
+    get:
+      tags:
+      - user
+      summary: Get currently loggend in user
+      description: Returns a data structur with details and permissions for the currently authenticated user
+      operationId: getUser
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/search/{search_term}:
+    get:
+      tags:
+      - user
+      summary: Search for users
+      description: Search in users accessible to the currently authenticated user
+      operationId: searchForUser
+      parameters:
+      - name: search_term
+        in: path
+        description: Part of user data to search for
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /log:
+    post:
+      tags:
+      - log
+      summary: Log an event
+      description: Pass details on log event type to create an entry in Stud.IPs log
+      operationId: logEvent
+      requestBody:
+        description: Details of the event
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        204:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    Video:
+      type: object
+      properties:
+        id:
+          type: integer
+        token:
+          type: string
+          description: If not empty, this is the token for videos made accesible via
+            secret link
+          format: varchar(8)
+        config_id:
+          type: integer
+          description: opencast config this video belongs to
+        episode:
+          type: string
+          description: The id of the event in Opencast
+        title:
+          type: string
+        description:
+          type: string
+        duration:
+          type: integer
+          description: video duration in milliseconds
+        views:
+          type: integer
+          description: number of clicks for this video from Stud.IP
+        preview:
+          type: object
+          properties:
+            search:
+              type: string
+            player:
+              type: string
+            has_previews:
+              type: boolean
+        publication:
+          type: object
+          properties:
+            downloads:
+              type: array
+              items:
+                $ref: '#/components/schemas/Download'
+            annotation_tool:
+              type: string
+            track_link:
+              type: string
+        visibility:
+          type: string
+        created:
+          type: string
+          format: date-time
+        author:
+          type: string
+        contributors:
+          type: string
+        chdate:
+          type: integer
+        mkdate:
+          type: integer
+        paella:
+          type: string
+        perm:
+          type: boolean
+        courses:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+    Download:
+      type: object
+      properties:
+        type:
+          type: string
+        url:
+          type: string
+        info:
+          type: string
+        size:
+          type: integer
+    Playlist:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          example: Meine Videos
+        description:
+          type: string
+        visibility:
+          type: string
+          enum:
+          - internal
+          - free
+          - public
+        mkdate:
+          type: string
+          format: date-time
+        chdate:
+          type: string
+          format: date-time
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlaylistReference'
+    ScheduledEvent:
+      required:
+      - date_id
+      - resource_id
+      type: object
+      properties:
+        id:
+          type: integer
+        resource_id:
+          type: string
+          example: ddce269a1e3d054cae349621c198dd52
+        date_id:
+          type: string
+          example: ddce269a1e3d054cae349621c198dd52
+        event_id:
+          type: string
+          example: f8c3de3d-1fea-4d7c-a8b0-29f63c4c3454
+    PlaylistReference:
+      type: object
+      properties:
+        course_id:
+          type: string
+          format: varchar(32)
+        visibility:
+          type: string
+          enum:
+          - hidden
+          - visible
+    OpencastConfig:
+      type: object
+      properties:
+        server:
+          type: object
+          properties: {}
+        settings:
+          type: object
+          properties: {}
+        languages:
+          type: object
+          properties: {}
+    Filter:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - text
+          - playlist
+          - tag
+        value:
+          type: string
+    User:
+      type: object
+      properties:
+        type:
+          type: string
+          default: 'user'
+        id:
+          type: string
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+            fullname:
+              type: string
+            status:
+              type: string
+              enum: ['user', 'autor', 'tutor', 'dozent', 'admin', 'root']
+            admin:
+              type: boolean
+            can_edit:
+              type: boolean
+    UserRoles:
+      type: object
+      properties:
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    Course:
+      type: object
+      properties:
+        start_semester:
+          type: object
+          properties:
+            end_semester:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+              example: WS2022/23
+          example: S1234567
+      example:
+        S12345678:
+          unbegrenzt:
+            id: 1
+            name: Kurs A
+          WS2022/23:
+            id: 2
+            name: Kurs B
+    CourseConfig:
+      type: object
+      properties:
+        series:
+          type: object
+          properties:
+            series_id:
+              type: string
+            visibility:
+              type: string
+              enum:
+              - visible
+              - invisible
+        workflow:
+          type: string
+          example: upload
+    Tag:
+      type: array
+      items:
+        type: string

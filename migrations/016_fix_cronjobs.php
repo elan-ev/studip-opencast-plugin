@@ -2,10 +2,12 @@
 
 class FixCronjobs extends Migration
 {
+    /*
     const FILENAMES = [
         'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_scheduled_events.php',
         'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_series.php'
     ];
+    */
 
     public function description()
     {
@@ -14,6 +16,7 @@ class FixCronjobs extends Migration
 
     public function up()
     {
+        return;
         foreach (self::FILENAMES as $filename) {
 
             if (!$task_id = CronjobTask::findByFilename($filename)[0]->task_id) {
