@@ -919,6 +919,18 @@ class CourseController extends OpencastController
         $this->redirect('course/index/false');
     }
 
+    public function refresh_episode_action($ticket, $episode_id)
+    {
+        OCPerm::checkEdit($this->course_id);
+
+        if (check_ticket($ticket)) {
+            $cache_key = 'sop/episodes/' . $episode_id;
+            \StudipCacheFactory::getCache()->expire($cache_key);
+        }
+
+        $this->redirect('course/index/false');
+    }
+
     public static function nice_size_text($size, $precision = 1, $conversion_factor = 1000, $display_threshold = 0.5)
     {
         $possible_sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];

@@ -265,6 +265,7 @@ textarea.oc_input:focus {
 .button.ocextern::before,
 .button.oc_editor::before,
 .button.oc_delete::before,
+.button.oc_refresh::before,
 .button.oc_feedback::before,
 .button.oc_download_dialog::before,
 .button.ocspecial::before {
@@ -377,6 +378,14 @@ textarea.oc_input:focus {
 
 .button.oc_delete:hover {
     .icon('before', 'trash', 'info_alt');
+}
+
+.button.oc_refresh {
+    .icon('before', 'refresh', 'clickable');
+}
+
+.button.oc_refresh:hover {
+    .icon('before', 'refresh', 'info_alt');
 }
 
 .button.oc_download_dialog {
@@ -839,4 +848,3 @@ iframe.oc_courseware {
 .oc_italic {
     font-style: italic;
 }
-
