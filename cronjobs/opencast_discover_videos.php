@@ -57,11 +57,11 @@ class OpencastDiscoverVideos extends CronJob
             $stmt_ids->execute([':config_id' => $config['id']]);
 
             $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
-            echo 'found oc events:' . "\n";
-            print_r($events);
+            //echo 'found oc events:' . "\n";
+            //print_r($events);
 
-            echo 'found local events:' . "\n";
-            print_r($local_event_ids);
+            //echo 'found local events:' . "\n";
+            //print_r($local_event_ids);
 
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
                 // check, if an entry for this episode_id exists in the archive and skip it if found
@@ -96,8 +96,6 @@ class OpencastDiscoverVideos extends CronJob
             // hide all videos, which are not present in opencast anymore
             foreach (array_diff($local_event_ids, $event_ids) as $old_event_id) {
                 $video = Videos::findOneByEpisode($old_event_id);
-
-
 
                 if (!empty($video)) {
                     echo 'found video MISSING in Opencast #'. $config['id'] .': ' . $old_event_id . ' ('.  $video->title .")\n";
