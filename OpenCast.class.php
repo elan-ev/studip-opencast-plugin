@@ -50,7 +50,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             )) {
             */
                 // only show main navigation, if media roles are disabled or user has a media role
-                $videos = new Navigation($this->_('Videos'));
+                $videos = new Navigation($this->_('Videos/Opencast'));
                 $videos->setDescription($this->_('Opencast Aufzeichnungen'));
                 $videos->setImage(Icon::create($this->assetsUrl . '/images/opencast-courseware.svg'));
                 $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
@@ -128,7 +128,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
         $navigation = new Navigation(
-            $this->_('Videos'),
+            $this->_('Videos/Opencast'),
             PluginEngine::getURL($this, [], 'course')
         );
         $navigation->setImage(Icon::create('video2'));
@@ -162,7 +162,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             return;
         }
 
-        $title      = 'Videos';
+        $title      = 'Videos/Opencast';
         if (SeminarSeries::getVisibilityForCourse($course_id) == 'invisible') {
             $title .= " (" . $this->_('versteckt') . ")";
         }
@@ -203,8 +203,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     {
         $metadata = parent::getMetadata();
 
-        $metadata['pluginname'] = $this->_("Videos");
-        $metadata['displayname'] = $this->_("Videos");
+        $metadata['pluginname'] = $this->_("Videos/Opencast");
+        $metadata['displayname'] = $this->_("Videos/Opencast");
 
         $description =  $this->_(
             "Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
