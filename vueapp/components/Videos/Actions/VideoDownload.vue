@@ -10,7 +10,7 @@
             <template v-slot:dialogContent>
                 <div v-if="presenters.length">
                     <h2>
-                        ReferentIn
+                        {{ $gettext('ReferentIn') }}
                     </h2>
                     <a v-for="(media, index) in presenters" :key="index"
                             :href="media['url']" target="_blank">
@@ -19,12 +19,27 @@
                         </StudipButton>
                     </a>
                 </div>
+
                 <div v-if="presentations.length">
                     <h2>
-                        Bildschirm
+                        {{ $gettext('Bildschirm') }}
                     </h2>
                     <a v-for="(media, index) in presentations" :key="index"
                             :href="media['url']" target="_blank">
+                        <StudipButton>
+                            {{ getMediaText(media) }}
+                        </StudipButton>
+                    </a>
+                </div>
+
+                <div v-if="supplemental.length">
+                    <h2>
+                        {{ $gettext('Materialien') }}
+                    </h2>
+                    <a
+                        v-for="material in supplemental"
+                        v-bind:key="material.url"
+                    >
                         <StudipButton>
                             {{ getMediaText(media) }}
                         </StudipButton>
@@ -52,29 +67,40 @@ export default {
     data() {
         return {
             presentations: [],
-            presenters: []
+            presenters: [],
+            supplemental: []
         }
     },
 
     methods: {
         getMediaText(media) {
-            var text = media?.info || '';
+
+            let text = media?.info || '';
             text = text.replace(' * ', ' x ');
-            var size = media?.size || 0;
+            let size = media?.size || 0;
 
-            if (size == 0) {
-                return text;
+            if (size > 0) {
+                if (size > 1000) {
+                    size = Math.round(size / 1000 / 1000 * 10) / 10
+                    text = text + ' (' + size + ' MB)'
+                } else {
+                    size = Math.round(size / 1000 * 10) / 10
+                    text = text + ' (' + size + ' KB)'
+                }
             }
 
-            if (size > 1000) {
-                size = Math.round(size/1000 * 10) / 10
-                text = text + ' (' + size + ' MB)'
-            } else {
-                size = Math.round(size * 10) / 10
-                text = text + ' (' + size + ' KB)'
-            }
-            
-            return text
+            let pretext = {
+                'captions'  : this.$gettext(`Untertitel (${text})`),
+                'slides'    : this.$gettext(`Vortragsfolien ${text}`),
+                'etherpad'  : this.$gettext('Geteilte Notizen (Etherpad Versionsgeschichte)'),
+                'notes'     : this.$gettext('Geteilte Notizen'),
+                'presenter'             : '',
+                'presenter_audio'       : this.$gettext(`ReferentIn {$text}`),
+                'presentation'          : '',
+                'presentation_audio'    : this.$gettext(`Bildschirm {$text}`),
+            };
+
+            return pretext[media.type] ? pretext[media.type] : text;
         },
 
         extractDownloads() {
@@ -90,6 +116,10 @@ export default {
                 let presenter = presenters[size];
                 presenter.size = size;
                 this.presenters.push(presenter);
+            }
+
+            if (this.event?.publication?.downloads?.supplemental?.length > 0) {
+                this.supplemental = this.event?.publication?.downloads?.supplemental
             }
         }
     },

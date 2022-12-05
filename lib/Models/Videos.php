@@ -562,6 +562,7 @@ class Videos extends UPMap
             $presenter_download    = [];
             $presentation_download = [];
             $audio_download        = [];
+            $supplemental_material = [];
             $annotation_tool       = false;
             $duration              = 0;
 
@@ -572,22 +573,58 @@ class Videos extends UPMap
                 if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;
                 }
+                if ($attachment->flavor === "presenter/search+preview" && !$preview) {
+                    $preview = $attachment->url;
+                }
+                if ($attachment->flavor === "presenter/player+preview" && !$presentation_preview) {
+                    $presentation_preview = $attachment->url;
+                }
+                if (explode('/', $attachment->flavor)[0] === 'captions') {
+                    // Untertitel
+                    $supplemental_material[] = [
+                        'type' => 'captions',
+                        'url'  => $attachment->url,
+                        'info' => explode('/', $attachment->flavor)[1],
+                    ];
+                }
+                if ($attachment->flavor === "presentation/pdf" || $attachment->flavor === "attachment/notes") {
+                    $supplemental_material[] = [
+                        'type' => 'slides',
+                        'url'  => $attachment->url,
+                        'info' => explode('/', $attachment->mediatype)[1],
+                    ];
+                }
+                if ($attachment->flavor === "etherpad/sharednotes") {
+                    $supplemental_material[] = [
+                        'type' => 'etherpad',
+                        'url'  => $attachment->url,
+                        'info' => '',
+                    ];
+                }
+                if ($attachment->flavor === "html/sharednotes") {
+                    $supplemental_material[] = [
+                        'type' => 'notes',
+                        'url'  => $attachment->url,
+                        'info' => '',
+                    ];
+                }
             }
 
             foreach ($episode->publications[0]->media as $track) {
                 $parsed_url = parse_url($track->url);
 
                 if ($track->flavor === 'presenter/delivery') {
-                    if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
-                        && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
-                            && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
+                    if ($track->mediatype === 'video/mp4'
+                        && $parsed_url['scheme'] != 'rtmp'
+                        && $parsed_url['scheme'] != 'rtmps'
                         && !empty($track->has_video)
                     ) {
-                        $quality = self::calculateSize(
+                        $quality = isset($track->size) ? $track->size : self::calculateSize(
                             $track->bitrate,
                             $track->duration
                         );
                         $presenter_download[$quality] = [
+                            'type' => 'presenter',
                             'url'  => $track->url,
                             'info' => self::getResolutionString($track->width, $track->height)
                         ];
@@ -599,41 +636,65 @@ class Videos extends UPMap
                         in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                         && !empty($track->has_audio)
                     ) {
-                        $quality = self::calculateSize(
+                        $quality = isset($track->size) ? $track->size : self::calculateSize(
                             $track->bitrate,
                             $track->duration
                         );
+
+                        $quality = $quality ? $quality : -rand();
+                        $bitrate = $track->bitrate ? round($track->bitrate / 1000, 1) . 'kb/s' : 'vbr';
+                        $encoder = isset($track->audio->encoder->type) ? ('/' . explode(' ', $track->audio->encoder->type)[0]) : '';
+                        $type = explode('/', $track->mediatype)[1] . '/' . $encoder;
+
                         $audio_download[$quality] = [
+                            'type' => 'presenter_audio',
                             'url'  => $track->url,
-                            'info' => round($track->audio->bitrate / 1000, 1) . 'kb/s, ' . explode('/', $track->mediatype)[1]
+                            'info' => $bitrate . ', ' . $type
                         ];
 
                         $duration = $track->duration;
                     }
                 }
 
-                if ($track->flavor === 'presentation/delivery' && (
-                    ($track->mediatype === 'video/mp4'
-                        || $track->mediatype === 'video/avi'
-                    ) && (
-                        (in_array('atom', $track->tags)
-                            || in_array('engage-download', $track->tags)
-                        )
-                        && $parsed_url['scheme'] != 'rtmp'
-                        && $parsed_url['scheme'] != 'rtmps'
-                    )
-                    && !empty($track->has_video)
-                )) {
-                    $quality = self::calculateSize(
-                        $track->bitrate,
-                        $track->duration
-                    );
+                if ($track->flavor === 'presentation/delivery') {
+                    if (
+                          $track->mediatype === 'video/mp4'
+                           && $parsed_url['scheme'] != 'rtmp'
+                           && $parsed_url['scheme'] != 'rtmps'
+                           && !empty($track->has_video)
+                    ) {
+                        $quality = isset($track->size) ? $track->size : self::calculate_size(
+                            $track->bitrate,
+                            $track->duration
+                        );
 
-                    $presentation_download[$quality] = [
-                        'url'  => $track->url,
-                        'info' => self::getResolutionString($track->width, $track->height)
-                    ];
-                }
+                        $presentation_download[$quality] = [
+                            'type' => 'presentation',
+                            'url'  => $track->url,
+                            'info' => self::getResolutionString($track->width, $track->height)
+                        ];
+                     }
+
+                     if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
+                         && !empty($track->has_audio)
+                     ) {
+                         $quality = isset($track->size) ? $track->size : self::calculate_size(
+                             $track->bitrate,
+                             $track->duration
+                         );
+                         $quality = $quality ? $quality : -rand();
+                         $bitrate = $track->bitrate ? round($track->bitrate / 1000, 1) . 'kb/s' : 'vbr';
+                         $encoder = isset($track->audio->encoder->type) ? ('/' . explode(' ', $track->audio->encoder->type)[0]) : '';
+                         $type = explode('/', $track->mediatype)[1] . $encoder;
+                         $audio_download[$quality] = [
+                            'type' => 'presentation_audio',
+                            'url'  => $track->url,
+                            'info' => $bitrate . ', ' . $type
+                         ];
+
+                         $duration = $track->duration;
+                     }
+                 }
             }
 
             foreach ($episode->publications as $publication) {
@@ -661,7 +722,8 @@ class Videos extends UPMap
                 'downloads' => [
                     'presenter'    => $presenter_download,
                     'presentation' => $presentation_download,
-                    'audio'        => $audio_download
+                    'audio'        => $audio_download,
+                    'supplemental' => $supplemental_material
                 ],
                 'annotation_tool'  => $annotation_tool,
                 'track_link'       => $track_link
