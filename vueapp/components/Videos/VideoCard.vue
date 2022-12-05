@@ -233,38 +233,39 @@ export default {
 
             if (this.canEdit) {
                 menuItems.push({
-                        id: 0,
-                        label: this.$gettext('Bearbeiten'),
-                        icon: 'edit',
-                        emit: 'performAction',
-                        emitArguments: 'VideoEdit'
-                    });
+                    id: 0,
+                    label: this.$gettext('Bearbeiten'),
+                    icon: 'edit',
+                    emit: 'performAction',
+                    emitArguments: 'VideoEdit'
+                });
 
-                if (!this.isCourse) {
-                    /*
-                    menuItems.push({
-                        label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                        icon: 'add',
-                        emit: 'performAction',
-                        emitArguments: 'VideoAddToPlaylist'
-                    });
-                    */
-                    menuItems.push({
-                        id: 2,
-                        label: this.$gettext('Verknüpfte Kurse'),
-                        icon: 'add',
-                        emit: 'performAction',
-                        emitArguments: 'VideoAddToSeminar'
-                    });
 
-                    menuItems.push({
-                        id: 3,
-                        label: this.$gettext('Video freigeben'),
-                        icon: 'share',
-                        emit: 'performAction',
-                        emitArguments: 'VideoAccess'
-                    });
-                }
+                /*
+                menuItems.push({
+                    label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
+                    icon: 'add',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAddToPlaylist'
+                });
+                */
+
+                menuItems.push({
+                    id: 2,
+                    label: this.$gettext('Verknüpfte Kurse'),
+                    icon: 'add',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAddToSeminar'
+                });
+
+                menuItems.push({
+                    id: 3,
+                    label: this.$gettext('Video freigeben'),
+                    icon: 'share',
+                    emit: 'performAction',
+                    emitArguments: 'VideoAccess'
+                });
+
 
                 if (this.event?.preview?.has_previews) {
                     menuItems.push({
