@@ -7,5 +7,3 @@ app/views/course/manager.php
 app/views/course/scheduler.php
 app/views/admin/index.php
 app/views/contents/index.php
-.vscode
-Opencast-V*.zip
