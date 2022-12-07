@@ -46,7 +46,7 @@
             <label>
                 {{ $gettext('Berechtigung') }}
                 <select v-model="selectedUser.perm">
-                    <option value="onwer">
+                    <option value="owner">
                         {{ $gettext('Besitzer/in') }}
                     </option>
 
