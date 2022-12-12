@@ -302,6 +302,11 @@ class Videos extends UPMap
         return self::findOneBySQL('token = ?', [$token]);
     }
 
+    public static function findById($id)
+    {
+        return self::findOneBySQL('id = ?', [$id]);
+    }
+
     public function toSanitizedArray()
     {
         $data = $this->toArray();

@@ -175,6 +175,29 @@ class LtiLink
     }
 
     /**
+     * Set the shared link user id associated with this LTI launch.
+     *
+     * @param object $video_share   video share object
+     */
+    public function setSharedUser($video_share)
+    {
+        $share_username = "share:{$video_share['uuid']}";
+
+        $this->addVariable('User.id', $share_username);
+        $this->addLaunchParameter('user_id', $share_username);
+        $this->addLaunchParameter('roles', 'Learner');
+
+        $this->addVariables([
+            'User.username' => $share_username,
+            'Person.sourcedId' => $share_username,
+        ]);
+        $this->addLaunchParameters([
+            'lis_person_name_full' => $this->variables['Person.sourcedId'],
+            'lis_person_sourcedid' => $this->variables['Person.sourcedId'],
+        ]);
+    }
+
+    /**
      * Add an additional launch parameter to this LTI launch request.
      *
      * @param string $name      parameter name
