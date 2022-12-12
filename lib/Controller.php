@@ -21,7 +21,10 @@ class Controller extends PluginController
         global $user;
 
         if ($user->id == 'nobody') {
-            $this->redirect(URLHelper::getURL('index.php'));
+            // Allowing share redirects.
+            if (($action == 'perform' && !in_array('share', $args)) || $action != 'perform') {
+                $this->redirect(URLHelper::getURL('index.php'));
+            }
         }
         parent::before_filter($action, $args);
 

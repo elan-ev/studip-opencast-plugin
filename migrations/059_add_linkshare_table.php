@@ -11,7 +11,7 @@ class AddLinkshareTable extends Migration
         $db = DBManager::get();
 
         $db->exec("
-            CREATE TABLE `oc_video_shares` (
+            CREATE TABLE IF NOT EXISTS `oc_video_shares` (
                 `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `token` varchar(32) NOT NULL,
                 `video_id` int NOT NULL,

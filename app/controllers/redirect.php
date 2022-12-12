@@ -1,6 +1,7 @@
 <?php
 
 use Opencast\Models\Videos;
+use Opencast\Models\VideosShares;
 use Opencast\Models\LTI\LtiHelper;
 
 class RedirectController extends Opencast\Controller
@@ -25,7 +26,14 @@ class RedirectController extends Opencast\Controller
 
     public function perform_action($action, $token)
     {
-        $video = Videos::findByToken($token);
+        $video = null;
+        $$video_share = null;
+        if ($action == 'share') {
+            $video_share = VideosShares::findByToken($token);
+            $video = Videos::findById($video_share->video_id);
+        } else {
+            $video = Videos::findByToken($token);
+        }
 
         if (empty($video)) {
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
@@ -41,13 +49,13 @@ class RedirectController extends Opencast\Controller
         */
 
         $customtool = $this->getLtiCustomTool($video, $action);
-        $lti = LtiHelper::getLaunchData($video->config_id, $customtool);
+        $lti = LtiHelper::getLaunchData($video->config_id, $customtool, $video_share);
         if (empty($lti) || empty($customtool)) {
             throw new Error('Es fehlen Parameter!', 422);
         }
 
         // get correct endpoint for redirect type
-        if ($action == 'video') {
+        if ($action == 'video' || $action == 'share') {
             $ltilink = self::getLtiLinkFor($lti, 'search');
         } else {
             $ltilink = self::getLtiLinkFor($lti, 'apievents');
@@ -114,6 +122,7 @@ class RedirectController extends Opencast\Controller
                 }
                 break;
 
+            case 'share':
             case 'video':
                 $preview = $video->preview ? json_decode($video->preview, true) : null;
                 if (!empty($preview)) {

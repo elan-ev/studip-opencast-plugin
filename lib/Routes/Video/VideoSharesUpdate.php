@@ -77,6 +77,12 @@ class VideoSharesUpdate extends OpencastController
 
         // set new links
         foreach ($json['shares'] as $share) {
+            if (isset($share['is_new'])) {
+                $share['video_id'] = $video->id;
+                $share['token'] = VideosShares::generateToken();
+                $share['uuid'] = VideosShares::generateUuid();
+                unset($share['is_new']);
+            }
             $nshare = new VideosShares();
             $nshare->setData($share);
             $nshare->store();

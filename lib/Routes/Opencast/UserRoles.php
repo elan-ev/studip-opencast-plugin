@@ -11,6 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\VideosUserPerms;
 use Opencast\Models\Videos;
 use Opencast\Models\Filter;
+use Opencast\Models\VideosShares;
 
 
 
@@ -24,15 +25,29 @@ class UserRoles extends OpencastController
     public function __invoke(Request $request, Response $response, $args)
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
+        $user_id = null;
+        $share_uuid = null;
         if (strpos($args['username'], 'lti:') === 0) {
-            $user_id = end(explode(':', $args['username']));
+            $username_args_parts = explode(':', $args['username']);
+            if (in_array('share', $username_args_parts)) {
+                $share_uuid = end($username_args_parts);
+            } else {
+                $user_id = end($username_args_parts);
+            }
         } else {
             $user_id = get_userid($args['username']);
         }
 
         $roles = [];
 
-        if ($user_id) {
+        if (!empty($share_uuid)) {
+            $video_share = VideosShares::findByUuid($share_uuid);
+            if (!empty($video_share)) {
+                $roles[] = 'STUDIP_' . $video_share->video->episode . '_read';
+            }
+        }
+
+        if (!empty($user_id)) {
             // Stud.IP-root has access to all videos
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
@@ -95,7 +110,7 @@ class UserRoles extends OpencastController
 
         return $this->createResponse([
             'username' => $args['username'],
-            'roles'    => $roles
+            'roles'    => array_values($roles)
         ], $response);
     }
 }
