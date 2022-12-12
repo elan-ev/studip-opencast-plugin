@@ -57,16 +57,22 @@ class LtiHelper
      * with the passed config_id
      *
      * @param  int  $config_id   config to check
+     * @param  string  $custom_tool the custom tool parameter
+     * @param  object  $video_share  the video share object
      * @return Array             array of LtiLink
      */
-    public static function getLaunchData($config_id, $custom_tool = '')
+    public static function getLaunchData($config_id, $custom_tool = '', $video_share = null)
     {
         global $user;
 
         $lti_links = [];
 
         foreach(self::getLtiLinks($config_id) as $lti) {
-            $lti['link']->setUser($user->id, 'Instructor', true);
+            if (!empty($video_share)) {
+                $lti['link']->setSharedUser($video_share);
+            } else {
+                $lti['link']->setUser($user->id, 'Instructor', true);
+            }
 
             if (!empty($custom_tool)) {
                 $lti['link']->addCustomParameter('tool', urlencode($custom_tool));

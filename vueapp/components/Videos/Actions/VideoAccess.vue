@@ -12,39 +12,109 @@
             @confirm="updateShares"
         >
             <template v-slot:dialogContent>
-                <table class="default" v-if="videoShares.perms?.length > 0">
-                    <thead>
-                        <tr>
-                            <th>
-                                {{ $gettext('Nutzer/in') }}
-                            </th>
-                            <th>
-                                {{ $gettext('Rechte') }}
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(share, index) in videoShares.perms" v-bind:key="share.id">
-                            <td>
+                <form class="default">
+                    <fieldset>
+                        <legend>
+                            {{ $gettext('Rechte') }}
+                        </legend>
+                        <table class="default" v-if="videoShares.perms?.length > 0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        {{ $gettext('Nutzer/in') }}
+                                    </th>
+                                    <th>
+                                        {{ $gettext('Rechte') }}
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(share, index) in videoShares.perms" v-bind:key="share.id">
+                                    <td>
+                                        {{ share.fullname }}
+                                    </td>
+                                    <td>
+                                        {{ permToText(share.perm) }}
+                                    </td>
+                                    <td>
+                                        <studip-icon shape="trash" role="clickable" @click="removePerm(index)" style="cursor: pointer"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                                {{ share.fullname }}
-                            </td>
-                            <td>
-                                {{ permToText(share.perm) }}
-                            </td>
-                            <td>
-                                <studip-icon shape="trash" role="clickable" @click="removePerm(index)" style="cursor: pointer"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <ShareWithUsers
+                            @add="addPerm"
+                            :selectedUsers="shareUsers"
+                            />
+                    </fieldset>
+                </form>
+                <form class="default">
+                    <fieldset>
+                        <legend v-translate>
+                            {{ $gettext('Share Links') }}
+                        </legend>
 
-                <ShareWithUsers
-                    @add="addPerm"
-                    :selectedUsers="shareUsers"
-                />
-
+                        <table class="default" style="margin-bottom: 0;">
+                            <colgroup>
+                                <col style="width: 90%">
+                                <col style="width: 10%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        {{ $gettext('Link') }}
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="videoShares.shares?.length > 0">
+                                <tr v-for="(slink, index) in videoShares.shares" :key="index">
+                                    <td>
+                                        <input type="text" readonly
+                                            :data-id="slink?.id ?? 0"
+                                            ref="shareLink"
+                                            :value="slink?.link ?? $gettext('Noch nicht erstellt!')"
+                                            style="width: 98%;"/>
+                                    </td>
+                                    <td>
+                                        <template v-if="slink.is_new === true">
+                                            <studip-icon shape="clipboard" role="inactive"
+                                                :title="$gettext('Share-Link noch nicht verfügbar')"/>
+                                        </template>
+                                        <template v-else>
+                                            <studip-icon shape="clipboard" role="clickable"
+                                                @click="copyLinkShare(slink.id)"
+                                                :title="$gettext('Share-Link kopieren')"
+                                                style="cursor: pointer;"/>
+                                        </template>
+                                        <studip-icon shape="remove" role="clickable"
+                                            @click="removeLinkShare(index)"
+                                            :title="$gettext('Share-Link löchen')"
+                                            style="cursor: pointer; margin-left: 5px;"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <tr>
+                                    <td colspan="2">
+                                        {{ $gettext('Es gibt bisher kein Share-Link') }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">
+                                        <StudipButton icon="add" @click.prevent="addLinkShare">
+                                            {{ $gettext('Share-Link hinzufügen') }}
+                                        </StudipButton>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </fieldset>
+                </form>
             </template>
         </StudipDialog>
     </div>
@@ -54,6 +124,7 @@
 import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog'
 import StudipIcon from '@studip/StudipIcon';
+import StudipButton from "@studip/StudipButton";
 
 import ShareWithUsers from './VideoAccess/ShareWithUsers';
 
@@ -62,7 +133,7 @@ export default {
 
     components: {
         StudipDialog, StudipIcon,
-        ShareWithUsers
+        ShareWithUsers, StudipButton
     },
 
     props: ['event'],
@@ -92,12 +163,44 @@ export default {
 
         addLinkShare()
         {
-
+            let dummyLink = {
+                is_new: true
+            }
+            this.videoShares.shares.push(dummyLink);
+            this.$store.dispatch('updateVideoShares', {
+                token: this.event.token,
+                shares: this.videoShares
+            }).then(({ data }) => {
+                this.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Share-Link erstellt!')
+                    });
+                this.initVideoShares();
+            }).catch((er) => {
+                console.log('Error while creating share link!', er);
+            });
         },
 
-        removeLinkShare()
+        removeLinkShare(index)
         {
+            this.videoShares.shares.splice(index, 1);
+        },
 
+        copyLinkShare(id) {
+            let input = this.$refs.shareLink.find(elm => elm.dataset.id == id);
+            if (input) {
+                try {
+                    input.select();
+                    document.execCommand("copy");
+                    document.getSelection().removeAllRanges();
+                    this.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Der Link wurde in die Zwischenablage kopiert.')
+                    });
+                } catch(e) {
+                    console.log(e);
+                }
+            }
         },
 
         decline() {
@@ -127,13 +230,17 @@ export default {
                 this.$emit('cancel');
             });
         },
-    },
 
-    mounted () {
-        this.$store.dispatch('loadVideoShares', this.event.token)
+        initVideoShares() {
+            this.$store.dispatch('loadVideoShares', this.event.token)
             .then(() => {
                 this.shareUsers = this.videoShares.perms
             });
+        }
+    },
+
+    mounted () {
+        this.initVideoShares();
     },
 }
 </script>
