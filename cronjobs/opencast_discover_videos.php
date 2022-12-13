@@ -94,6 +94,7 @@ class OpencastDiscoverVideos extends CronJob
             }
 
             // hide all videos, which are not present in opencast anymore
+            /*
             foreach (array_diff($local_event_ids, $event_ids) as $old_event_id) {
                 $video = Videos::findOneByEpisode($old_event_id);
 
@@ -111,6 +112,7 @@ class OpencastDiscoverVideos extends CronJob
                     $video->delete();
                 }
             }
+            */
         }
 
         // now check all videos which have no preview url (these were not yet ready when whe inspected them)
