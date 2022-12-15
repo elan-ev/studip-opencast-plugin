@@ -155,6 +155,9 @@ export default {
 
             if (this.isCourse) {
                 if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
+                    if (this.filters?.cid === undefined) {
+                        this.filters.cid = this.cid;
+                    }
                     await this.$store.dispatch('loadCourseVideos', this.filters)
                 } else {
 

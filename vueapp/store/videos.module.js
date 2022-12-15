@@ -127,8 +127,9 @@ const actions = {
 
     async loadCourseVideos({ commit, state, dispatch, rootState }, data)
     {
+        let cid = data?.cid ?? window?.OpencastPlugin?.CID;
         return dispatch('loadVideos', {
-            route: 'courses/' + data.cid + '/videos',
+            route: 'courses/' + cid + '/videos',
             filters: data,
         })
     },
