@@ -99,6 +99,12 @@
                             Reiter verbergen
                         </a>
                     </li>
+                    <li>
+                        <a @click="$emit('copyAll')">
+                            <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                            {{ $gettext('Videos & Wiedergabelise verknüpfen') }}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -180,7 +186,7 @@ export default {
             this.$store.commit('clearPaging');
 
             if (token === 'all' || token === null) {
-                 this.$store.dispatch('loadCourseVideos', {
+                this.$store.dispatch('loadCourseVideos', {
                     cid: this.cid,
                 });
             } else {
@@ -202,7 +208,7 @@ export default {
             this.$store.dispatch('updateView', page);
 
             if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                 this.$store.dispatch('loadCourseVideos', {
+                this.$store.dispatch('loadCourseVideos', {
                     cid: this.cid,
                 });
             } else {

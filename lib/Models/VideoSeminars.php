@@ -54,4 +54,20 @@ class VideoSeminars extends \SimpleORMap
             }
         }
     }
+
+    /**
+     * Get Seminar vidoes by a list of video tokens.
+     *
+     * @param string $course_id Course ID
+     * @param array $tokens array of video tokens
+     * @return \SimpleORCollection a collection of seminar videos
+     */
+    public function getSeminarVideosByTokens($course_id, $tokens) {
+        $sql = "INNER JOIN oc_video AS ocv ON (ocv.id = video_id) WHERE ocv.token IN (:tokens) AND seminar_id = :seminar_id";
+        $params = [
+            ':seminar_id' => $course_id,
+            ':tokens' => $tokens
+        ];
+        return self::findBySQL($sql, $params);
+    }
 }

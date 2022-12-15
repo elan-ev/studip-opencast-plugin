@@ -27,6 +27,13 @@
 
         </div>
 
+        <div v-if="isCourse" class="oc--bulk-actions">
+            <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
+            <StudipButton icon="add" @click.stop="showCopyDialog">
+                {{ $gettext('Verknüpfung mit anderen Kursen') }}
+            </StudipButton>
+        </div>
+
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="Object.keys(videos).length === 0 && (axios_running || videos_loading)" class="oc--episode-list--small oc--episode-list--empty">
                 <EmptyVideoCard />
@@ -117,7 +124,8 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
-            'currentPlaylist'
+            'currentPlaylist',
+            'courseVideosToCopy'
         ]),
 
         isCourse() {
@@ -187,7 +195,7 @@ export default {
         doSearch(filters) {
             this.filters = filters;
 
-             if (this.isCourse) {
+            if (this.isCourse) {
                 if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
                     this.$store.dispatch('loadCourseVideos', {
                         ...filters,
@@ -214,8 +222,8 @@ export default {
             }).then(() => {
                 this.selectedVideos = [];
                 view.$store.dispatch('addMessage', {
-                     type: 'success',
-                     text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
+                    type: 'success',
+                    text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
                 });
             })
         },
@@ -275,6 +283,12 @@ export default {
                     this.$store.dispatch('loadPlaylists');
                 });
             }
+        },
+
+        showCopyDialog() {
+            this.$store.dispatch('toggleCourseCopyDialog', true);
+            this.$store.dispatch('setCourseCopyType', 'selectedVideos');
+            this.$store.dispatch('setCourseVideosToCopy', this.selectedVideos);
         }
     },
 
@@ -294,6 +308,14 @@ export default {
         })
         this.$store.dispatch('loadUserCourses');
 
-    }
+    },
+
+    watch: {
+        courseVideosToCopy(newValue, oldValue) {
+            if (this.isCourse && oldValue?.length > 0 && newValue?.length == 0) {
+                this.selectedVideos = [];
+            }
+        }
+    },
 };
 </script>

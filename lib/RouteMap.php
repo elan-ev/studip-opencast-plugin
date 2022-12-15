@@ -49,6 +49,7 @@ class RouteMap
 
         $this->app->get('/videos/{token}/shares', Routes\Video\VideoSharesList::class); // TODO: add this route to the API scheme
         $this->app->put('/videos/{token}/shares', Routes\Video\VideoSharesUpdate::class);
+        $this->app->post('/videos/{course_id}/copy', Routes\Video\VideoCopyToCourse::class);
 
         // Playlist routes
         $this->app->get('/playlists', Routes\Playlist\PlaylistList::class);
