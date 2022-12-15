@@ -27,7 +27,7 @@
 
         </div>
 
-        <div v-if="isCourse" class="oc--bulk-actions">
+        <div v-if="isCourse && Object.keys(videos).length > 0" class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
             <StudipButton icon="add" @click.stop="showCopyDialog">
                 {{ $gettext('Verknüpfung mit anderen Kursen') }}
@@ -289,9 +289,17 @@ export default {
         },
 
         showCopyDialog() {
-            this.$store.dispatch('toggleCourseCopyDialog', true);
-            this.$store.dispatch('setCourseCopyType', 'selectedVideos');
-            this.$store.dispatch('setCourseVideosToCopy', this.selectedVideos);
+            this.$store.dispatch('clearMessages');
+            if (this.selectedVideos.length > 0) {
+                this.$store.dispatch('toggleCourseCopyDialog', true);
+                this.$store.dispatch('setCourseCopyType', 'selectedVideos');
+                this.$store.dispatch('setCourseVideosToCopy', this.selectedVideos);
+            } else {
+                this.$store.dispatch('addMessage', {
+                    type: 'warning',
+                    text: this.$gettext('Keine ausgewählte Videos!')
+                });
+            }
         }
     },
 

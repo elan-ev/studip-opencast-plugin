@@ -12,6 +12,31 @@
             @confirm="copyVideosToCourses"
         >
             <template v-slot:dialogContent>
+                <div v-if="courseCopyType !== 'selectedVideos'" style="margin-bottom: 1em;">
+                    <div @click="setCopyType('all')" style="cursor: pointer">
+                        <input type="radio" value="all"
+                            name="type"
+                            :checked="courseCopyType === 'all'"
+                        >
+                        {{ $gettext('Alle Inhalte') }}
+                    </div>
+    
+                    <div @click="setCopyType('videos')" style="cursor: pointer">
+                        <input type="radio" value="videos"
+                            name="type"
+                            :checked="courseCopyType === 'videos'"
+                        >
+                        {{ $gettext('Nur alle Videos') }}
+                    </div>
+    
+                    <div @click="setCopyType('playlists')" style="cursor: pointer">
+                        <input type="radio" value="playlists"
+                            name="type"
+                            :checked="courseCopyType === 'playlists'"
+                        >
+                        {{ $gettext('Nur alle Playliste') }}
+                    </div>
+                </div>
                 <table class="default">
                     <thead>
                         <tr>
@@ -100,7 +125,7 @@ export default {
         },
 
         confirmDelete(course_index) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie dieses Video aus dem Kurs entfernen möchten?'))) {
+            if (confirm(this.$gettext('Sind sie sicher, dass Sie diesen Kurs entfernen möchten?'))) {
                 this.courses.splice(course_index, 1);
             }
         },
@@ -124,6 +149,12 @@ export default {
             }).catch(() => {
                 this.$emit('cancel');
             });
+        },
+
+        setCopyType(type) {
+            if (['all', 'videos', 'playlists'].includes(type)) {
+                this.$store.dispatch('setCourseCopyType', type);
+            }
         },
 
         decline() {

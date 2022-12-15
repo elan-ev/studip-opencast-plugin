@@ -32,9 +32,14 @@ class VideoCopyToCourse extends OpencastController
 
         $videos = [];
         try {
-            if ($type === 'all') {
-                $videos = VideoSeminars::findBySeminar_id($course_id);
+            // Managing playlists.
+            if (in_array($type, ['all', 'playlists'])) {
                 $playlists = PlaylistSeminars::findBySeminar_id($course_id);
+            }
+
+            // Managing videos.
+            if (in_array($type, ['all', 'videos'])) {
+                $videos = VideoSeminars::findBySeminar_id($course_id);
             } else if ($type === 'selectedVideos' && !empty($tokens)) {
                 $videos = VideoSeminars::getSeminarVideosByTokens($course_id, $tokens);
             }
@@ -80,20 +85,15 @@ class VideoCopyToCourse extends OpencastController
                     }
                 }
             }
-            $message_text = $type === 'all' ?
-                _('Die Kurs-Verknüpfungen der Inhalte wurden ausgeführt.') :
-                _('Die Kurs-Verknüpfungen des Videos wurden ausgeführt.');
+
             $message = [
                 'type' => 'success',
-                'text' => $message_text
+                'text' => _('Die Kurs-Verknüpfungen wurden ausgeführt.')
             ];
         } catch (\Throwable $e) {
-            $message_text = $type === 'all' ?
-                _('Die Kurs-Verknüpfungen der Inhalte konnten nicht ausgeführt werden!') :
-                _('Die Kurs-Verknüpfungen des Videos konnten nicht ausgeführt werden!');
             $message = [
                 'type' => 'error',
-                'text' => $message_text
+                'text' => _('Die Kurs-Verknüpfungen konnten nicht ausgeführt werden!')
             ];
         }
 

@@ -72,10 +72,6 @@ export default {
         },
 
         copyDone() {
-            this.$store.dispatch('addMessage', {
-                type: 'info',
-                text: this.$gettext('Kopieren ist in der Bearbeitung, die Video werden gleich in den Kursen verfügbar.')
-            });
             this.resetCopyParams();
         },
 
