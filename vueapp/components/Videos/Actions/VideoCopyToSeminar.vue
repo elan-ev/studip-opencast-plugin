@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Alle Inhalte an einen neuen Kurs verknüpfen')"
+            :title="$gettext('Alle Inhalte mit weiterem Kurs verknüpfen')"
             :confirmText="$gettext('Verknüpfen')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
@@ -20,7 +20,7 @@
                         >
                         {{ $gettext('Alle Inhalte') }}
                     </div>
-    
+
                     <div @click="setCopyType('videos')" style="cursor: pointer">
                         <input type="radio" value="videos"
                             name="type"
@@ -28,13 +28,13 @@
                         >
                         {{ $gettext('Nur alle Videos') }}
                     </div>
-    
+
                     <div @click="setCopyType('playlists')" style="cursor: pointer">
                         <input type="radio" value="playlists"
                             name="type"
                             :checked="courseCopyType === 'playlists'"
                         >
-                        {{ $gettext('Nur alle Playliste') }}
+                        {{ $gettext('Nur alle Wiedergabelisten') }}
                     </div>
                 </div>
                 <table class="default">
@@ -61,7 +61,7 @@
                     <tbody v-else>
                         <tr>
                             <td colspan="2">
-                                {{ $gettext('Es gibt keinen Kurs ausgewählt!') }}
+                                {{ $gettext('Kein Kurs gewählt.') }}
                             </td>
                         </tr>
                     </tbody>

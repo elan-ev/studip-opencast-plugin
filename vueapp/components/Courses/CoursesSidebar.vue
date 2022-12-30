@@ -102,7 +102,7 @@
                     <li>
                         <a @click="$emit('copyAll')">
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                            {{ $gettext('Videos/Wiedergabelise verknüpfen') }}
+                            {{ $gettext('Videos/Wiedergabeliste verknüpfen') }}
                         </a>
                     </li>
                 </ul>

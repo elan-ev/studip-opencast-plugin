@@ -297,7 +297,7 @@ export default {
             } else {
                 this.$store.dispatch('addMessage', {
                     type: 'warning',
-                    text: this.$gettext('Keine ausgewählte Videos!')
+                    text: this.$gettext('Es wurden keine Videos ausgewählt!')
                 });
             }
         }
