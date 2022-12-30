@@ -25,18 +25,23 @@ class UserRoles extends OpencastController
     public function __invoke(Request $request, Response $response, $args)
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
+
+        error_log('OC ##1: '. print_r($args, 1));
         $user_id = null;
         $share_uuid = null;
-        if (strpos($args['username'], 'lti:') === 0) {
+
+        if (strpos($args['username'], 'share:') !== false) {
             $username_args_parts = explode(':', $args['username']);
-            if (in_array('share', $username_args_parts)) {
-                $share_uuid = end($username_args_parts);
-            } else {
-                $user_id = end($username_args_parts);
-            }
+            $share_uuid = end($username_args_parts);
+        } else  if (strpos($args['username'], 'lti:') === 0) {
+            $username_args_parts = explode(':', $args['username']);
+            $user_id = end($username_args_parts);
         } else {
             $user_id = get_userid($args['username']);
         }
+
+        error_log('OC ##2: '. $user_id);
+        error_log('OC ##3: '. $share_uuid);
 
         $roles = [];
 
@@ -45,9 +50,7 @@ class UserRoles extends OpencastController
             if (!empty($video_share)) {
                 $roles[] = 'STUDIP_' . $video_share->video->episode . '_read';
             }
-        }
-
-        if (!empty($user_id)) {
+        } else if (!empty($user_id)) {
             // Stud.IP-root has access to all videos
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
