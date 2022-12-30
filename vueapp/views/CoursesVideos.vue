@@ -17,7 +17,7 @@ export default {
     },
 
     computed: {
-         ...mapGetters(['cid'])
+        ...mapGetters(['cid'])
     },
 };
 </script>

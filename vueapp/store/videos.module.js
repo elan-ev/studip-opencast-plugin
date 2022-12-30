@@ -17,7 +17,10 @@ const state = {
         items: 0
     },
     playlistForVideos: null,
-    videoShares: {}
+    videoShares: {},
+    courseVideosToCopy: [],
+    showCourseCopyDialog: false,
+    courseCopyType: 'all',
 }
 
 const getters = {
@@ -51,6 +54,18 @@ const getters = {
 
     videoShares(state) {
         return state.videoShares;
+    },
+
+    courseVideosToCopy(state) {
+        return state.courseVideosToCopy
+    },
+
+    showCourseCopyDialog(state) {
+        return state.showCourseCopyDialog
+    },
+
+    courseCopyType(state) {
+        return state.courseCopyType
     }
 }
 
@@ -147,6 +162,16 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/courses', {courses: data.courses});
     },
 
+    async copyVideosToCourses(context, data) {
+        return ApiService.post('videos/' + data.cid + '/copy',
+            {
+                courses: data.courses,
+                tokens: data?.tokens ?? [],
+                type: data.type,
+            }
+        );
+    },
+
     async setVideoSort({dispatch, commit}, sort) {
         await commit('setVideoSort', sort)
     },
@@ -174,6 +199,18 @@ const actions = {
         });
 
         commit('setVideoSortMode', mode);
+    },
+
+    setCourseVideosToCopy({dispatch, state, commit}, videos) {
+        commit('setCourseVideosToCopy', videos);
+    },
+
+    toggleCourseCopyDialog({dispatch, state, commit}, mode) {
+        commit('setShowCourseCopyDialog', mode);
+    },
+
+    setCourseCopyType({dispatch, state, commit}, type) {
+        commit('setCourseCopyType', type);
     }
 }
 
@@ -221,7 +258,19 @@ const mutations = {
 
     setShares(state, data) {
         state.videoShares = data;
-    }
+    },
+
+    setCourseVideosToCopy(state, videos) {
+        state.courseVideosToCopy = videos;
+    },
+
+    setShowCourseCopyDialog(state, mode) {
+        state.showCourseCopyDialog = mode;
+    },
+
+    setCourseCopyType(state, type) {
+        state.courseCopyType = type;
+    },
 }
 
 export default {

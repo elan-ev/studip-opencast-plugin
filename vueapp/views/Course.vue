@@ -2,7 +2,8 @@
     <div class="container" id="app-episodes">
         <Teleport to="#layout-sidebar > section.sidebar">
             <CoursesSidebar
-                @uploadVideo="uploadDialog = true">
+                @uploadVideo="uploadDialog = true"
+                @copyAll="copyAll">
             </CoursesSidebar>
         </Teleport>
 
@@ -10,6 +11,11 @@
             @done="uploadDone"
             @cancel="uploadDialog = false"
             :currentUser="currentUser"
+        />
+
+        <VideoCopyToSeminar v-if="showCourseCopyDialog"
+            @done="copyDone"
+            @cancel="closeCopyDialog"
         />
 
         <MessageList />
@@ -22,6 +28,7 @@
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
+import VideoCopyToSeminar from '@/components/Videos/Actions/VideoCopyToSeminar.vue';
 
 import { mapGetters } from "vuex";
 
@@ -30,12 +37,13 @@ export default {
 
     components: {
         CoursesSidebar,     VideoUpload,
-        MessageList
+        MessageList, VideoCopyToSeminar
     },
 
     computed: {
         ...mapGetters([
-            'currentUser'
+            'currentUser',
+            'showCourseCopyDialog'
         ])
     },
 
@@ -52,6 +60,25 @@ export default {
                 text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
             });
             this.uploadDialog = false
+        },
+
+        copyAll() {
+            this.$store.dispatch('toggleCourseCopyDialog', true);
+            this.$store.dispatch('setCourseCopyType', 'all');
+        },
+
+        closeCopyDialog() {
+            this.resetCopyParams();
+        },
+
+        copyDone() {
+            this.resetCopyParams();
+        },
+
+        resetCopyParams() {
+            this.$store.dispatch('toggleCourseCopyDialog', false);
+            this.$store.dispatch('setCourseCopyType', 'all');
+            this.$store.dispatch('setCourseVideosToCopy', []);
         }
     },
 

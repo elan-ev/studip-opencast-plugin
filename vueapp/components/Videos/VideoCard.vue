@@ -1,8 +1,8 @@
 <template>
     <div name="oc--episode">
         <li v-if="event.refresh === undefined" :key="event.id" class="oc--flex-episode">
-            <div class="oc--flex-checkbox" v-if="playlistForVideos || playlistMode">
-                 <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
+            <div class="oc--flex-checkbox" v-if="playlistForVideos || playlistMode || isCourse">
+                <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
             </div>
 
             <div class="oc--flexitem oc--flexplaycontainer">
@@ -73,7 +73,7 @@
                 />
             </div>
 
-             <div v-if="playlistMode" class="oc--sort-options">
+            <div v-if="playlistMode" class="oc--sort-options">
                 <studip-icon
                     shape="arr_2up" role="navigation"
                     :hidden="!canMoveUp" @click="$emit('moveUp', event.token)" :title="$gettext('Element nach oben verschieben')"
@@ -145,7 +145,7 @@ export default {
     },
 
     methods: {
-         removeVideo() {
+        removeVideo() {
             let view = this;
             this.$store.dispatch('deleteVideo', this.event.token)
             .then(() => {
