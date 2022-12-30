@@ -18,6 +18,8 @@ class PlaylistVideoList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $perm;
+
         $params = $request->getQueryParams();
 
         // first, check if user has access to this playlist
@@ -29,17 +31,17 @@ class PlaylistVideoList extends OpencastController
 
         // check if playlist is connected to the passed course and user is part of that course as well
         $permission = false;
-        if ($args['cid']) {
-            if (sizeof(\CourseMember::findByCourse($args['cid']))) {
+        if ($params['cid']) {
+            if ($perm->have_studip_perm($params['cid'], 'user')) {
                 $permission = true;
             }
         }
 
-        if (!$args['cid'] || !$permission) {
+        if (!$params['cid'] || !$permission) {
             // check what permissions the current user has on the playlist
-            $perm = $playlist->getUserPerm();
+            $uperm = $playlist->getUserPerm();
 
-            if (empty($perm) || !$perm['perm'])
+            if (empty($uperm) || !$uperm['perm'])
             {
                 throw new \AccessDeniedException();
             }

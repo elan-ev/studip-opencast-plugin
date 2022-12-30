@@ -19,22 +19,35 @@ class CourseListPlaylist extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user;
+        global $user, $perm;
+
+        // check if user has access to this seminar
+        if (!$perm->have_studip_perm($params['cid'], 'user')) {
+           throw new \AccessDeniedException();
+        }
 
         $course_id = $args['course_id'];
         // find all playlists of the seminar
-        $seminar_playlists = PlaylistSeminars::findBySeminar_id($course_id);
+        $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ? '
+            .' ORDER BY is_default DESC', [$course_id]);
 
         foreach ($seminar_playlists as $seminar_playlist) {
-            // check what permissions the current user has on the playlist
-            foreach($seminar_playlist->playlist->perms as $perm) {
-                if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
-                    // Add playlist, if the user has access
-                    $playlist_list[] = $seminar_playlist->toSanitizedArray();
+            // if this is the default playlist for the course, show the list
+            if ($seminar_playlist->is_default == '1') {
+                $data = $seminar_playlist->toSanitizedArray();
+                $data['title'] = _('Kurswiedergabeliste');
+                $playlist_list[] = $data;
+            } else {
+                // check what permissions the current user has on the playlist
+                foreach($seminar_playlist->playlist->perms as $perm) {
+                    if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
+                        // Add playlist, if the user has access
+                        $playlist_list[] = $seminar_playlist->toSanitizedArray();
+                    }
                 }
             }
         }
-        
+
         return $this->createResponse($playlist_list, $response);
     }
 }

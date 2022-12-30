@@ -33,21 +33,16 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
-                    active: currentPlaylist == 'all'
-                    }"
-                    v-on:click="setPlaylist('all')">
-                    <router-link :to="{ name: 'course' }">
-                        Videos ohne Wiedergabeliste
-                    </router-link>
-                </li>
-                <li :class="{
                     active: currentPlaylist == playlist.token
                     }"
                     v-for="playlist in playlists"
                     v-bind:key="playlist.token"
                     v-on:click="setPlaylist(playlist.token)">
                     <router-link :to="{ name: 'course' }">
-                        {{ playlist.title }}
+                        {{ playlist.is_default == 1 ?
+                            $gettext('Kurswiedergabeliste')
+                            : playlist.title
+                        }}
                     </router-link>
                 </li>
             </ul>
@@ -185,17 +180,10 @@ export default {
             this.$store.commit('setCurrentPlaylist', token);
             this.$store.commit('clearPaging');
 
-            if (token === 'all' || token === null) {
-                this.$store.dispatch('loadCourseVideos', {
-                    cid: this.cid,
-                });
-            } else {
-                this.$store.dispatch('loadPlaylistCourseVideos', {
-                    cid: this.cid,
-                    token: token
-                });
-            }
-
+            this.$store.dispatch('loadPlaylistCourseVideos', {
+                cid: this.cid,
+                token: token
+            });
         },
 
         getScheduleList() {
@@ -207,16 +195,11 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
 
-            if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                this.$store.dispatch('loadCourseVideos', {
-                    cid: this.cid,
-                });
-            } else {
-                this.$store.dispatch('loadPlaylistCourseVideos', {
-                    cid: this.cid,
-                    token: this.currentPlaylist
-                });
-            }
+            this.$store.dispatch('loadPlaylistCourseVideos', {
+                cid: this.cid,
+                token: this.currentPlaylist
+            });
+
         },
 
         async setVisibility(visibility) {
@@ -226,11 +209,34 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadPlaylists');
+        let view = this;
+        this.$store.dispatch('loadPlaylists').
+            then(() => {
+                let currentPlaylist = null;
+                // set the courses default playlist
+                for (let id in view.playlists) {
+                    console.log('checking playlist:', view.playlists[id]);
+                    if (view.playlists[id].is_default == '1') {
+                        currentPlaylist = view.playlists[id].token;
+                    }
+                }
+
+                // if no default is found, use the first playlist
+                if (view.currentPlaylist == null) {
+                    console.log('found no default playlist, falling back');
+                    for (let id in view.playlists) {
+                        currentPlaylist = view.playlists[id].token;
+                        break;
+                    }
+                }
+
+                view.$store.commit('setCurrentPlaylist', currentPlaylist);
+            })
 
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;
+
     },
 
     watch: {

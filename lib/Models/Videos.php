@@ -61,7 +61,6 @@ class Videos extends UPMap
             $courses = Helpers::getMyCourses($user_id);
 
             $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
-                JOIN oc_video_seminar    ON (oc_video_seminar.video_id = oc_video.id AND oc_video_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
                 JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id)
@@ -96,33 +95,6 @@ class Videos extends UPMap
             'where' => ' WHERE 1 ',
             'params' => [
                 ':playlist_id' => $playlist_id
-            ]
-        ];
-
-        return self::getFilteredVideos($query, $filters);
-    }
-
-    /**
-     * Get videos for the passed course narrowed down by optional filters.
-     * This method does no further check for permissions and assumes the current user has access to the course!
-     *
-     * @param string $playlist_id
-     * @param Opencast\Models\Filter $filters
-     *
-     * @return array
-     *    [
-     *        'videos' => [Opencast\Models\Videos],
-     *        'sql'    => '...,
-     *        'count'  => 123
-     *    ];
-     */
-    public static function getCourseVideos($course_id, $filters)
-    {
-        $query = [
-            'sql'   => ' INNER JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id)',
-            'where' => ' WHERE 1 ',
-            'params' => [
-                ':seminar_id' => $course_id
             ]
         ];
 

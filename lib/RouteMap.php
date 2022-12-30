@@ -75,7 +75,6 @@ class RouteMap
         // Course routes
         $this->app->get('/courses', Routes\Course\MyCourseList::class);
 
-        $this->app->get('/courses/{course_id}/videos', Routes\Course\CourseVideoList::class);
         $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);
         $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
 

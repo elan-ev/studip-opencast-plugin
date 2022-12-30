@@ -154,17 +154,9 @@ export default {
             await this.$store.dispatch('setPage', page)
 
             if (this.isCourse) {
-                if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                    if (this.filters?.cid === undefined) {
-                        this.filters.cid = this.cid;
-                    }
-                    await this.$store.dispatch('loadCourseVideos', this.filters)
-                } else {
-
-                    let filters = this.filters;
-                    filters.token = this.currentPlaylist;
-                    this.$store.dispatch('loadPlaylistCourseVideos', filters);
-                }
+                let filters = this.filters;
+                filters.token = this.currentPlaylist;
+                this.$store.dispatch('loadPlaylistCourseVideos', filters);
             } else {
                 await this.$store.dispatch('loadMyVideos', this.filters)
             }
@@ -199,18 +191,11 @@ export default {
             this.filters = filters;
 
             if (this.isCourse) {
-                if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                    this.$store.dispatch('loadCourseVideos', {
-                        ...filters,
-                        cid: this.cid
-                    })
-                } else {
-                    this.$store.dispatch('loadPlaylistCourseVideos', {
-                        ...filters,
-                        cid: this.cid,
-                        token: this.currentPlaylist
-                    });
-                }
+                this.$store.dispatch('loadPlaylistCourseVideos', {
+                    ...filters,
+                    cid: this.cid,
+                    token: this.currentPlaylist
+                });
             } else {
                 this.$store.dispatch('loadMyVideos', this.filters)
             }
@@ -252,18 +237,11 @@ export default {
             this.clearAction();
             if (args == 'refresh') {
                 if (this.isCourse) {
-                    if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                        this.$store.dispatch('loadCourseVideos', {
-                            ...this.filters,
-                            cid: this.cid
-                        })
-                    } else {
-                        this.$store.dispatch('loadPlaylistCourseVideos', {
-                            ...this.filters,
-                            cid: this.cid,
-                            token: this.currentPlaylist
-                        });
-                    }
+                    this.$store.dispatch('loadPlaylistCourseVideos', {
+                        ...this.filters,
+                        cid: this.cid,
+                        token: this.currentPlaylist
+                    });
                 } else {
                     this.$store.dispatch('loadMyVideos', this.filters)
                 }
@@ -308,10 +286,11 @@ export default {
         this.$store.commit('clearPaging');
         await this.$store.dispatch('authenticateLti').then(() => {
             if (view.isCourse) {
-                view.$store.dispatch('loadCourseVideos', {
-                    cid: this.cid
-                })
-                    .then(() => { view.videos_loading = false });
+                 view.$store.dispatch('loadPlaylistCourseVideos', {
+                    ...this.filters,
+                    cid  : view.cid,
+                    token: view.currentPlaylist
+                }).then(() => { view.videos_loading = false });
             } else {
                 view.$store.dispatch('loadMyVideos', this.filters)
                     .then(() => { view.videos_loading = false });

@@ -125,15 +125,6 @@ const actions = {
         })
     },
 
-    async loadCourseVideos({ commit, state, dispatch, rootState }, data)
-    {
-        let cid = data?.cid ?? window?.OpencastPlugin?.CID;
-        return dispatch('loadVideos', {
-            route: 'courses/' + cid + '/videos',
-            filters: data,
-        })
-    },
-
     async loadPlaylistCourseVideos({ commit, state, dispatch, rootState }, data)
     {
         return dispatch('loadVideos', {

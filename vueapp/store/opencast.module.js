@@ -9,7 +9,7 @@ const state = {
     site: null,
     axios_running: false,
     userCourses: [],
-    currentPlaylist: 'all',
+    currentPlaylist: null,
     userList: []
 }
 
