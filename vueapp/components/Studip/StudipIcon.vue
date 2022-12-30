@@ -29,7 +29,12 @@
                     return this.shape;
                 }
                 let path = this.shape.split('+').reverse().join('/');
-                return `${STUDIP.ASSETS_URL}images/icons/${this.color}/${path}.svg`;
+
+                if (this.shape == 'clipboard') {
+                    return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/clipboard.svg';
+                } else {
+                    return `${STUDIP.ASSETS_URL}images/icons/${this.color}/${path}.svg`;
+                }
             },
             color: function () {
                 switch (this.role) {
