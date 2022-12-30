@@ -26,7 +26,6 @@ class UserRoles extends OpencastController
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
 
-        error_log('OC ##1: '. print_r($args, 1));
         $user_id = null;
         $share_uuid = null;
 
@@ -39,9 +38,6 @@ class UserRoles extends OpencastController
         } else {
             $user_id = get_userid($args['username']);
         }
-
-        error_log('OC ##2: '. $user_id);
-        error_log('OC ##3: '. $share_uuid);
 
         $roles = [];
 
