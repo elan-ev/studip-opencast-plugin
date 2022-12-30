@@ -8,7 +8,9 @@
         IMAGE      : '<?= Assets::url('images/icons/') ?>',
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
         ASSETS_URL : '<?= Assets::url('') ?>',
-        ROUTE      : 'admin'
+        ROUTE      : 'admin',
+        REDIRECT_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/perform', true) ?>',
+        AUTH_URL   : '<?= PluginEngine::getURL('opencast', [], 'redirect/authenticate', true) ?>'
     };
 </script>
 
