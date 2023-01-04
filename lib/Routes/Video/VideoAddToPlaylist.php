@@ -9,9 +9,10 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
-use Opencast\Models\VideoSeminars;
+use Opencast\Models\PlaylistVideos;
+use Opencast\Models\Playlists;
 
-class VideoAddToCourse extends OpencastController
+class VideoAddToPlaylist extends OpencastController
 {
     use OpencastTrait;
 
@@ -34,35 +35,36 @@ class VideoAddToCourse extends OpencastController
         }
 
         $json = $this->getRequestData($request);
-        $courses = $json['courses'];
+        $playlists = $json['playlists'];
 
         try {
             // Clear all existing record for this video.
-            VideoSeminars::deleteBySql(
+            PlaylistVideos::deleteBySql(
                 'video_id = ?', [$video->id]
             );
 
             // Add record to the VideoSeminars based on courses
-            if (!empty($courses)) {
-                foreach ($courses as $course) {
-                    if ($perm->have_studip_perm('tutor', $course['id'])) {
-                        $video_seminar = new VideoSeminars;
-                        $video_seminar->video_id = $video->id;
-                        $video_seminar->seminar_id = $course['id'];
-                        $video_seminar->visibility = $video->visibility ? $video->visibility : 'visible';
-                        $video_seminar->store();
+            if (!empty($playlists)) {
+                foreach ($playlists as $playlist) {
+                    // check if user has perms on the playlist
+                    $db_playlist = reset(Playlists::findByToken($playlist['token']));
+                    if (in_array($db_playlist->getUserPerm(), ['owner', 'write']) === true) {
+                        $pv = new PlaylistVideos();
+                        $pv->video_id = $video->id;
+                        $pv->playlist_id = $db_playlist->id;
+                        $pv->store();
                     }
                 }
             }
 
             $message = [
                 'type' => 'success',
-                'text' => _('Die Kurs-Verknüpfungen des Videos wurden aktualisiert.')
+                'text' => _('Die Wiedergabelisten-Verknüpfungen des Videos wurden aktualisiert.')
             ];
         } catch (\Throwable $th) {
             $message = [
                 'type' => 'error',
-                'text' => _('Die Kurs-Verknüpfungen des Videos konnten nicht aktualisiert werden!')
+                'text' => _('Die Wiedergabelisten-Verknüpfungen des Videos konnten nicht aktualisiert werden!') . $th->getMessage()
             ];
         }
 

@@ -30,16 +30,18 @@ class Videos extends UPMap
             'assoc_foreign_key' => 'video_id',
         ];
 
-        $config['has_many']['video_seminars'] = [
-            'class_name' => 'Opencast\\Models\\VideoSeminars',
-            'assoc_foreign_key' => 'video_id',
-        ];
-
         $config['has_and_belongs_to_many']['tags'] = [
             'class_name'     => 'Opencast\\Models\\Tags',
             'thru_table'     => 'oc_video_tags',
             'thru_key'       => 'video_id',
             'thru_assoc_key' => 'tag_id'
+        ];
+
+        $config['has_and_belongs_to_many']['playlists'] = [
+            'class_name'     => 'Opencast\\Models\\Playlists',
+            'thru_table'     => 'oc_playlist_video',
+            'thru_key'       => 'video_id',
+            'thru_assoc_key' => 'playlist_id',
         ];
 
         parent::configure($config);
@@ -300,33 +302,25 @@ class Videos extends UPMap
         $data['publication'] = json_decode($data['publication'], true);
 
         $data['perm'] = $this->getUserPerm($user_id);
-        $data['courses'] = $this->getCourses();
+        $data['playlists'] = $this->getPlaylists();
 
         $data['tags'] = $this->tags->toArray();
 
         return $data;
     }
 
-    /**
-     * Gets the list of assigned courses with additional course's infos
-     *
-     * @return string $courses the list of seminars
-     */
-    private function getCourses()
+    private function getPlaylists()
     {
-        $courses = [];
-        if (!empty($this->video_seminars)) {
-            foreach ($this->video_seminars as $video_seminar) {
+        $playlists = [];
+        if (!empty($this->playlists)) {
+
+            foreach ($this->playlists as $playlist) {
                 $course = $video_seminar->course;
-                $courses[] = [
-                    'id' => $course->id,
-                    'name' => $course->getFullname(),
-                    'semester_name' => $course->getFullname('sem-duration-name')
-                ];
+                $playlists[] = $playlist->toSanitizedArray();
             }
         }
 
-        return $courses;
+        return $playlists;
     }
 
     /**

@@ -15,9 +15,16 @@ class ConvertVirtualPlaylists extends Migration
     {
         $db = DBManager::get();
 
+        // fix oc_seminar_series table
+        $db->exec('SET foreign_key_checks = 0');
+        $db->exec('ALTER TABLE `oc_seminar_series`
+            DROP FOREIGN KEY `oc_seminar_series_ibfk_1`,
+            ADD FOREIGN KEY oc_seminar_series_ibfk_2 (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE CASCADE ON UPDATE CASCADE');
+        $db->exec('SET foreign_key_checks = 1');
+
         // add switch to playlist-course relation to denote if this is the default playlist for this course
-        //$db->exec('ALTER TABLE oc_playlist_seminar
-        //    ADD `is_default` tinyint DEFAULT 0 AFTER seminar_id');
+        $db->exec('ALTER TABLE oc_playlist_seminar
+            ADD `is_default` tinyint DEFAULT 0 AFTER seminar_id');
 
         $result = $db->query("SELECT * FROM oc_video_seminar");
 

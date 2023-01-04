@@ -149,8 +149,8 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async addVideoToCourses(context, data) {
-        return ApiService.post('videos/' + data.token + '/courses', {courses: data.courses});
+    async addVideoToPlaylists(context, data) {
+        return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
     },
 
     async copyVideosToCourses(context, data) {

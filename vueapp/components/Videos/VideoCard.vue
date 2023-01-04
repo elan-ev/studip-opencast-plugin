@@ -262,10 +262,10 @@ export default {
 
                 menuItems.push({
                     id: 2,
-                    label: this.$gettext('Verknüpfte Kurse'),
+                    label: this.$gettext('Verknüpfungen'),
                     icon: 'add',
                     emit: 'performAction',
-                    emitArguments: 'VideoAddToSeminar'
+                    emitArguments: 'VideoAddToPlaylist'
                 });
 
                 menuItems.push({
