@@ -672,7 +672,7 @@ class Videos extends UPMap
      * @param int $width the width of a track
      * @param int $height the height of a track
      *
-     * @return string resolution string
+     * @return string resolution stringSeminarSeries
      */
     private static function getResolutionString($width, $height)
     {
@@ -717,5 +717,40 @@ class Videos extends UPMap
             throw new Error(_('Unable to send email'), 500);
         }
         return false;
+    }
+
+
+     /**
+     * Assigns a video to the seminar if the video belongs to the seminar' series
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
+    public static function addToCoursePlaylist($eventType, $episode, $video)
+    {
+        // check if a series is assigned to this event
+        if (!isset($episode->is_part_of) || empty($episode)) {
+            return;
+        }
+
+        // get the courses this series belongs to
+        $series = SeminarSeries::findBySeries_id($episode->is_part_of);
+        foreach ($series as $s) {
+            $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+
+            $pvideo = PlaylistVideos::findOneBySQL('video_id - ? AND playlist_id = ?', [$video->id, $playlist->id]);
+
+            if (empty($pvideo)) {
+                $pvideo = new self();
+                $pvideo->video_id    = $video->id;
+                $pvideo->playlist_id = $playllist->id;
+                $pvideo->store();
+            }
+        }
     }
 }

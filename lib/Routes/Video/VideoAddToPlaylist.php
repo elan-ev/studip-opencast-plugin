@@ -43,7 +43,7 @@ class VideoAddToPlaylist extends OpencastController
                 'video_id = ?', [$video->id]
             );
 
-            // Add record to the VideoSeminars based on courses
+            // Add video to playlists
             if (!empty($playlists)) {
                 foreach ($playlists as $playlist) {
                     // check if user has perms on the playlist

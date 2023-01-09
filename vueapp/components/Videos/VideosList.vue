@@ -270,7 +270,6 @@ export default {
             this.$store.dispatch('clearMessages');
             if (this.selectedVideos.length > 0) {
                 this.$store.dispatch('toggleCourseCopyDialog', true);
-                this.$store.dispatch('setCourseCopyType', 'selectedVideos');
                 this.$store.dispatch('setCourseVideosToCopy', this.selectedVideos);
             } else {
                 this.$store.dispatch('addMessage', {

@@ -156,24 +156,40 @@ class Helpers
     {
         $playlists = PlaylistSeminars::findBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
 
-        if (!empty($playlists)) {
-            return $playlists[0]->playlist;
-        }
-
         $course = \Course::find($course_id);
 
-        // create new playlist
-        $playlist = new Playlists();
-        $playlist->title = $course->getFullname('number-name-semester');
-        $playlist->store();
+        if (!empty($playlists)) {
+            $playlist = $playlists[0]->playlist;
+        } else {
+            // create new playlist
+            $playlist = new Playlists();
+            $playlist->title = $course->getFullname('number-name-semester');
+            $playlist->store();
 
-        // connect playlist to course
-        $pcourse = new PlaylistSeminars();
-        $pcourse->playlist_id = $playlist->id;
-        $pcourse->seminar_id  = $course_id;
-        $pcourse->is_default = 1;
+            // connect playlist to course
+            $pcourse = new PlaylistSeminars();
+            $pcourse->playlist_id = $playlist->id;
+            $pcourse->seminar_id  = $course_id;
+            $pcourse->is_default = 1;
 
-        $pcourse->store();
+            $pcourse->store();
+        }
+
+        // add all current seminar lectures to have rights on this playlist
+        foreach ($course->getMembersWithStatus('dozent') as $user) {
+
+            // check, if relation exists
+            $perm = PlaylistsUserPerms::findOneBySQL('playlist_id = ? AND user_id = ?', [$playlist->id, $user->user_id]);
+
+            if (empty($perm)) {
+                $perm = new PlaylistsUserPerms();
+                $perm->playlist_id = $playlist->id;
+                $perm->user_id     = $user->user_id;
+                $perm->perm        = 'owner';
+
+                $perm->store();
+            }
+        }
 
         return $playlist;
     }

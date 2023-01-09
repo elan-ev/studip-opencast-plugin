@@ -20,7 +20,6 @@ const state = {
     videoShares: {},
     courseVideosToCopy: [],
     showCourseCopyDialog: false,
-    courseCopyType: 'all',
 }
 
 const getters = {
@@ -63,10 +62,6 @@ const getters = {
     showCourseCopyDialog(state) {
         return state.showCourseCopyDialog
     },
-
-    courseCopyType(state) {
-        return state.courseCopyType
-    }
 }
 
 const actions = {
@@ -198,10 +193,6 @@ const actions = {
 
     toggleCourseCopyDialog({dispatch, state, commit}, mode) {
         commit('setShowCourseCopyDialog', mode);
-    },
-
-    setCourseCopyType({dispatch, state, commit}, type) {
-        commit('setCourseCopyType', type);
     }
 }
 
@@ -257,11 +248,7 @@ const mutations = {
 
     setShowCourseCopyDialog(state, mode) {
         state.showCourseCopyDialog = mode;
-    },
-
-    setCourseCopyType(state, type) {
-        state.courseCopyType = type;
-    },
+    }
 }
 
 export default {
