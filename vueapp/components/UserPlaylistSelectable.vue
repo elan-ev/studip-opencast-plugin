@@ -18,7 +18,7 @@
         </fieldset>
         <footer>
             <StudipButton
-                :disabled="currentPlaylist == null"
+                :disabled="currentPlaylist == null || currentPlaylist == 0 || currentPlaylist.id == 0"
                 icon="accept"
                 @click.prevent="returnSelectedPlaylist()"
             >
@@ -73,7 +73,6 @@ export default {
             let search    = this.search ? this.search.toLowerCase() : null;
 
             let playlists = this.playlists.filter((playlist) => {
-                console.log('Playlists:', playlist, this.selectedPlaylists, this.selectedPlaylists.map(p => { return p.token}));
                 return (
                     (!this.search || playlist['title'].toLowerCase().indexOf(search) >= 0)
                     &&

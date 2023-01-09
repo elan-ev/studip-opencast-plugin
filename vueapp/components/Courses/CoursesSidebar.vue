@@ -117,7 +117,7 @@ export default {
         StudipIcon
     },
 
-    emits: ['uploadVideo', 'recordVideo'],
+    emits: ['uploadVideo', 'recordVideo', 'copyAll'],
 
     data() {
         return {
@@ -215,7 +215,6 @@ export default {
                 let currentPlaylist = null;
                 // set the courses default playlist
                 for (let id in view.playlists) {
-                    console.log('checking playlist:', view.playlists[id]);
                     if (view.playlists[id].is_default == '1') {
                         currentPlaylist = view.playlists[id].token;
                     }
@@ -223,7 +222,6 @@ export default {
 
                 // if no default is found, use the first playlist
                 if (view.currentPlaylist == null) {
-                    console.log('found no default playlist, falling back');
                     for (let id in view.playlists) {
                         currentPlaylist = view.playlists[id].token;
                         break;
