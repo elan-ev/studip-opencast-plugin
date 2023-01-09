@@ -144,4 +144,37 @@ class Helpers
 
         return $courses;
     }
+
+    /**
+     * Check if the default course playlists exists and create if necessary
+     *
+     * @param string $course_id
+     *
+     * @return object Default playlist of the course with the passed id
+     */
+    public function checkCoursePlaylist($course_id)
+    {
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
+
+        if (!empty($playlists)) {
+            return $playlists[0]->playlist;
+        }
+
+        $course = \Course::find($course_id);
+
+        // create new playlist
+        $playlist = new Playlists();
+        $playlist->title = $course->getFullname('number-name-semester');
+        $playlist->store();
+
+        // connect playlist to course
+        $pcourse = new PlaylistSeminars();
+        $pcourse->playlist_id = $playlist->id;
+        $pcourse->seminar_id  = $course_id;
+        $pcourse->is_default = 1;
+
+        $pcourse->store();
+
+        return $playlist;
+    }
 }

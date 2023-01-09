@@ -9,6 +9,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Helpers;
 
 /**
  * Find the playlists for the passed course
@@ -20,13 +21,16 @@ class CourseListPlaylist extends OpencastController
     public function __invoke(Request $request, Response $response, $args)
     {
         global $user, $perm;
+        $course_id = $args['course_id'];
 
         // check if user has access to this seminar
-        if (!$perm->have_studip_perm($params['cid'], 'user')) {
+        if (!$perm->have_studip_perm($course_id, 'user')) {
            throw new \AccessDeniedException();
         }
 
-        $course_id = $args['course_id'];
+        // check, if the default course playlist exists, if not create it
+        Helpers::checkCoursePlaylist($course_id);
+
         // find all playlists of the seminar
         $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ? '
             .' ORDER BY is_default DESC', [$course_id]);
