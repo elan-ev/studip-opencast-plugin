@@ -10,7 +10,6 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistsUserPerms;
-use Opencast\Models\Helpers;
 
 /**
  * Find the playlists for the passed user
