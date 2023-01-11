@@ -103,7 +103,6 @@ const actions = {
         commit('setPlaylistAdd', false);
 
         let $cid = rootState.opencast.cid;
-        // let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
 
         return ApiService.post('playlists', playlist)
             .then(({ data }) => {
