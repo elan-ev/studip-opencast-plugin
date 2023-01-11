@@ -184,9 +184,6 @@ export default {
                 if (this.canEdit) {
                     return true;
                 }
-                if (this.currentPlaylist === 'all') {
-                    return this.downloadSetting === 'allow';
-                }
 
                 let playlist_download = this.playlists.find(p => p['token'] === this.currentPlaylist)['allow_download'];
                 if (playlist_download === null) {

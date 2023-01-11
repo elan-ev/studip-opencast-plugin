@@ -252,7 +252,7 @@ export default {
 
         removePlaylistFromCourse(token, cid) {
             if (confirm(this.$gettext('Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen möchten?'))) {
-                this.$store.commit('setCurrentPlaylist', 'all');
+                this.$store.commit('setCurrentPlaylist', null);
                 this.$store.dispatch('removePlaylistFromCourse', {
                     token: token,
                     course: cid

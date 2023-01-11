@@ -230,29 +230,35 @@ export default {
         createPlaylist(playlist) {
             this.$store.dispatch('addPlaylist', playlist);
         },
+
+        getDefaultPlaylist()
+        {
+            let currentPlaylist = null;
+
+            // set the courses default playlist
+            for (let id in this.playlists) {
+                if (this.playlists[id].is_default == '1') {
+                    currentPlaylist = this.playlists[id].token;
+                }
+            }
+
+            // if no default is found, use the first playlist
+            if (this.currentPlaylist == null) {
+                for (let id in this.playlists) {
+                    currentPlaylist = this.playlists[id].token;
+                    break;
+                }
+            }
+
+            return currentPlaylist;
+        }
     },
 
     mounted() {
         let view = this;
         this.$store.dispatch('loadPlaylists').
             then(() => {
-                let currentPlaylist = null;
-                // set the courses default playlist
-                for (let id in view.playlists) {
-                    if (view.playlists[id].is_default == '1') {
-                        currentPlaylist = view.playlists[id].token;
-                    }
-                }
-
-                // if no default is found, use the first playlist
-                if (view.currentPlaylist == null) {
-                    for (let id in view.playlists) {
-                        currentPlaylist = view.playlists[id].token;
-                        break;
-                    }
-                }
-
-                view.$store.commit('setCurrentPlaylist', currentPlaylist);
+                view.$store.commit('setCurrentPlaylist', view.getDefaultPlaylist());
             })
 
         this.$store.dispatch('simpleConfigListRead');
@@ -272,6 +278,10 @@ export default {
 
         currentPlaylist(newValue, oldValue) {
             if (newValue !== oldValue) {
+                if (newValue === null) {
+                    // use default playlist
+                    newValue = this.getDefaultPlaylist();
+                }
                 this.setPlaylist(newValue);
             }
         }
