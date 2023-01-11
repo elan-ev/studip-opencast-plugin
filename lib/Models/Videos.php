@@ -30,16 +30,18 @@ class Videos extends UPMap
             'assoc_foreign_key' => 'video_id',
         ];
 
-        $config['has_many']['video_seminars'] = [
-            'class_name' => 'Opencast\\Models\\VideoSeminars',
-            'assoc_foreign_key' => 'video_id',
-        ];
-
         $config['has_and_belongs_to_many']['tags'] = [
             'class_name'     => 'Opencast\\Models\\Tags',
             'thru_table'     => 'oc_video_tags',
             'thru_key'       => 'video_id',
             'thru_assoc_key' => 'tag_id'
+        ];
+
+        $config['has_and_belongs_to_many']['playlists'] = [
+            'class_name'     => 'Opencast\\Models\\Playlists',
+            'thru_table'     => 'oc_playlist_video',
+            'thru_key'       => 'video_id',
+            'thru_assoc_key' => 'playlist_id',
         ];
 
         parent::configure($config);
@@ -61,7 +63,6 @@ class Videos extends UPMap
             $courses = Helpers::getMyCourses($user_id);
 
             $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
-                JOIN oc_video_seminar    ON (oc_video_seminar.video_id = oc_video.id AND oc_video_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
                 JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id)
@@ -96,33 +97,6 @@ class Videos extends UPMap
             'where' => ' WHERE 1 ',
             'params' => [
                 ':playlist_id' => $playlist_id
-            ]
-        ];
-
-        return self::getFilteredVideos($query, $filters);
-    }
-
-    /**
-     * Get videos for the passed course narrowed down by optional filters.
-     * This method does no further check for permissions and assumes the current user has access to the course!
-     *
-     * @param string $playlist_id
-     * @param Opencast\Models\Filter $filters
-     *
-     * @return array
-     *    [
-     *        'videos' => [Opencast\Models\Videos],
-     *        'sql'    => '...,
-     *        'count'  => 123
-     *    ];
-     */
-    public static function getCourseVideos($course_id, $filters)
-    {
-        $query = [
-            'sql'   => ' INNER JOIN oc_video_seminar AS vs ON (vs.seminar_id = :seminar_id AND vs.video_id = id)',
-            'where' => ' WHERE 1 ',
-            'params' => [
-                ':seminar_id' => $course_id
             ]
         ];
 
@@ -328,33 +302,25 @@ class Videos extends UPMap
         $data['publication'] = json_decode($data['publication'], true);
 
         $data['perm'] = $this->getUserPerm($user_id);
-        $data['courses'] = $this->getCourses();
+        $data['playlists'] = $this->getPlaylists();
 
         $data['tags'] = $this->tags->toArray();
 
         return $data;
     }
 
-    /**
-     * Gets the list of assigned courses with additional course's infos
-     *
-     * @return string $courses the list of seminars
-     */
-    private function getCourses()
+    private function getPlaylists()
     {
-        $courses = [];
-        if (!empty($this->video_seminars)) {
-            foreach ($this->video_seminars as $video_seminar) {
+        $playlists = [];
+        if (!empty($this->playlists)) {
+
+            foreach ($this->playlists as $playlist) {
                 $course = $video_seminar->course;
-                $courses[] = [
-                    'id' => $course->id,
-                    'name' => $course->getFullname(),
-                    'semester_name' => $course->getFullname('sem-duration-name')
-                ];
+                $playlists[] = $playlist->toSanitizedArray();
             }
         }
 
-        return $courses;
+        return $playlists;
     }
 
     /**
@@ -751,5 +717,40 @@ class Videos extends UPMap
             throw new Error(_('Unable to send email'), 500);
         }
         return false;
+    }
+
+
+     /**
+     * Assigns a video to the seminar if the video belongs to the seminar' series
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string                $eventType
+     * @param object                $episode
+     * @param Opencast\Models\Video $video
+     *
+     * @return void
+     */
+    public static function addToCoursePlaylist($eventType, $episode, $video)
+    {
+        // check if a series is assigned to this event
+        if (!isset($episode->is_part_of) || empty($episode)) {
+            return;
+        }
+
+        // get the courses this series belongs to
+        $series = SeminarSeries::findBySeries_id($episode->is_part_of);
+        foreach ($series as $s) {
+            $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+
+            $pvideo = PlaylistVideos::findOneBySQL('video_id - ? AND playlist_id = ?', [$video->id, $playlist->id]);
+
+            if (empty($pvideo)) {
+                $pvideo = new self();
+                $pvideo->video_id    = $video->id;
+                $pvideo->playlist_id = $playllist->id;
+                $pvideo->store();
+            }
+        }
     }
 }

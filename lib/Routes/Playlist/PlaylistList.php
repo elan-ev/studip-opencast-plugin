@@ -32,11 +32,11 @@ class PlaylistList extends OpencastController
                     // Add playlist, if the user has access
                     $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
                     ? 0 : \strtotime($playlist['mkdate']);
-                    $playlist_list[] = $playlist->toSanitizedArray();
+                    $playlist_list[$playlist->id] = $playlist->toSanitizedArray();
                 }
             }
         }
 
-        return $this->createResponse($playlist_list ?: [], $response);
+        return $this->createResponse(array_values($playlist_list) ?: [], $response);
     }
 }

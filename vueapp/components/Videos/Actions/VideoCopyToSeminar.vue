@@ -1,8 +1,8 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Alle Inhalte mit weiterem Kurs verknüpfen')"
-            :confirmText="$gettext('Verknüpfen')"
+            :title="$gettext('Alle Inhalte in weitere Kurse übertragen')"
+            :confirmText="$gettext('Übertragen')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
@@ -12,31 +12,6 @@
             @confirm="copyVideosToCourses"
         >
             <template v-slot:dialogContent>
-                <div v-if="courseCopyType !== 'selectedVideos'" style="margin-bottom: 1em;">
-                    <div @click="setCopyType('all')" style="cursor: pointer">
-                        <input type="radio" value="all"
-                            name="type"
-                            :checked="courseCopyType === 'all'"
-                        >
-                        {{ $gettext('Alle Inhalte') }}
-                    </div>
-
-                    <div @click="setCopyType('videos')" style="cursor: pointer">
-                        <input type="radio" value="videos"
-                            name="type"
-                            :checked="courseCopyType === 'videos'"
-                        >
-                        {{ $gettext('Nur alle Videos') }}
-                    </div>
-
-                    <div @click="setCopyType('playlists')" style="cursor: pointer">
-                        <input type="radio" value="playlists"
-                            name="type"
-                            :checked="courseCopyType === 'playlists'"
-                        >
-                        {{ $gettext('Nur alle Wiedergabelisten') }}
-                    </div>
-                </div>
                 <table class="default">
                     <thead>
                         <tr>
@@ -98,7 +73,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userCourses', 'cid', 'courseVideosToCopy', 'courseCopyType']),
+        ...mapGetters(['userCourses', 'cid', 'courseVideosToCopy']),
 
         user_courses_filtered() {
             let userCoursesFiltered = this.userCourses;
@@ -135,7 +110,6 @@ export default {
             let data = {
                 cid: this.cid,
                 courses: this.courses,
-                type: this.courseCopyType,
                 tokens: this.courseVideosToCopy
             };
             await this.$store.dispatch('copyVideosToCourses', data)
@@ -149,12 +123,6 @@ export default {
             }).catch(() => {
                 this.$emit('cancel');
             });
-        },
-
-        setCopyType(type) {
-            if (['all', 'videos', 'playlists'].includes(type)) {
-                this.$store.dispatch('setCourseCopyType', type);
-            }
         },
 
         decline() {

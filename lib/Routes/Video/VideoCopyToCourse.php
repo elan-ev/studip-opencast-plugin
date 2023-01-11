@@ -8,8 +8,10 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
-use Opencast\Models\VideoSeminars;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistVideos;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Helpers;
 
 class VideoCopyToCourse extends OpencastController
 {
@@ -26,45 +28,16 @@ class VideoCopyToCourse extends OpencastController
 
         $json = $this->getRequestData($request);
         $courses = $json['courses'];
-        $tokens = $json['tokens'];
-        $type = $json['type'];
         $playlists = [];
 
         $videos = [];
         try {
             // Managing playlists.
-            if (in_array($type, ['all', 'playlists'])) {
-                $playlists = PlaylistSeminars::findBySeminar_id($course_id);
-            }
-
-            // Managing videos.
-            if (in_array($type, ['all', 'videos'])) {
-                $videos = VideoSeminars::findBySeminar_id($course_id);
-            } else if ($type === 'selectedVideos' && !empty($tokens)) {
-                $videos = VideoSeminars::getSeminarVideosByTokens($course_id, $tokens);
-            }
+            $playlists = PlaylistSeminars::findBySeminar_id($course_id);
 
             if (!empty($courses) && (!empty($videos) || !empty($playlists))) {
                 foreach ($courses as $course) {
                     if ($perm->have_studip_perm('tutor', $course['id']) && $course['id'] !== $course_id) {
-                        if (!empty($videos)) {
-                            $target_course_vidoes = VideoSeminars::findBySeminar_id($course['id']);
-                            foreach ($videos as $video) {
-                                $video_id = $video->video_id;
-                                $exists = array_filter($target_course_vidoes, function ($vid) use ($video_id) {
-                                    return intval($vid->video_id) === intval($video_id);
-                                });
-                                if (!empty($exists)) {
-                                    continue;
-                                }
-                                $video_seminar = new VideoSeminars;
-                                $video_seminar->video_id = $video_id;
-                                $video_seminar->seminar_id = $course['id'];
-                                $video_seminar->visibility = $video->visibility ? $video->visibility : 'visible';
-                                $video_seminar->store();
-                            }
-                        }
-
                         if (!empty($playlists)) {
                             $target_course_playlists = PlaylistSeminars::findBySeminar_id($course['id']);
                             foreach ($playlists as $playlist) {
@@ -75,11 +48,27 @@ class VideoCopyToCourse extends OpencastController
                                 if (!empty($exists)) {
                                     continue;
                                 }
-                                $playlist_seminar = new PlaylistSeminars;
-                                $playlist_seminar->playlist_id = $playlist->playlist_id;
-                                $playlist_seminar->seminar_id = $course['id'];
-                                $playlist_seminar->visibility = 'visible';
-                                $playlist_seminar->store();
+
+                                // if this is the courses default playlist, copy the videos to the new courses default playlist
+                                if ($playlist->is_default) {
+                                    $default_playlist = Helpers::checkCoursePlaylist($course['id']);
+                                    $stmt = DBManager::get()->prepare("INSERT INTO oc_playlist_video (playlist_id, video, order)
+                                        SELECT :target, video, order, FROM oc_playlist_video
+                                             WHERE playlist_id = :source");
+                                    $stmt->execute([
+                                        ':target' => $default_playlist->id,
+                                        ':source' => $playlist->id
+                                    ]);
+                                } else {
+                                    $playlist_seminar = new PlaylistSeminars;
+                                    $playlist_seminar->playlist_id = $playlist->playlist_id;
+                                    $playlist_seminar->seminar_id = $course['id'];
+                                    $playlist_seminar->visibility = 'visible';
+
+                                    $playlist_seminar->store();
+                                }
+
+
                             }
                         }
                     }
@@ -88,12 +77,12 @@ class VideoCopyToCourse extends OpencastController
 
             $message = [
                 'type' => 'success',
-                'text' => _('Die Kurs-Verknüpfungen wurden ausgeführt.')
+                'text' => _('Die Übertragungen wurden ausgeführt.')
             ];
         } catch (\Throwable $e) {
             $message = [
                 'type' => 'error',
-                'text' => _('Die Kurs-Verknüpfungen konnten nicht ausgeführt werden!')
+                'text' => _('Die Übertragungen konnten nicht abgeschlossen werden!')
             ];
         }
 
