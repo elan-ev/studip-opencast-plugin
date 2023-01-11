@@ -27,7 +27,7 @@ class PlaylistList extends OpencastController
 
         foreach ($playlists as $playlist) {
             // check what permissions the current user has on the playlist
-            foreach($playlist->perms as $uperm) {
+            foreach($playlist->perms as $perm) {
                 if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
                     // Add playlist, if the user has access
                     $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
