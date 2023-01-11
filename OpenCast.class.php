@@ -53,7 +53,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 $videos = new Navigation($this->_('Videos/Opencast'));
                 $videos->setDescription($this->_('Opencast Aufzeichnungen'));
                 $videos->setImage(Icon::create($this->assetsUrl . '/images/opencast-courseware.svg'));
-                $videos->setURL(PluginEngine::getURL($this, [], 'contents/index'));
+                $videos->setURL(PluginEngine::getURL($this, [], 'contents/index#/contents/videos'));
 
                 // use correct navigation for Stud.IP Versions below 5
                 VersionHelper::get()->addMainNavigation($videos);
@@ -129,7 +129,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     {
         $navigation = new Navigation(
             $this->_('Videos/Opencast'),
-            PluginEngine::getURL($this, [], 'course')
+            PluginEngine::getURL($this, [], 'course/#/course/videos')
         );
         $navigation->setImage(Icon::create('video2'));
 
@@ -169,7 +169,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         $main = new Navigation(
             $this->_($title),
-            PluginEngine::getURL($this, [], 'course')
+            PluginEngine::getURL($this, [], 'course#/course/videos')
         );
         $main->setImage(Icon::create('video2'));
 

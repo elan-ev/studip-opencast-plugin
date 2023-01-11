@@ -32,50 +32,50 @@
             <ul class="widget-list oc--sidebar-links widget-links">
                 <li @click="$emit('uploadVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                    Medien Hochladen
+                    {{ $gettext('Medien Hochladen') }}
                 </li>
                 <!--
                 <li @click="$emit('recordVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Video Aufnehmen
+                    {{ $gettext('Video Aufnehmen') }}
                 </li>
                 -->
 
                 <li @click="addVideosToPlaylist" v-if="fragment == 'playlist_edit'">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Videos hinzufügen
+                    {{ $gettext('Videos hinzufügen') }}
                 </li>
 
-                <li @click="$emit('allowDownloadForPlaylist')" 
+                <li @click="$emit('allowDownloadForPlaylist')"
                     v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Mediendownloads erlauben
+                    {{ $gettext('Mediendownloads erlauben') }}
                 </li>
 
-                <li @click="$emit('disallowDownloadForPlaylist')" 
+                <li @click="$emit('disallowDownloadForPlaylist')"
                     v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Mediendownloads verbieten
+                   {{ $gettext(' Mediendownloads verbieten') }}
                 </li>
 
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
-                    Videos Sortieren
+                    {{ $gettext('Videos Sortieren') }}
                 </li>
                 <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                    Sortierung Speichern
+                    {{ $gettext('Sortierung Speichern') }}
                 </li>
                 <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                    Sortierung Abbrechen
+                    {{ $gettext('Sortierung Abbrechen') }}
                 </li>
                 <li @click="true" v-if="fragment == 'edit'">
                 </li>
 
                 <li @click="createPlaylist" v-if="fragment == 'playlists'">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    Wiedergabeliste anlegen
+                    <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                    {{ $gettext('Wiedergabeliste anlegen') }}
                 </li>
             </ul>
         </div>
@@ -96,8 +96,8 @@ export default {
         StudipIcon,     LoadingSpinner
     },
 
-    emits: ['uploadVideo', 'recordVideo', 
-            'sortVideo', 'saveSortVideo', 'cancelSortVideo', 
+    emits: ['uploadVideo', 'recordVideo',
+            'sortVideo', 'saveSortVideo', 'cancelSortVideo',
             'allowDownloadForPlaylist', 'disallowDownloadForPlaylist'
             ],
 
@@ -113,7 +113,7 @@ export default {
         },
 
         ...mapGetters([
-            'videoSortMode', 'playlist', 
+            'videoSortMode', 'playlist',
             'axios_running', 'downloadSetting',
         ]),
 
@@ -139,6 +139,10 @@ export default {
             this.$store.commit('setPlaylistForVideos', this.playlist);
             this.$router.push({ name: 'videos'})
         }
+    },
+
+    mounted() {
+        this.$store.dispatch('simpleConfigListRead');
     }
 }
 </script>

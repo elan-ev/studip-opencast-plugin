@@ -100,15 +100,23 @@ const actions = {
     },
 
     async addPlaylist({ commit, dispatch, rootState }, playlist) {
-        // TODO
         commit('setPlaylistAdd', false);
 
         let $cid = rootState.opencast.cid;
-        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
+        // let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
 
-        return ApiService.post($route, playlist)
+        return ApiService.post('playlists', playlist)
             .then(({ data }) => {
-                dispatch('loadPlaylists');
+                if ($cid !== null) {
+                    // connect playlist to new course
+                    dispatch('addPlaylistToCourse', {
+                        course: $cid,
+                        token: data.token
+                    })
+                    .then(() => dispatch('loadPlaylists'))
+                } else {
+                    dispatch('loadPlaylists');
+                }
             });
     },
 

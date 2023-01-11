@@ -12,12 +12,18 @@
         <SearchBar @search="doSearch"/>
         <PaginationButtons @changePage="changePage"/>
 
-        <StudipButton
-            icon="trash" v-if="playlist_token"
-            @click.prevent="removePlaylistFromCourse(playlist_token, cid)"
-        >
-            {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
-        </StudipButton>
+        <div v-if="isCourse && currentPlaylist">
+            <StudipButton
+                icon="trash" v-if="currentPlaylist"
+                @click.prevent="removePlaylistFromCourse(currentPlaylist, cid)"
+            >
+                {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
+            </StudipButton>
+
+            <a :href="getPlaylistLink(currentPlaylist)" class="button" target="_blank">
+                {{ $gettext('Wiedergabeliste bearbeiten') }}
+            </a>
+        </div>
 
         <div v-if="playlistForVideos" class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
@@ -27,12 +33,14 @@
 
         </div>
 
+        <!--
         <div v-if="isCourse && Object.keys(videos).length > 0" class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
             <StudipButton icon="add" @click.stop="showCopyDialog">
                 {{ $gettext('Verknüpfung mit anderen Kursen') }}
             </StudipButton>
         </div>
+        -->
 
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <ul v-if="Object.keys(videos).length === 0 && (axios_running || videos_loading)" class="oc--episode-list--small oc--episode-list--empty">
@@ -56,11 +64,11 @@
                     v-bind:key="event.token"
                     :playlistForVideos="playlistForVideos"
                     :selectedVideos="selectedVideos"
-                    :isCourse="isCourse"
                     @toggle="toggleVideo"
                     @doAction="doAction"
                     @redirectAction="redirectAction"
                 ></VideoCard>
+                <!-- :isCourse="isCourse"  -->
             </ul>
         </div>
 
@@ -134,18 +142,6 @@ export default {
 
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
-        },
-
-        playlist_token() {
-            if (!this.filters || !this.filters.filters) {
-                return null;
-            }
-
-            for (let i = 0; i < this.filters.filters.length; i++) {
-                if (this.filters.filters[i]['type'] == 'playlist') {
-                    return this.filters.filters[i]['value']
-                }
-            }
         }
     },
 
@@ -277,6 +273,10 @@ export default {
                     text: this.$gettext('Es wurden keine Videos ausgewählt!')
                 });
             }
+        },
+
+        getPlaylistLink(token) {
+            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
         }
     },
 
@@ -291,6 +291,8 @@ export default {
                         cid  : view.cid,
                         token: view.currentPlaylist
                     }).then(() => { view.videos_loading = false });
+                } else {
+                    view.videos_loading = false;
                 }
             } else {
                 view.$store.dispatch('loadMyVideos', this.filters)

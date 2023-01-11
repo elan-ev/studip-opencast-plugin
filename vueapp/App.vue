@@ -26,11 +26,6 @@ export default {
 
     computed: {
         ...mapGetters(['site'])
-    },
-
-    mounted() {
-        // check, which site was requested
-        this.$router.push({name: this.site});
     }
 };
 </script>

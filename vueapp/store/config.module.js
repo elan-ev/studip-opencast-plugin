@@ -36,7 +36,11 @@ const getters = {
     },
 
     downloadSetting(state) {
-        return state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD'];
+        if (state.simple_config_list.settings !== undefined) {
+            return state.simple_config_list.settings['OPENCAST_MEDIADOWNLOAD'];
+        } else {
+            return false;
+        }
     }
 };
 

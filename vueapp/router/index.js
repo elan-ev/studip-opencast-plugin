@@ -7,7 +7,6 @@ export default new createRouter({
     routes: [
         {
             path: "/contents",
-            name: "contents",
             component: () => import("@/views/Contents"),
             children: [
                 {
@@ -20,7 +19,6 @@ export default new createRouter({
                     name: "playlists",
                     component: () => import("@/views/Playlists"),
                 },
-
 
                 {
                     path: 'playlists/:token/edit/',

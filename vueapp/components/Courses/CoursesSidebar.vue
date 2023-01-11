@@ -31,7 +31,7 @@
             Wiedergabelisten
         </div>
         <div class="sidebar-widget-content">
-            <ul class="widget-list widget-links sidebar-navigation">
+            <ul class="widget-list widget-links oc--sidebar-links sidebar-navigation">
                 <li :class="{
                     active: currentPlaylist == playlist.token
                     }"
@@ -44,6 +44,11 @@
                             : playlist.title
                         }}
                     </router-link>
+                </li>
+
+                <li v-if="canEdit" @click="showCreatePlaylist">
+                    <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                    {{ $gettext('Wiedergabeliste anlegen') }}
                 </li>
             </ul>
         </div>
@@ -103,6 +108,11 @@
                 </ul>
             </div>
         </div>
+
+        <PlaylistAddCard v-if="addPlaylist"
+            @done="createPlaylist"
+            @cancel="cancelPlaylistAdd"
+        />
     </template>
 </template>
 
@@ -110,11 +120,13 @@
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
+import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
+
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon
+        StudipIcon,     PlaylistAddCard
     },
 
     emits: ['uploadVideo', 'recordVideo', 'copyAll'],
@@ -127,7 +139,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentView",
+        ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'currentPlaylist']),
 
@@ -205,7 +217,19 @@ export default {
         async setVisibility(visibility) {
             await this.$store.dispatch('setVisibility', {'cid': this.cid, 'visibility': visibility});
             this.$router.go(); // Reload page to make changes visible in navigation tab
-        }
+        },
+
+        showCreatePlaylist() {
+            this.$store.dispatch('addPlaylistUI', true);
+        },
+
+         cancelPlaylistAdd() {
+            this.$store.dispatch('addPlaylistUI', false);
+        },
+
+        createPlaylist(playlist) {
+            this.$store.dispatch('addPlaylist', playlist);
+        },
     },
 
     mounted() {
