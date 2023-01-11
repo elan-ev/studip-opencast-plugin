@@ -45,10 +45,9 @@ class RouteMap
         $this->app->delete('/videos/{token}', Routes\Video\VideoDelete::class);
 
         $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class);
-        // $this->app->post('/videos/{token}/courses', Routes\Video\VideoAddToCourse::class);   // TODO: remove this route from the API scheme
-        $this->app->post('/videos/{token}/playlists', Routes\Video\VideoAddToPlaylist::class);  // TODO: add this route to the API scheme
+        $this->app->post('/videos/{token}/playlists', Routes\Video\VideoAddToPlaylist::class);
 
-        $this->app->get('/videos/{token}/shares', Routes\Video\VideoSharesList::class); // TODO: add this route to the API scheme
+        $this->app->get('/videos/{token}/shares', Routes\Video\VideoSharesList::class);
         $this->app->put('/videos/{token}/shares', Routes\Video\VideoSharesUpdate::class);
         $this->app->post('/videos/{course_id}/copy', Routes\Video\VideoCopyToCourse::class);
 

@@ -672,7 +672,7 @@ class Videos extends UPMap
      * @param int $width the width of a track
      * @param int $height the height of a track
      *
-     * @return string resolution stringSeminarSeries
+     * @return string resolution string
      */
     private static function getResolutionString($width, $height)
     {

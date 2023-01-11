@@ -28,16 +28,12 @@ class VideoCopyToCourse extends OpencastController
 
         $json = $this->getRequestData($request);
         $courses = $json['courses'];
-        $tokens = $json['tokens'];
-        $type = $json['type'];
         $playlists = [];
 
         $videos = [];
         try {
             // Managing playlists.
-            if (in_array($type, ['all', 'playlists'])) {
-                $playlists = PlaylistSeminars::findBySeminar_id($course_id);
-            }
+            $playlists = PlaylistSeminars::findBySeminar_id($course_id);
 
             if (!empty($courses) && (!empty($videos) || !empty($playlists))) {
                 foreach ($courses as $course) {
