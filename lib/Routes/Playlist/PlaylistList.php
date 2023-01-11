@@ -38,35 +38,6 @@ class PlaylistList extends OpencastController
             }
         }
 
-        // find playlists in courses user has 'dozent' access to (root and admin are omitted)
-        /*
-        if (!$perm->have_perm('admin')) {
-            // get my courses
-            $courses = Helpers::getMyCourses($user->id);
-
-            // find playlists in these courses
-            $stmt = \DBManager::get()->prepare("SELECT DISTINCT playlist_id FROM oc_playlist_seminar AS ops
-                JOIN seminar_user AS su ON (
-                    su.seminar_id = ops.seminar_id
-                    AND su.status = 'dozent'
-                    AND su.user_id = :user_id
-                )
-                WHERE ops.seminar_id IN (:courses)");
-            $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
-            $stmt->execute([
-                ':user_id' => $user->id
-            ]);
-
-            while ($playlist_id = $stmt->fetchColumn()) {
-                $playlist = Playlists::find($playlist_id);
-
-                $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
-                    ? 0 : \strtotime($playlist['mkdate']);
-                $playlist_list[$playlist->id] = $playlist->toSanitizedArray();
-            }
-        }
-        */
-
         return $this->createResponse(array_values($playlist_list) ?: [], $response);
     }
 }
