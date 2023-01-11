@@ -14,13 +14,15 @@
 
         <div v-if="isCourse && currentPlaylist">
             <StudipButton
-                icon="trash" v-if="currentPlaylist"
+                v-if="currentPlaylist && getPlaylist(currentPlaylist).is_default != '1'"
                 @click.prevent="removePlaylistFromCourse(currentPlaylist, cid)"
             >
+                <studip-icon shape="trash" role="clickable" />
                 {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
             </StudipButton>
 
             <a :href="getPlaylistLink(currentPlaylist)" class="button" target="_blank">
+                 <studip-icon shape="edit" role="clickable" />
                 {{ $gettext('Wiedergabeliste bearbeiten') }}
             </a>
         </div>
@@ -86,6 +88,8 @@
 <script>
 import { mapGetters } from "vuex";
 import StudipButton from "@studip/StudipButton";
+import StudipIcon from "@studip/StudipIcon";
+
 import VideoCard from './VideoCard.vue';
 import EmptyVideoCard from './EmptyVideoCard.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
@@ -108,7 +112,7 @@ export default {
         PaginationButtons,      MessageBox,
         SearchBar,              Tag,
         StudipButton,           VideoAddToPlaylist,
-        VideoAccess,
+        VideoAccess,            StudipIcon,
         VideoAddToSeminar,      VideoDelete,
         VideoDownload,           VideoReport,
         VideoEdit
@@ -133,7 +137,8 @@ export default {
             "playlistForVideos",
             "cid",
             'currentPlaylist',
-            'courseVideosToCopy'
+            'courseVideosToCopy',
+            'playlists'
         ]),
 
         isCourse() {
@@ -277,6 +282,16 @@ export default {
 
         getPlaylistLink(token) {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
+        },
+
+        getPlaylist(token) {
+            for (let id in this.playlists) {
+                if (this.playlists[id].token == token) {
+                    return this.playlists[id];
+                }
+            }
+
+            return null;
         }
     },
 

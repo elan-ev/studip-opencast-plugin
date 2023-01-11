@@ -26,7 +26,7 @@ class CourseRemovePlaylist extends OpencastController
         // check what permissions the current user has on the playlist and video
         $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
 
-        if (empty($perm_playlist) || !$perm->have_studip_perm('tutor', $course_id))      // allow any perm for adding playlists to course user has access to
+        if (empty($perm_playlist) && !$perm->have_studip_perm('tutor', $course_id))      // allow any perm for adding playlists to course user has access to
         {
             throw new \AccessDeniedException();
         }
