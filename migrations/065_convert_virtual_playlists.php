@@ -63,7 +63,7 @@ class ConvertVirtualPlaylists extends Migration
         }
 
         // remove obsolete table
-        //$db->exec('DROP TABLE `oc_video_seminar`');
+        $db->exec('DROP TABLE `oc_video_seminar`');
 
         SimpleOrMap::expireTableScheme();
     }
