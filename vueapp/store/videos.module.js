@@ -120,14 +120,6 @@ const actions = {
         })
     },
 
-    async loadPlaylistCourseVideos({ commit, state, dispatch, rootState }, data)
-    {
-        return dispatch('loadVideos', {
-            route: 'playlists/' + data.token + '/videos/?cid=' + data.cid,
-            filters: data,
-        })
-    },
-
     async uploadSortPositions({}, data) {
         return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
     },

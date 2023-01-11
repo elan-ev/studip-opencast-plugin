@@ -156,7 +156,7 @@ export default {
             if (this.isCourse) {
                 let filters = this.filters;
                 filters.token = this.currentPlaylist;
-                this.$store.dispatch('loadPlaylistCourseVideos', filters);
+                this.$store.dispatch('loadPlaylistVideos', filters);
             } else {
                 await this.$store.dispatch('loadMyVideos', this.filters)
             }
@@ -191,7 +191,7 @@ export default {
             this.filters = filters;
 
             if (this.isCourse) {
-                this.$store.dispatch('loadPlaylistCourseVideos', {
+                this.$store.dispatch('loadPlaylistVideos', {
                     ...filters,
                     cid: this.cid,
                     token: this.currentPlaylist
@@ -237,7 +237,7 @@ export default {
             this.clearAction();
             if (args == 'refresh') {
                 if (this.isCourse) {
-                    this.$store.dispatch('loadPlaylistCourseVideos', {
+                    this.$store.dispatch('loadPlaylistVideos', {
                         ...this.filters,
                         cid: this.cid,
                         token: this.currentPlaylist
@@ -285,11 +285,13 @@ export default {
         this.$store.commit('clearPaging');
         await this.$store.dispatch('authenticateLti').then(() => {
             if (view.isCourse) {
-                 view.$store.dispatch('loadPlaylistCourseVideos', {
-                    ...this.filters,
-                    cid  : view.cid,
-                    token: view.currentPlaylist
-                }).then(() => { view.videos_loading = false });
+                if (this.currentPlaylist !== null) {
+                    view.$store.dispatch('loadPlaylistVideos', {
+                        ...this.filters,
+                        cid  : view.cid,
+                        token: view.currentPlaylist
+                    }).then(() => { view.videos_loading = false });
+                }
             } else {
                 view.$store.dispatch('loadMyVideos', this.filters)
                     .then(() => { view.videos_loading = false });

@@ -180,7 +180,7 @@ export default {
             this.$store.commit('setCurrentPlaylist', token);
             this.$store.commit('clearPaging');
 
-            this.$store.dispatch('loadPlaylistCourseVideos', {
+            this.$store.dispatch('loadPlaylistVideos', {
                 cid: this.cid,
                 token: token
             });
@@ -195,7 +195,7 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
 
-            this.$store.dispatch('loadPlaylistCourseVideos', {
+            this.$store.dispatch('loadPlaylistVideos', {
                 cid: this.cid,
                 token: this.currentPlaylist
             });
