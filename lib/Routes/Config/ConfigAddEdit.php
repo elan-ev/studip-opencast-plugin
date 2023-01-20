@@ -10,6 +10,7 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
+use Opencast\Models\WorkflowConfig;
 use Opencast\Models\LTI\LtiLink;
 use Opencast\Models\LTI\LtiHelper;
 use Opencast\Models\REST\Config as RESTConfig;
@@ -52,6 +53,9 @@ class ConfigAddEdit extends OpencastController
         // store config to database
         $config->setData($json['config']);
         $config->store();
+        
+        // create new entries for workflow_config table
+        WorkflowConfig::createForConfigId($config->id);
 
         // check Configuration and load endpoints
         $message = null;

@@ -117,16 +117,27 @@ class WorkflowClient extends RestClient
         $wf_defs = self::getDefinitions();
 
         $tagged_wfs = array();
-
-        if (!empty($wf_defs->definitions->definition)) {
-            foreach ($wf_defs->definitions->definition as $wdef) {
-                if (is_array($wdef->tags->tag)) {
-                    $tagged_wfs[] = array(
-                        'id'          => $wdef->id,
-                        'title'       => $wdef->title,
-                        'description' => $wdef->description,
-                        'tags'        => $wdef->tags->tag
-                    );
+        if (!empty($wf_defs)) {
+            foreach ($wf_defs as $wf_def) {
+                if (!empty($wf_def->tags)) {
+                    if (is_array($wf_def->tags->tag)) {
+                        foreach ($wf_def->tags->tag as $tag) {
+                            $tagged_wfs[] = array(
+                                'id'          => $wf_def->id,
+                                'title'       => $wf_def->title,
+                                'description' => $wf_def->description,
+                                'tag'        => $tag
+                            );
+                        }
+                    }
+                    else {
+                        $tagged_wfs[] = array(
+                            'id'          => $wf_def->id,
+                            'title'       => $wf_def->title,
+                            'description' => $wf_def->description,
+                            'tag'        => $wf_def->tags->tag
+                        );
+                    }
                 }
             }
         }
