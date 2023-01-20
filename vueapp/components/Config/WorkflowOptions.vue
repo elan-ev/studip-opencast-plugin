@@ -43,10 +43,15 @@ export default {
             let wf_defs = [];
 
             if (this.simple_config_list?.settings?.OPENCAST_DEFAULT_SERVER) {
-                let config_id = this.simple_config_list?.settings?.OPENCAST_DEFAULT_SERVER;
+                let config_id = this.simple_config_list.settings.OPENCAST_DEFAULT_SERVER;
                 for (let wf_conf of this.simple_config_list.workflow_configs) {
+                    console.log(wf_conf['config_id'] == config_id)
                     if (wf_conf['config_id'] == config_id) {
                         let options = [];
+                        options.push({
+                            'value': null,
+                            'description': 'Kein Workflow'
+                        })
                         for (let wf of this.simple_config_list.workflows) {
                             if (wf['config_id'] == config_id && wf['tag'] === wf_conf['used_for']) {
                                 options.push({
