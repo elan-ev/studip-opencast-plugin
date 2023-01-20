@@ -45,7 +45,6 @@ export default {
             if (this.simple_config_list?.settings?.OPENCAST_DEFAULT_SERVER) {
                 let config_id = this.simple_config_list.settings.OPENCAST_DEFAULT_SERVER;
                 for (let wf_conf of this.simple_config_list.workflow_configs) {
-                    console.log(wf_conf['config_id'] == config_id)
                     if (wf_conf['config_id'] == config_id) {
                         let options = [];
                         options.push({
