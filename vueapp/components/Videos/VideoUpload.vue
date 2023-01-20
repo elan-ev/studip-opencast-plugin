@@ -228,7 +228,7 @@ export default {
             upload: {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
-                workflow: 'upload',     // TODO: use globally configured workflow
+                workflow: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
@@ -249,11 +249,16 @@ export default {
         }),
 
         upload_workflows() {
-            // TODO: get list of applicaple workflows
-            return [{
-                id:   'upload',
-                name: 'Standard'
-            }]
+            let upload_wfs = [];
+
+            let wfs = this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
+            for (let wf of wfs) {
+                upload_wfs.push({
+                    id: wf['name'],
+                    name: wf['displayname']
+                });
+            }
+            return upload_wfs;
         },
 
         uploadButtonClasses() {
@@ -262,6 +267,12 @@ export default {
             }
 
             return 'accept';
+        },
+
+        getDefaultWorkflow() {
+            let wf_id = this.config['workflow_configs'].find(wf_config => 
+                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf_config['used_for'] === 'upload')['workflow_id'];
+            return this.config['workflows'].find(wf => wf['id'] == wf_id)['name'];
         }
     },
 
@@ -380,6 +391,7 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
+            this.upload.workflow = this.getDefaultWorkflow;
         })
 
         if (this.cid) {
