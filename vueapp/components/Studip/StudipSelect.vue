@@ -43,7 +43,7 @@ export default {
                 parseFloat(this.getStyleValue(dropdownList, 'paddingTop')) +
                 parseFloat(this.getStyleValue(dropdownList, 'paddingBottom'));
             const popper = createPopper(component.$refs.toggle, dropdownList, {
-                placement: this.calculatePlacement(dropdownListHeight),
+                //placement: this.calculatePlacement(dropdownListHeight), TODO this is broken
                 modifiers: [
                     {
                         name: 'offset',
