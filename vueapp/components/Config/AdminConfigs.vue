@@ -51,7 +51,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config_list', 'config_workflows']),
+        ...mapGetters(['config_list', 'simple_config_list', 'config_workflows']),
 
         is_scheduling_enabled() {
             return this.config_list?.scheduling && this.is_scheduling_configured;
@@ -76,6 +76,9 @@ export default {
             }
             if (this.is_scheduling_enabled) {
                 params.resources = this.config_list.scheduling.resources;
+            }
+            if (this.simple_config_list?.workflow_configs) {
+                params.workflow_configs = this.simple_config_list.workflow_configs;
             }
             this.$store.dispatch('configListUpdate', params)
                 .then(({ data }) => {

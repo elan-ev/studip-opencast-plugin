@@ -41,7 +41,6 @@ export default {
 
         workflow_definitions() {
             let wf_defs = [];
-
             if (this.simple_config_list?.settings?.OPENCAST_DEFAULT_SERVER) {
                 let config_id = this.simple_config_list.settings.OPENCAST_DEFAULT_SERVER;
                 for (let wf_conf of this.simple_config_list.workflow_configs) {
