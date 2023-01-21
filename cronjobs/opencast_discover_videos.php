@@ -7,6 +7,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Videos;
 use Opencast\Models\VideosArchive;
 use Opencast\Models\VideoSync;
+use Opencast\Models\Workflow;
 use Opencast\Models\REST\ApiEventsClient;
 
 class OpencastDiscoverVideos extends CronJob
@@ -139,6 +140,8 @@ class OpencastDiscoverVideos extends CronJob
                 $task->store();
             }
         }
+
+        Workflow::updateWorkflows();
     }
 
 }
