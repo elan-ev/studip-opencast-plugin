@@ -269,9 +269,12 @@ export default {
             return 'accept';
         },
 
-        getDefaultWorkflow() {
-            let wf_id = this.config['workflow_configs'].find(wf_config => 
-                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf_config['used_for'] === 'upload')['workflow_id'];
+        defaultWorkflow() {
+            let wf_id = this.config['workflow_configs'].find(wf_config =>
+                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
+                    && wf_config['used_for'] === 'upload'
+            )['workflow_id'];
+
             return this.config['workflows'].find(wf => wf['id'] == wf_id)['name'];
         }
     },
@@ -391,7 +394,7 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
-            this.upload.workflow = this.getDefaultWorkflow;
+            this.upload.workflow = this.defaultWorkflow;
         })
 
         if (this.cid) {
