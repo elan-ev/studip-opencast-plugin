@@ -20,7 +20,6 @@ const state = {
     videoShares: {},
     courseVideosToCopy: [],
     showCourseCopyDialog: false,
-    courseCopyType: 'all',
 }
 
 const getters = {
@@ -63,10 +62,6 @@ const getters = {
     showCourseCopyDialog(state) {
         return state.showCourseCopyDialog
     },
-
-    courseCopyType(state) {
-        return state.courseCopyType
-    }
 }
 
 const actions = {
@@ -125,23 +120,6 @@ const actions = {
         })
     },
 
-    async loadCourseVideos({ commit, state, dispatch, rootState }, data)
-    {
-        let cid = data?.cid ?? window?.OpencastPlugin?.CID;
-        return dispatch('loadVideos', {
-            route: 'courses/' + cid + '/videos',
-            filters: data,
-        })
-    },
-
-    async loadPlaylistCourseVideos({ commit, state, dispatch, rootState }, data)
-    {
-        return dispatch('loadVideos', {
-            route: 'playlists/' + data.token + '/videos/?cid=' + data.cid,
-            filters: data,
-        })
-    },
-
     async uploadSortPositions({}, data) {
         return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
     },
@@ -158,8 +136,8 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async addVideoToCourses(context, data) {
-        return ApiService.post('videos/' + data.token + '/courses', {courses: data.courses});
+    async addVideoToPlaylists(context, data) {
+        return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
     },
 
     async copyVideosToCourses(context, data) {
@@ -207,10 +185,6 @@ const actions = {
 
     toggleCourseCopyDialog({dispatch, state, commit}, mode) {
         commit('setShowCourseCopyDialog', mode);
-    },
-
-    setCourseCopyType({dispatch, state, commit}, type) {
-        commit('setCourseCopyType', type);
     }
 }
 
@@ -266,11 +240,7 @@ const mutations = {
 
     setShowCourseCopyDialog(state, mode) {
         state.showCourseCopyDialog = mode;
-    },
-
-    setCourseCopyType(state, type) {
-        state.courseCopyType = type;
-    },
+    }
 }
 
 export default {

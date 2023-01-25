@@ -32,10 +32,12 @@ class PlaylistSeminars extends \SimpleORMap
 
         if (!is_null($playlist_data['allow_download'])) {
             $playlist_data['allow_download'] = filter_var(
-                $playlist_data['allow_download'], 
+                $playlist_data['allow_download'],
                 FILTER_VALIDATE_BOOLEAN
             );
         }
+
+        $playlist_data['is_default'] = $this->is_default;
 
         return $playlist_data;
     }

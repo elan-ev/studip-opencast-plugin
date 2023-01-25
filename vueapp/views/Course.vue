@@ -64,7 +64,6 @@ export default {
 
         copyAll() {
             this.$store.dispatch('toggleCourseCopyDialog', true);
-            this.$store.dispatch('setCourseCopyType', 'all');
         },
 
         closeCopyDialog() {
@@ -77,7 +76,6 @@ export default {
 
         resetCopyParams() {
             this.$store.dispatch('toggleCourseCopyDialog', false);
-            this.$store.dispatch('setCourseCopyType', 'all');
             this.$store.dispatch('setCourseVideosToCopy', []);
         }
     },

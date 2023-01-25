@@ -73,6 +73,346 @@
         }
       }
     },
+    "/videos/{token}": {
+      "put": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Update Video with ID",
+        "operationId": "updateVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Video object to be updated",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/Video"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Remove the video from Stud.IP and from Opencast!",
+        "description": "**This operation is used to completely remove a video. It will remove the entry from Stud.IP and retract and delete the event completely in Opencast, so use with care!**",
+        "operationId": "deleteVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos/{token}/report": {
+      "put": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Send technical feedback",
+        "description": "Sends a technical feedback for the video with the passed token to the configured OPENCAST_SUPPORT_EMAIL",
+        "operationId": "sendReportForVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Video object to be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/videos/{token}/playlists": {
+      "put": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Set playlist link",
+        "description": "Set playlist links for the video with the passed token, clearing out all not passed playlist links.",
+        "operationId": "linkVideoToPlaylists",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "List of courses to link to",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "courses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/videos/{token}/shares": {
+      "get": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Set playlist link",
+        "description": "Set playlist links for the video with the passed token, clearing out all not passed playlist links.",
+        "operationId": "getSharesForVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shares"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "put": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Set playlist link",
+        "description": "Set playlist links for the video with the passed token, clearing out all not passed playlist links.",
+        "operationId": "setSharesForVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "List of courses to link to",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "courses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shares"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/videos/{course_id}/copy": {
+      "post": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Connect all playlists for the ourse in the path to the courses posted in the body",
+        "operationId": "connectPlaylistsToCourse",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of the course to copy from",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "List of courses to connect the playlists to",
+          "content": {
+            "*/*": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "courses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
     "/playlists": {
       "get": {
         "tags": [
@@ -861,199 +1201,6 @@
             "description": "successful operation"
           }
         }
-      }
-    },
-    "/videos/{token}": {
-      "put": {
-        "tags": [
-          "videos"
-        ],
-        "summary": "Update Video with ID",
-        "operationId": "updateVideo",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "description": "ID of the video",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Video object to be updated",
-          "content": {
-            "*/*": {
-              "schema": {
-                "$ref": "#/components/schemas/Video"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "x-codegen-request-body-name": "body"
-      },
-      "delete": {
-        "tags": [
-          "videos"
-        ],
-        "summary": "Remove the video from Stud.IP and from Opencast!",
-        "description": "**This operation is used to completely remove a video. It will remove the entry from Stud.IP and retract and delete the event completely in Opencast, so use with care!**",
-        "operationId": "deleteVideo",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "description": "ID of the video",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/videos/{token}/report": {
-      "put": {
-        "tags": [
-          "videos"
-        ],
-        "summary": "Send technical feedback",
-        "description": "Sends a technical feedback for the video with the passed token to the configured OPENCAST_SUPPORT_EMAIL",
-        "operationId": "sendReportForVideo",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "description": "ID of the video",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Video object to be updated",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "description": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-codegen-request-body-name": "body"
-      }
-    },
-    "/videos/{token}/courses": {
-      "put": {
-        "tags": [
-          "videos"
-        ],
-        "summary": "Set course link",
-        "description": "Set course links for the video with the passed token, clearing out all not passed course links",
-        "operationId": "linkVideoToCourses",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "description": "ID of the video",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "List of courses to link to",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "courses": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "x-codegen-request-body-name": "body"
       }
     },
     "/tags": {
@@ -2009,6 +2156,51 @@
         "type": "array",
         "items": {
           "type": "string"
+        }
+      },
+      "Shares": {
+        "type": "object",
+        "properties": {
+          "perms": {
+            "type": "object",
+            "properties": {
+              "video_id": {
+                "type": "string"
+              },
+              "user_id": {
+                "type": "string"
+              },
+              "perm": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "fullname": {
+                "type": "string"
+              }
+            }
+          },
+          "shares": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string"
+              },
+              "video_id": {
+                "type": "string"
+              },
+              "uuid": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }

@@ -31,15 +31,7 @@
             Wiedergabelisten
         </div>
         <div class="sidebar-widget-content">
-            <ul class="widget-list widget-links sidebar-navigation">
-                <li :class="{
-                    active: currentPlaylist == 'all'
-                    }"
-                    v-on:click="setPlaylist('all')">
-                    <router-link :to="{ name: 'course' }">
-                        Videos ohne Wiedergabeliste
-                    </router-link>
-                </li>
+            <ul class="widget-list widget-links oc--sidebar-links sidebar-navigation">
                 <li :class="{
                     active: currentPlaylist == playlist.token
                     }"
@@ -47,8 +39,16 @@
                     v-bind:key="playlist.token"
                     v-on:click="setPlaylist(playlist.token)">
                     <router-link :to="{ name: 'course' }">
-                        {{ playlist.title }}
+                        {{ playlist.is_default == 1 ?
+                            $gettext('Kurswiedergabeliste')
+                            : playlist.title
+                        }}
                     </router-link>
+                </li>
+
+                <li v-if="canEdit" @click="showCreatePlaylist">
+                    <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                    {{ $gettext('Wiedergabeliste anlegen') }}
                 </li>
             </ul>
         </div>
@@ -102,12 +102,17 @@
                     <li>
                         <a @click="$emit('copyAll')">
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                            {{ $gettext('Videos/Wiedergabeliste verknüpfen') }}
+                            {{ $gettext('Videos/Wiedergabelisten übertragen') }}
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
+
+        <PlaylistAddCard v-if="addPlaylist"
+            @done="createPlaylist"
+            @cancel="cancelPlaylistAdd"
+        />
     </template>
 </template>
 
@@ -115,14 +120,16 @@
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
+import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
+
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon
+        StudipIcon,     PlaylistAddCard
     },
 
-    emits: ['uploadVideo', 'recordVideo'],
+    emits: ['uploadVideo', 'recordVideo', 'copyAll'],
 
     data() {
         return {
@@ -132,7 +139,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentView",
+        ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'currentPlaylist']),
 
@@ -185,17 +192,10 @@ export default {
             this.$store.commit('setCurrentPlaylist', token);
             this.$store.commit('clearPaging');
 
-            if (token === 'all' || token === null) {
-                this.$store.dispatch('loadCourseVideos', {
-                    cid: this.cid,
-                });
-            } else {
-                this.$store.dispatch('loadPlaylistCourseVideos', {
-                    cid: this.cid,
-                    token: token
-                });
-            }
-
+            this.$store.dispatch('loadPlaylistVideos', {
+                cid: this.cid,
+                token: token
+            });
         },
 
         getScheduleList() {
@@ -207,30 +207,64 @@ export default {
         setView(page) {
             this.$store.dispatch('updateView', page);
 
-            if (this.currentPlaylist === 'all' || this.currentPlaylist === null) {
-                this.$store.dispatch('loadCourseVideos', {
-                    cid: this.cid,
-                });
-            } else {
-                this.$store.dispatch('loadPlaylistCourseVideos', {
-                    cid: this.cid,
-                    token: this.currentPlaylist
-                });
-            }
+            this.$store.dispatch('loadPlaylistVideos', {
+                cid: this.cid,
+                token: this.currentPlaylist
+            });
+
         },
 
         async setVisibility(visibility) {
             await this.$store.dispatch('setVisibility', {'cid': this.cid, 'visibility': visibility});
             this.$router.go(); // Reload page to make changes visible in navigation tab
+        },
+
+        showCreatePlaylist() {
+            this.$store.dispatch('addPlaylistUI', true);
+        },
+
+         cancelPlaylistAdd() {
+            this.$store.dispatch('addPlaylistUI', false);
+        },
+
+        createPlaylist(playlist) {
+            this.$store.dispatch('addPlaylist', playlist);
+        },
+
+        getDefaultPlaylist()
+        {
+            let currentPlaylist = null;
+
+            // set the courses default playlist
+            for (let id in this.playlists) {
+                if (this.playlists[id].is_default == '1') {
+                    currentPlaylist = this.playlists[id].token;
+                }
+            }
+
+            // if no default is found, use the first playlist
+            if (this.currentPlaylist == null) {
+                for (let id in this.playlists) {
+                    currentPlaylist = this.playlists[id].token;
+                    break;
+                }
+            }
+
+            return currentPlaylist;
         }
     },
 
     mounted() {
-        this.$store.dispatch('loadPlaylists');
+        let view = this;
+        this.$store.dispatch('loadPlaylists').
+            then(() => {
+                view.$store.commit('setCurrentPlaylist', view.getDefaultPlaylist());
+            })
 
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;
+
     },
 
     watch: {
@@ -244,6 +278,10 @@ export default {
 
         currentPlaylist(newValue, oldValue) {
             if (newValue !== oldValue) {
+                if (newValue === null) {
+                    // use default playlist
+                    newValue = this.getDefaultPlaylist();
+                }
                 this.setPlaylist(newValue);
             }
         }

@@ -92,11 +92,20 @@ class Playlists extends UPMap
 
         if (!is_null($data['allow_download'])) {
             $data['allow_download'] = filter_var(
-                $data['allow_download'], 
+                $data['allow_download'],
                 FILTER_VALIDATE_BOOLEAN
             );
         }
-        
+
         return $data;
+    }
+
+    public function store()
+    {
+        if (!$this->token) {
+            $this->token = bin2hex(random_bytes(8));
+        }
+
+        parent::store();
     }
 }
