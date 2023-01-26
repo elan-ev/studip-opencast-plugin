@@ -743,7 +743,7 @@ class Videos extends UPMap
         foreach ($series as $s) {
             $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
 
-            $pvideo = PlaylistVideos::findOneBySQL('video_id - ? AND playlist_id = ?', [$video->id, $playlist->id]);
+            $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 
             if (empty($pvideo)) {
                 $pvideo = new self();
