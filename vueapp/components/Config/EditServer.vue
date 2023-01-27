@@ -12,6 +12,9 @@
             <template v-slot:dialogContent ref="editServer-dialog">
                 <form class="default" v-if="currentConfig">
                     <fieldset>
+                        <legend>
+                            {{ $gettext('Grundeinstellungen') }}
+                        </legend>
                         <label v-if="config?.service_version">
                             <b> {{ $gettext('Opencast Version') }} </b><br />
                             {{ config.service_version }}
@@ -21,7 +24,9 @@
                             :setting="setting" :key="setting.name"
                             @updateValue="updateValue" />
                     </fieldset>
-                </form>
+
+                    <WorkflowOptions v-if="id != 'new'"/>
+                 </form>
             </template>
 
             <template v-slot:dialogButtons>
@@ -44,6 +49,7 @@ import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
+import WorkflowOptions from "@/components/Config/WorkflowOptions";
 
 export default {
     name: "EditServer",
@@ -54,6 +60,7 @@ export default {
         StudipDialog,
         ConfigOption,
         MessageList,
+        WorkflowOptions
     },
 
     props: {

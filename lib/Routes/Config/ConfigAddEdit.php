@@ -53,7 +53,7 @@ class ConfigAddEdit extends OpencastController
         // store config to database
         $config->setData($json['config']);
         $config->store();
-        
+
         // create new entries for workflow_config table
         WorkflowConfig::createForConfigId($config->id);
 
@@ -73,6 +73,7 @@ class ConfigAddEdit extends OpencastController
             ];
 
             Endpoints::deleteBySql('config_id = ?', [$config->id]);
+            Config::deleteBySql('id = ?', [$config->id]);
         } else {
             $service_host =
                 $service_url['scheme'] .'://' .

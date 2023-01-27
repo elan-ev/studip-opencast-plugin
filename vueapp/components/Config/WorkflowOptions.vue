@@ -34,8 +34,6 @@ export default {
         I18NText
     },
 
-    props: ['config_list'],
-
     computed: {
         ...mapGetters(['config', 'simple_config_list']),
 
