@@ -61,7 +61,7 @@
                                     <div v-if="alert">{{ alert }}</div>
                                 </section>
                                 <footer class="studip-dialog-footer" ref="footer">
-                                    <button
+                                    <button :disabled="disabled"
                                         v-if="buttonA"
                                         :title="buttonA.text"
                                         :class="[buttonA.class]"
@@ -115,6 +115,7 @@ export default {
         question: String,
         alert: String,
         message: String,
+        disabled: false
     },
     data() {
         const dialogId = uuid++;

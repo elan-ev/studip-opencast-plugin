@@ -4,6 +4,7 @@
             :title="$gettext('Opencast Server Einstellungen')"
             :confirmText="$gettext('Einstellungen speichern und überprüfen')"
             :closeText="$gettext('Schließen')"
+            :disabled="disabled"
             height="600"
             width="600"
             @confirm="storeConfig"
@@ -22,16 +23,15 @@
                             @updateValue="updateValue" />
                     </fieldset>
                 </form>
+
+                <MessageList :float="true"/>
             </template>
 
             <template v-slot:dialogButtons>
-                <button class="button trash" type="button" @click="deleteConfig">
+                <button class="button trash" type="button" @click="deleteConfig" :disabled="disabled">
                     Löschen
                 </button>
             </template>
-
-            <MessageList />
-
         </StudipDialog>
     </div>
 </template>
@@ -68,7 +68,8 @@ export default {
 
     data() {
         return {
-            currentConfig: {}
+            currentConfig: {},
+            disabled: false
         }
     },
 
@@ -154,6 +155,7 @@ export default {
         },
 
         storeConfig() {
+            this.disabled = true;
             this.$store.dispatch('clearMessages');
 
             this.currentConfig.checked = false;
@@ -161,6 +163,7 @@ export default {
             if (this.id == 'new') {
                 this.$store.dispatch('configCreate', this.currentConfig)
                 .then(({ data }) => {
+                    this.disabled = false;
                     this.$store.dispatch('configListRead', data.config);
                     this.checkConfigResponse(data);
                 });
@@ -168,6 +171,7 @@ export default {
                 this.$store.dispatch('configUpdate', this.currentConfig)
                 .then(({ data }) => {
                     this.$store.dispatch('configListRead', data.config);
+                    this.disabled = false;
                     this.checkConfigResponse(data);
                 });
             }
