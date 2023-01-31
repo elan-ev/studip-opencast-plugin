@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\WorkflowConfig;
+
 class UpdateWorkflowTables extends Migration
 {
     public function description()
@@ -27,6 +29,7 @@ class UpdateWorkflowTables extends Migration
             Drop COLUMN `workflow`,
             MODIFY `used_for` enum('schedule','upload','studio','editor','delete'),
             ADD COLUMN workflow_id int,
+            ADD UNIQUE KEY oc_workflow_config_unique(config_id, used_for),
             ADD CONSTRAINT oc_workflow_config_fk_wf_id FOREIGN KEY (`workflow_id`) REFERENCES `oc_workflow` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ");
 
@@ -44,6 +47,7 @@ class UpdateWorkflowTables extends Migration
             VALUES (:config_id, :used_for, null)');
         
         foreach ($configs as $config) {
+            //WorkflowConfig::createForConfigId($config['id']);     TODO Workflow API fails
             foreach ($types as $type) {
                 $stmt->execute([
                     'config_id' => $config['id'],
@@ -66,7 +70,8 @@ class UpdateWorkflowTables extends Migration
             ADD COLUMN `displayname` varchar(255),
             ADD COLUMN `workflow` varchar(255),
             MODIFY `used_for` enum('schedule','upload','studio'),
-            DROP COLUMN workflow_id;
+            DROP COLUMN workflow_id,
+            DROP CONSTRAINT oc_workflow_config_unique;
         ");
         $db->exec("DELETE FROM oc_workflow_config");
 

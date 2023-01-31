@@ -50,12 +50,17 @@ class ConfigAddEdit extends OpencastController
 
         $json['config']['settings'] = $new_settings;
 
+        // save configured workflows to store them when installation is successfull
+        $workflows = [];
+        if (isset($json['config']['settings']['workflow_configs'])) {
+            foreach ($json['config']['settings']['workflow_configs'] as $wf_config) {
+                $workflows[$wf_config['id']] = $wf_config;
+            }
+            unset($json['config']['settings']['workflow_configs']);
+        }
         // store config to database
         $config->setData($json['config']);
         $config->store();
-
-        // create new entries for workflow_config table
-        WorkflowConfig::createForConfigId($config->id);
 
         // check Configuration and load endpoints
         $message = null;
@@ -136,6 +141,9 @@ class ConfigAddEdit extends OpencastController
                             unset($services[$service_url]);
                         }
                     }
+
+                    // create new entries for workflow_config table
+                    WorkflowConfig::createForConfigId($config->id, $workflows);
 
                     $success_message[] = sprintf(
                         _('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),

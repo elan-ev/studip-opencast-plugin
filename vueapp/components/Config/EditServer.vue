@@ -81,7 +81,8 @@ export default {
 
     computed: {
         ...mapGetters({
-            configStore: 'config'
+            configStore: 'config',
+            simple_config_list: 'simple_config_list'
         }),
 
         settings() {
@@ -172,6 +173,9 @@ export default {
                     this.checkConfigResponse(data);
                 });
             } else {
+                if (this.simple_config_list?.workflow_configs) {
+                    this.currentConfig.workflow_configs = this.simple_config_list.workflow_configs;
+                }
                 this.$store.dispatch('configUpdate', this.currentConfig)
                 .then(({ data }) => {
                     this.$store.dispatch('configListRead', data.config);

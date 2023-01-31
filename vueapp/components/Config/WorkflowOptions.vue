@@ -44,17 +44,21 @@ export default {
                 for (let wf_conf of this.simple_config_list.workflow_configs) {
                     if (wf_conf['config_id'] == config_id) {
                         let options = [];
-                        options.push({
-                            'value': null,
-                            'description': 'Kein Workflow'
-                        })
                         for (let wf of this.simple_config_list.workflows) {
-                            if (wf['config_id'] == config_id && wf['tag'] === wf_conf['used_for']) {
+                            if (wf['config_id'] == config_id && 
+                                (wf['tag'] === wf_conf['used_for'] || wf['tag'] === 'upload' && wf_conf['used_for'] === 'studio')) {
                                 options.push({
                                     'value': wf['id'],
                                     'description': wf['displayname']
                                 })
                             }
+                        }
+
+                        if (options.length == 0) {
+                            options.push({
+                                'value': null,
+                                'description': 'Kein Workflow verfügbar'
+                            });
                         }
 
                         wf_defs.push({

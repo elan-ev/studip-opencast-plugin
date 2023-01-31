@@ -2,6 +2,8 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\Workflow;
+
 class WorkflowConfig extends \SimpleORMap
 {
     protected static function configure($config = [])
@@ -11,11 +13,31 @@ class WorkflowConfig extends \SimpleORMap
         parent::configure($config);
     }
 
-    public static function createForConfigId($config_id) {
+    public static function createForConfigId($config_id, $workflows) {
+        Workflow::updateWorkflows();
+
         foreach (self::getTypes() as $type) {
-            $entry = new self();
-            $entry->setValue('config_id', $config_id);
-            $entry->setValue('used_for', $type);
+            $entry = self::findOneBySql('config_id = ? AND used_for = ?', [$config_id, $type]);
+            if (!isset($entry)) {
+                $entry = new self();
+                $entry->setValue('config_id', $config_id);
+                $entry->setValue('used_for', $type);
+            }
+            
+            $type = ($type == 'studio') ? 'upload' : $type;
+            $workflow_id = isset($workflows[$entry->id]) ? $workflows[$entry->id]['workflow_id'] : $entry->workflow_id;
+            if (Workflow::countBySql('config_id = ? AND tag = ? AND id = ?', [$config_id, $type, $workflow_id]) > 0) {
+                $entry->setValue('workflow_id', $workflow_id);
+            }
+            else {
+                $workflow = Workflow::findOneBySql('config_id = ? AND tag = ?', [$config_id, $type]);
+                if (isset($workflow)) {
+                    $entry->setValue('workflow_id', $workflow->id);
+                }
+                else {
+                    $entry->setValue('workflow_id', null);
+                }
+            }
             $entry->store();
         }
     }

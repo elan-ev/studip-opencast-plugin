@@ -166,10 +166,11 @@ export default {
             // use the first avai
             return window.STUDIP.URLHelper.getURL(
                 server.studio, {
-                    'upload.seriesId' : this.course_config['series']['series_id'],
-                    'upload.acl'      : false,
-                    'return.target'   : window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + this.cid),
-                    'return.label'    : 'Stud.IP'
+                    'upload.seriesId'  : this.course_config['series']['series_id'],
+                    'upload.acl'       : false,
+                    'upload.workflowId': this.getWorkflow(config_id),
+                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + this.cid),
+                    'return.label'     : 'Stud.IP'
                 }
             );
         },
@@ -223,7 +224,7 @@ export default {
             this.$store.dispatch('addPlaylistUI', true);
         },
 
-         cancelPlaylistAdd() {
+        cancelPlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
@@ -251,6 +252,11 @@ export default {
             }
 
             return currentPlaylist;
+        },
+
+        getWorkflow(config_id) {
+            let wf_id = this.simple_config_list?.workflow_configs.find(wf_config => wf_config['config_id'] == config_id && wf_config['used_for'] === 'studio')['workflow_id'];
+            return this.simple_config_list?.workflows.find(wf => wf['id'] == wf_id)['name'];
         }
     },
 

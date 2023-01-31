@@ -74,9 +74,6 @@ export default {
             if (this.is_scheduling_enabled) {
                 params.resources = this.config_list.scheduling.resources;
             }
-            if (this.simple_config_list?.workflow_configs) {
-                params.workflow_configs = this.simple_config_list.workflow_configs;
-            }
             this.$store.dispatch('configListUpdate', params)
                 .then(({ data }) => {
                     if (data.messages.length) {
