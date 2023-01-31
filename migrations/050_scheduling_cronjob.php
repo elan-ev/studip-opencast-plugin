@@ -3,6 +3,7 @@
 class SchedulingCronJob extends Migration
 {
     const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/opencast_refresh_scheduling.php';
+    const BASE_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
 
     public function description()
     {
