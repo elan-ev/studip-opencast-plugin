@@ -47,7 +47,7 @@ class UpdateWorkflowTables extends Migration
             VALUES (:config_id, :used_for, null)');
         
         foreach ($configs as $config) {
-            //WorkflowConfig::createForConfigId($config['id']);     TODO Workflow API fails
+            //WorkflowConfig::createOrUpdatebyConfigId($config['id']);     TODO Workflow API fails
             foreach ($types as $type) {
                 $stmt->execute([
                     'config_id' => $config['id'],

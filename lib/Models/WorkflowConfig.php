@@ -3,6 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Models\Workflow;
+use Opencast\Models\Config;
 
 class WorkflowConfig extends \SimpleORMap
 {
@@ -13,8 +14,15 @@ class WorkflowConfig extends \SimpleORMap
         parent::configure($config);
     }
 
-    public static function createForConfigId($config_id, $workflows) {
-        Workflow::updateWorkflows();
+    public static function createAndUpdateAll($workflows=null) {
+        $configs = Config::findBySql(1);
+        foreach ($configs as $config) {
+            self::createAndUpdateByConfigId($config['id'], $workflows);
+        }
+    }
+
+    public static function createAndUpdateByConfigId($config_id, $workflows=null) {
+        Workflow::updateWorkflowsByConfigId($config_id);
 
         foreach (self::getTypes() as $type) {
             $entry = self::findOneBySql('config_id = ? AND used_for = ?', [$config_id, $type]);

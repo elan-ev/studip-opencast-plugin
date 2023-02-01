@@ -7,7 +7,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Videos;
 use Opencast\Models\VideosArchive;
 use Opencast\Models\VideoSync;
-use Opencast\Models\Workflow;
+use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
 
 class OpencastDiscoverVideos extends CronJob
@@ -94,6 +94,9 @@ class OpencastDiscoverVideos extends CronJob
                 }
             }
 
+            // Update Workflows
+            WorkflowConfig::createAndUpdateByConfigId($config['id']);
+
             // hide all videos, which are not present in opencast anymore
             /*
             foreach (array_diff($local_event_ids, $event_ids) as $old_event_id) {
@@ -141,7 +144,6 @@ class OpencastDiscoverVideos extends CronJob
             }
         }
 
-        Workflow::updateWorkflows();
     }
 
 }

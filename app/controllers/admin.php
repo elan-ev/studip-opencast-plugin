@@ -1,6 +1,6 @@
 <?php
 
-use Opencast\Models\Workflow;
+use Opencast\Models\WorkflowConfig;
 
 class AdminController extends Opencast\Controller
 {
@@ -40,6 +40,6 @@ class AdminController extends Opencast\Controller
             PageLayout::postMessage(MessageBox::warning(_('Das Plugin benötigt die "Nobody"-Rolle, um Opencast den Abruf der Nutzendenberechtigungen zu ermöglichen. Diese Rolle wurde jedoch noch nicht zugewiesen, deshalb ist das Plugin momentan nur eingeschränkt funktionsfähig.')));
         }
 
-        Workflow::updateWorkflows();
+        WorkflowConfig::createAndUpdateAll();
     }
 }

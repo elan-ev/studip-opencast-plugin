@@ -143,7 +143,7 @@ class ConfigAddEdit extends OpencastController
                     }
 
                     // create new entries for workflow_config table
-                    WorkflowConfig::createForConfigId($config->id, $workflows);
+                    WorkflowConfig::createAndUpdateByConfigId($config->id, $workflows);
 
                     $success_message[] = sprintf(
                         _('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
