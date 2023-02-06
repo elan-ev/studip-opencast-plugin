@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Teleport to="#layout-sidebar > section.sidebar">
+        <Teleport :to="toLayoutName">
             <VideosSidebar
                 @uploadVideo="uploadDialog = true"
                 @allowDownloadForPlaylist="allowDownload"
@@ -41,7 +41,16 @@ export default {
     computed: {
         ...mapGetters([
             'currentUser'
-        ])
+        ]),
+
+        toLayoutName() {
+            if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
+                return "#sidebar";
+            }
+            else {
+                return "#layout-sidebar > section.sidebar";
+            }
+        }
     },
 
     data() {

@@ -1,6 +1,6 @@
 <template>
     <div class="container" id="app-episodes">
-        <Teleport to="#layout-sidebar > section.sidebar">
+        <Teleport :to="toLayoutName">
             <CoursesSidebar
                 @uploadVideo="uploadDialog = true"
                 @copyAll="copyAll">
@@ -44,7 +44,16 @@ export default {
         ...mapGetters([
             'currentUser',
             'showCourseCopyDialog'
-        ])
+        ]),
+
+        toLayoutName() {
+            if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
+                return "#sidebar";
+            }
+            else {
+                return "#layout-sidebar > section.sidebar";
+            }
+        }
     },
 
       data() {
