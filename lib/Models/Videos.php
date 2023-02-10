@@ -213,6 +213,12 @@ class Videos extends UPMap
                     }
 
                     break;
+
+                // if the videos shall be filtered by course, consider all playlists, which are connected to the selected courses
+                case 'course':
+                    /*$course_playlist_ids[] = $filter['value'];
+                    break;
+                    */
             }
         }
 

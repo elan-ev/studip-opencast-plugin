@@ -46,6 +46,9 @@
                 <li @click="selectToken('playlist')" v-if="playlist && playlists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
+                <li @click="selectToken('course')" v-if="userCourses">
+                    {{ $gettext('Veranstaltung') }}
+                </li>
             </ul>
 
             <ul v-if="tokenState == 'compare'">
@@ -63,6 +66,17 @@
                 <li v-for="playlist in playlists" v-bind:key="playlist.token" @click="selectToken(playlist)">
                     {{ playlist.title }}
                 </li>
+            </ul>
+
+             <ul v-if="tokenState == 'value' && token.type == 'course'">
+                <template v-for="semester in userCourses" v-bind:key="semester">
+                    <template v-for="(courses,semester_name) in semester" v-bind:key="semester_name">
+                        <b>{{ semester_name }}</b>
+                        <li v-for="course in courses" v-bind:key="course.id" @click="selectToken(course)">
+                            {{ course.name }}
+                        </li>
+                    </template>
+                </template>
             </ul>
         </div>
     </div>
@@ -104,7 +118,8 @@ export default {
         ...mapGetters([
             'videoSort',
             'availableTags',
-            'playlists'
+            'playlists',
+            'userCourses'
         ]),
 
         filteredTags() {
@@ -215,8 +230,11 @@ export default {
                     this.token.type      = 'playlist';
                     this.token.type_name = this.$gettext('Wiedergabeliste')
                     this.tokenState      = 'compare';
+                } else if (content == 'course') {
+                    this.token.type      = 'course';
+                    this.token.type_name = this.$gettext('Veranstaltung')
+                    this.tokenState      = 'compare';
                 }
-
             } else if (this.tokenState == 'compare')
             {
                 this.token.compare = content;
@@ -230,7 +248,11 @@ export default {
                 } else if (this.token.type == 'playlist') {
                     this.token.value      = content.token;
                     this.token.value_name = content.title;
+                } else if (this.token.type == 'course') {
+                    this.token.value      = content.id;
+                    this.token.value_name = content.name;
                 }
+
                 this.tokenState       = 'main';
 
                 this.searchTokens.push(this.token);
@@ -274,6 +296,7 @@ export default {
     mounted() {
         this.$store.dispatch('updateAvailableTags');
         this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('loadUserCourses');
 
         if (this.playlist) {
             // find sort order for current playlist
