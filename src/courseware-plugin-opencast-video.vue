@@ -1,5 +1,5 @@
 <template>
-      <div class="cw-block cw-block-test">
+      <div class="cw-block">
         <component
             :is="containerComponents.CoursewareDefaultBlock"
             :block="block"
