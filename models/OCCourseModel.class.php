@@ -167,7 +167,10 @@ class OCCourseModel
         }
 
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) FROM oc_seminar_episodes
-            WHERE seminar_id = :seminar_id AND oc_seminar_episodes.mkdate > :lastvisit");
+            WHERE seminar_id = :seminar_id
+                AND oc_seminar_episodes.mkdate > :lastvisit
+                AND oc_seminar_episodes.visible != 'invisible'
+        ");
 
         $stmt->bindParam(':seminar_id', $course_id);
         $stmt->bindParam(':lastvisit', $visitdate);

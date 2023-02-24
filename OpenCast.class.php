@@ -158,30 +158,34 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             return;
         }
 
+        $num_entries = 0;
+        $text        = $this->_('Opencast Aufzeichnungen');
+
         $this->image_path = $this->getPluginURL() . '/images/';
         if ($GLOBALS['perm']->have_studip_perm('user', $course_id)) {
-            $ocgetcount = OCCourseModel::getCount($course_id, $last_visit);
-            $text       = sprintf(
-                $this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'),
-                $ocgetcount
-            );
-        } else {
-            $num_entries = 0;
-            $text        = $this->_('Opencast Aufzeichnungen');
+            $num_entries = OCCourseModel::getCount($course_id, $last_visit);
+
+            if ($num_entries) {
+                $text       = sprintf(
+                    $this->_('Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch.'),
+                    $num_entries
+                );
+            }
         }
 
         $navigation = new Navigation(
             'opencast',
             PluginEngine::getURL($this, [], 'course/index/false')
         );
+
         $navigation->setBadgeNumber($num_entries);
         $navigation->setDescription($text);
-        if ($ocgetcount > 0) {
+        if ($num_entries > 0) {
             $navigation->setImage(
                 Icon::create(
                     $this->getPluginURL() . '/images/opencast-red.svg',
                     Icon::ROLE_ATTENTION,
-                    ['title' => 'Opencast']
+                    ['title' => $text]
                 )
             );
         } else {
@@ -189,7 +193,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 Icon::create(
                     $this->getPluginURL() . '/images/opencast-grey.svg',
                     Icon::ROLE_INACTIVE,
-                    ['title' => 'Opencast']
+                    ['title' => $text]
                 )
             );
         }
