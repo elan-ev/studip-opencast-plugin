@@ -16,7 +16,7 @@
                       <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
                   </div>
                   <div v-else>
-                      <iframe :src="currentUrl"
+                    <iframe :src="currentUrl"
                         class="oc_courseware"
                         allowfullscreen
                     ></iframe>
