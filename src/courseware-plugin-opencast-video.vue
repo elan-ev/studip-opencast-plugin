@@ -10,6 +10,7 @@
             @closeEdit="initCurrentData"
         >
             <template #content>
+                <h2 v-if="currentTitle">{{ currentTitle }}</h2>
                 <div v-if="context.type == 'courses'">
                   <div v-if="currentUrl === null || ltiConnected == false">
                       <span v-if="currentUrl === null" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
@@ -43,7 +44,15 @@
 
                 <form v-if="context.type == 'courses'" class="default" @submit.prevent="">
                     <label>
-                        <translate>Video auswählen</translate>
+                        <translate>
+                            Titel:
+                        </translate>
+                        <input type="text" v-model="currentTitle">
+                    </label>
+                    <label>
+                        <translate>
+                            Video auswählen
+                        </translate>
                         <studip-select
                             :options="episodes"
                             label="name"
@@ -115,7 +124,9 @@ export default {
             ltiConnected    : false,
             loadingSeries   : false,
             loadingEpisodes : false,
-            currentVisible  : true
+            currentVisible  : true,
+            currentTitle    : '',
+            titleFromBackend: false
         }
     },
 
@@ -130,7 +141,8 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl
+                url       : this.currentUrl,
+                title     : this.currentTitle
             } };
             const container = this.$store.getters["courseware-containers/related"]({
                 parent: this.block,
@@ -147,6 +159,11 @@ export default {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
             this.currentUrl     = get(this.block, "attributes.payload.url", "");
+            this.currentTitle   = get(this.block, "attributes.payload.title", "");
+
+            if (this.currentTitle) {
+                this.titleFromBackend = true;
+            }
         },
 
         loadEpisodes() {
@@ -188,6 +205,9 @@ export default {
                     this.currentSeries  = this.episodes[id].series_id;
                     this.currentUrl     = this.episodes[id].url;
                     this.currentVisible = this.episodes[id].visible;
+                    if (!this.titleFromBackend) {
+                        this.currentTitle = this.episodes[id].name;
+                    }
                 }
             }
         }
