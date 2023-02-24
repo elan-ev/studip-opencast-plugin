@@ -5,7 +5,7 @@
  */
 
 use Opencast\Models\OCConfig;
-
+use Opencast\ConnectionTimedOutException;
 class OCRestClient
 {
     public static $me;
@@ -87,6 +87,9 @@ class OCRestClient
         //ssl
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, False);
         curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, False);
+
+        curl_setopt($this->ochandler, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($this->ochandler, CURLOPT_TIMEOUT, 3);
 
         // check, if debugging is enabled
         if (Context::getId()) {
@@ -192,6 +195,10 @@ class OCRestClient
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
 
+            if (curl_errno($this->ochandler) == 28) {
+                throw new ConnectionTimedOutException('Connection to Opencast-Server timed out!');
+            }
+
             if ($this->debug_curl) {
                 fclose($this->debug);
                 $runtime = (microtime(true) - $timing) / 1000;
@@ -270,6 +277,10 @@ class OCRestClient
             curl_setopt_array($this->ochandler, $options);
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+            if (curl_errno($this->ochandler) == 28) {
+                throw new ConnectionTimedOutException('Connection to Opencast-Server timed out!');
+            }
 
             if ($this->debug_curl) {
                 fclose($this->debug);
