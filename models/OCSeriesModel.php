@@ -321,14 +321,6 @@ class OCSeriesModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function updateSchedule($seminar_id, $schedule)
-    {
-        $stmt = DBManager::get()->prepare("UPDATE
-                oc_seminar_series SET `schedule` = ?  WHERE `seminar_id` = ?");
-
-        return $stmt->execute([$schedule, $seminar_id]);
-    }
-
     public static function getWorkflowForEvent($seminar_id, $termin_id)
     {
         $stmt = DBManager::get()->prepare('SELECT `workflow_id`FROM `oc_scheduled_recordings`

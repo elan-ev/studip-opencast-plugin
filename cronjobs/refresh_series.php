@@ -29,7 +29,7 @@ class RefreshSeries extends CronJob
 
         $stmt = DBManager::get()->prepare("SELECT ocs.seminar_id FROM oc_seminar_series AS ocs
                 LEFT JOIN seminare AS sem ON ocs.seminar_id = sem.Seminar_id WHERE start_time <= IFNULL(?, UNIX_TIMESTAMP())
-                          AND (? <= start_time + duration_time OR duration_time = -1) AND ocs.schedule=1");
+                          AND (? <= start_time + duration_time OR duration_time = -1)");
         $stmt->execute(array($semester_cur->beginn, $semester_cur->beginn));
         $courses  = $stmt->fetchAll(PDO::FETCH_COLUMN);
         if (!empty($courses)) {
