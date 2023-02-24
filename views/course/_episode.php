@@ -149,7 +149,7 @@ $sort_orders = Pager::getSortOptions();
                                         $_('Technisches Feedback'),
                                         'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL
                                             . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALinks zum betroffenen Video:%0D%0A'
-                                            . $controller->link_for('course/index/' . $item['id']) ."%0D%0A"
+                                            . URLHelper::getLink($controller->link_for('course/index/' . $item['id'])) . "%0D%0A"
                                             . $video_url . $item['id'],
                                         [
                                             'target' => '_blank',
