@@ -11,6 +11,9 @@ use Opencast\OpencastController;
 use Opencast\Models\Videos;
 use Opencast\Models\VideoTags;
 use Opencast\Models\Tags;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\PlaylistSeminarVideos;
 
 class VideoUpdate extends OpencastController
 {
@@ -67,6 +70,25 @@ class VideoUpdate extends OpencastController
             unset($event['tags']);
         }
 
+        if (isset($event['from_cid']) && isset($event['from_playlist'])) {
+            $playlist = Playlists::findOneByToken($event['from_playlist']);
+            if (!empty($playlist)) {
+                $playlistSeminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$event['from_cid'], $playlist->id]);
+                if (!empty($playlistSeminar)) {
+                    PlaylistSeminarVideos::deleteBySQL('playlist_seminar_id = ? AND video_id = ?', [$playlistSeminar->id, $video->id]);
+                    if (isset($event['playlist_seminar'])) {
+                        $pvs = new PlaylistSeminarVideos();
+                        $pvs->setValue('playlist_seminar_id', $playlistSeminar->id);
+                        $pvs->setValue('video_id', $video->id);
+                        $pvs->setValue('visibility', $event['playlist_seminar']['visibility']);
+                        $pvs->setValue('visible_timestamp', $event['playlist_seminar']['visible_timestamp']);
+                        $pvs->store();
+                    }
+                }
+            }
+
+        }
+
         $message = [
             'type' => 'success',
             'text' => _('Das Video wurde erfolgreich aktualisiert.')
@@ -78,7 +100,7 @@ class VideoUpdate extends OpencastController
             $message = [
                 'type' => 'error',
                 'text' => _('Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
-                    . ': '. $response['code'] . ' - '. $response['message']
+                //    . ': '. $response['code'] . ' - '. $response['message'] // TODO this throws error
             ];
         }
 

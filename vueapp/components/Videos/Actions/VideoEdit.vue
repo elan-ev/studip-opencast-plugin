@@ -48,6 +48,83 @@
                             Tags
                             <TagBar :taggable="event" @update="updatedTags"/>
                         </label>
+
+                        <label v-if="isCourse">
+                            <div>
+                                <span v-translate>
+                                    Sichtbarkeit des Videos
+                                </span>
+                            </div>
+
+                            <section class="hgroup size-m">
+                                <label>
+                                    <input type="radio" value="2"
+                                        :checked="visibility == 'default'"
+                                        @change="visibility = 'default'"
+                                    >
+                                    <translate>
+                                        Standard
+                                    </translate>
+                                </label>
+
+                                <label>
+                                    <input type="radio" value="1"
+                                        :checked="visibility == 'visible'"
+                                        @change="visibility = 'visible'"
+                                    >
+                                    <translate>
+                                        Sichtbar
+                                    </translate>
+                                </label>
+
+                                <label>
+                                    <input type="radio" value="0"
+                                        :checked="visibility == 'hidden'"
+                                        @change="visibility = 'hidden'"
+                                    >
+                                    <translate>
+                                        Unsichtbar
+                                    </translate>
+                                </label>
+                            </section>
+                        </label>
+
+                        <label v-if="showUseTimestamp">
+                            <div>
+                                <span v-translate>
+                                    Soll dieses Video über einen Zeitstempel Sichtbar geschaltet werden können?
+                                </span>
+                            </div>
+
+                            <section class="hgroup size-s">
+                                <label>
+                                    <input type="radio" value="1"
+                                        :checked="use_timestamp"
+                                        @change="use_timestamp = true"
+                                    >
+                                    <translate>
+                                        Ja
+                                    </translate>
+                                </label>
+
+                                <label>
+                                    <input type="radio" value="0"
+                                        :checked="!use_timestamp"
+                                        @change="use_timestamp = false"
+                                    >
+                                    <translate>
+                                        Nein
+                                    </translate>
+                                </label>
+                            </section>
+                        </label>
+
+                        <label v-if="showUseTimestamp && use_timestamp">
+                            <span v-translate>
+                                Zeitstempel für die Sichtbarkeit
+                            </span>
+                            <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp">
+                        </label>
                     </fieldset>
                 </form>
             </template>
@@ -56,6 +133,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog';
 import TagBar from '@/components/TagBar.vue';
 
@@ -66,12 +144,58 @@ export default {
         StudipDialog, TagBar
     },
 
+    data() {
+        return {
+            visibility: null,
+            visible_timestamp: null,
+            use_timestamp: false
+        }
+    },
+
     props: ['event'],
 
     emits: ['done', 'cancel'],
 
+    computed: {
+        ...mapGetters([
+            "cid", 
+            "playlists", "currentPlaylist"
+        ]),
+
+        isCourse() {
+            return this?.cid ? true : false;
+        },
+
+        defaultVisibility() {
+            return this.playlists.find(p => p['token'] === this.currentPlaylist)['visibility'];
+        },
+
+        showUseTimestamp() {
+            return this.isCourse && (this.visibility == 'hidden' || this.visibility == 'default' && this.defaultVisibility == 'hidden');
+        }
+    },
+
     methods: {
         async accept() {
+            // Handle visibility
+            this.event.from_cid = this.cid;
+            this.event.from_playlist = this.currentPlaylist;
+            if (this.visibility === "default") {
+                this.event.playlist_seminar = undefined;
+            }
+            else {
+                if (this.event.playlist_seminar === undefined) {
+                    this.event.playlist_seminar = {};
+                }
+                this.event.playlist_seminar.visibility = this.visibility;
+                this.event.playlist_seminar.visible_timestamp = null;
+                if (this.visibility !== 'visible') {
+                    if (this.use_timestamp && this.visible_timestamp !== undefined) {
+                        this.event.playlist_seminar.visible_timestamp = this.visible_timestamp;
+                    }
+                }
+            }
+
             await this.$store.dispatch('updateVideo', this.event)
             .then(({ data }) => {
                 this.$store.dispatch('addMessage', data.message);
@@ -94,6 +218,21 @@ export default {
                         tag:  this.event.tags[i]
                     }
                 }
+            }
+        }
+    },
+
+    mounted() {
+        // Initialize visibility
+        this.visibility = "default";
+        if (this.event.playlist_seminar !== undefined) {
+            if (this.event.playlist_seminar.visibility !== null) {
+                this.visibility = this.event.playlist_seminar.visibility;
+            }
+            if (this.event.playlist_seminar.visibility === 'hidden' &&
+                     this.event.playlist_seminar.visible_timestamp !== null) {
+                this.visible_timestamp = this.event.playlist_seminar.visible_timestamp;
+                this.use_timestamp = true;
             }
         }
     }
