@@ -356,7 +356,7 @@ class Videos extends UPMap
                 ];
             }
         }
-        return [];
+        return null;
     }
 
     /**

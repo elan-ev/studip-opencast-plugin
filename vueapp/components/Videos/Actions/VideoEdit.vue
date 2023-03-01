@@ -60,7 +60,7 @@
                                 <label>
                                     <input type="radio" value="2"
                                         :checked="visibility == 'default'"
-                                        @change="visibility = 'default'"
+                                        @change="changeVisibility('default')"
                                     >
                                     <translate>
                                         Standard
@@ -70,7 +70,7 @@
                                 <label>
                                     <input type="radio" value="1"
                                         :checked="visibility == 'visible'"
-                                        @change="visibility = 'visible'"
+                                        @change="changeVisibility('visible')"
                                     >
                                     <translate>
                                         Sichtbar
@@ -80,7 +80,7 @@
                                 <label>
                                     <input type="radio" value="0"
                                         :checked="visibility == 'hidden'"
-                                        @change="visibility = 'hidden'"
+                                        @change="changeVisibility('hidden')"
                                     >
                                     <translate>
                                         Unsichtbar
@@ -89,41 +89,11 @@
                             </section>
                         </label>
 
-                        <label v-if="showUseTimestamp">
-                            <div>
-                                <span v-translate>
-                                    Soll dieses Video über einen Zeitstempel Sichtbar geschaltet werden können?
-                                </span>
-                            </div>
-
-                            <section class="hgroup size-s">
-                                <label>
-                                    <input type="radio" value="1"
-                                        :checked="use_timestamp"
-                                        @change="use_timestamp = true"
-                                    >
-                                    <translate>
-                                        Ja
-                                    </translate>
-                                </label>
-
-                                <label>
-                                    <input type="radio" value="0"
-                                        :checked="!use_timestamp"
-                                        @change="use_timestamp = false"
-                                    >
-                                    <translate>
-                                        Nein
-                                    </translate>
-                                </label>
-                            </section>
-                        </label>
-
-                        <label v-if="showUseTimestamp && use_timestamp">
+                        <label>
                             <span v-translate>
                                 Zeitstempel für die Sichtbarkeit
                             </span>
-                            <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp">
+                            <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp" @change="checkVisibility">
                         </label>
                     </fieldset>
                 </form>
@@ -159,7 +129,8 @@ export default {
     computed: {
         ...mapGetters([
             "cid", 
-            "playlists", "currentPlaylist"
+            "playlists", 
+            "currentPlaylist"
         ]),
 
         isCourse() {
@@ -169,31 +140,22 @@ export default {
         defaultVisibility() {
             return this.playlists.find(p => p['token'] === this.currentPlaylist)['visibility'];
         },
-
-        showUseTimestamp() {
-            return this.isCourse && (this.visibility == 'hidden' || this.visibility == 'default' && this.defaultVisibility == 'hidden');
-        }
     },
 
     methods: {
         async accept() {
             // Handle visibility
-            this.event.from_cid = this.cid;
-            this.event.from_playlist = this.currentPlaylist;
+            this.event.cid = this.cid;
+            this.event.playlist_token = this.currentPlaylist;
+            this.checkVisibility();
             if (this.visibility === "default") {
-                this.event.playlist_seminar = undefined;
+                this.event.seminar_visibility = null;
             }
             else {
-                if (this.event.playlist_seminar === undefined) {
-                    this.event.playlist_seminar = {};
-                }
-                this.event.playlist_seminar.visibility = this.visibility;
-                this.event.playlist_seminar.visible_timestamp = null;
-                if (this.visibility !== 'visible') {
-                    if (this.use_timestamp && this.visible_timestamp !== undefined) {
-                        this.event.playlist_seminar.visible_timestamp = this.visible_timestamp;
-                    }
-                }
+                this.event.seminar_visibility = {
+                    'visibility': this.visibility,
+                    'visible_timestamp': this.visible_timestamp
+                };
             }
 
             await this.$store.dispatch('updateVideo', this.event)
@@ -219,22 +181,40 @@ export default {
                     }
                 }
             }
+        },
+
+        checkVisibility() {
+            if (this.visible_timestamp) {
+                if (Date.parse(this.visible_timestamp) < Date.now()) {
+                    this.visibility = "visible";
+                }
+                else {
+                    this.visibility = "hidden";
+                }
+            }
+            else if (!this.visibility) {
+                this.visibility = "default";
+            }
+        },
+
+        changeVisibility(visibility) {
+            this.visibility = visibility;
+            if (this.visible_timestamp) {
+                if (visibility === "default" ||
+                    visibility === "hidden" && Date.parse(this.visible_timestamp) < Date.now() ||
+                    visibility === "visible" && Date.parse(this.visible_timestamp) >= Date.now()) 
+                {
+                    this.visible_timestamp = null;
+                }
+            }
         }
     },
 
     mounted() {
         // Initialize visibility
-        this.visibility = "default";
-        if (this.event.playlist_seminar !== undefined) {
-            if (this.event.playlist_seminar.visibility !== null) {
-                this.visibility = this.event.playlist_seminar.visibility;
-            }
-            if (this.event.playlist_seminar.visibility === 'hidden' &&
-                     this.event.playlist_seminar.visible_timestamp !== null) {
-                this.visible_timestamp = this.event.playlist_seminar.visible_timestamp;
-                this.use_timestamp = true;
-            }
-        }
+        this.visibility = this.event.seminar_visibility?.visibility;
+        this.visible_timestamp = this.event.seminar_visibility?.visible_timestamp;
+        this.checkVisibility();
     }
 }
 </script>

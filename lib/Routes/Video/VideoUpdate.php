@@ -70,18 +70,18 @@ class VideoUpdate extends OpencastController
             unset($event['tags']);
         }
 
-        if (isset($event['from_cid']) && isset($event['from_playlist'])) {
-            $playlist = Playlists::findOneByToken($event['from_playlist']);
+        if (isset($event['cid']) && isset($event['playlist_token'])) {
+            $playlist = Playlists::findOneByToken($event['playlist_token']);
             if (!empty($playlist)) {
-                $playlistSeminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$event['from_cid'], $playlist->id]);
+                $playlistSeminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$event['cid'], $playlist->id]);
                 if (!empty($playlistSeminar)) {
                     PlaylistSeminarVideos::deleteBySQL('playlist_seminar_id = ? AND video_id = ?', [$playlistSeminar->id, $video->id]);
-                    if (isset($event['playlist_seminar'])) {
+                    if (isset($event['seminar_visibility'])) {
                         $pvs = new PlaylistSeminarVideos();
                         $pvs->setValue('playlist_seminar_id', $playlistSeminar->id);
                         $pvs->setValue('video_id', $video->id);
-                        $pvs->setValue('visibility', $event['playlist_seminar']['visibility']);
-                        $pvs->setValue('visible_timestamp', $event['playlist_seminar']['visible_timestamp']);
+                        $pvs->setValue('visibility', $event['seminar_visibility']['visibility']);
+                        $pvs->setValue('visible_timestamp', $event['seminar_visibility']['visible_timestamp']);
                         $pvs->store();
                     }
                 }
