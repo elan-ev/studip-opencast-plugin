@@ -89,7 +89,7 @@
                             </section>
                         </label>
 
-                        <label>
+                        <label v-if="isCourse">
                             <span v-translate>
                                 Zeitstempel für die Sichtbarkeit
                             </span>
