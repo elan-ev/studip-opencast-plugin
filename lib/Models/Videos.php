@@ -98,13 +98,13 @@ class Videos extends UPMap
         $where = ' WHERE 1 ';
         $params = [':playlist_id' => $playlist_id];
 
-        if (!(empty($cid) || $perm->have_perm('dozent'))) {
+        if (!(empty($filters->getCourseId()) || $perm->have_perm('dozent'))) {
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
             
             $where = ' WHERE opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
-                       OR opsv.visible_timestamp >= NOW() ';
+                       OR opsv.visible_timestamp < NOW() ';
             
             $params[':cid'] = $filters->getCourseId();
         }
