@@ -61,7 +61,7 @@
 
             <ul class="oc--episode-list--small" v-else>
                 <VideoCard
-                    v-for="event in videos_visible"
+                    v-for="event in videos"
                     v-bind:event="event"
                     v-bind:key="event.token"
                     :playlistForVideos="playlistForVideos"
@@ -148,23 +148,6 @@ export default {
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
         },
-
-        videos_visible() {
-            let ret = [];
-            for (const video of this.videos) {
-                let write_perm = video.perm === 'owner' || video.perm === 'write';
-                let has_playlist_seminar = !(video.playlist_seminar == null);
-                let is_visible = video.playlist_seminar?.visibility === "visible";
-                let is_hidden = video.playlist_seminar?.visibility === "hidden";
-                let has_timestamp = video.playlist_seminar?.visible_timestamp !== null;
-                let timestamp_expired = Date.parse(video.playlist_seminar?.visible_timestamp) < Date.now();
-
-                if (write_perm || !has_playlist_seminar || is_visible || (is_hidden && has_timestamp && timestamp_expired)) {
-                    ret.push(video);
-                }
-            }
-            return ret;
-        }
     },
 
     methods: {

@@ -53,18 +53,7 @@ class PlaylistVideoList extends OpencastController
 
         $ret = [];
         foreach ($videos['videos'] as $video) {
-            $ret_video = $video->toSanitizedArray();
-            $psv = PlaylistSeminarVideos::findOneBySQL(
-                "LEFT JOIN oc_playlist_seminar AS ops ON ops.id = playlist_seminar_id
-                WHERE video_id = ?
-                AND playlist_id = ?
-                AND seminar_id = ?", [$video->id, $playlist->id, $params['cid']]);
-            if (!empty($psv)) {
-                $ret_video['playlist_seminar'] = [];
-                $ret_video['playlist_seminar']['visibility'] = $psv->getValue('visibility');
-                $ret_video['playlist_seminar']['visible_timestamp'] = $psv->getValue('visible_timestamp');
-            }
-            $ret[] = $ret_video;
+            $ret[] = $video->toSanitizedArray($params['cid'], $playlist->id);
         }
 
         return $this->createResponse([
