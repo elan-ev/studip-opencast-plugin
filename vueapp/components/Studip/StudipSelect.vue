@@ -83,7 +83,14 @@ export default {
                 document.documentElement.scrollHeight,
                 document.documentElement.offsetHeight
             );
-            let footerHeight = document.getElementById('layout_footer').offsetHeight;
+            let footerHeight = 0;
+            if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
+                footerHeight = document.getElementById('main-footer').offsetHeight;
+            }
+            else {
+                footerHeight = document.getElementById('layout_footer').offsetHeight;
+            }
+            
             let functionalAreaHeight = totalDocHeight - footerHeight;
             return totalExpandedList >= functionalAreaHeight ? 'top' : 'bottom';
         },
