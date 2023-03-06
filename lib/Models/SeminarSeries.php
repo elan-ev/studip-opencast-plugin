@@ -46,7 +46,7 @@ class SeminarSeries extends \SimpleORMap
         $return = [];
 
         foreach (self::findBySeminar_id($course_id) as $series) {
-            if (true || self::checkSeries($course_id, $series['series_id'])) {
+            if (self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }
         }
