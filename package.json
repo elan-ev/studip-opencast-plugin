@@ -4,7 +4,7 @@
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
-    "build": "npm install && webpack --mode production && cd courseware; sh prebuild.sh",
+    "build": "composer install && npm install && webpack --mode production && cd courseware; sh prebuild.sh",
     "devcw": "cd courseware; sh watch.sh",
     "predev": "npm install",
     "dev": "webpack --mode development --watch",

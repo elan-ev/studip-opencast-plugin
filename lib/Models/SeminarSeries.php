@@ -16,7 +16,8 @@ class SeminarSeries extends \SimpleORMap
     {
         static $series = [];
 
-        $series_client = SeriesClient::create($course_id);
+        $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+        $series_client = new SeriesClient($config_id);
 
         if (!isset($series[$series_id])) {
 

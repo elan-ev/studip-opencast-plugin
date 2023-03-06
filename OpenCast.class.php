@@ -127,6 +127,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
      */
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
+        require_once __DIR__ . '/vendor/autoload.php';
+
         $navigation = new Navigation(
             $this->_('Videos/Opencast'),
             PluginEngine::getURL($this, [], 'course/#/course/videos')
@@ -158,6 +160,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
     public function getTabNavigation($course_id)
     {
+        require_once __DIR__ . '/vendor/autoload.php';
+
         if (!$this->isActivated($course_id) || !Helpers::getConfigurationstate()) {
             return;
         }
