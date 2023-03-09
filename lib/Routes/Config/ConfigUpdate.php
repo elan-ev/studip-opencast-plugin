@@ -8,6 +8,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
 use Opencast\Models\Config;
+use Opencast\Models\WorkflowConfig;
 
 use Opencast\Models\I18N as _;
 
@@ -56,6 +57,14 @@ class ConfigUpdate extends OpencastController
                 } else {
                     ScheduleHelper::deleteResource($resource['id']);
                 }
+            }
+        }
+
+        if (isset($json['workflow_configs']) && !empty($json['workflow_configs'])) {
+            foreach ($json['workflow_configs'] as $wf_config) {
+                $db_wf_conf = WorkflowConfig::findOneBySql("id = ?", [$wf_config['id']]);
+                $db_wf_conf->setValue('workflow_id', $wf_config['workflow_id']);
+                $db_wf_conf->store();
             }
         }
 

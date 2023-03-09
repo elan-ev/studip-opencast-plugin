@@ -10,6 +10,8 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
+use Opencast\Models\Workflow;
+use Opencast\Models\WorkflowConfig;
 use Opencast\Models\LTI\LtiHelper;
 
 class SimpleConfigList extends OpencastController
@@ -38,9 +40,14 @@ class SimpleConfigList extends OpencastController
             ];
         }
 
+        $workflows = new \SimpleCollection(Workflow::findBySql('1'));
+        $workflow_configs = new \SimpleCollection(WorkflowConfig::findBySql('1'));
+
         return $this->createResponse([
             'server'    => $config_list ?: [],
-            'settings'  => $this->getGlobalConfig()
+            'settings'  => $this->getGlobalConfig(),
+            'workflows' => $workflows->toArray(),
+            'workflow_configs' => $workflow_configs->toArray()
         ], $response);
     }
 

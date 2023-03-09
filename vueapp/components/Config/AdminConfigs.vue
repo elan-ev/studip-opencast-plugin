@@ -12,8 +12,6 @@
 
         <GlobalOptions :config_list="config_list"/>
 
-        <WorkflowOptions :workflows="config_workflows" />
-
         <SchedulingOptions v-if="is_scheduling_enabled" :config_list="config_list"/>
 
         <footer>
@@ -33,7 +31,6 @@ import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import GlobalOptions from "@/components/Config/GlobalOptions";
 import SchedulingOptions from "@/components/Config/SchedulingOptions";
-import WorkflowOptions from "@/components/Config/WorkflowOptions";
 import MessageBox from "@/components/MessageBox";
 
 export default {
@@ -41,7 +38,7 @@ export default {
     components: {
         StudipButton,       StudipIcon,
         MessageList,        MessageBox,
-        GlobalOptions,      SchedulingOptions,      WorkflowOptions
+        GlobalOptions,      SchedulingOptions
     },
 
     data() {
@@ -51,7 +48,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config_list', 'config_workflows']),
+        ...mapGetters(['config_list', 'simple_config_list']),
 
         is_scheduling_enabled() {
             return this.config_list?.scheduling && this.is_scheduling_configured;

@@ -10,7 +10,6 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\Resources;
 use Opencast\Models\ScheduleHelper;
-use Opencast\Models\WorkflowConfig;
 
 class ConfigList extends OpencastController
 {
@@ -34,12 +33,9 @@ class ConfigList extends OpencastController
             $languages[$id] = array_merge(['id' => $id], $lang);
         }
 
-        $workflows = new \SimpleCollection(WorkflowConfig::findBySql('1'));
-
         $response_data = [
             'server'    => $config_list ?: [],
             'settings'  => $this->getGlobalConfig(),
-            'workflows' => $workflows->toArray(),
             'languages' => $languages
         ];
 

@@ -13,6 +13,9 @@
             <template v-slot:dialogContent ref="editServer-dialog">
                 <form class="default" v-if="currentConfig">
                     <fieldset>
+                        <legend>
+                            {{ $gettext('Grundeinstellungen') }}
+                        </legend>
                         <label v-if="config?.service_version">
                             <b> {{ $gettext('Opencast Version') }} </b><br />
                             {{ config.service_version }}
@@ -22,6 +25,8 @@
                             :setting="setting" :key="setting.name"
                             @updateValue="updateValue" />
                     </fieldset>
+
+                    <WorkflowOptions v-if="id != 'new'"/>
                 </form>
 
                 <MessageList :float="true"/>
@@ -44,6 +49,7 @@ import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
+import WorkflowOptions from "@/components/Config/WorkflowOptions";
 
 export default {
     name: "EditServer",
@@ -54,6 +60,7 @@ export default {
         StudipDialog,
         ConfigOption,
         MessageList,
+        WorkflowOptions
     },
 
     props: {
@@ -75,7 +82,8 @@ export default {
 
     computed: {
         ...mapGetters({
-            configStore: 'config'
+            configStore: 'config',
+            simple_config_list: 'simple_config_list'
         }),
 
         settings() {
@@ -168,6 +176,9 @@ export default {
                     this.checkConfigResponse(data);
                 });
             } else {
+                if (this.simple_config_list?.workflow_configs) {
+                    this.currentConfig.workflow_configs = this.simple_config_list.workflow_configs;
+                }
                 this.$store.dispatch('configUpdate', this.currentConfig)
                 .then(({ data }) => {
                     this.$store.dispatch('configListRead', data.config);

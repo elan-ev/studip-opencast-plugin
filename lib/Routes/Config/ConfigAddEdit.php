@@ -10,6 +10,7 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
+use Opencast\Models\WorkflowConfig;
 use Opencast\Models\LTI\LtiLink;
 use Opencast\Models\LTI\LtiHelper;
 use Opencast\Models\REST\Config as RESTConfig;
@@ -49,6 +50,14 @@ class ConfigAddEdit extends OpencastController
 
         $json['config']['settings'] = $new_settings;
 
+        // save configured workflows to store them when installation is successfull
+        $workflows = [];
+        if (isset($json['config']['settings']['workflow_configs'])) {
+            foreach ($json['config']['settings']['workflow_configs'] as $wf_config) {
+                $workflows[$wf_config['id']] = $wf_config;
+            }
+            unset($json['config']['settings']['workflow_configs']);
+        }
         // store config to database
         $config->setData($json['config']);
         $config->store();
@@ -69,6 +78,7 @@ class ConfigAddEdit extends OpencastController
             ];
 
             Endpoints::deleteBySql('config_id = ?', [$config->id]);
+            Config::deleteBySql('id = ?', [$config->id]);
         } else {
             $service_host =
                 $service_url['scheme'] .'://' .
@@ -131,6 +141,9 @@ class ConfigAddEdit extends OpencastController
                             unset($services[$service_url]);
                         }
                     }
+
+                    // create new entries for workflow_config table
+                    WorkflowConfig::createAndUpdateByConfigId($config->id, $workflows);
 
                     $success_message[] = sprintf(
                         _('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
