@@ -82,10 +82,15 @@ class UserRoles extends OpencastController
                 $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
                 // find videos in accessible playlists
-                $stmt = \DBManager::get()->prepare("SELECT episode FROM oc_playlist_seminar
-                    INNER JOIN oc_playlist_video USING (playlist_id)
-                    INNER JOIN oc_video ON (oc_video.id = oc_playlist_video.video_id)
-                    WHERE seminar_id IN (:courses)");
+                $stmt = \DBManager::get()->prepare('SELECT episode FROM oc_playlist_seminar AS ops
+                    INNER JOIN oc_playlist_video         AS opv  USING (playlist_id)
+                    INNER JOIN oc_video                  AS ov   ON    (ov.id = opv.video_id)
+                    LEFT  JOIN oc_playlist_seminar_video AS opsv ON    (opsv.playlist_seminar_id = ops.id AND opsv.video_id = ov.id)
+                    WHERE ops.seminar_id IN (:courses)
+                    AND (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
+                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
+                        OR opsv.visible_timestamp < NOW() + INTERVAL 15 MINUTE)'
+                );
                 $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
                 $stmt->execute();
 
