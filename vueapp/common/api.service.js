@@ -1,27 +1,29 @@
+import axios from "@/common/axios.service";
+
 const ApiService = {
 
     query(resource, params) {
-        return window.Vue.axios.get(resource, params);
+        return axios.get(resource, params);
     },
 
     get(resource, params = {}) {
-        return window.Vue.axios.get(`${resource}`, params);
+        return axios.get(`${resource}`, params);
     },
 
     post(resource, params) {
-        return window.Vue.axios.post(`${resource}`, params);
+        return axios.post(`${resource}`, params);
     },
 
     update(resource, slug, params) {
-        return window.Vue.axios.put(`${resource}/${slug}`, params);
+        return axios.put(`${resource}/${slug}`, params);
     },
 
     put(resource, params) {
-        return window.Vue.axios.put(`${resource}`, params);
+        return axios.put(`${resource}`, params);
     },
 
     delete(resource) {
-        return window.Vue.axios.delete(resource);
+        return axios.delete(resource);
     }
 };
 

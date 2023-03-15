@@ -3,6 +3,8 @@
  *
  * @type {Object}
  */
+
+import axios from "@/common/axios.service";
 class UploadService {
 
     constructor(service_url) {
@@ -128,7 +130,7 @@ class UploadService {
         // Prepare meta data
         let episodeDC = this.createDCCCatalog(terms);
 
-        return window.Vue.axios({
+        return axios({
             url: this.service_url + "/addDCCatalog",
             method: "POST",
             data: new URLSearchParams({
@@ -150,7 +152,7 @@ class UploadService {
         acldata.append('flavor', 'security/xacml+episode');
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
-        return window.Vue.axios({
+        return axios({
             url: this.service_url + "/addAttachment",
             method: "POST",
             data: acldata,
@@ -186,9 +188,9 @@ class UploadService {
 
         return new Promise(
             function (resolve, reject) {
-                obj.request = window.Vue.axios.CancelToken.source();
+                obj.request = axios.CancelToken.source();
 
-                return window.Vue.axios({
+                return axios({
                     url: obj.service_url + "/addTrack",
                     method: "POST",
                     data: data,
@@ -209,7 +211,7 @@ class UploadService {
     }
 
     finishIngest(mediaPackage, workflowId = "upload") {
-        return window.Vue.axios({
+        return axios({
             url: this.service_url + "/ingest",
             method: "POST",
             data: new URLSearchParams({

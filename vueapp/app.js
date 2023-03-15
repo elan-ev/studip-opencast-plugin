@@ -1,13 +1,12 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import axios from "axios";
+import axios from "@/common/axios.service";
 import VueAxios from "vue-axios";
 
 import router from "./router";
 import store from "./store";
 import "./public-path";
 
-import ApiService from "@/common/api.service";
 import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";
 import ErrorFilter from "@/common/error.filter";
@@ -20,9 +19,7 @@ import { createGettext } from "vue3-gettext";
 import translations from './i18n/translations.json';
 
 window.addEventListener("DOMContentLoaded", function() {
-    window.Vue = createApp(App);
-
-    let Vue = window.Vue;
+    const Vue = createApp(App);
 
     Vue.use(router);
     Vue.use(store);
@@ -37,14 +34,8 @@ window.addEventListener("DOMContentLoaded", function() {
         helpurl: HelpUrlFilter
     };
 
-    let oc_axios = axios.create({
-        baseURL: window.OpencastPlugin.API_URL
-    });
-
-    oc_axios.CancelToken = axios.CancelToken;
-    oc_axios.isCancel    = axios.isCancel;
-
-    Vue.use(VueAxios, oc_axios);
+    axios.defaults.baseURL = window.OpencastPlugin.API_URL;
+    Vue.use(VueAxios, axios);
 
     // Catch errors
     Vue.axios.interceptors.response.use((response) => { // intercept the global error
