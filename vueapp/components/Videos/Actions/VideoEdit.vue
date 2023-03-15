@@ -93,7 +93,12 @@
                             <span v-translate>
                                 Zeitstempel für die Sichtbarkeit
                             </span>
-                            <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp" @change="checkVisibility">
+                            <div class="oc--timestamp-input">
+                                <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp" @change="checkVisibility">
+                                <button class="oc--trash-button" type="button" @click="visible_timestamp=null">
+                                    <studip-icon shape="trash" role="clickable"/>
+                                </button>
+                            </div>
                         </label>
                     </fieldset>
                 </form>
@@ -105,13 +110,15 @@
 <script>
 import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog';
+import StudipIcon from '@/components/Studip/StudipIcon'
 import TagBar from '@/components/TagBar.vue';
 
 export default {
     name: "VideoEdit",
 
     components: {
-        StudipDialog, TagBar
+        StudipDialog, TagBar,
+        StudipIcon
     },
 
     data() {

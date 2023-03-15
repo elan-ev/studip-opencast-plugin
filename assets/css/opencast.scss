@@ -532,6 +532,32 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     border-bottom: 1px solid $base_color;
 }
 
+.oc--timestamp-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    button {
+        margin-top: .5ex;
+        padding: 5px;
+        border: 1px solid #c5c7ca;
+        background-color: transparent;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $light-gray-color-20;
+        }
+
+        &.oc--trash-button {
+            img {
+                vertical-align: middle;
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+}
+
 .oc--datetime-input {
     display: block;
     margin-top: .5ex;
