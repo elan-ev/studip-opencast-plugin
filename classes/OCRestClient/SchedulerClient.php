@@ -137,12 +137,23 @@ class SchedulerClient extends OCRestClient
         $event = OCScheduledRecordings::find($event_id);
         $date  = CourseDate::find($termin_id);
 
-        if ($date->date != $event->start) {
+        // if start is after end, swap both of them
+        // (slider ending might have been moved before its starting point)
+        if ($event->start > $event->end) {
+            $new_start = $event->end;
+            $event->end = $event->start;
+            $event->start = $new_start;
+            $event->store();
+        }
+
+        // do not allow scheduling before the beginning of the lecture slot
+        if ($date->date > $event->start) {
             $event->start = $date->date;
             $event->store();
         }
 
-        if ($date->end_time != $event->end) {
+        // do not allow scheduling after the end of the lecture slot
+        if ($date->end_time < $event->end) {
             $event->end = $date->end_time;
             $event->store();
         }
