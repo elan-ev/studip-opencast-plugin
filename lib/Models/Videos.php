@@ -101,11 +101,11 @@ class Videos extends UPMap
         if (!(empty($filters->getCourseId()) || $perm->have_perm('dozent'))) {
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
-            
+
             $where = ' WHERE opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
                        OR opsv.visible_timestamp < NOW() ';
-            
+
             $params[':cid'] = $filters->getCourseId();
         }
 
@@ -346,9 +346,9 @@ class Videos extends UPMap
                 "LEFT JOIN oc_playlist_seminar AS ops ON ops.id = playlist_seminar_id
                 WHERE video_id = ?
                 AND playlist_id = ?
-                AND seminar_id = ?", 
+                AND seminar_id = ?",
                 [$this->id, $playlist_id, $cid]);
-            
+
             if (!empty($psv)) {
                 return [
                     'visibility' => $psv->getValue('visibility'),
@@ -782,9 +782,9 @@ class Videos extends UPMap
             $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 
             if (empty($pvideo)) {
-                $pvideo = new self();
+                $pvideo = new PlaylistVideos();
                 $pvideo->video_id    = $video->id;
-                $pvideo->playlist_id = $playllist->id;
+                $pvideo->playlist_id = $playlist->id;
                 $pvideo->store();
             }
         }
