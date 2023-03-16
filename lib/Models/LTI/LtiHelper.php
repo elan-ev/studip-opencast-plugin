@@ -4,6 +4,7 @@ namespace Opencast\Models\LTI;
 
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
+use Opencast\Providers\Perm;
 
 /**
  * LTI Helper class to create launch data
@@ -111,7 +112,7 @@ class LtiHelper
             $user_id = $user->id;
         }
 
-        $role = $perm->have_studip_perm('tutor', $course_id, $user_id)
+        $role = Perm::uploadAllowed($course_id, $user_id)
             ? 'Instructor' : 'Learner';
 
         $lti_links = [];

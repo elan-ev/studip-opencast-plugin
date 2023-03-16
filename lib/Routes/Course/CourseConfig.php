@@ -60,7 +60,8 @@ class CourseConfig extends OpencastController
             ],
             'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
             'edit_allowed'   => Perm::editAllowed($course_id),
-            'upload_allowed' => Perm::uploadAllowed($course_id)
+            'upload_allowed' => Perm::uploadAllowed($course_id),
+            'upload_enabled' => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0
         ];
 
         return $this->createResponse($results, $response);

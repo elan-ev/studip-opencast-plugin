@@ -63,7 +63,7 @@ class Perm
         }
 
         // check if additional upload permissions for this course have been granted
-        \CourseConfig::get($context_id)->OPENCAST_ALLOW_STUDENT_UPLOAD;
+        return \CourseConfig::get($context_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? true : false;
     }
 
     /**
