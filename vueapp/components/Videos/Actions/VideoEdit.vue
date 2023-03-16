@@ -48,6 +48,58 @@
                             Tags
                             <TagBar :taggable="event" @update="updatedTags"/>
                         </label>
+
+                        <label v-if="isCourse">
+                            <div>
+                                <span v-translate>
+                                    Sichtbarkeit des Videos
+                                </span>
+                            </div>
+
+                            <section class="hgroup size-m">
+                                <label>
+                                    <input type="radio" value="2"
+                                        :checked="visibility == 'default'"
+                                        @change="changeVisibility('default')"
+                                    >
+                                    <translate>
+                                        Standard
+                                    </translate>
+                                </label>
+
+                                <label>
+                                    <input type="radio" value="1"
+                                        :checked="visibility == 'visible'"
+                                        @change="changeVisibility('visible')"
+                                    >
+                                    <translate>
+                                        Sichtbar
+                                    </translate>
+                                </label>
+
+                                <label>
+                                    <input type="radio" value="0"
+                                        :checked="visibility == 'hidden'"
+                                        @change="changeVisibility('hidden')"
+                                    >
+                                    <translate>
+                                        Unsichtbar
+                                    </translate>
+                                </label>
+                            </section>
+                        </label>
+
+                        <label v-if="isCourse">
+                            <span v-translate>
+                                Zeitstempel für die Sichtbarkeit
+                            </span>
+                            <div class="oc--timestamp-input">
+                                <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp" @change="checkVisibility">
+                                <button class="oc--trash-button" type="button" @click="visible_timestamp=null">
+                                    <studip-icon shape="trash" role="clickable"/>
+                                </button>
+                            </div>
+                        </label>
                     </fieldset>
                 </form>
             </template>
@@ -56,22 +108,63 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog';
+import StudipIcon from '@/components/Studip/StudipIcon'
 import TagBar from '@/components/TagBar.vue';
 
 export default {
     name: "VideoEdit",
 
     components: {
-        StudipDialog, TagBar
+        StudipDialog, TagBar,
+        StudipIcon
+    },
+
+    data() {
+        return {
+            visibility: null,
+            visible_timestamp: null,
+            use_timestamp: false
+        }
     },
 
     props: ['event'],
 
     emits: ['done', 'cancel'],
 
+    computed: {
+        ...mapGetters([
+            "cid", 
+            "playlists", 
+            "currentPlaylist"
+        ]),
+
+        isCourse() {
+            return this?.cid ? true : false;
+        },
+
+        defaultVisibility() {
+            return this.playlists.find(p => p['token'] === this.currentPlaylist)['visibility'];
+        },
+    },
+
     methods: {
         async accept() {
+            // Handle visibility
+            this.event.cid = this.cid;
+            this.event.playlist_token = this.currentPlaylist;
+            this.checkVisibility();
+            if (this.visibility === "default") {
+                this.event.seminar_visibility = null;
+            }
+            else {
+                this.event.seminar_visibility = {
+                    'visibility': this.visibility,
+                    'visible_timestamp': this.visible_timestamp
+                };
+            }
+
             await this.$store.dispatch('updateVideo', this.event)
             .then(({ data }) => {
                 this.$store.dispatch('addMessage', data.message);
@@ -95,7 +188,40 @@ export default {
                     }
                 }
             }
+        },
+
+        checkVisibility() {
+            if (this.visible_timestamp) {
+                if (Date.parse(this.visible_timestamp) < Date.now()) {
+                    this.visibility = "visible";
+                }
+                else {
+                    this.visibility = "hidden";
+                }
+            }
+            else if (!this.visibility) {
+                this.visibility = "default";
+            }
+        },
+
+        changeVisibility(visibility) {
+            this.visibility = visibility;
+            if (this.visible_timestamp) {
+                if (visibility === "default" ||
+                    visibility === "hidden" && Date.parse(this.visible_timestamp) < Date.now() ||
+                    visibility === "visible" && Date.parse(this.visible_timestamp) >= Date.now()) 
+                {
+                    this.visible_timestamp = null;
+                }
+            }
         }
+    },
+
+    mounted() {
+        // Initialize visibility
+        this.visibility = this.event.seminar_visibility?.visibility;
+        this.visible_timestamp = this.event.seminar_visibility?.visible_timestamp;
+        this.checkVisibility();
     }
 }
 </script>

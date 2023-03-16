@@ -115,7 +115,7 @@ class RouteMap
     }
 
     /**
-     * Routes called by opencast vith token
+     * Routes called by opencast with token
      */
     public function opencastRoutes()
     {

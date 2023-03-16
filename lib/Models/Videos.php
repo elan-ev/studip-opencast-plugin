@@ -92,12 +92,27 @@ class Videos extends UPMap
      */
     public static function getPlaylistVideos($playlist_id, $filters)
     {
+        global $perm;
+
+        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = id)';
+        $where = ' WHERE 1 ';
+        $params = [':playlist_id' => $playlist_id];
+
+        if (!(empty($filters->getCourseId()) || $perm->have_perm('dozent'))) {
+            $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
+                    ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
+            
+            $where = ' WHERE opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
+                       OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
+                       OR opsv.visible_timestamp < NOW() ';
+            
+            $params[':cid'] = $filters->getCourseId();
+        }
+
         $query = [
-            'sql'   => ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = id)',
-            'where' => ' WHERE 1 ',
-            'params' => [
-                ':playlist_id' => $playlist_id
-            ]
+            'sql'   => $sql,
+            'where' => $where,
+            'params' => $params
         ];
 
         return self::getFilteredVideos($query, $filters);
@@ -281,7 +296,7 @@ class Videos extends UPMap
         return self::findOneBySQL('id = ?', [$id]);
     }
 
-    public function toSanitizedArray()
+    public function toSanitizedArray($cid = '', $playlist_id = '')
     {
         $data = $this->toArray();
 
@@ -303,6 +318,7 @@ class Videos extends UPMap
 
         $data['perm'] = $this->getUserPerm($user_id);
         $data['playlists'] = $this->getPlaylists();
+        $data['seminar_visibility'] = $this->getSeminarVisibility($cid, $playlist_id);
 
         $data['tags'] = $this->tags->toArray();
 
@@ -321,6 +337,26 @@ class Videos extends UPMap
         }
 
         return $playlists;
+    }
+
+    private function getSeminarVisibility($cid, $playlist_id)
+    {
+        if (!empty($cid) && !empty($playlist_id)) {
+            $psv = PlaylistSeminarVideos::findOneBySQL(
+                "LEFT JOIN oc_playlist_seminar AS ops ON ops.id = playlist_seminar_id
+                WHERE video_id = ?
+                AND playlist_id = ?
+                AND seminar_id = ?", 
+                [$this->id, $playlist_id, $cid]);
+            
+            if (!empty($psv)) {
+                return [
+                    'visibility' => $psv->getValue('visibility'),
+                    'visible_timestamp' => $psv->getValue('visible_timestamp')
+                ];
+            }
+        }
+        return null;
     }
 
     /**

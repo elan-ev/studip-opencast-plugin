@@ -11,6 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\Filter;
 use Opencast\Models\Playlists;
 use Opencast\Models\Videos;
+use Opencast\Models\PlaylistSeminarVideos;
 
 class PlaylistVideoList extends OpencastController
 {
@@ -52,7 +53,7 @@ class PlaylistVideoList extends OpencastController
 
         $ret = [];
         foreach ($videos['videos'] as $video) {
-            $ret[] = $video->toSanitizedArray();
+            $ret[] = $video->toSanitizedArray($params['cid'], $playlist->id);
         }
 
         return $this->createResponse([

@@ -147,7 +147,7 @@ export default {
 
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
-        }
+        },
     },
 
     methods: {
