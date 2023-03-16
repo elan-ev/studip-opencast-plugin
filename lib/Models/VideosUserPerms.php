@@ -76,31 +76,32 @@ class VideosUserPerms extends \SimpleORMap
                     }
                 }
             }
-        } else {
-            // if no series is assigned, try other mappings
-            // TODO: This field is not safe and could have been manipulated by the uploader! For now, we rely on it to detect the correct user, but this needs to be changed before production!
+        }
 
-            if ($episode->presenter[0]) {
-                $user_id = \get_userid($episode->presenter[0]);
+        // always make sure, that the uploader is in the list of the owners!
+        // TODO: This field is not safe and could have been manipulated by the uploader!
 
-                if ($user_id) {
-                    $perm = new self();
-                    $perm->user_id  = $user_id;
-                    $perm->video_id = $video->id;
-                    $perm->perm     = 'owner';
-                    $perm->store();
+        if ($episode->presenter[0]) {
+            $user_id = \get_userid($episode->presenter[0]);
 
-                    // notify user, that one of his videos is now available
-                    \PersonalNotifications::add(
-                        $user_id,
-                        \URLHelper::getURL('plugins.php/opencast/contents/index', [], true),
-                        sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $episode->title),
-                        "opencast_" . $episode->identifier,
-                        \Icon::create('video'),
-                        false
-                    );
-                }
+            if ($user_id) {
+                $perm = new self();
+                $perm->user_id  = $user_id;
+                $perm->video_id = $video->id;
+                $perm->perm     = 'owner';
+                $perm->store();
+
+                // notify user, that one of his videos is now available
+                \PersonalNotifications::add(
+                    $user_id,
+                    \URLHelper::getURL('plugins.php/opencast/contents/index', [], true),
+                    sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $episode->title),
+                    "opencast_" . $episode->identifier,
+                    \Icon::create('video'),
+                    false
+                );
             }
         }
+
     }
 }
