@@ -13,7 +13,7 @@ use Opencast\Models\SeminarSeries;
 /**
  * Find the playlists for the passed course
  */
-class CourseSetVisibility extends OpencastController
+class CourseSetUpload extends OpencastController
 {
     use OpencastTrait;
 
@@ -22,18 +22,16 @@ class CourseSetVisibility extends OpencastController
         global $user, $perm;
 
         $course_id = $args['course_id'];
-        $visibility = $args['visibility'];
+        $upload = $args['upload'] ? 1 : 0;
 
         if (!$perm->have_studip_perm('tutor', $course_id)) {
             throw new \AccessDeniedException();
         }
 
-        $series = SeminarSeries::findOneBySeminar_id($course_id);
-        if (empty($series)) {
-            throw new Error(_('Das Seminar kann nicht gefunden werden'), 404);
-        }
-        $series->setValue('visibility', $visibility);
-        $series->store();
+        \CourseConfig::get($course_id)->store(
+            'OPENCAST_ALLOW_STUDENT_UPLOAD',
+            $upload
+        );
 
         return $response->withStatus(204);
     }

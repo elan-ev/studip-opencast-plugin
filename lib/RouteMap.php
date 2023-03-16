@@ -84,6 +84,7 @@ class RouteMap
         $this->app->delete('/courses/{course_id}/playlist/{token}', Routes\Course\CourseRemovePlaylist::class);
 
         $this->app->put('/courses/{course_id}/visibility/{visibility}', Routes\Course\CourseSetVisibility::class);
+        $this->app->put('/courses/{course_id}/upload/{upload}', Routes\Course\CourseSetUpload::class);                  // TODO: document in api docs
 
         // Schedule
         $this->app->get('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleShow::class);

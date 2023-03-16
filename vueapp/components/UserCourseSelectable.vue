@@ -2,7 +2,7 @@
     <form class="default">
         <fieldset>
             <legend>
-                {{ $gettext('Zu neuem Kurs hinzufügen') }}
+                {{ $gettext('Zu Kurs hinzufügen') }}
                 <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!')"
                     title="" tabindex="0"
                 ></span>
@@ -29,7 +29,7 @@
                 icon="accept"
                 @click.prevent="returnSelectedCourse()"
             >
-                {{ $gettext('Kurse verknüpfen') }}
+                {{ $gettext('Kurse auswählen') }}
             </StudipButton>
         </footer>
     </form>

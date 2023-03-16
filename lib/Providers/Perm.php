@@ -45,6 +45,28 @@ class Perm
     }
 
     /**
+     * checks, if the current user has lecturer rights in the oc plugin
+     *
+     * @param  string $context_id course or institute id
+     * @param  string $user_id    user id
+     *
+     * @return boolean            true if allowed, false otherwise
+     */
+    public static function uploadAllowed($context_id = null, $user_id = null)
+    {
+        if (self::editAllowed($context_id, $user_id)) {
+            return true;
+        }
+
+        if (is_null($context_id)) {
+            $context_id = \Context::getId();
+        }
+
+        // check if additional upload permissions for this course have been granted
+        return \CourseConfig::get($context_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? true : false;
+    }
+
+    /**
      * checks, if the current user has lecturer rights in the oc plugin and
      * throws an Exception if not
      *

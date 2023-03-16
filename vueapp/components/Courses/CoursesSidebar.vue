@@ -16,7 +16,7 @@
                 <li :class="{
                     active: currentView == 'schedule'
                     }"
-                    v-if="can_schedule"
+                    v-if="canSchedule"
                     v-on:click="getScheduleList">
                     <router-link :to="{ name: 'schedule' }">
                         Aufzeichnungen planen
@@ -73,18 +73,18 @@
         </div>
     </template>
     <template v-else>
-        <div class="sidebar-widget " id="sidebar-actions" v-if="canEdit">
+        <div class="sidebar-widget " id="sidebar-actions" v-if="canEdit || canUpload">
             <div class="sidebar-widget-header" v-translate>
                 Aktionen
             </div>
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links">
-                    <li @click="$emit('uploadVideo')">
+                    <li @click="$emit('uploadVideo')" v-if="canUpload">
                         <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                         Medien Hochladen
                     </li>
                     <li>
-                        <a :href="recordingLink" target="_blank">
+                        <a :href="recordingLink" target="_blank" v-if="canUpload">
                             <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                             Video Aufnehmen
                         </a>
@@ -99,7 +99,17 @@
                             Reiter verbergen
                         </a>
                     </li>
-                    <li>
+                    <li v-if="canEdit">
+                        <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                            Studierendenupload erlauben
+                        </a>
+                        <a v-else @click="setUpload(0)" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                            Studierendenupload verbieten
+                        </a>
+                    </li>
+                    <li v-if="canEdit">
                         <a @click="$emit('copyAll')">
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                             {{ $gettext('Videos/Wiedergabelisten übertragen') }}
@@ -147,7 +157,7 @@ export default {
             return this.$route.name;
         },
 
-        can_schedule() {
+        canSchedule() {
             try {
                 return this.cid !== undefined && this.currentUser.can_edit && this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'];
             } catch (error) {
@@ -183,8 +193,24 @@ export default {
             return this.course_config.edit_allowed;
         },
 
+         canUpload() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.upload_allowed;
+        },
+
+        uploadEnabled() {
+             if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.upload_enabled == 1;
+        },
+
         canToggleVisibility() {
-            return window.OpencastPlugin.STUDIP_VERSION == '4.6';
+            return window.OpencastPlugin.STUDIP_VERSION == '4.6' && this.canEdit;
         }
     },
 
@@ -218,6 +244,14 @@ export default {
         async setVisibility(visibility) {
             await this.$store.dispatch('setVisibility', {'cid': this.cid, 'visibility': visibility});
             this.$router.go(); // Reload page to make changes visible in navigation tab
+        },
+
+        setUpload(upload) {
+            this.$store.dispatch('setUpload', {'cid': this.cid, 'upload': upload})
+            .then(() => {
+                this.$store.dispatch('loadCourseConfig', this.cid);
+            });
+
         },
 
         showCreatePlaylist() {
