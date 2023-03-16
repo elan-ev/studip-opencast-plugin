@@ -93,7 +93,7 @@ class UploadService {
     }
 
     async getMediaPackage() {
-        return Vue.axios({
+        return axios({
             method: 'GET',
             url: this.service_url + "/createMediaPackage",
             crossDomain: true,

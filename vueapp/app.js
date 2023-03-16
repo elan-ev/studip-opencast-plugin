@@ -35,10 +35,8 @@ window.addEventListener("DOMContentLoaded", function() {
     };
 
     axios.defaults.baseURL = window.OpencastPlugin.API_URL;
-    Vue.use(VueAxios, axios);
-
     // Catch errors
-    Vue.axios.interceptors.response.use((response) => { // intercept the global error
+    axios.interceptors.response.use((response) => { // intercept the global error
             store.dispatch('axiosStop');
 
             return response;
@@ -53,13 +51,15 @@ window.addEventListener("DOMContentLoaded", function() {
     );
 
      // set loading animation
-     Vue.axios.interceptors.request.use(
+     axios.interceptors.request.use(
         request => {
             store.dispatch('axiosStart');
 
             return request;
         }
     );
+
+    Vue.use(VueAxios, axios);
 
     const gettext = createGettext({
         availableLanguages: {
