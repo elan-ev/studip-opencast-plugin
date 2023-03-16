@@ -59,7 +59,8 @@ class CourseConfig extends OpencastController
                 'visibility' => $series->visibility
             ],
             'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
-            'edit_allowed'   => Perm::editAllowed($course_id)
+            'edit_allowed'   => Perm::editAllowed($course_id),
+            'upload_allowed' => Perm::uploadAllowed($course_id)
         ];
 
         return $this->createResponse($results, $response);
