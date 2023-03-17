@@ -12,7 +12,7 @@ class AddVisibleTimestamp extends Migration
         $db = DBManager::get();
 
         $db->exec("ALTER TABLE `oc_playlist_seminar_video`
-            ADD COLUMN `visible_timestamp` timestamp DEFAULT NULL");
+            ADD COLUMN `visible_timestamp` timestamp DEFAULT '0000-00-00 00:00:00'");
 
         SimpleOrMap::expireTableScheme();
     }

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../bootstrap.php';
+
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\PlaylistSeminars;
