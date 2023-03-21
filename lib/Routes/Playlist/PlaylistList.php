@@ -37,6 +37,6 @@ class PlaylistList extends OpencastController
             }
         }
 
-        return $this->createResponse(array_values($playlist_list) ?: [], $response);
+        return $this->createResponse(@array_values($playlist_list) ?: [], $response);
     }
 }
