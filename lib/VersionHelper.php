@@ -135,6 +135,6 @@ class VersionHelper50 implements VersionHelperInterface
             background-image:url(' . $icon->asImagePath() . ')
         }');
 
-        \PageLayout::addScript($plugin->getPluginUrl() . '/static/register.js');
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
     }
 }

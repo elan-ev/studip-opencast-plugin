@@ -9,7 +9,7 @@ module.exports = {
 
     output: {
         filename: "[name].js",
-        path: path.resolve(__dirname, "../static"),
+        path: path.resolve(__dirname, "../static_cw"),
         library: "courseware-plugin-opencast-video",
         libraryTarget: "umd",
         umdNamedDefine: true
