@@ -2,7 +2,7 @@
 
 use Opencast\Models\WorkflowConfig;
 
-class UpdateWorkflowTables extends Migration
+class UpdateWorkflowTablesTwo extends Migration
 {
     public function description()
     {
@@ -45,7 +45,7 @@ class UpdateWorkflowTables extends Migration
 
         $stmt = $db->prepare('INSERT IGNORE INTO oc_workflow_config (config_id, used_for, workflow_id)
             VALUES (:config_id, :used_for, null)');
-        
+
         foreach ($configs as $config) {
             //WorkflowConfig::createOrUpdatebyConfigId($config['id']);     TODO Workflow API fails
             foreach ($types as $type) {
