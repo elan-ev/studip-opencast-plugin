@@ -17,19 +17,6 @@ class FixCronjobs extends Migration
     public function up()
     {
         return;
-        foreach (self::FILENAMES as $filename) {
-
-            if (!$task_id = CronjobTask::findByFilename($filename)[0]->task_id) {
-                $task_id = CronjobScheduler::registerTask($filename, true);
-            }
-
-            // Schedule job to run every 60 minutes
-            if ($task_id) {
-                CronjobScheduler::cancelByTask($task_id);
-                CronjobScheduler::schedulePeriodic($task_id, -60);  // negative value means "every x minutes"
-                CronjobSchedule::findByTask_id($task_id)[0]->activate();
-            }
-        }
     }
 
     function down() {}

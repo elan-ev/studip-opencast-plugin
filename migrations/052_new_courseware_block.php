@@ -29,10 +29,12 @@ class NewCoursewareBlock extends Migration
 
         // Cronjob
         if (file_exists($GLOBALS['STUDIP_BASE_PATH'] . '/' . self::FILENAME)) {
-            $task_id = CronjobScheduler::registerTask(self::FILENAME, true);
+            $scheduler = CronjobScheduler::getInstance();
+            $task_id = $scheduler->registerTask(self::FILENAME, true);
+
 
             if ($task_id) {
-                CronjobScheduler::schedulePeriodic($task_id, -1);
+                $scheduler->schedulePeriodic($task_id, -1);
             }
         }
 
@@ -44,9 +46,11 @@ class NewCoursewareBlock extends Migration
         DBManager::get()->query("DROP TABLE IF EXISTS `oc_video_cw_blocks`;");
         DBManager::get()->query("DROP TABLE IF EXISTS `oc_cw_block_copy_mapping`;");
 
+        $scheduler = CronjobScheduler::getInstance();
+
         if (file_exists($GLOBALS['STUDIP_BASE_PATH'] . '/' . self::FILENAME)) {
             if ($task_id = CronjobTask::findByFilename(self::FILENAME)->task_id) {
-                CronjobScheduler::unregisterTask($task_id);
+                $scheduler->unregisterTask($task_id);
             }
         }
 
