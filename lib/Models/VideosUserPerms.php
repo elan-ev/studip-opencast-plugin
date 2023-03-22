@@ -3,6 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Models\SeminarSeries;
+use Opencast\Models\UserSeries;
 
 class VideosUserPerms extends \SimpleORMap
 {
@@ -74,6 +75,25 @@ class VideosUserPerms extends \SimpleORMap
                         $perm->perm     = 'owner';
                         $perm->store();
                     }
+                }
+            }
+
+            // Get the user this series belongs to
+            $series = UserSeries::findBySeries_id($episode->is_part_of);
+
+            foreach ($series as $s) {
+                // check, if there is already an entry for this user-video combination
+                $perm = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                    ':video_id' => $video->id,
+                    ':user_id'  => $s['user_id']
+                ]);
+
+                if (empty($perm)) {
+                    $perm = new self();
+                    $perm->user_id  = $s['user_id'];
+                    $perm->video_id = $video->id;
+                    $perm->perm     = 'owner';
+                    $perm->store();
                 }
             }
         }

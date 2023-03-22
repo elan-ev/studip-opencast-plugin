@@ -93,6 +93,7 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadCurrentUser');
+        this.$store.dispatch('loadCurrentUserSeries');
     }
 };
 </script>
