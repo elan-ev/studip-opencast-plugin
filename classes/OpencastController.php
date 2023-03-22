@@ -17,7 +17,6 @@ class OpencastController extends PluginController
     {
         parent::__construct($dispatcher);
 
-        $this->plugin = $dispatcher->current_plugin;
 
         // Localization
         $this->_ = function ($string) use ($dispatcher) {
@@ -50,14 +49,12 @@ class OpencastController extends PluginController
         if (isset($variables[$method]) && is_callable($variables[$method])) {
             return call_user_func_array($variables[$method], $arguments);
         }
-        throw new RuntimeException("Method {$method} does not exist");
+        return parent::__call($method, $arguments);
     }
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-
-        $this->plugin = $this->dispatcher->current_plugin;
 
         $this->flash = Trails_Flash::instance();
         $this->pluginpath = $this->dispatcher->trails_root;

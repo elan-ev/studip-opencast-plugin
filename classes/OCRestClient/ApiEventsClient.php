@@ -137,6 +137,9 @@ class ApiEventsClient extends OCRestClient
                         $media[] = $obj;
                     }
 
+                    if (is_null($oc_event->publications[0]->attachments)) {
+                        continue;
+                    }
                     $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
                     $oc_event->publications[0]->media       = $media;
                 }
