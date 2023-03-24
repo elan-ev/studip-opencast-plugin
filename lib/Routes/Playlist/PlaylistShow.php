@@ -31,9 +31,9 @@ class PlaylistShow extends OpencastController
 
         $ret_playlist = $playlist->toSanitizedArray();
         $ret_playlist['users'] = [[
-            'user_id'  => $perm['user_id'],
-            'fullname' => \get_fullname($perm['user_id']),
-            'perm'     => $perm['perm']
+            'user_id'  => $user->id,
+            'fullname' => \get_fullname($user->id),
+            'perm'     => $perm
         ]];
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));

@@ -247,7 +247,12 @@ class Videos extends UPMap
         }
 
         if (!empty($playlist_ids)) {
-            $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
+            if ($filters->getPlaylist() == null) {
+                $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
+            }
+            else {
+                $where .= ' AND opv.playlist_id IN('. implode(',', $playlist_ids) .')';
+            }
             $where .= ' AND opv.video_id = id';
         }
 
@@ -263,7 +268,7 @@ class Videos extends UPMap
         [$field, $order] = explode("_", $filters->getOrder());
 
         if ($field === 'order') {
-            if (!empty($playlist_ids)) {
+            if (!empty($playlist_ids) || $filters->getPlaylist() !== null) {
                 $sql .= ' ORDER BY opv.' . $field . ' ' . $order;
             }
         } else {
