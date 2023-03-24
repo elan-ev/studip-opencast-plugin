@@ -163,6 +163,7 @@ export default {
             this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
         },
         redirectAction(action) {
+            this.event.views++;
             this.$emit('redirectAction', action);
         },
 
