@@ -215,6 +215,14 @@ export default {
                 this.sortedVideos = this.videos;
             } else {
                 if (newmode === 'commit') {
+                    this.$store.dispatch('setPlaylistSort', {
+                        token: this.playlist.token,
+                        sort:  {
+                            field: 'order',
+                            order: 'asc',
+                            text : 'Benutzerdefiniert'
+                        }
+                    });
                     // store the new sorting order
                     this.$store.commit('setVideos', this.sortedVideos);
 

@@ -128,15 +128,10 @@ const actions = {
         dispatch('loadPlaylists')
     },
 
-    async setPlaylistSearch({dispatch, commit}, search) {
-        await commit('setPlaylistSearch', search)
-        dispatch('loadPlaylists')
-    },
-
-    async setPlaylistSort({}, data) {
+    async setPlaylistSort({dispatch}, data) {
         return ApiService.put('/playlists/' + data.token, {
             sort_order: data.sort.field + '_' + data.sort.order
-        });
+        }).then(() => dispatch('loadPlaylist', data.token));
     },
 
     async setAllowDownloadForPlaylist({dispatch, commit, state}, allowed) {
@@ -154,6 +149,10 @@ const mutations = {
 
     setPlaylist(state, playlist) {
         state.playlist = playlist;
+    },
+
+    setPlaylistSort(state, sortOder) {
+        state.playlist.sort_order = sortOder.sort.field + '_' + sortOder.sort.order
     },
 
     setPlaylistAdd(state, show) {

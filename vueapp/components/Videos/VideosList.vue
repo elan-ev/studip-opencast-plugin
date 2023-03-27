@@ -9,7 +9,12 @@
                 <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h3>
-        <SearchBar @search="doSearch"/>
+
+        <SearchBar v-if="getPlaylist(currentPlaylist) && getPlaylist(currentPlaylist).is_default != '1'"
+            :playlist="getPlaylist(currentPlaylist)"
+            @search="doSearch"/>
+        <SearchBar v-else @search="doSearch"/>
+        
         <PaginationButtons @changePage="changePage"/>
 
         <div v-if="isCourse && currentPlaylist">
@@ -315,7 +320,6 @@ export default {
             }
         })
         this.$store.dispatch('loadUserCourses');
-
     },
 
     watch: {

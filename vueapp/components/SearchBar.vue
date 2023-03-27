@@ -43,7 +43,7 @@
                 <li @click="selectToken('tag')" v-if="filteredTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="playlist && playlists.length">
+                <li @click="selectToken('playlist')" v-if="playlists && playlists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
@@ -158,15 +158,15 @@ export default {
 
     methods: {
         setSort() {
-            if (this.playlist) {
+            if (this.playlist && this.$route.name === 'playlist_edit') {
                 this.$store.dispatch('setPlaylistSort', {
                     token: this.playlist.token,
                     sort:  this.inputSort
                 });
-            } else {
+            }
+            else {
                 this.$store.dispatch('setVideoSort', this.inputSort)
             }
-
             this.doSearch();
         },
 
@@ -261,8 +261,20 @@ export default {
                 filters: filters,
                 order:  this.inputSort.field + '_' + this.inputSort.order
             });
-        }
+        },
 
+        checkPlaylistSort(playlist) {
+            // find sort order for current playlist
+            let sort, order;
+
+            if (!playlist.sort_order) {
+                sort = 'mkdate';
+                order = 'desc';
+            } else {
+                [sort, order] = playlist.sort_order.split('_');
+            }
+            this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
+        }
     },
 
     updated() {
@@ -276,19 +288,23 @@ export default {
         this.$store.dispatch('loadPlaylists');
 
         if (this.playlist) {
-            // find sort order for current playlist
-            let sort, order;
-
-            if (!this.playlist.sort_order) {
-                sort = 'mkdate';
-                order = 'desc';
-            } else {
-                [sort, order] = this.playlist.sort_order.split('_');
-            }
-                this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
+            this.checkPlaylistSort(this.playlist);
         }
         else {
-            this.inputSort = this.videoSort
+            this.inputSort = {
+                field: 'mkdate',
+                order: 'desc',
+                text : 'Datum hochgeladen: Neueste zuerst'
+            };
+        }
+        this.$store.dispatch('setVideoSort', this.inputSort)
+    },
+
+    watch: {
+        playlist(newPlaylist, oldPlaylist) {
+            if (oldPlaylist.sort_order != newPlaylist.sort_order) {
+                this.checkPlaylistSort(newPlaylist);
+            }
         }
     }
 }
