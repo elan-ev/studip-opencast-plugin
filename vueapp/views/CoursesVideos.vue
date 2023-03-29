@@ -17,7 +17,15 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['cid'])
+        ...mapGetters(['cid', 'defaultPlaylist'])
+    },
+
+    mounted() {
+        this.$store.dispatch('loadPlaylists').
+            then(() => {
+                this.$store.dispatch('setPlaylist', this.defaultPlaylist);
+                this.$store.dispatch('setDefaultSortOrder', this.defaultPlaylist);
+            });
     },
 };
 </script>

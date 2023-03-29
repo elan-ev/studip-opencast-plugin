@@ -15,7 +15,7 @@ class Filter
         $playlist;
 
     private static $ALLOWED_ORDERS = [
-        'mkdate_desc', 'mkdate_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
+        'created_desc', 'created_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
     ];
 
     private static $ALLOWED_FILTERS = [

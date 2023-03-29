@@ -4,7 +4,7 @@ const state = {
     videos: {},
     videoSearch: '',
     videoSort: {
-        field: 'mkdate',
+        field: 'created',
         order: 'desc',
         text : 'Datum hochgeladen: Neueste zuerst'
     },
@@ -170,12 +170,6 @@ const actions = {
     },
 
     setVideoSortMode({dispatch, state, commit}, mode) {
-        commit('setVideoSort', {
-            field: 'order',
-            order: 'asc',
-            text : 'Benutzerdefiniert'
-        });
-
         commit('setVideoSortMode', mode);
     },
 

@@ -137,7 +137,7 @@ export default {
         ...mapGetters([
             "cid", 
             "playlists", 
-            "currentPlaylist"
+            "playlist"
         ]),
 
         isCourse() {
@@ -145,7 +145,7 @@ export default {
         },
 
         defaultVisibility() {
-            return this.playlists.find(p => p['token'] === this.currentPlaylist)['visibility'];
+            return this.playlist['visibility'];
         },
     },
 
@@ -153,7 +153,7 @@ export default {
         async accept() {
             // Handle visibility
             this.event.cid = this.cid;
-            this.event.playlist_token = this.currentPlaylist;
+            this.event.playlist_token = this.playlist.token;
             this.checkVisibility();
             if (this.visibility === "default") {
                 this.event.seminar_visibility = null;

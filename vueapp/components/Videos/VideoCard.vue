@@ -175,7 +175,7 @@ export default {
 
     computed: {
         ...mapGetters([
-            'currentPlaylist',
+            'playlist',
             'playlists',
             'downloadSetting',
         ]),
@@ -186,7 +186,7 @@ export default {
                     return true;
                 }
 
-                let playlist_download = this.playlists.find(p => p['token'] === this.currentPlaylist)['allow_download'];
+                let playlist_download = this.playlist['allow_download'];
                 if (playlist_download === null) {
                     return this.downloadSetting === 'allow';
                 }

@@ -212,6 +212,11 @@ export default {
     watch: {
         videoSortMode(newmode) {
             if (newmode === true) {
+                this.$store.dispatch('setVideoSort', {
+                    field: 'order',
+                    order: 'asc',
+                    text : 'Benutzerdefiniert'
+                });
                 this.sortedVideos = this.videos;
             } else {
                 if (newmode === 'commit') {
@@ -230,12 +235,22 @@ export default {
                         playlist_token: this.playlist.token,
                         sortedVideos  : this.sortedVideos.map((elem) => elem.token)
                     });
-
-                    this.$store.dispatch('setVideoSortMode', false);
-                } else {
+                } 
+                else if (newmode === 'cancel') {
                     // cancel sorting
-                }
+                    let view = this;
 
+                    this.$store.dispatch('setDefaultSortOrder', this.playlist);
+                    this.$store.commit('clearPaging');
+                    this.$store.commit('setVideos', {});
+
+                    this.$store.dispatch('loadPlaylistVideos', {
+                        filters: this.filters,
+                        token: this.playlist.token,
+                        limit: -1
+                    }).then(() => { view.videos_loading = false });
+                }
+                this.$store.dispatch('setVideoSortMode', false);
             }
         }
     },

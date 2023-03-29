@@ -122,11 +122,11 @@ export default {
         availableSortOrders() {
             let sortOrders = [
                 {
-                    field: 'mkdate',
+                    field: 'created',
                     order: 'desc',
                     text : 'Datum hochgeladen: Neueste zuerst'
                 },  {
-                    field: 'mkdate',
+                    field: 'created',
                     order: 'asc',
                     text : 'Datum hochgeladen: Älteste zuerst'
                 },  {
@@ -164,9 +164,7 @@ export default {
                     sort:  this.inputSort
                 });
             }
-            else {
-                this.$store.dispatch('setVideoSort', this.inputSort)
-            }
+            this.$store.dispatch('setVideoSort', this.inputSort)
             this.doSearch();
         },
 
@@ -259,22 +257,9 @@ export default {
 
             this.$emit('search', {
                 filters: filters,
-                order:  this.inputSort.field + '_' + this.inputSort.order
+                order:  this.inputSort.field + '_' + this.inputSort.order // order should be unececcary
             });
         },
-
-        checkPlaylistSort(playlist) {
-            // find sort order for current playlist
-            let sort, order;
-
-            if (!playlist.sort_order) {
-                sort = 'mkdate';
-                order = 'desc';
-            } else {
-                [sort, order] = playlist.sort_order.split('_');
-            }
-            this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
-        }
     },
 
     updated() {
@@ -285,27 +270,20 @@ export default {
 
     mounted() {
         this.$store.dispatch('updateAvailableTags');
-        this.$store.dispatch('loadPlaylists');
 
         if (this.playlist) {
-            this.checkPlaylistSort(this.playlist);
+            // Default sort option should already be selected
+            this.inputSort = this.availableSortOrders.find(elem => elem.field == this.videoSort.field && elem.order == this.videoSort.order);
         }
         else {
+            // TODO Maybe use a global default sort order
             this.inputSort = {
-                field: 'mkdate',
+                field: 'created',
                 order: 'desc',
                 text : 'Datum hochgeladen: Neueste zuerst'
             };
         }
-        this.$store.dispatch('setVideoSort', this.inputSort)
+        this.$store.dispatch('setVideoSort', this.inputSort);
     },
-
-    watch: {
-        playlist(newPlaylist, oldPlaylist) {
-            if (oldPlaylist.sort_order != newPlaylist.sort_order) {
-                this.checkPlaylistSort(newPlaylist);
-            }
-        }
-    }
 }
 </script>

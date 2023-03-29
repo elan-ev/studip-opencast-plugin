@@ -10,23 +10,23 @@
             </div>
         </h3>
 
-        <SearchBar v-if="getPlaylist(currentPlaylist) && getPlaylist(currentPlaylist).is_default != '1'"
-            :playlist="getPlaylist(currentPlaylist)"
+        <SearchBar v-if="playlist && playlist.is_default != '1'"
+            :playlist="playlist"
             @search="doSearch"/>
         <SearchBar v-else @search="doSearch"/>
         
         <PaginationButtons @changePage="changePage"/>
 
-        <div v-if="isCourse && currentPlaylist">
+        <div v-if="isCourse && playlist">
             <StudipButton
-                v-if="currentPlaylist && getPlaylist(currentPlaylist).is_default != '1'"
-                @click.prevent="removePlaylistFromCourse(currentPlaylist, cid)"
+                v-if="playlist.is_default != '1'"
+                @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
             >
                 <studip-icon shape="trash" role="clickable" />
                 {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
             </StudipButton>
 
-            <a :href="getPlaylistLink(currentPlaylist)" class="button" target="_blank">
+            <a :href="getPlaylistLink(playlist.token)" class="button" target="_blank">
                  <studip-icon shape="edit" role="clickable" />
                 {{ $gettext('Wiedergabeliste bearbeiten') }}
             </a>
@@ -141,9 +141,9 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
-            'currentPlaylist',
             'courseVideosToCopy',
-            'playlists'
+            'playlists',
+            'playlist'
         ]),
 
         isCourse() {
@@ -161,7 +161,7 @@ export default {
 
             if (this.isCourse) {
                 let filters = this.filters;
-                filters.token = this.currentPlaylist;
+                filters.token = this.playlist.token;
                 this.$store.dispatch('loadPlaylistVideos', filters);
             } else {
                 await this.$store.dispatch('loadMyVideos', this.filters)
@@ -200,7 +200,7 @@ export default {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...filters,
                     cid: this.cid,
-                    token: this.currentPlaylist
+                    token: this.playlist.token
                 });
             } else {
                 this.$store.dispatch('loadMyVideos', this.filters)
@@ -246,7 +246,7 @@ export default {
                     this.$store.dispatch('loadPlaylistVideos', {
                         ...this.filters,
                         cid: this.cid,
-                        token: this.currentPlaylist
+                        token: this.playlist.token
                     });
                 } else {
                     this.$store.dispatch('loadMyVideos', this.filters)
@@ -262,7 +262,7 @@ export default {
 
         removePlaylistFromCourse(token, cid) {
             if (confirm(this.$gettext('Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen möchten?'))) {
-                this.$store.commit('setCurrentPlaylist', null);
+                this.$store.dispatch('setPlaylist', null);
                 this.$store.dispatch('removePlaylistFromCourse', {
                     token: token,
                     course: cid
@@ -288,16 +288,6 @@ export default {
         getPlaylistLink(token) {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
         },
-
-        getPlaylist(token) {
-            for (let id in this.playlists) {
-                if (this.playlists[id].token == token) {
-                    return this.playlists[id];
-                }
-            }
-
-            return null;
-        }
     },
 
     async mounted() {
@@ -305,11 +295,11 @@ export default {
         this.$store.commit('clearPaging');
         await this.$store.dispatch('authenticateLti').then(() => {
             if (view.isCourse) {
-                if (this.currentPlaylist !== null) {
+                if (this.playlist !== null) {
                     view.$store.dispatch('loadPlaylistVideos', {
                         ...this.filters,
                         cid  : view.cid,
-                        token: view.currentPlaylist
+                        token: view.playlist.token
                     }).then(() => { view.videos_loading = false });
                 } else {
                     view.videos_loading = false;

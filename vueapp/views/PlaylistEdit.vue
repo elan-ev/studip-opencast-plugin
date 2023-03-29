@@ -102,10 +102,11 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadPlaylist', this.token);
+        this.$store.dispatch('setDefaultSortOrder', this.playlist);
     },
 
     unmounted() {
-        this.$store.commit('setPlaylist', null);
+        this.$store.dispatch('setPlaylist', null);
     },
 
     methods: {

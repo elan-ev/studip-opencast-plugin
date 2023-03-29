@@ -2,7 +2,7 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: {},
-    playlists: null,
+    playlist: null,
     playlistSearch: '',
     addPlaylist: false,
     availableTags: [],
@@ -16,6 +16,22 @@ const getters = {
 
     playlist(state) {
         return state.playlist
+    },
+
+    defaultPlaylist(state) {
+        // Find the courses default playlist
+        for (let id in state.playlists) {
+            if (state.playlists[id].is_default == '1') {
+                return state.playlists[id];
+            }
+        }
+
+        // If no default is found, use the first playlist
+        for (let id in state.playlists) {
+            return state.playlists[id];
+        }
+
+        return null;
     },
 
     addPlaylist(state) {
@@ -46,8 +62,24 @@ const actions = {
     async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
+                context.dispatch('setDefaultSortOrder', data);
                 context.commit('setPlaylist', data);
             });
+    },
+
+    async setPlaylist(context, playlist) {
+        context.commit('setPlaylist', playlist);
+    },
+
+    async setDefaultSortOrder(context, playlist) {
+        let field, order;
+        if (!playlist.sort_order) {
+            sort = 'created';
+            order = 'desc';
+        } else {
+            [field, order] = playlist.sort_order.split('_');
+        }
+        context.commit('setVideoSort', {field: field, order: order});
     },
 
     async updatePlaylist(context, playlist) {
@@ -131,7 +163,7 @@ const actions = {
     async setPlaylistSort({dispatch}, data) {
         return ApiService.put('/playlists/' + data.token, {
             sort_order: data.sort.field + '_' + data.sort.order
-        }).then(() => dispatch('loadPlaylist', data.token));
+        });
     },
 
     async setAllowDownloadForPlaylist({dispatch, commit, state}, allowed) {
