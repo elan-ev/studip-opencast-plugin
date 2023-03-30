@@ -100,8 +100,8 @@ export default {
         ])
     },
 
-    mounted() {
-        this.$store.dispatch('loadPlaylist', this.token);
+    async mounted() {
+        await this.$store.dispatch('loadPlaylist', this.token);
         this.$store.dispatch('setDefaultSortOrder', this.playlist);
     },
 

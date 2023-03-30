@@ -43,7 +43,7 @@
                 <li @click="selectToken('tag')" v-if="filteredTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="playlists && playlists.length">
+                <li @click="selectToken('playlist')" v-if="playlists && comparablePlaylists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
@@ -60,7 +60,7 @@
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'playlist'">
-                <li v-for="playlist in playlists" v-bind:key="playlist.token" @click="selectToken(playlist)">
+                <li v-for="playlist in comparablePlaylists" v-bind:key="playlist.token" @click="selectToken(playlist)">
                     {{ playlist.title }}
                 </li>
             </ul>
@@ -117,6 +117,16 @@ export default {
                 }
             }
             return filteredTags;
+        },
+
+        comparablePlaylists() {
+            if (this.playlist) {
+                return this.playlists.filter(playlist => playlist.is_default != 1 && playlist.token != this.playlist.token);
+            }
+            else {
+                return this.playlists.filter(playlist => playlist.is_default != 1);
+            }
+            
         },
 
         availableSortOrders() {

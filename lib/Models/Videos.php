@@ -222,7 +222,10 @@ class Videos extends UPMap
 
                     // check, if user can access this playlist
                     if (!empty($playlist) && $playlist->getUserPerm()) {
-                        $playlist_ids[] = $playlist->id;
+                        $playlist_ids[$playlist->id] = [
+                            'id' => $playlist->id,
+                            'compare' => $filter['compare']
+                        ];
                     } else {
                         $playlist_ids[] = '-1';
                     }
@@ -247,13 +250,17 @@ class Videos extends UPMap
         }
 
         if (!empty($playlist_ids)) {
-            if ($filters->getPlaylist() == null) {
-                $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
+            foreach ($playlist_ids as $playlist_id) {
+                if ($playlist_id['compare'] == '=') {
+                    $sql .= ' INNER JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = id '
+                        .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
+                } else {
+                    $sql .= ' LEFT JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = id '
+                        .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
+
+                    $where .= ' AND opv'. $playlist_id['id'] . '.playlist_id IS NULL ';
+                }
             }
-            else {
-                $where .= ' AND opv.playlist_id IN('. implode(',', $playlist_ids) .')';
-            }
-            $where .= ' AND opv.video_id = id';
         }
 
         $sql .= $where;
