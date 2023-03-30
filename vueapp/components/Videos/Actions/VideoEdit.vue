@@ -153,7 +153,7 @@ export default {
         async accept() {
             // Handle visibility
             this.event.cid = this.cid;
-            this.event.playlist_token = this.playlist.token;
+            this.event.playlist_token = this.playlist?.token;
             this.checkVisibility();
             if (this.visibility === "default") {
                 this.event.seminar_visibility = null;

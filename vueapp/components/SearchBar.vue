@@ -267,7 +267,6 @@ export default {
 
             this.$emit('search', {
                 filters: filters,
-                order:  this.inputSort.field + '_' + this.inputSort.order // order should be unececcary
             });
         },
     },
@@ -295,5 +294,14 @@ export default {
         }
         this.$store.dispatch('setVideoSort', this.inputSort);
     },
+
+    watch: {
+        // Make sure that inputSort is synced with store
+        videoSort(newSort) {
+            if (newSort != null) {
+                this.inputSort = this.availableSortOrders.find(elem => elem.field == newSort.field && elem.order == newSort.order);
+            }
+        }
+    }
 }
 </script>

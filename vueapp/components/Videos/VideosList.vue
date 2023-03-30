@@ -291,22 +291,11 @@ export default {
     },
 
     async mounted() {
-        let view = this;
         this.$store.commit('clearPaging');
         await this.$store.dispatch('authenticateLti').then(() => {
-            if (view.isCourse) {
-                if (this.playlist !== null) {
-                    view.$store.dispatch('loadPlaylistVideos', {
-                        ...this.filters,
-                        cid  : view.cid,
-                        token: view.playlist.token
-                    }).then(() => { view.videos_loading = false });
-                } else {
-                    view.videos_loading = false;
-                }
-            } else {
-                view.$store.dispatch('loadMyVideos', this.filters)
-                    .then(() => { view.videos_loading = false });
+            if (!this.isCourse) {
+                this.$store.dispatch('loadMyVideos', this.filters)
+                    .then(() => { this.videos_loading = false });
             }
         })
         this.$store.dispatch('loadUserCourses');
@@ -316,6 +305,18 @@ export default {
         courseVideosToCopy(newValue, oldValue) {
             if (this.isCourse && oldValue?.length > 0 && newValue?.length == 0) {
                 this.selectedVideos = [];
+            }
+        },
+
+        // Catch every playlist change and automatically load videos of it
+        playlist(playlist) {
+            if (this.isCourse && playlist !== null) {
+                this.videos_loading = true;
+                this.$store.dispatch('loadPlaylistVideos', {
+                    ...this.filters,
+                    cid  : this.cid,
+                    token: playlist.token
+                }).then(() => { this.videos_loading = false });
             }
         }
     },

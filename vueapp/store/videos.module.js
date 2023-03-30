@@ -71,9 +71,7 @@ const actions = {
 
         const params = new URLSearchParams();
 
-        if (!filters['order']) {
-            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
-        }
+        params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
 
         if (!filters['offset']) {
             params.append('offset', state.paging.currPage * state.limit);

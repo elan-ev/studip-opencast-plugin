@@ -217,14 +217,9 @@ export default {
 
     methods: {
         setPlaylist(playlist) {
-            this.$store.dispatch('setPlaylist', playlist);
             this.$store.dispatch('setDefaultSortOrder', playlist);
+            this.$store.dispatch('setPlaylist', playlist);
             this.$store.commit('clearPaging');
-
-            this.$store.dispatch('loadPlaylistVideos', {
-                cid: this.cid,
-                token: playlist.token
-            });
         },
 
         getScheduleList() {
