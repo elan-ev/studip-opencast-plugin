@@ -275,7 +275,7 @@ class Videos extends UPMap
         [$field, $order] = explode("_", $filters->getOrder());
 
         if ($field === 'order') {
-            if (!empty($playlist_ids) || $filters->getPlaylist() !== null) {
+            if ($filters->getPlaylist() !== null) {
                 $sql .= ' ORDER BY opv.' . $field . ' ' . $order;
             }
         } else {

@@ -217,9 +217,7 @@ export default {
 
     methods: {
         setPlaylist(playlist) {
-            this.$store.dispatch('setDefaultSortOrder', playlist);
             this.$store.dispatch('setPlaylist', playlist);
-            this.$store.commit('clearPaging');
         },
 
         getScheduleList() {
@@ -230,12 +228,6 @@ export default {
 
         setView(page) {
             this.$store.dispatch('updateView', page);
-
-            this.$store.dispatch('loadPlaylistVideos', {
-                cid: this.cid,
-                token: this.playlist.token
-            });
-
         },
 
         async setVisibility(visibility) {

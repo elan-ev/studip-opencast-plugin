@@ -145,14 +145,14 @@ export default {
         },
 
         doSearch(options) {
-            let view = this;
-
             options.filters = options.filters.concat(this.filters);
             options.limit = -1;
             options.token = this.playlist.token;
-
+            
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
             this.$store.dispatch('loadPlaylistVideos', options)
-                .then(() => { view.videos_loading = false });
+                .then(() => { this.videos_loading = false });
         },
 
         canMoveUp(index) {
@@ -200,12 +200,20 @@ export default {
                      text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
 
+                this.loadVideos();
+            })
+        },
+
+        loadVideos() {
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
+            this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
                 this.$store.dispatch('loadPlaylistVideos', {
                     filters: this.filters,
-                    token:   this.playlist.token,
-                    limit:   -1
-                })
-            })
+                    token: this.playlist.token,
+                    limit: -1
+                }).then(() => { this.videos_loading = false });
+            });
         }
     },
 
@@ -237,18 +245,8 @@ export default {
                     });
                 } 
                 else if (newmode === 'cancel') {
-                    // cancel sorting
-                    let view = this;
-
-                    this.$store.dispatch('setDefaultSortOrder', this.playlist);
-                    this.$store.commit('clearPaging');
-                    this.$store.commit('setVideos', {});
-
-                    this.$store.dispatch('loadPlaylistVideos', {
-                        filters: this.filters,
-                        token: this.playlist.token,
-                        limit: -1
-                    }).then(() => { view.videos_loading = false });
+                    // Reload videos
+                    this.loadVideos();
                 }
                 this.$store.dispatch('setVideoSortMode', false);
             }
@@ -256,16 +254,7 @@ export default {
     },
 
     mounted() {
-        let view = this;
-
-        this.$store.commit('clearPaging');
-        this.$store.commit('setVideos', {});
-
-        this.$store.dispatch('loadPlaylistVideos', {
-            filters: this.filters,
-            token: this.playlist.token,
-            limit: -1
-        }).then(() => { view.videos_loading = false });
+        this.loadVideos();
     }
 };
 </script>

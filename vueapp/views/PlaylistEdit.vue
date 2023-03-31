@@ -101,8 +101,7 @@ export default {
     },
 
     async mounted() {
-        await this.$store.dispatch('loadPlaylist', this.token);
-        this.$store.dispatch('setDefaultSortOrder', this.playlist);
+        this.$store.dispatch('loadPlaylist', this.token);
     },
 
     unmounted() {

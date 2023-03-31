@@ -159,12 +159,14 @@ export default {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
 
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
             if (this.isCourse) {
                 let filters = this.filters;
                 filters.token = this.playlist.token;
-                this.$store.dispatch('loadPlaylistVideos', filters);
+                this.$store.dispatch('loadPlaylistVideos', filters).then(() => { this.videos_loading = false });
             } else {
-                await this.$store.dispatch('loadMyVideos', this.filters)
+                await this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
             }
         },
 
@@ -196,14 +198,17 @@ export default {
         doSearch(filters) {
             this.filters = filters;
 
+            this.videos_loading = true;
+            this.$store.commit('clearPaging');
+            this.$store.commit('setVideos', {});
             if (this.isCourse) {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...filters,
                     cid: this.cid,
                     token: this.playlist.token
-                });
+                }).then(() => { this.videos_loading = false });
             } else {
-                this.$store.dispatch('loadMyVideos', this.filters)
+                this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
             }
         },
 
@@ -242,14 +247,16 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
+                this.videos_loading = true;
+                this.$store.commit('setVideos', {});
                 if (this.isCourse) {
                     this.$store.dispatch('loadPlaylistVideos', {
                         ...this.filters,
                         cid: this.cid,
                         token: this.playlist.token
-                    });
+                    }).then(() => { this.videos_loading = false });
                 } else {
-                    this.$store.dispatch('loadMyVideos', this.filters)
+                    this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
                 }
             }
         },
@@ -292,6 +299,7 @@ export default {
 
     async mounted() {
         this.$store.commit('clearPaging');
+        this.$store.commit('setVideos', {});
         await this.$store.dispatch('authenticateLti').then(() => {
             if (!this.isCourse) {
                 this.$store.dispatch('loadMyVideos', this.filters)
@@ -308,15 +316,19 @@ export default {
             }
         },
 
-        // Catch every playlist change and automatically load videos of it
+        // Catch every playlist change to handle video loading
         playlist(playlist) {
             if (this.isCourse && playlist !== null) {
                 this.videos_loading = true;
-                this.$store.dispatch('loadPlaylistVideos', {
-                    ...this.filters,
-                    cid  : this.cid,
-                    token: playlist.token
-                }).then(() => { this.videos_loading = false });
+                this.$store.commit('clearPaging');
+                this.$store.commit('setVideos', {});
+                this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
+                    this.$store.dispatch('loadPlaylistVideos', {
+                        ...this.filters,
+                        cid  : this.cid,
+                        token: playlist.token
+                    }).then(() => { this.videos_loading = false });
+                });
             }
         }
     },

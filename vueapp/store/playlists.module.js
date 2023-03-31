@@ -62,8 +62,9 @@ const actions = {
     async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
-                context.dispatch('setDefaultSortOrder', data);
-                context.commit('setPlaylist', data);
+                context.dispatch('setDefaultSortOrder', data).then(() => {
+                    context.commit('setPlaylist', data);
+                });
             });
     },
 
