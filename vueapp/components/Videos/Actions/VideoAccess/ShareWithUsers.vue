@@ -45,7 +45,7 @@
 
             <label>
                 {{ $gettext('Berechtigung') }}
-                <select v-model="selectedUser.perm">
+                <select v-model="selectedUserPerm">
                     <option value="owner">
                         {{ $gettext('Besitzer/in') }}
                     </option>
@@ -100,6 +100,7 @@ export default {
     {
         return {
             selectedUser: {},
+            selectedUserPerm: null,
         }
     },
 
@@ -148,12 +149,14 @@ export default {
         addShareUser()
         {
             if (Object.keys(this.selectedUser).length > 0
-                && this.selectedUser.perm
                 && this.selectedUser.user_id
+                && this.selectedUserPerm
             ) {
+                this.selectedUser.perm = this.selectedUserPerm;
                 this.$emit('add', this.selectedUser);
 
                 this.selectedUser = {};
+                this.selectedUserPerm = null;
             }
         }
     },
