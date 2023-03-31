@@ -199,7 +199,7 @@ export default {
             this.filters = filters;
 
             this.videos_loading = true;
-            this.$store.commit('clearPaging');
+            this.changePage(0);
             this.$store.commit('setVideos', {});
             if (this.isCourse) {
                 this.$store.dispatch('loadPlaylistVideos', {
