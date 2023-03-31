@@ -7,7 +7,7 @@
 
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication && event.preview" @click="redirectAction(`/video/` + event.token)" target="_blank">
+                    <a v-if="event.publication && event.preview && event.available" @click="redirectAction(`/video/` + event.token)" target="_blank">
                         <span class="oc--previewimage">
                             <img class="oc--previewimage"
                                 :src="event.preview.player ? event.preview.player : event.preview.search"
@@ -25,6 +25,9 @@
                             </span>
                         </span>
                     </a>
+                    <span v-else-if="!event.available" class="oc--unavailable">
+                        {{ $gettext("Video nicht verfügbar") }}
+                    </span>
                     <span v-else class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
                         <!-- <p>No video uploaded</p> -->
