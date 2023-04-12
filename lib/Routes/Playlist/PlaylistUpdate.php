@@ -19,17 +19,18 @@ class PlaylistUpdate extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user;
+        global $user, $perm;
 
         $playlist = Playlists::findOneByToken($args['token']);
 
         // check what permissions the current user has on the playlist
-        $perm = $playlist->getUserPerm();
+        $uperm = $playlist->getUserPerm();
 
-        if (empty($perm) || (
-            $perm != 'owner' && $perm != 'write'))
-        {
-            throw new \AccessDeniedException();
+        if (!$perm->have_perm('root', $user->id)) {
+            if (empty($uperm) || ($uperm != 'owner' && $uperm != 'write'))
+            {
+                throw new \AccessDeniedException();
+            }
         }
 
         $json = $this->getRequestData($request);
@@ -71,7 +72,7 @@ class PlaylistUpdate extends OpencastController
         $ret_playlist['users'] = [[
             'user_id'  => $user->id,
             'fullname' => \get_fullname($user->id),
-            'perm'     => $perm
+            'perm'     => $uperm
         ]];
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));

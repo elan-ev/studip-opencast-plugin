@@ -18,17 +18,18 @@ class PlaylistUpdatePositions extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user;
+        global $user, $perm;
 
         $playlist = Playlists::findOneByToken($args['token']);
 
         // check what permissions the current user has on the playlist
-        $perm = $playlist->getUserPerm();
+        $uperm = $playlist->getUserPerm();
 
-        if (empty($perm) || (
-            $perm != 'owner' && $perm != 'write'))
-        {
-            throw new \AccessDeniedException();
+        if (!$perm->have_perm('root', $user->id)) {
+            if (empty($uperm) || ($uperm != 'owner' && $uperm != 'write'))
+            {
+                throw new \AccessDeniedException();
+            }
         }
 
         PlaylistVideos::reorder($args['token'], $this->getRequestData($request));
