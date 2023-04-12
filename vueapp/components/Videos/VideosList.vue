@@ -300,8 +300,25 @@ export default {
     async mounted() {
         this.$store.commit('clearPaging');
         this.$store.commit('setVideos', {});
+
+        let loadVideos = false;
+        if (this.playlist != null) {
+            loadVideos = true;
+        }
+
         await this.$store.dispatch('authenticateLti').then(() => {
-            if (!this.isCourse) {
+            if (this.isCourse) {
+                if (loadVideos) {
+                    this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
+                        this.$store.dispatch('loadPlaylistVideos', {
+                            ...this.filters,
+                            cid  : this.cid,
+                            token: playlist.token
+                        }).then(() => { this.videos_loading = false });
+                    });
+                }
+            }
+            else {
                 this.$store.dispatch('loadMyVideos', this.filters)
                     .then(() => { this.videos_loading = false });
             }
