@@ -238,10 +238,10 @@ class Videos extends UPMap
         if (!empty($tag_ids)) {
             foreach ($tag_ids as $tag) {
                 if ($tag['compare'] == '=') {
-                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
                         .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
                 } else {
-                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
                         .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
 
                     $where .= ' AND t'. $tag['id'] . '.tag_id IS NULL ';
@@ -252,10 +252,10 @@ class Videos extends UPMap
         if (!empty($playlist_ids)) {
             foreach ($playlist_ids as $playlist_id) {
                 if ($playlist_id['compare'] == '=') {
-                    $sql .= ' INNER JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = id '
+                    $sql .= ' INNER JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = oc_video.id '
                         .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
                 } else {
-                    $sql .= ' LEFT JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = id '
+                    $sql .= ' LEFT JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = oc_video.id '
                         .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
 
                     $where .= ' AND opv'. $playlist_id['id'] . '.playlist_id IS NULL ';
