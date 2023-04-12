@@ -17,7 +17,7 @@
         
         <PaginationButtons @changePage="changePage"/>
 
-        <div v-if="isCourse && playlist">
+        <div v-if="isCourse && playlist && canEdit">
             <StudipButton
                 v-if="playlist.is_default != '1'"
                 @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
@@ -143,7 +143,8 @@ export default {
             "cid",
             'courseVideosToCopy',
             'playlists',
-            'playlist'
+            'playlist',
+            'course_config'
         ]),
 
         isCourse() {
@@ -152,6 +153,14 @@ export default {
 
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
+        },
+
+        canEdit() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.edit_allowed;
         },
     },
 
