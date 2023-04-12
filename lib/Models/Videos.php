@@ -94,7 +94,7 @@ class Videos extends UPMap
     {
         global $perm;
 
-        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = id)';
+        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = oc_video.id)';
         $where = ' WHERE 1 ';
         $params = [':playlist_id' => $playlist_id];
 
@@ -138,7 +138,7 @@ class Videos extends UPMap
             $user_id = $user->id;
         }
 
-        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = oc_video.id)';
         $params = [];
         $where  = ' WHERE 1 ';
 
@@ -152,7 +152,7 @@ class Videos extends UPMap
                 $where = ' WHERE oc_video.id IN (:video_ids) ';
                 $params[':video_ids'] = self::getFilteredVideoIds($user_id);
             } else {
-                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
                 $where = ' WHERE 1 ';
             }
         }

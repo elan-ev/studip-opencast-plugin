@@ -170,6 +170,7 @@ class Helpers
             $pcourse = new PlaylistSeminars();
             $pcourse->playlist_id = $playlist->id;
             $pcourse->seminar_id  = $course_id;
+            $pcourse->visibility = 'visible';
             $pcourse->is_default = 1;
 
             $pcourse->store();
