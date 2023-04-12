@@ -208,11 +208,12 @@ export default {
             this.filters = filters;
 
             this.videos_loading = true;
-            this.changePage(0);
+            this.$store.dispatch('setPage', 0)
             this.$store.commit('setVideos', {});
             if (this.isCourse) {
+                console.log(this.cid)
                 this.$store.dispatch('loadPlaylistVideos', {
-                    ...filters,
+                    ...this.filters,
                     cid: this.cid,
                     token: this.playlist.token
                 }).then(() => { this.videos_loading = false });
