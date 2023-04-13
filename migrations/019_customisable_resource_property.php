@@ -15,12 +15,18 @@ class CustomisableResourceProperty extends Migration
             $property_id = DBManager::get()->query("SELECT property_id FROM `resource_property_definitions`
             WHERE `name` LIKE 'OCCA#%'
                 OR `name`='Opencast Capture Agent'")->fetchColumn();
+
+            $stmt_update = DBManager::get()->prepare("UPDATE `resource_property_definitions`
+                SET `name` = 'Aufzeichnungstechnik' WHERE property_id = ?");
         }
         else
         {
             $property_id = DBManager::get()->query("SELECT property_id FROM `resources_properties`
             WHERE `name` LIKE 'OCCA#%'
                 OR `name`='Opencast Capture Agent'")->fetchColumn();
+
+            $stmt_update = DBManager::get()->prepare("UPDATE `resources_properties`
+                SET `name` = 'Aufzeichnungstechnik' WHERE property_id = ?");
         }
 
         $stmt = $db->prepare('INSERT INTO config (field, value, section, type, `range`, mkdate, chdate, description)
@@ -35,6 +41,10 @@ class CustomisableResourceProperty extends Migration
         ]);
 
         $db->exec("DELETE FROM `oc_config_precise` WHERE name = 'capture_agent_attribute'");
+
+        $stmt_update->execute([
+            $property_id
+        ]);
 
         SimpleOrMap::expireTableScheme();
     }
