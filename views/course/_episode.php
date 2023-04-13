@@ -89,7 +89,7 @@ $sort_orders = Pager::getSortOptions();
                                          data-src="<?= $image ?>" height="200"
                                          style="filter: grayscale(100%);">
                                 </span>
-                            <? elseif ($mayWatchEpisodes) : ?>
+                            <? else: ?>
                                 <a href="<?= $video_url . $item['id'] ?>" target="_blank">
                                     <span class="previewimage">
                                         <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
@@ -99,11 +99,6 @@ $sort_orders = Pager::getSortOptions();
                                             src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">
                                     </span>
                                 </a>
-                            <? else : ?>
-                                <span class="previewimage">
-                                    <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                         data-src="<?= $image ?>" height="200">
-                                </span>
                             <? endif ?>
                         </div>
                     </div>
