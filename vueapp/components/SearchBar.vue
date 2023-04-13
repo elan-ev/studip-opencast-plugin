@@ -79,13 +79,6 @@ export default {
         StudipIcon
     },
 
-    props: {
-        'playlist' : {
-            type: Object,
-            default: null
-        }
-    },
-
     data() {
         return {
             inputSort: null,
@@ -104,7 +97,8 @@ export default {
         ...mapGetters([
             'videoSort',
             'availableTags',
-            'playlists'
+            'playlists',
+            'playlist'
         ]),
 
         filteredTags() {
@@ -121,12 +115,9 @@ export default {
 
         comparablePlaylists() {
             if (this.playlist) {
-                return this.playlists.filter(playlist => playlist.is_default != 1 && playlist.token != this.playlist.token);
+                return this.playlists.filter(playlist => playlist.token != this.playlist.token);
             }
-            else {
-                return this.playlists.filter(playlist => playlist.is_default != 1);
-            }
-            
+            return this.playlists;            
         },
 
         availableSortOrders() {

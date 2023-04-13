@@ -10,10 +10,7 @@
             </div>
         </h3>
 
-        <SearchBar v-if="playlist && playlist.is_default != '1'"
-            :playlist="playlist"
-            @search="doSearch"/>
-        <SearchBar v-else @search="doSearch"/>
+        <SearchBar @search="doSearch"/>
         
         <PaginationButtons @changePage="changePage"/>
 

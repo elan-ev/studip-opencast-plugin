@@ -1,6 +1,6 @@
 <template>
     <div>
-        <SearchBar @search="doSearch" v-if="!videoSortMode" :playlist="playlist" />
+        <SearchBar @search="doSearch" v-if="!videoSortMode"/>
 
         <div class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
