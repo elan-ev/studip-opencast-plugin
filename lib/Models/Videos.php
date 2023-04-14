@@ -560,7 +560,7 @@ class Videos extends UPMap
         }
 
         if ($acl <> $oc_acl) {
-            $new_acl = self::addEpisodeAcl($video->episode, $acl, $oc_acl);
+            $new_acl = self::addEpisodeAcl($video->episode, $acl, $current_acl);
             $api_client->setACL($video->episode, $new_acl);
             $workflow_client->republish($video->episode);
         }
