@@ -9,11 +9,17 @@ class Config extends \SimpleOrMap
 {
     use RelationshipTrait;
 
+    protected const allowed_settings_fields = [
+        'lti_consumerkey', 'lti_consumersecret', 'debug'
+    ];
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_config';
 
         $config['serialized_fields']['settings'] = 'JSONArrayObject';
+        $config['registered_callbacks']['after_initialize'][] = 'sanitizeSettings';
+        $config['registered_callbacks']['before_store'][]     = 'sanitizeSettings';
 
         parent::configure($config);
     }
@@ -94,5 +100,14 @@ class Config extends \SimpleOrMap
     public static function getConfigIdForCourse($course_id)
     {
         return SeminarSeries::findOneBySeminar_id($course_id)->config_id;
+    }
+
+    public function sanitizeSettings($event)
+    {
+        foreach ($this->settings as $key => $value) {
+            if (in_array($key, self::allowed_settings_fields) === false) {
+                unset($this->settings[$key]);
+            }
+        }
     }
 }
