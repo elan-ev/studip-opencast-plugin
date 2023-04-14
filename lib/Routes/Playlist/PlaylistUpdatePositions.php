@@ -23,10 +23,9 @@ class PlaylistUpdatePositions extends OpencastController
         $playlist = Playlists::findOneByToken($args['token']);
 
         // check what permissions the current user has on the playlist
-        $perm = $playlist->getUserPerm();
+        $uperm = $playlist->getUserPerm();
 
-        if (empty($perm) || (
-            $perm != 'owner' && $perm != 'write'))
+        if (empty($uperm) || ($uperm != 'owner' && $uperm != 'write'))
         {
             throw new \AccessDeniedException();
         }

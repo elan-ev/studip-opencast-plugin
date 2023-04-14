@@ -22,18 +22,18 @@ class PlaylistShow extends OpencastController
         $playlist = Playlists::findOneByToken($args['token']);
 
         // check what permissions the current user has on the playlist
-        $perm = $playlist->getUserPerm();
+        $uperm = $playlist->getUserPerm();
 
-        if (empty($perm) || !$perm)
+        if (empty($uperm) || !$uperm)
         {
             throw new \AccessDeniedException();
         }
 
         $ret_playlist = $playlist->toSanitizedArray();
         $ret_playlist['users'] = [[
-            'user_id'  => $perm['user_id'],
-            'fullname' => \get_fullname($perm['user_id']),
-            'perm'     => $perm['perm']
+            'user_id'  => $user->id,
+            'fullname' => \get_fullname($user->id),
+            'perm'     => $uperm
         ]];
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));

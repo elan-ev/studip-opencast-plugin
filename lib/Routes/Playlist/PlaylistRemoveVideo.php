@@ -24,10 +24,10 @@ class PlaylistRemoveVideo extends OpencastController
         $video = Videos::findOneByToken($args['vid_token']);
 
         // check what permissions the current user has on the playlist and video
-        $perm = $playlist->getUserPerm();
+        $uperm = $playlist->getUserPerm();
 
-        if ((empty($perm) ||
-            $perm != 'owner' && $perm != 'write'))
+        if ((empty($uperm) ||
+            $uperm != 'owner' && $uperm != 'write'))
         {
             throw new \AccessDeniedException();
         }

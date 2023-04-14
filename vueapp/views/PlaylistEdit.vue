@@ -100,12 +100,12 @@ export default {
         ])
     },
 
-    mounted() {
+    async mounted() {
         this.$store.dispatch('loadPlaylist', this.token);
     },
 
     unmounted() {
-        this.$store.commit('setPlaylist', null);
+        this.$store.dispatch('setPlaylist', null);
     },
 
     methods: {

@@ -11,10 +11,11 @@ class Filter
         $limit,
         $order,
         $filters = [],
-        $course_id;
+        $course_id,
+        $playlist;
 
     private static $ALLOWED_ORDERS = [
-        'mkdate_desc', 'mkdate_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
+        'created_desc', 'created_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
     ];
 
     private static $ALLOWED_FILTERS = [
@@ -43,6 +44,10 @@ class Filter
 
         if (isset($params['cid']) && !empty($params['cid'])) {
             $this->course_id = $params['cid'];
+        }
+
+        if (isset($params['token']) && !empty($params['token'])) {
+            $this->playlist = $params['token'];
         }
 
         if (!empty($params['filters'])) {
@@ -82,5 +87,10 @@ class Filter
     public function getCourseId()
     {
         return $this->course_id;
+    }
+
+    public function getPlaylist()
+    {
+        return $this->playlist;
     }
 }

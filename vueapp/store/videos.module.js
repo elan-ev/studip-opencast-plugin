@@ -4,7 +4,7 @@ const state = {
     videos: {},
     videoSearch: '',
     videoSort: {
-        field: 'mkdate',
+        field: 'created',
         order: 'desc',
         text : 'Datum hochgeladen: Neueste zuerst'
     },
@@ -71,9 +71,7 @@ const actions = {
 
         const params = new URLSearchParams();
 
-        if (!filters['order']) {
-            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
-        }
+        params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
 
         if (!filters['offset']) {
             params.append('offset', state.paging.currPage * state.limit);
@@ -170,12 +168,6 @@ const actions = {
     },
 
     setVideoSortMode({dispatch, state, commit}, mode) {
-        commit('setVideoSort', {
-            field: 'order',
-            order: 'asc',
-            text : 'Benutzerdefiniert'
-        });
-
         commit('setVideoSortMode', mode);
     },
 

@@ -35,7 +35,7 @@ class NewScheme extends Migration
             `visibility` enum('internal','free','public'),
             `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-            `sort_order` varchar(30) NOT NULL DEFAULT 'mkdate_desc',
+            `sort_order` varchar(30) NOT NULL DEFAULT 'created_desc',
             PRIMARY KEY (`id`),
             KEY `U.1` (`token`)
           );

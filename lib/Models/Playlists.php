@@ -57,13 +57,17 @@ class Playlists extends UPMap
      */
     public function getUserPerm()
     {
-        global $user;
+        global $user, $perm;;
 
         $ret_perm = false;
 
-        foreach ($this->perms as $perm) {
-            if ($perm->user_id == $user->id) {
-                $ret_perm = $perm->perm;
+        if ($perm->have_perm('root', $user->id)) {
+            return 'owner';
+        }
+
+        foreach ($this->perms as $uperm) {
+            if ($uperm->user_id == $user->id) {
+                $ret_perm = $uperm->perm;
             }
         }
 

@@ -7,7 +7,7 @@
 
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication && event.preview" @click="redirectAction(`/video/` + event.token)" target="_blank">
+                    <a v-if="event.publication && event.preview && event.available" @click="redirectAction(`/video/` + event.token)" target="_blank">
                         <span class="oc--previewimage">
                             <img class="oc--previewimage"
                                 :src="event.preview.player ? event.preview.player : event.preview.search"
@@ -25,6 +25,9 @@
                             </span>
                         </span>
                     </a>
+                    <span v-else-if="!event.available" class="oc--unavailable">
+                        {{ $gettext("Video nicht verfügbar") }}
+                    </span>
                     <span v-else class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
                         <!-- <p>No video uploaded</p> -->
@@ -163,6 +166,7 @@ export default {
             this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
         },
         redirectAction(action) {
+            this.event.views++;
             this.$emit('redirectAction', action);
         },
 
@@ -174,7 +178,7 @@ export default {
 
     computed: {
         ...mapGetters([
-            'currentPlaylist',
+            'playlist',
             'playlists',
             'downloadSetting',
         ]),
@@ -185,7 +189,7 @@ export default {
                     return true;
                 }
 
-                let playlist_download = this.playlists.find(p => p['token'] === this.currentPlaylist)['allow_download'];
+                let playlist_download = this.playlist['allow_download'];
                 if (playlist_download === null) {
                     return this.downloadSetting === 'allow';
                 }
@@ -265,14 +269,15 @@ export default {
                     emitArguments: 'VideoAddToPlaylist'
                 });
 
-                menuItems.push({
-                    id: 3,
-                    label: this.$gettext('Video freigeben'),
-                    icon: 'share',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAccess'
-                });
-
+                if (this.event?.perm === 'owner') {
+                    menuItems.push({
+                        id: 3,
+                        label: this.$gettext('Video freigeben'),
+                        icon: 'share',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAccess'
+                    });
+                }
 
                 if (this.event?.preview?.has_previews) {
                     menuItems.push({
