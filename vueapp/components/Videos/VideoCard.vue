@@ -269,14 +269,15 @@ export default {
                     emitArguments: 'VideoAddToPlaylist'
                 });
 
-                menuItems.push({
-                    id: 3,
-                    label: this.$gettext('Video freigeben'),
-                    icon: 'share',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAccess'
-                });
-
+                if (this.event?.perm === 'owner') {
+                    menuItems.push({
+                        id: 3,
+                        label: this.$gettext('Video freigeben'),
+                        icon: 'share',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAccess'
+                    });
+                }
 
                 if (this.event?.preview?.has_previews) {
                     menuItems.push({

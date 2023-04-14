@@ -42,11 +42,9 @@ class PlaylistVideoList extends OpencastController
             // check what permissions the current user has on the playlist
             $uperm = $playlist->getUserPerm();
 
-            if (!$perm->have_perm('root', $user->id)) {
-                if (empty($uperm) || !$uperm)
-                {
-                    throw new \AccessDeniedException();
-                }
+            if (empty($uperm) || !$uperm)
+            {
+                throw new \AccessDeniedException();
             }
         }
 
