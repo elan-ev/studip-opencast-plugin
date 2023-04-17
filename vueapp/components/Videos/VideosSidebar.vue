@@ -13,6 +13,13 @@
                     </router-link>
                 </li>
                 <li :class="{
+                    active: fragment == 'videosTrashed'
+                    }">
+                    <router-link :to="{ name: 'videosTrashed' }">
+                        Videos Archive
+                    </router-link>
+                </li>
+                <li :class="{
                     active: fragment == 'playlists' || fragment == 'playlist_edit'
                     }">
                     <router-link :to="{ name: 'playlists' }">

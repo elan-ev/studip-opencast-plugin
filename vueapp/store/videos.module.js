@@ -126,6 +126,10 @@ const actions = {
         return ApiService.delete('videos/' + token);
     },
 
+    async restoreVideo(context, token) {
+        return ApiService.put('videos/' + token + '/restore');
+    },
+
     async updateVideo(context, event) {
         return ApiService.put('videos/' + event.token, {event: event});
     },

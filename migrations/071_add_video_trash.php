@@ -46,7 +46,7 @@ class AddVideoTrash extends Migration
                 'chdate'         => $video['chdate'],
                 'mkdate'         => $video['mkdate'],
                 'available'      => true,
-                'trashed'          => true
+                'trashed'        => true
             ]);
         }
 

@@ -243,8 +243,18 @@ export default {
             let menuItems = [];
 
             if (this.canEdit) {
-                menuItems.push({
+                if (this.event?.trashed) {
+                    menuItems.push({
                     id: 0,
+                    label: this.$gettext('Widerherstellen'),
+                    icon: 'refresh',
+                    emit: 'performAction',
+                    emitArguments: 'VideoRestore'
+                });
+
+                }
+                menuItems.push({
+                    id: 1,
                     label: this.$gettext('Bearbeiten'),
                     icon: 'edit',
                     emit: 'performAction',
@@ -262,7 +272,7 @@ export default {
                 */
 
                 menuItems.push({
-                    id: 2,
+                    id: 3,
                     label: this.$gettext('Verknüpfungen'),
                     icon: 'add',
                     emit: 'performAction',
@@ -271,7 +281,7 @@ export default {
 
                 if (this.event?.perm === 'owner') {
                     menuItems.push({
-                        id: 3,
+                        id: 4,
                         label: this.$gettext('Video freigeben'),
                         icon: 'share',
                         emit: 'performAction',
@@ -281,7 +291,7 @@ export default {
 
                 if (this.event?.preview?.has_previews) {
                     menuItems.push({
-                        id: 4,
+                        id: 5,
                         label: this.$gettext('Schnitteditor öffnen'),
                         icon: 'knife',
                         emit: 'redirectAction',
@@ -291,7 +301,7 @@ export default {
 
                 if (this.event?.publication?.annotation_tool) {
                     menuItems.push({
-                        id: 5,
+                        id: 6,
                         label: this.$gettext('Anmerkungen hinzufügen'),
                         icon: 'knife',
                         emit: 'redirectAction',
@@ -299,18 +309,30 @@ export default {
                     });
                 }
 
-                menuItems.push({
-                    id: 7,
-                    label: this.$gettext('Entfernen'),
-                    icon: 'trash',
-                    emit: 'performAction',
-                    emitArguments: 'VideoDelete'
-                });
+                if (this.event?.trashed) {
+                    menuItems.push({
+                        id: 8,
+                        label: this.$gettext('Unwiderruflich entfernen'),
+                        icon: 'trash',
+                        emit: 'performAction',
+                        emitArguments: 'VideoDeletePermanent'
+                    });
+                }
+                else {
+                    menuItems.push({
+                        id: 8,
+                        label: this.$gettext('Entfernen'),
+                        icon: 'trash',
+                        emit: 'performAction',
+                        emitArguments: 'VideoDelete'
+                    });  
+                }
+
             }
 
             if (this.downloadAllowed) {
                 menuItems.push({
-                    id: 1,
+                    id: 2,
                     label: this.$gettext('Medien runterladen'),
                     icon: 'download',
                     emit: 'performAction',
@@ -319,7 +341,7 @@ export default {
             }
 
             menuItems.push({
-                id: 6,
+                id: 7,
                 label: this.$gettext('Technisches Feedback'),
                 icon: 'support',
                 emit: 'performAction',

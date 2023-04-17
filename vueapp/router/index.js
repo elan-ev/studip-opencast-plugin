@@ -15,6 +15,11 @@ export default new createRouter({
                     component: () => import("@/views/Videos"),
                 },
                 {
+                    path: "videosTrashed",
+                    name: "videosTrashed",
+                    component: () => import("@/views/VideosTrashed"),
+                },
+                {
                     path: "playlists",
                     name: "playlists",
                     component: () => import("@/views/Playlists"),

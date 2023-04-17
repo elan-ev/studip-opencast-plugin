@@ -101,9 +101,11 @@ import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.v
 import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
+import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
 import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
+import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import Tag from '@/components/Tag.vue'
 
 export default {
@@ -115,9 +117,10 @@ export default {
         SearchBar,              Tag,
         StudipButton,           VideoAddToPlaylist,
         VideoAccess,            StudipIcon,
-        VideoAddToSeminar,      VideoDelete,
-        VideoDownload,           VideoReport,
-        VideoEdit
+        VideoDownload,          VideoReport,
+        VideoEdit,              VideoRestore,
+        VideoDelete,            VideoDeletePermanent,
+        VideoAddToSeminar
     },
 
     data() {
@@ -326,6 +329,9 @@ export default {
                 }
             }
             else {
+                if (this.$route.name === 'videosTrashed') {
+                    this.filters.trashed = true;
+                }
                 this.$store.dispatch('loadMyVideos', this.filters)
                     .then(() => { this.videos_loading = false });
             }
