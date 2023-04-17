@@ -2,9 +2,11 @@
 
 class AddVideoTrash extends Migration
 {
+    const BASE_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+
     public function description()
     {
-        return 'Add trash attribute to videos';
+        return 'Add recycle bin functionality for videos';
     }
 
     public function up()
@@ -53,6 +55,30 @@ class AddVideoTrash extends Migration
         $db->exec("DROP TABLE IF EXISTS oc_video_archive");
 
         SimpleOrMap::expireTableScheme();
+
+        // Add cronjob to remove trashed videos
+        $scheduler = CronjobScheduler::getInstance();
+        if (!$task_id = CronjobTask::findByFilename(self::BASE_DIR . 'opencast_clear_recycle_bin.php')[0]->task_id) {
+            $task_id =  $scheduler->registerTask(self::BASE_DIR . 'opencast_clear_recycle_bin.php', true);
+        }
+
+        if ($task_id) {
+            $scheduler->cancelByTask($task_id);
+            $scheduler->schedulePeriodic($task_id, hour: 22);
+            CronjobSchedule::findByTask_id($task_id)[0]->activate();
+        }
+
+        // Add global config to edit clear interval of videos in recycle bin
+        $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
+        VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
+        $stmt->execute([
+            'name'        => 'OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL',
+            'section'     => 'opencast',
+            'description' => 'Wie viele Tage sollen Videos im Video Archive eines Nutzers erhalten bleiben?',
+            'range'       => 'global',
+            'type'        => 'integer',
+            'value'       => 2
+        ]);
     }
 
     public function down()
@@ -120,5 +146,15 @@ class AddVideoTrash extends Migration
             DROP COLUMN `trashed_timestamp`");
 
         SimpleOrMap::expireTableScheme();
+
+        // Unregister the cronjob
+        $scheduler = CronjobScheduler::getInstance();
+
+        if ($task_id = CronjobTask::findByFilename(self::BASE_DIR . 'opencast_clear_recycle_bin.php')[0]->task_id) {
+            $scheduler->unregisterTask($task_id);
+        }
+
+        // Remove global config
+        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL'");
     }
 }
