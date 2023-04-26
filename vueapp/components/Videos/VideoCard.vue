@@ -242,83 +242,63 @@ export default {
         menuItems() {
             let menuItems = [];
 
-            if (this.canEdit) {
-                if (this.event?.trashed) {
+            if (!this.event?.trashed) {
+                if (this.canEdit) {
                     menuItems.push({
-                    id: 0,
-                    label: this.$gettext('Widerherstellen'),
-                    icon: 'refresh',
-                    emit: 'performAction',
-                    emitArguments: 'VideoRestore'
-                });
-
-                }
-                menuItems.push({
-                    id: 1,
-                    label: this.$gettext('Bearbeiten'),
-                    icon: 'edit',
-                    emit: 'performAction',
-                    emitArguments: 'VideoEdit'
-                });
-
-
-                /*
-                menuItems.push({
-                    label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToPlaylist'
-                });
-                */
-
-                menuItems.push({
-                    id: 3,
-                    label: this.$gettext('Verknüpfungen'),
-                    icon: 'add',
-                    emit: 'performAction',
-                    emitArguments: 'VideoAddToPlaylist'
-                });
-
-                if (this.event?.perm === 'owner') {
-                    menuItems.push({
-                        id: 4,
-                        label: this.$gettext('Video freigeben'),
-                        icon: 'share',
+                        id: 1,
+                        label: this.$gettext('Bearbeiten'),
+                        icon: 'edit',
                         emit: 'performAction',
-                        emitArguments: 'VideoAccess'
+                        emitArguments: 'VideoEdit'
                     });
-                }
 
-                if (this.event?.preview?.has_previews) {
+                    /*
                     menuItems.push({
-                        id: 5,
-                        label: this.$gettext('Schnitteditor öffnen'),
-                        icon: 'knife',
-                        emit: 'redirectAction',
-                        emitArguments: '/editor/' + this.event.token
-                    });
-                }
-
-                if (this.event?.publication?.annotation_tool) {
-                    menuItems.push({
-                        id: 6,
-                        label: this.$gettext('Anmerkungen hinzufügen'),
-                        icon: 'knife',
-                        emit: 'redirectAction',
-                        emitArguments: '/annotation/' + this.event.token
-                    });
-                }
-
-                if (this.event?.trashed) {
-                    menuItems.push({
-                        id: 8,
-                        label: this.$gettext('Unwiderruflich entfernen'),
-                        icon: 'trash',
+                        label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
+                        icon: 'add',
                         emit: 'performAction',
-                        emitArguments: 'VideoDeletePermanent'
+                        emitArguments: 'VideoAddToPlaylist'
                     });
-                }
-                else {
+                    */
+
+                    menuItems.push({
+                        id: 3,
+                        label: this.$gettext('Verknüpfungen'),
+                        icon: 'add',
+                        emit: 'performAction',
+                        emitArguments: 'VideoAddToPlaylist'
+                    });
+
+                    if (this.event?.perm === 'owner') {
+                        menuItems.push({
+                            id: 4,
+                            label: this.$gettext('Video freigeben'),
+                            icon: 'share',
+                            emit: 'performAction',
+                            emitArguments: 'VideoAccess'
+                        });
+                    }
+
+                    if (this.event?.preview?.has_previews) {
+                        menuItems.push({
+                            id: 5,
+                            label: this.$gettext('Schnitteditor öffnen'),
+                            icon: 'knife',
+                            emit: 'redirectAction',
+                            emitArguments: '/editor/' + this.event.token
+                        });
+                    }
+
+                    if (this.event?.publication?.annotation_tool) {
+                        menuItems.push({
+                            id: 6,
+                            label: this.$gettext('Anmerkungen hinzufügen'),
+                            icon: 'knife',
+                            emit: 'redirectAction',
+                            emitArguments: '/annotation/' + this.event.token
+                        });
+                    }
+
                     menuItems.push({
                         id: 8,
                         label: this.$gettext('Entfernen'),
@@ -327,17 +307,33 @@ export default {
                         emitArguments: 'VideoDelete'
                     });  
                 }
-
+                if (this.downloadAllowed) {
+                    menuItems.push({
+                        id: 2,
+                        label: this.$gettext('Medien runterladen'),
+                        icon: 'download',
+                        emit: 'performAction',
+                        emitArguments: 'VideoDownload'
+                    });
+                }
             }
-
-            if (this.downloadAllowed) {
-                menuItems.push({
-                    id: 2,
-                    label: this.$gettext('Medien runterladen'),
-                    icon: 'download',
-                    emit: 'performAction',
-                    emitArguments: 'VideoDownload'
-                });
+            else {
+                if (this.canEdit) {
+                    menuItems.push({
+                        id: 0,
+                        label: this.$gettext('Widerherstellen'),
+                        icon: 'refresh',
+                        emit: 'performAction',
+                        emitArguments: 'VideoRestore'
+                    });
+                    menuItems.push({
+                        id: 8,
+                        label: this.$gettext('Unwiderruflich entfernen'),
+                        icon: 'trash',
+                        emit: 'performAction',
+                        emitArguments: 'VideoDeletePermanent'
+                    });
+                }
             }
 
             menuItems.push({

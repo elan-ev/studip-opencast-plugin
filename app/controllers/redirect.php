@@ -38,6 +38,9 @@ class RedirectController extends Opencast\Controller
         if (empty($video)) {
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
+        if ($video->trashed) {
+            throw new Error(_('Das Video wurde zur Löschung markiert und kann daher nicht abgerufen werden'), 404);
+        }
 
         /*
         $perm = $video->getUserPerm();

@@ -77,7 +77,7 @@ class AddVideoTrash extends Migration
             'description' => 'Wie viele Tage sollen Videos im Video Archive eines Nutzers erhalten bleiben?',
             'range'       => 'global',
             'type'        => 'integer',
-            'value'       => 2
+            'value'       => 30
         ]);
     }
 
