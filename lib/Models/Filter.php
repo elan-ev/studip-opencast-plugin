@@ -12,7 +12,8 @@ class Filter
         $order,
         $filters = [],
         $course_id,
-        $playlist;
+        $playlist,
+        $trashed;
 
     private static $ALLOWED_ORDERS = [
         'created_desc', 'created_asc', 'title_desc', 'title_asc', 'order_desc', 'order_asc'
@@ -48,6 +49,12 @@ class Filter
 
         if (isset($params['token']) && !empty($params['token'])) {
             $this->playlist = $params['token'];
+        }
+
+        if (isset($params['trashed']) && !empty($params['trashed'])) {
+            $this->trashed = $params['trashed'];
+        } else {
+            $this->trashed = 'false';
         }
 
         if (!empty($params['filters'])) {
@@ -92,5 +99,10 @@ class Filter
     public function getPlaylist()
     {
         return $this->playlist;
+    }
+
+    public function getTrashed()
+    {
+        return $this->trashed;
     }
 }

@@ -5,7 +5,6 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
 use Opencast\Models\Videos;
-use Opencast\Models\VideosArchive;
 use Opencast\Models\VideoSync;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
@@ -32,8 +31,6 @@ class OpencastDiscoverVideos extends CronJob
         $db = DBManager::get();
         $stmt_ids   = $db->prepare("
             SELECT episode FROM oc_video WHERE config_id = :config_id AND available=true
-            UNION
-            SELECT episode FROM oc_video_archive WHERE config_id = :config_id
             ");
 
         // iterate over all configured oc instances

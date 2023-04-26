@@ -263,6 +263,8 @@ class Videos extends UPMap
             }
         }
 
+        $where .= " AND trashed = " . $filters->getTrashed();
+
         $sql .= $where;
 
         $sql .= ' GROUP BY oc_video.id';
