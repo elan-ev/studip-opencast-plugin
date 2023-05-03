@@ -54,8 +54,8 @@
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'tag'">
-                <li v-for="tag in filteredTags" v-bind:key="tag.id" @click="selectToken(tag)">
-                    {{ tag.tag }}
+                <li v-for="(tag, index) in filteredTags" v-bind:key="index" @click="selectToken(tag)">
+                    {{ tag }}
                 </li>
             </ul>
 
@@ -96,7 +96,7 @@ export default {
     computed: {
         ...mapGetters([
             'videoSort',
-            'availableTags',
+            'availableVideoTags',
             'playlists',
             'playlist'
         ]),
@@ -104,10 +104,9 @@ export default {
         filteredTags() {
             let filteredTags = [];
 
-            for (let i = 0; i < this.availableTags.length; i++) {
-                 if (!this.searchTokens.find(token => token.value == this.availableTags[i].tag)
-                ) {
-                    filteredTags.push(this.availableTags[i]);
+            for (let i = 0; i < this.availableVideoTags.length; i++) {
+                if (!this.searchTokens.find(token => token.value == this.availableVideoTags[i])) {
+                    filteredTags.push(this.availableVideoTags[i]);
                 }
             }
             return filteredTags;
@@ -224,8 +223,8 @@ export default {
             } else if (this.tokenState == 'value')
             {
                 if (this.token.type == 'tag') {
-                    this.token.value      = content.tag;
-                    this.token.value_name = content.tag;
+                    this.token.value      = content;
+                    this.token.value_name = content;
                 } else if (this.token.type == 'playlist') {
                     this.token.value      = content.token;
                     this.token.value_name = content.title;
@@ -269,8 +268,6 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('updateAvailableTags');
-
         if (this.playlist) {
             // Default sort option should already be selected
             this.inputSort = this.availableSortOrders.find(elem => elem.field == this.videoSort.field && elem.order == this.videoSort.order);
