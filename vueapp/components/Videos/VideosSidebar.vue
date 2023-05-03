@@ -16,7 +16,7 @@
                     active: fragment == 'videosTrashed'
                     }">
                     <router-link :to="{ name: 'videosTrashed' }">
-                        Videos Archive
+                        Gelöschte Videos
                     </router-link>
                 </li>
                 <li :class="{
