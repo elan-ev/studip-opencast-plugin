@@ -37,6 +37,7 @@ class RouteMap
         // User routes
         $this->app->get('/user', Routes\User\UserShow::class);
         $this->app->get('/user/search/{search_term}', Routes\User\UserList::class);
+        $this->app->get('/user/series', Routes\User\UserSeriesShow::class);
 
         // Video routes
         $this->app->get('/videos', Routes\Video\VideoList::class);

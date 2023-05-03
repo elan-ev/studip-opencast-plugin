@@ -4,6 +4,7 @@ const state = {
     series: [],
     servers: [],
     currentUser: {},
+    currentUserSeries: '',
     currentView: 'videos',
     cid: null,
     site: null,
@@ -21,6 +22,9 @@ const getters = {
     },
     currentUser(state) {
         return state.currentUser
+    },
+    currentUserSeries(state) {
+        return state.currentUserSeries
     },
     currentView(state) {
         return state.currentView
@@ -74,6 +78,13 @@ const actions = {
         return ApiService.get('user')
             .then(({ data }) => {
                 commit('setCurrentUser', data.data);
+            });
+    },
+
+    async loadCurrentUserSeries({ commit }) {
+        return ApiService.get('user/series')
+            .then(({ data }) => {
+                commit('setCurrentUserSeries', data.series_id);
             });
     },
 
@@ -141,6 +152,10 @@ const mutations = {
 
     setCurrentUser(state, data) {
         state.currentUser = data;
+    },
+
+    setCurrentUserSeries(state, data) {
+        state.currentUserSeries = data;
     },
 
     setAxiosRunning(state, running) {

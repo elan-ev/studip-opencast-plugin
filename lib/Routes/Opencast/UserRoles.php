@@ -41,6 +41,9 @@ class UserRoles extends OpencastController
 
         $roles = [];
 
+        // Add user permission to access user-bound series
+        $roles[] = 'STUDIP_' . $user_id;
+
         if (!empty($share_uuid)) {
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
