@@ -10,7 +10,6 @@ const state = {
     site: null,
     axios_running: false,
     userCourses: [],
-    currentPlaylist: null,
     userList: []
 }
 
@@ -42,10 +41,6 @@ const getters = {
     userCourses(state) {
         return state.userCourses;
     },
-    currentPlaylist(state) {
-        return state.currentPlaylist;
-    },
-
     userList(state) {
         return state.userList;
     }
@@ -169,10 +164,6 @@ const mutations = {
 
     setUserCourses(state, data) {
         state.userCourses = data;
-    },
-
-    setCurrentPlaylist(state, data) {
-        state.currentPlaylist = data;
     },
 
     setUserList(state, data) {

@@ -7,10 +7,16 @@
             <ul class="widget-list widget-links sidebar-navigation">
                 <li :class="{
                     active: fragment == 'videos'
-                    }"
-                    v-on:click="this.$store.dispatch('loadMyVideos')">
+                    }">
                     <router-link :to="{ name: 'videos' }">
                         Videos
+                    </router-link>
+                </li>
+                <li :class="{
+                    active: fragment == 'videosTrashed'
+                    }">
+                    <router-link :to="{ name: 'videosTrashed' }">
+                        Gelöschte Videos
                     </router-link>
                 </li>
                 <li :class="{

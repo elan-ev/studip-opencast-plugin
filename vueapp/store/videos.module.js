@@ -4,7 +4,7 @@ const state = {
     videos: {},
     videoSearch: '',
     videoSort: {
-        field: 'mkdate',
+        field: 'created',
         order: 'desc',
         text : 'Datum hochgeladen: Neueste zuerst'
     },
@@ -16,6 +16,7 @@ const state = {
         lastPage: 0,
         items: 0
     },
+    availableVideoTags: [],
     playlistForVideos: null,
     videoShares: {},
     courseVideosToCopy: [],
@@ -47,6 +48,10 @@ const getters = {
         return state.search
     },
 
+    availableVideoTags(state) {
+        return state.availableVideoTags
+    },
+
     playlistForVideos(state) {
         return state.playlistForVideos
     },
@@ -71,9 +76,7 @@ const actions = {
 
         const params = new URLSearchParams();
 
-        if (!filters['order']) {
-            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
-        }
+        params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
 
         if (!filters['offset']) {
             params.append('offset', state.paging.currPage * state.limit);
@@ -110,6 +113,7 @@ const actions = {
             route: 'videos',
             filters: data,
         })
+        .then(() => dispatch('loadAvailableVideoTags'));
     },
 
     async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
@@ -118,6 +122,24 @@ const actions = {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
         })
+        .then(() => dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid}));
+    },
+
+    async loadAvailableVideoTags({ commit, state, dispatch, rootState }, data = []) {
+        const params = new URLSearchParams();
+        let route = '/tags/videos';
+
+        if (data.token) {
+            route += '/playlist/' + data.token;
+            if (data.cid) {
+                params.append('cid',  data.cid);
+            }
+        }
+
+        return ApiService.get(route, { params })
+            .then(({ data }) => {
+                commit('setAvailableVideoTags', data);
+            });
     },
 
     async uploadSortPositions({}, data) {
@@ -126,6 +148,10 @@ const actions = {
 
     async deleteVideo(context, token) {
         return ApiService.delete('videos/' + token);
+    },
+
+    async restoreVideo(context, token) {
+        return ApiService.put('videos/' + token + '/restore');
     },
 
     async updateVideo(context, event) {
@@ -170,12 +196,6 @@ const actions = {
     },
 
     setVideoSortMode({dispatch, state, commit}, mode) {
-        commit('setVideoSort', {
-            field: 'order',
-            order: 'asc',
-            text : 'Benutzerdefiniert'
-        });
-
         commit('setVideoSortMode', mode);
     },
 
@@ -240,6 +260,10 @@ const mutations = {
 
     setShowCourseCopyDialog(state, mode) {
         state.showCourseCopyDialog = mode;
+    },
+
+    setAvailableVideoTags(state, data) {
+        state.availableVideoTags = data;
     }
 }
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <SearchBar @search="doSearch" v-if="!videoSortMode" :playlist="playlist" />
+        <SearchBar @search="doSearch" v-if="!videoSortMode"/>
 
         <div class="oc--bulk-actions">
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
@@ -145,14 +145,14 @@ export default {
         },
 
         doSearch(options) {
-            let view = this;
-
             options.filters = options.filters.concat(this.filters);
             options.limit = -1;
             options.token = this.playlist.token;
-
+            
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
             this.$store.dispatch('loadPlaylistVideos', options)
-                .then(() => { view.videos_loading = false });
+                .then(() => { this.videos_loading = false });
         },
 
         canMoveUp(index) {
@@ -200,21 +200,42 @@ export default {
                      text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
 
+                this.loadVideos();
+            })
+        },
+
+        loadVideos() {
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
+            this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
                 this.$store.dispatch('loadPlaylistVideos', {
                     filters: this.filters,
-                    token:   this.playlist.token,
-                    limit:   -1
-                })
-            })
+                    token: this.playlist.token,
+                    limit: -1
+                }).then(() => { this.videos_loading = false });
+            });
         }
     },
 
     watch: {
         videoSortMode(newmode) {
             if (newmode === true) {
+                this.$store.dispatch('setVideoSort', {
+                    field: 'order',
+                    order: 'asc',
+                    text : 'Benutzerdefiniert'
+                });
                 this.sortedVideos = this.videos;
             } else {
                 if (newmode === 'commit') {
+                    this.$store.dispatch('setPlaylistSort', {
+                        token: this.playlist.token,
+                        sort:  {
+                            field: 'order',
+                            order: 'asc',
+                            text : 'Benutzerdefiniert'
+                        }
+                    });
                     // store the new sorting order
                     this.$store.commit('setVideos', this.sortedVideos);
 
@@ -222,27 +243,18 @@ export default {
                         playlist_token: this.playlist.token,
                         sortedVideos  : this.sortedVideos.map((elem) => elem.token)
                     });
-
-                    this.$store.dispatch('setVideoSortMode', false);
-                } else {
-                    // cancel sorting
+                } 
+                else if (newmode === 'cancel') {
+                    // Reload videos
+                    this.loadVideos();
                 }
-
+                this.$store.dispatch('setVideoSortMode', false);
             }
         }
     },
 
     mounted() {
-        let view = this;
-
-        this.$store.commit('clearPaging');
-        this.$store.commit('setVideos', {});
-
-        this.$store.dispatch('loadPlaylistVideos', {
-            filters: this.filters,
-            token: this.playlist.token,
-            limit: -1
-        }).then(() => { view.videos_loading = false });
+        this.loadVideos();
     }
 };
 </script>

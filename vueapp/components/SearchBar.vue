@@ -43,7 +43,7 @@
                 <li @click="selectToken('tag')" v-if="filteredTags.length">
                     {{ $gettext('Tag') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="playlist && playlists.length">
+                <li @click="selectToken('playlist')" v-if="playlists && comparablePlaylists.length">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
@@ -54,13 +54,13 @@
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'tag'">
-                <li v-for="tag in filteredTags" v-bind:key="tag.id" @click="selectToken(tag)">
-                    {{ tag.tag }}
+                <li v-for="(tag, index) in filteredTags" v-bind:key="index" @click="selectToken(tag)">
+                    {{ tag }}
                 </li>
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'playlist'">
-                <li v-for="playlist in playlists" v-bind:key="playlist.token" @click="selectToken(playlist)">
+                <li v-for="playlist in comparablePlaylists" v-bind:key="playlist.token" @click="selectToken(playlist)">
                     {{ playlist.title }}
                 </li>
             </ul>
@@ -77,13 +77,6 @@ export default {
 
     components: {
         StudipIcon
-    },
-
-    props: {
-        'playlist' : {
-            type: Object,
-            default: null
-        }
     },
 
     data() {
@@ -103,30 +96,37 @@ export default {
     computed: {
         ...mapGetters([
             'videoSort',
-            'availableTags',
-            'playlists'
+            'availableVideoTags',
+            'playlists',
+            'playlist'
         ]),
 
         filteredTags() {
             let filteredTags = [];
 
-            for (let i = 0; i < this.availableTags.length; i++) {
-                 if (!this.searchTokens.find(token => token.value == this.availableTags[i].tag)
-                ) {
-                    filteredTags.push(this.availableTags[i]);
+            for (let i = 0; i < this.availableVideoTags.length; i++) {
+                if (!this.searchTokens.find(token => token.value == this.availableVideoTags[i])) {
+                    filteredTags.push(this.availableVideoTags[i]);
                 }
             }
             return filteredTags;
         },
 
+        comparablePlaylists() {
+            if (this.playlist) {
+                return this.playlists.filter(playlist => playlist.token != this.playlist.token);
+            }
+            return this.playlists;            
+        },
+
         availableSortOrders() {
             let sortOrders = [
                 {
-                    field: 'mkdate',
+                    field: 'created',
                     order: 'desc',
                     text : 'Datum hochgeladen: Neueste zuerst'
                 },  {
-                    field: 'mkdate',
+                    field: 'created',
                     order: 'asc',
                     text : 'Datum hochgeladen: Älteste zuerst'
                 },  {
@@ -158,15 +158,13 @@ export default {
 
     methods: {
         setSort() {
-            if (this.playlist) {
+            if (this.playlist && this.$route.name === 'playlist_edit') {
                 this.$store.dispatch('setPlaylistSort', {
                     token: this.playlist.token,
                     sort:  this.inputSort
                 });
-            } else {
-                this.$store.dispatch('setVideoSort', this.inputSort)
             }
-
+            this.$store.dispatch('setVideoSort', this.inputSort)
             this.doSearch();
         },
 
@@ -225,8 +223,8 @@ export default {
             } else if (this.tokenState == 'value')
             {
                 if (this.token.type == 'tag') {
-                    this.token.value      = content.tag;
-                    this.token.value_name = content.tag;
+                    this.token.value      = content;
+                    this.token.value_name = content;
                 } else if (this.token.type == 'playlist') {
                     this.token.value      = content.token;
                     this.token.value_name = content.title;
@@ -259,10 +257,8 @@ export default {
 
             this.$emit('search', {
                 filters: filters,
-                order:  this.inputSort.field + '_' + this.inputSort.order
             });
-        }
-
+        },
     },
 
     updated() {
@@ -272,23 +268,27 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('updateAvailableTags');
-        this.$store.dispatch('loadPlaylists');
-
         if (this.playlist) {
-            // find sort order for current playlist
-            let sort, order;
-
-            if (!this.playlist.sort_order) {
-                sort = 'mkdate';
-                order = 'desc';
-            } else {
-                [sort, order] = this.playlist.sort_order.split('_');
-            }
-                this.inputSort = this.availableSortOrders.find(elem => elem.field == sort && elem.order == order);
+            // Default sort option should already be selected
+            this.inputSort = this.availableSortOrders.find(elem => elem.field == this.videoSort.field && elem.order == this.videoSort.order);
         }
         else {
-            this.inputSort = this.videoSort
+            // TODO Maybe use a global default sort order
+            this.inputSort = {
+                field: 'created',
+                order: 'desc',
+                text : 'Datum hochgeladen: Neueste zuerst'
+            };
+        }
+        this.$store.dispatch('setVideoSort', this.inputSort);
+    },
+
+    watch: {
+        // Make sure that inputSort is synced with store
+        videoSort(newSort) {
+            if (newSort != null) {
+                this.inputSort = this.availableSortOrders.find(elem => elem.field == newSort.field && elem.order == newSort.order);
+            }
         }
     }
 }

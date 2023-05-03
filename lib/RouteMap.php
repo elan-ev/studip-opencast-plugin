@@ -43,6 +43,7 @@ class RouteMap
         $this->app->get('/videos', Routes\Video\VideoList::class);
 
         $this->app->put('/videos/{token}', Routes\Video\VideoUpdate::class);
+        $this->app->put('/videos/{token}/restore', Routes\Video\VideoRestore::class);
         $this->app->delete('/videos/{token}', Routes\Video\VideoDelete::class);
 
         $this->app->post('/videos/{token}/report', Routes\Video\VideoReport::class);
@@ -95,6 +96,8 @@ class RouteMap
         $this->app->delete('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleDelete::class);
 
         $this->app->get('/tags', Routes\Tags\TagListForUser::class);
+        $this->app->get('/tags/videos', Routes\Tags\TagListForUserVideos::class);
+        $this->app->get('/tags/videos/playlist/{token}', Routes\Tags\TagListForPlaylistVideos::class);
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);

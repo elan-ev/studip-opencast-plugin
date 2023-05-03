@@ -33,15 +33,15 @@
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links oc--sidebar-links sidebar-navigation">
                 <li :class="{
-                    active: currentPlaylist == playlist.token
+                    active: playlist?.token == p.token
                     }"
-                    v-for="playlist in playlists"
-                    v-bind:key="playlist.token"
-                    v-on:click="setPlaylist(playlist.token)">
+                    v-for="p in playlists"
+                    v-bind:key="p.token"
+                    v-on:click="setPlaylist(p)">
                     <router-link :to="{ name: 'course' }">
-                        {{ playlist.is_default == 1 ?
+                        {{ p.is_default == 1 ?
                             $gettext('Kurswiedergabeliste')
-                            : playlist.title
+                            : p.title
                         }}
                     </router-link>
                 </li>
@@ -151,7 +151,8 @@ export default {
     computed: {
         ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
-            'simple_config_list', 'course_config', 'currentPlaylist']),
+            'simple_config_list', 'course_config', 'playlist',
+            'defaultPlaylist']),
 
         fragment() {
             return this.$route.name;
@@ -193,7 +194,7 @@ export default {
             return this.course_config.edit_allowed;
         },
 
-         canUpload() {
+        canUpload() {
             if (!this.course_config) {
                 return false;
             }
@@ -215,14 +216,8 @@ export default {
     },
 
     methods: {
-        setPlaylist(token) {
-            this.$store.commit('setCurrentPlaylist', token);
-            this.$store.commit('clearPaging');
-
-            this.$store.dispatch('loadPlaylistVideos', {
-                cid: this.cid,
-                token: token
-            });
+        setPlaylist(playlist) {
+            this.$store.dispatch('setPlaylist', playlist);
         },
 
         getScheduleList() {
@@ -233,12 +228,6 @@ export default {
 
         setView(page) {
             this.$store.dispatch('updateView', page);
-
-            this.$store.dispatch('loadPlaylistVideos', {
-                cid: this.cid,
-                token: this.currentPlaylist
-            });
-
         },
 
         async setVisibility(visibility) {
@@ -266,28 +255,6 @@ export default {
             this.$store.dispatch('addPlaylist', playlist);
         },
 
-        getDefaultPlaylist()
-        {
-            let currentPlaylist = null;
-
-            // set the courses default playlist
-            for (let id in this.playlists) {
-                if (this.playlists[id].is_default == '1') {
-                    currentPlaylist = this.playlists[id].token;
-                }
-            }
-
-            // if no default is found, use the first playlist
-            if (this.currentPlaylist == null) {
-                for (let id in this.playlists) {
-                    currentPlaylist = this.playlists[id].token;
-                    break;
-                }
-            }
-
-            return currentPlaylist;
-        },
-
         getWorkflow(config_id) {
             let wf_id = this.simple_config_list?.workflow_configs.find(wf_config => wf_config['config_id'] == config_id && wf_config['used_for'] === 'studio')['workflow_id'];
             return this.simple_config_list?.workflows.find(wf => wf['id'] == wf_id)['name'];
@@ -295,12 +262,6 @@ export default {
     },
 
     mounted() {
-        let view = this;
-        this.$store.dispatch('loadPlaylists').
-            then(() => {
-                view.$store.commit('setCurrentPlaylist', view.getDefaultPlaylist());
-            })
-
         this.$store.dispatch('simpleConfigListRead');
         this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;
@@ -314,17 +275,7 @@ export default {
                 this.$store.dispatch('clearMessages');
                 this.$store.dispatch('getScheduleList');
             }
-        },
-
-        currentPlaylist(newValue, oldValue) {
-            if (newValue !== oldValue) {
-                if (newValue === null) {
-                    // use default playlist
-                    newValue = this.getDefaultPlaylist();
-                }
-                this.setPlaylist(newValue);
-            }
         }
-    },
+    }
 }
 </script>

@@ -20,7 +20,7 @@ class OCCourseModel
         // fake filter request, use course id
         $request = [
             'limit'  => -1,
-            'order'  => 'mkdate_desc',
+            'order'  => 'created_desc',
             'cid'    => $this->context_id
         ];
 
@@ -33,7 +33,7 @@ class OCCourseModel
             $videos = Videos::findBySQL('LEFT JOIN oc_playlist_video AS opv
                     ON (opv.video_id = id AND opv.playlist_id IN ('. implode(', ', $playlist_ids) .'))
                 WHERE opv.playlist_id IS NOT NULL
-                GROUP BY oc_video.id ORDER BY oc_video.mkdate desc',
+                GROUP BY oc_video.id ORDER BY oc_video.created desc',
                 [
                     ':seminar_id' => $this->context_id
                 ]

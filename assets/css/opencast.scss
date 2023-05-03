@@ -142,6 +142,13 @@ $episode-background: $light-gray-color-20;
         height: 360px;
     }
 
+    span.oc--unavailable {
+        display: block;
+        min-height: 60px;
+        text-align: center;
+        border: 1px solid $light-gray-color-40;
+    }
+
     span.oc--previewimage {
         display: block;
         position: relative;

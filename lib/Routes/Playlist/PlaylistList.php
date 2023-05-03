@@ -25,6 +25,7 @@ class PlaylistList extends OpencastController
         // find all playlists, the current user has access to
         $playlists = Playlists::findByUser_id($user->id);
 
+        $playlist_list = [];
         foreach ($playlists as $playlist) {
             // check what permissions the current user has on the playlist
             foreach($playlist->perms as $perm) {

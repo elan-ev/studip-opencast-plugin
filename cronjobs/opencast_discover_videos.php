@@ -5,7 +5,6 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
 use Opencast\Models\Videos;
-use Opencast\Models\VideosArchive;
 use Opencast\Models\VideoSync;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
@@ -30,7 +29,9 @@ class OpencastDiscoverVideos extends CronJob
          - Eintragen der Videos und setzen der Rechte (Queue)
         */
         $db = DBManager::get();
-        $stmt_ids   = $db->prepare("SELECT episode FROM oc_video WHERE config_id = :config_id");
+        $stmt_ids   = $db->prepare("
+            SELECT episode FROM oc_video WHERE config_id = :config_id AND available=true
+            ");
 
         // iterate over all configured oc instances
         $configs = Config::findBySql(1);
@@ -64,14 +65,13 @@ class OpencastDiscoverVideos extends CronJob
             //echo 'found local events:' . "\n";
             //print_r($local_event_ids);
 
+            // Find new videos available in OC but not locally
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
-                // check, if an entry for this episode_id exists in the archive and skip it if found
-                $archive = VideosArchive::findOneByEpisode($new_event_id);
+                echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
 
-                if (empty($archive)) {
-                    echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
+                $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $new_event_id]);
+                if (!$video) {
                     $video = new Videos;
-
                     $video->setData([
                         'episode'     => $new_event_id,
                         'config_id'   => $config['id'],
@@ -79,18 +79,29 @@ class OpencastDiscoverVideos extends CronJob
                         'description' => $events[$new_event_id]->description,
                         'duration'    => $events[$new_event_id]->duration
                     ]);
+                }
+                $video->setValue('available', true);
+                $video->store();
+
+                // create task to update permissions and everything else
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+
+            // Check if local videos are not longer available in OC
+            foreach (array_diff($local_event_ids, $event_ids) as $event_id) {
+                $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $event_id]);
+                // Need null check for archived videos
+                if ($video) {
+                    $video->setValue('available', false);
                     $video->store();
-
-                    // create task to update permissions and everything else
-                    $task = new VideoSync;
-
-                    $task->setData([
-                        'video_id'  => $video->id,
-                        'state'     => 'scheduled',
-                        'scheduled' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $task->store();
                 }
             }
 

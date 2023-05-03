@@ -9,19 +9,21 @@
                 <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h3>
+
         <SearchBar @search="doSearch"/>
+        
         <PaginationButtons @changePage="changePage"/>
 
-        <div v-if="isCourse && currentPlaylist">
+        <div v-if="isCourse && playlist && canEdit">
             <StudipButton
-                v-if="currentPlaylist && getPlaylist(currentPlaylist).is_default != '1'"
-                @click.prevent="removePlaylistFromCourse(currentPlaylist, cid)"
+                v-if="playlist.is_default != '1'"
+                @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
             >
                 <studip-icon shape="trash" role="clickable" />
                 {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
             </StudipButton>
 
-            <a :href="getPlaylistLink(currentPlaylist)" class="button" target="_blank">
+            <a :href="getPlaylistLink(playlist.token)" class="button" target="_blank">
                  <studip-icon shape="edit" role="clickable" />
                 {{ $gettext('Wiedergabeliste bearbeiten') }}
             </a>
@@ -99,9 +101,11 @@ import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.v
 import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
+import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
 import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
+import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import Tag from '@/components/Tag.vue'
 
 export default {
@@ -113,9 +117,10 @@ export default {
         SearchBar,              Tag,
         StudipButton,           VideoAddToPlaylist,
         VideoAccess,            StudipIcon,
-        VideoAddToSeminar,      VideoDelete,
-        VideoDownload,           VideoReport,
-        VideoEdit
+        VideoDownload,          VideoReport,
+        VideoEdit,              VideoRestore,
+        VideoDelete,            VideoDeletePermanent,
+        VideoAddToSeminar
     },
 
     data() {
@@ -136,9 +141,10 @@ export default {
             "axios_running",
             "playlistForVideos",
             "cid",
-            'currentPlaylist',
             'courseVideosToCopy',
-            'playlists'
+            'playlists',
+            'playlist',
+            'course_config'
         ]),
 
         isCourse() {
@@ -148,18 +154,28 @@ export default {
         selectAll() {
             return this.videos.length == this.selectedVideos.length;
         },
+
+        canEdit() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.edit_allowed;
+        },
     },
 
     methods: {
         changePage: async function(page) {
             await this.$store.dispatch('setPage', page)
 
+            this.videos_loading = true;
+            this.$store.commit('setVideos', {});
             if (this.isCourse) {
                 let filters = this.filters;
-                filters.token = this.currentPlaylist;
-                this.$store.dispatch('loadPlaylistVideos', filters);
+                filters.token = this.playlist.token;
+                this.$store.dispatch('loadPlaylistVideos', filters).then(() => { this.videos_loading = false });
             } else {
-                await this.$store.dispatch('loadMyVideos', this.filters)
+                await this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
             }
         },
 
@@ -191,14 +207,18 @@ export default {
         doSearch(filters) {
             this.filters = filters;
 
+            this.videos_loading = true;
+            this.$store.dispatch('setPage', 0)
+            this.$store.commit('setVideos', {});
             if (this.isCourse) {
+                console.log(this.cid)
                 this.$store.dispatch('loadPlaylistVideos', {
-                    ...filters,
+                    ...this.filters,
                     cid: this.cid,
-                    token: this.currentPlaylist
-                });
+                    token: this.playlist.token
+                }).then(() => { this.videos_loading = false });
             } else {
-                this.$store.dispatch('loadMyVideos', this.filters)
+                this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
             }
         },
 
@@ -237,14 +257,16 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
+                this.videos_loading = true;
+                this.$store.commit('setVideos', {});
                 if (this.isCourse) {
                     this.$store.dispatch('loadPlaylistVideos', {
                         ...this.filters,
                         cid: this.cid,
-                        token: this.currentPlaylist
-                    });
+                        token: this.playlist.token
+                    }).then(() => { this.videos_loading = false });
                 } else {
-                    this.$store.dispatch('loadMyVideos', this.filters)
+                    this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
                 }
             }
         },
@@ -257,7 +279,7 @@ export default {
 
         removePlaylistFromCourse(token, cid) {
             if (confirm(this.$gettext('Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen möchten?'))) {
-                this.$store.commit('setCurrentPlaylist', null);
+                this.$store.dispatch('setPlaylist', null);
                 this.$store.dispatch('removePlaylistFromCourse', {
                     token: token,
                     course: cid
@@ -283,45 +305,60 @@ export default {
         getPlaylistLink(token) {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
         },
-
-        getPlaylist(token) {
-            for (let id in this.playlists) {
-                if (this.playlists[id].token == token) {
-                    return this.playlists[id];
-                }
-            }
-
-            return null;
-        }
     },
 
     async mounted() {
-        let view = this;
         this.$store.commit('clearPaging');
+        this.$store.commit('setVideos', {});
+
+        let loadVideos = false;
+        if (this.playlist != null) {
+            loadVideos = true;
+        }
+
         await this.$store.dispatch('authenticateLti').then(() => {
-            if (view.isCourse) {
-                if (this.currentPlaylist !== null) {
-                    view.$store.dispatch('loadPlaylistVideos', {
-                        ...this.filters,
-                        cid  : view.cid,
-                        token: view.currentPlaylist
-                    }).then(() => { view.videos_loading = false });
-                } else {
-                    view.videos_loading = false;
+            if (this.isCourse) {
+                if (loadVideos) {
+                    this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
+                        this.$store.dispatch('loadPlaylistVideos', {
+                            ...this.filters,
+                            cid  : this.cid,
+                            token: playlist.token
+                        }).then(() => { this.videos_loading = false });
+                    });
                 }
-            } else {
-                view.$store.dispatch('loadMyVideos', this.filters)
-                    .then(() => { view.videos_loading = false });
+            }
+            else {
+                if (this.$route.name === 'videosTrashed') {
+                    this.filters.trashed = true;
+                }
+                this.$store.dispatch('loadMyVideos', this.filters)
+                    .then(() => { this.videos_loading = false });
             }
         })
         this.$store.dispatch('loadUserCourses');
-
     },
 
     watch: {
         courseVideosToCopy(newValue, oldValue) {
             if (this.isCourse && oldValue?.length > 0 && newValue?.length == 0) {
                 this.selectedVideos = [];
+            }
+        },
+
+        // Catch every playlist change to handle video loading
+        playlist(playlist) {
+            if (this.isCourse && playlist !== null) {
+                this.videos_loading = true;
+                this.$store.commit('clearPaging');
+                this.$store.commit('setVideos', {});
+                this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
+                    this.$store.dispatch('loadPlaylistVideos', {
+                        ...this.filters,
+                        cid  : this.cid,
+                        token: playlist.token
+                    }).then(() => { this.videos_loading = false });
+                });
             }
         }
     },

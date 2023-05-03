@@ -152,7 +152,7 @@ class Helpers
      *
      * @return object Default playlist of the course with the passed id
      */
-    public function checkCoursePlaylist($course_id)
+    static public function checkCoursePlaylist($course_id)
     {
         $playlists = PlaylistSeminars::findBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
 
@@ -170,6 +170,7 @@ class Helpers
             $pcourse = new PlaylistSeminars();
             $pcourse->playlist_id = $playlist->id;
             $pcourse->seminar_id  = $course_id;
+            $pcourse->visibility = 'visible';
             $pcourse->is_default = 1;
 
             $pcourse->store();

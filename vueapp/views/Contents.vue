@@ -78,7 +78,7 @@ export default {
         },
 
         cancelSort() {
-            this.$store.dispatch('setVideoSortMode', false)
+            this.$store.dispatch('setVideoSortMode', 'cancel')
         },
 
         uploadDone() {
@@ -94,6 +94,7 @@ export default {
     mounted() {
         this.$store.dispatch('loadCurrentUser');
         this.$store.dispatch('loadCurrentUserSeries');
+        this.$store.dispatch('loadPlaylists');
     }
 };
 </script>

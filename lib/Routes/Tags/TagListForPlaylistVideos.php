@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencast\Routes\Playlist;
+namespace Opencast\Routes\Tags;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -8,12 +8,10 @@ use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
-use Opencast\Models\Filter;
 use Opencast\Models\Playlists;
-use Opencast\Models\Videos;
-use Opencast\Models\PlaylistSeminarVideos;
+use Opencast\Models\Tags;
 
-class PlaylistVideoList extends OpencastController
+class TagListForPlaylistVideos extends OpencastController
 {
     use OpencastTrait;
 
@@ -25,7 +23,6 @@ class PlaylistVideoList extends OpencastController
 
         // first, check if user has access to this playlist
         $playlist = Playlists::findOneByToken($args['token']);
-
         if (!$playlist) {
             throw new \AccessDeniedException();
         }
@@ -48,18 +45,8 @@ class PlaylistVideoList extends OpencastController
             }
         }
 
-        // show videos for this playlist and filter them with optional additional filters
-        $videos = Videos::getPlaylistVideos($playlist->id, new Filter($params));
+        $ret = Tags::getPlaylistVideosTags($playlist->id, $params['cid']);
 
-        $ret = [];
-        foreach ($videos['videos'] as $video) {
-            $ret[] = $video->toSanitizedArray($params['cid'], $playlist->id);
-        }
-
-        return $this->createResponse([
-            'videos' => $ret,
-            'count'  => $videos['count'],
-            'sql'    => $videos['sql']
-        ], $response);
+        return $this->createResponse($ret, $response->withStatus(200));
     }
 }

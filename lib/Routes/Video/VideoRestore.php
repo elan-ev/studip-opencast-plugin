@@ -10,7 +10,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
 
-class VideoDelete extends OpencastController
+class VideoRestore extends OpencastController
 {
     use OpencastTrait;
 
@@ -30,26 +30,15 @@ class VideoDelete extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        // Restore the Video
+        $video->setValue('trashed', false);
+        $video->setValue('trashed_timestamp', '0000-00-00 00:00:00');
+        $video->store();
+
         $message = [
             'type' => 'success',
-            'text' => _('Das Video wurde erfolgreich gelöscht')
+            'text' => _('Das Video wurde erfolgreich widerhergestellt')
         ];
-
-        if ($video->getValue('trashed')) {
-            // If the video is already marked as trashed, delete it permanently
-            if (!$video->removeVideo()) {
-                $message = [
-                    'type' => 'error',
-                    'text' => _('Das Video konnte nicht gelöscht werden')
-                ];
-            }
-        }
-        else {
-            // Do not really delete the videos, mark them as deleted first
-            $video->setValue('trashed', true);
-            $video->setValue('trashed_timestamp', date('Y-m-d H:i:s'));
-            $video->store();
-        }
 
         return $this->createResponse([
             'message' => $message,

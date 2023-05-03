@@ -96,3 +96,20 @@ Install the most recent version of this plugin, make sure that all migrations wo
 After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL and credentials for the Opencast system.
 Make sure you enter the LTI credentials under "Additional settings".
 If everything worked you can now start using the plugin in seminars.
+
+# Stud.IP User Provider (Plugin Version >= 3, Opencast >= 13)
+
+/etc/opencast/org.apache.karaf.features.cfg
+
+```
+    transaction/2.0.0 \
+    opencast-studip
+```
+
+Configure the settings for the user provider in the following file:
+
+/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg
+
+Create an API token and enter that in the above config and in the Stud.IP Opencast settings to make it work.
+
+Furthermore make sure the Opencast-Plugin in Stud.IP is assigned to the nobody role for it to work.

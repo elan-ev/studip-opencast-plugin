@@ -37,23 +37,47 @@ class VideoAddToPlaylist extends OpencastController
         $json = $this->getRequestData($request);
         $playlists = $json['playlists'];
 
-        try {
-            // Clear all existing record for this video.
-            PlaylistVideos::deleteBySql(
-                'video_id = ?', [$video->id]
-            );
+        $playlist_videos = PlaylistVideos::findBySql(
+            'video_id = ?', [$video->id]
+        );
 
-            // Add video to playlists
-            if (!empty($playlists)) {
-                foreach ($playlists as $playlist) {
-                    // check if user has perms on the playlist
-                    $db_playlist = reset(Playlists::findByToken($playlist['token']));
-                    if (in_array($db_playlist->getUserPerm(), ['owner', 'write']) === true) {
-                        $pv = new PlaylistVideos();
-                        $pv->video_id = $video->id;
-                        $pv->playlist_id = $db_playlist->id;
-                        $pv->store();
+        try {
+            // First we look for removable or already saved playlists
+            foreach($playlist_videos as $playlist_video) {
+                $db_playlist = Playlists::findOneById($playlist_video->playlist_id);
+
+                // Look for a corrosponding playlist from playlists in request
+                $playlist_key = null;
+                foreach ($playlists as $key => $playlist) {
+                    if ($playlist['token'] === $db_playlist->token) {
+                        $playlist_key = $key;
+                        break;
                     }
+                }
+                
+                // check if user has perms on the playlist
+                if (in_array($db_playlist->getUserPerm(), ['owner', 'write']) === true) {
+                    // Playlist was removed, so we remove it
+                    if (is_null($playlist_key)) {
+                        $playlist_video->delete();
+                    }
+                    // else Playlist was added or is still active, nothing to do
+                }
+
+                if (!is_null($playlist_key)) {
+                    unset($playlists[$playlist_key]);
+                }
+            }
+
+            // Add videos to remaining playlists
+            foreach ($playlists as $playlist) {
+                // check if user has perms on the playlist
+                $db_playlist = reset(Playlists::findByToken($playlist['token']));
+                if (in_array($db_playlist->getUserPerm(), ['owner', 'write']) === true) {
+                    $pv = new PlaylistVideos();
+                    $pv->video_id = $video->id;
+                    $pv->playlist_id = $db_playlist->id;
+                    $pv->store();
                 }
             }
 

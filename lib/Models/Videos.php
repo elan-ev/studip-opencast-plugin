@@ -94,7 +94,7 @@ class Videos extends UPMap
     {
         global $perm;
 
-        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = id)';
+        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = :playlist_id AND opv.video_id = oc_video.id)';
         $where = ' WHERE 1 ';
         $params = [':playlist_id' => $playlist_id];
 
@@ -102,9 +102,9 @@ class Videos extends UPMap
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where = ' WHERE opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
+            $where = ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
-                       OR opsv.visible_timestamp < NOW() ';
+                       OR opsv.visible_timestamp < NOW()) ';
 
             $params[':cid'] = $filters->getCourseId();
         }
@@ -138,7 +138,7 @@ class Videos extends UPMap
             $user_id = $user->id;
         }
 
-        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = id)';
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = oc_video.id)';
         $params = [];
         $where  = ' WHERE 1 ';
 
@@ -152,7 +152,7 @@ class Videos extends UPMap
                 $where = ' WHERE oc_video.id IN (:video_ids) ';
                 $params[':video_ids'] = self::getFilteredVideoIds($user_id);
             } else {
-                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = id) ';
+                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
                 $where = ' WHERE 1 ';
             }
         }
@@ -222,7 +222,10 @@ class Videos extends UPMap
 
                     // check, if user can access this playlist
                     if (!empty($playlist) && $playlist->getUserPerm()) {
-                        $playlist_ids[] = $playlist->id;
+                        $playlist_ids[$playlist->id] = [
+                            'id' => $playlist->id,
+                            'compare' => $filter['compare']
+                        ];
                     } else {
                         $playlist_ids[] = '-1';
                     }
@@ -235,10 +238,10 @@ class Videos extends UPMap
         if (!empty($tag_ids)) {
             foreach ($tag_ids as $tag) {
                 if ($tag['compare'] == '=') {
-                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
                         .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
                 } else {
-                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = id '
+                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
                         .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
 
                     $where .= ' AND t'. $tag['id'] . '.tag_id IS NULL ';
@@ -247,9 +250,20 @@ class Videos extends UPMap
         }
 
         if (!empty($playlist_ids)) {
-            $sql .= ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id IN('. implode(',', $playlist_ids) .'))';
-            $where .= ' AND opv.video_id = id';
+            foreach ($playlist_ids as $playlist_id) {
+                if ($playlist_id['compare'] == '=') {
+                    $sql .= ' INNER JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = oc_video.id '
+                        .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
+                } else {
+                    $sql .= ' LEFT JOIN oc_playlist_video AS opv'. $playlist_id['id'] .' ON (opv'. $playlist_id['id'] .'.video_id = oc_video.id '
+                        .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
+
+                    $where .= ' AND opv'. $playlist_id['id'] . '.playlist_id IS NULL ';
+                }
+            }
         }
+
+        $where .= " AND trashed = " . $filters->getTrashed();
 
         $sql .= $where;
 
@@ -263,7 +277,7 @@ class Videos extends UPMap
         [$field, $order] = explode("_", $filters->getOrder());
 
         if ($field === 'order') {
-            if (!empty($playlist_ids)) {
+            if ($filters->getPlaylist() !== null) {
                 $sql .= ' ORDER BY opv.' . $field . ' ' . $order;
             }
         } else {
@@ -548,7 +562,7 @@ class Videos extends UPMap
         }
 
         if ($acl <> $oc_acl) {
-            $new_acl = self::addEpisodeAcl($video->episode, $acl, $oc_acl);
+            $new_acl = self::addEpisodeAcl($video->episode, $acl, $current_acl);
             $api_client->setACL($video->episode, $new_acl);
             $workflow_client->republish($video->episode);
         }
