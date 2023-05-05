@@ -31,12 +31,13 @@ class SimpleConfigList extends OpencastController
 
         foreach ($config as $conf) {
             $config_list[$conf->id] = [
-                'id'      => $conf->id,
-                'name'    => $conf->service_url,
-                'version' => $conf->service_version,
-                'ingest'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
-                'studio'  => $conf->service_url . '/studio/index.html',
-                'lti_num' => sizeof(LtiHelper::getLtiLinks($conf->id))              // used to iterate over all Opencast nodes
+                'id'         => $conf->id,
+                'name'       => $conf->service_url,
+                'version'    => $conf->service_version,
+                'ingest'     => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
+                'apievents'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apievents'", [$conf->id]))->service_url,
+                'studio'     => $conf->service_url . '/studio/index.html',
+                'lti_num'    => sizeof(LtiHelper::getLtiLinks($conf->id))              // used to iterate over all Opencast nodes
             ];
         }
 

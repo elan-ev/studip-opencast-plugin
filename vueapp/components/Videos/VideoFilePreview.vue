@@ -7,6 +7,9 @@
             <h3 class="oc--file-type" v-if="type == 'presentation'" v-translate>
                 Folien
             </h3>
+            <h3 class="oc--file-type" v-if="type == 'caption'" v-translate>
+                Untertitel
+            </h3>
 
             <span class="oc--file-name">
                 <b v-translate>Name:</b> {{ file.name }}

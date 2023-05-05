@@ -288,6 +288,22 @@ class UploadService {
             })
     }
 
+    addCaptions(files) {
+        files = this.fixFilenames(files);
+        return axios({
+            url: this.service_url + "/ingest",
+            method: "POST",
+            data: new URLSearchParams({
+                mediaPackage: mediaPackage,
+                workflowDefinitionId: workflowId
+            }),
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
+        })
+    }
+
     cancel() {
         this.request.cancel();
     }
