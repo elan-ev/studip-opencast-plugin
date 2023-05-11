@@ -242,7 +242,7 @@ export default {
         menuItems() {
             let menuItems = [];
 
-            if (!!!+this.event?.trashed) {
+            if (!this.event?.trashed) {
                 if (this.canEdit) {
                     menuItems.push({
                         id: 1,
