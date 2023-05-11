@@ -167,19 +167,41 @@ class UploadService {
         let obj = this;
         return files.reduce(function(promise, file) {
             return promise.then(function (mediaPackage) {
-                return obj.addTrack(mediaPackage, file, onProgress);
+
+                var data = new FormData();
+                data.append('mediaPackage', mediaPackage);
+                data.append('flavor', file.flavor);
+                data.append('tags', '');
+                data.append('BODY', file.file, file.file.name);
+
+                return obj.addTrack(data, "/addTrack", onProgress);
             });
         }, Promise.resolve(mediaPackage))
     }
 
-    addTrack(mediaPackage, track, onProgress) {
-        var media = track.file;
-        var data = new FormData();
-        data.append('mediaPackage', mediaPackage);
-        data.append('flavor', track.flavor);
-        data.append('tags', '');
-        data.append('BODY', media, media.name);
+    async uploadCaptions(files, episode_id, options) {
+        this.fixFilenames(files);
+        let onProgress = options.uploadProgress;
+        let uploadDone = options.uploadDone;
 
+        let obj = this;
+        return files.reduce(function(promise, file) {
+            return promise.then(function () {
+
+                var data = new FormData();
+                data.append('flavor', file.flavor);
+                data.append('overwriteExisting', file.overwriteExisting);
+                data.append('track', file.file);
+
+                return obj.addTrack(data, "/" + episode_id + "/track", onProgress);
+            });
+        }, Promise.resolve())
+        .then(() => {
+            uploadDone();
+        })
+    }
+
+    addTrack(data, url_path, onProgress) {
         var fnOnProgress = function (event) {
             onProgress(track, event.loaded, event.total);
         };
@@ -191,7 +213,7 @@ class UploadService {
                 obj.request = axios.CancelToken.source();
 
                 return axios({
-                    url: obj.service_url + "/addTrack",
+                    url: obj.service_url + url_path,
                     method: "POST",
                     data: data,
                     processData: false,
@@ -286,22 +308,6 @@ class UploadService {
                 }
                 return ingest;
             })
-    }
-
-    addCaptions(files) {
-        files = this.fixFilenames(files);
-        return axios({
-            url: this.service_url + "/ingest",
-            method: "POST",
-            data: new URLSearchParams({
-                mediaPackage: mediaPackage,
-                workflowDefinitionId: workflowId
-            }),
-            withCredentials: true,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-            }
-        })
     }
 
     cancel() {

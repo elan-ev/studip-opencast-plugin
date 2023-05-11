@@ -19,7 +19,6 @@
         >
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
-
                     <label v-if="config && config['server'] && config['server'].length > 1">
                         <span class="required" v-translate>
                             Server auswählen:
@@ -36,20 +35,22 @@
                         </select>
                     </label>
 
-                    <div v-if="!files.length && !uploadProgress">
-                        <StudipButton icon="accept" v-translate  @click.prevent="chooseFiles('oc-file-presentation')">
-                            Dateien hinzufügen
-                        </StudipButton>
-                        <input type="file" class="caption_upload"
-                            @change="previewFiles" ref="oc-file-presentation"
-                            accept=".vtt">
-                    </div>
-                    <VideoFilePreview v-else :files="files"
-                        type="caption"  @remove="files=[]"
-                        :uploading="uploadProgress"
-                    />
+                    <div v-for="language in languages">
+                        <div v-if="!files[language.flavor]?.length && !uploadProgress">
+                            <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-'+language.lang)">
+                                Untertitel für {{ language.lang }}
+                            </StudipButton>
+                            <input type="file" class="caption_upload" :data-flavor="language.flavor"
+                                @change="previewFiles" :ref="'oc-file-'+language.lang"
+                                accept=".vtt">
+                        </div>
+                        <VideoFilePreview v-else :files="files[language.flavor]"
+                            type="caption"  @remove="delete files[language.flavor]"
+                            :uploading="uploadProgress"
+                        />
 
-                    <ProgressBar v-if="uploadProgress" :progress="uploadProgress.progress" />
+                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
+                    </div>
 
                     <MessageBox v-if="fileUploadError" type="error" v-translate>
                         Sie müssen mindestens eine Datei auswählen!
@@ -69,10 +70,7 @@ import MessageBox from '@/components/MessageBox'
 import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
 import ConfirmDialog from '@/components/ConfirmDialog'
-
 import UploadService from '@/common/upload.service'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
 
 export default {
     name: 'CaptionUpload',
@@ -88,16 +86,26 @@ export default {
 
     emits: ['done', 'cancel'],
 
-    props: ['currentUser'],
+    props: ['event'],
 
     data () {
         return {
             showAddEpisodeDialog: false,
             selectedServer: false,
             fileUploadError: false,
-            files: [],
+            files: {},
             uploadProgress: null,
-            showConfirmDialog: false
+            showConfirmDialog: false,
+            languages: [
+                {
+                    lang: 'Deutsch',
+                    flavor: 'captions/source+de'
+                },
+                {
+                    lang: 'Englisch',
+                    flavor: 'captions/source+en'
+                },
+            ]
         }
     },
 
@@ -130,10 +138,16 @@ export default {
             }
             
             // validate file upload
-            this.fileUploadError = false;
-            if (!this.files.length) {
-                this.fileUploadError = true;
+            this.fileUploadError = true;
+            this.languages.every(language => {
+                if (this.files[language.flavor] && this.files[language.flavor].length) {
+                    this.fileUploadError = false;
+                    return false;
+                }
+                return true;
+            });
 
+            if (this.fileUploadError) {
                 // scroll to error message to make it visible to the user
                 this.$refs['upload-form'].parentNode.scrollTo({
                     top: 1000,
@@ -145,38 +159,35 @@ export default {
             }
 
             // get correct upload endpoint url
-            this.uploadService = new UploadService(this.selectedServer['ingest']);
+            this.uploadService = new UploadService(this.selectedServer['apievents']);
 
             let files = [];
-            files.push({
-                file: this.files[0],
-                flavor: 'captions/source+en',
-                progress: {
-                    loaded: 0,
-                    total: this.files[0].size
-                }
-            });
+            for (const [key, value] of Object.entries(this.files)) {
+                files.push({
+                    file: value[0],
+                    flavor: key,
+                    overwriteExisting: true,
+                    progress: {
+                        loaded: 0,
+                        total: value.size
+                    }
+                });
+            }
 
             let view = this;
 
-            this.uploadService.addCaptions(files, {
-                uploadProgress: (track, loaded, total) => {
-                    view.uploadProgress = {
-                        flavor: track.flavor,
-                        progress: parseInt(Math.round((loaded / total) * 100 ))
-                    }
-                },
-                uploadDone: (episode_id, workflow_id) => {
-                    view.$emit('done');
-                    view.$store.dispatch('createLogEvent', {
-                        event: 'upload',
-                        data: {
-                            episode_id: episode_id,
-                            workflow_id: workflow_id
+            this.uploadService.uploadCaptions(files, this.event.episode, {
+                    uploadProgress: (track, loaded, total) => {
+                        view.uploadProgress = {
+                            flavor: track.flavor,
+                            progress: parseInt(Math.round((loaded / total) * 100 ))
                         }
-                    })
+                    },
+                    uploadDone: () => {
+                        view.$emit('done');
+                    }
                 }
-            });
+            );
         },
 
         decline() {
@@ -184,11 +195,12 @@ export default {
         },
 
         chooseFiles(id) {
-            this.$refs[id].click();
+            this.$refs[id][0].click();
         },
 
         previewFiles(event) {
-            this.files = event.target.files;
+            let flavor = event.target.attributes['data-flavor'].value;
+            this.files[flavor] = event.target.files;
         }
     },
 
