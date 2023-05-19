@@ -110,6 +110,9 @@
                 $instance_config['lti_consumerkey'],
                 $instance_config['lti_consumersecret']
             );
+
+            $lti_link->setUser($GLOBALS['user']->id, 'Instructor');
+
             $launch_data = $lti_link->getBasicLaunchData();
             $signature   = $lti_link->getLaunchSignature($launch_data);
 
