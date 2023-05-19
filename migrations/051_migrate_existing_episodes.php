@@ -18,7 +18,7 @@ class MigrateExistingEpisodes extends Migration
 
         $db = DBManager::get();
 
-        $stmt_sem = $db->prepare("INSERT INTO oc_video_seminar
+        $stmt_sem = $db->prepare("INSERT IGNORE INTO oc_video_seminar
             (video_id, seminar_id, visibility)
             VALUES (:video_id, :seminar_id, :vis)
         ");
