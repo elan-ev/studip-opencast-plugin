@@ -305,7 +305,7 @@ export default {
                         icon: 'trash',
                         emit: 'performAction',
                         emitArguments: 'VideoDelete'
-                    });  
+                    });
                 }
                 if (this.downloadAllowed) {
                     menuItems.push({
@@ -321,7 +321,7 @@ export default {
                 if (this.canEdit) {
                     menuItems.push({
                         id: 0,
-                        label: this.$gettext('Widerherstellen'),
+                        label: this.$gettext('Wiederherstellen'),
                         icon: 'refresh',
                         emit: 'performAction',
                         emitArguments: 'VideoRestore'

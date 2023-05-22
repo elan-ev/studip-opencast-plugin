@@ -336,6 +336,9 @@ class Videos extends UPMap
 
         $data['tags'] = $this->tags->toArray();
 
+
+        $data['trashed'] = $this->trashed ? true : false;
+
         return $data;
     }
 

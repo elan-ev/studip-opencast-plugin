@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Aufzeichnung Widerherstellen')"
+            :title="$gettext('Aufzeichnung Wiederherstellen')"
             :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
@@ -11,7 +11,7 @@
             @confirm="restoreVideo"
         >
             <template v-slot:dialogContent>
-                <translate>Möchten Sie die Aufzeichnung wirklich widerherstellen?</translate>
+                <translate>Möchten Sie die Aufzeichnung wirklich wiederherstellen?</translate>
             </template>
         </StudipDialog>
     </div>
