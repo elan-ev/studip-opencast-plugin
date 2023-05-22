@@ -41,6 +41,7 @@
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
                         :playlistMode="true"
+                        @redirectAction="redirectAction"
                     ></VideoCard>
                 </template>
             </draggable>
@@ -148,7 +149,7 @@ export default {
             options.filters = options.filters.concat(this.filters);
             options.limit = -1;
             options.token = this.playlist.token;
-            
+
             this.videos_loading = true;
             this.$store.commit('setVideos', {});
             this.$store.dispatch('loadPlaylistVideos', options)
@@ -214,6 +215,15 @@ export default {
                     limit: -1
                 }).then(() => { this.videos_loading = false });
             });
+        },
+
+        redirectAction(action) {
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
+
+            if (redirectUrl) {
+                redirectUrl = redirectUrl + action;
+                window.open(redirectUrl, '_blank');
+            }
         }
     },
 
@@ -243,7 +253,7 @@ export default {
                         playlist_token: this.playlist.token,
                         sortedVideos  : this.sortedVideos.map((elem) => elem.token)
                     });
-                } 
+                }
                 else if (newmode === 'cancel') {
                     // Reload videos
                     this.loadVideos();
