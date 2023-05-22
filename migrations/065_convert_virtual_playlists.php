@@ -28,6 +28,8 @@ class ConvertVirtualPlaylists extends Migration
         $db->exec('ALTER TABLE oc_playlist_seminar
             ADD `is_default` tinyint DEFAULT 0 AFTER seminar_id');
 
+        SimpleOrMap::expireTableScheme();
+
         $result = $db->query("SELECT * FROM oc_video_seminar");
 
         // collect videos for playlists
