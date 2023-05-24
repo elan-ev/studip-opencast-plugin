@@ -28,6 +28,8 @@ class ConvertVirtualPlaylists extends Migration
         $db->exec('ALTER TABLE oc_playlist_seminar
             ADD `is_default` tinyint DEFAULT 0 AFTER seminar_id');
 
+        SimpleOrMap::expireTableScheme();
+
         $result = $db->query("SELECT * FROM oc_video_seminar");
 
         // collect videos for playlists
@@ -40,28 +42,30 @@ class ConvertVirtualPlaylists extends Migration
         foreach ($playlists as $seminar_id => $videos) {
             $course = Course::find($seminar_id);
 
-            // create playlist
-            $playlist = new Playlists();
-            $playlist->title      = $course->getFullname('number-name-semester');
-            $playlist->token      = bin2hex(random_bytes(8));
-            $playlist->visibility = 'internal';
-            $playlist->store();
+            if (!empty($course)) {
+                // create playlist
+                $playlist = new Playlists();
+                $playlist->title      = $course->getFullname('number-name-semester');
+                $playlist->token      = bin2hex(random_bytes(8));
+                $playlist->visibility = 'internal';
+                $playlist->store();
 
-            // add videos to playlist
-            foreach ($videos as $video_id) {
-                $video = new PlaylistVideos();
-                $video->video_id    = $video_id;
-                $video->playlist_id = $playlist->id;
-                $video->store();
+                // add videos to playlist
+                foreach ($videos as $video_id) {
+                    $video = new PlaylistVideos();
+                    $video->video_id    = $video_id;
+                    $video->playlist_id = $playlist->id;
+                    $video->store();
+                }
+
+                // connect playlist to course
+                $psem = new PlaylistSeminars();
+                $psem->playlist_id = $playlist->id;
+                $psem->seminar_id  = $seminar_id;
+                $psem->is_default  = 1;
+                $psem->visibility  = 'visible';
+                $psem->store();
             }
-
-            // connect playlist to course
-            $psem = new PlaylistSeminars();
-            $psem->playlist_id = $playlist->id;
-            $psem->seminar_id  = $seminar_id;
-            $psem->is_default  = 1;
-            $psem->visibility  = 'visible';
-            $psem->store();
         }
 
         // remove obsolete table

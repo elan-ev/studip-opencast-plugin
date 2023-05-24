@@ -8,27 +8,67 @@ Refer to the Opencast documentation for instructions on how to configure your ve
 
 Normally this boils down to the following two changes / additions in the config files:
 
-1. Edit `etc/security/mh_default_org.xml` and make sure the following setting is enabled:
+1. Edit `/etc/opencast/security/mh_default_org.xml` and make sure the following setting is enabled:
 ```
 <ref bean="oauthProtectedResourceFilter" />
 ```
 
-2. Edit / Create `etc/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg` and configure / add the following settings:
+2. Edit / Create `/etc/opencast/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg` and configure / add the following settings:
 ```
 oauth.consumer.name.1=CONSUMERNAME
 oauth.consumer.key.1=CONSUMERKEY
 oauth.consumer.secret.1=CONSUMERSECRET
 ```
 
-3. Edit `etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg` and enable:
+3. Edit `/etc/opencast/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg` and enable:
 ```
 lti.create_jpa_user_reference=true
 lti.custom_role_name=Instructor
 lti.custom_roles=ROLE_STUDIO,ROLE_ADMIN_UI,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_DETAILS_MEDIA_VIEW,ROLE_UI_EVENTS_DETAILS_METADATA_EDIT,ROLE_UI_EVENTS_DETAILS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_CAPTURE_AGENT
 ```
 
-After that, restart Opencast.
+4. Edit `/etc/opencast/org.apache.karaf.features.cfg` and add `opencast-studip` *(Plugin Version >= 3, Opencast >= 13)*
 
+```
+	...
+	transaction/2.0.0 \
+    opencast-studip
+	...
+```
+
+5. Edit `/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg` *(Plugin Version >= 3, Opencast >= 13)*
+
+```
+# Studip UserDirectoryProvider configuration
+
+# This is an an optional service which is not enabled by default. To enable it,
+# edit etc/org.apache.karaf.features.cfg and add opencast-studip to the featuresBoot option.
+
+# The organization for this provider
+org.opencastproject.userdirectory.studip.org=mh_default_org
+
+# The URL and token for the Studip REST webservice
+org.opencastproject.userdirectory.studip.url=http://studip.me/studip/4.6/plugins.php/opencast/api/
+org.opencastproject.userdirectory.studip.token=mytoken1234abcdef
+
+# The maximum number of users to cache
+# Default: 1000
+#org.opencastproject.userdirectory.studip.cache.size=1000
+
+# The maximum number of minutes to cache a user
+# Default: 60
+org.opencastproject.userdirectory.studip.cache.expiration=1
+```
+
+Make sure to change the token and add that token to the Opencast config in Stud.IP.
+
+6. Add role `STUDIP` in Opencast *(Plugin Version >= 3, Opencast >= 13)*
+
+In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`
+
+----
+
+After all that, restart Opencast.
 
 
 ## Opencast - CORS
@@ -39,39 +79,122 @@ If your Stud.IP system resides on a different domain than your Opencast, you nee
 
 Example (nginx):
 
-http context:
+`/etc/nginx/nginx.conf`
+
 ```
-# CORS preparations: Allow CORS requests from some hosts (1)
-# for plugin integration.
-map $http_origin $cors_ok {
-    default                              0;
-    https://dev.studip.example.com       1;
-    https://studip.example.com           1;
-    https://ilias.example.com            1;
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+        worker_connections 768;
+        # multi_accept on;
 }
 
-map $cors_ok $cors_origin {
-    default                              '';
-    1                                    $http_origin;
-}
+http {
 
-map $cors_ok $cors_credentials {
-    default                              '';
-    1                                    true;
-}
-```
+    # HTTP set-up
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name _;
 
-location context:
-```
-# CAUTION: There could be several add_header directives.
-# These directives are inherited from the previous level
-# if and only if there are no add_header directives defined
-# on the current level.
-# -------------------------
-# Allow some CORS access
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-add_header Access-Control-Allow-Origin       '$cors_origin';
-add_header Access-Control-Allow-Credentials  '$cors_credentials';
+        # Enforce HTTPS by redirecting requests
+        location / {
+            return 301 https://opencast.me$request_uri;
+        }
+    }
+
+    # HTTPS set-up
+    server {
+        listen      443 ssl http2;
+        listen [::]:443 ssl http2;
+        server_name opencast.me;
+
+        # Path to the TLS certificate and private key. In almost all cases, you
+        # need to provide intermediate certificates as well to ensure browsers
+        # get the whole certificate chain.
+        ssl_certificate_key  /etc/ssl/private/nginx-selfsigned.key;
+        ssl_certificate      /etc/ssl/certs/nginx-selfsigned.crt;
+
+        # Accept large ingests. There should be no limit since Opencast may get
+        # really large ingests.
+        client_max_body_size 0;
+
+        # Proxy configuration for Opencast
+        location / {
+
+            # Make sure to pass the real addresses as well as the fact that
+            # outwards we are using HTTPS to Opencast.
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+
+            # Pass requests to this location. This expects Opencast to be
+            # running locally on port 8080 which should be the default set-up.
+            proxy_pass              http://127.0.0.1:8080;
+
+            # Make sure to redirect location headers to HTTPS. This is just a
+            # precaution and shouldn't strictly be necessary but it did prevent
+            # some issues in the past and it does not cost much performance.
+            proxy_redirect          http://$host https://$host;
+
+            # Make sure to serve cookies only via secure connections.
+            # proxy_cookie_flags ~ secure httponly;
+            # When using Nginx <1.19.3 replace the above 'proxy_cookie_flags' line
+            # with the (uncommented) 'proxy_cookie_path' line below.
+            #proxy_cookie_path / "/; HTTPOnly; Secure";
+
+            # Depending on your integration, you may also want to allow cookies
+            # to be used on other sites. In that case, use this instead:
+            #proxy_cookie_path / "/; HTTPOnly; Secure; SameSite=None";
+
+            # Do not buffer responses
+            proxy_buffering         off;
+
+            # Do not buffer requests
+            proxy_request_buffering off;
+
+            #
+            # Wide-open CORS config for nginx
+            #
+            if ($request_method = 'OPTIONS') {
+                add_header 'Access-Control-Allow-Credentials' true;
+                add_header 'Access-Control-Allow-Origin' 'https://studip.me';
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                #
+                # Custom headers and headers various browsers *should* be OK with but aren't
+                #
+                add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
+                #
+                # Tell client that this pre-flight info is valid for 20 days
+                #
+                add_header 'Access-Control-Max-Age' 1728000;
+                add_header 'Content-Type' 'text/plain; charset=utf-8';
+                add_header 'Content-Length' 0;
+                return 204;
+            }
+
+            if ($request_method = 'POST') {
+                add_header 'Access-Control-Allow-Credentials' true;
+                add_header 'Access-Control-Allow-Origin' 'https://studip.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+                add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+            }
+
+            if ($request_method = 'GET') {
+                add_header 'Access-Control-Allow-Credentials' true;
+                add_header 'Access-Control-Allow-Origin' 'https://studip.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+                add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+            }
+        }
+    }
+}
 ```
 
 ## Opencast Workflows
@@ -97,19 +220,6 @@ After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL an
 Make sure you enter the LTI credentials under "Additional settings".
 If everything worked you can now start using the plugin in seminars.
 
-# Stud.IP User Provider (Plugin Version >= 3, Opencast >= 13)
+### Stud.IP User Provider *(Plugin Version >= 3, Opencast >= 13)*
 
-/etc/opencast/org.apache.karaf.features.cfg
-
-```
-    transaction/2.0.0 \
-    opencast-studip
-```
-
-Configure the settings for the user provider in the following file:
-
-/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg
-
-Create an API token and enter that in the above config and in the Stud.IP Opencast settings to make it work.
-
-Furthermore make sure the Opencast-Plugin in Stud.IP is assigned to the nobody role for it to work.
+Make sure you followed all steps above. Furthermore make sure the Opencast-Plugin in Stud.IP is assigned to the nobody role for it to work.

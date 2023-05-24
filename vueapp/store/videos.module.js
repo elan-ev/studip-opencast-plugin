@@ -16,6 +16,7 @@ const state = {
         lastPage: 0,
         items: 0
     },
+    availableVideoTags: [],
     playlistForVideos: null,
     videoShares: {},
     courseVideosToCopy: [],
@@ -45,6 +46,10 @@ const getters = {
 
     search(state) {
         return state.search
+    },
+
+    availableVideoTags(state) {
+        return state.availableVideoTags
     },
 
     playlistForVideos(state) {
@@ -108,6 +113,7 @@ const actions = {
             route: 'videos',
             filters: data,
         })
+        .then(() => dispatch('loadAvailableVideoTags'));
     },
 
     async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
@@ -116,6 +122,24 @@ const actions = {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
         })
+        .then(() => dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid}));
+    },
+
+    async loadAvailableVideoTags({ commit, state, dispatch, rootState }, data = []) {
+        const params = new URLSearchParams();
+        let route = '/tags/videos';
+
+        if (data.token) {
+            route += '/playlist/' + data.token;
+            if (data.cid) {
+                params.append('cid',  data.cid);
+            }
+        }
+
+        return ApiService.get(route, { params })
+            .then(({ data }) => {
+                commit('setAvailableVideoTags', data);
+            });
     },
 
     async uploadSortPositions({}, data) {
@@ -236,6 +260,10 @@ const mutations = {
 
     setShowCourseCopyDialog(state, mode) {
         state.showCourseCopyDialog = mode;
+    },
+
+    setAvailableVideoTags(state, data) {
+        state.availableVideoTags = data;
     }
 }
 

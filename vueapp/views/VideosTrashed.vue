@@ -1,6 +1,8 @@
 <template>
     <div>
-        <h2>Videos Archive</h2>
+        <h2>
+            {{ $gettext('Gelöschte Videos') }}
+        </h2>
         <VideosList></VideosList>
     </div>
 </template>

@@ -16,7 +16,7 @@
                     active: fragment == 'videosTrashed'
                     }">
                     <router-link :to="{ name: 'videosTrashed' }">
-                        Videos Archive
+                        Gelöschte Videos
                     </router-link>
                 </li>
                 <li :class="{
@@ -46,6 +46,12 @@
                     {{ $gettext('Video Aufnehmen') }}
                 </li>
                 -->
+                <li>
+                    <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries" target="_blank">
+                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        Video Aufnehmen
+                    </a>
+                </li>
 
                 <li @click="addVideosToPlaylist" v-if="fragment == 'playlist_edit'">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
@@ -121,6 +127,7 @@ export default {
         ...mapGetters([
             'videoSortMode', 'playlist',
             'axios_running', 'downloadSetting',
+            'simple_config_list', 'currentUserSeries'
         ]),
 
         isDownloadAllowedForPlaylist() {
@@ -133,7 +140,27 @@ export default {
                 }
             }
             return false;
-        }
+        },
+
+        recordingLink() {
+            if (!this.simple_config_list.settings || !this.currentUserSeries) {
+                return;
+            }
+
+            let config_id = this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
+            let server    = this.simple_config_list.server[config_id];
+
+            // use the first avai
+            return window.STUDIP.URLHelper.getURL(
+                server.studio, {
+                    'upload.seriesId'  : this.currentUserSeries,
+                    'upload.acl'       : false,
+                    'upload.workflowId': this.getWorkflow(config_id),
+                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/videos'),
+                    'return.label'     : 'Stud.IP'
+                }
+            );
+        },
     },
 
     methods: {
@@ -144,6 +171,11 @@ export default {
         addVideosToPlaylist() {
             this.$store.commit('setPlaylistForVideos', this.playlist);
             this.$router.push({ name: 'videos'})
+        },
+
+        getWorkflow(config_id) {
+            let wf_id = this.simple_config_list?.workflow_configs.find(wf_config => wf_config['config_id'] == config_id && wf_config['used_for'] === 'studio')['workflow_id'];
+            return this.simple_config_list?.workflows.find(wf => wf['id'] == wf_id)['name'];
         }
     },
 

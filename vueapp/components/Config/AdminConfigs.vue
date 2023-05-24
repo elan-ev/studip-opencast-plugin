@@ -1,7 +1,7 @@
 <template>
   <div>
     <form class="default">
-        <MessageBox type="info" v-if="true || !is_scheduling_enabled && is_scheduling_configured">
+        <MessageBox type="info" v-if="is_scheduling_enabled && !is_scheduling_configured">
             {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
             <a :href="$filters.helpurl('OpencastV3Administration#toc2')"
                 target="_blank"

@@ -3,6 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Models\SeminarSeries;
+use Opencast\Models\UserSeries;
 
 class VideosUserPerms extends \SimpleORMap
 {
@@ -76,6 +77,25 @@ class VideosUserPerms extends \SimpleORMap
                     }
                 }
             }
+
+            // Get the user this series belongs to
+            $series = UserSeries::findBySeries_id($episode->is_part_of);
+
+            foreach ($series as $s) {
+                // check, if there is already an entry for this user-video combination
+                $perm = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                    ':video_id' => $video->id,
+                    ':user_id'  => $s['user_id']
+                ]);
+
+                if (empty($perm)) {
+                    $perm = new self();
+                    $perm->user_id  = $s['user_id'];
+                    $perm->video_id = $video->id;
+                    $perm->perm     = 'owner';
+                    $perm->store();
+                }
+            }
         }
 
         // always make sure, that the uploader is in the list of the owners!
@@ -85,21 +105,29 @@ class VideosUserPerms extends \SimpleORMap
             $user_id = \get_userid($episode->presenter[0]);
 
             if ($user_id) {
-                $perm = new self();
-                $perm->user_id  = $user_id;
-                $perm->video_id = $video->id;
-                $perm->perm     = 'owner';
-                $perm->store();
+                // check, if this perm has already been assigned
+                $perm = self::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
+                    ':user_id'  => $user_id,
+                    ':video_id' => $video->id
+                ]);
 
-                // notify user, that one of his videos is now available
-                \PersonalNotifications::add(
-                    $user_id,
-                    \URLHelper::getURL('plugins.php/opencast/contents/index', [], true),
-                    sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $episode->title),
-                    "opencast_" . $episode->identifier,
-                    \Icon::create('video'),
-                    false
-                );
+                if (empty($perm)) {
+                    $perm = new self();
+                    $perm->user_id  = $user_id;
+                    $perm->video_id = $video->id;
+                    $perm->perm     = 'owner';
+                    $perm->store();
+
+                    // notify user, that one of his videos is now available
+                    \PersonalNotifications::add(
+                        $user_id,
+                        \URLHelper::getURL('plugins.php/opencast/contents/index', [], true),
+                        sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $episode->title),
+                        "opencast_" . $episode->identifier,
+                        \Icon::create('video'),
+                        false
+                    );
+                }
             }
         }
 

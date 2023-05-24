@@ -20,16 +20,16 @@ class AddVideoTrash extends Migration
         // Write video archive to videos table with enabled trash
         $result = $db->query("SELECT * FROM oc_video_archive");
         $stmt = $db->prepare('INSERT IGNORE INTO oc_video (
-            token, config_id, episode, title, description, 
+            token, config_id, episode, title, description,
             duration, views, preview, publication, visibility,
-            created, author, contributors, chdate, mkdate, 
+            created, author, contributors, chdate, mkdate,
             available, trashed, trashed_timestamp)
           VALUES (
-            :token, :config_id, :episode, :title, :description, 
-            :duration, :views, :preview, :publication, :visibility, 
-            :created, :author, :contributors, :chdate, :mkdate, 
+            :token, :config_id, :episode, :title, :description,
+            :duration, :views, :preview, :publication, :visibility,
+            :created, :author, :contributors, :chdate, :mkdate,
             :available, :trashed, NOW())');
-        
+
         while ($video = $result->fetch(PDO::FETCH_ASSOC)) {
             $stmt->execute([
                 'token'          => $video['token'],
@@ -64,7 +64,7 @@ class AddVideoTrash extends Migration
 
         if ($task_id) {
             $scheduler->cancelByTask($task_id);
-            $scheduler->schedulePeriodic($task_id, hour: 22);
+            $scheduler->schedulePeriodic($task_id, 0, 22);
             CronjobSchedule::findByTask_id($task_id)[0]->activate();
         }
 
@@ -74,7 +74,7 @@ class AddVideoTrash extends Migration
         $stmt->execute([
             'name'        => 'OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL',
             'section'     => 'opencast',
-            'description' => 'Wie viele Tage sollen Videos im Video Archive eines Nutzers erhalten bleiben?',
+            'description' => 'Nach wie vielen Tage sollen zum Löschen markierte Videos tatsächlich gelöscht werden?',
             'range'       => 'global',
             'type'        => 'integer',
             'value'       => 30
@@ -111,15 +111,15 @@ class AddVideoTrash extends Migration
         // Write trashed videos to videos archive table
         $result = $db->query("SELECT * FROM oc_video WHERE trashed=1");
         $stmt = $db->prepare('INSERT IGNORE INTO oc_video_archive (
-                token, config_id, episode, title, description, 
+                token, config_id, episode, title, description,
                 duration, views, preview, publication, visibility,
                 created, author, contributors, chdate, mkdate)
             VALUES (
-                :token, :config_id, :episode, :title, :description, 
-                :duration, :views, :preview, :publication, :visibility, 
+                :token, :config_id, :episode, :title, :description,
+                :duration, :views, :preview, :publication, :visibility,
                 :created, :author, :contributors, :chdate, :mkdate)');
         $rm_stmt = $db->prepare("DELETE FROM oc_video WHERE token = ?");
-        
+
         while ($video = $result->fetch(PDO::FETCH_ASSOC)) {
             $stmt->execute([
                 'token'          => $video['token'],
@@ -141,7 +141,7 @@ class AddVideoTrash extends Migration
             $rm_stmt->execute([$video['token']]);
         }
 
-        $db->exec("ALTER TABLE `oc_video` 
+        $db->exec("ALTER TABLE `oc_video`
             DROP COLUMN `trashed`,
             DROP COLUMN `trashed_timestamp`");
 
