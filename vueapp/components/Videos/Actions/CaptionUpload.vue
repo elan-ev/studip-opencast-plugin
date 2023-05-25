@@ -36,7 +36,7 @@
                     </label>
 
                     <div v-for="language in languages">
-                        <div v-if="!files[language.flavor]?.length && !uploadProgress">
+                        <div v-if="!files[language.flavor] && !uploadProgress">
                             <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-'+language.lang)">
                                 Untertitel für {{ language.lang }}
                             </StudipButton>
@@ -200,7 +200,10 @@ export default {
 
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
+            let language = this.languages.find(language => language.flavor === flavor).lang;
+
             this.files[flavor] = event.target.files;
+            this.files[flavor]['language'] = language;
         }
     },
 
@@ -209,6 +212,19 @@ export default {
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
         });
+
+        if (this.event?.publication?.downloads?.caption) {
+            for (var flavor in this.event.publication.downloads.caption) {
+                let language = this.languages.find(language => language.flavor === flavor).lang;
+
+                this.files[flavor] = [];
+                this.files[flavor].push({
+                    'url': this.event.publication.downloads.caption[flavor].url,
+                    'name': this.event.publication.downloads.caption[flavor].url.split('/').pop()
+                });
+                this.files[flavor]['language'] = language;
+            }
+        }
     }
 }
 </script>

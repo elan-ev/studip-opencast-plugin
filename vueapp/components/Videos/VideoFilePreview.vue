@@ -8,14 +8,14 @@
                 Folien
             </h3>
             <h3 class="oc--file-type" v-if="type == 'caption'" v-translate>
-                Untertitel
+                Untertitel für {{ files.language }}
             </h3>
 
             <span class="oc--file-name">
                 <b v-translate>Name:</b> {{ file.name }}
             </span>
 
-            <span class="oc--file-size">
+            <span class="oc--file-size" v-if="file.size">
                 <b v-translate>Größe:</b> {{ $filters.filesize(file.size) }}
             </span>
 
@@ -26,6 +26,16 @@
                 >
                     Entfernen
                 </button>
+            </span>
+
+            <span v-if="file.url">
+                <a :href="file.url">
+                    <button class='button download'
+                        type=button v-translate
+                    >
+                        Herunterladen
+                    </button>
+                </a>
             </span>
         </div>
     </div>

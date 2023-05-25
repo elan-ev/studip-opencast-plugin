@@ -212,4 +212,22 @@ class ApiEventsClient extends RestClient
         $response = $this->opencastApi->eventsApi->delete($episode_id);
         return $response['code'] < 400;
     }
+
+    /**
+     * Return media files
+     * 
+     * @param
+     * 
+     * @return array
+     */
+    public function getMedia($eventId)
+    {
+        $response = $this->opencastApi->eventsApi->getMedia($eventId);
+
+        if ($response['code'] == 200) {
+            return $response['body'];
+        }
+        
+        return false;
+    }
 }
