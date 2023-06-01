@@ -96,16 +96,7 @@ export default {
             files: {},
             uploadProgress: null,
             showConfirmDialog: false,
-            languages: [
-                {
-                    lang: 'Deutsch',
-                    flavor: 'captions/source+de'
-                },
-                {
-                    lang: 'Englisch',
-                    flavor: 'captions/source+en'
-                },
-            ]
+            languages: []
         }
     },
 
@@ -213,16 +204,26 @@ export default {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
         });
 
+        // Add support for StudIP languages
+        for (let key in window.OpencastPlugin.STUDIP_LANGUAGES) {
+            this.languages.push({
+                lang: window.OpencastPlugin.STUDIP_LANGUAGES[key].name,
+                flavor: 'captions/source+' + key.split('_')[0]
+            });
+        }
+
         if (this.event?.publication?.downloads?.caption) {
             for (var flavor in this.event.publication.downloads.caption) {
-                let language = this.languages.find(language => language.flavor === flavor).lang;
+                let language = this.languages.find(language => language.flavor === flavor);
 
-                this.files[flavor] = [];
-                this.files[flavor].push({
-                    'url': this.event.publication.downloads.caption[flavor].url,
-                    'name': this.event.publication.downloads.caption[flavor].url.split('/').pop()
-                });
-                this.files[flavor]['language'] = language;
+                if (language) {
+                    this.files[flavor] = [];
+                    this.files[flavor].push({
+                        'url': this.event.publication.downloads.caption[flavor].url,
+                        'name': this.event.publication.downloads.caption[flavor].url.split('/').pop()
+                    });
+                    this.files[flavor]['language'] = language.lang;
+                }
             }
         }
     }

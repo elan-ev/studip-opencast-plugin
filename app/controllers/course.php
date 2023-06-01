@@ -34,6 +34,7 @@ class CourseController extends Opencast\Controller
         PageLayout::setBodyElementId('opencast-plugin');
 
         $this->studip_version = $this->getStudIPVersion();
+        $this->languages = json_encode($GLOBALS['CONTENT_LANGUAGES']);
 
         $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
     }
