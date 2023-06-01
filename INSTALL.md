@@ -27,12 +27,11 @@ lti.custom_role_name=Instructor
 lti.custom_roles=ROLE_STUDIO,ROLE_ADMIN_UI,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_DETAILS_MEDIA_VIEW,ROLE_UI_EVENTS_DETAILS_METADATA_EDIT,ROLE_UI_EVENTS_DETAILS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_CAPTURE_AGENT
 ```
 
-4. Edit `/etc/opencast/org.apache.karaf.features.cfg` and add `opencast-studip` *(Plugin Version >= 3, Opencast >= 13)*
+4. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable: *(Plugin Version >= 3, Opencast >= 13)*
 
 ```
 	...
-	transaction/2.0.0 \
-    opencast-studip
+    opencast-plugin-userdirectory-studip = on
 	...
 ```
 
