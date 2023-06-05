@@ -108,7 +108,8 @@ export default {
     computed: {
         ...mapGetters({
             'config'       : 'simple_config_list',
-            'course_config': 'course_config'
+            'course_config': 'course_config',
+            'videoCaptions': 'videoCaptions'
         }),
 
         uploadButtonClasses() {
@@ -208,6 +209,7 @@ export default {
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
         });
+        this.$store.dispatch('loadCaption', this.event.token);
 
         // Add support for StudIP languages
         for (let key in window.OpencastPlugin.STUDIP_LANGUAGES) {
@@ -216,20 +218,24 @@ export default {
                 flavor: 'captions/source+' + key.split('_')[0]
             });
         }
+    },
 
-        if (this.event?.publication?.downloads?.caption) {
-            for (var flavor in this.event.publication.downloads.caption) {
+    watch: {
+        videoCaptions(newCaptions) {
+            if (Object.keys(newCaptions).length > 0) {
+            for (var flavor in newCaptions) {
                 let language = this.languages.find(language => language.flavor === flavor);
 
                 if (language) {
                     this.files[flavor] = [];
                     this.files[flavor].push({
-                        'url': this.event.publication.downloads.caption[flavor].url,
-                        'name': this.event.publication.downloads.caption[flavor].url.split('/').pop()
+                        'url': newCaptions[flavor].url,
+                        'name': newCaptions[flavor].url.split('/').pop()
                     });
                     this.files[flavor]['language'] = language.lang;
                 }
             }
+        }
         }
     }
 }

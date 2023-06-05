@@ -590,7 +590,6 @@ class Videos extends UPMap
             $presenter_download    = [];
             $presentation_download = [];
             $audio_download        = [];
-            $caption_download      = [];
             $annotation_tool       = false;
             $duration              = 0;
 
@@ -665,20 +664,6 @@ class Videos extends UPMap
                 }
             }
 
-            // Get caption files
-            $api_event_client = ApiEventsClient::getInstance($video->config_id);
-            $media_tracks = $api_event_client->getMedia($episode->identifier);
-
-            foreach($media_tracks as $track) {
-                if (substr($track->flavor, 0, 9) === 'captions/' &&
-                    $track->mimetype === 'text/vtt') 
-                {
-                    $caption_download[$track->flavor] = [
-                        'url' => $track->uri
-                    ];
-                }
-            }
-
             foreach ($episode->publications as $publication) {
                 if ($publication->channel == 'engage-player') {
                     $track_link = $publication->url;
@@ -704,8 +689,7 @@ class Videos extends UPMap
                 'downloads' => [
                     'presenter'    => $presenter_download,
                     'presentation' => $presentation_download,
-                    'audio'        => $audio_download,
-                    'caption'      => $caption_download
+                    'audio'        => $audio_download
                 ],
                 'annotation_tool'  => $annotation_tool,
                 'track_link'       => $track_link
@@ -821,5 +805,34 @@ class Videos extends UPMap
                 $pvideo->store();
             }
         }
+    }
+
+    /**
+     * Fetch caption data for a given token
+     * 
+     * @param string $token
+     * 
+     * @return Array which contains urls for the caption files
+     */
+    public static function getCaptionByToken($token)
+    {
+        $caption_download = [];
+        $video = self::findByToken($token);
+
+        // Get caption files
+        $api_event_client = ApiEventsClient::getInstance($video->config_id);
+        $media_tracks = $api_event_client->getMedia($video->episode);
+
+        foreach($media_tracks as $track) {
+            if (substr($track->flavor, 0, 9) === 'captions/' &&
+                $track->mimetype === 'text/vtt') 
+            {
+                $caption_download[$track->flavor] = [
+                    'url' => $track->uri
+                ];
+            }
+        }
+
+        return $caption_download;
     }
 }
