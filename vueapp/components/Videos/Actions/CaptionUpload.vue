@@ -20,8 +20,8 @@
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <label v-if="config && config['server'] && config['server'].length > 1">
-                        <span class="required" v-translate>
-                            Server auswählen:
+                        <span class="required">
+                            {{ $gettext('Server auswählen:') }}
                         </span>
 
                         <select v-model="selectedServer" required>
@@ -38,7 +38,7 @@
                     <div v-for="language in languages">
                         <div v-if="!files[language.flavor] && !uploadProgress">
                             <label class="oc--file-upload">
-                                <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-'+language.lang)">
+                                <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-'+language.lang)">
                                     {{ $gettext('Untertitel für %{ lang }', {
                                         lang: $gettext(language.lang)
                                     }) }}
@@ -57,8 +57,8 @@
                         <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                     </div>
 
-                    <MessageBox v-if="fileUploadError" type="error" v-translate>
-                        Sie müssen mindestens eine Datei auswählen!
+                    <MessageBox v-if="fileUploadError" type="error">
+                        {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
                     </MessageBox>
                 </form>
             </template>
