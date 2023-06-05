@@ -37,13 +37,18 @@
 
                     <div v-for="language in languages">
                         <div v-if="!files[language.flavor] && !uploadProgress">
-                            <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-'+language.lang)">
-                                Untertitel für {{ language.lang }}
-                            </StudipButton>
-                            <input type="file" class="caption_upload" :data-flavor="language.flavor"
+                            <label class="oc--file-upload">
+                                <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-'+language.lang)">
+                                    {{ $gettext('Untertitel für %{ lang }', {
+                                        lang: $gettext(language.lang)
+                                    }) }}
+                                </StudipButton>
+                                <input type="file" class="caption_upload" :data-flavor="language.flavor"
                                 @change="previewFiles" :ref="'oc-file-'+language.lang"
                                 accept=".vtt">
+                            </label>
                         </div>
+
                         <VideoFilePreview v-else :files="files[language.flavor]"
                             type="caption"  @remove="delete files[language.flavor]"
                             :uploading="uploadProgress"
@@ -127,7 +132,7 @@ export default {
             if (!this.$refs['upload-form'].reportValidity()) {
                 return false;
             }
-            
+
             // validate file upload
             this.fileUploadError = true;
             this.languages.every(language => {
