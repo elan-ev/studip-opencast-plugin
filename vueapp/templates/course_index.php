@@ -2,9 +2,8 @@
     <h1 class="display-1 text-center">Starte Anwendung&hellip;</h1>
 </div>
 
-
 <script type="text/javascript">
-   window.OpencastPlugin = {
+    window.OpencastPlugin = {
         API_URL    : '<?= PluginEngine::getURL('opencast', [], 'api', true) ?>',
         CID        : '<?= $course_id ?>',
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
@@ -14,6 +13,7 @@
         REDIRECT_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/perform', true) ?>',
         AUTH_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/authenticate', true) ?>'
     };
+    <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;
 </script>
 

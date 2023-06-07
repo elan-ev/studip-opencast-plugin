@@ -33,5 +33,6 @@ class ContentsController extends Opencast\Controller
         PageLayout::setBodyElementId('opencast-plugin');
 
         $this->studip_version = $this->getStudIPVersion();
+        $this->languages = json_encode($GLOBALS['CONTENT_LANGUAGES']);
     }
 }

@@ -106,6 +106,7 @@ import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
+import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
 import Tag from '@/components/Tag.vue'
 
 export default {
@@ -120,7 +121,7 @@ export default {
         VideoDownload,          VideoReport,
         VideoEdit,              VideoRestore,
         VideoDelete,            VideoDeletePermanent,
-        VideoAddToSeminar
+        VideoAddToSeminar,      CaptionUpload
     },
 
     data() {

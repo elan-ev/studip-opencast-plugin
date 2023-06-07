@@ -806,4 +806,33 @@ class Videos extends UPMap
             }
         }
     }
+
+    /**
+     * Fetch caption data for a given token
+     * 
+     * @param string $token
+     * 
+     * @return Array which contains urls for the caption files
+     */
+    public static function getCaptionByToken($token)
+    {
+        $caption_download = [];
+        $video = self::findByToken($token);
+
+        // Get caption files
+        $api_event_client = ApiEventsClient::getInstance($video->config_id);
+        $media_tracks = $api_event_client->getMedia($video->episode);
+
+        foreach($media_tracks as $track) {
+            if (substr($track->flavor, 0, 9) === 'captions/' &&
+                $track->mimetype === 'text/vtt') 
+            {
+                $caption_download[$track->flavor] = [
+                    'url' => $track->uri
+                ];
+            }
+        }
+
+        return $caption_download;
+    }
 }

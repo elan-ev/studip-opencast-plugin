@@ -17,6 +17,7 @@ const state = {
         items: 0
     },
     availableVideoTags: [],
+    videoCaptions: {},
     playlistForVideos: null,
     videoShares: {},
     courseVideosToCopy: [],
@@ -50,6 +51,10 @@ const getters = {
 
     availableVideoTags(state) {
         return state.availableVideoTags
+    },
+
+    videoCaptions(state) {
+        return state.videoCaptions
     },
 
     playlistForVideos(state) {
@@ -191,6 +196,14 @@ const actions = {
         return ApiService.put('videos/' + data.token + '/shares', data.shares);
     },
 
+    async loadCaption({commit}, token) {
+        return ApiService.get('videos/' + token + '/captions')
+            .then(({ data }) => {
+                data.token = token
+                commit('setCaptionForToken', data)
+            });
+    },
+
     setPage({commit}, page) {
         commit('setPage', page);
     },
@@ -264,6 +277,16 @@ const mutations = {
 
     setAvailableVideoTags(state, data) {
         state.availableVideoTags = data;
+    },
+
+    setCaptionForToken(state, data) {
+        let key = Object.keys(state.videos).find(key => state.videos[key].token === data.token)
+        if (key) {
+            state.videoCaptions = data.caption;
+        }
+        else {
+            state.videoCaptions = {};
+        }
     }
 }
 

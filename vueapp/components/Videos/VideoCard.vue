@@ -300,6 +300,14 @@ export default {
                     }
 
                     menuItems.push({
+                        id: 7,
+                        label: this.$gettext('Untertitel hinzufügen'),
+                        icon: 'knife',
+                        emit: 'performAction',
+                        emitArguments: 'CaptionUpload'
+                    });
+
+                    menuItems.push({
                         id: 8,
                         label: this.$gettext('Entfernen'),
                         icon: 'trash',

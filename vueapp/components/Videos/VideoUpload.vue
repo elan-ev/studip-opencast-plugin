@@ -122,12 +122,14 @@
                         </label>
 
                         <div v-if="!files['presenter/source'].length && !uploadProgress">
-                            <StudipButton icon="accept" v-translate @click.prevent="chooseFiles('oc-file-presenter')">
-                                Aufzeichnung des/der Vortragende*n hinzufügen
-                            </StudipButton>
-                            <input type="file" class="video_upload" data-flavor="presenter/source"
-                                @change="previewFiles" ref="oc-file-presenter"
-                                accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                            <label class="oc--file-upload">
+                                <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-presenter')">
+                                    {{ $gettext('Aufzeichnung des/der Vortragende*n hinzufügen') }}
+                                </StudipButton>
+                                <input type="file" class="video_upload" data-flavor="presenter/source"
+                                    @change="previewFiles" ref="oc-file-presenter"
+                                    accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                            </label>
 
                                    <!--
                             <div style="display:none" class="invalid_media_type_warning">
@@ -147,12 +149,14 @@
                         <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presenter/source'" :progress="uploadProgress.progress" />
 
                         <div v-if="!files['presentation/source'].length && !uploadProgress">
-                            <StudipButton icon="accept" v-translate  @click.prevent="chooseFiles('oc-file-presentation')">
-                                Aufzeichnung der Folien hinzufügen
-                            </StudipButton>
-                            <input type="file" class="video_upload" data-flavor="presentation/source"
-                                @change="previewFiles" ref="oc-file-presentation"
-                                accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                            <label class="oc--file-upload">
+                                <StudipButton icon="accept" v-translate  @click.prevent="chooseFiles('oc-file-presentation')">
+                                    {{ $gettext('Aufzeichnung der Folien hinzufügen') }}
+                                </StudipButton>
+                                <input type="file" class="video_upload" data-flavor="presentation/source"
+                                    @change="previewFiles" ref="oc-file-presentation"
+                                    accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                            </label>
                                       <!--
                             <div style="display:none" class="invalid_media_type_warning">
                               <?= MessageBox::error(
