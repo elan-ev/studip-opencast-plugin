@@ -11,7 +11,7 @@
         </h3>
 
         <SearchBar @search="doSearch"/>
-        
+
         <PaginationButtons @changePage="changePage"/>
 
         <div v-if="isCourse && playlist && canEdit">
@@ -320,11 +320,11 @@ export default {
         await this.$store.dispatch('authenticateLti').then(() => {
             if (this.isCourse) {
                 if (loadVideos) {
-                    this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
+                    this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
                         this.$store.dispatch('loadPlaylistVideos', {
                             ...this.filters,
                             cid  : this.cid,
-                            token: playlist.token
+                            token: this.playlist.token
                         }).then(() => { this.videos_loading = false });
                     });
                 }
