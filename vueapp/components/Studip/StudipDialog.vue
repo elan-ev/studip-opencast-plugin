@@ -127,7 +127,7 @@ export default {
 
             currentWidth: 450,
             currentHeight: 300,
-            minW: 100,
+            minW: 400,
             minH: 100,
             left: 0,
             top: 0,
