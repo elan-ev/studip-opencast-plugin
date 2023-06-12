@@ -1,12 +1,6 @@
 <template>
     <div>
-        <ConfirmDialog v-if="showConfirmDialog"
-            :title="$gettext('Hochladen abbrechen')"
-            :message="$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?')"
-            @done="decline"
-            @cancel="showConfirmDialog = false"
-        />
-        <StudipDialog v-else
+        <StudipDialog
             :title="$gettext('Untertitel hinzufügen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
@@ -14,19 +8,11 @@
             :closeClass="'cancel'"
             height="600"
             width="600"
-            @close="showConfirmDialog=true"
+            @done="decline"
+            @close="decline"
             @confirm="accept"
         >
             <template v-slot:dialogContent ref="upload-dialog">
-                <MessageBox
-                    type="info">
-                    {{ $gettext('Untertiteldateien können nicht gelöscht sondern nur überschrieben werden.') }}
-                    <a :href=" $filters.helpurl('OpencastV3Subtitles')" target="_blank">
-
-                        {{ $gettext('Weitere Informationen zu diesem Thema in der Stud.IP Hilfe.') }}
-                    </a>
-                </MessageBox>
-
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <label v-if="config && config['server'] && config['server'].length > 1">
                         <span class="required">
@@ -71,6 +57,12 @@
                                             {{ $gettext('Herunterladen') }}
                                         </button>
                                     </a>
+                                </label>
+
+                                <label v-if="files[language.flavor] && files[language.flavor].url">
+                                    <StudipButton icon="trash" @click.prevent="removeCaption(language.flavor)">
+                                        {{ $gettext('Löschen') }}
+                                    </StudipButton>
                                 </label>
 
                                 <label class="oc--file-upload">
@@ -130,7 +122,6 @@ export default {
             fileUploadError: false,
             files: {},
             uploadProgress: null,
-            showConfirmDialog: false,
             languages: []
         }
     },
@@ -152,6 +143,34 @@ export default {
     },
 
     methods: {
+        removeCaption(flavor) {
+            if (this.uploadProgress) {
+                return;
+            }
+
+            if (confirm(this.$gettext('Sind sie sicher?'))) {
+                let files = [{
+                    file: undefined,
+                    flavor: flavor,
+                    overwriteExisting: true,
+                    progress: {
+                        loaded: 0,
+                        total: 0
+                    }
+                }];
+
+                let view = this;
+                // get correct upload endpoint url
+                this.uploadService = new UploadService(this.selectedServer['apievents']);
+
+                this.uploadService.uploadCaptions(files, this.event.episode, {
+                    uploadProgress: () => {},
+                    uploadDone: () => {
+                        delete view.files[flavor]
+                    }})
+            }
+        },
+
         async accept() {
             if (this.uploadProgress) {
                 return;
@@ -190,15 +209,18 @@ export default {
 
             let files = [];
             for (const [key, value] of Object.entries(this.files)) {
-                files.push({
-                    file: value[0],
-                    flavor: key,
-                    overwriteExisting: true,
-                    progress: {
-                        loaded: 0,
-                        total: value.size
-                    }
-                });
+                console.log('file', value['file']);
+                if (value['file']) {
+                    files.push({
+                        file: value['file'],
+                        flavor: key,
+                        overwriteExisting: true,
+                        progress: {
+                            loaded: 0,
+                            total: value.size
+                        }
+                    });
+                }
             }
 
             let view = this;
@@ -231,7 +253,8 @@ export default {
 
             this.files[flavor] = {
                 name: event.target.files[0].name,
-                size: this.$filters.filesize(event.target.files[0].size)
+                size: this.$filters.filesize(event.target.files[0].size),
+                file: event.target.files[0]
             }
         }
 
