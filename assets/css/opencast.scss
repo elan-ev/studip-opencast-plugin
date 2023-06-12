@@ -25,7 +25,7 @@ $episode-background: $light-gray-color-20;
         font-size: inherit ! important;
         line-height: inherit ! important;
     }
-    
+
     .vs__option-with-icon {
         vertical-align: top;
         display: inline-block;
@@ -205,7 +205,7 @@ $episode-background: $light-gray-color-20;
             img {
                 margin-bottom: -3px;
             }
-            
+
             position: absolute;
             background-color: $base_color;
             color: white;
@@ -753,12 +753,31 @@ label.oc--file-upload {
     cursor: pointer;
     color: $base-color;
 
+    &:hover {
+        background-color: none;
+    }
+
     input[type=file] {
         display: none;
     }
+
     .filename {
         padding-left: 0.5em;
         color: $light-gray-color-80;
+    }
+}
+
+.oc--button-bar {
+    label {
+        float: left;
+    }
+
+    clear: both;
+
+    &:after {
+        content: '';
+        display: block;
+        clear: both;
     }
 }
 

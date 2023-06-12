@@ -18,6 +18,15 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent ref="upload-dialog">
+                <MessageBox
+                    type="info">
+                    {{ $gettext('Untertiteldateien können nicht gelöscht sondern nur überschrieben werden.') }}
+                    <a :href=" $filters.helpurl('OpencastV3Subtitles')" target="_blank">
+
+                        {{ $gettext('Weitere Informationen zu diesem Thema in der Stud.IP Hilfe.') }}
+                    </a>
+                </MessageBox>
+
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <label v-if="config && config['server'] && config['server'].length > 1">
                         <span class="required">
@@ -36,23 +45,46 @@
                     </label>
 
                     <div v-for="language in languages">
-                        <div v-if="!files[language.flavor] && !uploadProgress">
-                            <label class="oc--file-upload">
-                                <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-'+language.lang)">
-                                    {{ $gettext('Untertitel für %{ lang }', {
-                                        lang: $gettext(language.lang)
-                                    }) }}
-                                </StudipButton>
-                                <input type="file" class="caption_upload" :data-flavor="language.flavor"
-                                @change="previewFiles" :ref="'oc-file-'+language.lang"
-                                accept=".vtt">
-                            </label>
-                        </div>
+                        <div v-if="!uploadProgress">
+                            <h4 class="oc--file-type">
+                                {{
+                                    $gettext('Untertitel für %{ lang }', {
+                                        lang: language.lang
+                                    })
+                                }}
+                            </h4>
 
-                        <VideoFilePreview v-else :files="files[language.flavor]"
-                            type="caption"  @remove="delete files[language.flavor]"
-                            :uploading="uploadProgress"
-                        />
+                            <div class="oc--file-preview" v-if="files[language.flavor] && files[language.flavor].size">
+                                <span class="oc--file-name">
+                                    <b>{{ $gettext('Name:') }}</b> {{ files[language.flavor].name }}
+                                </span>
+
+                                <span class="oc--file-size" v-if="files[language.flavor].size">
+                                    <b>{{ $gettext('Größe:') }}</b> {{files[language.flavor].size }}
+                                </span>
+                            </div>
+
+                            <div class="oc--button-bar">
+                                <label v-if="files[language.flavor] && files[language.flavor].url">
+                                    <a :href="files[language.flavor].url">
+                                        <button class='button download' type=button>
+                                            {{ $gettext('Herunterladen') }}
+                                        </button>
+                                    </a>
+                                </label>
+
+                                <label class="oc--file-upload">
+                                    <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-' + language.lang)">
+                                        {{ $gettext('Untertiteldatei auswählen') }}
+                                    </StudipButton>
+                                    <input
+                                        type="file" class="caption_upload" :data-flavor="language.flavor"
+                                        @change="previewFiles" :ref="'oc-file-' + language.lang"
+                                        accept=".vtt"
+                                    >
+                                </label>
+                            </div>
+                        </div>
 
                         <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                     </div>
@@ -72,7 +104,6 @@ import { mapGetters } from 'vuex';
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
-import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import UploadService from '@/common/upload.service'
@@ -84,7 +115,6 @@ export default {
         StudipDialog,
         MessageBox,
         StudipButton,
-        VideoFilePreview,
         ProgressBar,
         ConfirmDialog
     },
@@ -137,7 +167,7 @@ export default {
             // validate file upload
             this.fileUploadError = true;
             this.languages.every(language => {
-                if (this.files[language.flavor] && this.files[language.flavor].length) {
+                if (this.files[language.flavor]) {
                     this.fileUploadError = false;
                     return false;
                 }
@@ -199,9 +229,12 @@ export default {
             let flavor = event.target.attributes['data-flavor'].value;
             let language = this.languages.find(language => language.flavor === flavor).lang;
 
-            this.files[flavor] = event.target.files;
-            this.files[flavor]['language'] = language;
+            this.files[flavor] = {
+                name: event.target.files[0].name,
+                size: this.$filters.filesize(event.target.files[0].size)
+            }
         }
+
     },
 
     mounted() {
@@ -227,11 +260,10 @@ export default {
                 let language = this.languages.find(language => language.flavor === flavor);
 
                 if (language) {
-                    this.files[flavor] = [];
-                    this.files[flavor].push({
+                    this.files[flavor] = {
                         'url': newCaptions[flavor].url,
                         'name': newCaptions[flavor].url.split('/').pop()
-                    });
+                    };
                     this.files[flavor]['language'] = language.lang;
                 }
             }
