@@ -174,7 +174,7 @@ class UploadService {
                 data.append('tags', '');
                 data.append('BODY', file.file, file.file.name);
 
-                return obj.addTrack(data, "/addTrack", onProgress);
+                return obj.addTrack(data, "/addTrack", file, onProgress);
             });
         }, Promise.resolve(mediaPackage))
     }
@@ -193,7 +193,7 @@ class UploadService {
                 data.append('overwriteExisting', file.overwriteExisting);
                 data.append('track', file.file);
 
-                return obj.addTrack(data, "/" + episode_id + "/track", onProgress);
+                return obj.addTrack(data, "/" + episode_id + "/track", file, onProgress);
             });
         }, Promise.resolve())
         .then(() => {
@@ -201,8 +201,9 @@ class UploadService {
         })
     }
 
-    addTrack(data, url_path, onProgress) {
+    addTrack(data, url_path, track, onProgress) {
         var fnOnProgress = function (event) {
+            console.log('onProgress:', track);
             onProgress(track, event.loaded, event.total);
         };
 
