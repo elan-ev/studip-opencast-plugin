@@ -203,7 +203,6 @@ class UploadService {
 
     addTrack(data, url_path, track, onProgress) {
         var fnOnProgress = function (event) {
-            console.log('onProgress:', track);
             onProgress(track, event.loaded, event.total);
         };
 

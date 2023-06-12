@@ -209,7 +209,6 @@ export default {
 
             let files = [];
             for (const [key, value] of Object.entries(this.files)) {
-                console.log('file', value['file']);
                 if (value['file']) {
                     files.push({
                         file: value['file'],

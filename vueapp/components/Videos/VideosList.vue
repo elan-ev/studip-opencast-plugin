@@ -212,7 +212,6 @@ export default {
             this.$store.dispatch('setPage', 0)
             this.$store.commit('setVideos', {});
             if (this.isCourse) {
-                console.log(this.cid)
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...this.filters,
                     cid: this.cid,
