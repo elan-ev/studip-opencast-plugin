@@ -22,7 +22,7 @@ export default {
     name: "LtiAuth",
 
     computed: {
-        ...mapGetters(['simple_config_list', 'cid', 'ltiReauthenticate']),
+        ...mapGetters(['simple_config_list', 'cid']),
     },
 
     methods: {

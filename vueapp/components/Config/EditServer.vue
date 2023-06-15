@@ -51,6 +51,8 @@ import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
 
+import axios from "@/common/axios.service";
+
 export default {
     name: "EditServer",
 
@@ -224,28 +226,49 @@ export default {
             }
         },
 
-        async checkLti(data) {
-            return;
+        async checkLti(data)
+        {
             let view = this;
 
-            let check_successful = true;
+            await this.$store.dispatch('authenticateLti');
 
-            if (check_successful) {
-                view.$store.dispatch('addMessage', {
-                     type: 'success',
-                     text: view.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
-                });
-            } else {
-                view.$store.dispatch('addMessage', {
-                     type: 'error',
-                     text: view.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
-                         + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
-                         + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                         + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
-                         + 'Header zu setzen.'
-                     )
-                });
-            };
+            // make an lti call to make sure it worked, there are some caveats though...
+            // - already succesful calls will not be revoked
+            // - unsuccesful calls will persist even if it worked now
+            axios({
+                url: data[0].launch_url,
+                method: "GET",
+                withCredentials: true,
+            }).then(({ data }) => {
+                if (data.user_id == undefined) {
+                    view.postLtiCheckFailedMessage();
+                } else {
+                    view.postLtiCheckSucceededMessage();
+                }
+            }).catch(function (error) {
+                view.postLtiCheckFailedMessage();
+            });
+        },
+
+        postLtiCheckFailedMessage()
+        {
+            this.$store.dispatch('addMessage', {
+                type: 'error',
+                text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
+                    + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
+                    + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
+                    + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                    + 'Header zu setzen.'
+                )
+            });
+        },
+
+        postLtiCheckSucceededMessage()
+        {
+            this.$store.dispatch('addMessage', {
+                type: 'success',
+                text: this.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
+            });
         },
 
         updateValue(setting, newValue) {
