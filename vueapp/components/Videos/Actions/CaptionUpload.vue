@@ -97,7 +97,6 @@ import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
 import ProgressBar from '@/components/ProgressBar'
-import ConfirmDialog from '@/components/ConfirmDialog'
 import UploadService from '@/common/upload.service'
 
 export default {
@@ -108,7 +107,6 @@ export default {
         MessageBox,
         StudipButton,
         ProgressBar,
-        ConfirmDialog
     },
 
     emits: ['done', 'cancel'],

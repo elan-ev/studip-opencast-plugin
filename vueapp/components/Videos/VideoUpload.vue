@@ -1,12 +1,6 @@
 <template>
     <div>
-        <ConfirmDialog v-if="showConfirmDialog"
-            :title="$gettext('Hochladen abbrechen')"
-            :message="$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?')"
-            @done="decline"
-            @cancel="showConfirmDialog = false"
-        />
-        <StudipDialog v-else
+        <StudipDialog
             :title="$gettext('Video hinzufügen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
@@ -14,7 +8,7 @@
             :closeClass="'cancel'"
             height="600"
             width="600"
-            @close="showConfirmDialog=true"
+            @close="confirmCancel"
             @confirm="accept"
         >
             <template v-slot:dialogContent ref="upload-dialog">
@@ -202,7 +196,6 @@ import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
 import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
-import ConfirmDialog from '@/components/ConfirmDialog'
 
 import UploadService from '@/common/upload.service'
 import { format } from 'date-fns'
@@ -217,7 +210,6 @@ export default {
         StudipButton,
         VideoFilePreview,
         ProgressBar,
-        ConfirmDialog
     },
 
     emits: ['done', 'cancel'],
@@ -241,7 +233,6 @@ export default {
                 'presentation/source': []
             },
             uploadProgress: null,
-            showConfirmDialog: false
         }
     },
 
@@ -284,6 +275,21 @@ export default {
     },
 
     methods: {
+        confirmCancel()
+        {
+            if (confirm('Sind sie sicher, dass sie das Hochladen abbrechen möchten?')) {
+                if (this.uploadProgress) {
+                    this.uploadService.cancel();
+                }
+
+                this.uploadService  = null;
+                this.uploadProgress = null;
+
+                this.$emit('cancel');
+                }
+            }
+        },
+
         async accept() {
             if (this.uploadProgress) {
                 return;
@@ -373,17 +379,6 @@ export default {
             });
         },
 
-        decline() {
-            if (this.uploadProgress) {
-                this.uploadService.cancel();
-            }
-
-            this.uploadService  = null;
-            this.uploadProgress = null;
-
-            this.$emit('cancel');
-        },
-
         chooseFiles(id) {
             this.$refs[id].click();
         },
@@ -392,7 +387,7 @@ export default {
             let flavor = event.target.attributes['data-flavor'].value;
             this.files[flavor] = event.target.files;
         }
-    },
+    ,
 
     mounted() {
         this.$store.dispatch('authenticateLti');
