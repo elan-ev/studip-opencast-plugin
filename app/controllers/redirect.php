@@ -119,10 +119,10 @@ class RedirectController extends Opencast\Controller
                 break;
 
             case 'editor':
-                $preview = $video->preview ? json_decode($video->preview, true) : null;
-                if (!empty($preview) && isset($preview['has_previews']) && $preview['has_previews']) {
+                // $preview = $video->preview ? json_decode($video->preview, true) : null;
+                // if (!empty($preview) && isset($preview['has_previews']) && $preview['has_previews']) {
                     $custom_tool = "/editor-ui/index.html?id={$video->episode}";
-                }
+                // }
                 break;
 
             case 'share':

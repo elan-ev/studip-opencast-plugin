@@ -695,11 +695,6 @@ class Videos extends UPMap
                 'track_link'       => $track_link
             ]);
 
-            $video->created = date('Y-m-d H:i:s', strtotime($episode->created));
-
-            $video->author = $episode->creator;
-            $video->contributors = implode(', ', $episode->contributor);
-
             return $video->store();
         }
 
@@ -809,9 +804,9 @@ class Videos extends UPMap
 
     /**
      * Fetch caption data for a given token
-     * 
+     *
      * @param string $token
-     * 
+     *
      * @return Array which contains urls for the caption files
      */
     public static function getCaptionByToken($token)
@@ -825,7 +820,7 @@ class Videos extends UPMap
 
         foreach($media_tracks as $track) {
             if (substr($track->flavor, 0, 9) === 'captions/' &&
-                $track->mimetype === 'text/vtt') 
+                $track->mimetype === 'text/vtt')
             {
                 $caption_download[$track->flavor] = [
                     'url' => $track->uri

@@ -6,7 +6,7 @@
                     <a>
                         <span class="oc--previewimage">
                             <img class="oc--previewimage" :src="preview" height="200"/>
-                            <img class="oc--playbutton" :src="play">
+                            <img class="oc--play-button" :src="play">
                         </span>
                     </a>
                 </div>

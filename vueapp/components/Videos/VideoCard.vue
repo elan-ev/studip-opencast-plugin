@@ -7,7 +7,9 @@
 
             <div class="oc--flexitem oc--flexplaycontainer">
                 <div class="oc--playercontainer">
-                    <a v-if="event.publication && event.preview && event.available" @click="redirectAction(`/video/` + event.token)" target="_blank">
+                    <a v-if="event.publication && event.preview && event.available"
+                        @click="redirectAction(`/video/` + event.token)" target="_blank"
+                    >
                         <span class="oc--previewimage">
                             <img class="oc--previewimage"
                                 :src="event.preview.player ? event.preview.player : event.preview.search"
@@ -15,7 +17,7 @@
                                 height="200"
                                 :ref="event.id"
                             />
-                            <img class="oc--playbutton" :src="play">
+                            <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
                             <span class="oc--views">
                                 <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
                                 {{ event.views }}
@@ -27,6 +29,24 @@
                     </a>
                     <span v-else-if="!event.available" class="oc--unavailable">
                         {{ $gettext("Video nicht verfügbar") }}
+                    </span>
+                    <a v-else-if="event.state == 'cutting'"
+                        @click="redirectAction(`/editor/` + event.token)"
+                        :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
+                    >
+                        <span class="oc--previewimage">
+                            <img class="oc--image-button" :src="cut">
+                        </span>
+                    </a>
+                    <span v-else-if="event.state == 'running'" class="oc--previewimage"
+                        :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+                    >
+                        <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
+                    </span>
+                    <span v-else-if="event.state == 'failed'" class="oc--previewimage"
+                        :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
+                    >
+                        <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
                     </span>
                     <span v-else class="oc--previewimage">
                         <img class="oc--previewimage" :src="preview" height="200"/>
@@ -45,7 +65,7 @@
                             &nbsp;- {{ $filters.datetime(event.created) }} Uhr
                         </div>
                     </div>
-                    <div data-tooltip class="tooltip">
+                    <div data-tooltip class="tooltip" v-if="getInfoText">
                         <span class="tooltip-content" v-html="getInfoText"></span>
                         <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
                     </div>
@@ -68,7 +88,7 @@
                     -->
                 </div>
             </div>
-            <div v-if="!playlistMode && menuItems.length > 0" class="oc--actions-container">
+            <div v-if="!playlistMode && menuItems.length > 0 && event.state != 'running'" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
                     :collapseAt="menuItems.length > 1"
                     @performAction="performAction"
@@ -141,6 +161,7 @@ export default {
         return {
             preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
             play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
+            cut:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
             DeleteConfirmDialog: false,
             DownloadDialog: false,
             editDialog: false,
@@ -279,7 +300,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.preview?.has_previews) {
+                    if (this.event?.preview?.has_previews || this.event?.state == 'cutting') {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Schnitteditor öffnen'),

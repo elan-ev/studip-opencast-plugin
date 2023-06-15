@@ -51,11 +51,25 @@ class OpencastWorker extends CronJob
                 $api_client = ApiEventsClient::getInstance($video->config_id);
                 $event = $api_client->getEpisode($video->episode, ['withpublications' => 'true']);
 
-                if ($event && !empty($event->publications)) {
-                    $video->title       = $event->title;
-                    $video->description = $event->description;
-                    $video->duration    = $event->duration;
-                    $video->publication = json_encode($event->publications);
+                if ($event) {
+                    if (!empty($event->publications)) {
+                        $video->publication = json_encode($event->publications);
+                        $video->state = null;
+                    } else if ($event->processing_state == 'SUCCEEDED') {
+                        $video->state = 'cutting';        // assume cutting is requested if no publications are found but the event is processed correctly
+                    } else if ($event->processing_state == 'RUNNING') {
+                        $video->state = 'running';
+                    } else if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) {
+                        $video->state = 'failed';
+                    }
+
+                    $video->title        = $event->title;
+                    $video->description  = $event->description;
+                    $video->duration     = $event->duration;
+
+                    $video->created      = date('Y-m-d H:i:s', strtotime($event->created));
+                    $video->author       = $event->creator;
+                    $video->contributors = implode(', ', $event->contributor);
 
                     $video->store();
 
