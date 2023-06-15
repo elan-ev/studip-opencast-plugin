@@ -286,7 +286,6 @@ export default {
                 this.uploadProgress = null;
 
                 this.$emit('cancel');
-                }
             }
         },
 
@@ -387,7 +386,7 @@ export default {
             let flavor = event.target.attributes['data-flavor'].value;
             this.files[flavor] = event.target.files;
         }
-    ,
+    },
 
     mounted() {
         this.$store.dispatch('authenticateLti');
