@@ -11,7 +11,7 @@ class AddTutorEpisodePerm extends Migration
         $stmt->execute([
             'name'        => 'OPENCAST_TUTOR_EPISODE_PERM',
             'section'     => 'opencast',
-            'description' => 'Sollen Tutoren Rechte für das Bearbeiten der Episoden haben?',
+            'description' => 'Sollen Tutoren Rechte für das Bearbeiten der Videos haben?',
             'range'       => 'global',
             'type'        => 'boolean',
             'value'       => false

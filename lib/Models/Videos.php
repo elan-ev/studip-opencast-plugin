@@ -762,7 +762,7 @@ class Videos extends UPMap
 
             return $feedback->send();
         } catch (\Throwable $th) {
-            throw new Error(_('Unable to send email'), 500);
+            throw new Error('Unable to send email', 500);
         }
         return false;
     }

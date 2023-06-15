@@ -1,9 +1,9 @@
 <template>
     <div class="oc--admin--section">
         <fieldset>
-            <legend v-translate>
+            <legend>
                 <OpencastIcon small/>
-                Globale Einstellungen
+                {{ $gettext('Globale Einstellungen') }}
             </legend>
 
             <ConfigOption v-for="setting in global_settings"

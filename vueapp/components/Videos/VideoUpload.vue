@@ -7,7 +7,7 @@
             @cancel="showConfirmDialog = false"
         />
         <StudipDialog v-else
-            :title="$gettext('Episode hinzufügen')"
+            :title="$gettext('Video hinzufügen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
             :closeText="$gettext('Abbrechen')"
@@ -150,7 +150,7 @@
 
                         <div v-if="!files['presentation/source'].length && !uploadProgress">
                             <label class="oc--file-upload">
-                                <StudipButton icon="accept" v-translate  @click.prevent="chooseFiles('oc-file-presentation')">
+                                <StudipButton icon="accept"  @click.prevent="chooseFiles('oc-file-presentation')">
                                     {{ $gettext('Aufzeichnung der Folien hinzufügen') }}
                                 </StudipButton>
                                 <input type="file" class="video_upload" data-flavor="presentation/source"

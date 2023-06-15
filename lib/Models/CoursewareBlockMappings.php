@@ -13,11 +13,11 @@ class CoursewareBlockMappings extends \SimpleORMap
 
     /**
      * Adds a new mapping record
-     * 
+     *
      * @param string $seminar_id id of course
      * @param int $video_id id of video
      * @param string $block_id id of block
-     * 
+     *
      * @return bool
      * @throws Exception
      */
@@ -31,7 +31,7 @@ class CoursewareBlockMappings extends \SimpleORMap
             $video_cw_mapping->setData(compact('token', 'video_id', 'new_seminar_id'));
             return $video_cw_mapping->store();
         } else {
-            throw new \Exception(_('Falsche Informationen zum Speichern von Daten.'));
+            throw new \Exception('Could not store course mappings, missing data.');
         }
     }
 

@@ -32,7 +32,7 @@
                 v-for="sort in availableSortOrders"
                 v-bind:key="sort.key"
                 v-bind:value="sort">
-                <translate>{{ sort.text }}</translate>
+                {{ sort.text }}
             </option>
         </select>
 
@@ -116,7 +116,7 @@ export default {
             if (this.playlist) {
                 return this.playlists.filter(playlist => playlist.token != this.playlist.token);
             }
-            return this.playlists;            
+            return this.playlists;
         },
 
         availableSortOrders() {

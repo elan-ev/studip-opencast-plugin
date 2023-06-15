@@ -19,7 +19,7 @@
         </span>
 
         <span :class="css" v-if="visibility == 'public'"
-            :title="$gettext('Auf diese Liste kann jede Person zugreifen und die List wird u.U. auch auf externen Plattformen einsehbar.')"
+            :title="$gettext('Auf diese Liste kann jede Person zugreifen und die Liste wird u.U. auch auf externen Plattformen einsehbar.')"
         >
             <StudipIcon shape="globe" />
             <span v-if="showText">

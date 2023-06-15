@@ -67,7 +67,7 @@
                 <li @click="$emit('disallowDownloadForPlaylist')"
                     v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                   {{ $gettext(' Mediendownloads verbieten') }}
+                   {{ $gettext('Mediendownloads verbieten') }}
                 </li>
 
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">

@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Episode bearbeiten')"
+            :title="$gettext('Video bearbeiten')"
             :closeText="$gettext('Abbrechen')"
             :confirmText="$gettext('Speichern')"
             confirmClass="accept"
@@ -135,8 +135,8 @@ export default {
 
     computed: {
         ...mapGetters([
-            "cid", 
-            "playlists", 
+            "cid",
+            "playlists",
             "playlist"
         ]),
 
@@ -209,7 +209,7 @@ export default {
             if (this.visible_timestamp) {
                 if (visibility === "default" ||
                     visibility === "hidden" && Date.parse(this.visible_timestamp) < Date.now() ||
-                    visibility === "visible" && Date.parse(this.visible_timestamp) >= Date.now()) 
+                    visibility === "visible" && Date.parse(this.visible_timestamp) >= Date.now())
                 {
                     this.visible_timestamp = null;
                 }

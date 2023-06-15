@@ -65,7 +65,7 @@
                         :key="semester.id"
                         :value="semester.id"
                         :selected="semester.id == semester_filter"
-                        v-translate>
+                    >
                         {{ semester.name }}
                     </option>
                 </select>

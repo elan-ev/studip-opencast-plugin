@@ -71,8 +71,8 @@
                                 <span v-bind="selectAttributes"><studip-icon shape="arr_1down" size="10"/></span>
                             </template>
                             <template #no-options="{ search, searching, loading }">
-                                <translate v-if="loadingEpisodes">Bitte warten, verfügbare Episoden werden geladen...</translate>
-                                <translate v-else>Es wurden keine zugreifbaren Episoden gefunden!</translate>
+                                <translate v-if="loadingEpisodes">Bitte warten, verfügbare Videos werden geladen...</translate>
+                                <translate v-else>Es wurden keine zugreifbaren Videos gefunden!</translate>
                             </template>
                             <template #selected-option="{name, visible}">
                                 <span>{{ name }}

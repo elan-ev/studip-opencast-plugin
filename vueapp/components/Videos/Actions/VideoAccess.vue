@@ -52,7 +52,7 @@
                 </form>
                 <form class="default">
                     <fieldset>
-                        <legend v-translate>
+                        <legend>
                             {{ $gettext('Share Links') }}
                         </legend>
 
@@ -91,7 +91,7 @@
                                         </template>
                                         <studip-icon shape="remove" role="clickable"
                                             @click="removeLinkShare(index)"
-                                            :title="$gettext('Share-Link löchen')"
+                                            :title="$gettext('Share-Link löschen')"
                                             style="cursor: pointer; margin-left: 5px;"/>
                                     </td>
                                 </tr>
