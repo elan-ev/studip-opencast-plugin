@@ -6,6 +6,16 @@ export default new createRouter({
     base: window.location.pathname,
     routes: [
         {
+            path: '/', redirect: to => {
+                if (window.OpencastPlugin.CID === undefined) {
+                    return '/contents/videos';
+                } else {
+                    return '/course/videos';
+                }
+            }
+        },
+
+        {
             path: "/contents",
             component: () => import("@/views/Contents"),
             children: [
