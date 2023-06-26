@@ -120,12 +120,14 @@ const actions = {
         for (let i = 0; i < data.videos.length; i++) {
             await ApiService.put('/playlists/' + data.playlist + '/video/' + data.videos[i]);
         }
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
     },
 
     async removeVideosFromPlaylist(context, data) {
         for (let i = 0; i < data.videos.length; i++) {
             await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
         }
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.length});
     },
 
     addPlaylistUI({ commit }, show) {
@@ -206,6 +208,11 @@ const mutations = {
 
     setAllowDownload(state, allowed) {
         state.playlist.allow_download = allowed;
+    },
+
+    addToVideosCount(state, data) {
+        let idx = state.playlists.findIndex(playlist => playlist.token === data.token);
+        state.playlists[idx].videos_count += data.addToCount;
     }
 }
 
