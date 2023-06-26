@@ -4,7 +4,7 @@ class UpdateConfigKey extends Migration
 {
     public function description()
     {
-        return 'Add event state to videos, for enabling link to cutting tool and more';
+        return 'Update oc_config key to only use the service_url';
     }
 
     public function up()
