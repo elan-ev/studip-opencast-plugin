@@ -117,7 +117,7 @@
 
                         <div v-if="!files['presenter/source'].length && !uploadProgress">
                             <label class="oc--file-upload">
-                                <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-presenter')">
+                                <StudipButton class="wrap-button" icon="accept" @click.prevent="chooseFiles('oc-file-presenter')">
                                     {{ $gettext('Aufzeichnung des/der Vortragende*n hinzufügen') }}
                                 </StudipButton>
                                 <input type="file" class="video_upload" data-flavor="presenter/source"
@@ -144,7 +144,7 @@
 
                         <div v-if="!files['presentation/source'].length && !uploadProgress">
                             <label class="oc--file-upload">
-                                <StudipButton icon="accept"  @click.prevent="chooseFiles('oc-file-presentation')">
+                                <StudipButton class="wrap-button" icon="accept"  @click.prevent="chooseFiles('oc-file-presentation')">
                                     {{ $gettext('Aufzeichnung der Folien hinzufügen') }}
                                 </StudipButton>
                                 <input type="file" class="video_upload" data-flavor="presentation/source"

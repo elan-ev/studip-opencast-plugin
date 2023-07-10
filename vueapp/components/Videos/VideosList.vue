@@ -15,7 +15,7 @@
         <PaginationButtons @changePage="changePage"/>
 
         <div v-if="isCourse && playlist && canEdit">
-            <StudipButton
+            <StudipButton class="wrap-button"
                 v-if="playlist.is_default != '1'"
                 @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
             >
