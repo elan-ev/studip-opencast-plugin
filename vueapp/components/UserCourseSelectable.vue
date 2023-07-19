@@ -29,7 +29,7 @@
                 icon="accept"
                 @click.prevent="returnSelectedCourse()"
             >
-                {{ $gettext('Kurse auswählen') }}
+                {{ $gettext('Kurs auswählen') }}
             </StudipButton>
         </footer>
     </form>
@@ -74,7 +74,7 @@ export default {
             }];
 
             if (this.courses.length == 0) {
-                this.currentCourse = 0;
+                this.currentCourse = null;
                 return noCoursesFound;
             }
 
@@ -108,7 +108,7 @@ export default {
             }
 
             if (Object.keys(course_list).length == 0) {
-                this.currentCourse = 0;
+                this.currentCourse = null;
                 return noCoursesFound;
             }
 

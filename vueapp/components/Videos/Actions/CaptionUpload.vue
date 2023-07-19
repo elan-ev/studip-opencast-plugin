@@ -81,6 +81,8 @@
                         <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                     </div>
 
+                    <Error :float="true" />
+
                     <MessageBox v-if="fileUploadError" type="error">
                         {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
                     </MessageBox>
@@ -96,6 +98,7 @@ import { mapGetters } from 'vuex';
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
+import Error from "@/components/Error";
 import ProgressBar from '@/components/ProgressBar'
 import UploadService from '@/common/upload.service'
 
@@ -105,6 +108,7 @@ export default {
     components: {
         StudipDialog,
         MessageBox,
+        Error,
         StudipButton,
         ProgressBar,
     },

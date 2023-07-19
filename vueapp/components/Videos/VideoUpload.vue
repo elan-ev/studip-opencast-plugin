@@ -183,6 +183,8 @@
                             Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht.
                     </MessageBox>
                 </form>
+
+                <Error :float="true"/>
             </template>
         </StudipDialog>
     </div>
@@ -193,6 +195,7 @@ import { mapGetters } from 'vuex';
 
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
+import Error from "@/components/Error";
 import MessageBox from '@/components/MessageBox'
 import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
@@ -206,6 +209,7 @@ export default {
 
     components: {
         StudipDialog,
+        Error,
         MessageBox,
         StudipButton,
         VideoFilePreview,
@@ -329,7 +333,6 @@ export default {
             }
 
             uploadData['created']  = new Date(this.upload.recordDate).toISOString(),
-            delete uploadData['recordDate'];
 
             uploadData['oc_acl']   = this.uploadService.uploadACL();
 

@@ -52,9 +52,10 @@ class VideoCopyToCourse extends OpencastController
                                 // if this is the courses default playlist, copy the videos to the new courses default playlist
                                 if ($playlist->is_default) {
                                     $default_playlist = Helpers::checkCoursePlaylist($course['id']);
-                                    $stmt = DBManager::get()->prepare("INSERT INTO oc_playlist_video (playlist_id, video, order)
-                                        SELECT :target, video, order, FROM oc_playlist_video
-                                             WHERE playlist_id = :source");
+                                    $stmt = \DBManager::get()->prepare("INSERT INTO oc_playlist_video (playlist_id, video_id, `order`)
+                                        SELECT :target, video_id, `order` FROM oc_playlist_video
+                                            WHERE playlist_id = :source
+                                            AND NOT EXISTS (Select * FROM oc_playlist_video WHERE playlist_id = :target)");
                                     $stmt->execute([
                                         ':target' => $default_playlist->id,
                                         ':source' => $playlist->id

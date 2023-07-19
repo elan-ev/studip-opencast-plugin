@@ -66,6 +66,9 @@ class PlaylistUpdate extends OpencastController
         $playlist->setData($json);
         $playlist->store();
 
+        $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00') 
+            ? 0 : \strtotime($playlist['mkdate']);
+
         $ret_playlist = $playlist->toSanitizedArray();
         $ret_playlist['users'] = [[
             'user_id'  => $user->id,
