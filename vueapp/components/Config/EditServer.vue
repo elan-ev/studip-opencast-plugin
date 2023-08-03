@@ -27,18 +27,20 @@
                     </fieldset>
 
                     <WorkflowOptions v-if="id != 'new'"/>
-
-                    <button v-if="config !== null"
-                        class="button trash" 
-                        type="button" 
-                        @click="deleteConfig" 
-                        :disabled="disabled"
-                    >
-                        Server entfernen
-                    </button>
                 </form>
 
                 <MessageList :float="true"/>
+            </template>
+
+            <template v-slot:dialogButtons>
+                <button v-if="config !== null"
+                    class="button trash" 
+                    type="button" 
+                    @click="deleteConfig" 
+                    :disabled="disabled"
+                >
+                    Löschen
+                </button>
             </template>
         </StudipDialog>
     </div>
