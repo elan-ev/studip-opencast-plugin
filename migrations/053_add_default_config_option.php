@@ -18,7 +18,7 @@ class AddDefaultConfigOption extends Migration
         $stmt->execute([
             'name'        => 'OPENCAST_DEFAULT_SERVER',
             'section'     => 'opencast',
-            'description' => 'Das ist der standaramäßig verwendete Opencast-Server.',
+            'description' => 'Das ist der standardmäßig verwendete Opencast-Server.',
             'range'       => 'global',
             'type'        => 'integer',
             'value'       => $config_id
