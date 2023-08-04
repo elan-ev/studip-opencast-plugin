@@ -122,6 +122,8 @@ export default {
         StudipIcon
     },
 
+    emits: ['changePage'],
+
     data() {
         return {
             limit: 15
