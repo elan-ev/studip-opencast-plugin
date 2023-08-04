@@ -59,7 +59,7 @@
                                     </a>
                                 </label>
 
-                                <label v-if="files[language.flavor] && files[language.flavor].url">
+                                <label v-if="files[language.flavor]">
                                     <StudipButton icon="trash" @click.prevent="removeCaption(language.flavor)">
                                         {{ $gettext('Löschen') }}
                                     </StudipButton>
@@ -161,15 +161,20 @@ export default {
                     }
                 }];
 
-                let view = this;
-                // get correct upload endpoint url
-                this.uploadService = new UploadService(this.selectedServer['apievents']);
+                if (this.files[flavor].url) {
+                    let view = this;
+                    // get correct upload endpoint url
+                    this.uploadService = new UploadService(this.selectedServer['apievents']);
 
-                this.uploadService.uploadCaptions(files, this.event.episode, {
-                    uploadProgress: () => {},
-                    uploadDone: () => {
-                        delete view.files[flavor]
+                    this.uploadService.uploadCaptions(files, this.event.episode, {
+                        uploadProgress: () => {},
+                        uploadDone: () => {
+                            delete view.files[flavor]
                     }})
+                } else {
+                    delete this.files[flavor]
+                }
+
             }
         },
 
