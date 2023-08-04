@@ -2,7 +2,7 @@
     <form class="default">
         <fieldset>
             <legend>
-                {{ $gettext('Zu weiterer Wiedergabeliste hinzufügen') }}
+                {{ $gettext('Weitere Wiedergabelisten hinzufügen') }}
             </legend>
 
             <label>
@@ -22,7 +22,7 @@
                 icon="accept"
                 @click.prevent="returnSelectedPlaylist()"
             >
-                {{ $gettext('Video zur Wiedergabeliste hinzufügen') }}
+                {{ $gettext('Zur Wiedergabeliste hinzufügen') }}
             </StudipButton>
         </footer>
     </form>

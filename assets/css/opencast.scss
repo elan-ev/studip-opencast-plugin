@@ -40,6 +40,10 @@ $episode-background: $light-gray-color-20;
     visibility: hidden;
 }
 
+.button.wrap-button {
+    white-space: normal;
+}
+
 /* * * * * * * * * */
 /*   P A G I N G   */
 /* * * * * * * * * */
@@ -123,11 +127,8 @@ $episode-background: $light-gray-color-20;
 .oc--playercontainer {
     background: $episode-background;
     margin-top: 1em;
-    padding-right: 1.5em;
-    z-index: 1999;
     height: $item-height;
-
-   
+    width: 119px;
 
     .oc_playerframe {
         display: block;
@@ -219,29 +220,10 @@ $episode-background: $light-gray-color-20;
     }
 }
 
-.oc--metadata {
-    margin-right: 1em;
-    flex-basis: 100%;
-
-    &-title {
-        margin-top: 10px;
-        margin-bottom: 2px;
-    }
-
-    .tooltip {
-        margin-left: 0.5em;
-    }
-}
-
 .oc--metadata--empty {
     div {
         margin-bottom: 5px;
     }
-}
-
-.oc--metadata-title {
-    border-bottom: none;
-    display: inline-flex;
 }
 
 .oc--metadata-description {
@@ -294,7 +276,6 @@ $episode-background: $light-gray-color-20;
     }
 }
 
-
 .oc--episode-list--small {
     clear: both;
     padding-left: 0;
@@ -302,55 +283,120 @@ $episode-background: $light-gray-color-20;
     overflow: auto;
     height: auto;
 
-    .oc--flexplaycontainer {
-        width: 10em;
-        min-width: 10em;
-    }
 
-    .oc--flex-episode {
+    .oc--grid-episode {
         border-bottom: 1px solid $light-gray-color-40;
         padding: 5px 1em 5px 1em;
-        display: flex;
         position: relative;
         overflow: hidden;
         max-height: 70px;
 
+        display: grid;
+        grid-template-columns: auto auto minmax(auto, min-content) minmax(min-content,1fr) auto auto;
+
         .oc--playercontainer {
-            margin-top: 5px;
             background-color: transparent;
+            margin-top: 5px;
+            margin-right: 12px;
+
+            grid-column: 2;
+            grid-row: 1 / span 2;
+
+            img.oc--previewimage {
+                max-height: 60px;
+            }
+    
+            .oc--duration{
+                bottom: 0px;
+                right: 0px;
+            }
+    
+            .oc--views {
+                left: 0px;
+                bottom: 0px;
+            }
+    
+            .oc--image-button {
+                height: 40px;
+                opacity: 0.6;
+            }
         }
 
-        img.oc--previewimage {
-            max-height: 60px;
-        }
+        .oc--metadata-title {
+            grid-column: 3;
+            grid-row: 1;
 
-        .oc--duration{
-            bottom: 0px;
-            right: 0px;
-        }
+            margin: 10px 0 0 0;
 
-        .oc--views {
-            left: 0px;
-            bottom: 0px;
-        }
+            overflow: hidden;
 
-        .oc--image-button {
-            height: 40px;
+            h2 {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .oc--date {
-            margin-top: 1px;
+            grid-column: 4;
+            grid-row: 1;
+
+            margin: 10px 0 0 0;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .oc--metadata {
-            h2 {
-                margin-top: 5px;
+        .oc--tooltip {
+            grid-column: 5;
+            grid-row: 1;
+
+            .tooltip {
+                margin: 10px 5px 0 5px;
+            }
+        }
+
+        .oc--tags {
+            grid-column: 3 / span 3;
+            grid-row: 2;
+
+            margin-right: 5px;
+
+            white-space: nowrap;
+            overflow: auto;
+        }
+
+        .oc--actions-container {
+            grid-column: 6;
+            grid-row: 1 / span 2;
+        }
+    
+        .oc--metadata--empty {
+            grid-column: 3 / span 4;
+            grid-row: 1 / span 2;
+
+            h2, div {
                 margin-bottom: 5px;
             }
+        }
+
+        .oc--flex-checkbox {
+            grid-column: 1;
+            grid-row: 1 / span 2;
         }
     }
 
     .oc--sort-options {
+        grid-column: 6;
+        grid-row: 1 / span 2;
+
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 5px;
+        border-left: 1px solid $light-gray-color-40;
         align-self: center;
         white-space: nowrap;
 
@@ -450,6 +496,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
         display: flex;
         flex-direction: row;
+        overflow: auto;
 
         li {
             padding: none;
@@ -462,6 +509,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     .oc--searchbar-input {
         padding: 8px;
         width: 100%;
+        min-width: 8em;
 
         input {
             &:focus {
@@ -661,7 +709,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 .oc--admin--server-card-grid {
     margin: 10px 0px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, 405px);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 405px));
     grid-gap: 10px;
 }
 
@@ -840,6 +888,92 @@ label.oc--file-upload {
     }
 }
 
+@media only screen and (max-width: $major-breakpoint-large) {
+    .oc--episode-list--small {
+        grid-template-columns: auto 10em auto auto auto auto;
+        grid-template-rows: auto 1fr auto;
+
+        .oc--grid-episode {
+            max-height: 100px;
+
+            .oc--playercontainer {
+                grid-column: 2;
+                grid-row: 2 / span 2;
+
+                margin-top: 0;
+                padding-right: 11;
+            }
+
+            .oc--metadata-title {
+                grid-column: 2 / span 3;
+                grid-row: 1;
+
+                max-height: 1.4em;
+                margin-top: 4px;
+
+                h2 {
+                    margin-bottom: 0;
+                    overflow: auto;
+                }
+            }
+
+            .oc--date {
+                grid-column: 3 / span 3;
+                grid-row: 2;
+
+                margin-top: 0;
+
+                max-height: 2.8em;
+                white-space: normal;
+                overflow: hidden;
+            }
+
+            .oc--tags {
+                grid-column: 3 / span 3;
+                grid-row: 3;
+
+                max-height: 3em;
+                margin-bottom: 0;
+            }
+
+            .oc--actions-container {
+                grid-column: 6;
+                grid-row: 1 / span 3;
+            }
+
+            .oc--tooltip {
+                grid-column: 5;
+                grid-row: 1;
+
+                .tooltip {
+                    margin: 5px 5px 0 5px;
+                }
+            }
+
+            .oc--metadata--empty {
+                grid-row: 1 / span 3;
+            }
+        }
+    }
+}
+
+.oc--pagination-mobile {
+    @extend .oc--pagination;
+    visibility: hidden;
+    display: none;
+}
+
+@media only screen and (max-width: $major-breakpoint-small) {
+    .oc--pagination {
+        visibility: hidden;
+        display: none;
+    }
+    .oc--pagination-mobile {
+        visibility: visible;
+        display: flex;
+    }
+}
+
 /* * * * * * * * * * * * */
 /*   P L A Y L I S T S   */
 /* * * * * * * * * * * * */
@@ -862,7 +996,7 @@ label.oc--file-upload {
 .oc--tags {
 
     &-video {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
 
         & > span {
             background-color: $light-gray-color-40;

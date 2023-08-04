@@ -6,7 +6,7 @@
             <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
 
             <StudipButton icon="trash" @click.prevent="removeVideosFromPlaylist">
-                {{ $gettext('Videos aus der Wiedergabeliste löschen') }}
+                {{ $gettext('Verknüpfungen aufheben') }}
             </StudipButton>
         </div>
 

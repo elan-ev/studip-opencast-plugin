@@ -52,6 +52,62 @@
             <option value="50">50</option>
         </select>
     </div>
+
+    <div class="oc--pagination-mobile">
+        <button v-if="paging.lastPage >= 0"
+            v-bind:disabled="paging.currPage <= 0"
+            @click="setPage(0)"
+            class="oc--paging-arrow"
+        >
+            <studip-icon
+                shape="arr_2left" :role="paging.currPage <= 0 ? 'inactive' : 'clickable'"
+            />
+        </button>
+
+        <button v-if="paging.lastPage >= 0"
+            v-bind:disabled="paging.currPage <= 0"
+            @click="setPage(paging.currPage-1)"
+            class="oc--paging-arrow"
+        >
+            <studip-icon
+                shape="arr_1left" :role="paging.currPage <= 0 ? 'inactive' : 'clickable'"
+            />
+        </button>
+
+        <button class="active">
+            {{ paging.currPage+1 }}
+        </button>
+
+        <button v-if="paging.lastPage >= 0"
+            v-bind:disabled="paging.currPage >= paging.lastPage"
+            @click="setPage(paging.currPage + 1)"
+            class="oc--paging-arrow"
+        >
+             <studip-icon
+                shape="arr_1right" :role="paging.currPage >= paging.lastPage ? 'inactive' : 'clickable'"
+            />
+        </button>
+
+        <button v-if="paging.lastPage >= 0"
+            v-bind:disabled="paging.currPage >= paging.lastPage"
+            @click="setPage(paging.lastPage)"
+            class="oc--paging-arrow"
+        >
+             <studip-icon
+                shape="arr_2right" :role="paging.currPage >= paging.lastPage ? 'inactive' : 'clickable'"
+            />
+        </button>
+
+        <select class="oc--pagination--limit"
+            v-model="limit"
+            :title="$gettext('Videos pro Seite')"
+        >
+            <option value="5">5</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
+    </div>
 </template>
 
 <script>
