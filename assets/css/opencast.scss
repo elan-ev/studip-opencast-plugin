@@ -6,6 +6,7 @@ $item-width : 20em;
 $item-height-small: auto;
 $item-width-small : 16em;
 $episode-background: $light-gray-color-20;
+$action-menu-icon-size: 20px;
 
 /* * * * * * * * * * * * * * * * * */
 /*   G L O B A L E   K L A S S E N */
@@ -473,6 +474,64 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .action-menu-icon {
+        background: transparent;
+        border: 0;
+
+        // Create animated icon that changes to close icon on activation/hover
+        span {
+            width: 5px;
+            height: 5px;
+            transform: translate(-2.5px);
+            transition: all .25s ease-in-out;
+
+            display: block;
+            position: absolute;
+            background:  $base-color;
+            border-radius: 50%;
+            opacity: 1;
+            left: 50%;
+
+            &:nth-child(1) {
+                top: 0px;
+            }
+
+            &:nth-child(2) {
+                top: 10px;
+                transform: translate(-2.5px, -2.5px);
+            }
+
+            &:nth-child(3) {
+                bottom: 0;
+            }
+        }
+    }
+
+    .is-open {
+        z-index: 3;
+        .action-menu-icon {
+            span {
+                border-radius: 0;
+
+                &:nth-child(1) {
+                    left: 0;
+                    transform: rotate(45deg) translate(calc(($action-menu-icon-size / 4) + 0.5px), calc(($action-menu-icon-size / 4) + 0.5px));
+                    width: 100%;
+                }
+
+                &:nth-child(2) {
+                    opacity: 0;
+                }
+
+                &:nth-child(3) {
+                    left: 0;
+                    transform: rotate(-45deg) translate(calc($action-menu-icon-size / 4), calc(-1 * ($action-menu-icon-size / 4)));
+                    width: 100%;
+                }
+            }
+        }
+    }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * */
