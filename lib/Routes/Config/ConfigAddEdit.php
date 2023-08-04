@@ -29,14 +29,14 @@ class ConfigAddEdit extends OpencastController
         $json = $this->getRequestData($request);
 
         $config_checked = false;
-        $dublicate_url = false;
+        $duplicate_url = false;
 
         // check, if a config with the same data already exists:
         $config = reset(Config::findBySql('service_url = ?', [$json['config']['service_url']]));
         if ($args['id']) {
             // PUT request - edit config
             if ($config && $config->id !== (int)$args['id']) {
-                $dublicate_url = true;
+                $duplicate_url = true;
             }
             else {
                 $config = Config::find($args['id']);
@@ -45,13 +45,13 @@ class ConfigAddEdit extends OpencastController
         else {
             // POST request - create config
             if ($config) {
-                $dublicate_url = true;
+                $duplicate_url = true;
             } else {
                 $config = new Config;
             }
         }
         // Throw error if the url is already used
-        if ($dublicate_url) {
+        if ($duplicate_url) {
             return $this->createResponse([
                 'message'=> [
                     'type' => 'error',
