@@ -9,11 +9,11 @@
             <legend>
                 {{ $gettext('Für Nutzende freigeben') }}
             </legend>
-
             <label>
                 <studip-select :options="shareUsers" v-model="selectedUser"
-                    label="user"
-                    @option:selected="setSelectedUser"
+                    label="fullname"
+                    track-by="user_id"
+                    :filterable="false"
                     @search="updateUserList"
                 >
                     <template #list-header>
@@ -30,6 +30,7 @@
                             {{ option.Nachname ? option.Nachname + `, ` : `` }}
                             {{ option.Vorname }}
                             {{ option.title_rear }}
+                            ({{ option.username }})
                         </span>
                     </template>
                     <template #option="option">
@@ -38,6 +39,7 @@
                             {{ option.Nachname ? option.Nachname + `, ` : `` }}
                             {{ option.Vorname }}
                             {{ option.title_rear }}
+                            ({{ option.username }})
                         </span>
                     </template>
                 </studip-select>
@@ -114,27 +116,15 @@ export default {
                 return;
             }
 
-            // if no users been selected yet, return complete userlist
-            if (this.selectedUsers.length == 0) {
-                return this.userList;
-            }
-
-            // otherwise, remove already selected users from userlist to prevent trying to add them multiple times
+            // Remove already selected users from userlist to prevent trying to add them multiple times.
+            // Also remove the current user form the list
             return this.userList.filter((perm) => {
                 return this.selectedUsers.find(user => {
                     return user.user_id == perm.user_id
                 }) === undefined
                     && this.currentUser.id !== perm.user_id;
+
             });
-        },
-
-        setSelectedUser(user)
-        {
-            if (!user.user_id) {
-                return;
-            }
-
-            this.selectedUser.user_id = user.user_id;
         }
     },
 
@@ -144,7 +134,6 @@ export default {
         {
             this.$store.dispatch('loadUserList', search ? search : '%');
         },
-
 
         addShareUser()
         {
