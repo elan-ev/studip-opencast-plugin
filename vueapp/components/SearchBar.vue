@@ -13,6 +13,11 @@
             </li>
             <li class="oc--searchbar-token" v-if="token && token.type">
                  {{ token.type_name }} {{ token.compare }} {{ token.value_name }}
+                 <studip-icon
+                    shape="decline" role="info" class="oc--remove-filter"
+                    @click="removeTokenSelect"
+                    @blur="delayedHideTokenSelector"
+                />
             </li>
             <li class="oc--searchbar-input">
                 <input type="text" ref="searchbar"
@@ -243,6 +248,12 @@ export default {
         removeToken(token) {
             this.searchTokens.splice(this.searchTokens.indexOf(token), 1);
             this.doSearch();
+        },
+
+        removeTokenSelect() {
+            this.token = null;
+            this.tokenState = 'main';
+            this.hideTokenSelector();
         },
 
         doSearch() {

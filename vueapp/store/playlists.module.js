@@ -86,7 +86,7 @@ const actions = {
     async updatePlaylist(context, playlist) {
         return ApiService.put('playlists/' + playlist.token, playlist)
             .then(({ data }) => {
-                context.commit('setPlaylists', [data]);
+                context.commit('updatePlaylist', data);
             });
     },
 
@@ -176,6 +176,13 @@ const actions = {
 }
 
 const mutations = {
+    updatePlaylist(state, playlist) {
+        let idx = state.playlists.findIndex(p => p.token === playlist.token);
+        if (idx > -1) {
+            state.playlists[idx] = playlist;
+        }
+    },
+
     setPlaylists(state, playlists) {
         state.playlists = playlists;
     },

@@ -5,7 +5,7 @@
         </MessageBox>
         <h3 v-if="playlistForVideos">
             {{ playlistForVideos.title }}
-            <div class="oc--tags">
+            <div class="oc--tags oc--tags-playlist">
                 <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h3>

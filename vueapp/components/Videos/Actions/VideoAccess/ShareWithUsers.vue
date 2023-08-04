@@ -99,7 +99,7 @@ export default {
     data()
     {
         return {
-            selectedUser: {},
+            selectedUser: null,
             selectedUserPerm: null,
         }
     },
@@ -155,7 +155,7 @@ export default {
                 this.selectedUser.perm = this.selectedUserPerm;
                 this.$emit('add', this.selectedUser);
 
-                this.selectedUser = {};
+                this.selectedUser = null;
                 this.selectedUserPerm = null;
             }
         }

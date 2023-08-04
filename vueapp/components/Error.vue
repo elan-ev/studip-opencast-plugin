@@ -1,5 +1,8 @@
 <template>
-    <div v-if="errors.length">
+    <div v-if="errors.length"
+        :class="{
+            'oc--messages-float': float
+        }">
         <div class="messagebox messagebox_error"
             v-for="error in errors"
             v-bind:key="error">
@@ -44,6 +47,8 @@ import { mapGetters } from "vuex";
 
 export default {
     name: "Error",
+
+    props: ['float'],
 
     computed: {
         ...mapGetters(["errors"])

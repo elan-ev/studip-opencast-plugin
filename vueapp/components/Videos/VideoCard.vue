@@ -209,13 +209,11 @@ export default {
                 if (this.canEdit) {
                     return true;
                 }
-
-                let playlist_download = this.playlist['allow_download'];
-                if (playlist_download === null) {
-                    return this.downloadSetting === 'allow';
+                else if (this.playlist && this.playlist['allow_download']) {
+                    return this.playlist['allow_download'];
                 }
                 else {
-                    return playlist_download;
+                    return this.downloadSetting === 'allow';
                 }
             }
             return false;

@@ -76,11 +76,13 @@ export default {
         ...mapGetters(['userCourses', 'cid', 'courseVideosToCopy']),
 
         user_courses_filtered() {
-            let userCoursesFiltered = this.userCourses;
-            for (let semester_code in userCoursesFiltered) {
-                for (let semester in userCoursesFiltered[semester_code]) {
-                    if (Array.isArray(userCoursesFiltered[semester_code][semester])) {
-                        let filtered = userCoursesFiltered[semester_code][semester].filter(course => course.id != this.cid);
+            let userCoursesFiltered = {};
+            for (let semester_code in this.userCourses) {
+                userCoursesFiltered[semester_code] = {};
+                for (let semester in this.userCourses[semester_code]) {
+                    if (Array.isArray(this.userCourses[semester_code][semester])) {
+                        let filtered = this.userCourses[semester_code][semester].filter(
+                            course => course.id != this.cid && !this.courses.includes(course));
                         userCoursesFiltered[semester_code][semester] = filtered;
                     }
                 }
