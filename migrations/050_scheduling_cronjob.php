@@ -46,7 +46,7 @@ class SchedulingCronJob extends Migration
         // add the new cronjobs
         if ($task_id) {
             $scheduler->cancelByTask($task_id);
-            $scheduler->schedulePeriodic($task_id, -1);  // negative value means "every x minutes"
+            $scheduler->schedulePeriodic($task_id, -5);  // negative value means "every x minutes"
             CronjobSchedule::findByTask_id($task_id)[0]->activate();
         }
 
