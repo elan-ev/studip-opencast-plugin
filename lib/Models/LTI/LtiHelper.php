@@ -62,7 +62,7 @@ class LtiHelper
      * @param  object  $video_share  the video share object
      * @return Array             array of LtiLink
      */
-    public static function getLaunchData($config_id, $custom_tool = '', $video_share = null)
+    public static function getLaunchData($config_id, $custom_tool = '/ltitools', $video_share = null)
     {
         global $user;
 
@@ -79,7 +79,6 @@ class LtiHelper
                 $lti['link']->addCustomParameter('tool', urlencode($custom_tool));
             }
             $launch_data = $lti['link']->getBasicLaunchData();
-            $launch_data['custom_tool'] = '/ltitools';
             $signature   = $lti['link']->getLaunchSignature($launch_data);
 
             $launch_data['oauth_signature'] = $signature;

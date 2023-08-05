@@ -134,7 +134,10 @@ class RedirectController extends Opencast\Controller
                     $custom_tool = "/paella/ui/watch.html?id={$video->episode}";
                 }
                 break;
+            default:
+                $custom_tool = '/ltitools';
         }
+
         return $custom_tool;
     }
 
