@@ -27,7 +27,7 @@ class UpdateWorkflowTablesTwo extends Migration
         $db->exec("ALTER TABLE `oc_workflow_config`
             Drop COLUMN `displayname`,
             Drop COLUMN `workflow`,
-            MODIFY `used_for` enum('schedule','upload','studio','editor','delete'),
+            MODIFY `used_for` enum('schedule','upload','studio','delete'),
             ADD COLUMN workflow_id int,
             ADD UNIQUE KEY oc_workflow_config_unique(config_id, used_for),
             ADD CONSTRAINT oc_workflow_config_fk_wf_id FOREIGN KEY (`workflow_id`) REFERENCES `oc_workflow` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
