@@ -4,7 +4,7 @@ The Opencast plugin is now using LTI to present the videos and enforce permissio
 
 ## Configure Opencast
 
-Refer to the Opencast documentation for instructions on how to configure your version of the Opencast system (f.e. https://docs.opencast.org/r/8.x/admin/#modules/ltimodule)
+Refer to the Opencast documentation for instructions on how to configure your version of the Opencast system (f.e. https://docs.opencast.org/r/14.x/admin/#modules/ltimodule)
 
 Normally this boils down to the following two changes / additions in the config files:
 
@@ -25,7 +25,7 @@ oauth.consumer.secret.1=CONSUMERSECRET
 lti.create_jpa_user_reference=false
 
 lti.custom_role_name=Instructor
-lti.custom_roles=ROLE_STUDIO,ROLE_ADMIN_UI,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_DETAILS_MEDIA_VIEW,ROLE_UI_EVENTS_DETAILS_METADATA_EDIT,ROLE_UI_EVENTS_DETAILS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_CAPTURE_AGENT,ROLE_API_EVENTS_TRACK_EDIT
+lti.custom_roles=ROLE_STUDIO,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_DETAILS_MEDIA_VIEW,ROLE_UI_EVENTS_DETAILS_METADATA_EDIT,ROLE_UI_EVENTS_DETAILS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_CAPTURE_AGENT,ROLE_API_EVENTS_TRACK_EDIT
 ```
 
 The reference entry in Opencast is neither needed nor wanted, since we are using the Stud.IP user provider. If some actions like ingesting seem to file, when this options is disabled, make sure that the user provider is working correctly. One way to check this, is to call https://opencast.me/info/me.json after opening the videos page in Stud.IP and look for `provider` -> `studip` has to be listed there.  
