@@ -111,13 +111,14 @@ class RouteMap
      */
     public function adminRoutes()
     {
-        $this->app->get('/config', Routes\Config\ConfigList::class);
-        $this->app->put('/config', Routes\Config\ConfigUpdate::class);
-        $this->app->post('/config', Routes\Config\ConfigAddEdit::class);
+        // TODO: document in api docs
+        $this->app->get('/config', Routes\Config\ConfigList::class);                // get a list of all configured servers and their settings
+        $this->app->put('/global_config', Routes\Config\ConfigUpdate::class);
 
-        $this->app->get('/config/{id}', Routes\Config\ConfigShow::class);
-        $this->app->put('/config/{id}', Routes\Config\ConfigAddEdit::class);
-        $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);
+        $this->app->post('/config', Routes\Config\ConfigAdd::class);                // create new config
+        $this->app->get('/config/{id}', Routes\Config\ConfigShow::class);           // get config with itd
+        $this->app->put('/config/{id}', Routes\Config\ConfigEdit::class);           // update existing config
+        $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);      // delete existing config
     }
 
     /**

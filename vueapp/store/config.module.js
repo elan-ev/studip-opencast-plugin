@@ -75,7 +75,7 @@ export const actions = {
     },
 
     async configListUpdate(context, params) {
-        return  ApiService.put('config', params);
+        return  ApiService.put('global_config', params);
     },
 
     async configRead(context, id) {
