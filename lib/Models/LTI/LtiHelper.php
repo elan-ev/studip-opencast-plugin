@@ -79,6 +79,7 @@ class LtiHelper
                 $lti['link']->addCustomParameter('tool', urlencode($custom_tool));
             }
             $launch_data = $lti['link']->getBasicLaunchData();
+            $launch_data['custom_tool'] = '/ltitools';
             $signature   = $lti['link']->getLaunchSignature($launch_data);
 
             $launch_data['oauth_signature'] = $signature;
