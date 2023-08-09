@@ -6,20 +6,22 @@
                 <span>{{ token.compare }}</span>
                 <span class="oc--shorten-token">{{ token.value_name }}</span>
                 <studip-icon
-                    shape="decline" role="info" class="oc--remove-filter"
+                    shape="decline" role="clickable" class="oc--remove-filter"
                     @click="removeToken(token)"
                     @blur="delayedHideTokenSelector"
                 />
             </li>
             <li class="oc--searchbar-token" v-if="token && token.type">
-                 {{ token.type_name }} {{ token.compare }} {{ token.value_name }}
-                 <studip-icon
-                    shape="decline" role="info" class="oc--remove-filter"
+                <span>{{ token.type_name }}</span>
+                <span>{{ token.compare }}</span>
+                <span class="oc--shorten-token">{{ token.value_name }}</span>
+                <studip-icon
+                    shape="decline" role="clickable" class="oc--remove-filter"
                     @click="removeTokenSelect"
                     @blur="delayedHideTokenSelector"
                 />
             </li>
-            <li class="oc--searchbar-input">
+            <li class="oc--searchbar--input">
                 <input type="text" ref="searchbar"
                     v-on:keyup="hideTokenSelector"
                     v-on:keyup.enter="doSearch"
@@ -28,6 +30,14 @@
                     @click="showTokenSelector"
                     @blur="delayedHideTokenSelector"
                     @submit="doSearch"
+                />
+            </li>
+            <li title="Suche starten"
+                class="oc--searchbar--search-icon"
+                @click="doSearch"
+            >
+                <studip-icon
+                    shape="search" role="clickable"
                 />
             </li>
         </ul>
@@ -45,17 +55,28 @@
             :style="`left:` + tokenSelectorPos.left + `px; top:` + tokenSelectorPos.top + `px;`"
         >
             <ul v-if="tokenState == 'main'">
-                <li @click="selectToken('tag')" v-if="filteredTags.length">
+                <li @click="selectToken('tag')" :class="{
+                    'oc--tokenselector--disabled-option': !filteredTags.length
+                }">
                     {{ $gettext('Schlagwort') }}
                 </li>
-                <li @click="selectToken('playlist')" v-if="playlists && comparablePlaylists.length">
+
+                <li @click="selectToken('playlist')" :class="{
+                    'oc--tokenselector--disabled-option': !playlists || !comparablePlaylists.length
+                }">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
             </ul>
 
-            <ul v-if="tokenState == 'compare'">
-                <li @click="selectToken('=')">=</li>
-                <li @click="selectToken('!=')">!=</li>
+            <ul v-if="tokenState == 'compare'" class="oc--tokenselector--comparison">
+                <li @click="selectToken('=')">
+                    gleich
+                    <span>=</span>
+                </li>
+                <li @click="selectToken('!=')">
+                    ungleich
+                    <span>!=</span>
+                </li>
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'tag'">
@@ -209,12 +230,12 @@ export default {
         selectToken(content) {
             if (this.tokenState == 'main')
             {
-                if (content == 'tag') {
+                if (content == 'tag' && this.filteredTags.length) {
                     this.token.type      = 'tag';
                     this.token.type_name = this.$gettext('Schlagwort')
                     this.tokenState      = 'compare';
 
-                } else if (content == 'playlist') {
+                } else if (content == 'playlist' && this.playlists && this.comparablePlaylists.length) {
                     this.token.type      = 'playlist';
                     this.token.type_name = this.$gettext('Wiedergabeliste')
                     this.tokenState      = 'compare';

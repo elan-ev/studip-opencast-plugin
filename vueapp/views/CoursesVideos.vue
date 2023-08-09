@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2>Videos</h2>
         <VideosList></VideosList>
     </div>
 </template>

@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h2>Wiedergabelisten</h2>
-
         <div id="episodes" class="oc--flexitem oc--flexepisodelist">
             <table class="default">
                 <colgroup>

@@ -570,7 +570,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         border: 1px solid $light-gray-color-40;
     }
 
-    .oc--searchbar-input {
+    .oc--searchbar--input {
         padding: 8px;
         width: 100%;
         min-width: 8em;
@@ -587,6 +587,18 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         }
     }
 
+    .oc--searchbar--search-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+
+        border-left: thin solid $content-color-40;
+        background-color: $content-color-20;
+        
+        cursor: pointer;
+    }
+
     select.oc--searchbar-sorter {
         height: 40px;
     }
@@ -594,9 +606,33 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     .oc--tokenselector {
         position: absolute;
         z-index: 10;
-        border: 1px solid $light-gray-color-40;
-        background-color: $dark-gray-color-5;
-        margin-top: 5px;
+        border: thin solid $content-color-40;
+        background-color: $white;
+        margin-top: 12px;
+        min-width: 130px;
+
+
+        @include arrow-top-border(9px, white, 1px, $content-color-40, 12px);
+
+        &::before, &::after {
+            right: 90%;
+        }
+
+        /*
+        &::before {
+            border: 9px solid rgba(208, 215, 227, 0);
+            border-bottom-color: rgba(208, 215, 227, 0);
+            content: "";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-bottom-color: $content-color-40;
+            bottom: 100%;
+            left: 5px;
+            margin-right: -9px;
+        }
+        */
 
         ul, li {
             list-style-type: none;
@@ -613,17 +649,37 @@ h2.oc--loadingbar, .oc--loadingbar-title {
                 background-color: $light-gray-color-20;
             }
         }
+
+        .oc--tokenselector--comparison {
+            position: relative;
+            
+            span {
+                position: absolute;
+                right: 10px;
+                color: $dark-gray-color-80;
+            };
+        }
+
+        .oc--tokenselector--disabled-option {
+            color: $dark-gray-color-60;
+            cursor: default;
+
+            &:hover {
+                background-color: $dark-gray-color-5;
+            }
+        }
     }
 
     .oc--searchbar-token {
         margin: 3px;
         padding: 5px;
-        border-radius: 3px;
-        border: 1px solid $light-gray-color-40;
-        background-color: $dark-gray-color-5;
+        border: solid thin $black;
+        background-color: $content-color-20;
+
         display: inline;
 
         span {
+            margin: 0px 5px;
             display: inline-block;
             vertical-align: middle;
 
@@ -636,6 +692,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
         .oc--remove-filter {
             vertical-align: middle;
+            cursor: pointer;
         }
     }
 }

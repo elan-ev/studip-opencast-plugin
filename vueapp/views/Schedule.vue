@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2>Aufzeichnungen planen</h2>
         <ScheduleList></ScheduleList>
     </div>
 </template>

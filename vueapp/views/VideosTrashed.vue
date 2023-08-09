@@ -1,8 +1,5 @@
 <template>
     <div>
-        <h2>
-            {{ $gettext('Gelöschte Videos') }}
-        </h2>
         <VideosList></VideosList>
     </div>
 </template>

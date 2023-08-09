@@ -1460,8 +1460,8 @@ msgstr "Opencast settings"
 
 #: OpenCast.class.php:53 OpenCast.class.php:133 OpenCast.class.php:210
 #: OpenCast.class.php:211
-msgid "Videos/Opencast"
-msgstr "Videos/Opencast"
+msgid "Opencast Videos"
+msgstr "Opencast Videos"
 
 #: OpenCast.class.php:54
 msgid "Opencast Aufzeichnungen"
