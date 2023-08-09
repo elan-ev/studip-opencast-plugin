@@ -50,7 +50,7 @@
                     -->
 
                     <label>
-                        Tags
+                        Schlagworte
                         <TagBar :taggable="eplaylist" @update="updateTags" />
                     </label>
                 </form>

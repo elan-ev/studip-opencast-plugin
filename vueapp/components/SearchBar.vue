@@ -46,7 +46,7 @@
         >
             <ul v-if="tokenState == 'main'">
                 <li @click="selectToken('tag')" v-if="filteredTags.length">
-                    {{ $gettext('Tag') }}
+                    {{ $gettext('Schlagwort') }}
                 </li>
                 <li @click="selectToken('playlist')" v-if="playlists && comparablePlaylists.length">
                     {{ $gettext('Wiedergabeliste') }}
@@ -211,7 +211,7 @@ export default {
             {
                 if (content == 'tag') {
                     this.token.type      = 'tag';
-                    this.token.type_name = this.$gettext('Tag')
+                    this.token.type_name = this.$gettext('Schlagwort')
                     this.tokenState      = 'compare';
 
                 } else if (content == 'playlist') {

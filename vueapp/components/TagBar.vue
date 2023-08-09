@@ -8,11 +8,11 @@
         >
             <template #list-header>
                 <li style="text-align: center">
-                    <b>{{ $gettext('Tags') }}</b>
+                    <b>{{ $gettext('Schlagworte') }}</b>
                 </li>
             </template>
             <template #no-options="{ search, searching, loading }">
-                {{ $gettext('Es gibt bisher keine Tags, schreiben sie einfach in das Suchfeld ihren ersten eigenen Tag, dieser wird dann automatisch erstellt!')}}
+                {{ $gettext('Es gibt bisher keine Schlagworte, schreiben sie einfach in das Suchfeld ihr erstes eigenes Schlagwort, dieses wird dann automatisch erstellt!')}}
             </template>
             <template #selected-option="option">
                 <studip-icon shape="tag" role="info"/>

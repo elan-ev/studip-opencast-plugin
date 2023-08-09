@@ -45,7 +45,7 @@
                         </label>
 
                         <label>
-                            Tags
+                            Schlagworte
                             <TagBar :taggable="event" @update="updatedTags"/>
                         </label>
 
