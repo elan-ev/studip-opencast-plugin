@@ -86,13 +86,13 @@
                 <studip-icon
                     :style="{visibility: canMoveUp ? 'visible' : 'hidden'}"
                     shape="arr_2up" role="navigation"
-                    @click="$emit('moveUp', event.token)" 
+                    @click="$emit('moveUp', event.token)"
                     :title="$gettext('Element nach oben verschieben')"
                 />
                 <studip-icon
                     :style="{visibility: canMoveDown ? 'visible' : 'hidden'}"
                     shape="arr_2down" role="navigation"
-                    @click="$emit('moveDown', event.token)" 
+                    @click="$emit('moveDown', event.token)"
                     :title="$gettext('Element nach unten verschieben')"
                 />
             </div>
@@ -274,7 +274,7 @@ export default {
                     menuItems.push({
                         id: 3,
                         label: this.$gettext('Verknüpfungen'),
-                        icon: 'add',
+                        icon: 'link-intern',
                         emit: 'performAction',
                         emitArguments: 'VideoAddToPlaylist'
                     });
@@ -293,7 +293,7 @@ export default {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Schnitteditor öffnen'),
-                            icon: 'knife',
+                            icon: 'video2',
                             emit: 'redirectAction',
                             emitArguments: '/editor/' + this.event.token
                         });
@@ -303,7 +303,7 @@ export default {
                         menuItems.push({
                             id: 6,
                             label: this.$gettext('Anmerkungen hinzufügen'),
-                            icon: 'knife',
+                            icon: 'chat',
                             emit: 'redirectAction',
                             emitArguments: '/annotation/' + this.event.token
                         });
@@ -312,7 +312,7 @@ export default {
                     menuItems.push({
                         id: 7,
                         label: this.$gettext('Untertitel hinzufügen'),
-                        icon: 'knife',
+                        icon: 'accessibility',
                         emit: 'performAction',
                         emitArguments: 'CaptionUpload'
                     });
