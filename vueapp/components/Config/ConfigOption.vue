@@ -84,8 +84,10 @@
 
             <div class="input-group files-search oc--admin-password">
 
-                <input :type="passwordVisible ?'text' : 'password'"
+                <input :type="passwordVisible ? 'text' : 'password'"
                     @change="updateHiddenPassword"
+                    @focusin="clearTextFieldIfHidden"
+                    @focusout="fillTextFieldIfHidden"
                     v-model="password"
                     :placeholder="setting.placeholder"
                 >
@@ -116,20 +118,12 @@ export default {
 
     data() {
         return {
-            password: '',
+            password: '*****',
             passwordVisible: false
         }
     },
 
     mounted() {
-        if (!this.passwordVisible && this.setting.type == 'password'
-            && this.setting.value)
-        {
-            this.password = '*****';
-        }
-    },
-
-    updated() {
         if (!this.passwordVisible && this.setting.type == 'password'
             && this.setting.value)
         {
@@ -158,6 +152,20 @@ export default {
 
         updateHiddenPassword() {
             this.setValue(this.password);
+        },
+
+        clearTextFieldIfHidden()
+        {
+            if (!this.passwordVisible && this.password == '*****') {
+                this.password = '';
+            }
+        },
+
+        fillTextFieldIfHidden()
+        {
+            if (!this.passwordVisible && this.password.length == 0) {
+                this.password = '*****';
+            }
         }
     }
 }
