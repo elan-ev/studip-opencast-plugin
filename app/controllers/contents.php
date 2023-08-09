@@ -29,7 +29,7 @@ class ContentsController extends Opencast\Controller
     {
         VersionHelper::get()->activateContentNavigation();
 
-        PageLayout::setTitle($this->_('Videos'));
+        PageLayout::setTitle($this->_('Opencast Videos'));
         PageLayout::setBodyElementId('opencast-plugin');
 
         $this->studip_version = $this->getStudIPVersion();
