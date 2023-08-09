@@ -1,6 +1,12 @@
 # Stud.IP Opencast Plugin
 
-The Opencast plugin is now using LTI to present the videos and enforce permissions. You need to configure your Opencast system to make this plugin work.
+The Opencast plugin is using LTI and the Stud.IP User Provider to present the videos and enforce permissions. You need to configure your Opencast system to make this plugin work.
+
+## Requirements
+
+For this plugin to work, you need:
+- Stud.IP >= Version 4.6
+- Opencast >= Version 13.1
 
 ## Configure Opencast
 
@@ -30,7 +36,7 @@ lti.custom_roles=ROLE_STUDIO,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVEN
 
 The reference entry in Opencast is neither needed nor wanted, since we are using the Stud.IP user provider. If some actions like ingesting seem to file, when this options is disabled, make sure that the user provider is working correctly. One way to check this, is to call https://opencast.me/info/me.json after opening the videos page in Stud.IP and look for `provider` -> `studip` has to be listed there.  
 
-4. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable: *(Plugin Version >= 3, Opencast >= 13)*
+1. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable:
 
 ```
 	...
@@ -38,7 +44,7 @@ The reference entry in Opencast is neither needed nor wanted, since we are using
 	...
 ```
 
-5. Edit `/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg` *(Plugin Version >= 3, Opencast >= 13)*
+1. Edit `/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg`
 
 ```
 # Studip UserDirectoryProvider configuration
@@ -64,7 +70,7 @@ org.opencastproject.userdirectory.studip.cache.expiration=1
 
 Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP is have the `nobody` role for it to work.
 
-6. Add role `STUDIP` in Opencast *(Plugin Version >= 3, Opencast >= 13)*
+6. Add role `STUDIP` in Opencast
 
 In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`
 
