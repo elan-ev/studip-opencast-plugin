@@ -10,7 +10,7 @@ For this plugin to work, you need:
 
 ## Configure Opencast
 
-Refer to the Opencast documentation for instructions on how to configure your version of the Opencast system (f.e. https://docs.opencast.org/r/14.x/admin/#modules/ltimodule)
+Refer to the [Opencast documentation](https://docs.opencast.org) for instructions on how to configure your version of the Opencast system.
 
 Normally this boils down to the following two changes / additions in the config files:
 
@@ -36,7 +36,7 @@ lti.custom_roles=ROLE_STUDIO,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVEN
 
 The reference entry in Opencast is neither needed nor wanted, since we are using the Stud.IP user provider. If some actions like ingesting seem to file, when this options is disabled, make sure that the user provider is working correctly. One way to check this, is to call https://opencast.me/info/me.json after opening the videos page in Stud.IP and look for `provider` -> `studip` has to be listed there.  
 
-1. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable:
+4. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable:
 
 ```
 	...
@@ -44,7 +44,7 @@ The reference entry in Opencast is neither needed nor wanted, since we are using
 	...
 ```
 
-1. Edit `/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg`
+5. Edit `/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg`
 
 ```
 # Studip UserDirectoryProvider configuration
