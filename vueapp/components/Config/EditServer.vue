@@ -30,13 +30,14 @@
                 </form>
 
                 <MessageList :float="true"/>
+                <Error :float="true"/>
             </template>
 
             <template v-slot:dialogButtons>
                 <button v-if="config !== null"
-                    class="button trash" 
-                    type="button" 
-                    @click="deleteConfig" 
+                    class="button trash"
+                    type="button"
+                    @click="deleteConfig"
                     :disabled="disabled"
                 >
                     Löschen
@@ -53,6 +54,7 @@ import StudipDialog from '@studip/StudipDialog'
 import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
+import Error from "@/components/Error";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
 
@@ -67,6 +69,7 @@ export default {
         StudipDialog,
         ConfigOption,
         MessageList,
+        Error,
         WorkflowOptions
     },
 

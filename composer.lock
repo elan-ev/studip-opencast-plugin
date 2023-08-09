@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "93b0add7095a5253fb817edcf7000967",
+    "content-hash": "cd66818a11b06328d586eadff493804a",
     "packages": [
         {
             "name": "elan-ev/opencast-api",

@@ -35,6 +35,10 @@ class ServicesClient extends RestClient
             }
         }
 
+        if ($response['code'] == 0) {
+            throw new \Exception($response['reason']);
+        }
+
         return false;
     }
 }
