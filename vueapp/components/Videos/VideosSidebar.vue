@@ -38,7 +38,7 @@
             <ul class="widget-list oc--sidebar-links widget-links">
                 <li @click="$emit('uploadVideo')" v-if="fragment == 'videos'">
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                    {{ $gettext('Medien Hochladen') }}
+                    {{ $gettext('Medien hochladen') }}
                 </li>
                 <!--
                 <li @click="$emit('recordVideo')" v-if="fragment == 'videos'">
@@ -49,7 +49,7 @@
                 <li>
                     <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries" target="_blank">
                         <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                        Video Aufnehmen
+                        Video aufnehmen
                     </a>
                 </li>
 
@@ -72,15 +72,15 @@
 
                 <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
-                    {{ $gettext('Videos Sortieren') }}
+                    {{ $gettext('Videos sortieren') }}
                 </li>
                 <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                    {{ $gettext('Sortierung Speichern') }}
+                    {{ $gettext('Sortierung speichern') }}
                 </li>
                 <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                    {{ $gettext('Sortierung Abbrechen') }}
+                    {{ $gettext('Sortierung abbrechen') }}
                 </li>
                 <li @click="true" v-if="fragment == 'edit'">
                 </li>

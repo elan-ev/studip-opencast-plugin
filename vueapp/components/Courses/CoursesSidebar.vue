@@ -81,12 +81,12 @@
                 <ul class="widget-list oc--sidebar-links widget-links">
                     <li @click="$emit('uploadVideo')" v-if="canUpload">
                         <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                        Medien Hochladen
+                        Medien hochladen
                     </li>
                     <li>
                         <a :href="recordingLink" target="_blank" v-if="canUpload">
                             <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                            Video Aufnehmen
+                            Video aufnehmen
                         </a>
                     </li>
                     <li v-if="canToggleVisibility">

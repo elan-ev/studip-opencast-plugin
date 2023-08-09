@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Video hinzufügen')"
+            :title="$gettext('Medien hochladen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
             :closeText="$gettext('Abbrechen')"
