@@ -62,7 +62,7 @@ org.opencastproject.userdirectory.studip.token=mytoken1234abcdef
 org.opencastproject.userdirectory.studip.cache.expiration=1
 ```
 
-Make sure to change the token and add that token to the Opencast config in Stud.IP.
+Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP is have the `nobody` role for it to work.
 
 6. Add role `STUDIP` in Opencast *(Plugin Version >= 3, Opencast >= 13)*
 
@@ -103,7 +103,3 @@ Install the most recent version of this plugin, make sure that all migrations wo
 After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL and credentials for the Opencast system.
 Make sure you enter the LTI credentials under "Additional settings".
 If everything worked you can now start using the plugin in seminars.
-
-### Stud.IP User Provider *(Plugin Version >= 3, Opencast >= 13)*
-
-Make sure you followed all steps above. Furthermore make sure the Opencast-Plugin in Stud.IP is assigned to the nobody role for it to work.
