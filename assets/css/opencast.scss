@@ -52,15 +52,16 @@ $action-menu-icon-size: 20px;
 .oc--pagination {
     margin-bottom: 1em;
     display: flex;
+    line-height: 19px;
 
     select.oc--pagination--limit {
         margin-left: 1em;
-        height: 42px;
         font-size: 1.2em;
+        line-height: 19px;
     }
 
     button {
-        padding: 8px 16px;
+        padding: 3px 16px;
         border: 1px solid #ddd;
         float: left;
         cursor: pointer;
@@ -70,7 +71,7 @@ $action-menu-icon-size: 20px;
         }
 
         &.oc--paging-arrow {
-            padding: 8px 8px;
+            padding: 3px 8px;
 
             img {
                 vertical-align: middle;
