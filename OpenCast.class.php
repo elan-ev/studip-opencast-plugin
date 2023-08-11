@@ -78,6 +78,23 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             }
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
             NotificationCenter::addObserver($this, 'cleanCourse', 'CourseDidDelete');
+
+            // check, if migration 48.1 is present
+            $db = DBManager::get();
+            $results = $db->query("SHOW COLUMNS FROM `oc_scheduled_recordings` LIKE 'coursedate_start'");
+            if (empty($results->fetchAll())) {
+                // do the migration!
+                $db->exec('ALTER TABLE oc_scheduled_recordings
+                    ADD `coursedate_end` int(11) AFTER `end`,
+                    ADD `coursedate_start` int(11) AFTER `end`
+                ');
+
+                // update all entries to fill new coursedate-fields
+                $db->exec('UPDATE oc_scheduled_recordings
+                    SET coursedate_start = start, coursedate_end = end
+                    WHERE 1
+                ');
+            }
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
