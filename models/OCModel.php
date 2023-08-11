@@ -170,15 +170,17 @@ class OCModel
 
         $stmt = DBManager::get()->prepare("INSERT INTO
                 oc_scheduled_recordings (seminar_id, series_id, date_id,
-                    resource_id, start, end, capture_agent, event_id, status,
+                    resource_id, `start`, `end`, coursedate_start, coursedate_end, capture_agent, event_id, `status`,
                     mktime)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $success = $stmt->execute([
             $course_id,
             $serie['series_id'],
             $date_id,
             $resource_id,
+            $date->date,
+            $date->end_time,
             $date->date,
             $date->end_time,
             $ca['capture_agent'],
