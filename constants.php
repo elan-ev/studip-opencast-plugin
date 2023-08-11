@@ -68,12 +68,6 @@ class Constants {
             'required'    => true
         ],
         [
-            'name'        => 'livestream',
-            'description' => 'Soll das Live-Streaming aktiviert werden?',
-            'value'       => 0,
-            'type'        => 'boolean'
-        ],
-        [
             'name'        => 'paella',
             'description' => 'Soll der Paella Player verwendet werden statt Theodul?',
             'value'       => 1,

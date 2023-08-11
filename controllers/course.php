@@ -430,40 +430,11 @@ class CourseController extends OpencastController
     }
 
 
-    public function schedule_action($resource_id, $publishLive, $termin_id)
+    public function schedule_action($resource_id, $termin_id)
     {
         OCPerm::checkEdit($this->course_id);
 
-        $scheduler_client = SchedulerClient::getInstance();
-        if ($scheduler_client->scheduleEventForSeminar($this->course_id, $resource_id, $publishLive, $termin_id)) {
-            PageLayout::postSuccess(
-                $publishLive
-                    ? $this->_('Livestream mit Aufzeichnung wurde geplant.')
-                    : $this->_('Aufzeichnung wurde geplant.')
-            );
-            $course = Course::find($this->course_id);
-            $members = $course->members;
-            $users = [];
-            foreach ($members as $member) {
-                $users[] = $member->user_id;
-            }
-
-            $notification = sprintf(
-                $this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
-                htmlReady($course->name)
-            );
-            PersonalNotifications::add(
-                $users,
-                $this->url_for('course/index', ['cid' => $this->course_id]),
-                $notification,
-                $this->course_id,
-                Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
-            );
-
-            StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $this->course_id);
-        } else {
-            PageLayout::postError($this->_('Aufzeichnung konnte nicht geplant werden.'));
-        }
+        $this->schedule($resource_id, $termin_id, $this->course_id);
 
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
@@ -472,13 +443,7 @@ class CourseController extends OpencastController
     {
         OCPerm::checkEdit($this->course_id);
 
-        $scheduler_client = SchedulerClient::getInstance();
-        if ($scheduler_client->deleteEventForSeminar($this->course_id, $resource_id, $termin_id)) {
-            PageLayout::postSuccess($this->_('Die geplante Aufzeichnung wurde entfernt'));
-            StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $this->course_id);
-        } else {
-            PageLayout::postError($this->_('Die geplante Aufzeichnung konnte nicht entfernt werden.'));
-        }
+        $this->unschedule($resource_id, $termin_id, $this->course_id);
 
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
@@ -537,15 +502,7 @@ class CourseController extends OpencastController
     {
         OCPerm::checkEdit($this->course_id);
 
-        $scheduler_client = SchedulerClient::create($this->course_id);
-        $scheduled = OCModel::checkScheduledRecording($this->course_id, $resource_id, $termin_id);
-
-        if ($scheduler_client->updateEventForSeminar($this->course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
-            PageLayout::postSuccess($this->_('Die geplante Aufzeichnung wurde aktualisiert.'));
-            StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $this->course_id);
-        } else {
-            PageLayout::postError($this->_('Die geplante Aufzeichnung konnte nicht aktualisiert werden.'));
-        }
+        $this->updateschedule($resource_id, $termin_id, $this->course_id);
 
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
@@ -664,16 +621,13 @@ class CourseController extends OpencastController
         foreach ($dates as $termin_id => $resource_id) {
             switch ($action) {
                 case 'create':
-                    self::schedule($resource_id, false, $termin_id, $this->course_id);
-                    break;
-                case 'live':
-                    self::schedule($resource_id, true, $termin_id, $this->course_id);
+                    $this->schedule($resource_id, $termin_id, $this->course_id);
                     break;
                 case 'update':
-                    self::updateschedule($resource_id, $termin_id, $this->course_id);
+                    $this->updateschedule($resource_id, $termin_id, $this->course_id);
                     break;
                 case 'delete':
-                    self::unschedule($resource_id, $termin_id, $this->course_id);
+                    $this->unschedule($resource_id, $termin_id, $this->course_id);
                     break;
             }
         }
@@ -681,43 +635,106 @@ class CourseController extends OpencastController
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
-    public static function schedule($resource_id, $publishLive, $termin_id, $course_id)
+    public function schedule($resource_id, $termin_id, $course_id)
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $date      = CourseDate::find($termin_id);
+
         if (!$scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
-            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $publishLive, $termin_id)) {
+            if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
+                $course = Course::find($course_id);
+                $members = $course->members;
+                $users = [];
+
+                foreach ($members as $member) {
+                    $users[] = $member->user_id;
+                }
+
+                $notification = sprintf(
+                    $this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
+                    htmlReady($course->name)
+                );
+                PersonalNotifications::add(
+                    $users,
+                    $this->url_for('course/index', ['cid' => $course_id]),
+                    $notification,
+                    $course_id,
+                    Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
+                );
+
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
+
+                PageLayout::postSuccess(
+                    $this->_('Aufzeichnung wurde geplant.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
                 return true;
             } else {
-                // TODO FEEDBACK
+                PageLayout::postError(
+                    $this->_('Aufzeichnung konnte nicht geplant werden.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
+                return false;
             }
         }
     }
 
-    public static function updateschedule($resource_id, $termin_id, $course_id)
+    public function updateschedule($resource_id, $termin_id, $course_id)
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $date      = CourseDate::find($termin_id);
+
         if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
-            $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
-            StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
+            if ($scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
+                StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
+
+                PageLayout::postSuccess(
+                    $this->_('Aufzeichnungsplanung wurde aktualisiert.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
+                return true;
+            } else {
+                PageLayout::postError(
+                    $this->_('Die Aufzeichnungsplanung konnte nicht aktualisiert werden.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
+                return false;
+            }
         } else {
-            self::schedule($resource_id, false, $termin_id, $course_id);
+            $this->schedule($resource_id, false, $termin_id, $course_id);
         }
     }
 
-    public static function unschedule($resource_id, $termin_id, $course_id)
+    public function unschedule($resource_id, $termin_id, $course_id)
     {
         $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $date      = CourseDate::find($termin_id);
+
         if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
             if ($scheduler_client->deleteEventForSeminar($course_id, $resource_id, $termin_id)) {
                 StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
+
+                PageLayout::postSuccess(
+                    $this->_('Aufzeichnungsplanung wurde storniert.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
                 return true;
             } else {
-                // TODO FEEDBACK
+                PageLayout::postError(
+                    $this->_('Die Aufzeichnung konnte nicht storniert werden.')
+                    . ($date ?  ' -> '. $date->getFullname('include-room') : '')
+                );
+
+                return false;
             }
         }
     }
@@ -792,7 +809,7 @@ class CourseController extends OpencastController
         if (Request::isXhr()) {
             $occcourse = new OCCourseModel($this->course_id);
             $success = $occcourse->setWorkflowForDate($termin_id, $workflow_id);
-            self::updateschedule($resource_id, $termin_id, $this->course_id);
+            $this->updateschedule($resource_id, $termin_id, $this->course_id);
             $this->render_json($success);
         } else {
             $this->render_nothing();

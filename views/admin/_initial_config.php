@@ -86,7 +86,6 @@
         </span>
 
         <? foreach (Constants::$DEFAULT_CONFIG as $data) {
-            if ($data['name'] == 'livestream') continue; # this option is currently not save to be used
             $instance_config = Configuration::instance($config_id);
             $data['value'] = $instance_config[$data['name']];
         ?>

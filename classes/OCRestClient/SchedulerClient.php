@@ -29,7 +29,7 @@ class SchedulerClient extends OCRestClient
      *
      * @return bool success or not
      */
-    public function scheduleEventForSeminar($course_id, $resource_id, $publishLive, $termin_id)
+    public function scheduleEventForSeminar($course_id, $resource_id, $termin_id)
     {
         $ingest_client = new IngestClient();
         $media_package = $ingest_client->createMediaPackage();
@@ -44,7 +44,7 @@ class SchedulerClient extends OCRestClient
             return false;
         }
 
-        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $publishLive, $metadata['workflow']);
+        $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
 
         if ($result
             && $result[1] != 400

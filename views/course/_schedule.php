@@ -150,7 +150,7 @@
                                 </a>
                             <? else : ?>
                                 <? if (date($d['date']) > time()) : ?>
-                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 0 . '/' . $date->termin_id) ?>" class="oc-debounce">
+                                    <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . $date->termin_id) ?>" class="oc-debounce">
                                         <?= Icon::create(
                                             'video',
                                             Icon::ROLE_CLICKABLE,
@@ -159,17 +159,6 @@
                                             ]
                                         ) ?>
                                     </a>
-
-                				    <? if (Configuration::instance($config['id'])->get('livestream')) : ?>
-                                        <a href="<?= $controller->url_for('course/schedule/' . $resource . '/' . 1 . '/' . $date->termin_id) ?>"
-                                            style="margin-left: 1em;"
-                                        >
-                                            <span style="font-weight: bold" title="<?= $_('Livestream+Aufzeichnung planen') ?>">
-                                                LIVE
-                                            </span>
-                                        </a>
-                                    <? endif ?>
-
                                 <? else : ?>
                                     <?= Icon::create(
                                         'video',
@@ -201,10 +190,6 @@
                             <option value="create"><?= $_('Aufzeichnungen planen') ?></option>
                             <option value="update"><?= $_('Aufzeichnungen aktualisieren') ?></option>
                             <option value="delete"><?= $_('Aufzeichnungen stornieren') ?></option>
-
-                            <? if (Configuration::instance($config['id'])->get('livestream')) : ?>
-                                <option value="live"><?= $_('Livestream+Aufzeichnung planen') ?></option>
-                            <? endif ?>
                         </select>
                     </td>
                     <td></td>
