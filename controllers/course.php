@@ -327,7 +327,6 @@ class CourseController extends OpencastController
 
         Navigation::activateItem('course/opencast');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_('Opencast Konfiguration'));
         $this->response->add_header('X-Title', rawurlencode($this->_('Serie mit Veranstaltung verknüpfen')));
@@ -394,7 +393,6 @@ class CourseController extends OpencastController
 
         Navigation::activateItem('course/opencast/scheduler');
         $navigation = Navigation::getItem('/course/opencast');
-        $navigation->setImage(new Icon('../../' . $this->dispatcher->trails_root . '/images/opencast-black.svg'));
 
         $this->set_title($this->_('Opencast Aufzeichnungen planen'));
 
