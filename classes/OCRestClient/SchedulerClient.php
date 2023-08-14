@@ -37,12 +37,7 @@ class SchedulerClient extends OCRestClient
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
         $tmp_event_id  = $this->gen_uuid();
 
-        try {
-            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $tmp_event_id);
-        } catch (PDOException $error) {
-            // assume that scheduling is already under way - so just return false
-            return false;
-        }
+        OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $tmp_event_id);
 
         $result = $ingest_client->schedule($media_package, $metadata['device_capabilities'], $metadata['workflow']);
 
@@ -137,13 +132,17 @@ class SchedulerClient extends OCRestClient
         $event = OCScheduledRecordings::find($event_id);
         $date  = CourseDate::find($termin_id);
 
-        if ($date->date != $event->start) {
-            $event->start = $date->date;
-            $event->store();
-        }
+        // check if the course_dates are still the same, otherwise update them
+        if ($date->date != $event->coursedate_start
+            || $date->end_time != $event->coursedate_end
+        ) {
+            $event->coursedate_start = $date->date;
+            $event->coursedate_end = $date->end_time;
 
-        if ($date->end_time != $event->end) {
-            $event->end = $date->end_time;
+            // also reset any custom made changes to the recording length, to prevent any unwanted effects for alternate schedules (if even activated)
+            $event->start = $date->date;
+            $event->end   = $date->date;
+
             $event->store();
         }
 
