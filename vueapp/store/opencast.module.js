@@ -1,4 +1,5 @@
 import ApiService from "@/common/api.service";
+import axios from "@/common/axios.service";
 
 const state = {
     series: [],
@@ -10,7 +11,8 @@ const state = {
     site: null,
     axios_running: false,
     userCourses: [],
-    userList: []
+    userList: [],
+    isLTIAuthenticated: {}
 }
 
 const getters = {
@@ -43,6 +45,9 @@ const getters = {
     },
     userList(state) {
         return state.userList;
+    },
+    isLTIAuthenticated(state) {
+        return state.isLTIAuthenticated;
     }
 }
 
@@ -126,6 +131,31 @@ const actions = {
 
     setUpload({ commit }, data) {
         return ApiService.put('courses/' + data.cid + '/upload/' + data.upload);
+    },
+
+    checkLTIAuthentication({ commit }, server)
+    {
+        axios({
+            method: 'GET',
+            url: server.name + "/lti/info.json",
+            crossDomain: true,
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                commit('setLTIStatus', {
+                    server: server.id,
+                    authenticated: true
+                });
+            } else {
+                commit('setLTIStatus', {
+                    server: server.id,
+                    authenticated: false
+                });
+            }
+        });
     }
 }
 
@@ -169,6 +199,10 @@ const mutations = {
     setUserList(state, data) {
         state.userList = data;
     },
+
+    setLTIStatus(state, params) {
+        state.isLTIAuthenticated[params.server] = params.authenticated;
+    }
 }
 
 

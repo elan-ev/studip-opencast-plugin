@@ -11,8 +11,8 @@
                 >
                     <span class="oc--previewimage">
                         <img class="oc--previewimage"
-                            :src="event.preview.player ? event.preview.player : event.preview.search"
-                            @error="setDefaultImage(event)"
+                            :src="getImageSrc"
+                            @error="setDefaultImage()"
                             height="200"
                             :ref="event.id"
                         />
@@ -181,8 +181,8 @@ export default {
             this.$emit('redirectAction', action);
         },
 
-        setDefaultImage(event) {
-            let image = this.$refs[event.id];
+        setDefaultImage() {
+            let image = this.$refs[this.event.id];
             image.src = window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
         }
     },
@@ -192,8 +192,17 @@ export default {
             'playlist',
             'playlists',
             'downloadSetting',
-            "videoSortMode",
+            'videoSortMode',
+            'isLTIAuthenticated'
         ]),
+
+        getImageSrc() {
+            if (this.isLTIAuthenticated[this.event.config_id]) {
+                return this.event.preview.player ? this.event.preview.player : this.event.preview.search;
+            } else {
+                return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
+            }
+        },
 
         downloadAllowed() {
             if (this.downloadSetting !== 'never') {

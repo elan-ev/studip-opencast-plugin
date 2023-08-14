@@ -131,21 +131,25 @@ export default {
             actionComponent: null,
             showActionDialog: false,
             selectedEvent: null,
-            filters: []
+            filters: [],
+            interval: null,
+            interval_counter: 0
         }
     },
 
     computed: {
         ...mapGetters([
-            "videos",
-            "paging",
-            "axios_running",
-            "playlistForVideos",
-            "cid",
+            'videos',
+            'paging',
+            'axios_running',
+            'playlistForVideos',
+            'cid',
             'courseVideosToCopy',
             'playlists',
             'playlist',
-            'course_config'
+            'course_config',
+            'isLTIAuthenticated',
+            'simple_config_list'
         ]),
 
         isCourse() {
@@ -336,7 +340,28 @@ export default {
                     .then(() => { this.videos_loading = false });
             }
         })
+
         this.$store.dispatch('loadUserCourses');
+
+        // periodically check, if lti is authenticated
+        let view = this;
+
+        this.$store.dispatch('simpleConfigListRead').then(() => {
+            view.interval = setInterval(() => {
+                for (let id in view.simple_config_list['server']) {
+                    if (!view.isLTIAuthenticated[id]) {
+                        view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
+                    }
+                }
+
+                view.interval_counter++;
+
+                // prevent spamming of oc server
+                if (view.interval_counter > 10) {
+                    clearInterval(view.interval);
+                }
+            }, 2000);
+        });
     },
 
     watch: {
