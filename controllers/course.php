@@ -434,6 +434,8 @@ class CourseController extends OpencastController
 
         $this->schedule($resource_id, $termin_id, $this->course_id);
 
+        $this->sendRecordingNotifications($this->course_id);
+
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
@@ -630,6 +632,10 @@ class CourseController extends OpencastController
             }
         }
 
+        if ($action == 'create') {
+            $this->sendRecordingNotifications($this->course_id);
+        }
+
         $this->redirect('course/scheduler?semester_filter=' . Request::option('semester_filter'));
     }
 
@@ -642,26 +648,6 @@ class CourseController extends OpencastController
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
             if ($scheduler_client->scheduleEventForSeminar($course_id, $resource_id, $termin_id)) {
-                $course = Course::find($course_id);
-                $members = $course->members;
-                $users = [];
-
-                foreach ($members as $member) {
-                    $users[] = $member->user_id;
-                }
-
-                $notification = sprintf(
-                    $this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
-                    htmlReady($course->name)
-                );
-                PersonalNotifications::add(
-                    $users,
-                    $this->url_for('course/index', ['cid' => $course_id]),
-                    $notification,
-                    $course_id,
-                    Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
-                );
-
                 StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
 
                 PageLayout::postSuccess(
@@ -708,6 +694,29 @@ class CourseController extends OpencastController
         } else {
             $this->schedule($resource_id, false, $termin_id, $course_id);
         }
+    }
+
+    private function sendRecordingNotifications($course_id)
+    {
+        $course = Course::find($course_id);
+        $members = $course->members;
+        $users = [];
+
+        foreach ($members as $member) {
+            $users[] = $member->user_id;
+        }
+
+        $notification = sprintf(
+            $this->_('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
+            htmlReady($course->name)
+        );
+        PersonalNotifications::add(
+            $users,
+            $this->url_for('course/index', ['cid' => $course_id]),
+            $notification,
+            $course_id,
+            Icon::create($this->plugin->getPluginUrl() . '/images/opencast-black.svg')
+        );
     }
 
     public function unschedule($resource_id, $termin_id, $course_id)
