@@ -141,7 +141,7 @@ class SchedulerClient extends OCRestClient
 
             // also reset any custom made changes to the recording length, to prevent any unwanted effects for alternate schedules (if even activated)
             $event->start = $date->date;
-            $event->end   = $date->date;
+            $event->end   = $date->end_time;
 
             $event->store();
         }
