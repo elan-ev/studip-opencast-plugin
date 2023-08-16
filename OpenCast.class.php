@@ -60,6 +60,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             // }
         }
 
+        $this->addStylesheet("assets/css/courseware.scss");
         VersionHelper::get()->registerCoursewareBlock($this);
     }
 
