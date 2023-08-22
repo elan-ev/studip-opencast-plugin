@@ -11,6 +11,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
 use Opencast\Models\LTI\LtiHelper;
+use Opencast\Models\Helpers;
 
 use Opencast\Models\I18N as _;
 
@@ -52,9 +53,16 @@ class ConfigAdd extends OpencastController
 
         // check settings and store them to the database
         $config->updateSettings($json['config']);
+        // Validate that a correct default server is set
+        Helpers::validateDefaultServer();
 
         // check configuration and load endpoints
         $message = $config->updateEndpoints($this->container);
+        // Dont save configuration if it failed
+        if ($message['type'] == 'error') {
+            Endpoints::removeEndpoint($config->id, 'services');
+            Config::deleteBySql('id = ?', [$config->id]);
+        }
 
         $ret_config = $config->toArray();
         $ret_config = array_merge($ret_config, $ret_config['settings']);

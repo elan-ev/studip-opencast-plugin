@@ -76,6 +76,7 @@ export default {
             }
             this.$store.dispatch('configListUpdate', params)
                 .then(({ data }) => {
+                    this.$store.dispatch('configListRead');
                     if (data.messages.length) {
                         for (let i = 0; i < data.messages.length; i++ ) {
                             this.$store.dispatch('addMessage', data.messages[i]);
