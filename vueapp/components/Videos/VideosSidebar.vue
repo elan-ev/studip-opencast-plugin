@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="sidebar-widget" id="sidebar-actions">
+    <div class="sidebar-widget" id="sidebar-actions" v-if="fragment != 'videosTrashed'">
         <div class="sidebar-widget-header" v-translate>
             Aktionen
         </div>
