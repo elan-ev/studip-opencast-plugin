@@ -1,5 +1,5 @@
 <template>
-    <div class="oc--pagination">
+    <div class="oc--pagination" v-if="showPagination">
         <button v-if="paging.lastPage >= 0"
             v-bind:disabled="paging.currPage <= 0"
             @click="setPage(paging.currPage-1)"
@@ -46,14 +46,14 @@
             v-model="limit"
             :title="$gettext('Videos pro Seite')"
         >
-            <option value="5">5</option>
+            <option :value="minPaginationLimit">{{minPaginationLimit}}</option>
             <option value="15">15</option>
             <option value="30">30</option>
             <option value="50">50</option>
         </select>
     </div>
 
-    <div class="oc--pagination-mobile">
+    <div class="oc--pagination-mobile" v-if="showPagination">
         <button v-if="paging.lastPage >= 0"
             v-bind:disabled="paging.currPage <= 0"
             @click="setPage(0)"
@@ -102,7 +102,7 @@
             v-model="limit"
             :title="$gettext('Videos pro Seite')"
         >
-            <option value="5">5</option>
+            <option :value="minPaginationLimit">{{minPaginationLimit}}</option>
             <option value="15">15</option>
             <option value="30">30</option>
             <option value="50">50</option>
@@ -126,7 +126,8 @@ export default {
 
     data() {
         return {
-            limit: 15
+            limit: 15,
+            minPaginationLimit: 5
         }
     },
 
@@ -184,6 +185,10 @@ export default {
             }
 
             return numbers;
+        },
+
+        showPagination() {
+            return this.paging.items > this.minPaginationLimit;
         }
     },
 
