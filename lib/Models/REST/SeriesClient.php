@@ -72,7 +72,6 @@ class SeriesClient extends RestClient
         ];
 
         $metadata = self::getSeriesDC($course_id);
-
         $response = $this->opencastApi->seriesApi->create($metadata, $acl);
 
         if ((int)$response['code'] === 201) {
@@ -95,7 +94,7 @@ class SeriesClient extends RestClient
         $license      = "&copy; " . gmdate('Y') . " " . $GLOBALS['UNI_NAME_CLEAN'];
         $inst         = \Institute::find($course->institut_id);
 
-        $publisher   = $inst->name;
+        $publisher   = (string)$inst->name;
         $instructors = $course->getMembers('dozent');
         $instructor  = array_shift($instructors);
         $contributor = $GLOBALS['UNI_NAME_CLEAN'] ?: 'unbekannt';

@@ -29,40 +29,19 @@ class ScheduleAdd extends OpencastController
         }
 
         $json = $this->getRequestData($request);
-        $livestream = isset($json['livestream']) ? $json['livestream'] : false;
 
         $message = [
             'type' => 'error',
             'text' => _('Aufzeichnung konnte nicht geplant werden.')
         ];
 
-        if (ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id, $livestream)) {
+        if (ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id)) {
             $message = [
                 'type' => 'success',
-                'text' => $livestream ? _('Livestream mit Aufzeichnung wurde geplant.') : _('Aufzeichnung wurde geplant.')
+                'text' => _('Aufzeichnung wurde geplant.')
             ];
-            
-            $course = \Course::find($course_id);
-            $members = $course->members;
-            $users = [];
-            foreach ($members as $member) {
-                $users[] = $member->user_id;
-            }
 
-            $notification = sprintf(
-                _('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
-                htmlReady($course->name)
-            );
-            $plugin = \PluginEngine::getPlugin('OpenCast');
-            $assetsUrl = rtrim($plugin->getPluginURL(), '/') . '/assets';
-            $icon =  \Icon::create($assetsUrl . '/images/opencast-black.svg');
-            \PersonalNotifications::add(
-                $users,
-                \PluginEngine::getURL('opencast', ['cid' => $course_id], 'course'),
-                $notification,
-                $course_id,
-                $icon
-            );
+            ScheduleHelper::sendRecordingNotifications($course_id);
 
             \StudipLog::log('OC_SCHEDULE_EVENT', $termin_id, $course_id);
         }

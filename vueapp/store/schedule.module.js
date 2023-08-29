@@ -5,7 +5,6 @@ const state = {
     semester_list: [],
     semester_filter: 'all',
     allow_schedule_alternate: false,
-    allow_livestream: false,
     schedule_loading: false
 }
 
@@ -20,10 +19,6 @@ const getters = {
 
     allow_schedule_alternate(state) {
         return state.allow_schedule_alternate;
-    },
-
-    allow_livestream(state) {
-        return state.allow_livestream;
     },
 
     semester_filter() {
@@ -56,9 +51,6 @@ const actions = {
                 if (data?.allow_schedule_alternate) {
                     context.commit('setAllowAlternate', data.allow_schedule_alternate);
                 }
-                if (data?.allow_livestream) {
-                    context.commit('setAllowLivestream', data.allow_livestream);
-                }
             }).finally(() => {
                 context.commit('setScheduleLoading', false);
             });
@@ -82,9 +74,7 @@ const actions = {
             return;
         }
         context.commit('setScheduleLoading', true);
-        return ApiService.post('schedule/' + $cid + '/' + termin_id, {
-                livestream: true
-            }).finally(() => {
+        return ApiService.post('schedule/' + $cid + '/' + termin_id).finally(() => {
                 context.commit('setScheduleLoading', false);
             });
     },
@@ -164,10 +154,6 @@ const mutations = {
 
     setAllowAlternate(state, allow) {
         state.allow_schedule_alternate = allow;
-    },
-
-    setAllowLivestream(state, allow) {
-        state.allow_livestream = allow;
     },
 
     setSemesterFilter(state, semester_filter) {

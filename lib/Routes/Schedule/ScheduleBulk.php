@@ -30,8 +30,6 @@ class ScheduleBulk extends OpencastController
             throw new Error('Es fehlen Parameter!', 422);
         }
 
-        $livestream = $action == 'live' ? true : false;
-
         $message_type = 'success';
         $message_text = _('Die angeforderte Massenaktion wurde ausgeführt.');
         $errors = [];
@@ -42,8 +40,7 @@ class ScheduleBulk extends OpencastController
             $result = false;
             switch ($action) {
                 case 'schedule':
-                case 'live':
-                    $result = ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id, $livestream);
+                    $result = ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id);
                     break;
                 case 'unschedule':
                     $result = ScheduleHelper::deleteEventForSeminar($course_id, $termin_id);
@@ -57,6 +54,10 @@ class ScheduleBulk extends OpencastController
                 $date_text = $date->getDatesExport();
                 $errors[$termin_id] = $date_text;
             }
+        }
+
+        if ($action == 'schedule') {
+            ScheduleHelper::sendRecordingNotifications($course_id);
         }
 
         if (!empty($errors)) {

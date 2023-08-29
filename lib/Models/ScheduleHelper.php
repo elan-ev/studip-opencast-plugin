@@ -338,21 +338,22 @@ class ScheduleHelper
      *
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
-     * @param bool $livestream - livestream flag
      *
      * @return bool success or not
      */
-    public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false)
+    public static function scheduleEventForSeminar($course_id, $termin_id)
     {
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
         if (!$resource_id) {
             return false;
         }
+
         $oc_resource  = Resources::findByResource_id($resource_id);
         if (!$oc_resource
             || !self::checkCaptureAgent($oc_resource['config_id'], $oc_resource['capture_agent'])
-            || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])) {
+            || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])
+        ) {
             return false;
         }
 
@@ -361,10 +362,9 @@ class ScheduleHelper
         $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-        $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities'], $livestream);
+        $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
 
         if ($result) {
-
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
             $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id);
@@ -376,6 +376,7 @@ class ScheduleHelper
             $scheduler_client = SchedulerClient::getInstance($oc_resource['config_id']);
             $scheduler_client->deleteEvent($event_id);
         }
+
         return false;
     }
 
@@ -680,23 +681,6 @@ class ScheduleHelper
     }
 
     /**
-     * Gets the livestream parameter of the course's server config (if any)
-     *
-     * @param string $course_id course id
-     *
-     * @return bool
-     */
-    public static function checkCourseConfigLivestream($course_id)
-    {
-        $livestream = false;
-        $config = Config::getConfigForCourse($course_id);
-        if ($config && isset($config['settings']['livestream'])) {
-            $livestream = $config['settings']['livestream'];
-        }
-        return $livestream;
-    }
-
-    /**
      * Gets the list of scheduling dates for a course to be displayed in the scheduling list in a course
      *
      * @param string $course_id course id
@@ -707,7 +691,6 @@ class ScheduleHelper
     public static function getScheduleList($course_id, $semester_filter)
     {
         $allow_schedule_alternate = \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE;
-        $allow_livestream = self::checkCourseConfigLivestream($course_id);
 
         $dates = self::getDatesForSemester($course_id, $semester_filter);
         $events = self::getCourseEvents($course_id);
@@ -814,14 +797,6 @@ class ScheduleHelper
                             'role' => 'clickable',
                             'title' => _('Aufzeichnung planen')
                         ];
-                        if ($allow_livestream) {
-                            $actions['scheduleLive'] = [
-                                'shape' => 'video',
-                                'role' => 'clickable',
-                                'title' => _('Livestream+Aufzeichnung planen'),
-                                'info' => 'LIVE'
-                            ];
-                        }
                     } else {
                         $actions['expire'] = [
                             'shape' => 'video+decline',
@@ -961,4 +936,40 @@ class ScheduleHelper
 
         return $success;
     }
+
+    /**
+     * Send personal recording notifications to users for passed course
+     *
+     * @param string $course_id
+     *
+     * @return void
+     */
+    public static function sendRecordingNotifications($course_id)
+    {
+        $course = \Course::find($course_id);
+        $members = $course->members;
+        $users = [];
+
+        foreach ($members as $member) {
+            $users[] = $member->user_id;
+        }
+
+        $notification = sprintf(
+            _('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
+            htmlReady($course->name)
+        );
+
+        $plugin = \PluginEngine::getPlugin('OpenCast');
+        $assetsUrl = rtrim($plugin->getPluginURL(), '/') . '/assets';
+        $icon =  \Icon::create($assetsUrl . '/images/opencast-black.svg');
+
+        \PersonalNotifications::add(
+            $users,
+            \PluginEngine::getURL('opencast', ['cid' => $course_id], 'course'),
+            $notification,
+            $course_id,
+            $icon
+        );
+    }
+
 }

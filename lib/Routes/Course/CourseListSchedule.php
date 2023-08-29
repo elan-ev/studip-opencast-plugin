@@ -16,19 +16,18 @@ class CourseListSchedule extends OpencastController
     {
         $course_id = $args['course_id'];
         $semester_filter = $args['semester_filter'];
-        
+
         $semester_list = ScheduleHelper::getSemesterList($course_id);
         $allow_schedule_alternate = \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE;
-        $allow_livestream = ScheduleHelper::checkCourseConfigLivestream($course_id);
 
         $schedule_list = ScheduleHelper::getScheduleList($course_id, $semester_filter);
-        
+
         $response_data = [
             'semester_list' => $semester_list,
             'schedule_list' => $schedule_list,
-            'allow_schedule_alternate' => $allow_schedule_alternate,
-            'allow_livestream' => $allow_livestream
+            'allow_schedule_alternate' => $allow_schedule_alternate
         ];
+
         return $this->createResponse($response_data, $response);
     }
 }

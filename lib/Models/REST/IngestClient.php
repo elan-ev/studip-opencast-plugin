@@ -27,7 +27,7 @@ class IngestClient extends RestClient
     public function createMediaPackage()
     {
         $response = $this->opencastApi->ingest->createMediaPackage();
-        
+
         if ($response['code'] == 200) {
             return $response['body'];
         }
@@ -46,7 +46,7 @@ class IngestClient extends RestClient
     public function addDCCatalog($mediaPackage, $dublinCore, $flavor = '')
     {
         $response = $this->opencastApi->ingest->addDCCatalog($mediaPackage, $dublinCore, $flavor);
-        
+
         if ($response['code'] == 200) {
             return $response['body'];
         }
@@ -65,7 +65,7 @@ class IngestClient extends RestClient
     public function ingest($mediaPackage, $workflowDefinitionId = '', $workflowInstanceId = '')
     {
         $response = $this->opencastApi->ingest->ingest($mediaPackage, $workflowDefinitionId, $workflowInstanceId);
-        
+
         if ($response['code'] == 200) {
             return $response['body'];
         }
@@ -78,13 +78,13 @@ class IngestClient extends RestClient
      * @param string $mediaPackage The media package
      * @param string $trackURI The location of the media
      * @param string $flavor The kind of media track
-     * 
+     *
      * @return string augmented media package in xml format, or false if unable to add
      */
     public function addTrack($mediaPackage, $trackURI, $flavor)
     {
         $response = $this->opencastApi->ingest->addTrackUrl($mediaPackage, $flavor, $trackURI);
-        
+
         if ($response['code'] == 200) {
             return $response['body'];
         }
@@ -93,21 +93,18 @@ class IngestClient extends RestClient
 
     /**
      * Schedule an event based on the given media package.
-     * 
+     *
      * @param string $mediaPackage The media package
      * @param string $workflowDefinitionId  Workflow definition id
      * @param string $capabilities Device Capabilities
-     * @param boolean $livestream Whether to schedule with publishLive param
-     * 
+     *
      * @return boolean whether the event is scheduled or not
      */
-    public function schedule($mediaPackage, $workflowDefinitionId = '', $capabilities = '', $livestream = false)
+    public function schedule($mediaPackage, $workflowDefinitionId = '', $capabilities = '')
     {
-        // This part has been taken out from the old SOP which is intended to schedule an event
-        // with livestreaming capability, which does not work properly and must have further R&D!
-        if (!empty($capabilities) || $livestream) {
+        if (!empty($capabilities)) {
             $uri = "/ingest/schedule";
-            
+
             if (!empty($workflowDefinitionId)) {
                 $uri .= "/{$workflowDefinitionId}";
             }
@@ -120,18 +117,15 @@ class IngestClient extends RestClient
                 $query['capture.device.names'] = $capabilities;
             }
 
-            if ($livestream) {
-                $query['publishLive'] = 'True';
-            }
-
             $options = $this->ocRestClient->getQueryParams($query);
             $response = $this->ocRestClient->performGet($uri, $options);
 
             return $response['code'] == 200;
         } else {
             $response = $this->opencastApi->ingest->schedule($mediaPackage, $workflowDefinitionId);
-            return $response['code'] == 201;
+            return (in_array($response['code'], [200, 201]) !== false);
         }
+
         return false;
     }
 }

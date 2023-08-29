@@ -138,13 +138,6 @@ export default {
                     placeholder: 'CONSUMERSECRET',
                     required: true
                 },
-                /* { # this option is currently not safe to be used
-                    description: this.$gettext('Soll das Live-Streaming aktiviert werden?'),
-                    name: 'livestream',
-                    value: this.currentConfig.livestream ? this.currentConfig.livestream : false,
-                    type: 'boolean',
-                    required: false
-                }, */
                 {
                     description: this.$gettext('Zeitpuffer (in Sekunden) um Überlappungen zu verhindern'),
                     name: 'time_buffer_overlap',

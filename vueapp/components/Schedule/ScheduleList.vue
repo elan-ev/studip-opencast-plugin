@@ -131,7 +131,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["schedule_list", "allow_schedule_alternate", "allow_livestream", "cid", 'schedule_loading']),
+        ...mapGetters(["schedule_list", "allow_schedule_alternate", "cid", 'schedule_loading']),
 
         get_bulk_actions() {
             let bulk_actions = [
@@ -139,9 +139,6 @@ export default {
                 {value: 'update', text: this.$gettext('Aufzeichnungen aktualisieren')},
                 {value: 'unschedule', text: this.$gettext('Aufzeichnungen stornieren')},
             ];
-            if (this.allow_livestream) {
-                bulk_actions.push({value: 'live', text: this.$gettext('Livestream+Aufzeichnung planen')});
-            }
 
             return bulk_actions;
         }
@@ -246,7 +243,9 @@ export default {
                         this.$store.dispatch('getScheduleList');
                     }
                 } else {
-                    this.addMesssage('success', this.$gettext('Die geplante Aufzeichnung wurde entfernt'), true);
+                    if (dispatchAction == 'unschedule') {
+                        this.addMesssage('success', this.$gettext('Die geplante Aufzeichnung wurde entfernt.'), true);
+                    }
                     this.$store.dispatch('getScheduleList');
                 }
             });
