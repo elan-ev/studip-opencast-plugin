@@ -19,12 +19,9 @@
                 <ul class="video-list" v-else>
                     <li v-for="(video, index) in videos" :key="index" :class="{selected: selectedVideoId == video.id}" @click="setVideo(video)">
                         <div>
-                            <strong class="oc--metadata-title">
+                            <strong>
                                 {{video.title}}
                             </strong>
-                            <div>
-                                <small><i>{{ video.episode }}</i></small>
-                            </div>
                             <div>
                                 {{ printDetails(video) }}
                                 <!-- {{ video.author }}

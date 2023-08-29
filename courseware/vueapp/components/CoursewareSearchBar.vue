@@ -10,6 +10,14 @@
                     @submit="doSearch"
                 />
             </li>
+            <li title="Suche starten"
+                class="oc-cw-searchbar-search-icon"
+                @click="doSearch"
+            >
+                <studip-icon
+                    shape="search" role="clickable"
+                />
+            </li>
         </ul>
 
         <select class="oc-cw-searchbar-sorter" v-model="inputSort" @change="setSort">
@@ -27,11 +35,30 @@
 export default {
     name: "CoursewareSearchBar",
 
-    props: ['sorts'],
-
     data() {
+        const sorts = [
+            {
+                field: 'created',
+                order: 'desc',
+                text: 'Datum hochgeladen: Neueste zuerst'
+            }, {
+                field: 'created',
+                order: 'asc',
+                text: 'Datum hochgeladen: Älteste zuerst'
+            }, {
+                field: 'title',
+                order: 'asc',
+                text: 'Titel: Alphabetisch'
+            }, {
+                field: 'title',
+                order: 'desc',
+                text: 'Titel: Umgekehrt Alphabetisch'
+            }
+        ];
+
         return {
-            inputSort: null,
+            sorts: sorts,
+            inputSort: sorts[0],
             inputSearch: ''
         }
     },

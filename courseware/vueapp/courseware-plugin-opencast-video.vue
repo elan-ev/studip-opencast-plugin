@@ -12,12 +12,12 @@
             <template #content>
                 <div>
                   <div v-if="!lti_connected">
-                      <span v-if="!currentEpisodeURL && !currentEpisodeId" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
-                      <span v-if="!currentEpisodeURL && currentEpisodeId" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
-                      <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
+                      <span v-translate v-text="'LTI Verbindung fehlgeschlagen'"></span>
                   </div>
                   <div v-else>
-                      <iframe :src="currentEpisodeURL"
+                      <span v-if="!currentEpisodeId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
+                      <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
+                      <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen
                     ></iframe>
@@ -37,7 +37,6 @@
                         <translate>Videos</translate>
                     </label>
                     <CoursewareSearchBar
-                        :sorts="sorts"
                         @doSearch="performSearch"
                         @doSort="performSort"
                     />
@@ -104,28 +103,6 @@ export default {
             context: 'context',
             relatedContainers: 'courseware-containers/related',
         }),
-
-        sorts() {
-            return [
-                {
-                    field: 'mkdate',
-                    order: 'desc',
-                    text : 'Datum hochgeladen: Neueste zuerst'
-                },  {
-                    field: 'mkdate',
-                    order: 'asc',
-                    text : 'Datum hochgeladen: Älteste zuerst'
-                },  {
-                    field: 'title',
-                    order: 'desc',
-                    text : 'Titel: Alphabetisch'
-                }, {
-                    field: 'title',
-                    order: 'asc',
-                    text : 'Titel: Umgekehrt Alphabetisch'
-                }
-            ];
-        },
 
         container() {
             return (
@@ -198,7 +175,7 @@ export default {
             attributes.payload.episode_id = this.currentEpisodeId;
             attributes.payload.url = this.currentEpisodeURL;
             attributes.payload.visible = this.currentVisible;
-
+            
             if (this.container?.id && this.block?.id) {
                 return this.updateBlock({
                     attributes,
