@@ -61,6 +61,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         $this->addStylesheet("assets/css/courseware.scss");
+        $this->addStylesheet("assets/css/opencast.scss");
         VersionHelper::get()->registerCoursewareBlock($this);
     }
 
@@ -265,7 +266,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $app->group('/opencast/api', new RouteMap($app));
             $app->run();
         } else {
-            $this->addStylesheet("assets/css/opencast.scss");
             $css = VersionHelper::get()->getVersionSpecificStylesheet();
 
             if ($css) {

@@ -48,7 +48,11 @@ class SimpleConfigList extends OpencastController
             'server'    => $config_list ?: [],
             'settings'  => $this->getGlobalConfig(),
             'workflows' => $workflows->toArray(),
-            'workflow_configs' => $workflow_configs->toArray()
+            'workflow_configs' => $workflow_configs->toArray(),
+            'plugin_assets_url' => \PluginEngine::getPlugin('Opencast')->getAssetsUrl(),
+            'auth_url'          => \PluginEngine::getURL('opencast', [], 'redirect/authenticate', true),
+            'redirect_url'      => \PluginEngine::getURL('opencast', [], 'redirect/perform', true),
+            'course_id'         => \Context::getId() ?: null
         ], $response);
     }
 
