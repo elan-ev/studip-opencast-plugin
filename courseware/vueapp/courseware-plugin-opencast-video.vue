@@ -9,26 +9,24 @@
             @storeEdit="storeBlock"
             @closeEdit="initCurrentData"
         >
+            <LtiAuth />
+
             <template #content>
                 <div>
-                  <div v-if="!lti_connected">
-                      <span v-translate v-text="'LTI Verbindung fehlgeschlagen'"></span>
-                  </div>
-                  <div v-else>
-                      <span v-if="!currentEpisodeId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
-                      <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
-                      <iframe v-else :src="currentEpisodeURL"
+
+                    <span v-if="!currentEpisodeId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
+                    <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
+                    <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen
                     ></iframe>
-                  </div>
 
-                  <div v-if="currentVisible == 'intern' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
-                      <translate>
-                          Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
-                          Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
-                      </translate>
-                  </div>
+                    <div v-if="currentVisible == 'intern' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
+                        <translate>
+                            Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
+                            Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
+                        </translate>
+                    </div>
                 </div>
             </template>
             <template v-if="canEdit" #edit>
@@ -63,13 +61,15 @@ import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex';
 import CoursewareSearchBar from './components/CoursewareSearchBar.vue';
 import CoursewareVideoTable from './components/CoursewareVideoTable.vue';
+import LtiAuth from './components/LtiAuth.vue';
 
 export default {
     name: "courseware-plugin-opencast-video",
 
     components: {
         CoursewareSearchBar,
-        CoursewareVideoTable
+        CoursewareVideoTable,
+        LtiAuth
     },
     props: {
         block: Object,
@@ -93,8 +93,6 @@ export default {
             currentEpisodeId : null,
             currentEpisodeURL : null,
             currentVisible : '',
-            ltiConnections : [],
-            ltiConnected: false
         }
     },
 
@@ -112,15 +110,6 @@ export default {
                 }) ?? {}
             );
         },
-
-        lti_connected() {
-            if (!this.currentEpisodeURL || this.ltiConnections.length == 0) {
-                return false;
-            }
-            let edpisode_url = new URL(this.currentEpisodeURL);
-            let lti_connection = this.ltiConnections.find(connection => connection.launch_url.includes(edpisode_url.hostname));
-            return lti_connection?.authenticated == true;
-        }
     },
 
     methods: {
@@ -175,7 +164,7 @@ export default {
             attributes.payload.episode_id = this.currentEpisodeId;
             attributes.payload.url = this.currentEpisodeURL;
             attributes.payload.visible = this.currentVisible;
-            
+
             if (this.container?.id && this.block?.id) {
                 return this.updateBlock({
                     attributes,
@@ -227,63 +216,9 @@ export default {
                     view.loadingVideos = false;
                 })
         },
-
-        async runLTI() {
-            let view = this;
-            return axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/api/lti/launch_data/' + this.context.id)
-                .then(({data}) => {
-                    if (data.lti.length > 0) {
-                        data.lti.forEach(connection => view.ltiConnections.push({
-                            launch_url: JSON.parse(JSON.stringify(connection.launch_url)),
-                            launch_data: JSON.parse(JSON.stringify(connection.launch_data)),
-                            authenticated: false
-                        }));
-                        view.ltiConnections.forEach(connection => view.checkConnection(connection));
-                    } else {
-                        console.log('No LTI data found');
-                    }
-                });
-        },
-
-        async checkConnection(connection) {
-            let view = this;
-            return axios({
-                method: 'GET',
-                url: connection.launch_url,
-                crossDomain: true,
-                withCredentials: true,
-            }).then(({ data }) => {
-                if (!data.roles) {
-                    view.authenticateLTI(connection);
-                } else {
-                    connection.authenticated = true;
-                }
-            }).catch(() => {
-                view.authenticateLTI(connection);
-            });
-        },
-
-        async authenticateLTI(connection) {
-            return axios({
-                method: 'POST',
-                url: connection.launch_url,
-                data: new URLSearchParams(connection.launch_data),
-                crossDomain: true,
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-                }
-            }).then(() => {
-                connection.authenticated = true;
-            }).catch(() => {
-                console.log('LTI Authentication failed:', connection.launch_url);
-                connection.authenticated = false;
-            });
-        }
     },
 
     mounted() {
-        this.runLTI();
         this.initCurrentData();
         this.loadVideos();
     },

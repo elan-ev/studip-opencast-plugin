@@ -7,7 +7,7 @@
         </label>
         <div class="oc-cw-video-list" v-else>
             <PaginationButtons :paging="paging" @changePage="startPageChange"/>
-            
+
             <label>
                 <ul v-if="loadingVideos">
                     <li v-for="(n, index) in limit" :key="index">
@@ -17,6 +17,17 @@
                     </li>
                 </ul>
                 <ul class="video-list" v-else>
+                    <VideoCard
+                        v-for="event in videos"
+                        v-bind:event="event"
+                        v-bind:key="event.token"
+                        :isLTIAuthenticated="isLTIAuthenticated"
+                        :plugin_assets_url="plugin_assets_url"
+                        @doAction="setVideo"
+                        @redirectAction="redirectAction"
+                    ></VideoCard>
+
+                    <!--
                     <li v-for="(video, index) in videos" :key="index" :class="{selected: selectedVideoId == video.id}" @click="setVideo(video)">
                         <div>
                             <strong>
@@ -24,13 +35,14 @@
                             </strong>
                             <div>
                                 {{ printDetails(video) }}
-                                <!-- {{ video.author }}
-                                <span v-if="video.created">
+                                {{ video.author }}
+                                <!- <span v-if="video.created">
                                     - {{ video.created }} Uhr
-                                </span> -->
+                                </span> ->
                             </div>
                         </div>
                     </li>
+                    -->
                 </ul>
             </label>
         </div>
@@ -39,8 +51,8 @@
 
 <script>
 import PaginationButtons from './PaginationButtons.vue';
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import VideoCard from './VideoCard.vue';
+import axios from 'axios';
 
 export default {
     name: "CoursewareVideoTable",
@@ -49,7 +61,18 @@ export default {
 
     components: {
         PaginationButtons,
+        VideoCard
     },
+
+    data() {
+        return {
+            interval: null,
+            interval_counter: 0,
+            plugin_assets_url: '',
+            isLTIAuthenticated: {}
+        }
+    },
+
     methods: {
         startPageChange(page) {
             this.$emit('doChangePage', page);
@@ -57,23 +80,32 @@ export default {
 
         setVideo(video) {
             this.$emit('doSelectVideo', video);
-        },
-
-        printDetails(video) {
-            let details = [];
-            if (video?.author) {
-                details.push(video.author);
-            }
-            if (video?.created) {
-                let mydate = new Date(video.created);
-
-                if (mydate instanceof Date && !isNaN(mydate)) {
-                    details.push(format(mydate, "d. MMM, yyyy, HH:ii", {locale: de}));
-                }
-            }
-
-            return details.join(' - ');
         }
     },
+
+    mounted() {
+        let view = this;
+
+        axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/api/config/simple')
+            .then(({data}) => {
+                view.plugin_assets_url = data.plugin_assets_url;
+                console.log(data);
+
+                view.interval = setInterval(() => {
+                    for (let id in data['server']) {
+                        if (!view.isLTIAuthenticated[id]) {
+                            view.checkLTIAuthentication(data['server'][id]);
+                        }
+                    }
+
+                    view.interval_counter++;
+
+                    // prevent spamming of oc server
+                    if (view.interval_counter > 10) {
+                        clearInterval(view.interval);
+                    }
+                }, 2000);
+            });
+    }
 }
 </script>
