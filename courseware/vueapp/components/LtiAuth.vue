@@ -20,17 +20,15 @@ import { mapGetters } from "vuex";
 export default {
     name: "LtiAuth",
 
-    computed: {
-        ...mapGetters(['simple_config_list', 'cid']),
-    },
+    props: ['simple_config_list'],
 
     methods: {
         authUrl(config_id, num) {
             // check, if we are in a course
-            if (this.cid) {
-                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + '&cid=' + this.cid;
+            if (this.simple_config_list.course_id) {
+                return this.simple_config_list.auth_url + '/' + num + '?config_id=' + config_id + '&cid=' + this.simple_config_list.course_id;
             } else {
-                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id;
+                return this.simple_config_list.auth_url + '/' + num + '?config_id=' + config_id;
             }
         }
     },

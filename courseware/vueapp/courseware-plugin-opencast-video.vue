@@ -9,11 +9,8 @@
             @storeEdit="storeBlock"
             @closeEdit="initCurrentData"
         >
-            <LtiAuth />
-
             <template #content>
                 <div>
-
                     <span v-if="!currentEpisodeId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
                     <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
                     <iframe v-else :src="currentEpisodeURL"
@@ -61,7 +58,6 @@ import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex';
 import CoursewareSearchBar from './components/CoursewareSearchBar.vue';
 import CoursewareVideoTable from './components/CoursewareVideoTable.vue';
-import LtiAuth from './components/LtiAuth.vue';
 
 export default {
     name: "courseware-plugin-opencast-video",
@@ -69,8 +65,8 @@ export default {
     components: {
         CoursewareSearchBar,
         CoursewareVideoTable,
-        LtiAuth
     },
+
     props: {
         block: Object,
         canEdit: Boolean,
@@ -186,7 +182,6 @@ export default {
 
             let copied_from = get(this.block, "attributes.payload.copied_from", "");
             if (copied_from) {
-                console.log('copied_from: ', copied_from);
                 this.storeBlock();
             }
         },

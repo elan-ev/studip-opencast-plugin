@@ -16,15 +16,18 @@
                         <div class="oc-cw-loadingbar"></div>
                     </li>
                 </ul>
-                <ul class="video-list" v-else>
+                <ul class="oc--episode-list--small" v-else>
                     <VideoCard
+                        v-if="simple_config_list"
                         v-for="event in videos"
+                        class="{selected: selectedVideoId == event.id}"
                         v-bind:event="event"
                         v-bind:key="event.token"
                         :isLTIAuthenticated="isLTIAuthenticated"
-                        :plugin_assets_url="plugin_assets_url"
+                        :simple_config_list="simple_config_list"
                         @doAction="setVideo"
                         @redirectAction="redirectAction"
+                        @setVideo="setVideo(event)"
                     ></VideoCard>
 
                     <!--
@@ -46,12 +49,17 @@
                 </ul>
             </label>
         </div>
+
+        <LtiAuth v-if="simple_config_list"
+            :simple_config_list="simple_config_list"
+        />
     </div>
 </template>
 
 <script>
 import PaginationButtons from './PaginationButtons.vue';
 import VideoCard from './VideoCard.vue';
+import LtiAuth from './LtiAuth.vue';
 import axios from 'axios';
 
 export default {
@@ -61,15 +69,17 @@ export default {
 
     components: {
         PaginationButtons,
-        VideoCard
+        VideoCard,
+        LtiAuth
+
     },
 
     data() {
         return {
             interval: null,
             interval_counter: 0,
-            plugin_assets_url: '',
-            isLTIAuthenticated: {}
+            isLTIAuthenticated: {},
+            simple_config_list: null
         }
     },
 
@@ -80,6 +90,32 @@ export default {
 
         setVideo(video) {
             this.$emit('doSelectVideo', video);
+        },
+
+        checkLTIAuthentication(server)
+        {
+            axios({
+                method: 'GET',
+                url: server.name + "/lti/info.json",
+                crossDomain: true,
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                }
+            }).then((response) => {
+                if (response.status == 200 && response.data.user_id !== undefined) {
+                    this.$set(this.isLTIAuthenticated, server.id, true);
+                }
+            });
+        },
+
+        redirectAction(action) {
+            let redirectUrl = this.simple_config_list.redirect_url;
+
+            if (redirectUrl) {
+                redirectUrl = redirectUrl + action;
+                window.open(redirectUrl, '_blank');
+            }
         }
     },
 
@@ -88,13 +124,14 @@ export default {
 
         axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/api/config/simple')
             .then(({data}) => {
-                view.plugin_assets_url = data.plugin_assets_url;
-                console.log(data);
+                view.simple_config_list = data;
+
+                let server = data['server'];
 
                 view.interval = setInterval(() => {
-                    for (let id in data['server']) {
+                    for (let id in server) {
                         if (!view.isLTIAuthenticated[id]) {
-                            view.checkLTIAuthentication(data['server'][id]);
+                            view.checkLTIAuthentication(server[id]);
                         }
                     }
 

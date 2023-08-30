@@ -1,6 +1,6 @@
 <template>
     <div name="oc--episode">
-        <li :key="event.id" class="oc--grid-episode">
+        <li :key="event.id" class="oc--grid-episode" @click="$emit('setVideo', event)">
             <div class="oc--flex-checkbox" v-if="playlistForVideos || playlistMode || isCourse">
                 <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
             </div>
@@ -95,22 +95,23 @@ export default {
     props: {
         event: Object,
         isLTIAuthenticated: Object,
+        simple_config_list: Object
     },
 
     methods: {
         preview()
         {
-            return this.plugin_assets_url + '/images/default-preview.png';
+            return this.simple_config_list.plugin_assets_url + '/images/default-preview.png';
         },
 
         play()
         {
-            return this.plugin_assets_url + '/images/play.png';
+            return this.simple_config_list.plugin_assets_url + '/images/play.png';
         },
 
         cut()
         {
-            return this.plugin_assets_url + '/images/cut.png';
+            return this.simple_config_list.plugin_assets_url + '/images/cut.png';
         },
 
         removeVideo() {
@@ -136,31 +137,10 @@ export default {
         },
 
         setDefaultImage() {
-            if (this.plugin_assets_url) {
+            if (this.simple_config_list.plugin_assets_url) {
                 let image = this.$refs[this.event.id];
-                image.src = this.plugin_assets_url + '/images/default-preview.png';
+                image.src = this.simple_config_list.plugin_assets_url + '/images/default-preview.png';
             }
-        },
-
-        checkLTIAuthentication(server)
-        {
-            let view = this;
-
-            axios({
-                method: 'GET',
-                url: server.name + "/lti/info.json",
-                crossDomain: true,
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-                }
-            }).then((response) => {
-                if (response.status == 200) {
-                    view.isLTIAuthenticated[server.id] = true;
-                } else {
-                    view.isLTIAuthenticated[server.id] = false;
-                }
-            });
         },
 
         datetime(date) {
@@ -190,12 +170,9 @@ export default {
         {
             this.plugin_assets_url;
 
-            console.log('getImageSrc', this.plugin_assets_url);
             if (this.isLTIAuthenticated[this.event.config_id]) {
-                console.log('getImageSrc->isLTIAuthenticated');
                 return this.event.preview.player ? this.event.preview.player : this.event.preview.search;
             } else {
-                console.log('getImageSrc->NOT LTIAuthenticated');
                 return this.plugin_assets_url + '/images/default-preview.png';
             }
         },
