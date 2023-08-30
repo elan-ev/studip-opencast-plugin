@@ -89,8 +89,8 @@ class RefreshScheduledEvents extends CronJob
 
                     if ($cd->room_booking->resource_id == $se['resource_id']
                         && (
-                            $cd->room_booking->date        != $se['coursedate_start']
-                            || $cd->room_booking->end_time != $se['coursedate_end']
+                            $cd->room_booking->begin  != $se['coursedate_start']
+                            || $cd->room_booking->end != $se['coursedate_end']
                         )
                     ) {
                         $scheduler_client = SchedulerClient::create($se['seminar_id']);
