@@ -23,6 +23,8 @@ class AddCourseDateFieldsForEvents extends Migration
 
     public function down()
     {
+        $db = DBManager::get();
+
         $db->exec('ALTER TABLE oc_scheduled_recordings
             DROP `coursedate_end` ,
             DROP `coursedate_start`
