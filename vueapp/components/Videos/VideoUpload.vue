@@ -244,7 +244,8 @@ export default {
         ...mapGetters({
             'config'       : 'simple_config_list',
             'course_config': 'course_config',
-            'cid'          : 'cid'
+            'cid'          : 'cid',
+            'playlist'     : 'playlist'
         }),
 
         upload_workflows() {
@@ -368,7 +369,7 @@ export default {
                         progress: parseInt(Math.round((loaded / total) * 100 ))
                     }
                 },
-                uploadDone: (episode_id, workflow_id) => {
+                uploadDone: (episode_id, uploadData, workflow_id) => {
                     view.$emit('done');
                     view.$store.dispatch('createLogEvent', {
                         event: 'upload',
@@ -376,7 +377,30 @@ export default {
                             episode_id: episode_id,
                             workflow_id: workflow_id
                         }
-                    })
+                    });
+
+                    // If a playlist is selected, add the Video to the playlist
+                    if (view.playlist) {
+                        view.$store.dispatch('createVideo', {
+                            'episode': episode_id,
+                            'config_id': view.selectedServer.id,
+                            'title': uploadData.title,
+                            'description': uploadData.description
+                        })
+                        .then(({ data }) => {
+                            this.$store.dispatch('addMessage', data.message);
+
+                            if(data.event?.token) {
+                                this.$store.dispatch('addVideoToPlaylists', {
+                                    token: data.event.token,
+                                    playlists: [view.playlist],
+                                })
+                                .then(({data}) => {
+                                    this.$store.dispatch('addMessage', data.message);
+                                })
+                            }
+                        });
+                    }
                 }
             });
         },
