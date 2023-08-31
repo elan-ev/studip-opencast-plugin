@@ -43,6 +43,20 @@
                         </label>
 
                         <label>
+                            <span v-translate>
+                                Zu Wiedergabeliste hinzufügen
+                            </span>
+
+                            <select v-model="upload.playlist" required>
+                                <option v-for="playlist in upload_playlists"
+                                    v-bind:key="playlist.id"
+                                    :value="playlist.id">
+                                    {{ playlist.title }}
+                                </option>
+                            </select>
+                        </label>
+
+                        <label>
                             <span class="required" v-translate>
                                 Aufnahmezeitpunkt
                             </span>
@@ -229,6 +243,7 @@ export default {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
                 workflow: null,
+                playlist: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
@@ -245,8 +260,20 @@ export default {
             'config'       : 'simple_config_list',
             'course_config': 'course_config',
             'cid'          : 'cid',
-            'playlist'     : 'playlist'
+            'playlist'     : 'playlist',
+            'playlists'    : 'playlists'
         }),
+
+        upload_playlists() {
+            let upload_playlists = this.playlists
+            if (!this.playlist) {
+                upload_playlists.unshift({
+                    id: null,
+                    title: 'Keine Wiedergabeliste auswählen'
+                })
+            }
+            return upload_playlists;
+        },
 
         upload_workflows() {
             let upload_wfs = [];
@@ -379,28 +406,30 @@ export default {
                         }
                     });
 
-                    // If a playlist is selected, add the Video to the playlist
-                    if (view.playlist) {
-                        view.$store.dispatch('createVideo', {
-                            'episode': episode_id,
-                            'config_id': view.selectedServer.id,
-                            'title': uploadData.title,
-                            'description': uploadData.description
-                        })
-                        .then(({ data }) => {
-                            this.$store.dispatch('addMessage', data.message);
+                    // Add event to database
+                    view.$store.dispatch('createVideo', {
+                        'episode': episode_id,
+                        'config_id': view.selectedServer.id,
+                        'title': uploadData.title,
+                        'description': uploadData.description
+                    })
+                    .then(({ data }) => {
+                        this.$store.dispatch('addMessage', data.message);
 
-                            if(data.event?.token) {
+                        // If a playlist is selected, connect event with playlist
+                        if (data.event?.token && uploadData.playlist) {
+                            let playlist = view.playlists.find(p => p.id === uploadData.playlist);
+                            if (playlist) {
                                 this.$store.dispatch('addVideoToPlaylists', {
                                     token: data.event.token,
-                                    playlists: [view.playlist],
+                                    playlists: [playlist],
                                 })
                                 .then(({data}) => {
                                     this.$store.dispatch('addMessage', data.message);
                                 })
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             });
         },
@@ -424,6 +453,10 @@ export default {
 
         if (this.cid) {
             this.$store.dispatch('loadCourseConfig', this.cid);
+        }
+
+        if (this.playlist) {
+            this.upload.playlist = this.playlist.id;
         }
     }
 }
