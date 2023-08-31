@@ -166,7 +166,6 @@ class Config extends \SimpleOrMap
             ];
 
             Endpoints::deleteBySql('config_id = ?', [$this->id]);
-            Config::deleteBySql('id = ?', [$this->id]);
         } else {
             $service_host =
                 $service_url['scheme'] .'://' .
@@ -186,7 +185,18 @@ class Config extends \SimpleOrMap
                 $services_client = new ServicesClient($this->id);
 
                 $comp = null;
-                $comp = $services_client->getRESTComponents();
+                try {
+                    $comp = $services_client->getRESTComponents();
+                }
+                catch(\Exception $e) {
+                    return [
+                        'type' => 'error',
+                        'text' => sprintf(
+                            _('%s'),
+                            $e->getMessage()
+                        )
+                    ];
+                }
             } catch (AccessDeniedException $e) {
                 Endpoints::removeEndpoint($this->id, 'services');
 

@@ -64,7 +64,11 @@ export default {
                     setting.options = this.downloadOptions;
                     settings.push(setting);
                 }
-
+                else if (this.config_list.settings[id].name == 'OPENCAST_DEFAULT_SERVER') {
+                    let setting = this.config_list.settings[id];
+                    setting.options = this.defaultServerOptions;
+                    settings.push(setting);
+                }
                 else if (this.config_list.settings[id].name != 'OPENCAST_TOS') {
                     settings.push(this.config_list.settings[id]);
                 }
@@ -96,6 +100,26 @@ export default {
                     description: 'Mediendownloads sind verboten - für einzelne Wiedergabelisten und Videos einschaltbar'
                 }
             ];
+        },
+
+        defaultServerOptions() {
+            let options = [];
+
+            this.config_list.server.forEach(server => {
+                options.push({
+                    value: server.id,
+                    description: '[#' + server.id + '] ' + server.service_url + ''
+                })
+            });
+
+            if (options.length === 0) {
+                options.push({
+                    value: -1,
+                    description: 'Es sind keine Server eingerichtet'
+                })
+            }
+
+            return options;
         },
 
         opencastTos() {

@@ -146,6 +146,31 @@ class Helpers
     }
 
     /**
+     * Check and make sure, that a valid server is set.
+     * If no server is detected, -1 will be stored.
+     * 
+     * @return
+     */
+    static function validateDefaultServer() {
+        $config = new \SimpleCollection(Config::findBySql(1));
+        $config_ids = $config->pluck('id');
+
+        $value = \Config::get()->OPENCAST_DEFAULT_SERVER;
+        $valid_value = $value;
+
+        if (empty($config_ids)) {
+            $valid_value = -1;
+        }
+        elseif (in_array($value, $config_ids) === false) {
+            $valid_value = reset($config_ids);
+        }
+        if ($valid_value != $value) {
+            $value = $valid_value;
+            \Config::get()->store('OPENCAST_DEFAULT_SERVER', $valid_value);
+        }
+    }
+
+    /**
      * Check if the default course playlists exists and create if necessary
      *
      * @param string $course_id

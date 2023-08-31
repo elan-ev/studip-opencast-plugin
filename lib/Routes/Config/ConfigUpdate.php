@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Models\Helpers;
 use Opencast\Models\Config;
 use Opencast\Models\WorkflowConfig;
 
@@ -24,22 +25,14 @@ class ConfigUpdate extends OpencastController
         // load oc server configs
         $config = new \SimpleCollection(Config::findBySql(1));
 
-        $config_ids = $config->pluck('id');
-
         // Storing General Configs.
         foreach ($json['settings'] as $config) {
-            // validate values
-            if ($config['name'] == 'OPENCAST_DEFAULT_SERVER') {
-                // check, that a correct server is set
-                if (in_array($config['value'], $config_ids) === false) {
-                    $config['value'] = reset($config_ids);
-                }
-            }
-
             if (in_array($config['name'], $constants['global_config_options'])) {
                 \Config::get()->store($config['name'], $config['value']);
             }
         }
+        // Validate that a correct default server is set
+        Helpers::validateDefaultServer();
 
         // Storing Resources Configs.
         $messages = [];

@@ -28,6 +28,7 @@ class ConfigEdit extends OpencastController
         $duplicate_url = false;
 
         $config = Config::find($args['id']);
+        $config_old = $config->toArray();
 
         if (empty($config)) {
             throw new Error('Could not find config with id '. $args['id'] .'.', 500);
@@ -38,6 +39,11 @@ class ConfigEdit extends OpencastController
 
         // check configuration and load endpoints
         $message = $config->updateEndpoints($this->container);
+        // Restore configuration if it failed
+        if ($message['type'] == 'error') {
+            $config->setData($config_old);
+            $config->store();
+        }
 
         $ret_config = $config->toArray();
         $ret_config = array_merge($ret_config, $ret_config['settings']);

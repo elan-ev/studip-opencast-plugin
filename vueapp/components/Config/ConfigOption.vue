@@ -47,7 +47,7 @@
                 @change="setValue(setting.value)">
         </label>
 
-        <label v-if="setting.type == 'string' && setting.options">
+        <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options">
             <span :class="{
                 required: setting.required
             }">
@@ -61,7 +61,7 @@
                 @option:selected="setValue(setting.value)"/>
         </label>
 
-        <label v-if="setting.type == 'integer'">
+        <label v-if="setting.type == 'integer' && !setting.options">
             <span :class="{
                 required: setting.required
             }">
