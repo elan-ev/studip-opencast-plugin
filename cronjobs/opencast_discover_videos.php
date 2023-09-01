@@ -79,6 +79,7 @@ class OpencastDiscoverVideos extends CronJob
                     'title'       => $events[$new_event_id]->title,
                     'description' => $events[$new_event_id]->description,
                     'duration'    => $events[$new_event_id]->duration,
+                    'state'       => 'running',
                     'available'   => true
                 ]);
                 $video->store();

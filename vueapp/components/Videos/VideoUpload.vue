@@ -47,10 +47,10 @@
                                 Zu Wiedergabeliste hinzufügen
                             </span>
 
-                            <select v-model="upload.playlist" required>
+                            <select v-model="upload.playlist_token" required>
                                 <option v-for="playlist in upload_playlists"
-                                    v-bind:key="playlist.id"
-                                    :value="playlist.id">
+                                    v-bind:key="playlist.token"
+                                    :value="playlist.token">
                                     {{ playlist.title }}
                                 </option>
                             </select>
@@ -243,7 +243,7 @@ export default {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
                 workflow: null,
-                playlist: null,
+                playlist_token: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
@@ -268,7 +268,7 @@ export default {
             let upload_playlists = this.playlists
             if (!this.playlist) {
                 upload_playlists.unshift({
-                    id: null,
+                    token: null,
                     title: 'Keine Wiedergabeliste auswählen'
                 })
             }
@@ -417,8 +417,8 @@ export default {
                         this.$store.dispatch('addMessage', data.message);
 
                         // If a playlist is selected, connect event with playlist
-                        if (data.event?.token && uploadData.playlist) {
-                            let playlist = view.playlists.find(p => p.id === uploadData.playlist);
+                        if (data.event?.token && uploadData.playlist_token) {
+                            let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
                             if (playlist) {
                                 this.$store.dispatch('addVideoToPlaylists', {
                                     token: data.event.token,
@@ -456,7 +456,7 @@ export default {
         }
 
         if (this.playlist) {
-            this.upload.playlist = this.playlist.id;
+            this.upload.playlist_token = this.playlist.token;
         }
     }
 }

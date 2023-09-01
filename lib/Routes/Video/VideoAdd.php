@@ -38,6 +38,7 @@ class VideoAdd extends OpencastController
                 'title'       => $event['title'],
                 'description' => $event['description'],
                 'duration'    => $event['duration'],
+                'state'       => $event['state'],
                 'available'   => false
             ]);
             if (!$video->token) {

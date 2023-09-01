@@ -26,7 +26,7 @@
                         </span>
                     </span>
                 </a>
-                <span v-else-if="!event.available" class="oc--unavailable">
+                <span v-else-if="!event.available && !event.state" class="oc--unavailable">
                     {{ $gettext("Video nicht verfügbar") }}
                 </span>
                 <a v-else-if="event.state == 'cutting'"
