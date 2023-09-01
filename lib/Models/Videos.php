@@ -264,6 +264,7 @@ class Videos extends UPMap
         }
 
         $where .= " AND trashed = " . $filters->getTrashed();
+        $where .= " AND oc_video.token IS NOT NULL";
 
         $sql .= $where;
 
@@ -789,7 +790,7 @@ class Videos extends UPMap
         // get the courses this series belongs to
         $series = SeminarSeries::findBySeries_id($episode->is_part_of);
         foreach ($series as $s) {
-            // Only add video to default playlist if it is not connected to a different playlist in this course
+            // Only add video to default playlist if it is not connected to a any playlist in this course
             $stmt = \DBManager::get()->prepare($sql = 'SELECT count(*) FROM oc_playlist_seminar
                 INNER JOIN oc_playlist_video ON (oc_playlist_video.playlist_id = oc_playlist_seminar.playlist_id)
                 WHERE oc_playlist_seminar.seminar_id = ?
