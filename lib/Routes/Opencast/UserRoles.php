@@ -28,6 +28,7 @@ class UserRoles extends OpencastController
 
         $user_id = null;
         $share_uuid = null;
+        $email = null;
 
         if (strpos($args['username'], 'share:') !== false) {
             $username_args_parts = explode(':', $args['username']);
@@ -45,6 +46,8 @@ class UserRoles extends OpencastController
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
                 $roles[] = 'STUDIP_' . $video_share->video->episode . '_read';
+            } else {
+                throw new Error('Share not found', 404);
             }
         } else if (!empty($user_id)) {
             // check, if the user exists
@@ -53,6 +56,8 @@ class UserRoles extends OpencastController
             if (empty($user)) {
                 throw new Error('User not found', 404);
             }
+
+            $email = $user->email;
 
             // Add user permission to access user-bound series
             $roles[] = 'STUDIP_' . $user_id;
@@ -114,6 +119,7 @@ class UserRoles extends OpencastController
 
         return $this->createResponse([
             'username' => $args['username'],
+            'email'    => $email ?: null,
             'roles'    => array_values($roles)
         ], $response);
     }
