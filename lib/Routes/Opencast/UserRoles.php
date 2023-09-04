@@ -41,15 +41,22 @@ class UserRoles extends OpencastController
 
         $roles = [];
 
-        // Add user permission to access user-bound series
-        $roles[] = 'STUDIP_' . $user_id;
-
         if (!empty($share_uuid)) {
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
                 $roles[] = 'STUDIP_' . $video_share->video->episode . '_read';
             }
         } else if (!empty($user_id)) {
+            // check, if the user exists
+            $user = \User::find($user_id);
+
+            if (empty($user)) {
+                throw new Error('User not found', 404);
+            }
+
+            // Add user permission to access user-bound series
+            $roles[] = 'STUDIP_' . $user_id;
+
             // Stud.IP-root has access to all videos
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
@@ -101,6 +108,8 @@ class UserRoles extends OpencastController
                     $roles[$episode . '_read'] = 'STUDIP_' . $episode . '_read';
                 }
             }
+        } else {
+            throw new Error('User not found', 404);
         }
 
         return $this->createResponse([
