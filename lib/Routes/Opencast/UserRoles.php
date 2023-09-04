@@ -26,9 +26,10 @@ class UserRoles extends OpencastController
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
 
-        $user_id = null;
+        $user_id    = null;
         $share_uuid = null;
-        $email = null;
+        $email      = null;
+        $fullname   = null;
 
         if (strpos($args['username'], 'share:') !== false) {
             $username_args_parts = explode(':', $args['username']);
@@ -57,7 +58,8 @@ class UserRoles extends OpencastController
                 throw new Error('User not found', 404);
             }
 
-            $email = $user->email;
+            $email    = $user->email;
+            $fullname = $user->getFullName();
 
             // Add user permission to access user-bound series
             $roles[] = 'STUDIP_' . $user_id;
@@ -120,6 +122,7 @@ class UserRoles extends OpencastController
         return $this->createResponse([
             'username' => $args['username'],
             'email'    => $email ?: null,
+            'fullname' => $fullname ?: null,
             'roles'    => array_values($roles)
         ], $response);
     }
