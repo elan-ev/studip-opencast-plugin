@@ -2,7 +2,7 @@
     <div class="messagebox"
         :class="`messagebox_` + type">
         <div class="messagebox_buttons">
-            <a class="close" title="Nachrichtenbox schliessen" @click.stop="hide">
+            <a class="close" href="#" title="Nachrichtenbox schliessen">
                 <span>Nachrichtenbox schliessen</span>
             </a>
         </div>
