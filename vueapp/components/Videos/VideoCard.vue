@@ -328,7 +328,7 @@ export default {
 
                     menuItems.push({
                         id: 8,
-                        label: this.$gettext('Entfernen'),
+                        label: this.$gettext('Zum Löschen markieren'),
                         icon: 'trash',
                         emit: 'performAction',
                         emitArguments: 'VideoDelete'
