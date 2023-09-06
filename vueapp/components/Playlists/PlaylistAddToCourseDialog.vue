@@ -15,7 +15,7 @@
                     <thead>
                         <tr>
                             <th>
-                                {{ $gettext('Veranstaltung') }}
+                                {{ $gettext('Verknüpfte Veranstaltungen') }}
                             </th>
                             <th></th>
                         </tr>
