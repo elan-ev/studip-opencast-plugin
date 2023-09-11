@@ -16,6 +16,7 @@
                     <label>
                         <span class="required">Titel</span>
                         <input type="text"
+                            maxlength="255"
                             :placeholder="$gettext('Titel der Wiedergabeliste')"
                             v-model="playlist.title"
                         >

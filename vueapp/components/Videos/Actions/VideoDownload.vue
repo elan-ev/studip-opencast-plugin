@@ -12,9 +12,8 @@
                     <h2>
                         ReferentIn
                     </h2>
-                    <a v-for="(media, index) in presenters" :key="index"
-                            :href="media['url']" target="_blank">
-                        <StudipButton>
+                    <a v-for="(media, index) in presenters" :key="index">
+                        <StudipButton @click.prevent="downloadFile(media)">
                             {{ getMediaText(media) }}
                         </StudipButton>
                     </a>
@@ -23,9 +22,8 @@
                     <h2>
                         Bildschirm
                     </h2>
-                    <a v-for="(media, index) in presentations" :key="index"
-                            :href="media['url']" target="_blank">
-                        <StudipButton>
+                    <a v-for="(media, index) in presentations" :key="index">
+                        <StudipButton @click.prevent="downloadFile(media)">
                             {{ getMediaText(media) }}
                         </StudipButton>
                     </a>
@@ -38,6 +36,8 @@
 <script>
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
+
+import axios from "@/common/axios.service";
 
 export default {
     name: 'VideoDownload',
@@ -57,6 +57,28 @@ export default {
     },
 
     methods: {
+        async downloadFile(media) {
+            axios.get(media.url, {
+                crossDomain: true,
+                withCredentials: true,
+                responseType: 'blob'
+            }).then(response => {
+                const blob = new Blob([response.data]);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = this.getFileName(media);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }).catch(console.error);
+        },
+
+        getFileName(media) {
+            let res = media.info;
+            res = res.replace(' * ', ' x ').replace(/\s+/g, '');
+            let ext = media.url.split(".").pop();
+            return this.event.title + ' (' + res + ').' + ext;
+        },
+
         getMediaText(media) {
             var text = media?.info || '';
             text = text.replace(' * ', ' x ');

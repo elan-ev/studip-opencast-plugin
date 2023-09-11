@@ -107,7 +107,7 @@ export default {
 
             this.config_list.server.forEach(server => {
                 options.push({
-                    value: server.id,
+                    value: Number(server.id),
                     description: '[#' + server.id + '] ' + server.service_url + ''
                 })
             });

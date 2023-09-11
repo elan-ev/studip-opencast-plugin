@@ -14,72 +14,66 @@
         >
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
-                    <label v-if="config && config['server'] && config['server'].length > 1">
-                        <span class="required">
-                            {{ $gettext('Server auswählen:') }}
-                        </span>
+                    <fieldset>
+                        <legend >
+                                {{ $gettext('Datei(en)') }}
+                        </legend>
 
-                        <select v-model="selectedServer" required>
-                            <option v-for="server in config['server']"
-                                :key="server.id"
-                                :value="server"
-                            >
-                                #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
-                            </option>
+                        <p class="help" v-translate>
+                            Unterstützt wird das WebVTT Format mit der Endung .vtt
+                        </p>
 
-                        </select>
-                    </label>
+                        <div v-for="language in languages">
+                            <fieldset v-if="!uploadProgress">
+                                <legend class="oc--file-type">
+                                    {{
+                                        $gettext('Untertitel für %{ lang }', {
+                                            lang: language.lang
+                                        })
+                                    }}
+                                </legend>
 
-                    <div v-for="language in languages">
-                        <div v-if="!uploadProgress">
-                            <h4 class="oc--file-type">
-                                {{
-                                    $gettext('Untertitel für %{ lang }', {
-                                        lang: language.lang
-                                    })
-                                }}
-                            </h4>
+                                <div class="oc--file-preview" v-if="files[language.flavor] && files[language.flavor].size">
+                                    <span class="oc--file-name">
+                                        <b>{{ $gettext('Name:') }}</b> {{ files[language.flavor].name }}
+                                    </span>
 
-                            <div class="oc--file-preview" v-if="files[language.flavor] && files[language.flavor].size">
-                                <span class="oc--file-name">
-                                    <b>{{ $gettext('Name:') }}</b> {{ files[language.flavor].name }}
-                                </span>
+                                    <span class="oc--file-size" v-if="files[language.flavor].size">
+                                        <b>{{ $gettext('Größe:') }}</b> {{files[language.flavor].size }}
+                                    </span>
+                                </div>
 
-                                <span class="oc--file-size" v-if="files[language.flavor].size">
-                                    <b>{{ $gettext('Größe:') }}</b> {{files[language.flavor].size }}
-                                </span>
-                            </div>
+                                <div class="oc--button-bar">
+                                    <label v-if="files[language.flavor] && files[language.flavor].url">
+                                        <a :href="files[language.flavor].url">
+                                            <button class='button download' type=button>
+                                                {{ $gettext('Herunterladen') }}
+                                            </button>
+                                        </a>
+                                    </label>
 
-                            <div class="oc--button-bar">
-                                <label v-if="files[language.flavor] && files[language.flavor].url">
-                                    <a :href="files[language.flavor].url">
-                                        <button class='button download' type=button>
-                                            {{ $gettext('Herunterladen') }}
-                                        </button>
-                                    </a>
-                                </label>
+                                    <label v-if="files[language.flavor]">
+                                        <StudipButton icon="trash" @click.prevent="removeCaption(language.flavor)">
+                                            {{ $gettext('Löschen') }}
+                                        </StudipButton>
+                                    </label>
 
-                                <label v-if="files[language.flavor]">
-                                    <StudipButton icon="trash" @click.prevent="removeCaption(language.flavor)">
-                                        {{ $gettext('Löschen') }}
-                                    </StudipButton>
-                                </label>
+                                    <label class="oc--file-upload">
+                                        <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-' + language.lang)">
+                                            {{ $gettext('Untertiteldatei auswählen') }}
+                                        </StudipButton>
+                                        <input
+                                            type="file" class="caption_upload" :data-flavor="language.flavor"
+                                            @change="previewFiles" :ref="'oc-file-' + language.lang"
+                                            accept=".vtt"
+                                        >
+                                    </label>
+                                </div>
+                            </fieldset>
 
-                                <label class="oc--file-upload">
-                                    <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-' + language.lang)">
-                                        {{ $gettext('Untertiteldatei auswählen') }}
-                                    </StudipButton>
-                                    <input
-                                        type="file" class="caption_upload" :data-flavor="language.flavor"
-                                        @change="previewFiles" :ref="'oc-file-' + language.lang"
-                                        accept=".vtt"
-                                    >
-                                </label>
-                            </div>
+                            <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                         </div>
-
-                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
-                    </div>
+                    </fieldset>
 
                     <Error :float="true" />
 
@@ -239,6 +233,10 @@ export default {
                         }
                     },
                     uploadDone: () => {
+                        this.$store.dispatch('addMessage', {
+                            type: 'success',
+                            text: this.$gettext('Die Datei wurde erfolgreich hochgeladen.')
+                        });
                         view.$emit('done');
                     }
                 }

@@ -44,7 +44,8 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'OPENCAST_RESOURCE_PROPERTY_ID',
                 'OPENCAST_SUPPORT_EMAIL',
                 'OPENCAST_API_TOKEN',
-                'OPENCAST_DEFAULT_SERVER'
+                'OPENCAST_DEFAULT_SERVER',
+                'OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL'
             ]
         ];
     }
