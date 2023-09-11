@@ -14,22 +14,6 @@
         >
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
-                    <fieldset v-if="this.config?.server && Object.keys(this.config.server).length > 1">
-                        <legend>
-                            {{ $gettext('Server auswählen:') }}
-                        </legend>
-
-                        <select v-model="selectedServer" required>
-                            <option v-for="server in config['server']"
-                                :key="server.id"
-                                :value="server"
-                            >
-                                #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
-                            </option>
-
-                        </select>
-                    </fieldset>
-
                     <fieldset>
                         <legend >
                                 {{ $gettext('Datei(en)') }}
