@@ -300,7 +300,7 @@ class UploadService {
                     const xmlDoc = $.parseXML(mediaPackage);
                     episode_id = xmlDoc.documentElement.id;
                     if (episode_id) {
-                        uploadDone(episode_id, workflowId);
+                        uploadDone(episode_id, terms, workflowId);
                     }
                 } catch (ex) {
                     console.log(ex);

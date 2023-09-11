@@ -43,6 +43,20 @@
                         </label>
 
                         <label>
+                            <span v-translate>
+                                Zu Wiedergabeliste hinzufügen
+                            </span>
+
+                            <select v-model="upload.playlist_token" required>
+                                <option v-for="playlist in upload_playlists"
+                                    v-bind:key="playlist.token"
+                                    :value="playlist.token">
+                                    {{ playlist.title }}
+                                </option>
+                            </select>
+                        </label>
+
+                        <label>
                             <span class="required" v-translate>
                                 Aufnahmezeitpunkt
                             </span>
@@ -229,6 +243,7 @@ export default {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
                 workflow: null,
+                playlist_token: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
@@ -244,8 +259,21 @@ export default {
         ...mapGetters({
             'config'       : 'simple_config_list',
             'course_config': 'course_config',
-            'cid'          : 'cid'
+            'cid'          : 'cid',
+            'playlist'     : 'playlist',
+            'playlists'    : 'playlists'
         }),
+
+        upload_playlists() {
+            let upload_playlists = this.playlists
+            if (!this.playlist) {
+                upload_playlists.unshift({
+                    token: null,
+                    title: 'Keine Wiedergabeliste auswählen'
+                })
+            }
+            return upload_playlists;
+        },
 
         upload_workflows() {
             let upload_wfs = [];
@@ -368,7 +396,7 @@ export default {
                         progress: parseInt(Math.round((loaded / total) * 100 ))
                     }
                 },
-                uploadDone: (episode_id, workflow_id) => {
+                uploadDone: (episode_id, uploadData, workflow_id) => {
                     view.$emit('done');
                     view.$store.dispatch('createLogEvent', {
                         event: 'upload',
@@ -376,7 +404,32 @@ export default {
                             episode_id: episode_id,
                             workflow_id: workflow_id
                         }
+                    });
+
+                    // Add event to database
+                    view.$store.dispatch('createVideo', {
+                        'episode': episode_id,
+                        'config_id': view.selectedServer.id,
+                        'title': uploadData.title,
+                        'description': uploadData.description
                     })
+                    .then(({ data }) => {
+                        this.$store.dispatch('addMessage', data.message);
+
+                        // If a playlist is selected, connect event with playlist
+                        if (data.event?.token && uploadData.playlist_token) {
+                            let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
+                            if (playlist) {
+                                this.$store.dispatch('addVideoToPlaylists', {
+                                    token: data.event.token,
+                                    playlists: [playlist],
+                                })
+                                .then(({data}) => {
+                                    this.$store.dispatch('addMessage', data.message);
+                                })
+                            }
+                        }
+                    });
                 }
             });
         },
@@ -400,6 +453,10 @@ export default {
 
         if (this.cid) {
             this.$store.dispatch('loadCourseConfig', this.cid);
+        }
+
+        if (this.playlist) {
+            this.upload.playlist_token = this.playlist.token;
         }
     }
 }

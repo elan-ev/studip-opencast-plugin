@@ -72,15 +72,16 @@ class OpencastDiscoverVideos extends CronJob
                 $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $new_event_id]);
                 if (!$video) {
                     $video = new Videos;
-                    $video->setData([
-                        'episode'     => $new_event_id,
-                        'config_id'   => $config['id'],
-                        'title'       => $events[$new_event_id]->title,
-                        'description' => $events[$new_event_id]->description,
-                        'duration'    => $events[$new_event_id]->duration
-                    ]);
                 }
-                $video->setValue('available', true);
+                $video->setData([
+                    'episode'     => $new_event_id,
+                    'config_id'   => $config['id'],
+                    'title'       => $events[$new_event_id]->title,
+                    'description' => $events[$new_event_id]->description,
+                    'duration'    => $events[$new_event_id]->duration,
+                    'state'       => 'running',
+                    'available'   => true
+                ]);
                 $video->store();
 
                 // create task to update permissions and everything else

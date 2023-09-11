@@ -151,6 +151,10 @@ const actions = {
         return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
     },
 
+    async createVideo(context, event) {
+        return ApiService.post('videos/' + event.episode, {event: event});
+    },
+
     async deleteVideo(context, token) {
         return ApiService.delete('videos/' + token);
     },
