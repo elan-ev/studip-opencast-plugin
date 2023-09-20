@@ -74,7 +74,7 @@
                 <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
 
-            <div v-if="!playlistMode && menuItems.length > 0 && event.state != 'running'" class="oc--actions-container">
+            <div v-if="!videoSortMode && menuItems.length > 0 && event.state != 'running'" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
                     :collapseAt="menuItems.length > 1"
                     @performAction="performAction"
