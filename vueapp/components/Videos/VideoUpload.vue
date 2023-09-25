@@ -411,7 +411,8 @@ export default {
                         'episode': episode_id,
                         'config_id': view.selectedServer.id,
                         'title': uploadData.title,
-                        'description': uploadData.description
+                        'description': uploadData.description,
+                        'state': 'running'
                     })
                     .then(({ data }) => {
                         this.$store.dispatch('addMessage', data.message);
