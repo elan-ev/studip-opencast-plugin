@@ -29,7 +29,7 @@ DROP TABLE IF EXISTS `oc_config`,
     `oc_workflow`, 
     `oc_workflow_config`;
 
-DELETE FROM schema_versions WHERE domain = 'OpenCast';
+DELETE FROM schema_version WHERE domain = 'OpenCast';
 DELETE FROM config WHERE section = 'opencast';
 DELETE FROM config_values WHERE field LIKE 'OPENCAST_%';
 
