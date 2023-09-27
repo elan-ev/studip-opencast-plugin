@@ -22,7 +22,7 @@ class OpencastClearRecycleBin extends CronJob
     {
         echo "Deletes all videos that have been marked as trash for at least " . \Config::get()->OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL . " days\n";
 
-        $videos = Videos::findBySql("trashed=true AND trashed_timestamp < NOW() - INTERVAL " . \Config::get()->OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL ." DAY");
+        $videos = Videos::findBySql("trashed=true AND state!='running' AND trashed_timestamp < NOW() - INTERVAL " . \Config::get()->OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL ." DAY");
         foreach ($videos as $video) {
             echo "Video #" . $video->id . " (" . $video->title . ") ";
             if ($video->removeVideo()) {

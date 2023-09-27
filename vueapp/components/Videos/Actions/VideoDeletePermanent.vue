@@ -1,6 +1,6 @@
 <template>
     <div>
-        <StudipDialog
+        <StudipDialog v-if="event.state !== 'running'"
             :title="$gettext('Aufzeichnung entfernen')"
             :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
@@ -12,6 +12,19 @@
         >
             <template v-slot:dialogContent>
                 <translate>Möchten Sie die Aufzeichnung wirklich unwiderruflich entfernen?</translate>
+            </template>
+        </StudipDialog>
+
+        <StudipDialog v-else
+            :title="$gettext('Aufzeichnung entfernen')"
+            :closeText="$gettext('Abbrechen')"
+            :closeClass="'cancel'"
+            height="215"
+            @close="decline"
+            @confirm="removeVideo"
+        >
+            <template v-slot:dialogContent>
+                <translate>Das Video wird zurzeit verarbeitet und kann deshalb nicht unwiderruflich entfernt werden. Versuchen Sie es zu einem späteren Zeitpunkt erneut.</translate>
             </template>
         </StudipDialog>
     </div>

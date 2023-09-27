@@ -74,7 +74,7 @@
                 <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
 
-            <div v-if="!videoSortMode && menuItems.length > 0 && event.state != 'running'" class="oc--actions-container">
+            <div v-if="!videoSortMode && menuItems.length > 0" class="oc--actions-container">
                 <StudipActionMenu :items="menuItems"
                     :collapseAt="menuItems.length > 1"
                     @performAction="performAction"
@@ -263,13 +263,15 @@ export default {
 
             if (!this.event?.trashed) {
                 if (this.canEdit) {
-                    menuItems.push({
-                        id: 1,
-                        label: this.$gettext('Bearbeiten'),
-                        icon: 'edit',
-                        emit: 'performAction',
-                        emitArguments: 'VideoEdit'
-                    });
+                    if (this.event?.state !== 'running') {
+                        menuItems.push({
+                            id: 1,
+                            label: this.$gettext('Bearbeiten'),
+                            icon: 'edit',
+                            emit: 'performAction',
+                            emitArguments: 'VideoEdit'
+                        });
+                    }
 
                     /*
                     menuItems.push({
@@ -308,7 +310,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.publication?.annotation_tool) {
+                    if (this.event?.publication?.annotation_tool && this.event?.state !== 'running') {
                         menuItems.push({
                             id: 6,
                             label: this.$gettext('Anmerkungen hinzufügen'),
@@ -318,14 +320,16 @@ export default {
                         });
                     }
 
-                    menuItems.push({
-                        id: 7,
-                        label: this.$gettext('Untertitel hinzufügen'),
-                        icon: 'accessibility',
-                        emit: 'performAction',
-                        emitArguments: 'CaptionUpload'
-                    });
-
+                    if (this.event?.state !== 'running') {
+                        menuItems.push({
+                            id: 7,
+                            label: this.$gettext('Untertitel hinzufügen'),
+                            icon: 'accessibility',
+                            emit: 'performAction',
+                            emitArguments: 'CaptionUpload'
+                        });
+                    }
+                    
                     menuItems.push({
                         id: 8,
                         label: this.$gettext('Zum Löschen markieren'),
@@ -334,7 +338,7 @@ export default {
                         emitArguments: 'VideoDelete'
                     });
                 }
-                if (this.downloadAllowed) {
+                if (this.downloadAllowed && this.event?.state !== 'running') {
                     menuItems.push({
                         id: 2,
                         label: this.$gettext('Medien runterladen'),
