@@ -131,7 +131,7 @@ class RedirectController extends Opencast\Controller
                 if (!empty($preview)) {
                     $video->views += 1;
                     $video->store();
-                    $custom_tool = "/paella/ui/watch.html?id={$video->episode}";
+                    $custom_tool = "/play/{$video->episode}";
                 }
                 break;
             default:

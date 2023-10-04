@@ -321,13 +321,6 @@ class Videos extends UPMap
         $data['mkdate'] = ($data['mkdate'] == '0000-00-00 00:00:00')
             ? 0 : \strtotime($data['mkdate']);
 
-        if ($data['episode']) {
-            $config = Config::getConfigForService('search', $data['config_id']);
-            $url    = preg_replace('/\/search/', '', $config['service_url']);
-
-            $data['paella'] = $url . "/paella/ui/watch.html?id=" . $data['episode'];
-        }
-
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
