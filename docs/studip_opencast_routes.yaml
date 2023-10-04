@@ -821,7 +821,6 @@ paths:
                     ssl_cipher_list: none
                     lti_consumerkey: CONSUMERKEY
                     lti_consumersecret: CONSUMERSECRET
-                    paella: true
                     livestream: false
                     service_url: https://opencast.example.com
                     service_user: user
@@ -1236,8 +1235,6 @@ components:
           type: integer
         mkdate:
           type: integer
-        paella:
-          type: string
         perm:
           type: boolean
         courses:
