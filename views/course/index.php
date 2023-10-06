@@ -66,7 +66,7 @@ if ($this->connectedSeries[0]['series_id']) :
         )
     ) {
         $role = 'Instructor';
-    } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+    } else if ($GLOBALS['perm']->have_studip_perm('user', $course_id, $current_user_id)) {
         $role = 'Learner';
     }
 
@@ -101,7 +101,7 @@ if ($this->connectedSeries[0]['series_id']) :
             && (($controller->isStudyGroup() && $controller->isStudentUploadEnabled() || !$controller->isStudyGroup()))
         ) {
             $role = 'Instructor';
-        } else if ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
+        } else if ($GLOBALS['perm']->have_studip_perm('user', $course_id, $current_user_id)) {
             $role = 'Learner';
         }
 
