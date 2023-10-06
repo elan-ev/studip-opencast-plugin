@@ -61,7 +61,4 @@ ansprechen oder bei Verwendung anderer Opencast-Bündelungen (z.B. separater
 Admin statt Admin-Presentation) oder Domain-Umstellungen die Endpunkte neu
 erkennen lassen. Das geht am einfachsten, indem man die Einstellungen unter
 `Administration` -> `Opencast Einstellungen` ohne Änderung abspeichert.
-* Bei der Verknüpfung von Serien ist zunächst eingestellt, dass in der
-Veranstaltung nicht geplant werden darf. Damit Lehrende planen und hochladen
-können, muss die Medienaufzeichnung durch einen root user erlaubt werden.
 
