@@ -74,7 +74,7 @@ class AddVideoTrash extends Migration
         $stmt->execute([
             'name'        => 'OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL',
             'section'     => 'opencast',
-            'description' => 'Nach wie vielen Tage sollen zum Löschen markierte Videos tatsächlich gelöscht werden?',
+            'description' => 'Nach wie vielen Tagen sollen zum Löschen markierte Videos tatsächlich gelöscht werden?',
             'range'       => 'global',
             'type'        => 'integer',
             'value'       => 30
