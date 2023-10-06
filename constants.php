@@ -68,12 +68,6 @@ class Constants {
             'required'    => true
         ],
         [
-            'name'        => 'paella',
-            'description' => 'Soll der Paella Player verwendet werden statt Theodul?',
-            'value'       => 1,
-            'type'        => 'boolean'
-        ],
-        [
             'name'        => 'time_buffer_overlap',
             'description' => 'Zeitpuffer (in Sekunden) um Überlappungen zu verhindern',
             'value'       => 60,

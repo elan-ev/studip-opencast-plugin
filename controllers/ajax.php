@@ -84,7 +84,7 @@ class AjaxController extends OpencastController
                         'id'         => $episode['id'],
                         'name'       => $episode['title'],
                         'date'       => $episode['start'],
-                        'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode['id'],
+                        'url'        => $search_client->getBaseURL() . "/play/" . $episode['id'],
                         'visible'    => $studip_episode->visible
                     ];
                 }
@@ -138,7 +138,7 @@ class AjaxController extends OpencastController
                 'id'         => $episode['id'],
                 'name'       => $episode['title'],
                 'date'       => $episode['start'],
-                'url'        => $search_client->getBaseURL() . "/paella/ui/watch.html?id=" . $episode['id'],
+                'url'        => $search_client->getBaseURL() . "/play/" . $episode['id'],
                 'visible'    => $studip_episode->visible
             ];
         }

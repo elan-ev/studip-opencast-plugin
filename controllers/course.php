@@ -62,7 +62,6 @@ class CourseController extends OpencastController
         }
 
         $this->config = OCConfig::getConfigForCourse($this->course_id);
-        $this->paella = $this->config['paella'] == '0' ? false : true;
 
         // set the stream context to ignore ssl erros -> get_headers will not work otherwise
         stream_context_set_default([
@@ -192,11 +191,7 @@ class CourseController extends OpencastController
 
                 if (!empty($this->ordered_episode_ids)) {
                     PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Medien'));
-                    if ($this->paella) {
-                        $this->video_url = $this->search_client->getBaseURL() . "/paella/ui/watch.html?id=";
-                    } else {
-                        $this->video_url = $this->search_client->getBaseURL() . "/engage/theodul/ui/core.html?id=";
-                    }
+                    $this->video_url = $this->search_client->getBaseURL() . "/play/";
                 }
 
                 // Upload-Dialog

@@ -321,15 +321,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         if ($config !== null) {
-            $paella = $config['paella'] == '0' ? false : true;
-
             $search_client = SearchClient::getInstance($config['config_id']);
-
-            if ($paella) {
-                $embed = $search_client->getBaseURL() . "/paella/ui/embed.html?id=" . $contents;
-            } else {
-                $embed = $search_client->getBaseURL() . "/engage/theodul/ui/core.html?mode=embed&id=" . $contents;
-            }
+            $embed = $search_client->getBaseURL() . '/play/' . $contents;
 
             $id = md5(uniqid());
             if ($course_id !== null) {
