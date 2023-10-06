@@ -34,7 +34,7 @@
     "html-webpack-plugin": "^5.3.2",
     "install": "^0.12.2",
     "mini-css-extract-plugin": "^2.5.3",
-    "postcss": "^8.4.6",
+    "postcss": "^8.4.31",
     "postcss-loader": "^6.2.1",
     "redoc-cli": "^0.13.20",
     "regenerator-runtime": "^0.13.5",
