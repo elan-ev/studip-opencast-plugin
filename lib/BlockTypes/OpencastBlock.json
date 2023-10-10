@@ -2,13 +2,7 @@
     "title": "Payload schema of OpencastBlock",
     "type": "object",
     "properties": {
-        "episode_id": {
-            "type": "string"
-        },
-        "url": {
-            "type": "string"
-        },
-        "video_id" : {
+        "token" : {
             "type": "string"
         },
         "visible": {
@@ -18,6 +12,6 @@
             "type": "string"
         }
     },
-    "required": ["episode_id", "url"],
+    "required": ["token"],
     "additionalProperties": false
 }

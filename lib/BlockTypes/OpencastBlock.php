@@ -30,8 +30,7 @@ class OpencastBlock extends BlockType
     public function initialPayload(): array
     {
         return [
-            'id'  => '',
-            'url' => ''
+            'token'  => ''
         ];
     }
 
@@ -64,7 +63,7 @@ class OpencastBlock extends BlockType
         $token = md5($this->block['id'] . time());
         $payload['copied_token'] = $token;
 
-        CoursewareBlockMappings::setRecord($token, $payload['video_id'], $rangeId);
+        CoursewareBlockMappings::setRecord($token, $payload['token'], $rangeId);
 
         return $payload;
     }
@@ -72,7 +71,7 @@ class OpencastBlock extends BlockType
     public function setPayload($payload): void
     {
         $rangeId = $this->block->container->structural_element->range_id;
-        VideoCoursewareBlocks::setRecord($rangeId, $payload['video_id'], $this->block['id']);
+        VideoCoursewareBlocks::setRecord($rangeId, $payload['token'], $this->block['id']);
         parent::setPayload($payload);
     }
 }

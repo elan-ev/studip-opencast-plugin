@@ -27,7 +27,7 @@ class RedirectController extends Opencast\Controller
     public function perform_action($action, $token)
     {
         $video = null;
-        $$video_share = null;
+        $video_share = null;
         if ($action == 'share') {
             $video_share = VideosShares::findByToken($token);
             $video = Videos::findById($video_share->video_id);
@@ -54,7 +54,7 @@ class RedirectController extends Opencast\Controller
         $customtool = $this->getLtiCustomTool($video, $action);
         $lti = LtiHelper::getLaunchData($video->config_id, $customtool, $video_share);
         if (empty($lti) || empty($customtool)) {
-            throw new Error('Es fehlen Parameter!', 422);
+            throw new Error('Could not load video!', 422);
         }
 
         // get correct endpoint for redirect type

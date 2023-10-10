@@ -11,7 +11,7 @@
         >
             <template #content>
                 <div>
-                    <span v-if="!currentEpisodeId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
+                    <span v-if="!currentVideoId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
                     <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
                     <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
@@ -86,7 +86,6 @@ export default {
             videos: {},
             loadingVideos : false,
             currentVideoId : null,
-            currentEpisodeId : null,
             currentEpisodeURL : null,
             currentVisible : '',
         }
@@ -115,6 +114,7 @@ export default {
             companionError: 'companionError',
             updateBlock: 'updateBlockInContainer',
         }),
+
         resetPaging() {
             this.paging = {
                     currPage: 0,
@@ -141,9 +141,8 @@ export default {
         },
 
         performSelectVideo(video) {
-            this.currentVideoId = video.id;
-            this.currentEpisodeId = video.episode;
-            this.currentEpisodeURL = video?.publication?.track_link || '';
+            this.currentVideoId = video.token;
+            this.currentEpisodeURL = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + video.token;
             this.currentVisible = video?.visibility || 'public';
         },
 
@@ -156,9 +155,7 @@ export default {
             }
             let attributes = {};
             attributes.payload = {};
-            attributes.payload.video_id = this.currentVideoId;
-            attributes.payload.episode_id = this.currentEpisodeId;
-            attributes.payload.url = this.currentEpisodeURL;
+            attributes.payload.token = this.currentVideoId;
             attributes.payload.visible = this.currentVisible;
 
             if (this.container?.id && this.block?.id) {
@@ -175,9 +172,8 @@ export default {
         },
 
         initCurrentData() {
-            this.currentVideoId = get(this.block, "attributes.payload.video_id", "");
-            this.currentEpisodeId = get(this.block, "attributes.payload.episode_id", "");
-            this.currentEpisodeURL = get(this.block, "attributes.payload.url", "");
+            this.currentVideoId = get(this.block, "attributes.payload.token", "");
+            this.currentEpisodeURL =STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentVideoId;
             this.currentVisible = get(this.block, "attributes.payload.visible", "");
 
             let copied_from = get(this.block, "attributes.payload.copied_from", "");

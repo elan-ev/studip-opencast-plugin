@@ -41,7 +41,7 @@ class OpencastCoursewareBlockCopyMapping extends CronJob
 
                     // Add record into the VideoCoursewareBlocks
                     $msg = 'Record is added into oc_video_cw_blocks';
-                    $added = VideoCoursewareBlocks::setRecord($mapping->new_seminar_id, $mapping->video_id, $new_block_record['id']);
+                    $added = VideoCoursewareBlocks::setRecord($mapping->new_seminar_id, $mapping->token, $new_block_record['id']);
                     if (!$added) {
                         $msg = 'No record is added into oc_video_cw_blocks!';
                     }
