@@ -141,7 +141,6 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl,
                 title     : this.currentTitle
             } };
             const container = this.$store.getters["courseware-containers/related"]({
@@ -158,7 +157,7 @@ export default {
         initCurrentData() {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
-            this.currentUrl     = get(this.block, "attributes.payload.url", "");
+            this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
             this.currentTitle   = get(this.block, "attributes.payload.title", "");
 
             if (this.currentTitle) {
@@ -203,7 +202,7 @@ export default {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
                     this.currentSeries  = this.episodes[id].series_id;
-                    this.currentUrl     = this.episodes[id].url;
+                    this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;;
                     this.currentVisible = this.episodes[id].visible;
                     if (!this.titleFromBackend) {
                         this.currentTitle = this.episodes[id].name;
