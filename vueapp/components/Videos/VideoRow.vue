@@ -287,9 +287,11 @@ export default {
 
         getAccessText() {
             var txt = '';
-            this.event.perms.forEach(perm => {
-                txt += '<div>' + perm.fullname + ': ' + perm.perm + '</div>'
-            });
+            if (this.event?.perms) {
+                this.event.perms.forEach(perm => {
+                    txt += '<div>' + perm.fullname + ': ' + perm.perm + '</div>'
+                });
+            }
             return txt;
         },
 
