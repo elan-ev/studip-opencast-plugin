@@ -9,6 +9,7 @@ import "./public-path";
 
 import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";
+import PermNameFilter from "@/common/permname.filter";
 import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
 import HelpUrlFilter from "@/common/helpurl.filter";
@@ -29,6 +30,7 @@ window.addEventListener("DOMContentLoaded", function() {
     Vue.config.globalProperties.$filters = {
         date: DateFilter,
         datetime: DateTimeFilter,
+        permname: PermNameFilter,
         error: ErrorFilter,
         filesize: FileSizeFilter,
         helpurl: HelpUrlFilter

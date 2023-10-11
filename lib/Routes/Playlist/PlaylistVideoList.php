@@ -53,7 +53,10 @@ class PlaylistVideoList extends OpencastController
 
         $ret = [];
         foreach ($videos['videos'] as $video) {
-            $ret[] = $video->toSanitizedArray($params['cid'], $playlist->id);
+            # TODO Who has access to the perms list? currently everyone (frontend needs to handle this)
+            $video_array = $video->toSanitizedArray($params['cid'], $playlist->id);
+            $video_array['perms'] = $video->perms->toSanitizedArray();
+            $ret[] = $video_array;
         }
 
         return $this->createResponse([
