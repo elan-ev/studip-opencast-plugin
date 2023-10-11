@@ -67,9 +67,20 @@
 
                 <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
                     <span class="tooltip-content" v-html="getAccessText"></span>
-                    <studip-icon 
-                        shape="group2" 
-                        role="active" 
+                    <studip-icon
+                        shape="group2"
+                        role="active"
+                        :size="18"
+                        @click="performAction('VideoAccess')"
+                    />
+                </div>
+
+            <div class="oc--tooltips">
+                <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
+                    <span class="tooltip-content" v-html="getAccessText"></span>
+                    <studip-icon
+                        shape="group2"
+                        role="active"
                         :size="18"
                         @click="performAction('VideoAccess')"
                     />
@@ -270,6 +281,14 @@ export default {
             var txt = '';
             this.event.perms.forEach(perm => {
                 txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.$filters.permname(perm.perm)) + '</div>'
+            });
+            return txt;
+        },
+
+        getAccessText() {
+            var txt = '';
+            this.event.perms.forEach(perm => {
+                txt += '<div>' + perm.fullname + ': ' + perm.perm + '</div>'
             });
             return txt;
         },
