@@ -2,14 +2,12 @@
     <div>
         <StudipDialog
             :title="$gettext('Video freigeben')"
-            :confirmText="$gettext('Speichern')"
+            :confirmText="$gettext('Abschließen')"
             :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
-            :closeClass="'cancel'"
             height="600"
             width="600"
-            @close="decline"
-            @confirm="updateShares"
+            @close="$emit('done', 'refresh')"
+            @confirm="$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
                 <form class="default">
@@ -115,6 +113,7 @@
                         </table>
                     </fieldset>
                 </form>
+                <MessageList />
             </template>
         </StudipDialog>
     </div>
@@ -125,6 +124,7 @@ import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog'
 import StudipIcon from '@studip/StudipIcon';
 import StudipButton from "@studip/StudipButton";
+import MessageList from "@/components/MessageList";
 
 import ShareWithUsers from './VideoAccess/ShareWithUsers';
 
@@ -133,7 +133,8 @@ export default {
 
     components: {
         StudipDialog, StudipIcon,
-        ShareWithUsers, StudipButton
+        ShareWithUsers, StudipButton,
+        MessageList
     },
 
     props: ['event'],
@@ -154,11 +155,31 @@ export default {
         addPerm(user)
         {
             this.shareUsers.push(user);
+
+            this.$store.dispatch('updateVideoShares', {
+                token: this.event.token,
+                shares: this.videoShares
+            })
+            .catch((er) => {
+                this.shareUsers.pop();
+                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'));
+                console.log('Error while creating access perm!', er);
+            })
         },
 
         removePerm(index)
         {
-            this.videoShares.perms.splice(index, 1);
+            let perm = this.videoShares.perms.splice(index, 1)[0];
+            
+            this.$store.dispatch('updateVideoShares', {
+                token: this.event.token,
+                shares: this.videoShares
+            })
+            .catch((er) => {
+                this.videoShares.perms.splice(index, 0, perm);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Löschen der Freigabe ist ein Fehler aufgetreten.'));
+                console.log('Error while removing access perm!', er);
+            })
         },
 
         addLinkShare()
@@ -167,23 +188,32 @@ export default {
                 is_new: true
             }
             this.videoShares.shares.push(dummyLink);
+
             this.$store.dispatch('updateVideoShares', {
                 token: this.event.token,
                 shares: this.videoShares
             }).then(({ data }) => {
-                this.$store.dispatch('addMessage', {
-                        type: 'success',
-                        text: this.$gettext('Share-Link erstellt!')
-                    });
                 this.initVideoShares();
             }).catch((er) => {
+                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen des Links ist ein Fehler aufgetreten.'));
                 console.log('Error while creating share link!', er);
             });
         },
 
         removeLinkShare(index)
         {
-            this.videoShares.shares.splice(index, 1);
+            let link = this.videoShares.shares.splice(index, 1)[0];
+
+            this.$store.dispatch('updateVideoShares', {
+                token: this.event.token,
+                shares: this.videoShares
+            }).then(({ data }) => {
+                this.initVideoShares();
+            }).catch((er) => {
+                this.videoShares.shares.splice(index, 0, link);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Löschen des Links ist ein Fehler aufgetreten.'));
+                console.log('Error while removing share link!', er);
+            });
         },
 
         copyLinkShare(id) {
@@ -203,10 +233,6 @@ export default {
             }
         },
 
-        decline() {
-            this.$emit('cancel');
-        },
-
         permToText(perm) {
             let translations = {
                 'owner': this.$gettext('Besitzer/in'),
@@ -216,19 +242,6 @@ export default {
             }
 
             return translations[perm];
-        },
-
-        updateShares() {
-            this.$store.dispatch('updateVideoShares', {
-                token: this.event.token,
-                shares: this.videoShares
-            })
-            .then(({ data }) => {
-                this.$store.dispatch('addMessage', this.$gettext('Freigaben gespeichert!'));
-                this.$emit('done', 'refresh');
-            }).catch(() => {
-                this.$emit('cancel');
-            });
         },
 
         initVideoShares() {
