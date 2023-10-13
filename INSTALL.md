@@ -68,7 +68,7 @@ org.opencastproject.userdirectory.studip.token=mytoken1234abcdef
 org.opencastproject.userdirectory.studip.cache.expiration=1
 ```
 
-Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP is have the `nobody` role for it to work.
+Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP to have the `nobody` role for it to work.
 
 6. Add role `STUDIP` in Opencast
 
@@ -96,16 +96,18 @@ This plugin assumes your
 
 ## Credentials for Opencast
 
-This plugin requires a front end user account to connect to Opencast; create one or use an existing one.
+This plugin requires an user account to connect to Opencast; create one or use an existing one.
 `matterhorn_system_account` and `opencast_system_account` ceased working!
 
-The frontend user needs to following roles:
-`ROLE_ADMIN`, `ROLE_ADMIN_UI`
+The user needs to following role:
+`ROLE_ADMIN`
 
 ## Configure Stud.IP
 
 Install the most recent version of this plugin, make sure that all migrations worked properly.
 
-After that go to "Admin" -> "System" -> "Opencast settings" and enter the URL and credentials for the Opencast system.
-Make sure you enter the LTI credentials under "Additional settings".
-If everything worked you can now start using the plugin in seminars.
+After that go to "Admin" -> "System" -> "Opencast settings" and add a new server. Enter the URL and all the credentials for the Opencast system. Also make sure to assign to `nobody`-role to the plugin as well as entering the API-token for the user provider (see above).
+If everything worked you can now start using the plugin!
+
+Further help can be found under:
+https://hilfe.studip.de/help/4.0/de/Basis/OpencastV3Administration
