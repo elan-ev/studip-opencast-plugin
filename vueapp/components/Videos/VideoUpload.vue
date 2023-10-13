@@ -430,6 +430,8 @@ export default {
                                 })
                             }
                         }
+                        
+                        this.$store.dispatch('setVideosReload', true);
                     });
                 }
             });
