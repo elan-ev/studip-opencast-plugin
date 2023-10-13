@@ -4,6 +4,7 @@ require_once __DIR__.'/../bootstrap.php';
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
+use Opencast\Models\REST\Config as OCConfig;
 use Opencast\Models\Videos;
 use Opencast\Models\VideoSync;
 use Opencast\Models\WorkflowConfig;
@@ -38,7 +39,19 @@ class OpencastDiscoverVideos extends CronJob
 
 
         foreach ($configs as $config) {
+            // check, if this opencast instance is accessible
+            $version = false;
+
             echo 'working on config '. $config->id ."\n";
+            $version = OCConfig::getOCBaseVersion($config->id);
+
+            if (!$version) {
+                echo 'cannot connect to opencast, skipping!' ."\n";
+                continue;
+            } else {
+                echo "found opencast with version $version, continuing\n";
+            }
+
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
             echo 'instantiated api_client' . "\n";
@@ -108,27 +121,6 @@ class OpencastDiscoverVideos extends CronJob
 
             // Update Workflows
             WorkflowConfig::createAndUpdateByConfigId($config['id']);
-
-            // hide all videos, which are not present in opencast anymore
-            /*
-            foreach (array_diff($local_event_ids, $event_ids) as $old_event_id) {
-                $video = Videos::findOneByEpisode($old_event_id);
-
-                if (!empty($video)) {
-                    echo 'found video MISSING in Opencast #'. $config['id'] .': ' . $old_event_id . ' ('.  $video->title .")\n";
-
-                    $archive = new VideosArchive();
-                    $archive->setData($video->toArray());
-                    try {
-                        $archive->store();
-                    } catch (PDOException $p) {
-                        echo ' -> error during archiving: '. $p->getMessage() ."\n";
-                    }
-
-                    $video->delete();
-                }
-            }
-            */
         }
 
         // now check all videos which have no preview url (these were not yet ready when whe inspected them)

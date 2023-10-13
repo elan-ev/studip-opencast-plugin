@@ -6,7 +6,7 @@
             </div>
 
             <div class="oc--playercontainer">
-                <a v-if="event.publication && event.preview && event.available"
+                <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
                     @click="redirectAction(`/video/` + event.token)" target="_blank"
                 >
                     <span class="oc--previewimage">
@@ -26,7 +26,7 @@
                         </span>
                     </span>
                 </a>
-                <span v-else-if="!event.available && !event.state" class="oc--unavailable">
+                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
                     {{ $gettext("Video nicht verfügbar") }}
                 </span>
                 <a v-else-if="event.state == 'cutting'"
@@ -329,7 +329,7 @@ export default {
                             emitArguments: 'CaptionUpload'
                         });
                     }
-                    
+
                     menuItems.push({
                         id: 8,
                         label: this.$gettext('Zum Löschen markieren'),
