@@ -42,7 +42,7 @@
                                 name="title" id="titleField" v-model="upload.title" required>
                         </label>
 
-                        <label>
+                        <label v-if="upload_playlists && upload_playlists.length">
                             <span v-translate>
                                 Zu Wiedergabeliste hinzufügen
                             </span>
@@ -266,12 +266,18 @@ export default {
 
         upload_playlists() {
             let upload_playlists = this.playlists
+
+            if (!this.playlists.length) {
+                return null;
+            }
+
             if (!this.playlist) {
                 upload_playlists.unshift({
                     token: null,
-                    title: 'Keine Wiedergabeliste auswählen'
+                    title: this.$gettext('Keiner Wiedergabeliste hinzufügen')
                 })
             }
+
             return upload_playlists;
         },
 
