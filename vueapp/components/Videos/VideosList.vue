@@ -315,6 +315,19 @@ export default {
                 if (this.$route.name === 'videosTrashed') {
                     this.filters.trashed = true;
                 }
+            
+                if (this.playlistForVideos?.token) {
+
+                    if (!this.filters.filters) {
+                        this.filters.filters = []
+                    }
+                    this.filters.filters.push({
+                        'compare': '!=',
+                        'type': 'playlist',
+                        'value': this.playlistForVideos.token
+                    });
+                }
+
                 this.loadVideos();
             }
         })
