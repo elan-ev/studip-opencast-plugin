@@ -13,7 +13,7 @@ import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
 import HelpUrlFilter from "@/common/helpurl.filter";
 
-import vSelect from "vue-select";
+import vSelect from "vue3-select";
 
 import { createGettext } from "vue3-gettext";
 import translations from './i18n/translations.json';
