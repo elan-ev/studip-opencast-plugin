@@ -1,18 +1,18 @@
 <template>
     <div>
-        <VideosList></VideosList>
+        <VideosTable></VideosTable>
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import VideosList from "@/components/Videos/VideosList";
+import VideosTable from "@/components/Videos/VideosTable";
 
 
 export default {
     name: "CourseVideos",
     components: {
-        VideosList
+      VideosTable
     },
 
     computed: {
