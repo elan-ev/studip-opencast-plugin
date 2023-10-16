@@ -21,6 +21,7 @@
                 <col>
                 <col style="width: 180px" class="responsive-hidden">
                 <col style="width: 150px" class="responsive-hidden">
+                <col style="width: 18px">
                 <col style="width: 64px">
             </colgroup>
             <thead>
@@ -48,6 +49,7 @@
                             {{ $gettext('Autor/-in') }}
                         </a>
                     </th>
+                    <th></th>
                     <th class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
@@ -224,7 +226,7 @@ export default {
         ]),
 
         numberOfColumns() {
-          return 6 - (this.showCheckbox ? 0 : 1);
+          return 7 - (this.showCheckbox ? 0 : 1);
         },
 
         showCheckbox() {

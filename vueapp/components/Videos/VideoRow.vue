@@ -64,11 +64,6 @@
                 <span v-else>
                     {{event.title}}
                 </span>
-
-                <div data-tooltip class="tooltip" v-if="getInfoText">
-                    <span class="tooltip-content" v-html="getInfoText"></span>
-                    <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
-                </div>
             </div>
             <div class="oc--tags oc--tags-video">
                 <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
@@ -82,6 +77,13 @@
 
         <td class="oc--author responsive-hidden">
             {{ event.author ?? '' }}
+        </td>
+
+        <td class="oc--tooltip">
+            <div data-tooltip class="tooltip" v-if="getInfoText">
+                <span class="tooltip-content" v-html="getInfoText"></span>
+                <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
+            </div>
         </td>
 
         <td v-if="!videoSortMode && menuItems.length > 0" class="actions">
