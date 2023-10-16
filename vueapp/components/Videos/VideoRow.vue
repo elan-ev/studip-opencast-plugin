@@ -1,109 +1,121 @@
 <template>
-    <div name="oc--episode">
-        <li v-if="event.refresh === undefined" :key="event.id" class="oc--grid-episode">
-            <div class="oc--flex-checkbox" v-if="playlistForVideos || playlistMode || isCourse">
-                <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
-            </div>
+    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id">
+        <td v-if="playlistForVideos || playlistMode || showCheckbox">
+            <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
+        </td>
 
-            <div class="oc--playercontainer">
-                <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
-                    @click="redirectAction(`/video/` + event.token)" target="_blank"
-                >
-                    <span class="oc--previewimage">
-                        <img class="oc--previewimage"
-                            :src="getImageSrc"
-                            @error="setDefaultImage()"
-                            height="200"
-                            :ref="event.id"
-                        />
-                        <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
-                        <span class="oc--views">
-                            <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
-                            {{ event.views }}
+        <td class="oc--playercontainer">
+            <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
+               @click="redirectAction(`/video/` + event.token)" target="_blank"
+            >
+                <span class="oc--previewimage">
+                    <img class="oc--previewimage"
+                         :src="getImageSrc"
+                         @error="setDefaultImage()"
+                         height="200"
+                         :ref="event.id"
+                    />
+                    <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
+                    <span data-tooltip class="tooltip oc--views">
+                        <span class="tooltip-content">
+                            {{ $gettext('Aufrufe') }}
                         </span>
-                        <span class="oc--duration">
-                            {{ getDuration }}
-                        </span>
+                        <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
+                        {{ event.views }}
                     </span>
-                </a>
-                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
-                    {{ $gettext("Video nicht verfügbar") }}
-                </span>
-                <a v-else-if="event.state == 'cutting'"
-                    @click="redirectAction(`/editor/` + event.token)"
-                    :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
-                >
-                    <span class="oc--previewimage">
-                        <img class="oc--image-button" :src="cut">
+                    <span class="oc--duration">
+                        {{ getDuration }}
                     </span>
-                </a>
-                <span v-else-if="event.state == 'running'" class="oc--previewimage"
-                    :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
-                >
-                    <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
                 </span>
-                <span v-else-if="event.state == 'failed'" class="oc--previewimage"
-                    :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
-                >
-                    <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
+            </a>
+            <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
+                {{ $gettext("Video nicht verfügbar") }}
+            </span>
+            <a v-else-if="event.state == 'cutting'"
+               @click="redirectAction(`/editor/` + event.token)"
+               :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
+            >
+                <span class="oc--previewimage">
+                    <img class="oc--image-button" :src="cut">
                 </span>
-                <span v-else class="oc--previewimage">
-                    <img class="oc--previewimage" :src="preview" height="200"/>
-                    <!-- <p>No video uploaded</p> -->
-                </span>
-            </div>
+            </a>
+            <span v-else-if="event.state == 'running'" class="oc--previewimage"
+                  :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+            >
+                <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
+            </span>
+            <span v-else-if="event.state == 'failed'" class="oc--previewimage"
+                  :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
+            >
+                <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
+            </span>
+            <span v-else class="oc--previewimage">
+                <img class="oc--previewimage" :src="preview" height="200"/>
+                <!-- <p>No video uploaded</p> -->
+            </span>
+        </td>
 
-            <div class="oc--metadata-title">
-                <h2>
+        <td class="oc--metadata-title">
+            <div class="oc--title-container">
+                <a v-if="event.publication && event.preview && event.available"
+                   @click="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
-                </h2>
-            </div>
+                </a>
+                <span v-else>
+                    {{event.title}}
+                </span>
 
-            <div v-if="event.created && $filters.datetime(event.created)" class="oc--date">
-                &nbsp;- {{ $filters.datetime(event.created) }} Uhr
-            </div>
-
-            <div class="oc--tooltip">
                 <div data-tooltip class="tooltip" v-if="getInfoText">
                     <span class="tooltip-content" v-html="getInfoText"></span>
                     <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
                 </div>
             </div>
-
             <div class="oc--tags oc--tags-video">
                 <Tag v-for="tag in event.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
+        </td>
 
-            <div v-if="!videoSortMode && menuItems.length > 0" class="oc--actions-container">
-                <StudipActionMenu :items="menuItems"
-                    :collapseAt="menuItems.length > 1"
-                    @performAction="performAction"
-                    @redirectAction="redirectAction"
-                />
-            </div>
+        <td v-if="event.created && $filters.datetime(event.created)" class="oc--date responsive-hidden">
+            {{ $filters.datetime(event.created) }} Uhr
+        </td>
+        <td v-else></td>
 
-            <div v-if="playlistMode && videoSortMode" class="oc--sort-options">
-                <studip-icon
-                    :style="{visibility: canMoveUp ? 'visible' : 'hidden'}"
-                    shape="arr_2up" role="navigation"
-                    @click="$emit('moveUp', event.token)"
-                    :title="$gettext('Element nach oben verschieben')"
-                />
-                <studip-icon
-                    :style="{visibility: canMoveDown ? 'visible' : 'hidden'}"
-                    shape="arr_2down" role="navigation"
-                    @click="$emit('moveDown', event.token)"
-                    :title="$gettext('Element nach unten verschieben')"
-                />
-            </div>
-        </li>
-        <EmptyVideoCard v-else/>
-    </div>
+        <td class="oc--author responsive-hidden">
+            {{ event.author ?? '' }}
+        </td>
+
+        <td v-if="!videoSortMode && menuItems.length > 0" class="actions">
+            <StudipActionMenu :items="menuItems"
+                              :collapseAt="menuItems.length > 1"
+                              @performAction="performAction"
+                              @redirectAction="redirectAction"
+            />
+        </td>
+
+        <td v-if="playlistMode && videoSortMode" class="oc--sort-options">
+            <studip-icon
+                :style="{visibility: canMoveUp ? 'visible' : 'hidden'}"
+                shape="arr_2up" role="navigation"
+                @click="$emit('moveUp', event.token)"
+                :title="$gettext('Element nach oben verschieben')"
+            />
+            <studip-icon
+                :style="{visibility: canMoveDown ? 'visible' : 'hidden'}"
+                shape="arr_2down" role="navigation"
+                @click="$emit('moveDown', event.token)"
+                :title="$gettext('Element nach unten verschieben')"
+            />
+        </td>
+    </tr>
+    <tr v-else>
+        <td :colspan="numberOfColumns">
+            {{ $gettext('Kein Video vorhanden') }}
+        </td>
+    </tr>
 </template>
 
 <script>
 import { mapGetters } from "vuex"
-import EmptyVideoCard from "@/components/Videos/EmptyVideoCard"
 import ConfirmDialog from '@/components/ConfirmDialog'
 import StudipButton from '@/components/Studip/StudipButton'
 import StudipIcon from '@/components/Studip/StudipIcon'
@@ -112,16 +124,20 @@ import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 import Tag from '@/components/Tag.vue'
 
 export default {
-    name: "VideoCard",
+    name: "VideoRow",
 
     components: {
         StudipButton, ConfirmDialog,
-        EmptyVideoCard, StudipIcon,
-        StudipActionMenu, Tag
+        StudipIcon, StudipActionMenu,
+        Tag
     },
 
     props: {
         event: Object,
+        numberOfColumns: {
+            type: Number,
+            required: true
+        },
         canMoveUp: {
             type: Boolean,
             default: false
@@ -137,7 +153,7 @@ export default {
         selectedVideos: {
             type: Object,
         },
-        isCourse: {
+        showCheckbox: {
             type: Boolean,
             default: false
         },
@@ -162,9 +178,9 @@ export default {
         removeVideo() {
             let view = this;
             this.$store.dispatch('deleteVideo', this.event.token)
-            .then(() => {
-                view.DeleteConfirmDialog = false;
-            });
+                .then(() => {
+                    view.DeleteConfirmDialog = false;
+                });
         },
 
         toggleVideo(e) {
@@ -237,8 +253,7 @@ export default {
         },
 
         isChecked() {
-            return this.selectedVideos.indexOf(this.event.token)
-                >= 0 ? true : false;
+            return this.selectedVideos.indexOf(this.event.token) >= 0;
         },
 
         getInfoText() {

@@ -57,7 +57,7 @@
              </template>
         </StudipDialog>
 
-        <PlaylistVideos :playlist="playlist"/>
+        <VideosTable :playlistEdit="true"/>
     </div>
 </template>
 
@@ -68,7 +68,7 @@ import StudipDialog from '@studip/StudipDialog.vue';
 
 import TagBar from '@/components/TagBar.vue';
 import PlaylistVisibility from '@/components/Playlists/PlaylistVisibility.vue';
-import PlaylistVideos from "@/components/Playlists/PlaylistVideos";
+import VideosTable from "@/components/Videos/VideosTable.vue";
 
 import Tag from '@/components/Tag.vue'
 
@@ -84,7 +84,7 @@ export default {
         StudipIcon,     StudipButton,
         StudipDialog,
         TagBar,   PlaylistVisibility,
-        PlaylistVideos, Tag
+        VideosTable, Tag
     },
 
     data() {

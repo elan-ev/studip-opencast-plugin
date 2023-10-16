@@ -243,7 +243,7 @@ $action-menu-icon-size: 20px;
     }
 }
 
-.oc--episode-list, .oc--playlist {
+.oc--episode-list, .oc--episode-table, .oc--playlist {
     clear: both;
     padding-left: 0;
     list-style: none;
@@ -369,11 +369,6 @@ $action-menu-icon-size: 20px;
             overflow: auto;
         }
 
-        .oc--actions-container {
-            grid-column: 6;
-            grid-row: 1 / span 2;
-        }
-    
         .oc--metadata--empty {
             grid-column: 3 / span 4;
             grid-row: 1 / span 2;
@@ -413,7 +408,104 @@ $action-menu-icon-size: 20px;
     }
 }
 
-.oc--episode-list--empty {
+.oc--episode-table--small {
+    clear: both;
+    padding-left: 0;
+    overflow: auto;
+    height: auto;
+
+
+    .oc--episode {
+        overflow: hidden;
+        max-height: 70px;
+
+        .oc--playercontainer {
+            background-color: transparent;
+
+            img.oc--previewimage {
+                max-height: 60px;
+            }
+
+            .oc--duration{
+                bottom: 0px;
+                right: 0px;
+            }
+
+            .oc--views {
+                left: 0px;
+                bottom: 0px;
+            }
+
+            .oc--image-button {
+                height: 40px;
+                opacity: 0.6;
+            }
+        }
+
+        .oc--metadata-title {
+            overflow: hidden;
+
+            .oc--title-container {
+                display: flex;
+                gap: 5px;
+
+                font-size: 1.4em;
+                margin: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            a {
+                cursor: pointer;
+            }
+
+            .oc--tags {
+                display: flex;
+                flex-wrap: wrap;
+                row-gap: 5px;
+
+                margin-top: 8px;
+                white-space: nowrap;
+                overflow: auto;
+            }
+        }
+
+        .oc--date {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .oc--author {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .oc--metadata--empty {
+
+            h2, div {
+                margin-bottom: 5px;
+            }
+        }
+    }
+
+    .oc--sort-options {
+        text-align: right;
+        white-space: nowrap;
+
+        img {
+            cursor: pointer;
+        }
+    }
+
+    .oc--ghost {
+        opacity: 0.5;
+        background: dodgerblue;
+    }
+}
+
+.oc--episode-list--empty, oc--episode-table--empty {
     opacity: 0.7;
 }
 
@@ -470,16 +562,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 /* * * * * * * * * * * * * * */
 /*   A C T I O N   M E N U   */
 /* * * * * * * * * * * * * * */
-
-.oc--actions-container {
-    min-width: 2em;
-    border-left: 1px solid $light-gray-color-40;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .action-menu-icon {
     background: transparent;
@@ -1058,11 +1140,6 @@ label.oc--file-upload {
                 margin-bottom: 0;
             }
 
-            .oc--actions-container {
-                grid-column: 6;
-                grid-row: 1 / span 3;
-            }
-
             .oc--tooltip {
                 grid-column: 5;
                 grid-row: 1;
@@ -1074,6 +1151,26 @@ label.oc--file-upload {
 
             .oc--metadata--empty {
                 grid-row: 1 / span 3;
+            }
+        }
+    }
+
+    .oc--episode-table--small {
+
+        .oc--episode {
+            max-height: 100px;
+
+            .oc--metadata-title {
+                max-height: 1.4em;
+
+                .oc--title-container {
+                    overflow: auto;
+                }
+            }
+
+            .oc--tags {
+                max-height: 3em;
+                margin-bottom: 0;
             }
         }
     }
