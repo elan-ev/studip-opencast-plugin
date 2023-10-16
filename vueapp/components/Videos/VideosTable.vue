@@ -101,7 +101,7 @@
                             </StudipButton>
 
                             <StudipButton v-if="playlistEdit" icon="trash" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
-                                {{ $gettext('Verknüpfungen aufheben') }}
+                                {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>
 
