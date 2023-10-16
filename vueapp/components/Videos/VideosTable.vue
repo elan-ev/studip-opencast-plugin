@@ -208,6 +208,7 @@ export default {
     computed: {
         ...mapGetters([
             'videos',
+            'videosReload',
             'videoSort',
             'videoSortMode',
             'paging',
@@ -268,18 +269,30 @@ export default {
     },
 
     methods: {
-        changePage: async function(page) {
-            await this.$store.dispatch('setPage', page)
-
+        loadVideos() {
             this.videos_loading = true;
             this.$store.commit('setVideos', {});
+
             if (this.isCourse) {
-                let filters = this.filters;
-                filters.token = this.playlist.token;
-                this.$store.dispatch('loadPlaylistVideos', filters).then(() => { this.videos_loading = false });
+                this.$store.dispatch('loadPlaylistVideos', {
+                    ...this.filters,
+                    cid: this.cid,
+                    token: this.playlist.token
+                }).then(() => { this.videos_loading = false });
+            } else if (this.playlistEdit) {
+                this.$store.dispatch('loadPlaylistVideos', {
+                    ...this.filters,
+                    token: this.playlist.token,
+                    limit: -1,  // Show all videos in playlist edit view
+                }).then(() => { this.videos_loading = false });
             } else {
-                await this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
+                this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
             }
+        },
+
+        changePage: async function(page) {
+            await this.$store.dispatch('setPage', page);
+            this.loadVideos();
         },
 
         toggleVideo(data) {
@@ -309,26 +322,8 @@ export default {
 
         doSearch(filters) {
             this.filters = filters;
-
-            this.videos_loading = true;
             this.$store.dispatch('setPage', 0);
-            this.$store.commit('setVideos', {});
-
-            if (this.isCourse) {
-                this.$store.dispatch('loadPlaylistVideos', {
-                    ...this.filters,
-                    cid: this.cid,
-                    token: this.playlist.token
-                }).then(() => { this.videos_loading = false });
-            } else if (this.playlistEdit) {
-                this.$store.dispatch('loadPlaylistVideos', {
-                    ...this.filters,
-                    token: this.playlist.token,
-                    limit: -1  // Show all videos in playlist edit view
-                }).then(() => { this.videos_loading = false });
-            } else {
-                this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
-            }
+            this.loadVideos();
         },
 
         setSort(column) {
@@ -356,7 +351,8 @@ export default {
             }
 
             this.$store.dispatch('setVideoSort', videoSort);
-            this.doSearch(this.filters);
+            this.$store.dispatch('setPage', 0);
+            this.loadVideos();
         },
 
         sortClasses(column) {
@@ -451,17 +447,7 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
-                this.videos_loading = true;
-                this.$store.commit('setVideos', {});
-                if (this.isCourse) {
-                    this.$store.dispatch('loadPlaylistVideos', {
-                        ...this.filters,
-                        cid: this.cid,
-                        token: this.playlist.token
-                    }).then(() => { this.videos_loading = false });
-                } else {
-                    this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
-                }
+                this.loadVideos();
             }
         },
 
@@ -499,53 +485,31 @@ export default {
         getPlaylistLink(token) {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
         },
-
-        async loadVideos() {
-            this.videos_loading = true;
-            this.$store.commit('clearPaging');
-            this.$store.commit('setVideos', {});
-
-            let loadVideos = false;
-            if (this.playlist != null) {
-                loadVideos = true;
-            }
-
-            await this.$store.dispatch('authenticateLti').then(() => {
-                if (this.isCourse) {
-                    if (loadVideos) {
-                        this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
-                            this.$store.dispatch('loadPlaylistVideos', {
-                                ...this.filters,
-                                cid  : this.cid,
-                                token: this.playlist.token
-                            }).then(() => { this.videos_loading = false });
-                        });
-                    }
-                } else if (this.playlistEdit) {
-                    if (loadVideos) {
-                        this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
-                            this.$store.dispatch('loadPlaylistVideos', {
-                                ...this.filters,
-                                token: this.playlist.token,
-                                limit: -1,  // Show all videos in playlist edit view
-                            }).then(() => { this.videos_loading = false });
-                        });
-                    }
-                } else {
-                    if (this.$route.name === 'videosTrashed') {
-                        this.filters.trashed = true;
-                    }
-                    this.$store.dispatch('loadMyVideos', this.filters)
-                        .then(() => { this.videos_loading = false });
-                }
-            })
-        },
     },
 
     async mounted() {
-        await this.loadVideos();
+        this.$store.commit('clearPaging');
+        this.$store.commit('setVideos', {});
+
+        let loadVideos = this.playlist !== null;
 
         this.$store.dispatch('loadUserCourses');
+
+        await this.$store.dispatch('authenticateLti').then(() => {
+            if (this.isCourse || this.playlistEdit) {
+                if (loadVideos) {
+                    this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
+                        this.loadVideos();
+                    })
+                }
+            }
+            else {
+                if (this.$route.name === 'videosTrashed') {
+                    this.filters.trashed = true;
+                }
+                this.loadVideos();
+            }
+        })
 
         // periodically check, if lti is authenticated
         let view = this;
@@ -578,16 +542,18 @@ export default {
         // Catch every playlist change to handle video loading
         playlist(playlist) {
             if (this.isCourse && playlist !== null) {
-                this.videos_loading = true;
                 this.$store.commit('clearPaging');
-                this.$store.commit('setVideos', {});
-                this.$store.dispatch('setDefaultSortOrder', playlist).then(() => {
-                    this.$store.dispatch('loadPlaylistVideos', {
-                        ...this.filters,
-                        cid  : this.cid,
-                        token: playlist.token
-                    }).then(() => { this.videos_loading = false });
+                this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
+                    this.loadVideos();
                 });
+            }
+        },
+
+        // Handle reloading Videos from outside of this component (e.g. used after VideoUpload)
+        videosReload(reload) {
+            if (reload) {
+                this.loadVideos();
+                this.$store.dispatch('setVideosReload', false);
             }
         },
 
