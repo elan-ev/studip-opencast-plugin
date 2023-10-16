@@ -16,7 +16,10 @@
                          :ref="event.id"
                     />
                     <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
-                    <span class="oc--views">
+                    <span data-tooltip class="tooltip oc--views">
+                        <span class="tooltip-content">
+                            {{ $gettext('Aufrufe') }}
+                        </span>
                         <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
                         {{ event.views }}
                     </span>
