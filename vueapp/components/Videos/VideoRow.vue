@@ -288,26 +288,46 @@ export default {
                         });
                     }
 
+                    if (this.playlistMode && this.playlist) {
+                        menuItems.push({
+                            id: 2,
+                            label: this.$gettext('Aus Wiedergabeliste entfernen'),
+                            icon: 'trash',
+                            emit: 'performAction',
+                            emitArguments: 'VideoRemoveFromPlaylist'
+                        });
+                    }
+
+                    if (this.playlistForVideos) {
+                        menuItems.push({
+                            id: 3,
+                            label: this.$gettext('Zur Wiedergabeliste hinzufügen'),
+                            icon: 'add',
+                            emit: 'performAction',
+                            emitArguments: 'VideoAddToPlaylist'
+                        });
+                    }
+
                     /*
                     menuItems.push({
                         label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
                         icon: 'add',
                         emit: 'performAction',
-                        emitArguments: 'VideoAddToPlaylist'
+                        emitArguments: 'VideoLinkToPlaylists'
                     });
                     */
 
                     menuItems.push({
-                        id: 3,
+                        id: 5,
                         label: this.$gettext('Verknüpfungen'),
                         icon: 'link-intern',
                         emit: 'performAction',
-                        emitArguments: 'VideoAddToPlaylist'
+                        emitArguments: 'VideoLinkToPlaylists'
                     });
 
                     if (this.event?.perm === 'owner') {
                         menuItems.push({
-                            id: 4,
+                            id: 6,
                             label: this.$gettext('Video freigeben'),
                             icon: 'share',
                             emit: 'performAction',
@@ -317,7 +337,7 @@ export default {
 
                     if (this.event?.preview?.has_previews || this.event?.state == 'cutting') {
                         menuItems.push({
-                            id: 5,
+                            id: 7,
                             label: this.$gettext('Schnitteditor öffnen'),
                             icon: 'video2',
                             emit: 'redirectAction',
@@ -327,7 +347,7 @@ export default {
 
                     if (this.event?.publication?.annotation_tool && this.event?.state !== 'running') {
                         menuItems.push({
-                            id: 6,
+                            id: 8,
                             label: this.$gettext('Anmerkungen hinzufügen'),
                             icon: 'chat',
                             emit: 'redirectAction',
@@ -337,7 +357,7 @@ export default {
 
                     if (this.event?.state !== 'running') {
                         menuItems.push({
-                            id: 7,
+                            id: 9,
                             label: this.$gettext('Untertitel hinzufügen'),
                             icon: 'accessibility',
                             emit: 'performAction',
@@ -346,7 +366,7 @@ export default {
                     }
 
                     menuItems.push({
-                        id: 8,
+                        id: 10,
                         label: this.$gettext('Zum Löschen markieren'),
                         icon: 'trash',
                         emit: 'performAction',
@@ -355,7 +375,7 @@ export default {
                 }
                 if (this.downloadAllowed && this.event?.state !== 'running') {
                     menuItems.push({
-                        id: 2,
+                        id: 4,
                         label: this.$gettext('Medien runterladen'),
                         icon: 'download',
                         emit: 'performAction',
@@ -373,7 +393,7 @@ export default {
                         emitArguments: 'VideoRestore'
                     });
                     menuItems.push({
-                        id: 8,
+                        id: 10,
                         label: this.$gettext('Unwiderruflich entfernen'),
                         icon: 'trash',
                         emit: 'performAction',
@@ -383,7 +403,7 @@ export default {
             }
 
             menuItems.push({
-                id: 7,
+                id: 9,
                 label: this.$gettext('Technisches Feedback'),
                 icon: 'support',
                 emit: 'performAction',

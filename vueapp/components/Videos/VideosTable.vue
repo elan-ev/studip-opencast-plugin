@@ -154,6 +154,7 @@ import EmptyVideoRow from './EmptyVideoRow.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
+import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylists.vue';
 import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
 import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
@@ -163,6 +164,7 @@ import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
+import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
 import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
 import Tag from '@/components/Tag.vue'
 
@@ -175,12 +177,13 @@ export default {
         VideoRow,               EmptyVideoRow,
         PaginationButtons,      MessageBox,
         SearchBar,              Tag,
-        StudipButton,           VideoAddToPlaylist,
+        StudipButton,           VideoLinkToPlaylists,
         VideoAccess,            StudipIcon,
         VideoDownload,          VideoReport,
         VideoEdit,              VideoRestore,
         VideoDelete,            VideoDeletePermanent,
-        VideoAddToSeminar,      CaptionUpload,
+        VideoAddToSeminar,      VideoRemoveFromPlaylist,
+        VideoAddToPlaylist,     CaptionUpload,
         draggable,
     },
 

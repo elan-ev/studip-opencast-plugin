@@ -1,17 +1,17 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Video zur Wiedergabeliste hinzufügen')"
+            :title="$gettext('Video aus Wiedergabeliste entfernen')"
             :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
             height="200"
             @close="decline"
-            @confirm="addVideo"
+            @confirm="removeVideo"
         >
             <template v-slot:dialogContent>
-                {{ $gettext('Möchten Sie das Video wirklich zu der Wiedergabeliste hinzufügen?') }}
+                {{ $gettext('Möchten Sie das Video wirklich aus der Wiedergabeliste entfernen?') }}
             </template>
         </StudipDialog>
     </div>
@@ -22,7 +22,7 @@ import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog'
 
 export default {
-    name: 'VideoAddToPlaylist',
+    name: 'VideoRemoveFromPlaylist',
 
     components: {
         StudipDialog
@@ -33,18 +33,18 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['playlistForVideos'])
+        ...mapGetters(['playlist'])
     },
 
     methods: {
-        async addVideo() {
-            await this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlistForVideos.token,
+        async removeVideo() {
+            await this.$store.dispatch('removeVideosFromPlaylist', {
+                playlist: this.playlist.token,
                 videos: [this.event.token]
             }).then(() => {
                 this.$store.dispatch('addMessage', {
                     type: 'success',
-                    text: this.$gettext('Das Video wurde zu der Wiedergabeliste hinzugefügt.')
+                    text: this.$gettext('Das Video wurde aus der Wiedergabeliste entfernt.')
                 });
                 this.$emit('done', 'refresh');
             }).catch(() => {
@@ -54,7 +54,7 @@ export default {
 
         decline() {
             this.$emit('cancel');
-        }
+        },
     },
 }
 </script>
