@@ -141,6 +141,7 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
+                url       : this.currentUrl,
                 title     : this.currentTitle
             } };
             const container = this.$store.getters["courseware-containers/related"]({
@@ -157,7 +158,7 @@ export default {
         initCurrentData() {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
-            this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
+            this.currentUrl     = get(this.block, "attributes.payload.url", "");;
             this.currentTitle   = get(this.block, "attributes.payload.title", "");
 
             if (this.currentTitle) {
@@ -173,7 +174,21 @@ export default {
                 .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/course_episodes/'
                     + this.context.id + '?cid=' + this.context.id)
                 .then(response => {
-                    this.episodes = response.data;
+                    view.episodes = response.data;
+
+                    // check, if there is a matching episode id
+                    if (view.currentEpisode) {
+                        if (view.episodes.find((element) => element.id == view.currentEpisode) === undefined) {
+                            let data;
+                            view.episodes.push(data = {
+                                series_id : view.currentSeries,
+                                id        : view.currentEpisode,
+                                url       : view.currentUrl,
+                                name      : view.currentTitle + ' (Import)',
+                                visible   : true
+                            });
+                        };
+                    }
                     view.loadingEpisodes = false;
                 })
         },
@@ -202,7 +217,9 @@ export default {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
                     this.currentSeries  = this.episodes[id].series_id;
-                    this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;;
+                    this.currentUrl     = this.episodes[id].url
+                        ? this.episodes[id].url
+                        : STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
                     this.currentVisible = this.episodes[id].visible;
                     if (!this.titleFromBackend) {
                         this.currentTitle = this.episodes[id].name;
