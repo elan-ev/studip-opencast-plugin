@@ -10,8 +10,9 @@ class RedirectController extends OpencastController
     {
         $video = OCSeminarEpisodes::findOneByEpisode_id($episode_id);
 
-        if ($action !== 'video' && empty($video)) {
-            $this->render_nothing();
+        if ($action !== 'video' || empty($video)) {
+            // return from this route and show template containing the default oc preview image
+            $this->set_layout(null);
             return;
         }
 
