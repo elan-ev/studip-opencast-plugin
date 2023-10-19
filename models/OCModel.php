@@ -347,8 +347,8 @@ class OCModel
                                 <dcterms:contributor><![CDATA[' . urlencode($contributor) . ']]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
                                 <dcterms:temporal xsi:type="dcterms:Period">start=' . self::getDCTime($start_time) . '; end=' . self::getDCTime($end_time) . '; scheme=W3C-DTF;</dcterms:temporal>
-                                <dcterms:description><![CDATA[' . urlencode($description) . ']]></dcterms:description>
-                                <dcterms:subject><![CDATA[' . urlencode($abstract) . ']]></dcterms:subject>
+                                <dcterms:description><![CDATA[' . urlencode(str_replace('%', '', $description)) . ']]></dcterms:description>
+                                <dcterms:subject><![CDATA[' . urlencode(str_replace('%', '', $abstract)) . ']]></dcterms:subject>
                                 <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
                                 <dcterms:title><![CDATA[' . urlencode($title) . ']]></dcterms:title>
