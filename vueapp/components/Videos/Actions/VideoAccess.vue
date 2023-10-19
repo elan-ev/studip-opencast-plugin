@@ -208,7 +208,6 @@ export default {
             }).catch((er) => {
                 this.videoShares.shares.splice(index, 0, link);
                 this.$store.dispatch('addMessage', this.$gettext('Beim Löschen des Links ist ein Fehler aufgetreten.'));
-                console.log('Error while removing share link!', er);
             });
         },
 
