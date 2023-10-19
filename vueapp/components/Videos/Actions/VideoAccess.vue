@@ -2,12 +2,11 @@
     <div>
         <StudipDialog
             :title="$gettext('Video freigeben')"
-            :confirmText="$gettext('Abschließen')"
-            :confirmClass="'accept'"
+            :closeText="$gettext('Schließen')"
+            :closeClass="'cancel'"
             height="600"
             width="600"
             @close="$emit('done', 'refresh')"
-            @confirm="$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
                 <form class="default">
@@ -163,7 +162,6 @@ export default {
             .catch((er) => {
                 this.shareUsers.pop();
                 this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'));
-                console.log('Error while creating access perm!', er);
             })
         },
 
@@ -178,7 +176,6 @@ export default {
             .catch((er) => {
                 this.videoShares.perms.splice(index, 0, perm);
                 this.$store.dispatch('addMessage', this.$gettext('Beim Löschen der Freigabe ist ein Fehler aufgetreten.'));
-                console.log('Error while removing access perm!', er);
             })
         },
 
@@ -196,7 +193,6 @@ export default {
                 this.initVideoShares();
             }).catch((er) => {
                 this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen des Links ist ein Fehler aufgetreten.'));
-                console.log('Error while creating share link!', er);
             });
         },
 
