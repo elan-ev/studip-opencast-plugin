@@ -220,7 +220,8 @@ export default {
             'playlist',
             'course_config',
             'isLTIAuthenticated',
-            'simple_config_list'
+            'simple_config_list',
+            'errors'
         ]),
 
         numberOfColumns() {
@@ -485,6 +486,44 @@ export default {
         getPlaylistLink(token) {
             return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
         },
+
+        checkLTIPeriodically() {
+            let view = this;
+
+            this.$store.dispatch('simpleConfigListRead').then(() => {
+
+                const error_msg = this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Einige Aktionen könnten nicht richtig funktionieren.');
+                const server_ids = Object.keys(view.simple_config_list['server']);
+
+                // periodically check, if lti is authenticated
+                view.interval = setInterval(async () => {
+                    // Create an array of promises for checking each server in parallel
+                    const promises = server_ids.map(async (id) => {
+                        await view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
+                        // Remove server from list, if authenticated
+                        if (view.isLTIAuthenticated[id]) {
+                            server_ids.splice(server_ids.indexOf(id), 1);
+                        }
+                    });
+                    // Wait for all checks to finish
+                    await Promise.all(promises);
+
+                    if (server_ids.length === 0) {
+                        view.$store.dispatch('errorRemove', error_msg);
+                        clearInterval(view.interval);
+                    } else {
+                        if (!view.errors.find((e) => e === error_msg)) {
+                            view.$store.dispatch('errorCommit', error_msg);
+                        }
+                    }
+
+                    view.interval_counter++;
+                    if (view.interval_counter > 10) {
+                        clearInterval(view.interval);
+                    }
+                }, 2000);
+            });
+        }
     },
 
     async mounted() {
@@ -511,25 +550,7 @@ export default {
             }
         })
 
-        // periodically check, if lti is authenticated
-        let view = this;
-
-        this.$store.dispatch('simpleConfigListRead').then(() => {
-            view.interval = setInterval(() => {
-                for (let id in view.simple_config_list['server']) {
-                    if (!view.isLTIAuthenticated[id]) {
-                        view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
-                    }
-                }
-
-                view.interval_counter++;
-
-                // prevent spamming of oc server
-                if (view.interval_counter > 10) {
-                    clearInterval(view.interval);
-                }
-            }, 2000);
-        });
+        this.checkLTIPeriodically();
     },
 
     watch: {
