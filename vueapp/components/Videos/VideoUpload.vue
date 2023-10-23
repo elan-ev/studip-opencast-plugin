@@ -439,6 +439,9 @@ export default {
                         
                         this.$store.dispatch('setVideosReload', true);
                     });
+                },
+                onError: (response) => {
+                    this.$store.dispatch('errorCommit', response);
                 }
             });
         },
