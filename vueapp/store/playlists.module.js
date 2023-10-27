@@ -219,7 +219,9 @@ const mutations = {
 
     addToVideosCount(state, data) {
         let idx = state.playlists.findIndex(playlist => playlist.token === data.token);
-        state.playlists[idx].videos_count += data.addToCount;
+        if (idx !== -1) {
+            state.playlists[idx].videos_count += data.addToCount;
+        }
     }
 }
 
