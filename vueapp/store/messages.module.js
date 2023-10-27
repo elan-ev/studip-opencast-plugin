@@ -1,5 +1,6 @@
 const initialState = {
     messages: [],
+    message_max_id: 0,
     message_num: 1
 };
 
@@ -23,7 +24,8 @@ export const actions = {
         let messages = state.messages;
         let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text);
         if (!current_message) {
-            message.id = messages.length + 1;
+            context.commit('incrementMessageMaxId')
+            message.id = state.message_max_id;
             context.commit('setMessage', message);
         }
     },
@@ -41,6 +43,10 @@ export const mutations = {
 
     setMessages(state, messages) {
         state.messages = messages;
+    },
+
+    incrementMessageMaxId(state) {
+        state.message_max_id++;
     },
 
     removeMessage(state, id) {
