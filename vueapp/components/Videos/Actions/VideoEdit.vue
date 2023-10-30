@@ -182,7 +182,7 @@ export default {
         updatedTags() {
             for (let i = 0; i < this.event.tags.length; i++) {
                 if (typeof this.event.tags[i] !== 'object') {
-                    // fix tag, because vue-select seems to have an incosistent behaviour
+                    // fix tag, because vue3-select seems to have an incosistent behaviour
                     this.event.tags[i] = {
                         tag:  this.event.tags[i]
                     }

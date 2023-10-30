@@ -32,7 +32,7 @@
                                         {{ share.fullname }}
                                     </td>
                                     <td>
-                                        {{ permToText(share.perm) }}
+                                        {{ $gettext($filters.permname(share.perm)) }}
                                     </td>
                                     <td>
                                         <studip-icon shape="trash" role="clickable" @click="removePerm(index)" style="cursor: pointer"/>
@@ -226,17 +226,6 @@ export default {
                     console.log(e);
                 }
             }
-        },
-
-        permToText(perm) {
-            let translations = {
-                'owner': this.$gettext('Besitzer/in'),
-                'write': this.$gettext('Schreibrechte'),
-                'read':  this.$gettext('Leserechte'),
-                'share': this.$gettext('Kann weiterteilen')
-            }
-
-            return translations[perm];
         },
 
         initVideoShares() {

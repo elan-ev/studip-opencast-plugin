@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import vSelect from 'vue-select';
+import vSelect from 'vue3-select';
 import { createPopper } from '@popperjs/core'
-import 'vue-select/dist/vue-select.css'
+import 'vue3-select/dist/vue3-select.css'
 export default {
     name: 'studip-select',
     inheritAttrs: false,
@@ -90,7 +90,7 @@ export default {
             else {
                 footerHeight = document.getElementById('layout_footer').offsetHeight;
             }
-            
+
             let functionalAreaHeight = totalDocHeight - footerHeight;
             return totalExpandedList >= functionalAreaHeight ? 'top' : 'bottom';
         },

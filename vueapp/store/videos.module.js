@@ -6,7 +6,6 @@ const state = {
     videoSort: {
         field: 'created',
         order: 'desc',
-        text : 'Datum hochgeladen: Neueste zuerst'
     },
     videoSortMode: false,
     videoSortList: {},
@@ -22,6 +21,7 @@ const state = {
     videoShares: {},
     courseVideosToCopy: [],
     showCourseCopyDialog: false,
+    videosReload: false,
 }
 
 const getters = {
@@ -71,6 +71,10 @@ const getters = {
 
     showCourseCopyDialog(state) {
         return state.showCourseCopyDialog
+    },
+
+    videosReload(state) {
+        return state.videosReload
     },
 }
 
@@ -222,6 +226,10 @@ const actions = {
 
     toggleCourseCopyDialog({dispatch, state, commit}, mode) {
         commit('setShowCourseCopyDialog', mode);
+    },
+
+    setVideosReload({commit}, mode) {
+        commit('setVideosReload', mode)
     }
 }
 
@@ -291,6 +299,10 @@ const mutations = {
         else {
             state.videoCaptions = {};
         }
+    },
+
+    setVideosReload(state, mode) {
+        state.videosReload = mode;
     }
 }
 

@@ -9,11 +9,12 @@ import "./public-path";
 
 import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";
+import PermNameFilter from "@/common/permname.filter";
 import ErrorFilter from "@/common/error.filter";
 import FileSizeFilter from "@/common/filesize.filter";
 import HelpUrlFilter from "@/common/helpurl.filter";
 
-import vSelect from "vue-select";
+import vSelect from "vue3-select";
 
 import { createGettext } from "vue3-gettext";
 import translations from './i18n/translations.json';
@@ -29,6 +30,7 @@ window.addEventListener("DOMContentLoaded", function() {
     Vue.config.globalProperties.$filters = {
         date: DateFilter,
         datetime: DateTimeFilter,
+        permname: PermNameFilter,
         error: ErrorFilter,
         filesize: FileSizeFilter,
         helpurl: HelpUrlFilter
@@ -43,7 +45,9 @@ window.addEventListener("DOMContentLoaded", function() {
         }, function (error) {
             store.dispatch('axiosStop');
 
-            store.dispatch('errorCommit', error.response);
+            if (error.data !== undefined) {
+                store.dispatch('errorCommit', error.response);
+            }
 
             // Do something with response error
             return Promise.reject(error)

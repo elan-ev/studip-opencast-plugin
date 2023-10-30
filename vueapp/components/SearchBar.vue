@@ -42,15 +42,6 @@
             </li>
         </ul>
 
-        <select class="oc--searchbar-sorter" v-model="inputSort" @change="setSort">
-            <option
-                v-for="sort in availableSortOrders"
-                v-bind:key="sort.key"
-                v-bind:value="sort">
-                {{ sort.text }}
-            </option>
-        </select>
-
         <div class="oc--tokenselector" v-if="showTS"
             :style="`left:` + tokenSelectorPos.left + `px; top:` + tokenSelectorPos.top + `px;`"
         >
@@ -107,7 +98,6 @@ export default {
 
     data() {
         return {
-            inputSort: null,
             inputSearch: '',
             searchTokens: [],
             showTS: false,
@@ -144,56 +134,9 @@ export default {
             }
             return this.playlists;
         },
-
-        availableSortOrders() {
-            let sortOrders = [
-                {
-                    field: 'created',
-                    order: 'desc',
-                    text : 'Datum hochgeladen: Neueste zuerst'
-                },  {
-                    field: 'created',
-                    order: 'asc',
-                    text : 'Datum hochgeladen: Älteste zuerst'
-                },  {
-                    field: 'title',
-                    order: 'asc',
-                    text : 'Titel: Alphabetisch'
-                }, {
-                    field: 'title',
-                    order: 'desc',
-                    text : 'Titel: Umgekehrt Alphabetisch'
-                }
-            ];
-
-            if (this.playlist) {
-                sortOrders.push({
-                    field: 'order',
-                    order: 'asc',
-                    text : 'Benutzerdefiniert'
-                }, {
-                    field: 'order',
-                    order: 'desc',
-                    text : 'Benutzerdefiniert Umgekehrt'
-                });
-            }
-
-            return sortOrders;
-        }
     },
 
     methods: {
-        setSort() {
-            if (this.playlist && this.$route.name === 'playlist_edit') {
-                this.$store.dispatch('setPlaylistSort', {
-                    token: this.playlist.token,
-                    sort:  this.inputSort
-                });
-            }
-            this.$store.dispatch('setVideoSort', this.inputSort)
-            this.doSearch();
-        },
-
         showTokenSelector() {
             this.showTS = true;
 
@@ -298,30 +241,5 @@ export default {
             this.showTokenSelector();
         }
     },
-
-    mounted() {
-        if (this.playlist) {
-            // Default sort option should already be selected
-            this.inputSort = this.availableSortOrders.find(elem => elem.field == this.videoSort.field && elem.order == this.videoSort.order);
-        }
-        else {
-            // TODO Maybe use a global default sort order
-            this.inputSort = {
-                field: 'created',
-                order: 'desc',
-                text : 'Datum hochgeladen: Neueste zuerst'
-            };
-        }
-        this.$store.dispatch('setVideoSort', this.inputSort);
-    },
-
-    watch: {
-        // Make sure that inputSort is synced with store
-        videoSort(newSort) {
-            if (newSort != null) {
-                this.inputSort = this.availableSortOrders.find(elem => elem.field == newSort.field && elem.order == newSort.order);
-            }
-        }
-    }
 }
 </script>

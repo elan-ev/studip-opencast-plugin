@@ -1,53 +1,68 @@
 <template>
     <div>
-        <label v-if="Object.keys(videos).length === 0">
-            <translate>
-                Es konnten keine Videos gefunden werden
-            </translate>
-        </label>
-        <div class="oc-cw-video-list" v-else>
+        <div class="oc-cw-video-list">
             <PaginationButtons :paging="paging" @changePage="startPageChange"/>
+            <table id="episodes" class="default oc--episode-table--small" v-if="simple_config_list">
+                <colgroup>
+                    <col style="width: 119px">
+                    <col>
+                    <col style="width: 180px" class="responsive-hidden">
+                    <col style="width: 150px" class="responsive-hidden">
+                </colgroup>
+                <thead>
+                    <tr class="sortable">
+                        <th data-sort="false">{{ $gettext('Video') }}</th>
+                        <th @click="setSort('title')" :class="sortClasses('title')">
+                            <a href="#" @click.prevent>
+                                {{ $gettext('Titel') }}
+                            </a>
+                        </th>
+                        <th @click="setSort('created')" class="responsive-hidden" :class="sortClasses('created')">
+                            <a href="#" @click.prevent>
+                                {{ $gettext('Datum') }}
+                            </a>
+                        </th>
+                        <th data-sort="false" class="responsive-hidden">
+                            {{ $gettext('Autor/-in') }}
+                        </th>
+                    </tr>
+                </thead>
 
-            <label>
-                <ul v-if="loadingVideos">
-                    <li v-for="(n, index) in limit" :key="index">
-                        <div class="oc-cw-loadingbar"></div>
-                        <div class="oc-cw-loadingbar"></div>
-                        <div class="oc-cw-loadingbar"></div>
-                    </li>
-                </ul>
-                <ul class="oc--episode-list--small" v-else>
-                    <VideoCard
-                        v-if="simple_config_list"
-                        v-for="event in videos"
-                        class="{selected: selectedVideoId == event.id}"
-                        v-bind:event="event"
-                        v-bind:key="event.token"
-                        :isLTIAuthenticated="isLTIAuthenticated"
+                <tbody v-if="loadingVideos" class="oc--episode-table--empty">
+                    <EmptyVideoRow
+                        :numberOfColumns="numberOfColumns"
                         :simple_config_list="simple_config_list"
-                        @doAction="setVideo"
-                        @redirectAction="redirectAction"
-                        @setVideo="setVideo(event)"
-                    ></VideoCard>
-
-                    <!--
-                    <li v-for="(video, index) in videos" :key="index" :class="{selected: selectedVideoId == video.id}" @click="setVideo(video)">
-                        <div>
-                            <strong>
-                                {{video.title}}
-                            </strong>
-                            <div>
-                                {{ printDetails(video) }}
-                                {{ video.author }}
-                                <!- <span v-if="video.created">
-                                    - {{ video.created }} Uhr
-                                </span> ->
-                            </div>
-                        </div>
-                    </li>
-                    -->
-                </ul>
-            </label>
+                    />
+                    <EmptyVideoRow
+                        :numberOfColumns="numberOfColumns"
+                        :simple_config_list="simple_config_list"
+                    />
+                    <EmptyVideoRow
+                        :numberOfColumns="numberOfColumns"
+                        :simple_config_list="simple_config_list"
+                    />
+                </tbody>
+                <tbody v-else-if="Object.keys(videos).length === 0 || !simple_config_list">
+                    <tr>
+                        <td :colspan="numberOfColumns">
+                            {{ $gettext('Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden.') }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <template v-for="event in videos" >
+                        <VideoRow
+                            :event="event"
+                            :numberOfColumns="numberOfColumns"
+                            @doAction="setVideo"
+                            @setVideo="setVideo(event)"
+                            @redirectAction="redirectAction"
+                            :isLTIAuthenticated="isLTIAuthenticated"
+                            :simple_config_list="simple_config_list"
+                        ></VideoRow>
+                    </template>
+                </tbody>
+            </table>
         </div>
 
         <LtiAuth v-if="simple_config_list"
@@ -58,20 +73,21 @@
 
 <script>
 import PaginationButtons from './PaginationButtons.vue';
-import VideoCard from './VideoCard.vue';
+import VideoRow from './VideoRow.vue';
+import EmptyVideoRow from './EmptyVideoRow.vue';
 import LtiAuth from './LtiAuth.vue';
 import axios from 'axios';
 
 export default {
     name: "CoursewareVideoTable",
 
-    props: ['videos', 'paging', 'selectedVideoId', 'loadingVideos', 'limit'],
+    props: ['videos', 'paging', 'selectedVideoId', 'loadingVideos', 'limit', 'sorts', 'videoSort'],
 
     components: {
         PaginationButtons,
-        VideoCard,
+        VideoRow,
+        EmptyVideoRow,
         LtiAuth
-
     },
 
     data() {
@@ -79,7 +95,8 @@ export default {
             interval: null,
             interval_counter: 0,
             isLTIAuthenticated: {},
-            simple_config_list: null
+            simple_config_list: null,
+            numberOfColumns: 5
         }
     },
 
@@ -90,6 +107,14 @@ export default {
 
         setVideo(video) {
             this.$emit('doSelectVideo', video);
+        },
+
+        sortClasses(column) {
+            let classes = [];
+            if (this.videoSort.field === column) {
+                classes.push(this.videoSort.order === 'asc' ? 'sortasc' : 'sortdesc');
+            }
+            return classes;
         },
 
         checkLTIAuthentication(server)
@@ -116,6 +141,25 @@ export default {
                 redirectUrl = redirectUrl + action;
                 window.open(redirectUrl, '_blank');
             }
+        },
+
+        setSort(column) {
+            let videoSort = {
+                field: column,
+                order: 'asc'
+            };
+
+            if (this.videoSort.field === column) {
+                if (this.playlist && this.videoSort.order === 'desc') {
+                    // Custom order in playlists after descending order
+                    videoSort.field = 'order';
+                    videoSort.order = 'asc';
+                } else {
+                    videoSort.order = this.videoSort.order === 'desc' ? 'asc' : 'desc';
+                }
+            }
+
+            this.$emit('doSort', videoSort)
         }
     },
 
