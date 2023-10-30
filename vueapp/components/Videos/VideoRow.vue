@@ -64,16 +64,7 @@
                 <span v-else>
                     {{event.title}}
                 </span>
-
-                <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
-                    <span class="tooltip-content" v-html="getAccessText"></span>
-                    <studip-icon
-                        shape="group2"
-                        role="active"
-                        :size="18"
-                        @click="performAction('VideoAccess')"
-                    />
-                </div>
+            </div>
 
             <div class="oc--tooltips">
                 <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">

@@ -488,6 +488,12 @@ $action-menu-icon-size: 20px;
                 margin-bottom: 5px;
             }
         }
+
+        .oc--tooltips {
+            .tooltip {
+                margin: 5px 0 0 5px;
+            }
+        }
     }
 
     .oc--sort-options {
