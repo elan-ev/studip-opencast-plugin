@@ -285,16 +285,6 @@ export default {
             return txt;
         },
 
-        getAccessText() {
-            var txt = '';
-            if (this.event?.perms) {
-                this.event.perms.forEach(perm => {
-                    txt += '<div>' + perm.fullname + ': ' + perm.perm + '</div>'
-                });
-            }
-            return txt;
-        },
-
         getInfoText() {
             var txt = '';
             if (this.event.author) {
