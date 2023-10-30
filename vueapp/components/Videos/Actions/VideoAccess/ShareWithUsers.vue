@@ -48,17 +48,11 @@
             <label>
                 {{ $gettext('Berechtigung') }}
                 <select v-model="selectedUserPerm">
-                    <option value="owner">
-                        {{ $gettext('Besitzer/in') }}
-                    </option>
-
-                    <option value="write">
-                        {{ $gettext('Schreibrechte') }}
-                    </option>
-
-                    <option value="read">
-                        {{ $gettext('Leserechte') }}
-                    </option>
+                    <template v-for="perm in ['owner', 'write', 'read']">
+                        <option value="owner">
+                            {{ $gettext($filters.permname(perm)) }}
+                        </option>
+                    </template>
                 </select>
             </label>
         </fieldset>

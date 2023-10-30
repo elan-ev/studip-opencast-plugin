@@ -350,7 +350,7 @@ $action-menu-icon-size: 20px;
             text-overflow: ellipsis;
         }
 
-        .oc--tooltip {
+        .oc--tooltips {
             grid-column: 5;
             grid-row: 1;
 
@@ -486,6 +486,12 @@ $action-menu-icon-size: 20px;
 
             h2, div {
                 margin-bottom: 5px;
+            }
+        }
+
+        .oc--tooltips {
+            .tooltip {
+                margin: 5px 0 0 5px;
             }
         }
     }
@@ -1140,7 +1146,12 @@ label.oc--file-upload {
                 margin-bottom: 0;
             }
 
-            .oc--tooltip {
+            .oc--actions-container {
+                grid-column: 6;
+                grid-row: 1 / span 3;
+            }
+
+            .oc--tooltips {
                 grid-column: 5;
                 grid-row: 1;
 

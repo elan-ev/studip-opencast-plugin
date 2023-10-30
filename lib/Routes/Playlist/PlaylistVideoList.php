@@ -53,7 +53,12 @@ class PlaylistVideoList extends OpencastController
 
         $ret = [];
         foreach ($videos['videos'] as $video) {
-            $ret[] = $video->toSanitizedArray($params['cid'], $playlist->id);
+            $video_array = $video->toSanitizedArray($params['cid'], $playlist->id);
+            if (!empty($video_array['perm']) && ($video_array['perm'] == 'owner' || $video_array['perm'] == 'write'))
+            {
+                $video_array['perms'] = $video->perms->toSanitizedArray();
+            }
+            $ret[] = $video_array;
         }
 
         return $this->createResponse([

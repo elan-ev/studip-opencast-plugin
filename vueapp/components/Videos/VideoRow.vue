@@ -64,6 +64,18 @@
                 <span v-else>
                     {{event.title}}
                 </span>
+            </div>
+
+            <div class="oc--tooltips">
+                <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
+                    <span class="tooltip-content" v-html="getAccessText"></span>
+                    <studip-icon
+                        shape="group2"
+                        role="active"
+                        :size="18"
+                        @click="performAction('VideoAccess')"
+                    />
+                </div>
 
                 <div data-tooltip class="tooltip" v-if="getInfoText">
                     <span class="tooltip-content" v-html="getInfoText"></span>
@@ -254,6 +266,14 @@ export default {
 
         isChecked() {
             return this.selectedVideos.indexOf(this.event.token) >= 0;
+        },
+
+        getAccessText() {
+            var txt = '';
+            this.event.perms.forEach(perm => {
+                txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.$filters.permname(perm.perm)) + '</div>'
+            });
+            return txt;
         },
 
         getInfoText() {

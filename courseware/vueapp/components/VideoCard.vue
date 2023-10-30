@@ -63,7 +63,7 @@
                 &nbsp;- {{ datetime(event.created) }} Uhr
             </div>
 
-            <div class="oc--tooltip">
+            <div class="oc--tooltips">
                 <div data-tooltip class="tooltip" v-if="getInfoText">
                     <span class="tooltip-content" v-html="getInfoText"></span>
                     <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
