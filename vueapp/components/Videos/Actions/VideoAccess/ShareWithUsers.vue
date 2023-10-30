@@ -49,7 +49,7 @@
                 {{ $gettext('Berechtigung') }}
                 <select v-model="selectedUserPerm">
                     <template v-for="perm in ['owner', 'write', 'read']">
-                        <option value="owner">
+                        <option :value="perm">
                             {{ $gettext($filters.permname(perm)) }}
                         </option>
                     </template>

@@ -167,8 +167,12 @@ export default {
 
         removePerm(index)
         {
+            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Freigabe entfernen möchten?'))) {
+                return;
+            }
+
             let perm = this.videoShares.perms.splice(index, 1)[0];
-            
+
             this.$store.dispatch('updateVideoShares', {
                 token: this.event.token,
                 shares: this.videoShares
@@ -198,6 +202,10 @@ export default {
 
         removeLinkShare(index)
         {
+            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Freigabe entfernen möchten?'))) {
+                return;
+            }
+
             let link = this.videoShares.shares.splice(index, 1)[0];
 
             this.$store.dispatch('updateVideoShares', {
