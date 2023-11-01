@@ -43,6 +43,9 @@
                         :limit="limit"
                         @doSelectVideo="performSelectVideo"
                         @doChangePage="performPageChange"
+                        @doSort="performSort"
+                        :sorts="sorts"
+                        :videoSort="sortObj"
                     />
                 </form>
             </template>
@@ -74,9 +77,26 @@ export default {
     },
 
     data() {
+        const sorts = [
+            {
+                field: 'created',
+                order: 'desc',
+            }, {
+                field: 'created',
+                order: 'asc',
+            }, {
+                field: 'title',
+                order: 'asc',
+            }, {
+                field: 'title',
+                order: 'desc',
+            }
+        ];
+
         return {
             searchText: '',
-            sortObj: null,
+            sorts: sorts,
+            sortObj: sorts[0],
             limit: 15,
             paging: {
                     currPage: 0,
@@ -125,13 +145,13 @@ export default {
 
         performSearch(searchText) {
             this.searchText = searchText;
-            this.resetPaging();
+            // this.resetPaging();
             this.loadVideos();
         },
 
         performSort(sortObj) {
             this.sortObj = sortObj;
-            this.resetPaging();
+            // this.resetPaging();
             this.loadVideos();
         },
 

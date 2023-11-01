@@ -19,15 +19,6 @@
                 />
             </li>
         </ul>
-
-        <select class="oc-cw-searchbar-sorter" v-model="inputSort" @change="setSort">
-            <option
-                v-for="sort in sorts"
-                v-bind:key="sort.key"
-                v-bind:value="sort">
-                <translate>{{ sort.text }}</translate>
-            </option>
-        </select>
     </div>
 </template>
 
@@ -36,29 +27,7 @@ export default {
     name: "CoursewareSearchBar",
 
     data() {
-        const sorts = [
-            {
-                field: 'created',
-                order: 'desc',
-                text: 'Datum hochgeladen: Neueste zuerst'
-            }, {
-                field: 'created',
-                order: 'asc',
-                text: 'Datum hochgeladen: Älteste zuerst'
-            }, {
-                field: 'title',
-                order: 'asc',
-                text: 'Titel: Alphabetisch'
-            }, {
-                field: 'title',
-                order: 'desc',
-                text: 'Titel: Umgekehrt Alphabetisch'
-            }
-        ];
-
         return {
-            sorts: sorts,
-            inputSort: sorts[0],
             inputSearch: ''
         }
     },
@@ -66,20 +35,6 @@ export default {
     methods: {
         doSearch() {
             this.$emit('doSearch', this.inputSearch);
-        },
-
-        resetSearch() {
-            this.inputSearch = '';
-            this.startSearch();
-        },
-
-        setSort() {
-            this.$emit('doSort', this.inputSort);
-        },
-
-        resetSort() {
-            this.inputSort = null;
-            this.startSort();
         }
     },
 }
