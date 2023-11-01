@@ -263,8 +263,6 @@ class Config extends \SimpleOrMap
                         'type' => 'success',
                         'text' => implode('<br>', $success_message)
                     ];
-
-                    $config_checked = true;
                 }
             } else {
                 $message = [

@@ -212,43 +212,63 @@ export default {
         },
 
         checkConfigResponse(data) {
-            if (data.lti !== undefined) {
-                this.checkLti(data.lti);
-            }
             if (data.message !== undefined) {
-                this.$store.dispatch('addMessage', {
-                     type: data.message.type,
-                     text: data.message.text
-                });
+                if (data.message.type === 'error') {
+                    this.$store.dispatch('addMessage', {
+                        type: data.message.type,
+                        text: data.message.text
+                    });
+                    return;
+                }
+                else if (data.message.type === 'success') {
+                    let lti_checked = false;
+                    this.checkLti(data.lti).then((result) => {
+                        lti_checked = result;
+                    });
 
-                if(data.message.type == 'success'){
-                    this.$emit('close');
+                    this.$store.dispatch('addMessage', {
+                        type: data.message.type,
+                        text: data.message.text
+                    });
+
+                    if (!lti_checked) {
+                        this.postLtiCheckFailedMessage();
+                    }
+                    else {
+                        this.$emit('close');
+                    }
+                    return;
                 }
             }
+
+            this.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.')
+            });
         },
 
         async checkLti(data)
         {
-            let view = this;
-
             await this.$store.dispatch('authenticateLti');
 
             // make an lti call to make sure it worked, there are some caveats though...
             // - already succesful calls will not be revoked
             // - unsuccesful calls will persist even if it worked now
-            axios({
-                url: data[0].launch_url,
-                method: "GET",
-                withCredentials: true,
-            }).then(({ data }) => {
-                if (data.user_id == undefined) {
-                    view.postLtiCheckFailedMessage();
+            try {
+                const response = await axios({
+                    url: data[0].launch_url,
+                    method: "GET",
+                    withCredentials: true,
+                });
+
+                if (response.user_id == undefined) {
+                    return false;
                 } else {
-                    view.postLtiCheckSucceededMessage();
+                    return true;
                 }
-            }).catch(function (error) {
-                view.postLtiCheckFailedMessage();
-            });
+            } catch (error) {
+                return false;
+            }
         },
 
         postLtiCheckFailedMessage()
@@ -261,14 +281,6 @@ export default {
                     + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
                     + 'Header zu setzen.'
                 )
-            });
-        },
-
-        postLtiCheckSucceededMessage()
-        {
-            this.$store.dispatch('addMessage', {
-                type: 'success',
-                text: this.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
             });
         },
 
