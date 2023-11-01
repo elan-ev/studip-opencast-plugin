@@ -92,20 +92,17 @@
             </ul>
         </div>
     </div>
-
-    <LoadingSpinner v-if="axios_running"/>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
-import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon,     LoadingSpinner
+        StudipIcon
     },
 
     emits: ['uploadVideo', 'recordVideo',
