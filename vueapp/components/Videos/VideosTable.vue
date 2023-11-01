@@ -102,7 +102,7 @@
                                 {{ $gettext('Zur Wiedergabeliste hinzufügen') }}
                             </StudipButton>
 
-                            <StudipButton v-if="playlistEdit" icon="trash" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
+                            <StudipButton v-if="playlistEdit" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>

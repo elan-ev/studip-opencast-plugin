@@ -312,7 +312,7 @@ export default {
                         menuItems.push({
                             id: 2,
                             label: this.$gettext('Aus Wiedergabeliste entfernen'),
-                            icon: 'trash',
+                            icon: 'remove-circle',
                             emit: 'performAction',
                             emitArguments: 'VideoRemoveFromPlaylist'
                         });

@@ -1,5 +1,6 @@
 @import "assets/stylesheets/scss/variables";
 @import "assets/stylesheets/scss/breakpoints";
+@import "assets/stylesheets/scss/buttons";
 
 $item-height: auto;
 $item-width : 20em;
@@ -86,40 +87,6 @@ $action-menu-icon-size: 20px;
         color: white;
         cursor: default
     }
-}
-
-/* * * * * * * * * * * * * * * * * * * */
-/*   F L E X   E P I S O D E   L I S T */
-/* * * * * * * * * * * * * * * * * * * */
-
-.oc--flex {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    margin-bottom: 1em;
-}
-
-.oc--flexitem {
-    display: inline-block;
-    position: relative;
-}
-
-.oc--flexplaycontainer {
-    margin: 0 1px;
-    float: left;
-    width: $item-width;
-    min-width: $item-width;
-    height: $item-height;
-}
-
-.oc--flexepisodelist {
-    height: auto;
-    width: 100%;
-}
-
-.oc--flex-checkbox {
-    padding-right: 10px;
-    margin-top: 1.5em;
 }
 
 /* * * * * * * * * * * * * * * */
@@ -249,19 +216,6 @@ $action-menu-icon-size: 20px;
     list-style: none;
     overflow: auto;
     height: auto;
-
-    .oc--flex-episode {
-        background: $episode-background;
-        border-right-width: 1px;
-        border-left-width: 1px;
-        border-width: 1px 0 0;
-        margin-bottom: 1em;
-        padding: 0.5em 1em 0.5em 1em;
-        display: flex;
-        position: relative;
-        overflow: hidden;
-        border-color: #ddd;
-    }
 
     img.oc--previewimage {
         max-height: 130px;
@@ -554,7 +508,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
         border-left: thin solid $content-color-40;
         background-color: $content-color-20;
-        
+
         cursor: pointer;
     }
 
@@ -611,7 +565,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
 
         .oc--tokenselector--comparison {
             position: relative;
-            
+
             span {
                 position: absolute;
                 right: 10px;
@@ -922,10 +876,6 @@ label.oc--file-upload {
 /* * * * * * * * * * * * * * * * * * * * * */
 
 @media only screen and (max-width: $major-breakpoint-large) {
-    .oc--flexplaycontainer {
-        width: 15em;
-    }
-
     .oc--playercontainer span.oc--previewimage img.oc--image-button {
         max-height: 50px;
     }
@@ -948,10 +898,6 @@ label.oc--file-upload {
 }
 
 @media only screen and (max-width: $major-breakpoint-large) {
-    .oc--flexplaycontainer {
-        width: 100%;
-    }
-
     .oc--playercontainer span.oc--previewimage img.image-button {
         max-height: 100px;
     }
@@ -1053,6 +999,10 @@ label.oc--file-upload {
             margin: 0 4px;
         }
     }
+}
+
+.button.remove {
+    @include button-with-icon(remove, clickable, info_alt);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
