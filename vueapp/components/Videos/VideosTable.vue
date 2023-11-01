@@ -492,7 +492,7 @@ export default {
 
             this.$store.dispatch('simpleConfigListRead').then(() => {
 
-                const error_msg = this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Einige Aktionen könnten nicht richtig funktionieren.');
+                const error_msg = this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.');
                 const server_ids = Object.keys(view.simple_config_list['server']);
 
                 // periodically check, if lti is authenticated
