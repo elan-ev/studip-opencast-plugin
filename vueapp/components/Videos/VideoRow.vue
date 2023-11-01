@@ -79,7 +79,7 @@
             {{ event.author ?? '' }}
         </td>
 
-        <td class="oc--tooltip">
+        <td class="oc--tooltips">
             <div data-tooltip class="tooltip" v-if="getInfoText">
                 <span class="tooltip-content" v-html="getInfoText"></span>
                 <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
