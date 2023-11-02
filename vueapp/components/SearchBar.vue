@@ -57,6 +57,12 @@
                 }">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
+
+                <li @click="selectToken('course')" :class="{
+                    'oc--tokenselector--disabled-option': !filteredCourses.length
+                }">
+                    {{ $gettext('Veranstaltung') }}
+                </li>
             </ul>
 
             <ul v-if="tokenState == 'compare'" class="oc--tokenselector--comparison">
@@ -79,6 +85,12 @@
             <ul v-if="tokenState == 'value' && token.type == 'playlist'">
                 <li v-for="playlist in comparablePlaylists" v-bind:key="playlist.token" @click="selectToken(playlist)">
                     {{ playlist.title }}
+                </li>
+            </ul>
+
+            <ul v-if="tokenState == 'value' && token.type == 'course'">
+                <li v-for="course in filteredCourses" v-bind:key="course.id" @click="selectToken(course)">
+                    {{ course.name }}
                 </li>
             </ul>
         </div>
@@ -113,6 +125,7 @@ export default {
         ...mapGetters([
             'videoSort',
             'availableVideoTags',
+            'availableVideoCourses',
             'playlists',
             'playlist'
         ]),
@@ -133,6 +146,10 @@ export default {
                 return this.playlists.filter(playlist => playlist.token != this.playlist.token);
             }
             return this.playlists;
+        },
+
+        filteredCourses() {
+            return this.availableVideoCourses.filter(course => !this.searchTokens.find(token => token.value === course.id));
         },
     },
 
@@ -182,6 +199,11 @@ export default {
                     this.token.type      = 'playlist';
                     this.token.type_name = this.$gettext('Wiedergabeliste')
                     this.tokenState      = 'compare';
+
+                } else if (content == 'course' && this.filteredCourses.length) {
+                    this.token.type      = 'course';
+                    this.token.type_name = this.$gettext('Veranstaltung')
+                    this.tokenState      = 'compare';
                 }
 
             } else if (this.tokenState == 'compare')
@@ -197,6 +219,9 @@ export default {
                 } else if (this.token.type == 'playlist') {
                     this.token.value      = content.token;
                     this.token.value_name = content.title;
+                } else if (this.token.type == 'course') {
+                    this.token.value      = content.id;
+                    this.token.value_name = content.name;
                 }
                 this.tokenState       = 'main';
 
