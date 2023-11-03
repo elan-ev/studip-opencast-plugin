@@ -60,6 +60,8 @@ export default {
         return {
             isShow: false,
             checkFailed: false,
+            interval: null,
+            interval_counter: 0,
             error_msg: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
                 + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
                 + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
@@ -86,7 +88,7 @@ export default {
         showEditServer() {
             this.isShow = true;
 
-            if (!this.errors.find((e) => e === this.error_msg)) {
+            if (this.checkFailed && !this.errors.find((e) => e === this.error_msg)) {
                 this.$store.dispatch('errorCommit', this.error_msg);
             }
         },
@@ -100,20 +102,23 @@ export default {
             let view = this;
 
             // periodically check, if lti is authenticated
-            view.interval = setInterval(async () => {
-                await view.$store.dispatch('checkLTIAuthentication', {id: view.config.id, name: view.config.service_url});
-                // Make sure error is removed when authenticated
-                if (view.isLTIAuthenticated[view.config.id]) {
-                    view.$store.dispatch('errorRemove', this.error_msg);
-                    clearInterval(view.interval);
-                } else {
-                    view.checkFailed = true;
-                }
+            view.interval = setInterval(() => {
+                view.$store.dispatch('checkLTIAuthentication', {id: view.config.id, name: view.config.service_url})
+                .then(() => {
+                    // Make sure error is removed when authenticated
+                    if (view.isLTIAuthenticated[view.config.id]) {
+                        view.$store.dispatch('errorRemove', this.error_msg);
+                        view.checkFailed = false;
+                        clearInterval(view.interval);
+                    } else {
+                        view.checkFailed = true;
+                    }
 
-                view.interval_counter++;
-                if (view.interval_counter > 10) {
-                    clearInterval(view.interval);
-                }
+                    view.interval_counter++;
+                    if (view.interval_counter > 10) {
+                        clearInterval(view.interval);
+                    }
+                });
             }, 2000);
         }
     },
