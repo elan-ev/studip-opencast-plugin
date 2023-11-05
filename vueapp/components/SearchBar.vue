@@ -63,6 +63,12 @@
                 }">
                     {{ $gettext('Veranstaltung') }}
                 </li>
+
+                <li @click="selectToken('lecturer')" :class="{
+                    'oc--tokenselector--disabled-option': !filteredLecturers.length
+                }">
+                    {{ $gettext('Dozent/-in') }}
+                </li>
             </ul>
 
             <ul v-if="tokenState == 'compare'" class="oc--tokenselector--comparison">
@@ -91,6 +97,12 @@
             <ul v-if="tokenState == 'value' && token.type == 'course'">
                 <li v-for="course in filteredCourses" v-bind:key="course.id" @click="selectToken(course)">
                     {{ course.name }}
+                </li>
+            </ul>
+
+            <ul v-if="tokenState == 'value' && token.type == 'lecturer'">
+                <li v-for="lecturer in filteredLecturers" v-bind:key="lecturer.username" @click="selectToken(lecturer)">
+                    {{ lecturer.name }}
                 </li>
             </ul>
         </div>
@@ -151,6 +163,13 @@ export default {
         filteredCourses() {
             return this.availableVideoCourses.filter(course => !this.searchTokens.find(token => token.value === course.id));
         },
+
+        filteredLecturers() {
+            return this.availableVideoCourses
+                .flatMap(course => course.lecturers)
+                .filter((lecturer, index, array) => array.findIndex(l => l.username === lecturer.username) === index  // Filter out duplicate lecturers
+                    && !this.searchTokens.find(token => token.value === lecturer.username));
+        },
     },
 
     methods: {
@@ -204,6 +223,10 @@ export default {
                     this.token.type      = 'course';
                     this.token.type_name = this.$gettext('Veranstaltung')
                     this.tokenState      = 'compare';
+                } else if (content == 'lecturer' && this.filteredLecturers.length) {
+                    this.token.type      = 'lecturer';
+                    this.token.type_name = this.$gettext('Dozent/-in')
+                    this.tokenState      = 'compare';
                 }
 
             } else if (this.tokenState == 'compare')
@@ -221,6 +244,9 @@ export default {
                     this.token.value_name = content.title;
                 } else if (this.token.type == 'course') {
                     this.token.value      = content.id;
+                    this.token.value_name = content.name;
+                } else if (this.token.type == 'lecturer') {
+                    this.token.value      = content.username;
                     this.token.value_name = content.name;
                 }
                 this.tokenState       = 'main';

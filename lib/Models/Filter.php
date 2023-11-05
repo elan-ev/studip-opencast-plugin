@@ -20,7 +20,7 @@ class Filter
     ];
 
     private static $ALLOWED_FILTERS = [
-        'text', 'playlist', 'tag', 'course',
+        'text', 'playlist', 'tag', 'course', 'lecturer',
     ];
 
     public function __construct($params)

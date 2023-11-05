@@ -57,9 +57,19 @@ class CourseListForPlaylistVideos extends OpencastController
 
             // Check if user has access to this seminar
             if ($perm->have_studip_perm($course_id, 'user')) {
+                $lecturers = [];
+                $lecturers_obj = $course->getMembersWithStatus('dozent');
+                foreach ($lecturers_obj as $lecturer) {
+                    $lecturers[] = [
+                        'username'    => $lecturer->username,
+                        'name'  => $lecturer->getUserFullname(),
+                    ];
+                }
+
                 $ret[] = [
-                    'id'    => $course->id,
-                    'name'  => $course->getFullname('number-name'),
+                    'id'        => $course->id,
+                    'name'      => $course->getFullname('number-name'),
+                    'lecturers' => $lecturers,
                 ];
             }
         }
