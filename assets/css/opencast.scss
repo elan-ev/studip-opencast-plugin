@@ -248,6 +248,7 @@ $action-menu-icon-size: 20px;
 
             img.oc--previewimage {
                 max-height: 60px;
+                min-width: 90px;
             }
 
             .oc--duration{
@@ -273,10 +274,8 @@ $action-menu-icon-size: 20px;
                 display: flex;
                 gap: 5px;
 
-                font-size: 1.4em;
                 margin: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                overflow-wrap: anywhere;
             }
 
             a {
