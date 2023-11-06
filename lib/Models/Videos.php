@@ -358,7 +358,7 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
-        $parsed_sql = 'SELECT * FROM oc_video '. $query['sql'] .' '. $query['where'];
+        $parsed_sql = 'SELECT * FROM oc_video '. $sql;
         foreach ($params as $key => $value) {
             $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
         }
@@ -864,7 +864,7 @@ class Videos extends UPMap
                 $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
-    
+
                 if (empty($pvideo)) {
                     $pvideo = new PlaylistVideos();
                     $pvideo->video_id    = $video->id;
