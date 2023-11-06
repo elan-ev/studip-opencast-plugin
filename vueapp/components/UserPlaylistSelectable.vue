@@ -2,7 +2,7 @@
     <form class="default">
         <fieldset>
             <legend>
-                {{ $gettext('Weitere Wiedergabelisten hinzufügen') }}
+                {{ $gettext('Weiteren Wiedergabelisten hinzufügen') }}
             </legend>
 
             <label>

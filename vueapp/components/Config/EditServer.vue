@@ -243,7 +243,7 @@ export default {
                         // On create, scroll to the default workflow configuration
                         this.$store.dispatch('addMessage', {
                             type: data.message.type,
-                            text: data.message.text + ' Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'
+                            text: data.message.text + this.$gettext(' Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.')
                         });
 
                         this.newId = data.config.id;
@@ -251,13 +251,13 @@ export default {
 
                         let view = this;
                         // We need to wait for a short time so the component is actually visible
-                        setTimeout(() => {  
+                        setTimeout(() => {
                             view.$refs['workflow-form'].$el.scrollIntoView({
                                 behavior: 'smooth'
                             });
                         }, 10);
                     }
-                    
+
                     if (!lti_checked) {
                         // Show LTI error
                         this.postLtiCheckFailedMessage();
