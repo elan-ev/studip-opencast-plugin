@@ -189,13 +189,24 @@ class Config extends \SimpleOrMap
                     $comp = $services_client->getRESTComponents();
                 }
                 catch(\Exception $e) {
-                    return [
-                        'type' => 'error',
-                        'text' => sprintf(
-                            _('%s'),
-                            $e->getMessage()
-                        )
-                    ];
+                    if (str_starts_with($e->getMessage(), 'cURL error 6')) {
+                        return [
+                            'type' => 'error',
+                            'text' => sprintf(
+                                _('Die angegebene URL %s konnte nicht gefunden werden. Überprüfen Sie bitte ihre Eingabe und versuchen Sie es erneut.'),
+                                $service_host
+                            )
+                        ];
+                    }
+                    else {
+                        return [
+                            'type' => 'error',
+                            'text' => sprintf(
+                                _('%s'),
+                                $e->getMessage()
+                            )
+                        ];
+                    }
                 }
             } catch (AccessDeniedException $e) {
                 Endpoints::removeEndpoint($this->id, 'services');
@@ -203,7 +214,7 @@ class Config extends \SimpleOrMap
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(
-                        _('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
+                        _('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingegebenen Daten.'),
                         $service_host
                     )
                 ];
@@ -252,8 +263,6 @@ class Config extends \SimpleOrMap
                         'type' => 'success',
                         'text' => implode('<br>', $success_message)
                     ];
-
-                    $config_checked = true;
                 }
             } else {
                 $message = [

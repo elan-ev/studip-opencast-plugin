@@ -24,7 +24,6 @@ class ConfigEdit extends OpencastController
 
         $json = $this->getRequestData($request);
 
-        $config_checked = false;
         $duplicate_url = false;
 
         $config = Config::find($args['id']);
@@ -49,7 +48,7 @@ class ConfigEdit extends OpencastController
         $ret_config = array_merge($ret_config, $ret_config['settings']);
         unset($ret_config['settings']);
 
-        if ($config_checked) {
+        if ($message['type'] == 'success') {
             $lti = LtiHelper::getLaunchData($config->id);
 
             return $this->createResponse([

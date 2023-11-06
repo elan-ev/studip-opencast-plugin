@@ -1,6 +1,6 @@
 <template>
     <div class="oc--admin--section">
-        <fieldset class="collapsable">
+        <fieldset class="collapsable" v-if="!disabled">
             <legend>
                 {{ $gettext('Standardworkflows') }}
             </legend>
@@ -34,8 +34,12 @@ export default {
         I18NText
     },
 
+    props: {
+        disabled: true
+    },
+
     computed: {
-        ...mapGetters(['config', 'simple_config_list']),
+        ...mapGetters(['simple_config_list']),
 
         workflow_definitions() {
             let wf_defs = [];

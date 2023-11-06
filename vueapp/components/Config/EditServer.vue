@@ -26,7 +26,7 @@
                             @updateValue="updateValue" />
                     </fieldset>
 
-                    <WorkflowOptions v-if="id != 'new'"/>
+                    <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form"/>
                 </form>
 
                 <MessageList :float="true"/>
@@ -34,7 +34,7 @@
             </template>
 
             <template v-slot:dialogButtons>
-                <button v-if="config !== null"
+                <button v-if="currentId !== 'new'"
                     class="button trash"
                     type="button"
                     @click="deleteConfig"
@@ -86,7 +86,8 @@ export default {
     data() {
         return {
             currentConfig: {},
-            disabled: false
+            disabled: false,
+            newId: null
         }
     },
 
@@ -95,6 +96,10 @@ export default {
             configStore: 'config',
             simple_config_list: 'simple_config_list'
         }),
+
+        currentId() {
+            return this.newId ? this.newId : this.id;
+        },
 
         settings() {
             return [
@@ -171,7 +176,7 @@ export default {
 
             this.currentConfig.checked = false;
 
-            if (this.id == 'new') {
+            if (this.currentId == 'new') {
                 this.$store.dispatch('configCreate', this.currentConfig)
                 .then(({ data }) => {
                     this.disabled = false;
@@ -193,10 +198,10 @@ export default {
 
         deleteConfig() {
             if (confirm(this.$gettext('Sind Sie sicher, dass Sie die Serverkonfiguration löschen möchten? Die damit verbundenen Videos werden danach nicht mehr in Stud.IP zur Verfügung stehen!'))) {
-                if (this.id == 'new') {
+                if (this.currentId == 'new') {
                     this.currentConfig = {}
                 } else {
-                    this.$store.dispatch('configDelete', this.id)
+                    this.$store.dispatch('configDelete', this.currentId)
                         .then(() => {
                             this.$store.dispatch('configListRead');
                             this.$store.dispatch('addMessage', {
@@ -212,43 +217,88 @@ export default {
         },
 
         checkConfigResponse(data) {
-            if (data.lti !== undefined) {
-                this.checkLti(data.lti);
-            }
             if (data.message !== undefined) {
-                this.$store.dispatch('addMessage', {
-                     type: data.message.type,
-                     text: data.message.text
-                });
+                if (data.message.type === 'error') {
+                    this.$store.dispatch('addMessage', {
+                        type: data.message.type,
+                        text: data.message.text
+                    });
+                    return;
+                }
+                else if (data.message.type === 'success') {
+                    // Check if LTI connection is available
+                    let lti_checked = false;
+                    this.checkLti(data.lti).then((result) => {
+                        lti_checked = result;
+                    });
 
-                if(data.message.type == 'success'){
-                    this.$emit('close');
+                    if (this.currentId !== 'new') {
+                        // Just show success message if server was edited
+                        this.$store.dispatch('addMessage', {
+                            type: data.message.type,
+                            text: data.message.text
+                        });
+                    }
+                    else {
+                        // On create, scroll to the default workflow configuration
+                        this.$store.dispatch('addMessage', {
+                            type: data.message.type,
+                            text: data.message.text + ' Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'
+                        });
+
+                        this.newId = data.config.id;
+                        this.$store.dispatch('simpleConfigListRead');
+
+                        let view = this;
+                        // We need to wait for a short time so the component is actually visible
+                        setTimeout(() => {  
+                            view.$refs['workflow-form'].$el.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }, 10);
+                    }
+                    
+                    if (!lti_checked) {
+                        // Show LTI error
+                        this.postLtiCheckFailedMessage();
+                    }
+                    else if (this.currentId !== 'new') {
+                        // Only close dialog, if lti successfull and no new server was created
+                        this.$emit('close');
+                    }
+
+                    return;
                 }
             }
+
+            this.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.')
+            });
         },
 
         async checkLti(data)
         {
-            let view = this;
-
             await this.$store.dispatch('authenticateLti');
 
             // make an lti call to make sure it worked, there are some caveats though...
             // - already succesful calls will not be revoked
             // - unsuccesful calls will persist even if it worked now
-            axios({
-                url: data[0].launch_url,
-                method: "GET",
-                withCredentials: true,
-            }).then(({ data }) => {
-                if (data.user_id == undefined) {
-                    view.postLtiCheckFailedMessage();
+            try {
+                const response = await axios({
+                    url: data[0].launch_url,
+                    method: "GET",
+                    withCredentials: true,
+                });
+
+                if (response.user_id == undefined) {
+                    return false;
                 } else {
-                    view.postLtiCheckSucceededMessage();
+                    return true;
                 }
-            }).catch(function (error) {
-                view.postLtiCheckFailedMessage();
-            });
+            } catch (error) {
+                return false;
+            }
         },
 
         postLtiCheckFailedMessage()
@@ -264,14 +314,6 @@ export default {
             });
         },
 
-        postLtiCheckSucceededMessage()
-        {
-            this.$store.dispatch('addMessage', {
-                type: 'success',
-                text: this.$gettext('Die LTI-Konfiguration wurde erfolgreich überprüft!')
-            });
-        },
-
         updateValue(setting, newValue) {
             this.currentConfig[setting.name] = newValue;
         },
@@ -280,9 +322,9 @@ export default {
     mounted() {
         this.$store.dispatch('clearMessages');
 
-        if (this.id !== 'new') {
+        if (this.currentId !== 'new') {
             if (!this.config) {
-                this.$store.dispatch('configRead', this.id)
+                this.$store.dispatch('configRead', this.currentId)
                 .then(() => {
                     this.currentConfig = this.configStore;
                 });
