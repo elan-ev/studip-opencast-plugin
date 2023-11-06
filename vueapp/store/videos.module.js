@@ -16,6 +16,7 @@ const state = {
         items: 0
     },
     availableVideoTags: [],
+    availableVideoCourses: [],
     videoCaptions: {},
     playlistForVideos: null,
     videoShares: {},
@@ -51,6 +52,10 @@ const getters = {
 
     availableVideoTags(state) {
         return state.availableVideoTags
+    },
+
+    availableVideoCourses(state) {
+        return state.availableVideoCourses
     },
 
     videoCaptions(state) {
@@ -122,7 +127,10 @@ const actions = {
             route: 'videos',
             filters: data,
         })
-        .then(() => dispatch('loadAvailableVideoTags'));
+        .then(() => {
+            dispatch('loadAvailableVideoTags');
+            dispatch('loadAvailableVideoCourses');
+        });
     },
 
     async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
@@ -131,7 +139,10 @@ const actions = {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
         })
-        .then(() => dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid}));
+        .then(() => {
+            dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid});
+            dispatch('loadAvailableVideoCourses', {token: data.token, cid: data.cid});
+        });
     },
 
     async loadAvailableVideoTags({ commit, state, dispatch, rootState }, data = []) {
@@ -148,6 +159,23 @@ const actions = {
         return ApiService.get(route, { params })
             .then(({ data }) => {
                 commit('setAvailableVideoTags', data);
+            });
+    },
+
+    async loadAvailableVideoCourses({ commit, state, dispatch, rootState }, data = []) {
+        const params = new URLSearchParams();
+        let route = '/courses/videos';
+
+        if (data.token) {
+            route += '/playlist/' + data.token;
+            if (data.cid) {
+                params.append('cid',  data.cid);
+            }
+        }
+
+        return ApiService.get(route, { params })
+            .then(({ data }) => {
+                commit('setAvailableVideoCourses', data);
             });
     },
 
@@ -289,6 +317,10 @@ const mutations = {
 
     setAvailableVideoTags(state, data) {
         state.availableVideoTags = data;
+    },
+
+    setAvailableVideoCourses(state, data) {
+        state.availableVideoCourses = data;
     },
 
     setCaptionForToken(state, data) {

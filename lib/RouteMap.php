@@ -90,6 +90,9 @@ class RouteMap
         $this->app->put('/courses/{course_id}/visibility/{visibility}', Routes\Course\CourseSetVisibility::class);
         $this->app->put('/courses/{course_id}/upload/{upload}', Routes\Course\CourseSetUpload::class);                  // TODO: document in api docs
 
+        $this->app->get('/courses/videos', Routes\Course\CourseListForUserVideos::class);
+        $this->app->get('/courses/videos/playlist/{token}', Routes\Course\CourseListForPlaylistVideos::class);
+
         // Schedule
         $this->app->get('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleShow::class);
         $this->app->post('/schedule/{course_id}/{termin_id}', Routes\Schedule\ScheduleAdd::class);

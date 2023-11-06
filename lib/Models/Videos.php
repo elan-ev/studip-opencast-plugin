@@ -184,12 +184,16 @@ class Videos extends UPMap
      */
     protected static function getFilteredVideos($query, $filters)
     {
+        global $perm;
+
         $sql    = $query['sql'];
         $where  = $query['where'];
         $params = $query['params'];
 
         $tag_ids      = [];
         $playlist_ids = [];
+        $course_ids   = [];
+        $lecturer_ids = [];
 
         foreach ($filters->getFilters() as $filter) {
             switch ($filter['type']) {
@@ -231,6 +235,35 @@ class Videos extends UPMap
                     }
 
                     break;
+
+                case 'course':
+                    $course = \Course::find($filter['value']);
+
+                    // check, if user has access to this seminar
+                    if (!empty($course) && $perm->have_studip_perm($course->id, 'user')) {
+                        $course_ids[$course->id] = [
+                            'id' => $course->id,
+                            'compare' => $filter['compare']
+                        ];
+                    } else {
+                        $course_ids[] = '-1';
+                    }
+
+                    break;
+
+                case 'lecturer':
+                    $lecturer = \User::findByUsername($filter['value']);
+
+                    if (!empty($lecturer)) {
+                        $lecturer_ids[$lecturer->user_id] = [
+                            'id' => $lecturer->user_id,
+                            'compare' => $filter['compare']
+                        ];
+                    } else {
+                        $lecturer_ids[] = '-1';
+                    }
+
+                    break;
             }
         }
 
@@ -259,6 +292,42 @@ class Videos extends UPMap
                         .' AND opv'. $playlist_id['id'] .'.playlist_id = '. $playlist_id['id'] .')';
 
                     $where .= ' AND opv'. $playlist_id['id'] . '.playlist_id IS NULL ';
+                }
+            }
+        }
+
+        if (!empty($course_ids)) {
+            foreach ($course_ids as $course_id) {
+                if ($course_id['compare'] == '=') {
+                    $sql .= " INNER JOIN oc_playlist_video AS opv". $course_id['id'] ." ON (opv". $course_id['id'] .".video_id = oc_video.id)"
+                        . " INNER JOIN oc_playlist_seminar AS ops". $course_id['id'] ." ON "
+                        ." (ops". $course_id['id'] .".playlist_id = opv". $course_id['id'] .".playlist_id "
+                        ." AND ops". $course_id['id'] .".seminar_id = '". $course_id['id'] ."')";
+                } else {
+                    $where .= " AND '". $course_id['id']."' NOT IN ("
+                        ." SELECT DISTINCT ops". $course_id['id'].".seminar_id FROM oc_playlist_seminar AS ops". $course_id['id']
+                        ." INNER JOIN oc_playlist_video AS ocp". $course_id['id']
+                        ." ON (ocp". $course_id['id'].".playlist_id = ops". $course_id['id'].".playlist_id "
+                        ." AND ocp". $course_id['id'].".video_id = oc_video.id))";
+                }
+            }
+        }
+
+        if (!empty($lecturer_ids)) {
+            foreach ($lecturer_ids as $lecturer_id) {
+                if ($lecturer_id['compare'] == '=') {
+                    $sql .= " INNER JOIN oc_playlist_video AS opv". $lecturer_id['id'] ." ON (opv". $lecturer_id['id'] .".video_id = oc_video.id)"
+                        ." INNER JOIN oc_playlist_seminar AS ops". $lecturer_id['id'] ." ON "
+                        ." (ops". $lecturer_id['id'] .".playlist_id = opv". $lecturer_id['id'] .".playlist_id)";
+                    $where .= " AND ops". $lecturer_id['id'] .".seminar_id IN ("
+                        ." SELECT DISTINCT su". $lecturer_id['id'] .".Seminar_id FROM seminar_user AS su". $lecturer_id['id']
+                        ." WHERE su". $lecturer_id['id'] .".user_id = '". $lecturer_id['id']. "' AND su". $lecturer_id['id'] .".status = 'dozent')";
+                } else {
+                    $where .= " AND oc_video.id NOT IN (SELECT DISTINCT ov". $lecturer_id['id'] .".id FROM oc_video AS ov". $lecturer_id['id']
+                        ." INNER JOIN oc_playlist_video AS opv". $lecturer_id['id'] ." ON (opv". $lecturer_id['id'] .".video_id = ov". $lecturer_id['id'] .".id)"
+                        ." INNER JOIN oc_playlist_seminar AS ops". $lecturer_id['id'] ." ON (ops". $lecturer_id['id'] .".playlist_id = opv". $lecturer_id['id'] .".playlist_id)"
+                        ." INNER JOIN seminar_user AS su". $lecturer_id['id'] ." ON (su". $lecturer_id['id'] .".Seminar_id = ops". $lecturer_id['id'] .".seminar_id)"
+                        ." WHERE su". $lecturer_id['id'] .".user_id = '". $lecturer_id['id'] ."' AND su". $lecturer_id['id'] .".status = 'dozent')";
                 }
             }
         }
