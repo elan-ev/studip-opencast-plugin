@@ -270,9 +270,11 @@ export default {
 
         getAccessText() {
             var txt = '';
-            this.event.perms.forEach(perm => {
-                txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.$filters.permname(perm.perm)) + '</div>'
-            });
+            if (this.event.perms !== undefined) {
+                this.event.perms.forEach(perm => {
+                    txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.$filters.permname(perm.perm)) + '</div>'
+                });
+            }
             return txt;
         },
 

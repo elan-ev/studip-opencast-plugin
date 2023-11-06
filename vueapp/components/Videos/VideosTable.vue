@@ -94,7 +94,7 @@
                 </template>
             </draggable>
 
-            <tfoot v-if="playlistForVideos || playlistEdit || (isCourse && playlist && canEdit)">
+            <tfoot v-if="!isCourse || (isCourse && playlist)">
                 <tr>
                     <td :colspan="numberOfColumns">
                         <span class="oc--bulk-actions">
@@ -105,6 +105,19 @@
                             <StudipButton v-if="playlistEdit" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
+                        </span>
+
+                        <span v-if="canEdit || !isCourse">
+                            <StudipButton icon="trash"
+                                @click.prevent="doBulkAction('BulkVideoDelete')"
+                                :class="{
+                                    'disabled': selectedVideos.length == 0
+                                }"
+                                :disabled="selectedVideos.length == 0"
+                            >
+                                {{ $gettext('Zum Löschen markieren') }}
+                            </StudipButton>
+
                         </span>
 
                         <span v-if="isCourse && playlist && canEdit">
@@ -168,6 +181,9 @@ import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
 import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
+
+import BulkVideoDelete from '@/components/Videos/BulkActions/VideoDelete.vue';
+
 import Tag from '@/components/Tag.vue'
 
 import draggable from 'vuedraggable'
@@ -186,6 +202,7 @@ export default {
         VideoDelete,            VideoDeletePermanent,
         VideoAddToSeminar,      VideoRemoveFromPlaylist,
         VideoAddToPlaylist,     CaptionUpload,
+        BulkVideoDelete,
         draggable,
     },
 
@@ -234,7 +251,7 @@ export default {
         },
 
         showCheckbox() {
-            return this.playlistForVideos || this.playlistEdit;
+            return !this.isCourse || this.canEdit || this.playlistForVideos || this.playlistEdit;
         },
 
         isCourse() {
@@ -259,6 +276,7 @@ export default {
 
         videos_list: {
             get() {
+                console.log('videos_list', JSON.parse(JSON.stringify(this.videos)));
                 if (this.videoSortMode === true) {
                     return this.sortedVideos;
                 } else {
@@ -441,6 +459,15 @@ export default {
             }
         },
 
+        doBulkAction(action)
+        {
+            if (Object.keys(this.$options.components).includes(action)) {
+                this.actionComponent = action;
+                this.selectedEvent = this.selectedVideos;
+                this.showActionDialog = true;
+            }
+        },
+
         redirectAction(action) {
             let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
 
@@ -453,6 +480,7 @@ export default {
         async doAfterAction(args) {
             this.clearAction();
             if (args == 'refresh') {
+                this.selectedVideos = [];
                 this.loadVideos();
             }
         },
