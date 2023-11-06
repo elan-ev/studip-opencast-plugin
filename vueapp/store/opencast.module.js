@@ -133,18 +133,20 @@ const actions = {
         return ApiService.put('courses/' + data.cid + '/upload/' + data.upload);
     },
 
-    checkLTIAuthentication({ commit }, server)
+    async checkLTIAuthentication({ commit }, server)
     {
-        axios({
-            method: 'GET',
-            url: server.name + "/lti/info.json",
-            crossDomain: true,
-            withCredentials: true,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-            }
-        }).then((response) => {
-            if (response.status == 200) {
+        try {
+            const response = await axios({
+                method: 'GET',
+                url: server.name + "/lti/info.json",
+                crossDomain: true,
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                }
+            });
+    
+            if (response.status === 200) {
                 commit('setLTIStatus', {
                     server: server.id,
                     authenticated: true
@@ -155,7 +157,12 @@ const actions = {
                     authenticated: false
                 });
             }
-        });
+        } catch (error) {
+            commit('setLTIStatus', {
+                server: server.id,
+                authenticated: false
+            });
+        }
     }
 }
 

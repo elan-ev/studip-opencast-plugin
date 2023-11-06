@@ -238,6 +238,9 @@ export default {
                             text: this.$gettext('Die Datei wurde erfolgreich hochgeladen.')
                         });
                         view.$emit('done');
+                    },
+                    onError: (response) => {
+                        this.$store.dispatch('errorCommit', response);
                     }
                 }
             );

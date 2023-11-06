@@ -92,6 +92,10 @@ class UploadService {
         return str;
     }
 
+    networkError(onError) {
+        onError('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.');
+    }
+
     async getMediaPackage() {
         return axios({
             method: 'GET',
@@ -183,6 +187,7 @@ class UploadService {
         this.fixFilenames(files);
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
+        let onError = options.onError;
 
         let obj = this;
         return files.reduce(function(promise, file) {
@@ -193,15 +198,19 @@ class UploadService {
                 data.append('overwriteExisting', file.overwriteExisting);
                 data.append('track', file.file);
 
-                return obj.addTrack(data, "/" + episode_id + "/track", file, onProgress);
+                return obj.addTrack(data, "/" + episode_id + "/track", file, onProgress, onError);
             });
         }, Promise.resolve())
         .then(() => {
             uploadDone();
-        })
+        }).catch(function (error) {
+            if (error.code === 'ERR_NETWORK') {
+                obj.networkError(onError)
+            }
+        });
     }
 
-    addTrack(data, url_path, track, onProgress) {
+    addTrack(data, url_path, track, onProgress, onError) {
         var fnOnProgress = function (event) {
             onProgress(track, event.loaded, event.total);
         };
@@ -278,6 +287,7 @@ class UploadService {
         let obj = this;
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
+        let onError = options.onError;
 
         return this.getMediaPackage()
             .then(function ({ data }) {
@@ -307,7 +317,11 @@ class UploadService {
                     /* Catch XML parse error. On Error Resume Next ;-) */
                 }
                 return ingest;
-            })
+            }).catch(function (error) {
+                if (error.code === 'ERR_NETWORK') {
+                    obj.networkError(onError);
+                }
+            });
     }
 
     cancel() {
