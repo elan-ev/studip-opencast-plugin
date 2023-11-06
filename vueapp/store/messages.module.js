@@ -21,6 +21,11 @@ export const actions = {
             return false;
         }
 
+        // Remove error messages if success message is displayed
+        if (message.type === "success") {
+            context.dispatch('errorClear');
+        }
+
         let messages = state.messages;
         let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text);
         if (!current_message) {
