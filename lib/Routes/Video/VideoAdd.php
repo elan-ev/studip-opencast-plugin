@@ -9,6 +9,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Videos;
+use Opencast\Models\VideosUserPerms;
 
 class VideoAdd extends OpencastController
 {
@@ -16,6 +17,8 @@ class VideoAdd extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+	    global $user;
+
         $json = $this->getRequestData($request);
         $event = $json['event'];
 
@@ -39,12 +42,28 @@ class VideoAdd extends OpencastController
                 'description' => $event['description'],
                 'duration'    => $event['duration'],
                 'state'       => $event['state'],
-                'available'   => false
+		        'created'     => date('Y-m-d H:i:s'),
+		        'author'      => get_fullname($user->id),
+                'available'   => true
             ]);
             if (!$video->token) {
                 $video->token = bin2hex(random_bytes(8));
             }
             $video->store();
+
+            // add permissions to this video for current user
+            $perm = VideosUserPerms::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
+                ':user_id'  => $user->id,
+                ':video_id' => $video->id
+            ]);
+
+            if (empty($perm)) {
+                $perm = new VideosUserPerms();
+                $perm->user_id  = $user->id;
+                $perm->video_id = $video->id;
+                $perm->perm     = 'owner';
+                $perm->store();
+            }
 
             $ret = $video->toSanitizedArray();
 
