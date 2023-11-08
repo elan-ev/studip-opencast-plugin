@@ -16,7 +16,9 @@
 
         <footer>
             <StudipButton icon="accept" @click.prevent="storeAdminConfig($event)">
-                <span v-translate>Einstellungen speichern</span>
+                <span>
+                    {{ $gettext('Einstellungen speichern') }}
+                </span>
             </StudipButton>
         </footer>
     </form>

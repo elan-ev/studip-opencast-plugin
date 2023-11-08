@@ -14,8 +14,8 @@
         </div>
         <div @click="showEditServer" class="oc--admin--server-data">
             <div v-if="isAddCard" class="oc--admin--server-data">
-                <div class="oc--admin-server-add" v-translate>
-                    Neuen Server hinzufügen
+                <div class="oc--admin-server-add">
+                    {{ $gettext('Neuen Server hinzufügen') }}
                 </div>
             </div>
             <div v-else class="oc--admin--server-data">
@@ -23,7 +23,7 @@
                     {{ config.service_url }}
                 </div>
                 <div v-if="config.service_version">
-                    Opencast-Version: {{ config.service_version }}
+                    {{ $gettext('Opencast-Version:') }} {{ config.service_version }}
                 </div>
             </div>
         </div>

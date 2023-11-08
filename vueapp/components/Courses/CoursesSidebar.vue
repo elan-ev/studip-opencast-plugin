@@ -1,7 +1,7 @@
 <template>
     <div class="sidebar-widget " id="sidebar-navigation">
-        <div class="sidebar-widget-header" v-translate>
-            Navigation
+        <div class="sidebar-widget-header">
+            {{ $gettext('Navigation') }}
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">
@@ -10,7 +10,7 @@
                     }"
                     v-on:click="setView('videos')">
                     <router-link :to="{ name: 'course' }">
-                        Videos
+                        {{ $gettext('Videos') }}
                     </router-link>
                 </li>
                 <li :class="{
@@ -19,7 +19,7 @@
                     v-if="canSchedule"
                     v-on:click="getScheduleList">
                     <router-link :to="{ name: 'schedule' }">
-                        Aufzeichnungen planen
+                        {{ $gettext('Aufzeichnungen planen') }}
                     </router-link>
                 </li>
             </ul>
@@ -27,8 +27,8 @@
     </div>
 
     <div class="sidebar-widget" v-if="currentView == 'videos'">
-        <div class="sidebar-widget-header" v-translate>
-            Wiedergabelisten
+        <div class="sidebar-widget-header">
+            {{ $gettext('Wiedergabelisten') }}
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links oc--sidebar-links sidebar-navigation">
@@ -56,8 +56,8 @@
 
     <template v-if="currentView == 'schedule'">
         <div v-if="semester_list.length" class="sidebar-widget " id="sidebar-actions">
-            <div class="sidebar-widget-header" v-translate>
-                Semesterfilter
+            <div class="sidebar-widget-header">
+                {{ $gettext('Semesterfilter') }}
             </div>
             <div class="sidebar-widget-content">
                 <select class="sidebar-selectlist submit-upon-select" v-model="semesterFilter">
@@ -74,39 +74,39 @@
     </template>
     <template v-else>
         <div class="sidebar-widget " id="sidebar-actions" v-if="canEdit || canUpload">
-            <div class="sidebar-widget-header" v-translate>
-                Aktionen
+            <div class="sidebar-widget-header">
+                {{ $gettext('Aktionen') }}
             </div>
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links">
                     <li @click="$emit('uploadVideo')" v-if="canUpload">
                         <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                        Medien hochladen
+                        {{ $gettext('Medien hochladen') }}
                     </li>
                     <li>
                         <a :href="recordingLink" target="_blank" v-if="canUpload">
                             <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                            Video aufnehmen
+                            {{ $gettext('Video aufnehmen') }}
                         </a>
                     </li>
                     <li v-if="canToggleVisibility">
                         <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
                             <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
-                            Reiter sichtbar schalten
+                            {{ $gettext('Reiter sichtbar schalten') }}
                         </a>
                         <a v-else @click="setVisibility('invisible')" target="_blank">
                             <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
-                            Reiter verbergen
+                            {{ $gettext('Reiter verbergen') }}
                         </a>
                     </li>
                     <li v-if="canEdit">
                         <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
                             <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                            Studierendenupload erlauben
+                            {{ $gettext('Studierendenupload erlauben') }}
                         </a>
                         <a v-else @click="setUpload(0)" target="_blank">
                             <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                            Studierendenupload verbieten
+                            {{ $gettext('Studierendenupload verbieten') }}
                         </a>
                     </li>
                     <li v-if="canEdit">

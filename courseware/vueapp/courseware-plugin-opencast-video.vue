@@ -11,8 +11,8 @@
         >
             <template #content>
                 <div>
-                    <span v-if="!currentVideoId" v-translate v-text="'Es wurde bisher kein Video ausgewählt'"></span>
-                    <span v-else-if="!currentEpisodeURL" v-translate v-text="'Dieses Video hat keinen Veröffentlichungs-URL-Link'"></span>
+                    <span v-if="!currentVideoId" v-text="$gettext('Es wurde bisher kein Video ausgewählt')"></span>
+                    <span v-else-if="!currentEpisodeURL" v-text="$gettext('Dieses Video hat keinen Veröffentlichungs-URL-Link')"></span>
                     <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen

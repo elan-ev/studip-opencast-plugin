@@ -17,13 +17,13 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th v-translate>Termin</th>
+                    <th>{{ $gettext('Termin') }}</th>
                     <template v-if="allow_schedule_alternate">
-                        <th v-translate>Aufzeichnungszeitraum</th>
+                        <th>{{ $gettext('Aufzeichnungszeitraum') }}</th>
                     </template>
-                    <th v-translate>Titel</th>
-                    <th v-translate>Status</th>
-                    <th v-translate>Aktionen</th>
+                    <th>{{ $gettext('Titel') }}</th>
+                    <th>{{ $gettext('Status') }}</th>
+                    <th>{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,10 +85,10 @@
                             </option>
                         </select>
                         <StudipButton icon="accept" @click.prevent="performBulkAction">
-                            <span v-translate>Übernehmen</span>
+                            <span>{{ $gettext('Übernehmen') }}</span>
                         </StudipButton>
                         <StudipButton icon="cancel" @click.prevent="resetBulk">
-                            <span v-translate>Abbrechen</span>
+                            <span>{{ $gettext('Abbrechen') }}</span>
                         </StudipButton>
                     </td>
                 </tr>

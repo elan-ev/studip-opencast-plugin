@@ -1,25 +1,23 @@
 <template>
     <div class="oc--admin--section">
         <fieldset class="collapsable">
-            <legend v-translate>
-                Ressourcen
+            <legend>
+                {{ $gettext('Ressourcen') }}
             </legend>
             <MessageBox type="info">
-                <translate>
-                    Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!
-                </translate>
+                {{ $gettext('Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!') }}
             </MessageBox>
             <table class="default">
-                <caption v-translate>
-                    Zuweisung der Capture Agents
+                <caption>
+                    {{ $gettext('Zuweisung der Capture Agents') }}
                 </caption>
                 <thead>
                     <tr>
-                        <th v-translate>Raum</th>
-                        <th v-translate>Capture Agent</th>
-                        <th v-translate>Workflow</th>
-                        <th v-translate>Status</th>
-                        <th v-translate>Aktionen</th>
+                        <th>{{ $gettext('Raum') }}</th>
+                        <th>{{ $gettext('Capture Agent') }}</th>
+                        <th>{{ $gettext('Workflow') }}</th>
+                        <th>{{ $gettext('Status') }}</th>
+                        <th>{{ $gettext('Aktionen') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,7 +30,9 @@
                             <template v-else-if="free_capture_agents.length">
                                 <select @change="assignCA($event, index)">
                                     <option value="" disabled selected>
-                                        <span v-translate>Bitte wählen Sie einen CA.</span>
+                                        <span>
+                                            {{ $gettext('Bitte wählen Sie einen CA.') }}
+                                        </span>
                                     </option>
                                     <template v-for="(ca_obj, index) in free_capture_agents" :key="index">
                                         <optgroup style="font-weight:bold;" :label="`Server #${ca_obj.id}`">
@@ -43,8 +43,8 @@
                                     </template>
                                 </select>
                             </template>
-                            <span v-else v-translate>
-                                Kein (weiterer) CA verfügbar
+                            <span v-else>
+                                {{ $gettext('Kein (weiterer) CA verfügbar') }}
                             </span>
                         </td>
                         <td>
@@ -54,7 +54,9 @@
                             <template v-else-if="resource.capture_agent">
                                 <select v-model="resource.workflow_id">
                                     <option value="" disabled selected>
-                                        <span v-translate>Bitte wählen Sie einen Workflow aus.</span>
+                                        <span>
+                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}'
+                                        </span>
                                     </option>
                                     <option v-for="workflow in compiledWDList(resource)"
                                         :key="workflow.id"
@@ -64,8 +66,8 @@
                                     </option>
                                 </select>
                             </template>
-                            <span v-else v-translate>
-                                Kein Workflow verfügbar
+                            <span v-else>
+                                {{ $gettext('Kein Workflow verfügbar') }}
                             </span>
                         </td>
                         <td>

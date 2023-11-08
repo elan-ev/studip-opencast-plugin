@@ -243,7 +243,7 @@ export default {
                         // On create, scroll to the default workflow configuration
                         this.$store.dispatch('addMessage', {
                             type: data.message.type,
-                            text: data.message.text + this.$gettext(' Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.')
+                            text: data.message.text + this.$gettext('Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.')
                         });
 
                         this.newId = data.config.id;

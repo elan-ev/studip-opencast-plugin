@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-06 16:57+0100\n"
-"PO-Revision-Date: 2023-11-06 16:57+0100\n"
+"POT-Creation-Date: 2023-11-08 20:44+0100\n"
+"PO-Revision-Date: 2023-11-08 20:36+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -18,48 +18,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.3.2\n"
 
-#: vueapp/components/Config/EditServer.vue:196
-msgid ""
-" Sie können nun die Standardworkflows einstellen oder die Konfiguration "
-"abschließen."
-msgstr "You can now set the standard workflows or complete the configuration."
-
 #: vueapp/components/Videos/Actions/VideoAccess.vue:60
 #: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:55
 msgid "_ctx"
 msgstr ""
 
-#: vueapp/components/Videos/VideoUpload.vue:156
-#: vueapp/components/Videos/VideoUpload.vue:153
-msgid ""
-"<b>Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!</"
-"b><br/>\n"
-"                            Nach §60 UrhG dürfen nur maximal 5-minütige "
-"Sequenzen aus urheberrechtlich geschützten\n"
-"                            Filmen oder Musikaufnahmen bereitgestellt "
-"werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.\n"
-"                            <a href=\"https://elan-ev.de/themen_p60.php\" "
-"target=\"_blank\">\n"
-"                                §60 UrhG Zusammenfassung\n"
-"                            </a><br/>\n"
-"                            Medien, bei denen Urheberrechtsverstöße "
-"vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht."
-msgstr ""
-"<b>Only upload media that you have the right to use!</b><br/>\n"
-"                             According to §60 UrhG, only a maximum of 5-"
-"minute sequences from copyrighted\n"
-"                             Films or music recordings are allowed to be "
-"made available, provided these make up a small extent of the overall work.\n"
-"                             <a href=\"https://elan-ev.de/themen_p60.php\" "
-"target=\"_blank\">\n"
-"                                 §60 UrhG summary\n"
-"                             </a><br/>\n"
-"                             Media found to be in breach of copyright will "
-"be deleted immediately without prior notice."
-
 #: vueapp/components/ConfirmDialog.vue:11
 #: vueapp/components/Playlists/PlaylistAddCard.vue:15
-#: vueapp/components/Schedule/ScheduleList.vue:81
+#: vueapp/components/Schedule/ScheduleList.vue:205
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:44
 #: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:11
 #: vueapp/components/Videos/Actions/VideoAddToSeminar.vue:20
@@ -73,18 +39,18 @@ msgstr ""
 #: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:11
 #: vueapp/components/Videos/Actions/VideoReport.vue:15
 #: vueapp/components/Videos/Actions/VideoRestore.vue:12
-#: vueapp/components/Videos/VideoUpload.vue:48 vueapp/views/PlaylistEdit.vue:41
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:15
+#: vueapp/components/Videos/VideoUpload.vue:41 vueapp/views/PlaylistEdit.vue:41
 msgid "Abbrechen"
 msgstr "Cancel"
 
-#: vueapp/components/Config/SchedulingOptions.vue:21
-#: vueapp/components/Courses/CoursesSidebar.vue:66
-#: vueapp/components/Courses/CoursesSidebar.vue:2
-#: vueapp/components/Schedule/ScheduleList.vue:25
-#: vueapp/components/Schedule/ScheduleLoading.vue:25
+#: vueapp/components/Config/SchedulingOptions.vue:46
+#: vueapp/components/Courses/CoursesSidebar.vue:148
+#: vueapp/components/Schedule/ScheduleList.vue:74
+#: vueapp/components/Schedule/ScheduleLoading.vue:63
 #: vueapp/components/Studip/StudipActionMenu.vue:38
 #: vueapp/components/Videos/VideosSidebar.vue:33
-#: vueapp/components/Videos/VideosTable.vue:150
+#: vueapp/components/Videos/VideosTable.vue:151
 msgid "Aktionen"
 msgstr "Actions"
 
@@ -108,7 +74,7 @@ msgstr "Accept"
 msgid "Alle Inhalte in weitere Kurse übertragen"
 msgstr "Transfer all content to other courses"
 
-#: vueapp/components/Videos/VideosTable.vue:117
+#: vueapp/components/Videos/VideosTable.vue:118
 msgid "Alle Videos auswählen"
 msgstr "Select all videos"
 
@@ -117,7 +83,7 @@ msgstr "Select all videos"
 msgid "Allgemeine Angaben"
 msgstr "General information"
 
-#: vueapp/components/Videos/VideoRow.vue:242
+#: vueapp/components/Videos/VideoRow.vue:244
 msgid "Anmerkungen hinzufügen"
 msgstr "Add annotation"
 
@@ -144,11 +110,11 @@ msgstr "Recording time"
 msgid "Aufrufe"
 msgstr "Views"
 
-#: vueapp/components/Videos/VideoUpload.vue:294
+#: vueapp/components/Videos/VideoUpload.vue:287
 msgid "Aufzeichnung der Folien hinzufügen"
 msgstr "Add recording of the slides"
 
-#: vueapp/components/Videos/VideoUpload.vue:257
+#: vueapp/components/Videos/VideoUpload.vue:250
 msgid "Aufzeichnung des/der Vortragende*n hinzufügen"
 msgstr "Add recording of the lecturer(s)"
 
@@ -162,6 +128,7 @@ msgid "Aufzeichnung Wiederherstellen"
 msgstr "Restore recording"
 
 #: vueapp/components/Videos/Actions/VideoDelete.vue:12
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:12
 msgid "Aufzeichnung zum Löschen markieren"
 msgstr "Mark recording for deletion"
 
@@ -169,6 +136,7 @@ msgstr "Mark recording for deletion"
 msgid "Aufzeichnungen aktualisieren"
 msgstr "Update recording"
 
+#: vueapp/components/Courses/CoursesSidebar.vue:72
 #: vueapp/components/Schedule/ScheduleList.vue:32
 msgid "Aufzeichnungen planen"
 msgstr "Schedule recording"
@@ -177,23 +145,21 @@ msgstr "Schedule recording"
 msgid "Aufzeichnungen stornieren"
 msgstr "Cancel recording"
 
-#: vueapp/components/Config/AdminConfigs.vue:25
+#: vueapp/components/Config/AdminConfigs.vue:24
 msgid "Aufzeichnungsplanung konfigurieren"
 msgstr "Configure recording schedule"
 
-#: vueapp/components/Schedule/ScheduleList.vue:21
-#: vueapp/components/Schedule/ScheduleList.vue:1
-#: vueapp/components/Schedule/ScheduleLoading.vue:21
-#: vueapp/components/Schedule/ScheduleLoading.vue:1
+#: vueapp/components/Schedule/ScheduleList.vue:70
+#: vueapp/components/Schedule/ScheduleLoading.vue:59
 msgid "Aufzeichnungszeitraum"
 msgstr "Recording range"
 
-#: vueapp/components/Videos/VideoRow.vue:185
-#: vueapp/components/Videos/VideosTable.vue:237
+#: vueapp/components/Videos/VideoRow.vue:187
+#: vueapp/components/Videos/VideosTable.vue:238
 msgid "Aus Wiedergabeliste entfernen"
 msgstr "Remove from playlist"
 
-#: vueapp/components/Videos/VideosTable.vue:147
+#: vueapp/components/Videos/VideosTable.vue:148
 msgid "Autor/-in"
 msgstr "Author"
 
@@ -202,7 +168,7 @@ msgid "Basis URL zur Opencast Installation"
 msgstr "Base URL for Opencast system"
 
 #: vueapp/components/Playlists/PlaylistCard.vue:26
-#: vueapp/components/Videos/VideoRow.vue:175
+#: vueapp/components/Videos/VideoRow.vue:177
 msgid "Bearbeiten"
 msgstr "Edit"
 
@@ -232,7 +198,7 @@ msgstr "An error occurred while deleting the link."
 msgid "Berechtigung"
 msgstr "Permission"
 
-#: vueapp/components/Config/SchedulingOptions.vue:174
+#: vueapp/components/Config/SchedulingOptions.vue:166
 msgid "Beschäftigt"
 msgstr "Working"
 
@@ -256,27 +222,25 @@ msgstr "Please describe the problem you encountered"
 msgid "Bitte bestätigen Sie die Aktion"
 msgstr "Please confirm the action"
 
-#: vueapp/components/Videos/VideosTable.vue:67
+#: vueapp/components/Videos/VideosTable.vue:68
 msgid ""
 "Bitte wählen Sie die Videos aus, die zur Wiedergabeliste hinzugefügt werden "
 "sollen."
 msgstr "Please select the videos to add to the playlist."
 
-#: vueapp/components/Schedule/ScheduleList.vue:202
+#: vueapp/components/Schedule/ScheduleList.vue:181
 msgid "Bitte wählen Sie eine Aktion."
 msgstr "Please select an action."
 
-#: vueapp/components/Config/SchedulingOptions.vue:34
-#: vueapp/components/Config/SchedulingOptions.vue:3
+#: vueapp/components/Config/SchedulingOptions.vue:64
 msgid "Bitte wählen Sie einen CA."
 msgstr "Please select a CA."
 
-#: vueapp/components/Config/SchedulingOptions.vue:56
-#: vueapp/components/Config/SchedulingOptions.vue:3
+#: vueapp/components/Config/SchedulingOptions.vue:94
 msgid "Bitte wählen Sie einen Workflow aus."
 msgstr "Please select a workflow."
 
-#: vueapp/components/Config/SchedulingOptions.vue:18
+#: vueapp/components/Config/SchedulingOptions.vue:43
 msgid "Capture Agent"
 msgstr "Capture agent"
 
@@ -303,7 +267,7 @@ msgstr "The video has been added to the playlist."
 msgid "Datei(en)"
 msgstr "File(s)"
 
-#: vueapp/components/Videos/VideosTable.vue:138
+#: vueapp/components/Videos/VideosTable.vue:139
 msgid "Datum"
 msgstr "Date"
 
@@ -323,11 +287,11 @@ msgstr "File upload has been successful."
 msgid "Die geplante Aufzeichnung wurde entfernt."
 msgstr "The scheduled recording has been removed."
 
-#: vueapp/components/Videos/VideosTable.vue:282
+#: vueapp/components/Videos/VideosTable.vue:286
 msgid "Die Videos wurden der Wiedergabeliste hinzugefügt."
 msgstr "The videos have been added to the playlist."
 
-#: vueapp/components/Videos/VideosTable.vue:253
+#: vueapp/components/Videos/VideosTable.vue:257
 msgid "Die Videos wurden von der Wiedergabeliste entfernt."
 msgstr "The videos have been removed from the playlist."
 
@@ -367,11 +331,11 @@ msgstr "Lecturer"
 msgid "Einsenden"
 msgstr "Submit"
 
-#: vueapp/components/Config/AdminConfigs.vue:62
+#: vueapp/components/Config/AdminConfigs.vue:67
 msgid "Einstellungen konnten nicht gespeichert werden!"
 msgstr "Settings could not be saved!"
 
-#: vueapp/components/Config/AdminConfigs.vue:16
+#: vueapp/components/Config/AdminConfigs.vue:42
 msgid "Einstellungen speichern"
 msgstr "Save settings"
 
@@ -431,7 +395,7 @@ msgstr "An error has occurred"
 msgid "Es ist ein unbekannter Fehler aufgetreten"
 msgstr "An unknown error has occurred"
 
-#: vueapp/components/Videos/VideosTable.vue:351
+#: vueapp/components/Videos/VideosTable.vue:365
 msgid ""
 "Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden "
 "Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu "
@@ -445,7 +409,7 @@ msgid ""
 "Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!"
 msgstr "Only courses in which the Opencast plugin is activated are listed!"
 
-#: vueapp/components/Config/AdminConfigs.vue:21
+#: vueapp/components/Config/AdminConfigs.vue:20
 msgid ""
 "Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte "
 "konsultieren Sie die Hilfeseiten."
@@ -453,11 +417,11 @@ msgstr ""
 "So far, no rooms have been configured with recording technology! Please "
 "consult the help pages."
 
-#: vueapp/components/Videos/VideosTable.vue:337
+#: vueapp/components/Videos/VideosTable.vue:351
 msgid "Es wurden keine Videos ausgewählt!"
 msgstr "No videos were selected!"
 
-#: vueapp/components/Videos/VideosTable.vue:179
+#: vueapp/components/Videos/VideosTable.vue:180
 msgid "Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden."
 msgstr "No videos were found for the selected view options."
 
@@ -473,7 +437,7 @@ msgstr "Make accessible for users"
 msgid "Für Nutzer/in freigeben"
 msgstr "Make accessible for user"
 
-#: vueapp/components/Config/GlobalOptions.vue:16
+#: vueapp/components/Config/GlobalOptions.vue:13
 msgid "Globale Einstellungen"
 msgstr "Global settings"
 
@@ -492,11 +456,11 @@ msgid "Herunterladen"
 msgstr "Download"
 
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:42
-#: vueapp/components/Videos/VideoUpload.vue:46
+#: vueapp/components/Videos/VideoUpload.vue:39
 msgid "Hochladen"
 msgstr "Upload"
 
-#: vueapp/components/Config/SchedulingOptions.vue:168
+#: vueapp/components/Config/SchedulingOptions.vue:160
 msgid "Idle"
 msgstr "Idle"
 
@@ -529,7 +493,7 @@ msgstr "Internal"
 msgid "Ja"
 msgstr "Yes"
 
-#: vueapp/components/Config/SchedulingOptions.vue:7
+#: vueapp/components/Config/SchedulingOptions.vue:34
 msgid "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!"
 msgstr "Every capture agent can only be assigned to one room maximum!"
 
@@ -537,7 +501,7 @@ msgstr "Every capture agent can only be assigned to one room maximum!"
 msgid "Kachelansicht"
 msgstr "Tile view"
 
-#: vueapp/components/Config/SchedulingOptions.vue:45
+#: vueapp/components/Config/SchedulingOptions.vue:81
 msgid "Kein (weiterer) CA verfügbar"
 msgstr "No (further) capture agent available"
 
@@ -549,7 +513,7 @@ msgstr "No course selected."
 msgid "Kein Video vorhanden"
 msgstr "No video available"
 
-#: vueapp/components/Config/SchedulingOptions.vue:63
+#: vueapp/components/Config/SchedulingOptions.vue:105
 msgid "Kein Workflow verfügbar"
 msgstr "No workflow available"
 
@@ -577,7 +541,7 @@ msgstr "Do not add to any playlist"
 msgid "Kurs auswählen"
 msgstr "Choose course"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:106
+#: vueapp/components/Courses/CoursesSidebar.vue:97
 #: lib/Routes/Course/CourseListPlaylist.php:42
 msgid "Kurswiedergabeliste"
 msgstr "Course playlist"
@@ -589,6 +553,7 @@ msgstr "Link"
 #: vueapp/components/Playlists/PlaylistCard.vue:44
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:99
 #: vueapp/components/Videos/Actions/VideoDelete.vue:13
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:13
 msgid "Löschen"
 msgstr "Delete"
 
@@ -604,12 +569,13 @@ msgstr "LTI Consumersecret"
 msgid "Medien herunterladen"
 msgstr "Download media"
 
-#: vueapp/components/Videos/VideoUpload.vue:45
+#: vueapp/components/Courses/CoursesSidebar.vue:161
+#: vueapp/components/Videos/VideoUpload.vue:38
 #: vueapp/components/Videos/VideosSidebar.vue:92
 msgid "Medien hochladen"
 msgstr "Upload media"
 
-#: vueapp/components/Videos/VideoRow.vue:270
+#: vueapp/components/Videos/VideoRow.vue:272
 msgid "Medien runterladen"
 msgstr "Download media"
 
@@ -679,6 +645,23 @@ msgstr ""
 "{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} days.\n"
 "                     Up to this point you can restore the recording."
 
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:4
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:1
+msgid ""
+"Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?<br/><br/>\n"
+"                    Die Aufzeichnungen werden damit in den \"Gelöschte "
+"Videos\" Bereich Ihres Arbeitsplatzes verschoben und werden nach "
+"{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen "
+"automatisch gelöscht.\n"
+"                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen "
+"wiederherstellen."
+msgstr ""
+"Are you sure you want to mark the recording for deletion?<br/><br/>\n"
+"                     The recording will then be moved to the \"Deleted "
+"Videos\" area of your workstation and will be automatically deleted after "
+"{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} days.\n"
+"                     Up to this point you can restore the recording."
+
 #: vueapp/views/Playlists.vue:38
 msgid "Name"
 msgstr "Name"
@@ -688,7 +671,7 @@ msgstr "Name"
 msgid "Name:"
 msgstr "Name:"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:2
+#: vueapp/components/Courses/CoursesSidebar.vue:46
 #: vueapp/components/Videos/VideosSidebar.vue:2
 msgid "Navigation"
 msgstr "Navigation"
@@ -698,7 +681,7 @@ msgstr "Navigation"
 msgid "Nein"
 msgstr "No"
 
-#: vueapp/components/Config/ServerCard.vue:16
+#: vueapp/components/Config/ServerCard.vue:58
 msgid "Neuen Server hinzufügen"
 msgstr "Add new server"
 
@@ -738,11 +721,16 @@ msgstr "Opencast server settings"
 msgid "Opencast Version"
 msgstr "Opencast version"
 
+#: vueapp/components/Config/ServerCard.vue:63
+#, fuzzy
+msgid "Opencast-Version:"
+msgstr "Opencast version"
+
 #: vueapp/components/Config/EditServer.vue:73
 msgid "Passwort"
 msgstr "Password"
 
-#: vueapp/components/Config/SchedulingOptions.vue:17
+#: vueapp/components/Config/SchedulingOptions.vue:42
 msgid "Raum"
 msgstr "Room"
 
@@ -751,7 +739,15 @@ msgstr "Room"
 msgid "Rechte"
 msgstr "Permissions"
 
-#: vueapp/components/Config/SchedulingOptions.vue:3
+#: vueapp/components/Courses/CoursesSidebar.vue:193
+msgid "Reiter sichtbar schalten"
+msgstr "Show navigation tab"
+
+#: vueapp/components/Courses/CoursesSidebar.vue:205
+msgid "Reiter verbergen"
+msgstr "Hide navigation tab"
+
+#: vueapp/components/Config/SchedulingOptions.vue:31
 msgid "Ressourcen"
 msgstr "Resources"
 
@@ -770,12 +766,11 @@ msgstr "Tags"
 msgid "Schließen"
 msgstr "Close"
 
-#: vueapp/components/Videos/VideoRow.vue:232
+#: vueapp/components/Videos/VideoRow.vue:234
 msgid "Schnitteditor öffnen"
 msgstr "Open cutting tool"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:52
-#: vueapp/components/Courses/CoursesSidebar.vue:2
+#: vueapp/components/Courses/CoursesSidebar.vue:125
 msgid "Semesterfilter"
 msgstr "Semesterfilter"
 
@@ -818,11 +813,21 @@ msgstr "Visible"
 msgid "Sichtbarkeit des Videos"
 msgstr "Video visibility"
 
+#: vueapp/components/Config/EditServer.vue:196
+msgid ""
+"Sie können nun die Standardworkflows einstellen oder die Konfiguration "
+"abschließen."
+msgstr "You can now set the standard workflows or complete the configuration."
+
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:144
 #: vueapp/components/Videos/VideoUpload.vue:151
 #: vueapp/components/Videos/VideoUpload.vue:148
 msgid "Sie müssen mindestens eine Datei auswählen!"
 msgstr "You must select at least one file!"
+
+#: vueapp/components/Videos/VideoUpload.vue:123
+msgid "Sind sie sicher, dass sie das Hochladen abbrechen möchten?"
+msgstr "Are you sure you want to cancel the upload?"
 
 #: vueapp/components/Schedule/ScheduleList.vue:128
 msgid "Sind sie sicher, dass sie die geplante Aufzeichnung entfernen möchten?"
@@ -851,7 +856,7 @@ msgid ""
 "Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this playlist from the course?"
 
-#: vueapp/components/Videos/VideosTable.vue:318
+#: vueapp/components/Videos/VideosTable.vue:332
 msgid ""
 "Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen "
 "möchten?"
@@ -906,33 +911,37 @@ msgstr "Default"
 msgid "Standardworkflows"
 msgstr "Default workflows"
 
-#: vueapp/components/Config/SchedulingOptions.vue:20
-#: vueapp/components/Schedule/ScheduleList.vue:24
-#: vueapp/components/Schedule/ScheduleLoading.vue:24
+#: vueapp/components/Config/SchedulingOptions.vue:45
+#: vueapp/components/Schedule/ScheduleList.vue:73
+#: vueapp/components/Schedule/ScheduleLoading.vue:62
 msgid "Status"
 msgstr "Status"
 
-#: vueapp/components/Config/SchedulingOptions.vue:171
+#: vueapp/components/Config/SchedulingOptions.vue:163
 msgid "Status unbekannt"
 msgstr "Status unknown"
+
+#: vueapp/components/Courses/CoursesSidebar.vue:222
+msgid "Studierendenupload erlauben"
+msgstr "Allow student uploads"
+
+#: vueapp/components/Courses/CoursesSidebar.vue:234
+msgid "Studierendenupload verbieten"
+msgstr "Prohibit student uploads"
 
 #: vueapp/components/ViewSwitch.vue:4
 msgid "Tabellarische Ansicht"
 msgstr "Tabular view"
 
 #: vueapp/components/Videos/Actions/VideoReport.vue:12
-#: vueapp/components/Videos/VideoRow.vue:298
+#: vueapp/components/Videos/VideoRow.vue:300
 msgid "Technisches Feedback"
 msgstr "Technical feedback"
 
-#: vueapp/components/Schedule/ScheduleList.vue:19
-#: vueapp/components/Schedule/ScheduleLoading.vue:19
+#: vueapp/components/Schedule/ScheduleList.vue:68
+#: vueapp/components/Schedule/ScheduleLoading.vue:57
 msgid "Termin"
 msgstr "Date"
-
-#: vueapp/components/Config/GlobalOptions.vue:12
-msgid "Terms of service"
-msgstr "Terms of service"
 
 #: vueapp/components/Videos/Actions/VideoEdit.vue:22
 #: vueapp/components/Videos/Actions/VideoEdit.vue:19
@@ -941,17 +950,17 @@ msgstr "Terms of service"
 msgid "Thema"
 msgstr "Topic"
 
-#: vueapp/components/Videos/VideoRow.vue:145
+#: vueapp/components/Videos/VideoRow.vue:146
 msgid "this"
 msgstr ""
 
-#: vueapp/components/Schedule/ScheduleList.vue:23
-#: vueapp/components/Schedule/ScheduleLoading.vue:23
+#: vueapp/components/Schedule/ScheduleList.vue:72
+#: vueapp/components/Schedule/ScheduleLoading.vue:61
 #: vueapp/components/Videos/Actions/VideoEdit.vue:7
 #: vueapp/components/Videos/Actions/VideoEdit.vue:4
 #: vueapp/components/Videos/VideoUpload.vue:23
 #: vueapp/components/Videos/VideoUpload.vue:20
-#: vueapp/components/Videos/VideosTable.vue:129
+#: vueapp/components/Videos/VideosTable.vue:130
 msgid "Titel"
 msgstr "Title"
 
@@ -959,7 +968,7 @@ msgstr "Title"
 msgid "Titel der Wiedergabeliste"
 msgstr "Playlist title"
 
-#: vueapp/components/Schedule/ScheduleList.vue:78
+#: vueapp/components/Schedule/ScheduleList.vue:196
 msgid "Übernehmen"
 msgstr "Accept"
 
@@ -998,7 +1007,7 @@ msgid "Untertitel für %{ lang }"
 msgstr "Subtitles for %{ lang }"
 
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:41
-#: vueapp/components/Videos/VideoRow.vue:252
+#: vueapp/components/Videos/VideoRow.vue:254
 msgid "Untertitel hinzufügen"
 msgstr "Add subtitles"
 
@@ -1006,7 +1015,7 @@ msgstr "Add subtitles"
 msgid "Untertiteldatei auswählen"
 msgstr "Select subtitle file"
 
-#: vueapp/components/Videos/VideoRow.vue:288
+#: vueapp/components/Videos/VideoRow.vue:290
 msgid "Unwiderruflich entfernen"
 msgstr "Remove irrevocably"
 
@@ -1025,18 +1034,22 @@ msgstr "Linked courses"
 msgid "Verknüpfte Veranstaltungen"
 msgstr "Linked courses"
 
-#: vueapp/components/Config/SchedulingOptions.vue:176
+#: vueapp/components/Config/SchedulingOptions.vue:125
 msgid "Verknüpfung entfernen"
 msgstr "Remove link"
 
 #: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:17
-#: vueapp/components/Videos/VideoRow.vue:213
+#: vueapp/components/Videos/VideoRow.vue:215
 msgid "Verknüpfungen"
 msgstr "Links"
 
-#: vueapp/components/Videos/VideosTable.vue:121
+#: vueapp/components/Videos/VideosTable.vue:122
 msgid "Video"
 msgstr "Video"
+
+#: vueapp/components/Courses/CoursesSidebar.vue:176
+msgid "Video aufnehmen"
+msgstr "Record video"
 
 #: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:8
 msgid "Video aus Wiedergabeliste entfernen"
@@ -1047,7 +1060,7 @@ msgid "Video bearbeiten"
 msgstr "Edit video"
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:34
-#: vueapp/components/Videos/VideoRow.vue:222
+#: vueapp/components/Videos/VideoRow.vue:224
 msgid "Video freigeben"
 msgstr "Share video"
 
@@ -1064,6 +1077,7 @@ msgstr "Add video to playlist"
 msgid "Video(s)"
 msgstr "Video(s)"
 
+#: vueapp/components/Courses/CoursesSidebar.vue:57
 #: vueapp/views/Playlists.vue:41
 msgid "Videos"
 msgstr "Videos"
@@ -1082,9 +1096,9 @@ msgstr "Videos per page"
 msgid "Videos sortieren"
 msgstr "Sort videos"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:265
+#: vueapp/components/Courses/CoursesSidebar.vue:248
 msgid "Videos/Wiedergabelisten übertragen"
-msgstr "Videos/Wiedergabelisten übertragen"
+msgstr "Transfer videos/playlists"
 
 #: vueapp/components/Videos/VideoFilePreview.vue:3
 msgid "Vortragende*r"
@@ -1099,30 +1113,30 @@ msgstr "Add to more playlists"
 msgid "Wiedergabeliste"
 msgstr "Playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:123
+#: vueapp/components/Courses/CoursesSidebar.vue:114
 #: vueapp/components/Playlists/PlaylistAddCard.vue:12
 #: vueapp/components/Videos/VideosSidebar.vue:206
 msgid "Wiedergabeliste anlegen"
 msgstr "Add playlist"
 
-#: vueapp/components/Videos/VideosTable.vue:256
+#: vueapp/components/Videos/VideosTable.vue:274
 msgid "Wiedergabeliste aus diesem Kurs entfernen"
 msgstr "Remove playlist from course"
 
-#: vueapp/components/Videos/VideosTable.vue:270
+#: vueapp/components/Videos/VideosTable.vue:288
 #: vueapp/views/PlaylistEdit.vue:38
 msgid "Wiedergabeliste bearbeiten"
 msgstr "Edit playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:26
+#: vueapp/components/Courses/CoursesSidebar.vue:83
 msgid "Wiedergabelisten"
 msgstr "Playlists"
 
-#: vueapp/components/Videos/VideoRow.vue:281
+#: vueapp/components/Videos/VideoRow.vue:283
 msgid "Wiederherstellen"
 msgstr "Restore"
 
-#: vueapp/components/Config/SchedulingOptions.vue:19
+#: vueapp/components/Config/SchedulingOptions.vue:44
 #: vueapp/components/Videos/VideoUpload.vue:86
 #: vueapp/components/Videos/VideoUpload.vue:83
 msgid "Workflow"
@@ -1151,17 +1165,18 @@ msgstr "Add to course"
 msgid "Zu Wiedergabeliste hinzufügen"
 msgstr "Add to playlist"
 
-#: vueapp/components/Videos/VideoRow.vue:261
+#: vueapp/components/Videos/VideoRow.vue:263
+#: vueapp/components/Videos/VideosTable.vue:255
 msgid "Zum Löschen markieren"
 msgstr "Mark for deletion"
 
 #: vueapp/components/UserPlaylistSelectable.vue:45
-#: vueapp/components/Videos/VideoRow.vue:195
-#: vueapp/components/Videos/VideosTable.vue:224
+#: vueapp/components/Videos/VideoRow.vue:197
+#: vueapp/components/Videos/VideosTable.vue:225
 msgid "Zur Wiedergabeliste hinzufügen"
 msgstr "Add to playlist"
 
-#: vueapp/components/Config/SchedulingOptions.vue:12
+#: vueapp/components/Config/SchedulingOptions.vue:39
 msgid "Zuweisung der Capture Agents"
 msgstr "Assignment of capture agents"
 
@@ -1428,11 +1443,11 @@ msgid ""
 "Die Kurs-Verknüpfungen der Wiedergabeliste konnten nicht aktualisiert werden!"
 msgstr "The course connections for the playlist could not be updated!!"
 
-#: lib/Routes/Video/VideoAdd.php:30
+#: lib/Routes/Video/VideoAdd.php:33
 msgid "Beim Erstellen des Videos ist ein Fehler aufgetreten."
 msgstr "An error occurred while creating the video."
 
-#: lib/Routes/Video/VideoAdd.php:53
+#: lib/Routes/Video/VideoAdd.php:72
 msgid "Das Video wurde erfolgreich erstellt."
 msgstr "The video was created successfully."
 
@@ -1576,6 +1591,36 @@ msgstr ""
 msgid "Videos & Vorlesungsaufzeichnung"
 msgstr "Videos & lecture recording"
 
+#~ msgid ""
+#~ "<b>Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!</"
+#~ "b><br/>\n"
+#~ "                            Nach §60 UrhG dürfen nur maximal 5-minütige "
+#~ "Sequenzen aus urheberrechtlich geschützten\n"
+#~ "                            Filmen oder Musikaufnahmen bereitgestellt "
+#~ "werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.\n"
+#~ "                            <a href=\"https://elan-ev.de/themen_p60.php\" "
+#~ "target=\"_blank\">\n"
+#~ "                                §60 UrhG Zusammenfassung\n"
+#~ "                            </a><br/>\n"
+#~ "                            Medien, bei denen Urheberrechtsverstöße "
+#~ "vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht."
+#~ msgstr ""
+#~ "<b>Only upload media that you have the right to use!</b><br/>\n"
+#~ "                             According to §60 UrhG, only a maximum of 5-"
+#~ "minute sequences from copyrighted\n"
+#~ "                             Films or music recordings are allowed to be "
+#~ "made available, provided these make up a small extent of the overall "
+#~ "work.\n"
+#~ "                             <a href=\"https://elan-ev.de/themen_p60."
+#~ "php\" target=\"_blank\">\n"
+#~ "                                 §60 UrhG summary\n"
+#~ "                             </a><br/>\n"
+#~ "                             Media found to be in breach of copyright "
+#~ "will be deleted immediately without prior notice."
+
+#~ msgid "Terms of service"
+#~ msgstr "Terms of service"
+
 #~ msgid "(unsichtbar für Teilnehmende!)"
 #~ msgstr "(invisible for participants!)"
 
@@ -1642,9 +1687,6 @@ msgstr "Videos & lecture recording"
 
 #~ msgid "Share-Link erstellt!"
 #~ msgstr "Share link created!"
-
-#~ msgid "Sind sie sicher, dass sie das Hochladen abbrechen möchten?"
-#~ msgstr "Are you sure you want to cancel the upload?"
 
 #~ msgid "Tag"
 #~ msgstr "Tag"
@@ -1960,12 +2002,6 @@ msgstr "Videos & lecture recording"
 
 #~ msgid "Kursspezifischen Workflow konfigurieren"
 #~ msgstr "Configure course-specific worklow"
-
-#~ msgid "Reiter verbergen"
-#~ msgstr "Hide navigation tab"
-
-#~ msgid "Reiter sichtbar machen"
-#~ msgstr "Show navigation tab"
 
 #~ msgid "Nutzungsvereinbarung ablehnen"
 #~ msgstr "Decline terms of service"
