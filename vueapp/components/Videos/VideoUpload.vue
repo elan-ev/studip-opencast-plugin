@@ -187,14 +187,7 @@
                         </MessageBox>
                     </fieldset>
 
-                    <MessageBox type="info" v-translate>
-                            <b>Laden Sie nur Medien hoch, an denen Sie das Nutzungsrecht besitzen!</b><br />
-                            Nach §60 UrhG dürfen nur maximal 5-minütige Sequenzen aus urheberrechtlich geschützten
-                            Filmen oder Musikaufnahmen bereitgestellt werden, sofern diese einen geringen Umfang des Gesamtwerkes ausmachen.
-                            <a href="https://elan-ev.de/themen_p60.php" target="_blank">
-                                §60 UrhG Zusammenfassung
-                            </a><br />
-                            Medien, bei denen Urheberrechtsverstöße vorliegen, werden ohne vorherige Ankündigung umgehend gelöscht.
+                    <MessageBox type="info" v-if="infoText" v-html="infoText">
                     </MessageBox>
                 </form>
 
@@ -309,13 +302,25 @@ export default {
             )['workflow_id'];
 
             return this.config['workflows'].find(wf => wf['id'] == wf_id)['name'];
+        },
+
+        infoText()
+        {
+            try {
+                let info = JSON.parse(this.config.settings.OPENCAST_UPLOAD_INFO_TEXT_BODY);
+                return info[this.config.user_language];
+            } catch (e) {
+
+            }
+
+            return null;
         }
     },
 
     methods: {
         confirmCancel()
         {
-            if (confirm('Sind sie sicher, dass sie das Hochladen abbrechen möchten?')) {
+            if (confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))) {
                 if (this.uploadProgress) {
                     this.uploadService.cancel();
                 }
@@ -436,7 +441,7 @@ export default {
                                 })
                             }
                         }
-                        
+
                         this.$store.dispatch('setVideosReload', true);
                     });
                 },

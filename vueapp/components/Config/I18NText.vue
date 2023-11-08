@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <label>
             <div class="i18n_group">
                 <div v-for="lang in languages"
@@ -11,8 +10,8 @@
                     :data-lang="lang.id"
                     :data-icon="`url(` + getLangImage(lang) + `)`">
                     <textarea
-                        v-model="text[lang.id]"
-                        :id="`studip_wysiwyg_` + lang.id"
+                        :value="currentText[lang.id]"
+                        :id="`studip_wysiwyg_` + uuid + '_' + lang.id"
                         :ref="`studip_wysiwyg_` + lang.id"
                         class="studip-wysiwyg"
                     >
@@ -38,34 +37,46 @@
 </template>
 
 <script>
+import { toRaw } from "vue";
+
 export default {
     name: 'I18NText',
 
     props: {
         text: {
-            type: Object
+            type: String
         },
         languages: {
             type: Object
         }
     },
 
+    emits: ['updateValue'],
+
     data() {
         return {
             currentText: null,
             selectedLang: null,
             fallbackActive: false,
-            wysiwyg_editor: null
+            wysiwyg_editor: {},
+            uuid: Math.random().toString(16).slice(2)
         }
     },
 
     mounted() {
-        let ckeInit = this.initCKE();
+        this.initCKE();
     },
 
     beforeMount() {
         this.selectedLang = this.languages[Object.keys(this.languages)[0]];
-        this.currentText  = this.text;
+        let json;
+        try {
+            json = JSON.parse(this.text);
+        } catch (e) {
+            json = {}
+        }
+
+        this.currentText = json;
     },
 
     methods: {
@@ -73,37 +84,53 @@ export default {
             return OpencastPlugin.ASSETS_URL + 'images/languages/' + lang.picture;
         },
 
-        async initCKE() {
+        initCKE() {
             if (!STUDIP.wysiwyg_enabled) {
                 return false;
             }
 
-            let view = this;
+            let textarea = this.$refs['studip_wysiwyg_' + this.selectedLang.id][0];
 
-            if (view.wysiwyg_editor !== null) {
-                await view.wysiwyg_editor.destroy();
+            if (!this.wysiwyg_editor[this.selectedLang.id]) {
+                this.checkEditor();
             }
-
-            let textarea = view.$refs['studip_wysiwyg_' + view.selectedLang.id][0];
-
-
-            await STUDIP.wysiwyg.replace(textarea);
-            view.wysiwyg_editor = CKEDITOR.instances[textarea.id];
-
-            view.wysiwyg_editor.on('blur', function() {
-
-            });
-
-            view.wysiwyg_editor.on('change', function() {
-                view.updateValue(view.wysiwyg_editor.getData());
-            });
 
             return true;
         },
 
-        updateValue(value) {
+        checkEditor()
+        {
+            let view = this;
+            let textarea = this.$refs['studip_wysiwyg_' + this.selectedLang.id][0];
+
+            if (!STUDIP.wysiwyg.getEditor(textarea)) {
+                STUDIP.wysiwyg.replace(textarea);
+                setTimeout(() => {
+                    view.checkEditor()
+                }, 500);
+                return;
+            }
+
+            this.wysiwyg_editor[this.selectedLang.id] = STUDIP.wysiwyg.getEditor(textarea);
+
+            // using toRaw to remove Vue proxys. They do not work well with CKEditor
+            toRaw(this.wysiwyg_editor[this.selectedLang.id]).ui.focusTracker.on( 'change:isFocused', () => {
+                view.updateValue(toRaw(view.wysiwyg_editor[view.selectedLang.id]).getData());
+            });
+        },
+
+        updateValue(value)
+        {
             this.currentText[this.selectedLang.id] = value;
-            this.$emit('input', this.currentText);
+
+            // clean anything else besides languages
+            for (let id in this.currentText) {
+                if (!this.languages[id]) {
+                    delete this.currentText[id];
+                }
+            }
+
+            this.$emit('updateValue', JSON.stringify(this.currentText));
         }
     }
 }

@@ -34,7 +34,7 @@
             </section>
         </span>
 
-        <label v-if="setting.type == 'string' && !setting.options">
+        <label v-if="setting.type == 'string' && !setting.options && !isI18N(setting)">
             <span :class="{
                 required: setting.required
             }">
@@ -47,7 +47,7 @@
                 @change="setValue(setting.value)">
         </label>
 
-        <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options">
+        <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options && !isI18N(setting)">
             <span :class="{
                 required: setting.required
             }">
@@ -100,20 +100,34 @@
                 </span>
             </div>
         </label>
+
+        <label v-if="setting.type == 'string' && isI18N(setting)">
+            <span :class="{
+                required: setting.required
+            }">
+                {{ setting.description }}
+            </span>
+
+            <I18NText :text="setting.value"
+                :languages="languages"
+                @updateValue="setValue"
+            />
+        </label>
     </span>
 </template>
 
 <script>
 import StudipIcon from '@studip/StudipIcon.vue';
 import StudipSelect from '@studip/StudipSelect';
+import I18NText from "@/components/Config/I18NText";
 
 export default {
     name: "ConfigOption",
 
-    props: ['setting'],
+    props: ['setting', 'languages'],
 
     components: {
-        StudipIcon, StudipSelect
+        StudipIcon, StudipSelect, I18NText
     },
 
     data() {
@@ -166,6 +180,18 @@ export default {
             if (!this.passwordVisible && this.password.length == 0) {
                 this.password = '*****';
             }
+        },
+
+        isI18N(setting)
+        {
+            if (
+                setting.name == 'OPENCAST_UPLOAD_INFO_TEXT_BODY'
+                || setting.name == 'OPENCAST_TOS'
+            ) {
+                return true;
+            }
+
+            return false;
         }
     }
 }

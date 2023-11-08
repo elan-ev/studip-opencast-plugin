@@ -15,23 +15,13 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@studip/StudipButton";
-import StudipIcon from "@studip/StudipIcon";
-import MessageBox from "@/components/MessageBox";
-import OpencastIcon from "@/components/OpencastIcon";
 import ConfigOption from "@/components/Config/ConfigOption";
-import I18NText from "@/components/Config/I18NText";
 
 export default {
     name: "WorkflowOptions",
 
     components: {
-        StudipButton,
-        StudipIcon,
-        MessageBox,
-        OpencastIcon,
-        ConfigOption,
-        I18NText
+        ConfigOption
     },
 
     props: {
@@ -49,7 +39,7 @@ export default {
                     if (wf_conf['config_id'] == config_id) {
                         let options = [];
                         for (let wf of this.simple_config_list.workflows) {
-                            if (wf['config_id'] == config_id && 
+                            if (wf['config_id'] == config_id &&
                                 (wf['tag'] === wf_conf['used_for'] || wf['tag'] === 'upload' && wf_conf['used_for'] === 'studio')) {
                                 options.push({
                                     'value': wf['id'],

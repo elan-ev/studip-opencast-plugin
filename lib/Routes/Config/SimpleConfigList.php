@@ -25,6 +25,8 @@ class SimpleConfigList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $user;
+
         $config = Config::findBySql(1);
 
         $config_list = [];
@@ -52,7 +54,8 @@ class SimpleConfigList extends OpencastController
             'plugin_assets_url' => \PluginEngine::getPlugin('Opencast')->getAssetsUrl(),
             'auth_url'          => \PluginEngine::getURL('opencast', [], 'redirect/authenticate', true),
             'redirect_url'      => \PluginEngine::getURL('opencast', [], 'redirect/perform', true),
-            'course_id'         => \Context::getId() ?: null
+            'course_id'         => \Context::getId() ?: null,
+            'user_language'     => getUserLanguage($user->id)
         ], $response);
     }
 

@@ -276,7 +276,6 @@ export default {
 
         videos_list: {
             get() {
-                console.log('videos_list', JSON.parse(JSON.stringify(this.videos)));
                 if (this.videoSortMode === true) {
                     return this.sortedVideos;
                 } else {

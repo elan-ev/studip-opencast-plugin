@@ -88,23 +88,15 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageBox from "@/components/MessageBox";
-import OpencastIcon from "@/components/OpencastIcon";
-import ConfigOption from "@/components/Config/ConfigOption";
-import I18NText from "@/components/Config/I18NText";
 
 export default {
     name: "SchedulingOptions",
 
     components: {
-        StudipButton,
         StudipIcon,
-        MessageBox,
-        OpencastIcon,
-        ConfigOption,
-        I18NText
+        MessageBox
     },
 
     props: ['config_list'],

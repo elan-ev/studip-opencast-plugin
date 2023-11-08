@@ -8,17 +8,8 @@
 
             <ConfigOption v-for="setting in global_settings"
                 :key="setting.name" :setting="setting"
-                @updateValue="updateValue"/>
-        </fieldset>
-
-        <fieldset v-if="showTos">
-            <legend v-translate>
-                Terms of service
-            </legend>
-
-            <I18NText :text="opencastTos"
                 :languages="config_list.languages"
-                @input="updateTos"
+                @updateValue="updateValue"
             />
         </fieldset>
     </div>
@@ -27,23 +18,15 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@studip/StudipButton";
-import StudipIcon from "@studip/StudipIcon";
-import MessageBox from "@/components/MessageBox";
 import OpencastIcon from "@/components/OpencastIcon";
 import ConfigOption from "@/components/Config/ConfigOption";
-import I18NText from "@/components/Config/I18NText";
 
 export default {
     name: "GlobalOptions",
 
     components: {
-        StudipButton,
-        StudipIcon,
-        MessageBox,
         OpencastIcon,
-        ConfigOption,
-        I18NText,
+        ConfigOption
     },
 
     props: ['config_list'],
@@ -69,8 +52,14 @@ export default {
                     setting.options = this.defaultServerOptions;
                     settings.push(setting);
                 }
-                else if (this.config_list.settings[id].name != 'OPENCAST_TOS') {
-                    settings.push(this.config_list.settings[id]);
+                else {
+                    if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
+                        if (this.showTos) {
+                            settings.push(this.config_list.settings[id]);
+                        }
+                    } else {
+                        settings.push(this.config_list.settings[id]);
+                    }
                 }
             }
 
@@ -122,24 +111,6 @@ export default {
             return options;
         },
 
-        opencastTos() {
-            for (let id in this.config_list.settings) {
-                if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
-                    try {
-                        if (typeof JSON.parse(this.config_list.settings[id].value) !== 'object')
-                        {
-                            return {}
-                        } else {
-                            return JSON.parse(this.config_list.settings[id].value);
-                        }
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                    return {}
-                }
-            }
-        }
     },
 
     methods: {
@@ -151,15 +122,7 @@ export default {
                     return;
                 }
             }
-        },
-
-        updateTos(text) {
-            for (let id in this.config_list.settings) {
-                if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
-                    this.config_list.settings[id].value = JSON.stringify(text);
-                }
-            }
-        },
+        }
     }
 }
 </script>

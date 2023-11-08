@@ -66,26 +66,31 @@ export default {
     methods: {
         storeAdminConfig(event) {
             event.preventDefault();
+            let view = this;
+
             this.$store.dispatch('clearMessages');
             let params = {};
+
             if (this.config_list?.settings) {
                 params.settings = this.config_list.settings;
             }
+
             if (this.is_scheduling_enabled) {
                 params.resources = this.config_list.scheduling.resources;
             }
+
             this.$store.dispatch('configListUpdate', params)
                 .then(({ data }) => {
-                    this.$store.dispatch('configListRead');
+                    view.$store.dispatch('configListRead');
                     if (data.messages.length) {
                         for (let i = 0; i < data.messages.length; i++ ) {
-                            this.$store.dispatch('addMessage', data.messages[i]);
+                            view.$store.dispatch('addMessage', data.messages[i]);
                         }
                     }
                 }).catch(function (error) {
-                    this.$store.dispatch('addMessage', {
+                    view.$store.dispatch('addMessage', {
                         type: 'error',
-                        text: this.$gettext('Einstellungen konnten nicht gespeichert werden!')
+                        text: view.$gettext('Einstellungen konnten nicht gespeichert werden!')
                     });
                 });
         }

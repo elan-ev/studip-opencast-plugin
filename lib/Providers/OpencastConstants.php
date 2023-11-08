@@ -29,8 +29,8 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'workflow'
             ],
             'global_config_options' => [
-                'OPENCAST_TOS',
                 'OPENCAST_SHOW_TOS',
+                'OPENCAST_TOS',
                 'OPENCAST_ALLOW_ALTERNATE_SCHEDULE' ,
                 'OPENCAST_MEDIADOWNLOAD',
                 'OPENCAST_ALLOW_STUDIO',
@@ -44,7 +44,8 @@ class OpencastConstants implements \Pimple\ServiceProviderInterface
                 'OPENCAST_RESOURCE_PROPERTY_ID',
                 'OPENCAST_SUPPORT_EMAIL',
                 'OPENCAST_API_TOKEN',
-                'OPENCAST_DEFAULT_SERVER'
+                'OPENCAST_DEFAULT_SERVER',
+                'OPENCAST_UPLOAD_INFO_TEXT_BODY'
             ]
         ];
     }
