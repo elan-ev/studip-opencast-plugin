@@ -665,6 +665,7 @@ export default {
     created() {
         // Disable sort mode if active
         this.$store.dispatch('setVideoSortMode', false);
+        this.$store.dispatch('setVideosReload', false);
     },
 
     async mounted() {
@@ -703,7 +704,7 @@ export default {
         // Catch every playlist change to handle video loading
         playlist(playlist) {
             this.$store.dispatch('setVideoSortMode', false);
-            if (this.isCourse && playlist !== null) {
+            if (playlist !== null) {
                 this.clearPaging();
                 this.setDefaultSortOrder();
                 this.loadVideos();

@@ -2,7 +2,6 @@
     <div class="container" id="app-episodes">
         <Teleport :to="toLayoutName">
             <CoursesSidebar
-                @addVideos="addVideosDialog = true"
                 @uploadVideo="uploadDialog = true"
                 @sortVideo="enableSortMode"
                 @saveSortVideo="saveSort"
@@ -12,11 +11,11 @@
             </CoursesSidebar>
         </Teleport>
 
-        <PlaylistAddVideos v-if="addVideosDialog"
+        <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
             :canEdit="canEdit"
             :canUpload="canUpload"
-            @done="addVideosDialog = false"
-            @cancel="addVideosDialog = false"
+            @done="closePlaylistAddVideosDialog"
+            @cancel="closePlaylistAddVideosDialog"
         />
 
         <PlaylistEditCard v-if="editPlaylistDialog"
@@ -58,6 +57,7 @@ export default {
         ...mapGetters([
             'currentUser',
             'showCourseCopyDialog',
+            'showPlaylistAddVideosDialog',
             'cid',
         ]),
 
@@ -74,7 +74,6 @@ export default {
       data() {
         return {
             uploadDialog: false,
-            addVideosDialog: false,
             editPlaylistDialog: false,
         }
     },
@@ -110,6 +109,10 @@ export default {
 
         copyAll() {
             this.$store.dispatch('toggleCourseCopyDialog', true);
+        },
+
+        closePlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
         },
 
         closeCopyDialog() {

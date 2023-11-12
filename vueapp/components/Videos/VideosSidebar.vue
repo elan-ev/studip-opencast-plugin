@@ -53,7 +53,7 @@
                     </a>
                 </li>
 
-                <li @click="$emit('addVideos')" v-if="fragment == 'playlist'">
+                <li @click="openPlaylistAddVideosDialog" v-if="fragment == 'playlist'">
                     <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                     {{ $gettext('Videos hinzufügen') }}
                 </li>
@@ -159,6 +159,10 @@ export default {
     },
 
     methods: {
+        openPlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
+        },
+
         createPlaylist() {
             this.$store.dispatch('addPlaylistUI', true);
         },

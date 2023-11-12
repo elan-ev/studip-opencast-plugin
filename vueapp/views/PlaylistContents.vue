@@ -61,8 +61,12 @@ export default {
         ])
     },
 
+    created() {
+        this.$store.dispatch('setPlaylist', null);
+    },
+
     async mounted() {
-        this.$store.dispatch('loadPlaylist', this.token);
+        await this.$store.dispatch('loadPlaylist', this.token);
     },
 
     unmounted() {

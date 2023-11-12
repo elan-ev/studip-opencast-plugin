@@ -6,7 +6,8 @@ const state = {
     playlistSearch: '',
     addPlaylist: false,
     availableTags: [],
-    playlistCourses: null
+    playlistCourses: null,
+    showPlaylistAddVideosDialog: false
 }
 
 const getters = {
@@ -44,7 +45,11 @@ const getters = {
 
     playlistCourses(state) {
         return state.playlistCourses
-    }
+    },
+
+    showPlaylistAddVideosDialog(state) {
+        return state.showPlaylistAddVideosDialog;
+    },
 }
 
 
@@ -174,7 +179,11 @@ const actions = {
             await commit('setAllowDownload', allowed);
             dispatch('updatePlaylist', state.playlist);
         }
-    }
+    },
+
+    togglePlaylistAddVideosDialog({commit}, mode) {
+        commit('setShowPlaylistAddVideosDialog', mode);
+    },
 }
 
 const mutations = {
@@ -211,6 +220,10 @@ const mutations = {
 
     setPlaylistCourses(state, courses) {
         state.playlistCourses = courses
+    },
+
+    setShowPlaylistAddVideosDialog(state, mode) {
+        state.showPlaylistAddVideosDialog = mode;
     },
 
     setAllowDownload(state, allowed) {

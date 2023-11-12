@@ -90,7 +90,7 @@
                         </li>
                     </template>
                     <template v-else>
-                        <li @click="$emit('addVideos')" v-if="canEdit || canUpload">
+                        <li @click="openPlaylistAddVideosDialog" v-if="canEdit || canUpload">
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                             {{ $gettext('Videos hinzufügen') }}
                         </li>
@@ -159,7 +159,7 @@ export default {
         StudipIcon,     PlaylistAddCard
     },
 
-    emits: ['addVideos', 'uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist'],
+    emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist'],
 
     data() {
         return {
@@ -269,6 +269,10 @@ export default {
 
         cancelPlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
+        },
+
+        openPlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
         },
 
         createPlaylist(playlist) {

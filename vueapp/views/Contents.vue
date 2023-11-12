@@ -3,7 +3,6 @@
         <Teleport :to="toLayoutName">
             <VideosSidebar
                 @uploadVideo="uploadDialog = true"
-                @addVideos="addVideosDialog = true"
                 @allowDownloadForPlaylist="allowDownload"
                 @disallowDownloadForPlaylist="disallowDownload"
                 @sortVideo="enableSortMode"
@@ -17,9 +16,9 @@
             @cancel="uploadDialog = false"
         />
 
-        <PlaylistAddVideos v-if="addVideosDialog"
-            @done="addVideosDialog = false"
-            @cancel="addVideosDialog = false"
+        <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
+            @done="closePlaylistAddVideosDialog"
+            @cancel="closePlaylistAddVideosDialog"
         />
 
         <MessageList />
@@ -46,7 +45,8 @@ export default {
 
     computed: {
         ...mapGetters([
-            'currentUser'
+            'currentUser',
+            'showPlaylistAddVideosDialog'
         ]),
 
         toLayoutName() {
@@ -62,7 +62,6 @@ export default {
     data() {
         return {
             uploadDialog: false,
-            addVideosDialog: false,
             sortDialog: false
         }
     },
@@ -86,6 +85,10 @@ export default {
 
         cancelSort() {
             this.$store.dispatch('setVideoSortMode', 'cancel')
+        },
+
+        closePlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
         },
 
         uploadDone() {
