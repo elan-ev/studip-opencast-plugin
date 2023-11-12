@@ -6,7 +6,7 @@
         -->
 
         <td>
-            <router-link :to="{ name: 'playlist_edit', params: { token: playlist.token } }">
+            <router-link :to="{ name: 'playlist', params: { token: playlist.token } }">
                 {{ playlist.title }}
             </router-link>
 
@@ -39,8 +39,7 @@
            <StudipActionMenu :items="menuItems"
                 @addToCourse="addToCourse(playlist)"
                 @deletePlaylist="deletePlaylist(playlist)"
-                @editPlaylist="$router.push({ name: 'playlist_edit', params: { token: playlist.token } })"
-                @addToPlaylist="addToPlaylist(playlist)"
+                @editPlaylist="$router.push({ name: 'playlist', params: { token: playlist.token } })"
            />
         </td>
     </tr>
@@ -76,12 +75,14 @@ export default {
                     icon: 'edit',
                     emit: 'editPlaylist'
                 },
-                 {
+                /*
+                {
                     id: 2,
                     label: this.$gettext('Videos hinzufügen'),
                     icon: 'add',
                     emit: 'addToPlaylist'
                 },
+                */
                 {
                     id: 2,
                     label: this.$gettext('Verknüpfte Kurse'),
@@ -115,10 +116,12 @@ export default {
            this.$emit('deletePlaylist', playlist);
         },
 
+        /*
         addToPlaylist(playlist) {
             this.$store.commit('setPlaylistForVideos', playlist);
             this.$router.push({ name: 'videos'})
         }
+        */
     }
 }
 </script>

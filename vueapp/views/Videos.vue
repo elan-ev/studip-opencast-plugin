@@ -1,6 +1,6 @@
 <template>
     <div>
-        <VideosTable></VideosTable>
+        <VideosTable/>
     </div>
 </template>
 

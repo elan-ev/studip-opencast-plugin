@@ -3,6 +3,7 @@
         <Teleport :to="toLayoutName">
             <VideosSidebar
                 @uploadVideo="uploadDialog = true"
+                @addVideos="addVideosDialog = true"
                 @allowDownloadForPlaylist="allowDownload"
                 @disallowDownloadForPlaylist="disallowDownload"
                 @sortVideo="enableSortMode"
@@ -14,7 +15,11 @@
         <VideoUpload v-if="uploadDialog"
             @done="uploadDone"
             @cancel="uploadDialog = false"
-            :currentUser="currentUser"
+        />
+
+        <PlaylistAddVideos v-if="addVideosDialog"
+            @done="addVideosDialog = false"
+            @cancel="addVideosDialog = false"
         />
 
         <MessageList />
@@ -26,8 +31,9 @@
 <script>
 import VideosSidebar from "@/components/Videos/VideosSidebar";
 import VideoUpload from "@/components/Videos/VideoUpload";
-import MessageList from "@/components/MessageList";
+import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 
+import MessageList from "@/components/MessageList";
 import { mapGetters } from "vuex";
 
 export default {
@@ -35,7 +41,7 @@ export default {
 
     components: {
         VideosSidebar,      VideoUpload,
-        MessageList
+        PlaylistAddVideos,  MessageList
     },
 
     computed: {
@@ -56,6 +62,7 @@ export default {
     data() {
         return {
             uploadDialog: false,
+            addVideosDialog: false,
             sortDialog: false
         }
     },

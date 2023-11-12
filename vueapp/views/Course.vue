@@ -2,15 +2,26 @@
     <div class="container" id="app-episodes">
         <Teleport :to="toLayoutName">
             <CoursesSidebar
+                @addVideos="addVideosDialog = true"
                 @uploadVideo="uploadDialog = true"
+                @sortVideo="enableSortMode"
+                @saveSortVideo="saveSort"
+                @cancelSortVideo="cancelSort"
+                @editPlaylist="editPlaylistDialog = true"
                 @copyAll="copyAll">
             </CoursesSidebar>
         </Teleport>
 
-        <VideoUpload v-if="uploadDialog"
-            @done="uploadDone"
-            @cancel="uploadDialog = false"
-            :currentUser="currentUser"
+        <PlaylistAddVideos v-if="addVideosDialog"
+            :canEdit="canEdit"
+            :canUpload="canUpload"
+            @done="addVideosDialog = false"
+            @cancel="addVideosDialog = false"
+        />
+
+        <PlaylistEditCard v-if="editPlaylistDialog"
+            @done="editPlaylistDialog = false"
+            @cancel="editPlaylistDialog = false"
         />
 
         <VideoCopyToSeminar v-if="showCourseCopyDialog"
@@ -26,8 +37,10 @@
 
 <script>
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
+import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
+import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
 import VideoCopyToSeminar from '@/components/Videos/Actions/VideoCopyToSeminar.vue';
 
 import { mapGetters } from "vuex";
@@ -36,14 +49,16 @@ export default {
     name: "Course",
 
     components: {
-        CoursesSidebar,     VideoUpload,
+        PlaylistEditCard, CoursesSidebar,
+        VideoUpload, PlaylistAddVideos,
         MessageList, VideoCopyToSeminar
     },
 
     computed: {
         ...mapGetters([
             'currentUser',
-            'showCourseCopyDialog'
+            'showCourseCopyDialog',
+            'cid',
         ]),
 
         toLayoutName() {
@@ -58,17 +73,39 @@ export default {
 
       data() {
         return {
-            uploadDialog: false
+            uploadDialog: false,
+            addVideosDialog: false,
+            editPlaylistDialog: false,
         }
     },
 
     methods: {
-         uploadDone() {
-            this.$store.dispatch('addMessage', {
-                type: 'info',
-                text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
-            });
-            this.uploadDialog = false
+        canEdit() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.edit_allowed;
+        },
+
+        canUpload() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.upload_allowed;
+        },
+
+        enableSortMode() {
+            this.$store.dispatch('setVideoSortMode', true)
+        },
+
+        saveSort() {
+            this.$store.dispatch('setVideoSortMode', 'commit')
+        },
+
+        cancelSort() {
+            this.$store.dispatch('setVideoSortMode', 'cancel')
         },
 
         copyAll() {
@@ -91,6 +128,7 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadCurrentUser');
+        this.$store.dispatch('loadCourseConfig', this.cid);
     }
 };
 </script>

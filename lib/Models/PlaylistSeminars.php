@@ -26,17 +26,9 @@ class PlaylistSeminars extends \SimpleORMap
      */
     public function toSanitizedArray()
     {
-        $playlist_data = $this->playlist->toArray();
+        $playlist_data = $this->playlist->toSanitizedArray();
         $playlist_data['videos_count'] = count($this->seminar_videos);
         $playlist_data['visibility'] = $this->visibility;
-
-        if (!is_null($playlist_data['allow_download'])) {
-            $playlist_data['allow_download'] = filter_var(
-                $playlist_data['allow_download'],
-                FILTER_VALIDATE_BOOLEAN
-            );
-        }
-
         $playlist_data['is_default'] = $this->is_default;
 
         return $playlist_data;

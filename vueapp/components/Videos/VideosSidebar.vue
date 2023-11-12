@@ -20,7 +20,7 @@
                     </router-link>
                 </li>
                 <li :class="{
-                    active: fragment == 'playlists' || fragment == 'playlist_edit'
+                    active: fragment == 'playlists' || fragment == 'playlist'
                     }">
                     <router-link :to="{ name: 'playlists' }">
                         Wiedergabelisten
@@ -53,36 +53,34 @@
                     </a>
                 </li>
 
-                <li @click="addVideosToPlaylist" v-if="fragment == 'playlist_edit'">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                <li @click="$emit('addVideos')" v-if="fragment == 'playlist'">
+                    <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                     {{ $gettext('Videos hinzufügen') }}
                 </li>
 
                 <li @click="$emit('allowDownloadForPlaylist')"
-                    v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
+                    v-if="fragment == 'playlist' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                     {{ $gettext('Mediendownloads erlauben') }}
                 </li>
 
                 <li @click="$emit('disallowDownloadForPlaylist')"
-                    v-if="fragment == 'playlist_edit' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
+                    v-if="fragment == 'playlist' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
                     <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                    {{ $gettext('Mediendownloads verbieten') }}
                 </li>
 
-                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist_edit' && !videoSortMode">
+                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist' && !videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                     {{ $gettext('Videos sortieren') }}
                 </li>
-                <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
+                <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
                     {{ $gettext('Sortierung speichern') }}
                 </li>
-                <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist_edit' && videoSortMode">
+                <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist' && videoSortMode">
                     <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
                     {{ $gettext('Sortierung abbrechen') }}
-                </li>
-                <li @click="true" v-if="fragment == 'edit'">
                 </li>
 
                 <li @click="createPlaylist" v-if="fragment == 'playlists'">
@@ -163,11 +161,6 @@ export default {
     methods: {
         createPlaylist() {
             this.$store.dispatch('addPlaylistUI', true);
-        },
-
-        addVideosToPlaylist() {
-            this.$store.commit('setPlaylistForVideos', this.playlist);
-            this.$router.push({ name: 'videos'})
         },
 
         getWorkflow(config_id) {

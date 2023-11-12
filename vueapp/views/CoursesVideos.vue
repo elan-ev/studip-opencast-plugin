@@ -1,6 +1,10 @@
 <template>
     <div>
-        <VideosTable></VideosTable>
+        <VideosTable
+            :playlist="playlist"
+            :cid="cid"
+            :editable="canEdit"
+        />
     </div>
 </template>
 
@@ -16,7 +20,11 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['cid', 'defaultPlaylist'])
+        ...mapGetters(['playlist', 'cid', 'defaultPlaylist', 'course_config']),
+
+        canEdit() {
+            return this.course_config?.edit_allowed ?? false;
+        },
     },
 
     mounted() {

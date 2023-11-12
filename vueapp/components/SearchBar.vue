@@ -135,7 +135,6 @@ export default {
 
     computed: {
         ...mapGetters([
-            'videoSort',
             'availableVideoTags',
             'availableVideoCourses',
             'playlists',

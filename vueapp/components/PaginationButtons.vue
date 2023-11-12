@@ -122,7 +122,14 @@ export default {
         StudipIcon
     },
 
-    emits: ['changePage'],
+    props: {
+        'paging': {
+            type: Object,
+            required: true
+        }
+    },
+
+    emits: ['changePage', 'changeLimit'],
 
     data() {
         return {
@@ -132,10 +139,6 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'paging'
-        ]),
-
         /**
          * Takes care of the page numbers to display.  For ui-consistency,
          * the number of elements is always the same, returning always 5 elements
@@ -194,7 +197,7 @@ export default {
 
     watch: {
         limit(newLimit, oldLimit) {
-            this.$store.commit('setLimit', newLimit);
+            this.$emit('changeLimit', newLimit);
             this.$emit('changePage', 0);
         }
     },

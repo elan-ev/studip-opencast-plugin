@@ -24,7 +24,7 @@
                     <tbody>
                         <tr v-for="(playlist, index) in event.playlists" v-bind:key="playlist.id">
                             <td>
-                                <router-link :to="{ name: 'playlist_edit' , params: { token: playlist.token }}" target="_blank">
+                                <router-link :to="{ name: 'playlist' , params: { token: playlist.token }}" target="_blank">
                                     {{ playlist.title }}
                                 </router-link>
                             </td>
