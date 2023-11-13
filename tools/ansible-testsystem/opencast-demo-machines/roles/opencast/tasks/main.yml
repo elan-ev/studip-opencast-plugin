@@ -1,0 +1,85 @@
+---
+
+###
+# Install Opencast RPM repositories
+
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: el7.yml
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
+
+- include_tasks: el8.yml
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '8'
+
+
+###
+# Create opencast directories
+
+- name: create opencast directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0775'
+    owner: opencast
+    group: opencast
+  loop:
+    - /srv/opencast
+    - /opt/opencast-build
+
+###
+# Install build and ingest scripts, install systemd service files
+
+- name: install opencast build and ingest scripts
+  template:
+    src: '{{ item }}'
+    dest: /opt/opencast-build/
+    mode: '0750'
+    owner: opencast
+    group: opencast
+  loop:
+    - opencast-build.sh
+    - media.yml
+    - ingest.py
+
+- name: install systemd service files
+  copy:
+    src: '{{ item }}'
+    dest: /etc/systemd/system/
+    mode: '0644'
+    owner: root
+    group: root
+    force: true
+  loop:
+    - opencast.service
+    - opencast-build.service
+    - opencast-build.timer
+
+- name: give opencast user rights to run build commands with higher privileges
+  copy:
+    src: opencast-build-sudoers
+    dest: /etc/sudoers.d/
+    mode: 0440
+    owner: root
+    group: root
+    force: true
+
+###
+# Enable and run opencast buid service
+
+- name: enable opencast build service
+  systemd:
+    daemon_reload: true
+    name: opencast-build.timer
+    enabled: true
+    state: started
+
+- name: enable opencast service
+  service:
+    name: opencast
+    enabled: true
+
+- name: run opencast build service
+  service:
+    name: opencast-build.service
+    state: started

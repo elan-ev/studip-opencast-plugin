@@ -1,0 +1,18 @@
+---
+studip_version: main
+
+download_dir: '/home/tgloeggl/main'
+studip_install_dir: '/usr/local/studip'
+studip_base_dir: '{{studip_install_dir}}/{{studip_version}}'
+studip_cronjob_dir: '/opt/studip'
+
+node_version: '20.5.1'
+
+opencast_uri: 'https://lms-demo-oc.vm2.elan.codes'
+studip_uri: 'https://lms-demo-studip.vm2.elan.codes'
+
+mariadb_port: 3306
+studip_db:
+  name: studip
+  user: studip
+  password: studip

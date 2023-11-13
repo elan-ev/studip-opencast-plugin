@@ -1,0 +1,13 @@
+## Special allowences for Opencast set-up
+opencast        ALL=(root) NOPASSWD: /bin/systemctl reload nginx.service
+opencast        ALL=(root) NOPASSWD: /bin/systemctl stop elasticsearch.service
+opencast        ALL=(root) NOPASSWD: /bin/systemctl restart elasticsearch.service
+opencast        ALL=(root) NOPASSWD: /bin/systemctl start opencast.service
+opencast        ALL=(root) NOPASSWD: /bin/systemctl stop opencast.service
+opencast        ALL=(root) NOPASSWD: /bin/rm -rf /var/lib/elasticsearch/nodes
+opencast        ALL=(root) NOPASSWD: /usr/bin/systemctl reload nginx.service
+opencast        ALL=(root) NOPASSWD: /usr/bin/systemctl stop elasticsearch.service
+opencast        ALL=(root) NOPASSWD: /usr/bin/systemctl restart elasticsearch.service
+opencast        ALL=(root) NOPASSWD: /usr/bin/systemctl start opencast.service
+opencast        ALL=(root) NOPASSWD: /usr/bin/systemctl stop opencast.service
+opencast        ALL=(root) NOPASSWD: /usr/bin/rm -rf /var/lib/elasticsearch/nodes

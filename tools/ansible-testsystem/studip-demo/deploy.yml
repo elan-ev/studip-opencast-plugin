@@ -1,0 +1,11 @@
+---
+- hosts: lms-demo-studip.vm2.elan.codes
+  become: yes
+  roles:
+    - set-timezone
+    - mariadb
+    - studip
+    - apache
+    - cleaner
+  tags:
+    - root-task

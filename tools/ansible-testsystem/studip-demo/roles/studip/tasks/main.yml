@@ -1,0 +1,147 @@
+---
+  - name: Install GIT
+    package:
+      name: git
+      state: present
+
+  - name: php - install base packages
+    apt:
+      name: ["memcached", "php-memcached", "php-xdebug", "php-mysql", "php-curl", "php-imagick", "php-gd", "php-zip", "php-mbstring", "php-xml", "php-pgsql", "zip", "unzip", "make", "xsltproc", "php-xmlrpc", "php-intl", "libapache2-mod-php"]
+      state: "present"
+    become: yes
+    tags:
+    - packages
+    - root-task
+
+  - name: Ensures download dir exists
+    file: path={{download_dir}}/ state=directory
+
+  - name: Git checkout
+    ansible.builtin.git:
+      repo: 'https://gitlab.studip.de/studip/studip.git'
+      dest: '{{download_dir}}'
+      version: main
+
+  - name: create studip install-dir
+    file:
+      path: "{{studip_install_dir}}"
+      state: "directory"
+      owner: "www-data"
+      group: "www-data"
+      mode: "+rx"
+    become: yes
+    tags:
+    - root-task
+
+  - name: copy studip sources
+    ansible.builtin.copy:
+      remote_src: yes
+      src: '{{download_dir}}'
+      dest: '{{studip_install_dir}}'
+      owner: "www-data"
+      group: "www-data"
+    become: yes
+    tags:
+    - root-task
+
+  - name: copy config.inc.php
+    copy:
+      src: "{{studip_base_dir}}/config/config.inc.php.dist"
+      dest: "{{studip_base_dir}}/config/config.inc.php"
+      remote_src: yes
+    become: yes
+    tags:
+    - root-task
+
+  - name: copy config_local.inc.php
+    copy:
+      src: "{{studip_base_dir}}/config/config_local.inc.php.dist"
+      dest: "{{studip_base_dir}}/config/config_local.inc.php"
+      remote_src: yes
+    become: yes
+    tags:
+    - root-task
+
+  - name: edit DB_STUDIP_USER in config_local.inc.php
+    lineinfile:
+      path: '{{studip_base_dir}}/config/config_local.inc.php'
+      line: '$DB_STUDIP_USER = "{{studip_db.user}}";'
+      regexp: '\$DB_STUDIP_USER'
+    become: yes
+    tags:
+    - root-task
+
+  - name: edit DB_STUDIP_PASSWORD in config_local.inc.php
+    lineinfile:
+      path: '{{studip_base_dir}}/config/config_local.inc.php'
+      line: '$DB_STUDIP_PASSWORD = "{{studip_db.password}}";'
+      regexp: '\$DB_STUDIP_PASSWORD'
+    become: yes
+    tags:
+    - root-task
+
+  - name: import database schema
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip.sql'
+    become: yes
+    tags:
+    - root-task
+
+  - name: import root user
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip_root_user.sql'
+    become: yes
+    tags:
+    - root-task
+
+  - name: import default data
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip_default_data.sql'
+    become: yes
+    tags:
+    - root-task
+
+  - name: import resources default data
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip_resources_default_data.sql'
+    become: yes
+    tags:
+    - root-task
+
+  - name: import test data
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip_demo_data.sql'
+    become: yes
+    tags:
+    - root-task
+    - demo-data
+
+  - name: import resources test data
+    mysql_db:
+      name: '{{studip_db.name}}'
+      state: import
+      target: '{{studip_base_dir}}/db/studip_resources_demo_data.sql'
+    become: yes
+    tags:
+    - root-task
+    - demo-data
+
+  - name: install cronjob
+    template:
+      src: 'studip'
+      dest: '/etc/cron.d/studip'
+      mode: '0644'
+      owner: root
+      group: root
+    tags:
+    - root-task

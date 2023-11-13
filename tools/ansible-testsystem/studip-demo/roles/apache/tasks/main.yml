@@ -1,0 +1,46 @@
+---
+- name: Install apache and certbot
+  apt:
+    name: ["apache2", "certbot", "python3-certbot-apache"]
+    state: "present"
+  tags:
+  - packages
+
+- name: apache - enabled mod_php
+  apache2_module:
+    name: "php7.4"
+    state: "present"
+
+- name: apache - enabled mod_rewrite
+  apache2_module:
+    name: "rewrite"
+    state: "present"
+
+- name: apache - enabled mod_headers
+  apache2_module:
+    name: "headers"
+    state: "present"
+
+- name: a2dissite default
+  command: a2dissite 000-default
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify:
+    - restart apache2
+
+- name: apache - add virtual host
+  template:
+    src: apache_vhost.conf.j2
+    dest: /etc/apache2/sites-available/studip.conf
+
+- name: a2ensite studip
+  command: a2ensite studip
+  args:
+    creates: /etc/apache2/sites-enabled/studip.conf
+  notify:
+    - restart apache2
+
+- name: Install certbot cronjob
+  template:
+    src: certbot.conf
+    dest: /etc/cron.d/certbot.conf

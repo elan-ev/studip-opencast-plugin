@@ -1,0 +1,22 @@
+[server]
+user=root
+port={{mariadb_port}}
+lower_case_table_names=1
+max_allowed_packet=16777216
+
+[client]
+default-character-set = utf8mb4
+
+[mysqld]
+innodb_file_format = Barracuda
+innodb_file_per_table = 1
+innodb_large_prefix=1
+sql_mode="ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+skip-character-set-client-handshake
+
+default-time-zone = +02:00
+[mysql]
+default-character-set = utf8mb4

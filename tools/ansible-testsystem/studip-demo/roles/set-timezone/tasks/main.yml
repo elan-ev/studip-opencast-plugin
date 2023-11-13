@@ -1,0 +1,5 @@
+---
+- name: reconfigure tzdata
+  timezone:
+    name: "{{timezone}}"
+  when: timezone is defined and timezone

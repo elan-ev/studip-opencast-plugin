@@ -1,0 +1,14 @@
+[Unit]
+Description=Opencast
+After=local-fs.target
+After=network.target
+
+[Service]
+ExecStart=/srv/opencast/opencast-dist-allinone/bin/start-opencast server
+ExecStop=/srv/opencast/opencast-dist-allinone/bin/stop-opencast
+Restart=always
+User=opencast
+Group=opencast
+
+[Install]
+WantedBy=multi-user.target
