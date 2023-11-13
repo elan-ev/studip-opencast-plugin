@@ -4,4 +4,4 @@ These are ansible playbooks for creating a demo environment for Opencast and Stu
 
 ## Caveats
 
-- Certbot will installed but you need to run it once by hand, afterwards a cronjob takes care of thath (this might change in a future iteration)
+- Certbot will be installed but you need to run it once by hand, afterwards a cronjob takes care of thath (this might change in a future iteration)
