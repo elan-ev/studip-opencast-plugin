@@ -203,7 +203,7 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async addVideoToPlaylists(context, data) {
+    async updateVideoPlaylists(context, data) {
         return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
     },
 

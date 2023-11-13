@@ -2,13 +2,11 @@
     <div>
         <StudipDialog
             :title="title"
-            :confirmText="$gettext('Speichern')"
-            :confirmClass="'accept'"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="500"
-            @close="$emit('cancel')"
-            @confirm="addToCourse"
+            width="600"
+            @close="this.$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
                 <table class="default" v-if="selectedCourses.length > 0">
@@ -28,13 +26,13 @@
                                 </a>
                             </td>
                             <td>
-                                <studip-icon shape="trash" role="clickable" @click="removeFromCourse(index)" style="cursor: pointer"/>
+                                <studip-icon shape="trash" role="clickable" @click="removeCourse(index)" style="cursor: pointer"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                <UserCourseSelectable @add="addCourseToList"
+                <UserCourseSelectable @add="addCourse"
                     :courses="userCourses"
                     :selectedCourses="selectedCourses"
                 />
@@ -71,6 +69,46 @@ export default {
         ...mapGetters(['playlistCourses', 'userCourses'])
     },
 
+    methods: {
+        getCourseLink(course) {
+            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + course.id + '#/course/videos')
+        },
+
+        addCourse(course) {
+            this.selectedCourses.push(course);
+
+            this.$store.dispatch('updatePlaylistCourses', {
+                token: this.playlist.token,
+                courses: this.selectedCourses
+            })
+            .catch(() => {
+                // find the index of the course that was just added and remove it
+                let index = this.selectedCourses.findIndex((c) => c.id === course.id);
+                this.selectedCourses.splice(index, 1);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen des Kurses ist ein Fehler aufgetreten.'));
+            });
+        },
+
+        removeCourse(index) {
+            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?'))) {
+                return;
+            }
+
+            let course = this.selectedCourses.splice(index, 1)[0];
+
+            this.$store.dispatch('updatePlaylistCourses', {
+                token: this.playlist.token,
+                courses: this.selectedCourses
+            })
+            .catch(() => {
+                // find the index of the course that was just added and remove it
+                let index = this.selectedCourses.findIndex((c) => c.id === course.id);
+                this.selectedCourses.splice(index, 1);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen des Kurses ist ein Fehler aufgetreten.'));
+            });
+        }
+    },
+
     mounted() {
         let view = this;
 
@@ -82,34 +120,5 @@ export default {
 
         this.$store.dispatch('loadUserCourses');
     },
-
-    methods: {
-        getCourseLink(course) {
-            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + course.id + '#/course/videos')
-        },
-
-        addCourseToList(course) {
-            this.selectedCourses.push(course);
-        },
-
-        addToCourse() {
-            this.$store.dispatch('addPlaylistToCourses', {
-                token: this.playlist.token,
-                courses: this.selectedCourses
-            })
-            .then(({ data }) => {
-                this.$store.dispatch('addMessage', data.message);
-                this.$emit('done', 'refresh');
-            }).catch(() => {
-                this.$emit('cancel');
-            });
-        },
-
-        removeFromCourse(course_index) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?'))) {
-                this.selectedCourses.splice(course_index, 1);
-            }
-        }
-    }
 }
 </script>

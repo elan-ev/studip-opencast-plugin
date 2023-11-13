@@ -170,8 +170,6 @@ import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylists.vue';
-import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
-import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
@@ -200,9 +198,8 @@ export default {
         VideoDownload,          VideoReport,
         VideoEdit,              VideoRestore,
         VideoDelete,            VideoDeletePermanent,
-        VideoAddToSeminar,      VideoRemoveFromPlaylist,
-        VideoAddToPlaylist,     CaptionUpload,
-        BulkVideoDelete,
+        VideoLinkToPlaylists,   VideoRemoveFromPlaylist,
+        CaptionUpload,          BulkVideoDelete,
         draggable,
     },
 
