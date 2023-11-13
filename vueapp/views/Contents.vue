@@ -14,6 +14,7 @@
         <VideoUpload v-if="uploadDialog"
             @done="uploadDone"
             @cancel="uploadDialog = false"
+            :currentUser="currentUser"
         />
 
         <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"

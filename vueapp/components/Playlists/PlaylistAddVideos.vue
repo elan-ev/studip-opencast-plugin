@@ -33,7 +33,6 @@
         <VideosAddFromContents v-if="activeDialog === 'contents'"
              @done="done"
              @cancel="cancel"
-             :currentUser="currentUser"
         />
     </div>
 </template>
