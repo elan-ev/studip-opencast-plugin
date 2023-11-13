@@ -138,8 +138,12 @@ export default {
         }
     },
 
-    mounted() {
+    created() {
         this.$store.commit('clearPaging');
+        this.$store.commit('setPlaylists', {});
+    },
+
+    mounted() {
         this.$store.dispatch('loadPlaylists');
     }
 };
