@@ -237,7 +237,7 @@ export default {
                 if (this.canEdit) {
                     return true;
                 }
-                else if (this.playlist && this.playlist['allow_download']) {
+                else if (this.playlist && this.playlist['allow_download'] !== undefined) {
                     return this.playlist['allow_download'];
                 }
                 else {
