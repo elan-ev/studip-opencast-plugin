@@ -1,0 +1,56 @@
+---
+- name: Ensures /etc/mysql/mariadb.conf.d dir exists
+  file: path=/etc/mysql/mariadb.conf.d/ state=directory
+  tags:
+  - root-task
+
+- name: Configure MariaDB
+  template:
+    src: mysql.cnf
+    dest: /etc/mysql/mariadb.conf.d/studip-changes.cnf
+  tags:
+  - root-task
+
+- name: Install MariaDB server package
+  package:
+    name: mariadb-server
+    state: present
+  tags:
+  - packages
+  - root-task
+
+- name: Start Mysql Service
+  service:
+    name: mysql
+    state: started
+    enabled: true
+  tags:
+  - root-task
+
+- name: Ensure mysql python packages are present
+  package:
+    name: python3-mysqldb
+  become: yes
+  tags:
+  - packages
+  - root-task
+
+- name: Create a new database with name 'studip'
+  mysql_db:
+    name: '{{studip_db.name}}'
+    encoding: 'utf8mb4'
+    collation: 'utf8mb4_unicode_ci'
+    config_file: /etc/mysql/mariadb.conf.d/studip-changes.cnf
+    state: present
+  become: yes
+  tags:
+  - root-task
+
+- name: Create studip database user
+  mysql_user:
+    name: '{{studip_db.user}}'
+    password: '{{studip_db.password}}'
+    priv: '{{studip_db.name}}.*:ALL'
+  become: yes
+  tags:
+  - root-task

@@ -1,0 +1,7 @@
+- name: Install test systems
+  hosts: lms-demo-oc.vm2.elan.codes
+  become: true
+  roles:
+    - role: nginx
+    - role: opencast
+

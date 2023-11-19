@@ -1,0 +1,3 @@
+dependencies:
+  - elan.opencast_repository
+  - elan.opencast_user

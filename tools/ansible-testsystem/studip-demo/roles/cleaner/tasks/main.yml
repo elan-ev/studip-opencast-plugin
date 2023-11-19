@@ -1,0 +1,37 @@
+---
+  - name: Install cleanup cronjob
+    template:
+      src: cleaner
+      dest: /etc/cron.d/cleaner
+
+  - name: create cleaner directories
+    file:
+      path: '{{ studip_cronjob_dir }}'
+      state: directory
+      mode: '0775'
+      owner: root
+      group: root
+
+  - name: Install cleanup script
+    template:
+      src: 'cleaner.sh'
+      dest: '{{ studip_cronjob_dir }}/cleaner.sh'
+      mode: '0750'
+      owner: root
+      group: root
+
+  - name: Copy OC settings SQL file
+    template:
+      src: 'oc.sql'
+      dest: '{{ studip_cronjob_dir }}/oc.sql'
+      mode: '0750'
+      owner: root
+      group: root
+
+  - name: Copy PHP CLI settings for Stud.IP
+    template:
+      src: 'studip.ini'
+      dest: '/etc/php/7.4/cli/conf.d/studip.ini'
+      mode: '0750'
+      owner: root
+      group: root

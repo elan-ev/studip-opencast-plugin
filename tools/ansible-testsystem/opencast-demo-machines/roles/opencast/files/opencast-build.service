@@ -1,0 +1,13 @@
+[Unit]
+Description=Opencast build service
+After=local-fs.target
+After=network.target
+
+[Service]
+ExecStart=/opt/opencast-build/opencast-build.sh
+User=opencast
+Group=opencast
+KillMode=process
+
+[Install]
+Also=opencast-build.timer

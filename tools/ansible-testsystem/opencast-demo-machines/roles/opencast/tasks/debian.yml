@@ -1,0 +1,21 @@
+---
+
+- name: fail early if OS is not supported
+  assert:
+    that: ansible_os_family == 'Debian'
+
+- name: install opencast dependencies
+  package:
+    name:
+      - openjdk-11-jre
+      - curl
+      - ffmpeg-dist
+      - netcat
+      - elasticsearch-oss
+      - tesseract-ocr
+      - tesseract-ocr-deu
+      # for ingest script
+      - python3
+      - python3-requests
+      - python3-yaml
+      - policycoreutils

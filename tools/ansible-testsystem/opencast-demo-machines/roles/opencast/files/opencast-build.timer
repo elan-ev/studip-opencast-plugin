@@ -1,0 +1,11 @@
+[Unit]
+Description=Rebuild Opencast daily
+After=local-fs.target
+After=network.target
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=false
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,1 @@
+0 3 * * * root /opt/studip/cleaner.sh > /var/log/cleaner.log 2>&1

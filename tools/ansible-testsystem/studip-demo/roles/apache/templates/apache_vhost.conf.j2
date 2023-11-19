@@ -1,0 +1,44 @@
+<VirtualHost *:80>
+
+    ServerName {{ studip_uri }}
+    DocumentRoot {{studip_base_dir}}
+
+    Alias /  {{studip_base_dir}}/public/
+
+    <Directory "{{studip_base_dir}}/public">
+        # für rewrite wird die Option FollowSymLinks oder SymLinksIfOwnerMatch benötigt ...
+        #Options SymLinksIfOwnerMatch
+        #RewriteEngine on
+        #RewriteRule ^download/(normal|force_download|zip)/([0-467])/([^/]+)/(.+)$ sendfile.php?$1=1&type=$2&file_id=$3&file_name=$4 [L]
+        #RewriteRule ^download/(normal|force_download|zip)/5/([^/]+)/([^/]+)/(.+)$ sendfile.php?$1=1&type=5&range_id=$2&list_id=$3&file_name=$4 [L]
+        #bzw. bei Verwendung von Alias:
+        #RewriteEngine on
+        #RewriteBase /usr/local/studip/public
+        #RewriteRule ^download/(normal|force_download|zip)/([0-467])/([^/]+)/(.+)$ /studip/sendfile.php?$1=1&type=$2&file_id=$3&file_name=$4 [L]
+        #RewriteRule ^download/(normal|force_download|zip)/5/([^/]+)/([^/]+)/(.+)$ /studip/sendfile.php?$1=1&type=5&range_id=$2&list_id=$3&file_name=$4 [L]
+
+        #Apache 2.2
+        #Order Allow,Deny
+        #Allow from all
+
+        #Apache 2.4
+        Require all granted
+
+        php_value upload_max_filesize 7M
+        php_value post_max_size 8M
+        php_value memory_limit 64M
+        php_value max_execution_time 300
+        php_flag short_open_tag On
+        php_admin_flag allow_url_fopen On
+        php_value max_input_vars 10000
+        #PHP Konstanten sind hier nicht verfügbar
+        # 22519 = E_ALL & ~(E_NOTICE|E_DEPRECATED) PHP 5.3.x
+        php_value error_reporting 22519
+
+        # PHP 5.5 (ab 5.6 Standardeinstellung)
+        php_value default_charset utf-8
+        php_value mbstring.internal_encoding utf-8
+
+    </Directory>
+
+</VirtualHost>

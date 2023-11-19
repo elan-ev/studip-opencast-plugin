@@ -1,58 +1,43 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Aufzeichnung zum Löschen markieren')"
-            :confirmText="$gettext('Löschen')"
+            :title="$gettext('Aufzeichnung Wiederherstellen')"
+            :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
-            height="275"
+            height="175"
             @close="decline"
-            @confirm="removeVideo"
+            @confirm="restoreVideo"
         >
             <template v-slot:dialogContent>
-                <span v-if="dialogContent">
-                    {{ dialogContent }}
-                </span>
-                <translate v-else>
-                    Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?<br/><br/>
-                    Die Aufzeichnungen werden damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und werden nach {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.
-                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen wiederherstellen.
-                </translate>
+                <translate>Möchten Sie die Aufzeichnungen wiederherstellen?</translate>
             </template>
         </StudipDialog>
     </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 import StudipDialog from '@studip/StudipDialog'
 
 export default {
-    name: 'BulkVideoDelete',
+    name: 'VideoRestore',
 
     components: {
         StudipDialog
     },
 
-    props: ['event', 'dialogContent'],
+    props: ['event'],
 
     emits: ['done', 'cancel'],
 
-    computed: {
-        ...mapGetters([
-            'simple_config_list'
-        ]),
-    },
-
     methods: {
-        removeVideo()
+        async restoreVideo()
         {
             let promises = [];
 
             for (let id in this.event) {
-                promises.push(this.$store.dispatch('deleteVideo', this.event[id]));
+                promises.push(this.$store.dispatch('restoreVideo', this.event[id]));
             }
 
             Promise.all(promises).then((values) => {
@@ -73,7 +58,7 @@ export default {
 
                 this.$store.dispatch('addMessage', {
                     type: type,
-                    text: this.$gettext('%{ num_success } Videos wurden gelöscht, bei %{ num_errors } Videos gab es Probleme.', {
+                    text: this.$gettext('%{ num_success } Videos wurden wiederhergestellt, bei %{ num_errors } Videos gab es Probleme.', {
                         num_success: success,
                         num_errors:  errors
                     })

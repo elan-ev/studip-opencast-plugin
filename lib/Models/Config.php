@@ -140,6 +140,7 @@ class Config extends \SimpleOrMap
             }
             unset($json['settings']['workflow_configs']);
         }
+        WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
 
         $this->setData($json);
         return $this->store();

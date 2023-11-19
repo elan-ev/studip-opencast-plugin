@@ -1,0 +1,38 @@
+---
+
+- name: fail early if os is not supported
+  assert:
+    that: ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7'
+
+- name: install opencast repository
+  yum_repository:
+    file: '{{ item.file }}'
+    name: '{{ item.name }}'
+    description: 'Opencast: {{ item.name }}'
+    baseurl: '{{ item.baseurl }}'
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://pkg.opencast.org/gpgkeys/opencast-el7-rpm.opencast.org.key
+  loop:
+    - name: 'opencast'
+      file: 'opencast'
+      baseurl: 'https://pkg.opencast.org/rpms/release/el/7/x86_64'
+    - name: 'opencast-noarch'
+      file: 'opencast'
+      baseurl: 'https://pkg.opencast.org/rpms/release/el/7/noarch'
+    - name: 'opencast-testing'
+      file: 'opencast-testing'
+      baseurl: 'https://pkg.opencast.org/rpms/testing/el/7/x86_64'
+    - name: 'opencast-testing-noarch'
+      file: 'opencast-testing'
+      baseurl: 'https://pkg.opencast.org/rpms/testing/el/7/noarch'
+
+- name: install opencast dependencies
+  package:
+    name:
+      - nmap-ncat
+      - curl
+      - ffmpeg
+      - tesseract
+      - hunspell
+      - tesseract-langpack-deu

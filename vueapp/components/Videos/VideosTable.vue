@@ -107,7 +107,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="canEdit || !isCourse">
+                        <span v-if="(canEdit || !isCourse) && !trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDelete')"
                                 :class="{
@@ -117,7 +117,28 @@
                             >
                                 {{ $gettext('Zum Löschen markieren') }}
                             </StudipButton>
+                        </span>
 
+                        <span v-if="(canEdit || !isCourse) && trashBin">
+                            <StudipButton icon="trash"
+                                @click.prevent="doBulkAction('BulkVideoDeletePermanent')"
+                                :class="{
+                                    'disabled': selectedVideos.length == 0
+                                }"
+                                :disabled="selectedVideos.length == 0"
+                            >
+                                {{ $gettext('Unwiderruflich entfernen') }}
+                            </StudipButton>
+
+                            <StudipButton icon="trash"
+                                @click.prevent="doBulkAction('BulkVideoRestore')"
+                                :class="{
+                                    'disabled': selectedVideos.length == 0
+                                }"
+                                :disabled="selectedVideos.length == 0"
+                            >
+                                {{ $gettext('Wiederherstellen') }}
+                            </StudipButton>
                         </span>
 
                         <span v-if="isCourse && playlist && canEdit">
@@ -181,6 +202,8 @@ import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFrom
 import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
 
 import BulkVideoDelete from '@/components/Videos/BulkActions/VideoDelete.vue';
+import BulkVideoDeletePermanent from '@/components/Videos/BulkActions/VideoDeletePermanent.vue';
+import BulkVideoRestore from '@/components/Videos/BulkActions/VideoRestore.vue';
 
 import Tag from '@/components/Tag.vue'
 
@@ -190,21 +213,26 @@ export default {
     name: "VideosTable",
 
     components: {
-        VideoRow,               EmptyVideoRow,
-        PaginationButtons,      MessageBox,
-        SearchBar,              Tag,
-        StudipButton,           VideoLinkToPlaylists,
-        VideoAccess,            StudipIcon,
-        VideoDownload,          VideoReport,
-        VideoEdit,              VideoRestore,
-        VideoDelete,            VideoDeletePermanent,
-        VideoLinkToPlaylists,   VideoRemoveFromPlaylist,
-        CaptionUpload,          BulkVideoDelete,
+        VideoRow,                 EmptyVideoRow,
+        PaginationButtons,        MessageBox,
+        SearchBar,                Tag,
+        StudipButton,             VideoLinkToPlaylists,
+        VideoAccess,              StudipIcon,
+        VideoDownload,            VideoReport,
+        VideoEdit,                VideoRestore,
+        VideoDelete,              VideoDeletePermanent,
+        VideoLinkToPlaylists,     VideoRemoveFromPlaylist,
+        CaptionUpload,            BulkVideoDelete,
+        BulkVideoDeletePermanent, BulkVideoRestore,
         draggable,
     },
 
     props: {
         'playlistEdit': {
+            type: Boolean,
+            default: false
+        },
+        'trashBin' : {
             type: Boolean,
             default: false
         }

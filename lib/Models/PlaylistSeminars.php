@@ -95,20 +95,20 @@ class PlaylistSeminars extends \SimpleORMap
         global $perm;
 
         $query = 'SELECT DISTINCT ops.seminar_id FROM oc_playlist_seminar AS ops'.
-                 ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = ops.playlist_id)'.
-                 ' WHERE opv.video_id IN (SELECT opv_i.video_id FROM oc_playlist_video AS opv_i WHERE opv_i.playlist_id = :playlist_id)';
+                 ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = ops.playlist_id)';
+        $where = ' WHERE opv.video_id IN (SELECT opv_i.video_id FROM oc_playlist_video AS opv_i WHERE opv_i.playlist_id = :playlist_id)';
         $params = [':playlist_id' => $playlist_id];
 
         if (!(empty($cid) || $perm->have_perm('dozent'))) {
-            $query .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)'.
-                ' WHERE (ops.seminar_id = :cid '.
+            $query .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
+            $where .= ' AND (ops.seminar_id = :cid '.
                 ' AND (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"'.
                 ' OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL'.
                 ' OR opsv.visible_timestamp < NOW()))';
-
             $params[':cid'] = $cid;
         }
 
+        $query .= $where;
         $stmt = \DBManager::get()->prepare($query);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
