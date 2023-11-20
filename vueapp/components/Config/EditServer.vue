@@ -304,7 +304,7 @@ export default {
         postLtiCheckFailedMessage()
         {
             this.$store.dispatch('addMessage', {
-                type: 'error',
+                type: 'warning',
                 text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
                     + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
                     + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '

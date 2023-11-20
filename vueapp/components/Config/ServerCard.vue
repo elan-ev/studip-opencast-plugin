@@ -3,10 +3,19 @@
         <div class="oc--admin--server-image">
             <OpencastIcon />
             <span v-if="!isAddCard" class="oc--admin--server-id">
-                #{{ config.id }}
+                <input
+                    type="checkbox"
+                    :checked="config.active"
+                    @click.stop="toogleServer"
+                    :title="$gettext('Server aktivieren')">
             </span>
-            <span v-if="!isAddCard && checkFailed" class="oc--admin--server-icons">
-                <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
+            <span class="oc--admin--server-icons">
+                <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
+                    <span class="tooltip-content">
+                        {{ $gettext('Verbindungstest fehlgeschlagen.') }}
+                    </span>
+                    <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
+                </div>
             </span>
             <span v-if="isAddCard" class="oc--admin--server-id">
                 +
@@ -62,7 +71,7 @@ export default {
             checkFailed: false,
             interval: null,
             interval_counter: 0,
-            error_msg: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
+            error_msg: this.$gettext('Überprüfung der Verbindung fehlgeschlagen! '
                 + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
                 + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
                 + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
@@ -80,11 +89,18 @@ export default {
     computed: {
         ...mapGetters([
             'isLTIAuthenticated',
-            'errors'
+            'errors',
         ])
     },
 
     methods: {
+        toogleServer(e) {
+            this.$store.dispatch('configUpdate', {id: this.config.id, active: e.target.checked})
+            .then(({ data }) => {
+                this.$store.dispatch('configListRead', data.config);
+            });
+        },
+
         showEditServer() {
             this.isShow = true;
 
@@ -126,6 +142,14 @@ export default {
     mounted() {
         if (!this.isAddCard) {
             this.checkLTIPeriodically();
+        }
+    },
+
+    watch: {
+        checkFailed: function (newVal) {
+            if (newVal && this.isShow && !this.errors.find((e) => e === this.error_msg)) {
+                this.$store.dispatch('errorCommit', this.error_msg);
+            }
         }
     }
 }

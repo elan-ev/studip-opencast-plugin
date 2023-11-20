@@ -34,8 +34,8 @@ class OpencastDiscoverVideos extends CronJob
             SELECT episode FROM oc_video WHERE config_id = :config_id AND available=true
             ");
 
-        // iterate over all configured oc instances
-        $configs = Config::findBySql(1);
+        // iterate over all active configured oc instances
+        $configs = Config::findBySql('active = 1');
 
 
         foreach ($configs as $config) {

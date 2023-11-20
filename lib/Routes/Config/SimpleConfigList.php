@@ -27,7 +27,8 @@ class SimpleConfigList extends OpencastController
     {
         global $user;
 
-        $config = Config::findBySql(1);
+        // Only show active servers
+        $config = Config::findBySql('active = 1');
 
         $config_list = [];
 

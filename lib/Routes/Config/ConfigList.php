@@ -23,6 +23,10 @@ class ConfigList extends OpencastController
 
         foreach ($config as $conf) {
             $ret_config = $conf->toArray();
+            $ret_config['active'] = filter_var(
+                $ret_config['active'],
+                FILTER_VALIDATE_BOOLEAN
+            );
             $ret_config = array_merge($ret_config, $ret_config['settings']);
             unset($ret_config['settings']);
             $config_list[] = $ret_config;
