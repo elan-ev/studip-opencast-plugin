@@ -342,7 +342,7 @@ export default {
                     menuItems.push({
                         id: 5,
                         label: this.$gettext('Verknüpfungen'),
-                        icon: 'link-intern',
+                        icon: 'group',
                         emit: 'performAction',
                         emitArguments: 'VideoLinkToPlaylists'
                     });

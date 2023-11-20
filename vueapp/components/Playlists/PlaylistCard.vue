@@ -85,7 +85,7 @@ export default {
                 {
                     id: 2,
                     label: this.$gettext('Verknüpfte Kurse'),
-                    icon: 'add',
+                    icon: 'group',
                     emit: 'addToCourse'
                 },
                 {
