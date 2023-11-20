@@ -21,6 +21,7 @@ class CourseController extends Opencast\Controller
     {
         parent::before_filter($action, $args);
         $this->course_id = Context::getId();
+        object_set_visit_module($this->plugin->getPluginId());
     }
 
     /**

@@ -7,6 +7,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\Models\Helpers;
 use Opencast\Models\SeminarSeries;
+use Opencast\Models\Videos;
 
 use Opencast\AppFactory;
 use Opencast\RouteMap;
@@ -124,8 +125,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     /**
      * This method takes care of the Navigation
      *
-     * @param string   course_id
-     * @param string   last_visit
+     * @param string    $course_id
+     * @param int       $last_visit
+     * @param string    $user_id
      */
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
@@ -136,6 +138,21 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             PluginEngine::getURL($this, [], 'course/#/course/videos')
         );
         $navigation->setImage(Icon::create('video2'));
+
+        // Get number of new videos since last visit
+        $new_videos = Videos::getNumberOfNewCourseVideos($course_id, $last_visit, $user_id);
+
+        if ($new_videos > 0) {
+            if ($new_videos == 1) {
+                $text = $this->_('neues Video');
+            } else {
+                $text = $this->_('neue Videos');
+            }
+            $navigation->setImage(Icon::create('video2', Icon::ROLE_ATTENTION, [
+                'title' => $new_videos . ' ' . $text,
+            ]));
+            $navigation->setBadgeNumber($new_videos);
+        }
 
         return $navigation;
     }
