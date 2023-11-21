@@ -247,6 +247,10 @@ $action-menu-icon-size: 20px;
         overflow: hidden;
         max-height: 70px;
 
+        .dragarea .oc--drag-handle {
+            cursor: move;
+        }
+
         .oc--playercontainer {
             background-color: transparent;
 

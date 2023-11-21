@@ -22,16 +22,18 @@
 
         <table id="episodes" class="default oc--episode-table--small">
             <colgroup>
+                <col v-if="editable && videoSortMode" style="width: 20px">
                 <col v-if="showCheckbox" style="width: 30px">
                 <col style="width: 119px">
                 <col>
                 <col style="width: 180px" class="responsive-hidden">
                 <col style="width: 150px" class="responsive-hidden">
                 <col style="width: 18px">
-                <col v-if="showActions" style="width: 64px">
+                <col v-if="showActions && !videoSortMode" style="width: 64px">
             </colgroup>
             <thead>
                 <tr class="sortable">
+                    <th v-if="editable && videoSortMode" data-sort="false"></th>
                     <th v-if="showCheckbox" data-sort="false">
                         <input
                             type="checkbox"
@@ -56,7 +58,7 @@
                         </a>
                     </th>
                     <th></th>
-                    <th v-if="showActions" class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
+                    <th v-if="showActions && !videoSortMode" class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
 
@@ -85,10 +87,6 @@
                     <VideoRow
                         :event="element"
                         :numberOfColumns="numberOfColumns"
-                        :canMoveUp="canMoveUp(index)"
-                        :canMoveDown="canMoveDown(index)"
-                        @moveUp="moveUpVideoRow"
-                        @moveDown="moveDownVideoRow"
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
                         :selectable="selectable"
@@ -224,10 +222,9 @@ export default {
         VideoDownload,            VideoReport,
         VideoEdit,                VideoRestore,
         VideoDelete,              VideoDeletePermanent,
-        VideoLinkToPlaylists,     VideoRemoveFromPlaylist,
-        CaptionUpload,            BulkVideoDelete,
-        BulkVideoDeletePermanent, BulkVideoRestore,
-        draggable,
+        VideoRemoveFromPlaylist,  CaptionUpload,
+        BulkVideoDelete,          BulkVideoDeletePermanent,
+        BulkVideoRestore,         draggable,
     },
 
     props: {
@@ -486,26 +483,6 @@ export default {
             return classes;
         },
 
-        canMoveUp(index) {
-            return this.videoSortMode && (index !== 0);
-        },
-
-        canMoveDown(index) {
-            return this.videoSortMode && (index !== this.loadedVideos.length - 1);
-        },
-
-        moveUpVideoRow(token) {
-            const index = this.sortedVideos.findIndex(video => {
-                return video.token === token;
-            });
-
-            if (this.canMoveUp(index)) {
-                let tmp = this.sortedVideos[index - 1];
-                this.sortedVideos[index - 1] = this.sortedVideos[index];
-                this.sortedVideos[index] = tmp;
-            }
-        },
-
         removeVideosFromPlaylist() {
             let view = this;
 
@@ -522,18 +499,6 @@ export default {
 
                 this.loadVideos();
             })
-        },
-
-        moveDownVideoRow(token) {
-            const index = this.sortedVideos.findIndex(video => {
-                return video.token === token;
-            });
-
-            if (this.canMoveDown(index)) {
-                let tmp = this.sortedVideos[index + 1];
-                this.sortedVideos[index + 1] = this.sortedVideos[index];
-                this.sortedVideos[index] = tmp;
-            }
         },
 
         /*

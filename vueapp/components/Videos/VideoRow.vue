@@ -1,5 +1,14 @@
 <template>
     <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id">
+        <td v-if="playlistEditable && videoSortMode">
+            <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
+                <img class="oc--drag-handle"
+                     :src="dragHandle"
+                     height="24"
+                />
+            </a>
+        </td>
+
         <td v-if="showCheckbox">
             <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
         </td>
@@ -103,21 +112,6 @@
                               @redirectAction="redirectAction"
             />
         </td>
-
-        <td v-if="playlistEditable && videoSortMode" class="oc--sort-options">
-            <studip-icon
-                :style="{visibility: canMoveUp ? 'visible' : 'hidden'}"
-                shape="arr_2up" role="navigation"
-                @click="$emit('moveUp', event.token)"
-                :title="$gettext('Element nach oben verschieben')"
-            />
-            <studip-icon
-                :style="{visibility: canMoveDown ? 'visible' : 'hidden'}"
-                shape="arr_2down" role="navigation"
-                @click="$emit('moveDown', event.token)"
-                :title="$gettext('Element nach unten verschieben')"
-            />
-        </td>
     </tr>
     <tr v-else>
         <td :colspan="numberOfColumns">
@@ -180,6 +174,7 @@ export default {
             preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
             play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
             cut:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
+            dragHandle: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/grabber_grey.svg',
             DeleteConfirmDialog: false,
             DownloadDialog: false,
             editDialog: false,
