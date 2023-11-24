@@ -1,60 +1,8 @@
 <template>
     <div>
-        <table class="default">
-            <colgroup>
-                <!--
-                    <col style="width: 2%">
-                -->
-                <col style="width: 50%">
-                <col style="width: 2%">
-                <col style="width: 20%">
-                <!--
-                    <col style="width: 13%">
-                -->
-                <col style="width: 13%">
-                <col style="width: 2%">
-            </colgroup>
-            <thead>
-                <tr>
-                    <!--
-                    <th>
-                        <input type="checkbox">
-                    </th>
-                    -->
-                    <th>
-                        {{ $gettext('Name') }}
-                    </th>
-
-                    <th></th>
-
-                    <!--
-                    <th>
-                        {{ $gettext('Sichtbarkeit') }}
-                    </th>
-                    -->
-
-                    <th>
-                        {{ $gettext('Videos') }}
-                    </th>
-                    <th>
-                        {{ $gettext('Erstellt am') }}
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody v-if="Object.keys(playlists).length === 0 && axios_running" class="oc--episode-list oc--episode-list--empty">
-                <EmptyPlaylistCard />
-            </tbody>
-            <tbody class="oc--playlist" v-else>
-                <PlaylistCard
-                    v-for="playlist in playlists"
-                    v-bind:playlist="playlist"
-                    v-bind:key="playlist.token"
-                    @addToCourse="addToCourse"
-                    @deletePlaylist="deletePlaylist"
-                ></PlaylistCard>
-            </tbody>
-        </table>
+        <PlaylistsTable
+            :playlists="playlists"
+        />
 
         <MessageBox type="info" v-if="Object.keys(playlists).length === 0 && !addPlaylist">
             <translate>
@@ -62,60 +10,36 @@
             </translate>
         </MessageBox>
 
-            <PlaylistAddCard v-if="addPlaylist"
+        <PlaylistAddNewCard v-if="addPlaylist"
             @done="createPlaylist"
             @cancel="cancelPlaylistAdd"
-        />
-
-        <PlaylistAddToCourseDialog :title="playlistCourse.title"
-            :playlist="playlistCourse"
-            @key="playlistCourse.token"
-            v-if="playlistCourse"
-            @cancel="playlistCourse = null"
-            @done="playlistCourse = null"
         />
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import PlaylistCard from '../components/Playlists/PlaylistCard.vue';
-import EmptyPlaylistCard from '../components/Playlists/EmptyPlaylistCard.vue';
-import PlaylistAddCard from '../components/Playlists/PlaylistAddCard.vue';
-import PaginationButtons from '@/components/PaginationButtons.vue';
-import PlaylistAddToCourseDialog from '@/components/Playlists/PlaylistAddToCourseDialog.vue'
+import PlaylistsTable from '@/components/Playlists/PlaylistsTable.vue';
 import MessageBox from '@/components/MessageBox.vue';
+import PlaylistAddNewCard from '@/components/Playlists/PlaylistAddNewCard.vue';
 
 export default {
     name: "Playlists",
 
     components: {
-        PlaylistCard,       EmptyPlaylistCard,
-        PaginationButtons,  MessageBox,
-        PlaylistAddCard,    PlaylistAddToCourseDialog
-    },
-
-    data() {
-        return {
-            playlistCourse: null
-        }
+        PlaylistsTable,
+        MessageBox,
+        PlaylistAddNewCard,
     },
 
     computed: {
         ...mapGetters([
             "playlists",
-            "paging",
-            "axios_running",
             'addPlaylist'
         ])
     },
 
     methods: {
-        changePage: async function(page) {
-            await this.$store.dispatch('setPage', page)
-            await this.$store.dispatch('loadPlaylists')
-        },
-
         cancelPlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
         },
@@ -123,23 +47,9 @@ export default {
         createPlaylist(playlist) {
             this.$store.dispatch('addPlaylist', playlist);
         },
-
-        addToCourse(playlist) {
-            this.playlistCourse = playlist;
-        },
-
-        deletePlaylist(playlist) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?'))) {
-                this.$store.dispatch('deletePlaylist', playlist.token)
-                .then(() => {
-                    this.$store.dispatch('loadPlaylists');
-                })
-            }
-        }
     },
 
     created() {
-        this.$store.commit('clearPaging');
         this.$store.commit('setPlaylists', {});
     },
 
