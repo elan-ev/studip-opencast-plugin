@@ -370,6 +370,51 @@ class Videos extends UPMap
         ];
     }
 
+    /**
+     * Count number of new videos in a course since last visit
+     *
+     * @param string    $course_id  course id
+     * @param int       $last_visit time of last visit
+     * @param string    $user_id    user id
+     *
+     * @return int number of new videos
+     */
+    public static function getNumberOfNewCourseVideos($course_id, $last_visit, $user_id = null) {
+        global $perm;
+
+        $sql = 'SELECT COUNT(DISTINCT video.id) 
+                FROM `oc_video` AS video
+                INNER JOIN `oc_playlist_video` AS opv ON (opv.video_id = video.id)
+                INNER JOIN `oc_playlist` AS op ON (op.id = opv.playlist_id)
+                INNER JOIN `oc_playlist_seminar` AS ops ON (ops.playlist_id = op.id)';
+
+        $where = 'WHERE ops.seminar_id = :course_id
+                  AND (UNIX_TIMESTAMP(video.chdate) > :last_visit OR UNIX_TIMESTAMP(opv.mkdate) > :last_visit)
+                  AND video.trashed = 0
+                  AND video.token IS NOT NULL
+                  AND video.state IS NULL 
+                  AND video.available = 1';
+
+        if (!$perm->have_perm('dozent', $user_id)) {
+            $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
+
+            $where .= ' AND (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
+                       OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
+                       OR opsv.visible_timestamp < NOW()) ';
+        }
+
+        $sql .= $where;
+
+        $stmt = \DBManager::get()->prepare($sql);
+
+        $stmt->execute([
+            'course_id' => $course_id,
+            'last_visit' => $last_visit,
+        ]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public static function findByToken($token)
     {
         return self::findOneBySQL('token = ?', [$token]);
