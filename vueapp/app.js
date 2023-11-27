@@ -67,6 +67,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
     const gettext = createGettext({
         availableLanguages: {
+            //de_DE: 'Deutsch',
             en_GB: 'British English',
         },
         defaultLanguage: String.locale.replace('-', '_'),

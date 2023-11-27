@@ -276,7 +276,7 @@ export default {
             var txt = '';
             if (this.event.perms !== undefined) {
                 this.event.perms.forEach(perm => {
-                    txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.$filters.permname(perm.perm)) + '</div>'
+                    txt += '<div>' + perm.fullname + ': ' + this.$filters.permname(perm.perm, this.$gettext) + '</div>'
                 });
             }
             return txt;

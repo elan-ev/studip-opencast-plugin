@@ -160,10 +160,10 @@ export default {
 
         permname(perm) {
             let translations = {
-                'owner': 'Besitzer/in',
-                'write': 'Schreibrechte',
-                'read':  'Leserechte',
-                'share': 'Kann weiterteilen'
+                'owner': this.$gettext('Besitzer/in'),
+                'write': this.$gettext('Schreibrechte'),
+                'read':  this.$gettext('Leserechte'),
+                'share': this.$gettext('Kann weiterteilen')
             }
 
             return translations[perm] ? translations[perm] : ''
@@ -199,7 +199,7 @@ export default {
         getAccessText() {
             var txt = '';
             this.event.perms.forEach(perm => {
-                txt += '<div>' + perm.fullname + ': ' + this.$gettext(this.permname(perm.perm)) + '</div>'
+                txt += '<div>' + perm.fullname + ': ' + this.permname(perm.perm) + '</div>'
             });
             return txt;
         },

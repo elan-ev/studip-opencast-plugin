@@ -9,21 +9,21 @@
                     active: fragment == 'videos'
                     }">
                     <router-link :to="{ name: 'videos' }">
-                        Videos
+                        {{ $gettext('Videos') }}
                     </router-link>
                 </li>
                 <li :class="{
                     active: fragment == 'videosTrashed'
                     }">
                     <router-link :to="{ name: 'videosTrashed' }">
-                        Gelöschte Videos
+                        {{ $gettext('Gelöschte Videos') }}
                     </router-link>
                 </li>
                 <li :class="{
                     active: fragment == 'playlists' || fragment == 'playlist'
                     }">
                     <router-link :to="{ name: 'playlists' }">
-                        Wiedergabelisten
+                        {{ $gettext('Wiedergabelisten') }}
                     </router-link>
                 </li>
             </ul>
@@ -31,8 +31,8 @@
     </div>
 
     <div class="sidebar-widget" id="sidebar-actions" v-if="fragment != 'videosTrashed'">
-        <div class="sidebar-widget-header" v-translate>
-            Aktionen
+        <div class="sidebar-widget-header">
+            {{ $gettext('Aktionen') }}
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list oc--sidebar-links widget-links">
@@ -40,16 +40,10 @@
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                     {{ $gettext('Medien hochladen') }}
                 </li>
-                <!--
-                <li @click="$emit('recordVideo')" v-if="fragment == 'videos'">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    {{ $gettext('Video Aufnehmen') }}
-                </li>
-                -->
                 <li>
                     <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries" target="_blank">
                         <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                        Video aufnehmen
+                        {{ $gettext('Video aufnehmen') }}
                     </a>
                 </li>
 

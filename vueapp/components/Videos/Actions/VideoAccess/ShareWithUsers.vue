@@ -50,7 +50,7 @@
                 <select v-model="selectedUserPerm">
                     <template v-for="perm in ['owner', 'write', 'read']">
                         <option :value="perm">
-                            {{ $gettext($filters.permname(perm)) }}
+                            {{ $filters.permname(perm, $gettext) }}
                         </option>
                     </template>
                 </select>

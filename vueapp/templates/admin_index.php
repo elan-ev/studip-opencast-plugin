@@ -12,6 +12,7 @@
         REDIRECT_URL: '<?= PluginEngine::getURL('opencast', [], 'redirect/perform', true) ?>',
         AUTH_URL   : '<?= PluginEngine::getURL('opencast', [], 'redirect/authenticate', true) ?>'
     };
+    <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;
 </script>
 

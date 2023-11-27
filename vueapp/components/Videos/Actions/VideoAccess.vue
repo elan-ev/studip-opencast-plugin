@@ -32,7 +32,7 @@
                                         {{ share.fullname }}
                                     </td>
                                     <td>
-                                        {{ $gettext($filters.permname(share.perm)) }}
+                                        {{ $filters.permname(share.perm, $gettext) }}
                                     </td>
                                     <td>
                                         <studip-icon shape="trash" role="clickable" @click="removePerm(index)" style="cursor: pointer"/>
