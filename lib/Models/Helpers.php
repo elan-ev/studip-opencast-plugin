@@ -49,7 +49,7 @@ class Helpers
 
     static function getConfigurationstate()
     {
-        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config");
+        $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config WHERE active = 1");
         $stmt->execute();
 
         if ($stmt->fetchColumn() > 0) {
@@ -152,20 +152,23 @@ class Helpers
      * @return
      */
     static function validateDefaultServer() {
-        $config = new \SimpleCollection(Config::findBySql(1));
+        // Only check active servers
+        $config = new \SimpleCollection(Config::findBySql('active = 1'));
         $config_ids = $config->pluck('id');
 
         $value = \Config::get()->OPENCAST_DEFAULT_SERVER;
         $valid_value = $value;
 
+        // Check if list is empty
         if (empty($config_ids)) {
             $valid_value = -1;
         }
-        elseif (in_array($value, $config_ids) === false) {
+        // Check if the set value is valid (id exists)
+        elseif (in_array($valid_value, $config_ids) === false) {
             $valid_value = reset($config_ids);
         }
+        // Only update value if necessary
         if ($valid_value != $value) {
-            $value = $valid_value;
             \Config::get()->store('OPENCAST_DEFAULT_SERVER', $valid_value);
         }
     }

@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Errors\AuthorizationFailedException;
+use Opencast\Models\Helpers;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\SeminarEpisodes;
@@ -43,6 +44,9 @@ class ConfigEdit extends OpencastController
             $config->setData($config_old);
             $config->store();
         }
+
+        // Validate that a correct default server is set
+        Helpers::validateDefaultServer();
 
         $ret_config = $config->toArray();
         $ret_config = array_merge($ret_config, $ret_config['settings']);

@@ -95,10 +95,12 @@ export default {
             let options = [];
 
             this.config_list.server.forEach(server => {
-                options.push({
-                    value: Number(server.id),
-                    description: '[#' + server.id + '] ' + server.service_url + ''
-                })
+                if(server.active) {
+                    options.push({
+                        value: Number(server.id),
+                        description: server.service_url + ''
+                    });
+                }
             });
 
             if (options.length === 0) {
