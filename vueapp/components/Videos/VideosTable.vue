@@ -115,7 +115,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="(canEdit || !isCourse) && !trashBin">
+                        <span v-if="(editable || !isCourse) && !trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDelete')"
                                 :class="{
@@ -127,7 +127,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="(canEdit || !isCourse) && trashBin">
+                        <span v-if="(editable || !isCourse) && trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDeletePermanent')"
                                 :class="{
