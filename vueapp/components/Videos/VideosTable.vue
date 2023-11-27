@@ -194,8 +194,6 @@ import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylists.vue';
-import VideoAddToPlaylist from '@/components/Videos/Actions/VideoAddToPlaylist.vue';
-import VideoAddToSeminar from '@/components/Videos/Actions/VideoAddToSeminar.vue';
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
@@ -218,19 +216,17 @@ export default {
     name: "VideosTable",
 
     components: {
-        VideoRow,               EmptyVideoRow,
-        PaginationButtons,      MessageBox,
-        SearchBar,              Tag,
-        StudipButton,           VideoLinkToPlaylists,
-        VideoAccess,            StudipIcon,
-        VideoDownload,          VideoReport,
-        VideoEdit,              VideoRestore,
-        VideoDelete,            VideoDeletePermanent,
-        VideoAddToSeminar,      VideoRemoveFromPlaylist,
-        VideoAddToPlaylist,     CaptionUpload,
-        BulkVideoDelete,        BulkVideoDeletePermanent,
-        BulkVideoRestore,
-
+        VideoRow,                 EmptyVideoRow,
+        PaginationButtons,        MessageBox,
+        SearchBar,                Tag,
+        StudipButton,             VideoLinkToPlaylists,
+        VideoAccess,              StudipIcon,
+        VideoDownload,            VideoReport,
+        VideoEdit,                VideoRestore,
+        VideoDelete,              VideoDeletePermanent,
+        VideoLinkToPlaylists,     VideoRemoveFromPlaylist,
+        CaptionUpload,            BulkVideoDelete,
+        BulkVideoDeletePermanent, BulkVideoRestore,
         draggable,
     },
 

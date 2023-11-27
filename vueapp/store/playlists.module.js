@@ -113,12 +113,8 @@ const actions = {
         return ApiService.put('courses/' + params.course + '/playlist/' + params.token)
     },
 
-    async addPlaylistToCourses(context, params) {
+    async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
-    },
-
-    async removePlaylistFromCourse(context, params) {
-        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
     },
 
     async addVideosToPlaylist(context, data) {
