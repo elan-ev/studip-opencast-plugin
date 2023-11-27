@@ -17,6 +17,11 @@
             :currentUser="currentUser"
         />
 
+        <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
+            @done="closePlaylistAddVideosDialog"
+            @cancel="closePlaylistAddVideosDialog"
+        />
+
         <MessageList />
 
         <router-view></router-view>
@@ -26,8 +31,9 @@
 <script>
 import VideosSidebar from "@/components/Videos/VideosSidebar";
 import VideoUpload from "@/components/Videos/VideoUpload";
-import MessageList from "@/components/MessageList";
+import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 
+import MessageList from "@/components/MessageList";
 import { mapGetters } from "vuex";
 
 export default {
@@ -35,12 +41,13 @@ export default {
 
     components: {
         VideosSidebar,      VideoUpload,
-        MessageList
+        PlaylistAddVideos,  MessageList
     },
 
     computed: {
         ...mapGetters([
-            'currentUser'
+            'currentUser',
+            'showPlaylistAddVideosDialog'
         ]),
 
         toLayoutName() {
@@ -79,6 +86,10 @@ export default {
 
         cancelSort() {
             this.$store.dispatch('setVideoSortMode', 'cancel')
+        },
+
+        closePlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
         },
 
         uploadDone() {

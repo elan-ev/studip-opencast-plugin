@@ -1,6 +1,6 @@
 <template>
     <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id">
-        <td v-if="playlistForVideos || playlistMode || showCheckbox">
+        <td v-if="showCheckbox">
             <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
         </td>
 
@@ -96,7 +96,7 @@
             </div>
         </td>
 
-        <td v-if="!videoSortMode && menuItems.length > 0" class="actions">
+        <td v-if="!videoSortMode && showActions && menuItems.length > 0" class="actions">
             <StudipActionMenu :items="menuItems"
                               :collapseAt="menuItems.length > 1"
                               @performAction="performAction"
@@ -104,7 +104,7 @@
             />
         </td>
 
-        <td v-if="playlistMode && videoSortMode" class="oc--sort-options">
+        <td v-if="playlistEditable && videoSortMode" class="oc--sort-options">
             <studip-icon
                 :style="{visibility: canMoveUp ? 'visible' : 'hidden'}"
                 shape="arr_2up" role="navigation"
@@ -158,20 +158,20 @@ export default {
             type: Boolean,
             default: false
         },
-        playlistForVideos: {
-            type: Object,
-            default: null
+        selectable: {
+            type: Boolean,
+            default: false
         },
         selectedVideos: {
             type: Object,
         },
-        showCheckbox: {
+        playlistEditable: {
             type: Boolean,
             default: false
         },
-        playlistMode: {
+        showActions: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
 
@@ -223,6 +223,10 @@ export default {
             'videoSortMode',
             'isLTIAuthenticated'
         ]),
+
+        showCheckbox() {
+            return this.selectable || this.playlistEditable;
+        },
 
         getImageSrc() {
             if (this.isLTIAuthenticated[this.event.config_id]) {
@@ -310,7 +314,7 @@ export default {
                         });
                     }
 
-                    if (this.playlistMode && this.playlist) {
+                    if (this.playlistEditable && this.playlist) {
                         menuItems.push({
                             id: 2,
                             label: this.$gettext('Aus Wiedergabeliste entfernen'),
@@ -320,6 +324,7 @@ export default {
                         });
                     }
 
+                    /*
                     if (this.playlistForVideos) {
                         menuItems.push({
                             id: 3,
@@ -329,6 +334,7 @@ export default {
                             emitArguments: 'VideoAddToPlaylist'
                         });
                     }
+                    */
 
                     /*
                     menuItems.push({

@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!--
         <MessageBox type="info" v-if="playlistForVideos">
             {{ $gettext('Bitte wählen Sie die Videos aus, die zur Wiedergabeliste hinzugefügt werden sollen.') }}
         </MessageBox>
@@ -9,10 +10,15 @@
                 <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
             </div>
         </h3>
+        -->
 
         <SearchBar @search="doSearch" v-if="!videoSortMode"/>
 
-        <PaginationButtons v-if="!playlistEdit" @changePage="changePage"/>
+        <PaginationButtons v-if="!editable"
+            :paging="paging"
+            @changePage="changePage"
+            @changeLimit="changeLimit"
+        />
 
         <table id="episodes" class="default oc--episode-table--small">
             <colgroup>
@@ -22,7 +28,7 @@
                 <col style="width: 180px" class="responsive-hidden">
                 <col style="width: 150px" class="responsive-hidden">
                 <col style="width: 18px">
-                <col style="width: 64px">
+                <col v-if="showActions" style="width: 64px">
             </colgroup>
             <thead>
                 <tr class="sortable">
@@ -50,7 +56,7 @@
                         </a>
                     </th>
                     <th></th>
-                    <th class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
+                    <th v-if="showActions" class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
 
@@ -83,26 +89,28 @@
                         :canMoveDown="canMoveDown(index)"
                         @moveUp="moveUpVideoRow"
                         @moveDown="moveDownVideoRow"
-                        :playlistForVideos="playlistForVideos"
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
-                        :showCheckbox="showCheckbox"
-                        :playlistMode="playlistEdit"
+                        :selectable="selectable"
+                        :playlistEditable="editable"
+                        :showActions="showActions"
                         @doAction="doAction"
                         @redirectAction="redirectAction"
                     ></VideoRow>
                 </template>
             </draggable>
 
-            <tfoot v-if="!isCourse || (isCourse && playlist)">
+            <tfoot v-if="editable || (isCourse && playlist)">
                 <tr>
                     <td :colspan="numberOfColumns">
                         <span class="oc--bulk-actions">
+                            <!--
                             <StudipButton v-if="playlistForVideos" icon="add" @click.stop="addVideosToPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Zur Wiedergabeliste hinzufügen') }}
                             </StudipButton>
+                            -->
 
-                            <StudipButton v-if="playlistEdit" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
+                            <StudipButton v-if="editable" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>
@@ -141,7 +149,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="isCourse && playlist && canEdit">
+                        <span v-if="isCourse && playlist">
                             <StudipButton class="wrap-button"
                                           v-if="playlist.is_default != '1'"
                                           @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
@@ -149,11 +157,6 @@
                                 <studip-icon shape="trash" role="clickable" />
                                 {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
                             </StudipButton>
-
-                            <a :href="getPlaylistLink(playlist.token)" class="button" target="_blank">
-                                <studip-icon shape="edit" role="clickable" />
-                                {{ $gettext('Wiedergabeliste bearbeiten') }}
-                            </a>
                         </span>
                     </td>
                 </tr>
@@ -232,9 +235,25 @@ export default {
     },
 
     props: {
-        'playlistEdit': {
+        'playlist': {
+            type: Object,
+            default: null
+        },
+        'cid': {
+            type: String,
+            default: null
+        },
+        'editable': {
             type: Boolean,
             default: false
+        },
+        'selectable': {
+            type: Boolean,
+            default: false
+        },
+        'showActions': {
+            type: Boolean,
+            default: true
         },
         'trashBin' : {
             type: Boolean,
@@ -242,9 +261,22 @@ export default {
         }
     },
 
+    emits: ['selectedVideosChange'],
+
     data() {
         return {
+            loadedVideos: [],
             selectedVideos: [],
+            videoSort: {
+                field: 'created',
+                order: 'desc',
+            },
+            limit: 15,
+            paging: {
+                currPage: 0,
+                lastPage: 0,
+                items: 0
+            },
             sortedVideos: null,
             videos_loading: true,
             actionComponent: null,
@@ -259,16 +291,12 @@ export default {
     computed: {
         ...mapGetters([
             'videos',
+            'videosCount',
             'videosReload',
-            'videoSort',
             'videoSortMode',
-            'paging',
             'axios_running',
-            'playlistForVideos',
-            'cid',
             'courseVideosToCopy',
             'playlists',
-            'playlist',
             'course_config',
             'isLTIAuthenticated',
             'simple_config_list',
@@ -276,11 +304,11 @@ export default {
         ]),
 
         numberOfColumns() {
-          return 7 - (this.showCheckbox ? 0 : 1);
+          return 7 - (this.showCheckbox ? 0 : 1) - (this.showActions ? 0 : 1);
         },
 
         showCheckbox() {
-            return !this.isCourse || this.canEdit || this.playlistForVideos || this.playlistEdit;
+            return this.selectable || this.editable;
         },
 
         isCourse() {
@@ -288,27 +316,27 @@ export default {
         },
 
         selectAll() {
-            return this.videos.length == this.selectedVideos.length;
-        },
-
-        canEdit() {
-            if (!this.course_config) {
-                return false;
-            }
-
-            return this.course_config.edit_allowed;
+            return this.loadedVideos.length == this.selectedVideos.length;
         },
 
         hasCheckedVideos() {
             return this.selectedVideos.length > 0;
         },
 
+        offset() {
+          return this.paging.currPage * this.limit;
+        },
+
+        order() {
+            return this.videoSort.field + '_' + this.videoSort.order;
+        },
+
         videos_list: {
             get() {
-                if (this.videoSortMode === true) {
+                if (this.videoSortMode === true && this.sortedVideos) {
                     return this.sortedVideos;
                 } else {
-                    return this.videos;
+                    return this.loadedVideos;
                 }
             },
 
@@ -324,58 +352,106 @@ export default {
         loadVideos() {
             this.videos_loading = true;
             this.$store.commit('setVideos', {});
+            this.loadedVideos = [];
 
-            if (this.isCourse) {
+            if (this.isCourse && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...this.filters,
+                    offset: this.offset,
+                    order: this.order,
                     cid: this.cid,
-                    token: this.playlist.token
-                }).then(() => { this.videos_loading = false });
-            } else if (this.playlistEdit) {
+                    token: this.playlist.token,
+                    limit: this.editable ? -1 : this.limit
+                }).then(this.loadVideosFinished);
+            } else if (this.editable && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...this.filters,
+                    order: this.order,
                     token: this.playlist.token,
                     limit: -1,  // Show all videos in playlist edit view
-                }).then(() => { this.videos_loading = false });
+                }).then(this.loadVideosFinished);
             } else {
-                this.$store.dispatch('loadMyVideos', this.filters).then(() => { this.videos_loading = false });
+                this.$store.dispatch('loadMyVideos', {
+                    ...this.filters,
+                    offset: this.offset,
+                    order: this.order,
+                    limit: this.limit,
+                }).then(this.loadVideosFinished);
             }
         },
 
-        changePage: async function(page) {
-            await this.$store.dispatch('setPage', page);
+        loadVideosFinished() {
+            this.loadedVideos = this.videos;
+            this.updatePaging();
+            this.videos_loading = false;
+        },
+
+        changeLimit(limit) {
+            this.limit = limit;
+        },
+
+        changePage(page) {
+            if (page >= 0 && page <= this.paging.lastPage) {
+                this.paging.currPage = page;
+            }
             this.loadVideos();
+        },
+
+        clearPaging() {
+            this.paging = {
+                currPage: 0,
+                lastPage: 0,
+                items: 0
+            };
+        },
+
+        updatePaging() {
+            this.paging.items = this.videosCount;
+            this.paging.lastPage = (this.paging.items === this.limit) ? 0 : Math.floor((this.paging.items - 1) / this.limit);
+        },
+
+        updateSelectedVideos(selectedVideos) {
+            this.selectedVideos = selectedVideos;
+            this.$emit('selectedVideosChange', this.selectedVideos);
         },
 
         toggleVideo(data) {
             if (data.checked === false) {
                 let index = this.selectedVideos.indexOf(data.event_id);
                 if (index >= 0) {
-                    this.selectedVideos.splice(index, 1);
+                    this.updateSelectedVideos(this.selectedVideos.toSpliced(index, 1))
+
                 }
             } else {
-                this.selectedVideos.push(data.event_id);
+                this.updateSelectedVideos(this.selectedVideos.concat(data.event_id));
             }
         },
 
         toggleAll(e) {
             if (e.target.checked) {
                 // select all videos on current page
-                this.selectedVideos = [];
-
-                for (let id in this.videos) {
-                    this.selectedVideos.push(this.videos[id].token);
-                }
+                this.updateSelectedVideos(this.loadedVideos.map(v => v.token));
             } else {
                 // deselect all videos on current page
-                this.selectedVideos = [];
+                this.updateSelectedVideos([]);
             }
         },
 
         doSearch(filters) {
             this.filters = filters;
-            this.$store.dispatch('setPage', 0);
+            this.changePage(0);
             this.loadVideos();
+        },
+
+        setDefaultSortOrder() {
+            if (this.playlist?.sort_order) {
+                let field, order;
+                [field, order] = this.playlist.sort_order.split('_');
+                this.videoSort = {
+                    field: field,
+                    order: order
+                }
+            }
         },
 
         setSort(column) {
@@ -394,16 +470,15 @@ export default {
                 }
             }
 
-            // TODO: Wollen wir das haben? Besser custom immer als default?
-            if (this.playlist && this.$route.name === 'playlist_edit') {
+            if (this.playlist && this.editable) {
                 this.$store.dispatch('setPlaylistSort', {
                     token: this.playlist.token,
                     sort: videoSort
                 });
             }
 
-            this.$store.dispatch('setVideoSort', videoSort);
-            this.$store.dispatch('setPage', 0);
+            this.videoSort = videoSort;
+            this.changePage(0);
             this.loadVideos();
         },
 
@@ -420,7 +495,7 @@ export default {
         },
 
         canMoveDown(index) {
-            return this.videoSortMode && (index !== this.videos.length - 1);
+            return this.videoSortMode && (index !== this.loadedVideos.length - 1);
         },
 
         moveUpVideoRow(token) {
@@ -442,7 +517,8 @@ export default {
                 playlist: this.playlist.token,
                 videos:   this.selectedVideos
             }).then(() => {
-                this.selectedVideos = [];
+                this.updateSelectedVideos([]);
+
                 view.$store.dispatch('addMessage', {
                     type: 'success',
                     text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
@@ -464,6 +540,7 @@ export default {
             }
         },
 
+        /*
         addVideosToPlaylist() {
             let view = this;
 
@@ -477,7 +554,9 @@ export default {
                     text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
                 });
             })
+            this.$emit('addVideosDone');
         },
+        */
 
         doAction(args) {
             if (Object.keys(this.$options.components).includes(args.actionComponent)) {
@@ -544,10 +623,6 @@ export default {
             }
         },
 
-        getPlaylistLink(token) {
-            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/playlists/' + token + '/edit', {}, ['cid'])
-        },
-
         checkLTIPeriodically() {
             let view = this;
 
@@ -587,8 +662,14 @@ export default {
         }
     },
 
+    created() {
+        // Disable sort mode if active
+        this.$store.dispatch('setVideoSortMode', false);
+        this.$store.dispatch('setVideosReload', false);
+    },
+
     async mounted() {
-        this.$store.commit('clearPaging');
+        this.clearPaging()
         this.$store.commit('setVideos', {});
 
         let loadVideos = this.playlist !== null;
@@ -596,11 +677,10 @@ export default {
         this.$store.dispatch('loadUserCourses');
 
         await this.$store.dispatch('authenticateLti').then(() => {
-            if (this.isCourse || this.playlistEdit) {
+            if (this.isCourse || this.editable) {
                 if (loadVideos) {
-                    this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
-                        this.loadVideos();
-                    })
+                    this.setDefaultSortOrder();
+                    this.loadVideos();
                 }
             }
             else {
@@ -617,17 +697,17 @@ export default {
     watch: {
         courseVideosToCopy(newValue, oldValue) {
             if (this.isCourse && oldValue?.length > 0 && newValue?.length == 0) {
-                this.selectedVideos = [];
+                this.updateSelectedVideos([]);
             }
         },
 
         // Catch every playlist change to handle video loading
         playlist(playlist) {
-            if (this.isCourse && playlist !== null) {
-                this.$store.commit('clearPaging');
-                this.$store.dispatch('setDefaultSortOrder', this.playlist).then(() => {
-                    this.loadVideos();
-                });
+            this.$store.dispatch('setVideoSortMode', false);
+            if (playlist !== null) {
+                this.clearPaging();
+                this.setDefaultSortOrder();
+                this.loadVideos();
             }
         },
 
@@ -641,12 +721,11 @@ export default {
 
         videoSortMode(newmode) {
             if (newmode === true) {
-                this.$store.dispatch('setVideoSort', {
+                this.videoSort = {
                     field: 'order',
                     order: 'asc',
-                    text : 'Benutzerdefiniert'
-                });
-                this.sortedVideos = this.videos;
+                };
+                this.sortedVideos = this.loadedVideos;
             } else {
                 if (newmode === 'commit') {
                     this.$store.dispatch('setPlaylistSort', {
@@ -654,10 +733,10 @@ export default {
                         sort:  {
                             field: 'order',
                             order: 'asc',
-                            text : 'Benutzerdefiniert'
                         }
                     });
                     // store the new sorting order
+                    this.loadedVideos = this.sortedVideos;
                     this.$store.commit('setVideos', this.sortedVideos);
 
                     this.$store.dispatch('uploadSortPositions', {
@@ -669,7 +748,9 @@ export default {
                     // Reload videos
                     this.loadVideos();
                 }
-                this.$store.dispatch('setVideoSortMode', false);
+                if (newmode !== false) {
+                    this.$store.dispatch('setVideoSortMode', false);
+                }
             }
         }
     },
