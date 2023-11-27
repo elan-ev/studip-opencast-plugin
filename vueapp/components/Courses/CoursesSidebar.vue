@@ -110,6 +110,16 @@
                                 {{ $gettext('Reiter verbergen') }}
                             </a>
                         </li>
+                        <li v-if="canEdit && downloadSetting !== 'never'">
+                            <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                {{ $gettext('Mediendownloads erlauben') }}
+                            </a>
+                            <a v-else @click="setDownload(false)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                {{ $gettext('Mediendownloads verbieten') }}
+                            </a>
+                        </li>
                         <li v-if="canEdit">
                             <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
                                 <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
@@ -172,7 +182,7 @@ export default {
         ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
-            'defaultPlaylist', 'videoSortMode']),
+            'defaultPlaylist', 'videoSortMode', 'downloadSetting']),
 
         fragment() {
             return this.$route.name;
@@ -230,6 +240,18 @@ export default {
             return this.course_config.upload_enabled == 1;
         },
 
+        downloadEnabled() {
+            if (this.playlist) {
+                if (this.playlist['allow_download'] === null) {
+                    return this.downloadSetting === 'allow';
+                }
+                else {
+                    return this.playlist['allow_download'];
+                }
+            }
+            return false;
+        },
+
         canToggleVisibility() {
             return window.OpencastPlugin.STUDIP_VERSION == '4.6' && this.canEdit;
         }
@@ -253,6 +275,10 @@ export default {
         async setVisibility(visibility) {
             await this.$store.dispatch('setVisibility', {'cid': this.cid, 'visibility': visibility});
             this.$router.go(); // Reload page to make changes visible in navigation tab
+        },
+
+        setDownload(download) {
+            this.$store.dispatch('setAllowDownloadForPlaylist', download)
         },
 
         setUpload(upload) {

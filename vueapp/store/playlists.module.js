@@ -110,11 +110,22 @@ const actions = {
     },
 
     async addPlaylistToCourse(context, params) {
-        return ApiService.put('courses/' + params.course + '/playlist/' + params.token)
+        return ApiService.post('courses/' + params.course + '/playlist/' + params.token)
     },
 
     async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
+    },
+
+    async updatePlaylistOfCourse(context, params) {
+        return ApiService.put('courses/' + params.course + '/playlist/' + params.token, params.playlist)
+            .then(({ data }) => {
+                context.commit('updatePlaylist', data);
+            });
+    },
+
+    async removePlaylistFromCourse(context, params) {
+        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
     },
 
     async addVideosToPlaylist(context, data) {
@@ -170,10 +181,21 @@ const actions = {
         });
     },
 
-    async setAllowDownloadForPlaylist({dispatch, commit, state}, allowed) {
+    async setAllowDownloadForPlaylist({dispatch, commit, state, rootState}, allowed) {
+        let $cid = rootState.opencast.cid;
+
         if (state.playlist) {
             await commit('setAllowDownload', allowed);
-            dispatch('updatePlaylist', state.playlist);
+
+            if ($cid !== null) {
+                dispatch('updatePlaylistOfCourse', {
+                    course: $cid,
+                    token: state.playlist.token,
+                    playlist: state.playlist
+                });
+            } else {
+                dispatch('updatePlaylist', state.playlist);
+            }
         }
     },
 
