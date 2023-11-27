@@ -33,13 +33,13 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['playlistForVideos'])
+        ...mapGetters(['playlist'])
     },
 
     methods: {
         async addVideo() {
             await this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlistForVideos.token,
+                playlist: this.playlist.token,
                 videos: [this.event.token]
             }).then(() => {
                 this.$store.dispatch('addMessage', {

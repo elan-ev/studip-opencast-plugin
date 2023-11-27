@@ -40,7 +40,7 @@ msgstr ""
 #: vueapp/components/Videos/Actions/VideoReport.vue:15
 #: vueapp/components/Videos/Actions/VideoRestore.vue:12
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:15
-#: vueapp/components/Videos/VideoUpload.vue:41 vueapp/views/PlaylistEdit.vue:41
+#: vueapp/components/Videos/PlaylistContents.vue:41 vueapp/views/PlaylistEdit.vue:41
 msgid "Abbrechen"
 msgstr "Cancel"
 
@@ -893,7 +893,7 @@ msgstr "Save sorting"
 #: vueapp/components/Videos/Actions/VideoAddToSeminar.vue:18
 #: vueapp/components/Videos/Actions/VideoEdit.vue:23
 #: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:18
-#: vueapp/views/PlaylistEdit.vue:39
+#: vueapp/views/PlaylistContents.vue:39
 msgid "Speichern"
 msgstr "Save"
 
@@ -1124,7 +1124,7 @@ msgid "Wiedergabeliste aus diesem Kurs entfernen"
 msgstr "Remove playlist from course"
 
 #: vueapp/components/Videos/VideosTable.vue:288
-#: vueapp/views/PlaylistEdit.vue:38
+#: vueapp/views/PlaylistContents.vue:38
 msgid "Wiedergabeliste bearbeiten"
 msgstr "Edit playlist"
 

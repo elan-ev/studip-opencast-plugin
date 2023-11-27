@@ -9,6 +9,7 @@ const state = {
     },
     videoSortMode: false,
     videoSortList: {},
+    videosCount: 0,
     limit: 15,
     paging: {
         currPage: 0,
@@ -18,7 +19,6 @@ const state = {
     availableVideoTags: [],
     availableVideoCourses: [],
     videoCaptions: {},
-    playlistForVideos: null,
     videoShares: {},
     courseVideosToCopy: [],
     showCourseCopyDialog: false,
@@ -32,6 +32,10 @@ const getters = {
 
     paging(state) {
         return state.paging
+    },
+
+    videosCount(state) {
+        return state.videosCount;
     },
 
     limit(state) {
@@ -62,10 +66,6 @@ const getters = {
         return state.videoCaptions
     },
 
-    playlistForVideos(state) {
-        return state.playlistForVideos
-    },
-
     videoShares(state) {
         return state.videoShares;
     },
@@ -90,7 +90,9 @@ const actions = {
 
         const params = new URLSearchParams();
 
-        params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
+        if (!filters['order']) {
+            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
+        }
 
         if (!filters['offset']) {
             params.append('offset', state.paging.currPage * state.limit);
@@ -113,6 +115,7 @@ const actions = {
                 commit('setVideos', data.videos);
 
                 if (data.count) {
+                    commit('setVideosCount', data.count);
                     commit('updatePaging', {
                         currPage: state.paging.currPage,
                         items   : data.count
@@ -203,7 +206,7 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async addVideoToPlaylists(context, data) {
+    async updateVideoPlaylists(context, data) {
         return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
     },
 
@@ -295,8 +298,8 @@ const mutations = {
         state.paging = paging;
     },
 
-    setPlaylistForVideos(state, playlist) {
-        state.playlistForVideos = playlist;
+    setVideosCount(state, videosCount) {
+        state.videosCount = videosCount;
     },
 
     setLimit(state, limit) {

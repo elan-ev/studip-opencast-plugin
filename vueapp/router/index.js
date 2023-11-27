@@ -36,10 +36,10 @@ export default new createRouter({
                 },
 
                 {
-                    path: 'playlists/:token/edit/',
-                    name: 'playlist_edit',
+                    path: 'playlists/:token',
+                    name: 'playlist',
                     props: true,
-                    component: () => import("@/views/PlaylistEdit"),
+                    component: () => import("@/views/PlaylistContents"),
                 }
             ]
         },

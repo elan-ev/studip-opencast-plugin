@@ -44,7 +44,7 @@
                         <ShareWithUsers
                             @add="addPerm"
                             :selectedUsers="shareUsers"
-                            />
+                        />
                     </fieldset>
                 </form>
                 <form class="default">
@@ -159,8 +159,10 @@ export default {
                 token: this.event.token,
                 shares: this.videoShares
             })
-            .catch((er) => {
-                this.shareUsers.pop();
+            .catch(() => {
+                // find the index of the user that was just added and remove it
+                let index = this.shareUsers.findIndex(u => u.user_id == user.user_id);
+                this.shareUsers.splice(index, 1);
                 this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'));
             })
         },
@@ -179,7 +181,7 @@ export default {
             })
             .catch((er) => {
                 this.videoShares.perms.splice(index, 0, perm);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Löschen der Freigabe ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen der Freigabe ist ein Fehler aufgetreten.'));
             })
         },
 

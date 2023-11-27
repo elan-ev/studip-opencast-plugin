@@ -79,52 +79,72 @@
             </div>
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links">
-                    <li @click="$emit('uploadVideo')" v-if="canUpload">
-                        <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                        {{ $gettext('Medien hochladen') }}
-                    </li>
-                    <li>
-                        <a :href="recordingLink" target="_blank" v-if="canUpload">
-                            <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                            {{ $gettext('Video aufnehmen') }}
-                        </a>
-                    </li>
-                    <li v-if="canToggleVisibility">
-                        <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
-                            <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
-                            {{ $gettext('Reiter sichtbar schalten') }}
-                        </a>
-                        <a v-else @click="setVisibility('invisible')" target="_blank">
-                            <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
-                            {{ $gettext('Reiter verbergen') }}
-                        </a>
-                    </li>
-                    <li v-if="canEdit && downloadSetting !== 'never'">
-                        <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
-                            <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                            {{ $gettext('Mediendownloads erlauben') }}
-                        </a>
-                        <a v-else @click="setDownload(false)" target="_blank">
+                    <template v-if="videoSortMode">
+                        <li @click="$emit('saveSortVideo')" v-if="canEdit && videoSortMode">
                             <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                            {{ $gettext('Mediendownloads verbieten') }}
-                        </a>
-                    </li>
-                    <li v-if="canEdit">
-                        <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
+                            {{ $gettext('Sortierung speichern') }}
+                        </li>
+                        <li @click="$emit('cancelSortVideo')" v-if="canEdit && videoSortMode">
                             <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                            {{ $gettext('Studierendenupload erlauben') }}
-                        </a>
-                        <a v-else @click="setUpload(0)" target="_blank">
-                            <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                            {{ $gettext('Studierendenupload verbieten') }}
-                        </a>
-                    </li>
-                    <li v-if="canEdit">
-                        <a @click="$emit('copyAll')">
+                            {{ $gettext('Sortierung abbrechen') }}
+                        </li>
+                    </template>
+                    <template v-else>
+                        <li @click="openPlaylistAddVideosDialog" v-if="canEdit || canUpload">
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                            {{ $gettext('Videos/Wiedergabelisten übertragen') }}
-                        </a>
-                    </li>
+                            {{ $gettext('Videos hinzufügen') }}
+                        </li>
+                        <li>
+                            <a :href="recordingLink" target="_blank" v-if="canUpload">
+                                <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                                {{ $gettext('Video aufnehmen') }}
+                            </a>
+                        </li>
+                        <li v-if="canToggleVisibility">
+                            <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
+                                {{ $gettext('Reiter sichtbar schalten') }}
+                            </a>
+                            <a v-else @click="setVisibility('invisible')" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
+                                {{ $gettext('Reiter verbergen') }}
+                            </a>
+                        </li>
+                        <li v-if="canEdit && downloadSetting !== 'never'">
+                            <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                {{ $gettext('Mediendownloads erlauben') }}
+                            </a>
+                            <a v-else @click="setDownload(false)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                {{ $gettext('Mediendownloads verbieten') }}
+                            </a>
+                        </li>
+                        <li v-if="canEdit">
+                            <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                {{ $gettext('Studierendenupload erlauben') }}
+                            </a>
+                            <a v-else @click="setUpload(0)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                {{ $gettext('Studierendenupload verbieten') }}
+                            </a>
+                        </li>
+                        <li @click="$emit('sortVideo')" v-if="canEdit">
+                            <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                            {{ $gettext('Videos sortieren') }}
+                        </li>
+                        <li @click="$emit('editPlaylist')" v-if="canEdit">
+                            <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
+                            {{ $gettext('Wiedergabeliste bearbeiten') }}
+                        </li>
+                        <li v-if="canEdit">
+                            <a @click="$emit('copyAll')">
+                                <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
+                                {{ $gettext('Videos/Wiedergabelisten übertragen') }}
+                            </a>
+                        </li>
+                    </template>
                 </ul>
             </div>
         </div>
@@ -149,7 +169,7 @@ export default {
         StudipIcon,     PlaylistAddCard
     },
 
-    emits: ['uploadVideo', 'recordVideo', 'copyAll'],
+    emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist'],
 
     data() {
         return {
@@ -162,7 +182,7 @@ export default {
         ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
-            'defaultPlaylist', 'downloadSetting']),
+            'defaultPlaylist', 'videoSortMode', 'downloadSetting']),
 
         fragment() {
             return this.$route.name;
@@ -277,6 +297,10 @@ export default {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
+        openPlaylistAddVideosDialog() {
+            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
+        },
+
         createPlaylist(playlist) {
             this.$store.dispatch('addPlaylist', playlist);
         },
@@ -289,7 +313,6 @@ export default {
 
     mounted() {
         this.$store.dispatch('simpleConfigListRead');
-        this.$store.dispatch('loadCourseConfig', this.cid);
         this.semesterFilter = this.semester_filter;
 
     },

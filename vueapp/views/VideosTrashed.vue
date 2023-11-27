@@ -1,6 +1,6 @@
 <template>
     <div>
-        <VideosTable :trashBin="true"></VideosTable>
+        <VideosTable :trashBin="true"/>
     </div>
 </template>
 

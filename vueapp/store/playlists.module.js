@@ -6,7 +6,8 @@ const state = {
     playlistSearch: '',
     addPlaylist: false,
     availableTags: [],
-    playlistCourses: null
+    playlistCourses: null,
+    showPlaylistAddVideosDialog: false
 }
 
 const getters = {
@@ -44,7 +45,11 @@ const getters = {
 
     playlistCourses(state) {
         return state.playlistCourses
-    }
+    },
+
+    showPlaylistAddVideosDialog(state) {
+        return state.showPlaylistAddVideosDialog;
+    },
 }
 
 
@@ -108,7 +113,7 @@ const actions = {
         return ApiService.post('courses/' + params.course + '/playlist/' + params.token)
     },
 
-    async addPlaylistToCourses(context, params) {
+    async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
     },
 
@@ -192,7 +197,11 @@ const actions = {
                 dispatch('updatePlaylist', state.playlist);
             }
         }
-    }
+    },
+
+    togglePlaylistAddVideosDialog({commit}, mode) {
+        commit('setShowPlaylistAddVideosDialog', mode);
+    },
 }
 
 const mutations = {
@@ -229,6 +238,10 @@ const mutations = {
 
     setPlaylistCourses(state, courses) {
         state.playlistCourses = courses
+    },
+
+    setShowPlaylistAddVideosDialog(state, mode) {
+        state.showPlaylistAddVideosDialog = mode;
     },
 
     setAllowDownload(state, allowed) {

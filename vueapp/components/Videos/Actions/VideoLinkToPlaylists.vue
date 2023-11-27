@@ -2,14 +2,11 @@
     <div>
         <StudipDialog
             :title="$gettext('Verknüpfungen')"
-            :confirmText="$gettext('Speichern')"
-            :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
+            :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
             width="600"
-            @close="decline"
-            @confirm="addToCourse"
+            @close="this.$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
                 <table class="default" v-if="event.playlists.length > 0">
@@ -24,19 +21,19 @@
                     <tbody>
                         <tr v-for="(playlist, index) in event.playlists" v-bind:key="playlist.id">
                             <td>
-                                <router-link :to="{ name: 'playlist_edit' , params: { token: playlist.token }}" target="_blank">
+                                <router-link :to="{ name: 'playlist' , params: { token: playlist.token }}" target="_blank">
                                     {{ playlist.title }}
                                 </router-link>
                             </td>
                             <td>
-                                <studip-icon shape="trash" role="clickable" @click="confirmDelete(index)" style="cursor: pointer"/>
+                                <studip-icon shape="trash" role="clickable" @click="removePlaylist(index)" style="cursor: pointer"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
                 <UserPlaylistSelectable
-                    @add="addPlaylistToList"
+                    @add="addPlaylist"
                     :playlists="playlists"
                     :selectedPlaylists="this.event.playlists"
                 />
@@ -54,7 +51,7 @@ import StudipIcon from '@studip/StudipIcon';
 import UserPlaylistSelectable from '@/components/UserPlaylistSelectable';
 
 export default {
-    name: 'VideoAddToSeminar',
+    name: 'VideoLinkToPlaylists',
 
     components: {
         StudipDialog, StudipIcon,
@@ -70,33 +67,38 @@ export default {
     },
 
     methods: {
-        addPlaylistToList(course) {
-            this.event.playlists.push(course);
-        },
+        addPlaylist(playlist) {
+            this.event.playlists.push(playlist);
 
-        confirmDelete(playlist_index) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie dieses Video aus der Wiedergabeliste entfernen möchten?'))) {
-                this.event.playlists.splice(playlist_index, 1);
-            }
-        },
-
-        async addToCourse() {
-            let data = {
+            this.$store.dispatch('updateVideoPlaylists', {
                 token: this.event.token,
                 playlists: this.event.playlists,
-            };
-            await this.$store.dispatch('addVideoToPlaylists', data)
-            .then(({ data }) => {
-                this.$store.dispatch('addMessage', data.message);
-                this.$emit('done', 'refresh');
-            }).catch(() => {
-                this.$emit('cancel');
+            })
+            .catch(() => {
+                // find the index of the playlist that was just added and remove it
+                let index = this.event.playlists.findIndex(p => p.token == playlist.token);
+                this.event.playlists.splice(index, 1);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten.'));
             });
         },
 
-        decline() {
-            this.$emit('cancel');
-        }
+        removePlaylist(index) {
+            if (!confirm(this.$gettext('Sind sie sicher, dass sie dieses Video aus der Wiedergabeliste entfernen möchten?'))) {
+                return;
+            }
+
+            let link = this.event.playlists.splice(index, 1)[0];
+
+            this.$store.dispatch('updateVideoPlaylists', {
+                token: this.event.token,
+                playlists: this.event.playlists,
+            })
+            .catch(() => {
+                // add the playlist back to the list
+                this.event.playlists.splice(index, 0, link);
+                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten.'));
+            });
+        },
     },
 
     mounted () {
