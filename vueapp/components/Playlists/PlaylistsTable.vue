@@ -10,7 +10,7 @@
                     <col style="width: 13%">
                 -->
                 <col style="width: 13%">
-                <col style="width: 2%">
+                <col v-if="showActions" style="width: 2%">
             </colgroup>
             <thead>
             <tr>
@@ -40,7 +40,7 @@
                 <th>
                     {{ $gettext('Erstellt am') }}
                 </th>
-                <th></th>
+                <th v-if="showActions"></th>
             </tr>
             </thead>
             <tbody v-if="Object.keys(playlists).length === 0 && axios_running" class="oc--episode-list oc--episode-list--empty">
@@ -51,6 +51,7 @@
                 v-for="playlist in playlists"
                 v-bind:playlist="playlist"
                 v-bind:key="playlist.token"
+                :showActions="showActions"
                 :selectable="selectable"
                 :selectedPlaylists="selectedPlaylists"
                 @togglePlaylist="togglePlaylist"

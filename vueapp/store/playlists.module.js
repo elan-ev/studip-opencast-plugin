@@ -113,6 +113,15 @@ const actions = {
         return ApiService.post('courses/' + params.course + '/playlist/' + params.token)
     },
 
+    async addPlaylistsToCourse(context, data) {
+        for (const playlist of data.playlists) {
+            await context.dispatch('addPlaylistToCourse', {
+                course: data.course,
+                token: playlist,
+            });
+        }
+    },
+
     async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
     },

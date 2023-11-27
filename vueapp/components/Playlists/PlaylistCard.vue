@@ -34,7 +34,7 @@
             </span>
         </td>
 
-        <td>
+        <td v-if="showActions">
            <StudipActionMenu :items="menuItems"
                 @addToCourse="addToCourse(playlist)"
                 @deletePlaylist="deletePlaylist(playlist)"
@@ -64,6 +64,10 @@ export default {
 
     props: {
         playlist: Object,
+        showActions: {
+            type: Boolean,
+            default: true,
+        },
         selectable: {
             type: Boolean,
             default: false,

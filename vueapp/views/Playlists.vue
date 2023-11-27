@@ -11,8 +11,8 @@
         </MessageBox>
 
         <PlaylistAddNewCard v-if="addPlaylist"
-            @done="createPlaylist"
-            @cancel="cancelPlaylistAdd"
+            @done="closePlaylistAdd"
+            @cancel="closePlaylistAdd"
         />
     </div>
 </template>
@@ -40,12 +40,8 @@ export default {
     },
 
     methods: {
-        cancelPlaylistAdd() {
+        closePlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
-        },
-
-        createPlaylist(playlist) {
-            this.$store.dispatch('addPlaylist', playlist);
         },
     },
 
