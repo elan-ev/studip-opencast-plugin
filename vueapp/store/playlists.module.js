@@ -60,7 +60,7 @@ const actions = {
 
         return ApiService.get($route)
             .then(({ data }) => {
-                context.commit('setPlaylists', data);
+                context.commit('setPlaylists', data.playlists);
             });
     },
 

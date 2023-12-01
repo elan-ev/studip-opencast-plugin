@@ -46,25 +46,29 @@
             :style="`left:` + tokenSelectorPos.left + `px; top:` + tokenSelectorPos.top + `px;`"
         >
             <ul v-if="tokenState == 'main'">
-                <li @click="selectToken('tag')" :class="{
+                <li v-if="availableTags"
+                    @click="selectToken('tag')" :class="{
                     'oc--tokenselector--disabled-option': !filteredTags.length
                 }">
                     {{ $gettext('Schlagwort') }}
                 </li>
 
-                <li @click="selectToken('playlist')" :class="{
-                    'oc--tokenselector--disabled-option': !playlists || !comparablePlaylists.length
+                <li v-if="availablePlaylists"
+                    @click="selectToken('playlist')" :class="{
+                    'oc--tokenselector--disabled-option': !filteredPlaylists.length
                 }">
                     {{ $gettext('Wiedergabeliste') }}
                 </li>
 
-                <li @click="selectToken('course')" :class="{
+                <li v-if="availableCourses"
+                    @click="selectToken('course')" :class="{
                     'oc--tokenselector--disabled-option': !filteredCourses.length
                 }">
                     {{ $gettext('Veranstaltung') }}
                 </li>
 
-                <li @click="selectToken('lecturer')" :class="{
+                <li v-if="availableCourses"
+                    @click="selectToken('lecturer')" :class="{
                     'oc--tokenselector--disabled-option': !filteredLecturers.length
                 }">
                     {{ $gettext('Dozent/-in') }}
@@ -89,7 +93,7 @@
             </ul>
 
             <ul v-if="tokenState == 'value' && token.type == 'playlist'">
-                <li v-for="playlist in comparablePlaylists" v-bind:key="playlist.token" @click="selectToken(playlist)">
+                <li v-for="playlist in filteredPlaylists" v-bind:key="playlist.token" @click="selectToken(playlist)">
                     {{ playlist.title }}
                 </li>
             </ul>
@@ -120,6 +124,27 @@ export default {
         StudipIcon
     },
 
+    props: {
+        availablePlaylists: {
+            type: Array,
+            default: null,
+        },
+        availableTags: {
+            type: Array,
+            default: null,
+        },
+        availableCourses: {
+            type: Array,
+            default: null,
+        },
+        activePlaylist: {
+            type: Object,
+            default: null
+        },
+    },
+
+    emits: ['search'],
+
     data() {
         return {
             inputSearch: '',
@@ -130,41 +155,53 @@ export default {
             tokenSelectorPos: {
                 top: 0,
                 left: 0
-            }        }
+            }
+        }
     },
 
     computed: {
-        ...mapGetters([
-            'availableVideoTags',
-            'availableVideoCourses',
-            'playlists',
-            'playlist'
-        ]),
-
         filteredTags() {
+            if (!this.availableTags) {
+                return [];
+            }
+
             let filteredTags = [];
 
-            for (let i = 0; i < this.availableVideoTags.length; i++) {
-                if (!this.searchTokens.find(token => token.value == this.availableVideoTags[i])) {
-                    filteredTags.push(this.availableVideoTags[i]);
+            for (let i = 0; i < this.availableTags.length; i++) {
+                if (!this.searchTokens.find(token => token.value === this.availableTags[i])) {
+                    filteredTags.push(this.availableTags[i]);
                 }
             }
             return filteredTags;
         },
 
-        comparablePlaylists() {
-            if (this.playlist) {
-                return this.playlists.filter(playlist => playlist.token != this.playlist.token);
+        filteredPlaylists() {
+            if (!this.availablePlaylists) {
+                return [];
             }
-            return this.playlists;
+
+            return this.availablePlaylists.filter(playlist =>
+                !this.searchTokens.find(token => token.value === playlist.token)
+                && (!this.activePlaylist || this.activePlaylist.token !== playlist.token)
+            );
         },
 
         filteredCourses() {
-            return this.availableVideoCourses.filter(course => !this.searchTokens.find(token => token.value === course.id));
+            if (!this.availableCourses) {
+                return [];
+            }
+
+            return this.availableCourses.filter(course =>
+                !this.searchTokens.find(token => token.value === course.id)
+            );
         },
 
         filteredLecturers() {
-            return this.availableVideoCourses
+            if (!this.availableCourses) {
+                return [];
+            }
+
+            return this.availableCourses
                 .flatMap(course => course.lecturers)
                 .filter((lecturer, index, array) => array.findIndex(l => l.username === lecturer.username) === index  // Filter out duplicate lecturers
                     && !this.searchTokens.find(token => token.value === lecturer.username));
@@ -213,7 +250,7 @@ export default {
                     this.token.type_name = this.$gettext('Schlagwort')
                     this.tokenState      = 'compare';
 
-                } else if (content == 'playlist' && this.playlists && this.comparablePlaylists.length) {
+                } else if (content == 'playlist' && this.filteredPlaylists.length) {
                     this.token.type      = 'playlist';
                     this.token.type_name = this.$gettext('Wiedergabeliste')
                     this.tokenState      = 'compare';
@@ -222,6 +259,7 @@ export default {
                     this.token.type      = 'course';
                     this.token.type_name = this.$gettext('Veranstaltung')
                     this.tokenState      = 'compare';
+
                 } else if (content == 'lecturer' && this.filteredLecturers.length) {
                     this.token.type      = 'lecturer';
                     this.token.type_name = this.$gettext('Dozent/-in')

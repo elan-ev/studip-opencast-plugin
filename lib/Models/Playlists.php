@@ -35,11 +35,234 @@ class Playlists extends UPMap
         parent::configure($config);
     }
 
-    public static function findByUser_id($user_id)
+    /**
+     * Get the list of accessible course playlists, faceted by the passed filters
+     *
+     * @param String $course_id
+     * @param Filter $filters
+     * @param String|null $user_id
+     * @return array
+     *  [
+     *      'playlists' => [Opencast\Models\PlaylistSeminars]
+     *      'count'     => int
+     *  ];
+     */
+    public static function getCoursePlaylists(String $course_id, Filter $filters, String $user_id = null)
     {
-        return self::findBySQL('LEFT JOIN oc_playlist_user_perms AS ocp
-            ON (ocp.playlist_id = oc_playlist.id)
-            WHERE ocp.user_id = ?', [$user_id]);
+        global $user;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
+
+        // Check if user has access to playlist
+        $sql    = " INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)"
+                 ." LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
+        $where  = " WHERE oc_playlist_seminar.seminar_id = :course_id"
+                 ." AND (oc_playlist_seminar.is_default = 1 OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read')) ";
+        $params = [
+            ':course_id' => $course_id,
+            ':user_id' => $user_id,
+        ];
+
+        return self::getFilteredPlaylists([
+            'sql'    => $sql,
+            'where'  => $where,
+            'params' => $params,
+        ], $filters);
+    }
+
+    /**
+     * Get the list of accessible playlists, faceted by the passed filters
+     *
+     * @param Filter $filters
+     * @param String|null $user_id
+     * @return array
+     *  [
+     *      'playlists' => [Opencast\Models\PlaylistSeminars]
+     *      'count'     => int
+     *  ];
+     */
+    public static function getUserPlaylists(Filter $filters, String $user_id = null)
+    {
+        global $user;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
+
+        // Check if user has access to playlist
+        $sql    = " INNER JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
+        $where  = " WHERE ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read') ";
+        $params = [
+            ':user_id' => $user_id,
+        ];
+
+        return self::getFilteredPlaylists([
+            'sql'    => $sql,
+            'where'  => $where,
+            'params' => $params,
+        ], $filters);
+    }
+
+
+    /**
+     * Add filters to the passed data and return playlists.
+     *
+     * @param array $query
+     *    [
+     *        'sql'   => '',
+     *        'where' => '',
+     *        'params' => ''
+     *    ];
+     * @param Filter $filters
+     *
+     * @return array
+     *    [
+     *        'videos' => [Opencast\Models\Playlist]|[Opencast\Models\PlaylistSeminars],
+     *        'sql'    => '...,
+     *        'count'  => int
+     *    ];
+     */
+    private static function getFilteredPlaylists(array $query, Filter $filters)
+    {
+        global $perm;
+
+        $sql    = $query['sql'];
+        $where  = $query['where'];
+        $params = $query['params'];
+
+        $tags      = [];
+        $courses   = [];
+        $lecturers = [];
+
+        // Apply filters
+        foreach ($filters->getFilters() as $filter) {
+            switch ($filter['type']) {
+                case 'text':
+                    $pname = ':text' . sizeof($params);
+                    $where .= " AND (title LIKE $pname)";
+                    $params[$pname] = '%' . $filter['value'] .'%';
+                    break;
+
+                case 'tag':
+                    // get id of this tag (if any)
+                    if (!empty($filter['value'])) {
+                        $tags_obj = Tags::findBySQL($sq = 'tag LIKE ?',  [$filter['value']]);
+
+                        if (!empty($tags_obj)) {
+                            $tags[$filter['value']] = [
+                                'tag_ids' => array_map(function ($tag) {
+                                    return $tag->id;
+                                }, $tags_obj),
+                                'compare' => $filter['compare'],
+                            ];
+                        }
+                    }
+                    break;
+
+                case 'course':
+                    $course = \Course::find($filter['value']);
+
+                    // check, if user has access to this seminar
+                    if (!empty($course) && $perm->have_studip_perm($course->id, 'user')) {
+                        $courses[$course->id] = [
+                            'id' => $course->id,
+                            'compare' => $filter['compare']
+                        ];
+                    }
+                    break;
+
+                case 'lecturer':
+                    $lecturer = \User::findByUsername($filter['value']);
+
+                    if (!empty($lecturer)) {
+                        $lecturers[$lecturer->user_id] = [
+                            'id' => $lecturer->user_id,
+                            'compare' => $filter['compare']
+                        ];
+                    }
+                    break;
+            }
+        }
+
+
+        if (!empty($tags)) {
+            foreach ($tags as $value => $tag_filter) {
+                $tags_param = ':tags' . $value;
+                $params[$tags_param] = $tag_filter['tag_ids'];
+                if ($tag_filter['compare'] == '=') {
+                    $sql .= ' INNER JOIN oc_playlist_tags AS t'. $value .' ON (t'. $value .'.playlist_id = oc_playlist.id '
+                        .' AND t'. $value .'.tag_id IN ('. $tags_param .'))';
+                } else {
+                    $sql .= ' LEFT JOIN oc_playlist_tags AS t'. $value .' ON (t'. $value .'.playlist_id = oc_playlist.id '
+                        .' AND t'. $value .'.tag_id IN ('. $tags_param .'))';
+
+                    $where .= ' AND t'. $value . '.tag_id IS NULL ';
+                }
+            }
+        }
+
+        if (!empty($courses)) {
+            foreach ($courses as $course) {
+                if ($course['compare'] == '=') {
+                    $sql .= " INNER JOIN oc_playlist_seminar AS ops". $course['id'] ." ON "
+                        ." (ops". $course['id'] .".playlist_id = oc_playlist.id "
+                        ." AND ops". $course['id'] .".seminar_id = '". $course['id'] ."')";
+                } else {
+                    $where .= " AND '". $course['id'] ."' NOT IN ("
+                        ." SELECT DISTINCT ops". $course['id'].".seminar_id FROM oc_playlist_seminar AS ops". $course['id']
+                        ." WHERE ops". $course['id'].".playlist_id = oc_playlist.id)";
+                }
+            }
+        }
+
+        if (!empty($lecturers)) {
+            foreach ($lecturers as $lecturer) {
+                if ($lecturer['compare'] == '=') {
+                    $sql .= " INNER JOIN oc_playlist_seminar AS ops". $lecturer['id'] ." ON "
+                        ." (ops". $lecturer['id'] .".playlist_id = oc_playlist.id)";
+                    $where .= " AND ops". $lecturer['id'] .".seminar_id IN ("
+                        ." SELECT DISTINCT su". $lecturer['id'] .".Seminar_id FROM seminar_user AS su". $lecturer['id']
+                        ." WHERE su". $lecturer['id'] .".user_id = '". $lecturer['id']. "' AND su". $lecturer['id'] .".status = 'dozent')";
+                } else {
+                    $where .= " AND oc_playlist.id NOT IN (SELECT DISTINCT ops". $lecturer['id'] .".playlist_id FROM oc_playlist_seminar AS ops". $lecturer['id']
+                        ." INNER JOIN seminar_user AS su". $lecturer['id'] ." ON (su". $lecturer['id'] .".Seminar_id = ops". $lecturer['id'] .".seminar_id)"
+                        ." WHERE su". $lecturer['id'] .".user_id = '". $lecturer['id'] ."' AND su". $lecturer['id'] .".status = 'dozent')";
+                }
+            }
+        }
+
+
+        $sql .= $where;
+
+        $sql .= ' GROUP BY oc_playlist.id';
+
+        // Count playlists
+        if (!$filters->getCourseId()) {
+            $count_sql = "SELECT COUNT(*) FROM (SELECT oc_playlist.* FROM oc_playlist $sql) t";
+        } else {
+            $count_sql = "SELECT COUNT(*) FROM (SELECT oc_playlist_seminar.* FROM oc_playlist_seminar $sql) t";
+        }
+
+        $stmt = \DBManager::get()->prepare($count_sql);
+        $stmt->execute($params);
+        $count = $stmt->fetchColumn();
+
+        if ($filters->getCourseId()) {
+            $sql .= ' ORDER BY oc_playlist_seminar.is_default DESC';
+        }
+
+        $parsed_sql = 'SELECT * FROM oc_playlist '. $sql;
+        foreach ($params as $key => $value) {
+            $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
+        }
+
+        return [
+            'playlists' => !$filters->getCourseId() ? self::findBySQL($sql, $params): PlaylistSeminars::findBySQL($sql, $params),
+            'sql'    => $parsed_sql,
+            'count'  => $count
+        ];
     }
 
     public static function findByCourse_id($course_id)

@@ -1,5 +1,11 @@
 <template>
     <div>
+        <SearchBar
+            :availableTags="playlistsTags"
+            :availableCourses="playlistsCourses"
+            @search="doSearch"
+        />
+
         <table class="default">
             <colgroup>
                 <col v-if="selectable" style="width: 2%">
@@ -76,6 +82,8 @@ import { mapGetters } from "vuex";
 import PlaylistCard from '@/components/Playlists/PlaylistCard.vue';
 import EmptyPlaylistCard from '@/components/Playlists/EmptyPlaylistCard.vue';
 import PlaylistAddToCourseDialog from '@/components/Playlists/PlaylistAddToCourseDialog.vue'
+import SearchBar from "@/components/SearchBar.vue";
+import ApiService from "@/common/api.service";
 
 export default {
     name: "PlaylistsTable",
@@ -83,13 +91,14 @@ export default {
     components: {
         PlaylistCard,
         EmptyPlaylistCard,
-        PlaylistAddToCourseDialog
+        PlaylistAddToCourseDialog,
+        SearchBar
     },
 
     props: {
-        playlists: {
-            type: Object,
-            required: true,
+        cid: {
+            type: String,
+            default: null,
         },
         showActions: {
             type: Boolean,
@@ -105,8 +114,12 @@ export default {
 
     data() {
         return {
+            playlists: [],
+            playlistsTags: [],
+            playlistsCourses: [],
             playlistCourse: null,
             selectedPlaylists: [],
+            filters: [],
         }
     },
 
@@ -115,12 +128,40 @@ export default {
             "axios_running",
         ]),
 
+        isCourse() {
+            return this.cid !== null;
+        },
+
         allSelected() {
             return this.playlists.length === this.selectedPlaylists.length;
         }
     },
 
     methods: {
+        loadPlaylists() {
+            let route = !this.isCourse ? 'playlists' : 'courses/' + this.cid + '/playlists';
+
+            // Add search bar filters
+            const params = new URLSearchParams();
+            params.append('filters', JSON.stringify(this.filters));
+
+            if (this.isCourse) {
+                params.append('cid', this.cid);
+            }
+
+            ApiService.get(route, { params })
+                .then(({ data }) => {
+                    this.playlists = data.playlists;
+                    this.playlistsTags = data.tags;
+                    this.playlistsCourses = data.courses;
+                });
+        },
+
+        doSearch(filters) {
+            this.filters = filters.filters;
+            this.loadPlaylists();
+        },
+
         togglePlaylist(data) {
             if (data.checked === false) {
                 let index = this.selectedPlaylists.indexOf(data.token);
@@ -158,5 +199,9 @@ export default {
             }
         }
     },
+
+    mounted() {
+        this.loadPlaylists();
+    }
 };
 </script>

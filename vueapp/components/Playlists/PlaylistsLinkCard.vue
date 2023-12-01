@@ -13,7 +13,6 @@
         >
             <template v-slot:dialogContent>
                 <PlaylistsTable
-                    :playlists="playlists"
                     :selectable="true"
                     :showActions="false"
                     @selectedPlaylistsChange="updateSelectedPlaylists"
@@ -52,13 +51,6 @@ export default {
     },
 
     methods: {
-        loadPlaylists() {
-            ApiService.get('playlists')
-                .then(({ data }) => {
-                    this.playlists = data;
-                });
-        },
-
         cancel() {
             this.$emit('cancel');
         },
@@ -81,10 +73,6 @@ export default {
                 this.$emit('done');
             });
         },
-    },
-
-    mounted() {
-        this.loadPlaylists();
     },
 };
 </script>
