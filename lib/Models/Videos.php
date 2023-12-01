@@ -209,12 +209,12 @@ class Videos extends UPMap
                         $tags = Tags::findBySQL($sq = 'tag LIKE ?',  [$filter['value']]);
 
                         if (!empty($tags)) {
-                            foreach ($tags as $tag) {
-                                $tag_ids[$tag->id] = [
-                                    'id'      => $tag->id,
-                                    'compare' => $filter['compare']
-                                ];
-                            }
+                            $tag_ids[$filter['value']] = [
+                                'tag_ids' => array_map(function ($tag) {
+                                    return $tag->id;
+                                }, $tags),
+                                'compare' => $filter['compare'],
+                            ];
                         } else {
                             $tag_ids[] = '-1';
                         }
@@ -269,15 +269,17 @@ class Videos extends UPMap
 
 
         if (!empty($tag_ids)) {
-            foreach ($tag_ids as $tag) {
-                if ($tag['compare'] == '=') {
-                    $sql .= ' INNER JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
-                        .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
+            foreach ($tag_ids as $value => $tag_filter) {
+                $tags_param = ':tags' . $value;
+                $params[$tags_param] = $tag_filter['tag_ids'];
+                if ($tag_filter['compare'] == '=') {
+                    $sql .= ' INNER JOIN oc_video_tags AS t'. $value .' ON (t'. $value .'.video_id = oc_video.id '
+                        .' AND t'. $value .'.tag_id IN ('. $tags_param .'))';
                 } else {
-                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $tag['id'] .' ON (t'. $tag['id'] .'.video_id = oc_video.id '
-                        .' AND t'. $tag['id'] .'.tag_id = '. $tag['id'] .')';
+                    $sql .= ' LEFT JOIN oc_video_tags AS t'. $value .' ON (t'. $value .'.video_id = oc_video.id '
+                        .' AND t'. $value .'.tag_id IN ('. $tags_param .'))';
 
-                    $where .= ' AND t'. $tag['id'] . '.tag_id IS NULL ';
+                    $where .= ' AND t'. $value . '.tag_id IS NULL ';
                 }
             }
         }
