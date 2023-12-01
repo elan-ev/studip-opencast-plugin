@@ -126,6 +126,7 @@ export default {
     computed: {
         ...mapGetters([
             "axios_running",
+            "playlistsReload",
         ]),
 
         isCourse() {
@@ -201,7 +202,18 @@ export default {
     },
 
     mounted() {
+        this.$store.dispatch('setPlaylistsReload', false);
         this.loadPlaylists();
+    },
+
+    watch: {
+        // Handle reloading Playlists from outside of this component (e.g. used after PlaylistAdd)
+        playlistsReload(reload) {
+            if (reload) {
+                this.loadPlaylists();
+                this.$store.dispatch('setPlaylistsReload', false);
+            }
+        }
     }
 };
 </script>

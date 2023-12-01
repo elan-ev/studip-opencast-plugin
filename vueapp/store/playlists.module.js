@@ -7,7 +7,8 @@ const state = {
     addPlaylist: false,
     availableTags: [],
     playlistCourses: null,
-    showPlaylistAddVideosDialog: false
+    showPlaylistAddVideosDialog: false,
+    playlistsReload: false,
 }
 
 const getters = {
@@ -50,6 +51,10 @@ const getters = {
     showPlaylistAddVideosDialog(state) {
         return state.showPlaylistAddVideosDialog;
     },
+
+    playlistsReload(state) {
+        return state.playlistsReload;
+    }
 }
 
 
@@ -168,8 +173,12 @@ const actions = {
                         course: $cid,
                         token: data.token
                     })
-                    .then(() => dispatch('loadPlaylists'))
+                    .then(() => {
+                        dispatch('setPlaylistsReload', true);
+                        dispatch('loadPlaylists');
+                    })
                 } else {
+                    dispatch('setPlaylistsReload', true);
                     dispatch('loadPlaylists');
                 }
             });
@@ -211,6 +220,10 @@ const actions = {
     togglePlaylistAddVideosDialog({commit}, mode) {
         commit('setShowPlaylistAddVideosDialog', mode);
     },
+
+    setPlaylistsReload({commit}, mode) {
+        commit('setPlaylistsReload', mode)
+    }
 }
 
 const mutations = {
@@ -262,6 +275,10 @@ const mutations = {
         if (idx !== -1) {
             state.playlists[idx].videos_count += data.addToCount;
         }
+    },
+
+    setPlaylistsReload(state, mode) {
+        state.playlistsReload = mode;
     }
 }
 

@@ -70,6 +70,7 @@ export default {
                     text: this.$gettext('Die Playlisten wurden der Veranstaltung hinzugefügt.')
                 });
                 this.$store.dispatch('loadPlaylists');
+                this.$store.dispatch('setPlaylistsReload', true);
                 this.$emit('done');
             });
         },
