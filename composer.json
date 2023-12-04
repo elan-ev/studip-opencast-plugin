@@ -8,7 +8,7 @@
     },
     "require": {
         "slim/slim": "^3.12",
-        "elan-ev/opencast-api": "^1.4",
+        "elan-ev/opencast-api": "^1.5",
         "symfony/console": "^5.3"
     },
     "require-dev": {
