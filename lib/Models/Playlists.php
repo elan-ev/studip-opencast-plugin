@@ -253,6 +253,10 @@ class Playlists extends UPMap
             $sql .= ' ORDER BY oc_playlist_seminar.is_default DESC';
         }
 
+        if ($filters->getLimit() != -1) {
+            $sql .= ' LIMIT '. $filters->getOffset() . ', '. $filters->getLimit();
+        }
+
         $parsed_sql = 'SELECT * FROM oc_playlist '. $sql;
         foreach ($params as $key => $value) {
             $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);

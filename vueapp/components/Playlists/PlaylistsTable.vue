@@ -6,6 +6,12 @@
             @search="doSearch"
         />
 
+        <PaginationButtons
+            :paging="paging"
+            @changePage="changePage"
+            @changeLimit="changeLimit"
+        />
+
         <table class="default">
             <colgroup>
                 <col v-if="selectable" style="width: 2%">
@@ -83,6 +89,7 @@ import PlaylistCard from '@/components/Playlists/PlaylistCard.vue';
 import EmptyPlaylistCard from '@/components/Playlists/EmptyPlaylistCard.vue';
 import PlaylistAddToCourseDialog from '@/components/Playlists/PlaylistAddToCourseDialog.vue'
 import SearchBar from "@/components/SearchBar.vue";
+import PaginationButtons from "@/components/PaginationButtons.vue";
 import ApiService from "@/common/api.service";
 
 export default {
@@ -92,7 +99,8 @@ export default {
         PlaylistCard,
         EmptyPlaylistCard,
         PlaylistAddToCourseDialog,
-        SearchBar
+        SearchBar,
+        PaginationButtons,
     },
 
     props: {
@@ -120,6 +128,12 @@ export default {
             playlistCourse: null,
             selectedPlaylists: [],
             filters: [],
+            limit: 15,
+            paging: {
+                currPage: 0,
+                lastPage: 0,
+                items: 0
+            },
         }
     },
 
@@ -135,7 +149,11 @@ export default {
 
         allSelected() {
             return this.playlists.length === this.selectedPlaylists.length;
-        }
+        },
+
+        offset() {
+            return this.paging.currPage * this.limit;
+        },
     },
 
     methods: {
@@ -145,6 +163,8 @@ export default {
             // Add search bar filters
             const params = new URLSearchParams();
             params.append('filters', JSON.stringify(this.filters));
+            params.append('offset', this.offset);
+            params.append('limit', this.limit);
 
             if (this.isCourse) {
                 params.append('cid', this.cid);
@@ -155,12 +175,31 @@ export default {
                     this.playlists = data.playlists;
                     this.playlistsTags = data.tags;
                     this.playlistsCourses = data.courses;
+
+                    this.updatePaging(data.count);
                 });
         },
 
         doSearch(filters) {
             this.filters = filters.filters;
+            this.changePage(0);
             this.loadPlaylists();
+        },
+
+        changeLimit(limit) {
+            this.limit = limit;
+        },
+
+        changePage(page) {
+            if (page >= 0 && page <= this.paging.lastPage) {
+                this.paging.currPage = page;
+            }
+            this.loadPlaylists();
+        },
+
+        updatePaging(playlistsCount) {
+            this.paging.items = playlistsCount;
+            this.paging.lastPage = (this.paging.items === this.limit) ? 0 : Math.floor((this.paging.items - 1) / this.limit);
         },
 
         togglePlaylist(data) {
