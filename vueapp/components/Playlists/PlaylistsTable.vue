@@ -18,9 +18,6 @@
                 <col style="width: 50%">
                 <col style="width: 2%">
                 <col style="width: 20%">
-                <!--
-                    <col style="width: 13%">
-                -->
                 <col style="width: 13%">
                 <col v-if="showActions" style="width: 2%">
             </colgroup>
@@ -39,12 +36,6 @@
                 </th>
 
                 <th></th>
-
-                <!--
-                <th>
-                    {{ $gettext('Sichtbarkeit') }}
-                </th>
-                -->
 
                 <th>
                     {{ $gettext('Videos') }}

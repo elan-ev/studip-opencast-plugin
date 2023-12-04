@@ -21,23 +21,6 @@
                                v-model="playlist.title"
                         >
                     </label>
-
-                    <!--
-                    <label>
-                        Sichtbarkeit
-                        <select class="size-s" v-model="playlist.visibility">
-                            <option value="internal">
-                                {{ $gettext('Intern') }}
-                            </option>
-                            <option value="free">
-                                {{ $gettext('Nicht gelistet') }}
-                            </option>
-                            <option value="public">
-                                {{ $gettext('Öffentlich') }}
-                            </option>
-                        </select>
-                    </label>
-                    -->
                 </form>
             </template>
         </StudipDialog>

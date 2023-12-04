@@ -32,7 +32,7 @@ class CourseAddPlaylist extends OpencastController
 
 
         $playlist_seminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$course_id, $playlist->id]);
-        if (is_null($playlist_seminar)) {
+        if (empty($playlist_seminar)) {
             $playlist_seminar = new PlaylistSeminars;
         }
 
