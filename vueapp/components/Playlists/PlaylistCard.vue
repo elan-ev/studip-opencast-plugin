@@ -16,10 +16,6 @@
 
         <td></td>
 
-        <!-- <td>
-            <PlaylistVisibility css="oc--playlist-visibility" :visibility="playlist.visibility"/>
-        </td>  -->
-
         <td>
             {{ playlist.videos_count }}
         </td>
