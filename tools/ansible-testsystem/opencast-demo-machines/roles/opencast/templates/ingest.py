@@ -51,8 +51,13 @@ def create_episodes():
         title = [x[1][1] for x in fields if x[0] == "title"][0]
         print_status(r.ok, title)
 
+def create_group_studip():
+    print('Creating Stud.IP group')
+    endpoint = '/api/groups'
+    post(endpoint, files=[('name', 'STUDIP'), ('roles', 'ROLE_ADMIN')])
 
 if __name__ == '__main__':
     load_config()
+    create_group_studip()
     create_series()
     create_episodes()
