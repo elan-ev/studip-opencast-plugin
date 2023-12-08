@@ -603,8 +603,11 @@ export default {
 
             this.$store.dispatch('simpleConfigListRead').then(() => {
 
-                const error_msg = this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.');
-                const server_ids = Object.keys(view.simple_config_list['server']);
+                const error_msg = {
+                    type: 'error',
+                    text: this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.')
+                };
+                    const server_ids = Object.keys(view.simple_config_list['server']);
 
                 // periodically check, if lti is authenticated
                 view.interval = setInterval(async () => {
@@ -620,12 +623,10 @@ export default {
                     await Promise.all(promises);
 
                     if (server_ids.length === 0) {
-                        view.$store.dispatch('errorRemove', error_msg);
+                        view.$store.dispatch('removeMessage', error_msg);
                         clearInterval(view.interval);
                     } else {
-                        if (!view.errors.find((e) => e === error_msg)) {
-                            view.$store.dispatch('errorCommit', error_msg);
-                        }
+                        view.$store.dispatch('addMessage', error_msg);
                     }
 
                     view.interval_counter++;

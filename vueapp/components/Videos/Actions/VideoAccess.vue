@@ -112,7 +112,7 @@
                         </table>
                     </fieldset>
                 </form>
-                <MessageList />
+                <MessageList :float="true" :dialog="true"/>
             </template>
         </StudipDialog>
     </div>
@@ -142,7 +142,27 @@ export default {
 
     data() {
         return {
-            shareUsers: []
+            shareUsers: [],
+            add_perm_error: {
+                type: 'error',
+                text: this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'),
+                dialog: true
+            },
+            remove_perm_error: {
+                type: 'error',
+                text: this.$gettext('Beim Entfernen der Freigabe ist ein Fehler aufgetreten.'),
+                dialog: true
+            },
+            add_link_error: {
+                type: 'error',
+                text: this.$gettext('Beim Hinzufügen des Links ist ein Fehler aufgetreten.'),
+                dialog: true
+            },
+            remove_link_error: {
+                type: 'error',
+                text: this.$gettext('Beim Löschen des Links ist ein Fehler aufgetreten.'),
+                dialog: true
+            }
         }
     },
 
@@ -163,7 +183,7 @@ export default {
                 // find the index of the user that was just added and remove it
                 let index = this.shareUsers.findIndex(u => u.user_id == user.user_id);
                 this.shareUsers.splice(index, 1);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', add_perm_error);
             })
         },
 
@@ -181,7 +201,7 @@ export default {
             })
             .catch((er) => {
                 this.videoShares.perms.splice(index, 0, perm);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen der Freigabe ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', remove_perm_error);
             })
         },
 
@@ -198,7 +218,7 @@ export default {
             }).then(({ data }) => {
                 this.initVideoShares();
             }).catch((er) => {
-                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen des Links ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', add_link_error);
             });
         },
 
@@ -217,7 +237,7 @@ export default {
                 this.initVideoShares();
             }).catch((er) => {
                 this.videoShares.shares.splice(index, 0, link);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Löschen des Links ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', remove_link_error);
             });
         },
 
@@ -230,7 +250,8 @@ export default {
                     document.getSelection().removeAllRanges();
                     this.$store.dispatch('addMessage', {
                         type: 'success',
-                        text: this.$gettext('Der Link wurde in die Zwischenablage kopiert.')
+                        text: this.$gettext('Der Link wurde in die Zwischenablage kopiert.'),
+                        dialog: true
                     });
                 } catch(e) {
                     console.log(e);

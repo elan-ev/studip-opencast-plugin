@@ -27,7 +27,7 @@ export const actions = {
         }
 
         // If a message already exists, remove it so it appears as a new one on the bottom of the list
-        let current_message = state.messages.find(msg => msg.type == message.type && msg.text == message.text);
+        let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog);
         if (current_message) {
             context.commit('removeMessage', current_message.id);
         }
@@ -36,8 +36,18 @@ export const actions = {
         context.commit('setMessage', message);
     },
 
-    clearMessages(context) {
-        context.commit('setMessages', []);
+    removeMessage(context, message) {
+        let id = state.messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog).id;
+        context.commit('removeMessage', id);
+    },
+
+    clearMessages(context, is_dialog) {
+        if (is_dialog) {
+            context.commit('setMessages', state.messages.filter(m => !m.dialog));
+        }
+        else {
+            context.commit('setMessages', state.messages.filter(m => m.dialog));
+        }
     }
 };
 

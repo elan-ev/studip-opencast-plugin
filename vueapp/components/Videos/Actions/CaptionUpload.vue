@@ -75,7 +75,8 @@
                         </div>
                     </fieldset>
 
-                    <Error :float="true" />
+                    <Error :float="true"/>
+                    <MessageList :float="true" :dialog="true"/>
 
                     <MessageBox v-if="fileUploadError" type="error">
                         {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
@@ -92,6 +93,7 @@ import { mapGetters } from 'vuex';
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import MessageBox from '@/components/MessageBox'
+import MessageList from '@/components/MessageList';
 import Error from "@/components/Error";
 import ProgressBar from '@/components/ProgressBar'
 import UploadService from '@/common/upload.service'
@@ -100,12 +102,13 @@ export default {
     name: 'CaptionUpload',
 
     components: {
-        StudipDialog,
-        MessageBox,
-        Error,
-        StudipButton,
-        ProgressBar,
-    },
+    StudipDialog,
+    MessageBox,
+    Error,
+    StudipButton,
+    ProgressBar,
+    MessageList
+},
 
     emits: ['done', 'cancel'],
 
@@ -240,7 +243,11 @@ export default {
                         view.$emit('done');
                     },
                     onError: (response) => {
-                        this.$store.dispatch('errorCommit', response);
+                        this.$store.dispatch('addMessage', {
+                            type: 'error',
+                            text: response,
+                            dialog: true
+                        });
                     }
                 }
             );

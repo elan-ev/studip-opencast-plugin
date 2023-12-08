@@ -61,7 +61,17 @@ export default {
 
     data() {
         return {
-            selectedCourses: []
+            selectedCourses: [],
+            add_course_error: {
+                type: 'error',
+                text: 'Beim Hinzufügen des Kurses ist ein Fehler aufgetreten.',
+                dialog: true
+            },
+            remove_course_error: {
+                type: 'error',
+                text: 'Beim Entfernen des Kurses ist ein Fehler aufgetreten.',
+                dialog: true
+            }
         }
     },
 
@@ -85,7 +95,7 @@ export default {
                 // find the index of the course that was just added and remove it
                 let index = this.selectedCourses.findIndex((c) => c.id === course.id);
                 this.selectedCourses.splice(index, 1);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen des Kurses ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', add_course_error);
             });
         },
 
@@ -104,7 +114,7 @@ export default {
                 // find the index of the course that was just added and remove it
                 let index = this.selectedCourses.findIndex((c) => c.id === course.id);
                 this.selectedCourses.splice(index, 1);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen des Kurses ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', remove_course_error);
             });
         }
     },
