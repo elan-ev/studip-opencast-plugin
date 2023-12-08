@@ -12,7 +12,7 @@
             @confirm="accept"
         >
             <template v-slot:dialogContent>
-                <form class="default" style="max-width: 50em;" @submit="editVideo">
+                <form class="default" style="max-width: 50em;" @submit="editVideo" ref="videoEdit-form">
                     <fieldset>
                         <label>
                             <span class="required" v-translate>
@@ -151,6 +151,9 @@ export default {
 
     methods: {
         async accept() {
+            if (!this.$refs['videoEdit-form'].reportValidity()) {
+                return false;
+            }
             // Handle visibility
             this.event.cid = this.cid;
             this.event.playlist_token = this.playlist?.token;

@@ -11,10 +11,10 @@
             @confirm="updatePlaylist"
         >
             <template v-slot:dialogContent>
-                <form class="default">
+                <form class="default" ref="playlistEditCard-form">
                     <label v-if="!isDefaultCoursePlaylist">
-                        Name
-                        <input type="text" v-model="eplaylist.title">
+                        <span class="required">Titel</span>
+                        <input type="text" v-model="eplaylist.title" required>
                     </label>
 
                     <!--
@@ -77,6 +77,9 @@ export default {
 
     methods: {
         updatePlaylist() {
+            if (!this.$refs['playlistEditCard-form'].reportValidity()) {
+                return false;
+            }
             this.playlist.title      = this.eplaylist.title;
             this.playlist.visibility = this.eplaylist.visibility;
             this.playlist.tags       = JSON.parse(JSON.stringify((this.eplaylist.tags)));

@@ -12,13 +12,14 @@
             @keyup.enter="createPlaylist"
         >
             <template v-slot:dialogContent>
-                <form class="default">
+                <form class="default" ref="playlistAddCard-form">
                     <label>
                         <span class="required">Titel</span>
                         <input type="text"
                             maxlength="255"
                             :placeholder="$gettext('Titel der Wiedergabeliste')"
                             v-model="playlist.title"
+                            required
                         >
                     </label>
 
@@ -69,6 +70,9 @@ export default {
 
     methods: {
         createPlaylist() {
+            if (!this.$refs['playlistAddCard-form'].reportValidity()) {
+                return false;
+            }
             this.$emit('done', this.playlist);
         }
     }
