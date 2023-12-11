@@ -164,6 +164,10 @@ export default {
             if (this.currentTitle) {
                 this.titleFromBackend = true;
             }
+
+            if (this.currentEpisode != '' && this.currentUrl == '') {
+                this.currentUrl = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
+            }
         },
 
         loadEpisodes() {
