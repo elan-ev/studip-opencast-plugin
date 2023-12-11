@@ -95,7 +95,7 @@
                             {{ $gettext('Videos hinzufügen') }}
                         </li>
                         <li>
-                            <a :href="recordingLink" target="_blank" v-if="canUpload">
+                            <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id">
                                 <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                                 {{ $gettext('Video aufnehmen') }}
                             </a>

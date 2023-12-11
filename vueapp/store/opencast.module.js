@@ -90,6 +90,7 @@ const actions = {
         return ApiService.get('user/series')
             .then(({ data }) => {
                 commit('setCurrentUserSeries', data.series_id);
+                return data.series_id;
             });
     },
 

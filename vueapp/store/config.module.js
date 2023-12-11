@@ -71,6 +71,7 @@ export const actions = {
         return ApiService.get('courses/' + course_id + '/config')
             .then(({ data }) => {
                 context.commit('setCourseConfig', data);
+                return data;
             });
     },
 

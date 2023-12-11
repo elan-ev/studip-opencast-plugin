@@ -18,6 +18,7 @@
         />
 
         <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
+            :canUpload="!!currentUserSeries"
             @done="closePlaylistAddVideosDialog"
             @cancel="closePlaylistAddVideosDialog"
         />
@@ -47,6 +48,7 @@ export default {
     computed: {
         ...mapGetters([
             'currentUser',
+            'currentUserSeries',
             'showPlaylistAddVideosDialog'
         ]),
 
@@ -104,7 +106,15 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadCurrentUser');
-        this.$store.dispatch('loadCurrentUserSeries');
+        this.$store.dispatch('loadCurrentUserSeries')
+        .then((series_id) => {
+            if (!series_id) {
+                this.$store.dispatch('addMessage', {
+                    type: 'warning',
+                    text: this.$gettext('Die Nutzerkonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
+                });
+            }
+        });
         this.$store.dispatch('loadPlaylists');
     }
 };
