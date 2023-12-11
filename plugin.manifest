@@ -1,7 +1,7 @@
 pluginname=OpenCast
 pluginclassname=OpenCast
 origin=elan-ev
-version=2.7.6
+version=2.7.7
 studipMinVersion=4.5
 studipMaxVersion=5.4.99
 summary=Vorlesungsaufzeichnung
