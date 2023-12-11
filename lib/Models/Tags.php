@@ -66,7 +66,8 @@ class Tags extends \SimpleORMap
      *      ...    
      *  ];
      */
-    public static function getPlaylistVideosTags($playlist_id, $cid) {
+    public static function getPlaylistVideosTags($playlist_id, $cid)
+    {
         global $perm;
 
         $query = 'SELECT tag FROM oc_tags'.
@@ -85,6 +86,66 @@ class Tags extends \SimpleORMap
         }
 
         $query .= ' GROUP BY tag';
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get the tags from all playlists the user has access to
+     *
+     * @return array
+     *  [
+     *      tag1,
+     *      tag2,
+     *      tag3,
+     *      ...
+     *  ];
+     */
+    public static function getUserPlaylistsTags()
+    {
+        global $user;
+
+        $query = "SELECT tag FROM oc_tags".
+                " LEFT JOIN oc_playlist_tags AS pt ON (pt.tag_id = id)".
+                " LEFT JOIN oc_playlist_user_perms AS ocp ON (pt.playlist_id = ocp.playlist_id)".
+                " WHERE ocp.user_id = :user_id".
+                " AND ocp.perm IN ('owner', 'write', 'read')".
+                " GROUP BY tag";
+        $params[':user_id'] = $user->id;
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get the tags from all playlists of a course the user has access to
+     *
+     * @return array
+     *  [
+     *      tag1,
+     *      tag2,
+     *      tag3,
+     *      ...
+     *  ];
+     */
+    public static function getCoursePlaylistsTags(String $cid)
+    {
+        global $user;
+
+        $query = "SELECT tag FROM oc_tags".
+            " INNER JOIN oc_playlist_tags AS pt ON (pt.tag_id = id)".
+            " INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = pt.playlist_id)".
+            " LEFT JOIN oc_playlist_user_perms AS ocp ON (pt.playlist_id = ocp.playlist_id)".
+            " WHERE ops.seminar_id = :cid".
+            " AND (ops.is_default = 1 OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read'))".
+            " GROUP BY tag";
+        $params = [
+            ':user_id'  => $user->id,
+            ':cid'      => $cid,
+        ];
 
         $stmt = \DBManager::get()->prepare($query);
         $stmt->execute($params);

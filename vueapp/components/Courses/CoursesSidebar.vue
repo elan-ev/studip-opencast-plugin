@@ -48,7 +48,7 @@
 
                 <li v-if="canEdit" @click="showCreatePlaylist">
                     <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
-                    {{ $gettext('Wiedergabeliste anlegen') }}
+                    {{ $gettext('Wiedergabeliste hinzufügen') }}
                 </li>
             </ul>
         </div>
@@ -150,8 +150,8 @@
         </div>
 
         <PlaylistAddCard v-if="addPlaylist"
-            @done="createPlaylist"
-            @cancel="cancelPlaylistAdd"
+            @done="closePlaylistAdd"
+            @cancel="closePlaylistAdd"
         />
     </template>
 </template>
@@ -293,16 +293,12 @@ export default {
             this.$store.dispatch('addPlaylistUI', true);
         },
 
-        cancelPlaylistAdd() {
+        closePlaylistAdd() {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
         openPlaylistAddVideosDialog() {
             this.$store.dispatch('togglePlaylistAddVideosDialog', true);
-        },
-
-        createPlaylist(playlist) {
-            this.$store.dispatch('addPlaylist', playlist);
         },
 
         getWorkflow(config_id) {

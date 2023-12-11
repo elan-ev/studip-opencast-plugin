@@ -48,32 +48,8 @@ class CourseListForPlaylistVideos extends OpencastController
             }
         }
 
-        $courses = PlaylistSeminars::getPlaylistVideosCourses($playlist->id, $params['cid']);
+        $courses_ids = PlaylistSeminars::getPlaylistVideosCourses($playlist->id, $params['cid']);
 
-        $ret = [];
-
-        foreach ($courses as $course_id) {
-            $course = \Course::find($course_id);
-
-            // Check if user has access to this seminar
-            if ($perm->have_studip_perm($course_id, 'user')) {
-                $lecturers = [];
-                $lecturers_obj = $course->getMembersWithStatus('dozent');
-                foreach ($lecturers_obj as $lecturer) {
-                    $lecturers[] = [
-                        'username'    => $lecturer->username,
-                        'name'  => $lecturer->getUserFullname(),
-                    ];
-                }
-
-                $ret[] = [
-                    'id'        => $course->id,
-                    'name'      => $course->getFullname('number-name'),
-                    'lecturers' => $lecturers,
-                ];
-            }
-        }
-
-        return $this->createResponse($ret, $response->withStatus(200));
+        return $this->createResponse(PlaylistSeminars::getCoursesArray($courses_ids), $response->withStatus(200));
     }
 }

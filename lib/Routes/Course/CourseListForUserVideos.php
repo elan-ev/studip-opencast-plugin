@@ -19,33 +19,8 @@ class CourseListForUserVideos extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
-        $courses = PlaylistSeminars::getUserVideosCourses();
+        $courses_ids = PlaylistSeminars::getUserVideosCourses();
 
-        $ret = [];
-
-        foreach ($courses as $course_id) {
-            $course = \Course::find($course_id);
-
-            // Check if user has access to this seminar
-            if ($perm->have_studip_perm($course_id, 'user')) {
-                $lecturers = [];
-                $lecturers_obj = $course->getMembersWithStatus('dozent');
-                foreach ($lecturers_obj as $lecturer) {
-                    $lecturers[] = [
-                        'username'    => $lecturer->username,
-                        'name'  => $lecturer->getUserFullname(),
-                    ];
-                }
-
-                $ret[] = [
-                    'id'        => $course->id,
-                    'name'      => $course->getFullname('number-name'),
-                    'lecturers' => $lecturers,
-                ];
-            }
-        }
-
-        return $this->createResponse($ret, $response->withStatus(200));
+        return $this->createResponse(PlaylistSeminars::getCoursesArray($courses_ids), $response->withStatus(200));
     }
 }

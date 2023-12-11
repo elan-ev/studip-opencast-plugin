@@ -10,7 +10,7 @@
         >
             <template v-slot:dialogContent ref="add-dialog">
                 <h2>{{ $gettext('Quelle auswählen') }}</h2>
-                <div class="oc--videos-add-possibilities">
+                <div class="oc--dialog-possibilities">
                     <a v-if="canUpload" href="#" @click.prevent="activeDialog = 'upload'">
                         <studip-icon shape="computer" role="clickable" size="50"/>
                         {{ $gettext('Mein Computer') }}

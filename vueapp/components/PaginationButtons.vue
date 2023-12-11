@@ -44,7 +44,7 @@
 
         <select class="oc--pagination--limit"
             v-model="limit"
-            :title="$gettext('Videos pro Seite')"
+            :title="$gettext('Elemente pro Seite')"
         >
             <option :value="minPaginationLimit">{{minPaginationLimit}}</option>
             <option value="15">15</option>
@@ -100,7 +100,7 @@
 
         <select class="oc--pagination--limit"
             v-model="limit"
-            :title="$gettext('Videos pro Seite')"
+            :title="$gettext('Elemente pro Seite')"
         >
             <option :value="minPaginationLimit">{{minPaginationLimit}}</option>
             <option value="15">15</option>

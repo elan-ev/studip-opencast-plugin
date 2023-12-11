@@ -30,7 +30,12 @@ class CourseAddPlaylist extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        $playlist_seminar = new PlaylistSeminars;
+
+        $playlist_seminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$course_id, $playlist->id]);
+        if (empty($playlist_seminar)) {
+            $playlist_seminar = new PlaylistSeminars;
+        }
+
         $playlist_seminar->setData([
             'playlist_id' => $playlist->id,
             'seminar_id' => $course_id,

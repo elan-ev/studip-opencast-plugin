@@ -4,12 +4,12 @@ namespace Opencast\Routes\Playlist;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
-use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
-use Opencast\Models\PlaylistsUserPerms;
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Filter;
+use Opencast\Models\Tags;
 
 /**
  * Find the playlists for the passed user
@@ -22,22 +22,25 @@ class PlaylistList extends OpencastController
     {
         global $user;
 
+        $params = $request->getQueryParams();
+
         // find all playlists, the current user has access to
-        $playlists = Playlists::findByUser_id($user->id);
+        $playlists = Playlists::getUserPlaylists(new Filter($params), $user->id);
 
         $playlist_list = [];
-        foreach ($playlists as $playlist) {
-            // check what permissions the current user has on the playlist
-            foreach($playlist->perms as $perm) {
-                if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
-                    // Add playlist, if the user has access
-                    $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
-                    ? 0 : \strtotime($playlist['mkdate']);
-                    $playlist_list[$playlist->id] = $playlist->toSanitizedArray();
-                }
-            }
+        foreach ($playlists['playlists'] as $playlist) {
+            $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
+            ? 0 : \strtotime($playlist['mkdate']);
+            $playlist_list[$playlist->id] = $playlist->toSanitizedArray();
         }
 
-        return $this->createResponse(@array_values($playlist_list) ?: [], $response);
+        $courses_ids = PlaylistSeminars::getUserPlaylistsCourses();
+
+        return $this->createResponse([
+            'playlists' => @array_values($playlist_list) ?: [],
+            'count'     => $playlists['count'],
+            'tags'      => Tags::getUserPlaylistsTags(),
+            'courses'   => PlaylistSeminars::getCoursesArray($courses_ids),
+        ], $response);
     }
 }
