@@ -1,9 +1,8 @@
 <template>
     <tr :key="playlist.id">
-        <!-- <td>
-             <input type="checkbox">
+        <td v-if="selectable">
+             <input type="checkbox" :checked="isChecked" @click.stop="togglePlaylist">
         </td>
-        -->
 
         <td>
             <router-link :to="{ name: 'playlist', params: { token: playlist.token } }">
@@ -16,10 +15,6 @@
         </td>
 
         <td></td>
-
-        <!-- <td>
-            <PlaylistVisibility css="oc--playlist-visibility" :visibility="playlist.visibility"/>
-        </td>  -->
 
         <td>
             {{ playlist.videos_count }}
@@ -35,7 +30,7 @@
             </span>
         </td>
 
-        <td>
+        <td v-if="showActions">
            <StudipActionMenu :items="menuItems"
                 @addToCourse="addToCourse(playlist)"
                 @deletePlaylist="deletePlaylist(playlist)"
@@ -64,8 +59,19 @@ export default {
     },
 
     props: {
-        playlist: Object
+        playlist: Object,
+        showActions: {
+            type: Boolean,
+            default: true,
+        },
+        selectable: {
+            type: Boolean,
+            default: false,
+        },
+        selectedPlaylists: Object,
     },
+
+    emits: ['togglePlaylist', 'addToCourse', 'deletePlaylist'],
 
     data() {
         return {
@@ -98,7 +104,20 @@ export default {
         }
     },
 
+    computed: {
+        isChecked() {
+            return this.selectedPlaylists.indexOf(this.playlist.token) >= 0;
+        },
+    },
+
     methods: {
+        togglePlaylist(e) {
+            this.$emit('togglePlaylist', {
+                token: this.playlist.token,
+                checked: e.target.checked ? true : false,
+            })
+        },
+
         removeVideo() {
             let view = this;
             this.$store.dispatch('deleteVideo', this.playlist.id)

@@ -3,11 +3,21 @@
         <div class="oc--admin--server-image">
             <OpencastIcon />
             <span v-if="!isAddCard" class="oc--admin--server-id">
-                <input
-                    type="checkbox"
-                    :checked="config.active"
-                    @click.stop="toogleServer"
-                    :title="$gettext('Server aktivieren')">
+                <studip-icon
+                    v-if="config.active"
+                    @click="toogleServer(false)"
+                    shape="checkbox-checked"
+                    role="clickable"
+                    :size="32"
+                    style="cursor: pointer"
+                />
+                <studip-icon
+                    v-else
+                    @click="toogleServer(true)"
+                    shape="checkbox-unchecked"
+                    role="clickable"
+                    :size="32"
+                    style="cursor: pointer"/>
             </span>
             <span class="oc--admin--server-icons">
                 <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
@@ -94,10 +104,25 @@ export default {
     },
 
     methods: {
-        toogleServer(e) {
-            this.$store.dispatch('configUpdate', {id: this.config.id, active: e.target.checked})
+        toogleServer(active) {
+            this.config.active = active;
+            this.$store.dispatch('configUpdate', {id: this.config.id, active: active})
             .then(({ data }) => {
-                this.$store.dispatch('configListRead', data.config);
+                this.$store.dispatch('configListRead', data.config)
+                .then(() => {
+                    if (this.config.active) {
+                        this.$store.dispatch("addMessage", {
+                            type: "success",
+                            text: this.$gettext("Server wurde erfolgreich aktiviert")
+                        });
+                    }
+                    else {
+                        this.$store.dispatch("addMessage", {
+                            type: "success",
+                            text: this.$gettext("Server wurde erfolgreich deaktiviert")
+                        });
+                    }
+                });
             });
         },
 

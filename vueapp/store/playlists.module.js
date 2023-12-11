@@ -7,7 +7,8 @@ const state = {
     addPlaylist: false,
     availableTags: [],
     playlistCourses: null,
-    showPlaylistAddVideosDialog: false
+    showPlaylistAddVideosDialog: false,
+    playlistsReload: false,
 }
 
 const getters = {
@@ -50,6 +51,10 @@ const getters = {
     showPlaylistAddVideosDialog(state) {
         return state.showPlaylistAddVideosDialog;
     },
+
+    playlistsReload(state) {
+        return state.playlistsReload;
+    }
 }
 
 
@@ -60,7 +65,7 @@ const actions = {
 
         return ApiService.get($route)
             .then(({ data }) => {
-                context.commit('setPlaylists', data);
+                context.commit('setPlaylists', data.playlists);
             });
     },
 
@@ -113,6 +118,15 @@ const actions = {
         return ApiService.post('courses/' + params.course + '/playlist/' + params.token)
     },
 
+    async addPlaylistsToCourse(context, data) {
+        for (const playlist of data.playlists) {
+            await context.dispatch('addPlaylistToCourse', {
+                course: data.course,
+                token: playlist,
+            });
+        }
+    },
+
     async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
     },
@@ -159,8 +173,12 @@ const actions = {
                         course: $cid,
                         token: data.token
                     })
-                    .then(() => dispatch('loadPlaylists'))
+                    .then(() => {
+                        dispatch('setPlaylistsReload', true);
+                        dispatch('loadPlaylists');
+                    })
                 } else {
+                    dispatch('setPlaylistsReload', true);
                     dispatch('loadPlaylists');
                 }
             });
@@ -202,6 +220,10 @@ const actions = {
     togglePlaylistAddVideosDialog({commit}, mode) {
         commit('setShowPlaylistAddVideosDialog', mode);
     },
+
+    setPlaylistsReload({commit}, mode) {
+        commit('setPlaylistsReload', mode)
+    }
 }
 
 const mutations = {
@@ -253,6 +275,10 @@ const mutations = {
         if (idx !== -1) {
             state.playlists[idx].videos_count += data.addToCount;
         }
+    },
+
+    setPlaylistsReload(state, mode) {
+        state.playlistsReload = mode;
     }
 }
 

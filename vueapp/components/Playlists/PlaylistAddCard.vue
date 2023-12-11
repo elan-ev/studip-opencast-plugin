@@ -1,80 +1,74 @@
 <template>
     <div>
-        <StudipDialog
-            :title="$gettext('Wiedergabeliste anlegen')"
-            :confirmText="$gettext('Erstellen')"
-            :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
+        <StudipDialog v-if="activeDialog === null"
+            :title="$gettext('Wiedergabeliste hinzufügen')"
+            :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
-            height="500"
+            height="350"
             @close="$emit('cancel')"
-            @confirm="createPlaylist"
-            @keyup.enter="createPlaylist"
         >
-            <template v-slot:dialogContent>
-                <form class="default" ref="playlistAddCard-form">
-                    <label>
-                        <span class="required">Titel</span>
-                        <input type="text"
-                            maxlength="255"
-                            :placeholder="$gettext('Titel der Wiedergabeliste')"
-                            v-model="playlist.title"
-                            required
-                        >
-                    </label>
-
-                    <!--
-                    <label>
-                        Sichtbarkeit
-                        <select class="size-s" v-model="playlist.visibility">
-                            <option value="internal">
-                                {{ $gettext('Intern') }}
-                            </option>
-                            <option value="free">
-                                {{ $gettext('Nicht gelistet') }}
-                            </option>
-                            <option value="public">
-                                {{ $gettext('Öffentlich') }}
-                            </option>
-                        </select>
-                    </label>
-                    -->
-                </form>
+            <template v-slot:dialogContent ref="add-dialog">
+                <h2>{{ $gettext('Aktionen') }}</h2>
+                <div class="oc--dialog-possibilities">
+                    <a href="#" @click.prevent="activeDialog = 'new'">
+                        <studip-icon shape="add" role="clickable" size="50"/>
+                        {{ $gettext('Neu erstellen') }}
+                    </a>
+                    <a href="#" @click.prevent="activeDialog = 'link'">
+                        <studip-icon shape="group" role="clickable" size="50"/>
+                        {{ $gettext('Bestehende verknüpfen') }}
+                    </a>
+                </div>
             </template>
         </StudipDialog>
+
+        <PlaylistAddNewCard v-if="activeDialog === 'new'"
+            @done="done"
+            @cancel="cancel"
+        />
+
+        <PlaylistsLinkCard v-if="activeDialog === 'link'"
+            @done="done"
+            @cancel="cancel"
+        />
+
     </div>
 </template>
 
 <script>
-import StudipButton from "@studip/StudipButton";
 import StudipDialog from '@studip/StudipDialog'
+import StudipIcon from "@studip/StudipIcon";
+import PlaylistAddNewCard from "@/components/Playlists/PlaylistAddNewCard";
+import PlaylistsLinkCard from "@/components/Playlists/PlaylistsLinkCard";
 
 export default {
     name: "PlaylistAddCard",
 
     components: {
-        StudipButton,
-        StudipDialog
+        StudipDialog,
+        StudipIcon,
+        PlaylistAddNewCard,
+        PlaylistsLinkCard,
     },
 
-
+    emits: ['done', 'cancel'],
 
     data() {
         return {
-            playlist: {
-                title: '',
-                visibility: 'internal'
-            }
+            activeDialog: null,
         }
     },
 
     methods: {
-        createPlaylist() {
-            if (!this.$refs['playlistAddCard-form'].reportValidity()) {
-                return false;
-            }
-            this.$emit('done', this.playlist);
-        }
+        done() {
+            this.activeDialog = null;
+            this.$emit('done');
+        },
+
+        cancel() {
+            this.activeDialog = null;
+            this.$emit('cancel');
+        },
     }
 }
 </script>

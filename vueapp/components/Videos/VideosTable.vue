@@ -12,7 +12,13 @@
         </h3>
         -->
 
-        <SearchBar @search="doSearch" v-if="!videoSortMode"/>
+        <SearchBar v-if="!videoSortMode"
+            :availableTags="videosTags"
+            :availablePlaylists="playlists"
+            :availableCourses="videosCourses"
+            :activePlaylist="playlist"
+            @search="doSearch"
+       />
 
         <PaginationButtons v-if="!editable"
             :paging="paging"
@@ -275,6 +281,8 @@ export default {
             actionComponent: null,
             showActionDialog: false,
             selectedEvent: null,
+            videosTags: [],
+            videosCourses: [],
             filters: [],
             interval: null,
             interval_counter: 0
@@ -287,6 +295,8 @@ export default {
             'videosCount',
             'videosReload',
             'videoSortMode',
+            'availableVideoTags',
+            'availableVideoCourses',
             'axios_running',
             'courseVideosToCopy',
             'playlists',
@@ -346,6 +356,8 @@ export default {
             this.videos_loading = true;
             this.$store.commit('setVideos', {});
             this.loadedVideos = [];
+            this.videosTags = [];
+            this.videosCourses = [];
 
             if (this.isCourse && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
@@ -375,6 +387,8 @@ export default {
 
         loadVideosFinished() {
             this.loadedVideos = this.videos;
+            this.videosTags = this.availableVideoTags;
+            this.videosCourses = this.availableVideoCourses;
             this.updatePaging();
             this.videos_loading = false;
         },

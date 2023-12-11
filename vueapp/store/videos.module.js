@@ -130,9 +130,9 @@ const actions = {
             route: 'videos',
             filters: data,
         })
-        .then(() => {
-            dispatch('loadAvailableVideoTags');
-            dispatch('loadAvailableVideoCourses');
+        .then(async () => {
+            await dispatch('loadAvailableVideoTags');
+            await dispatch('loadAvailableVideoCourses');
         });
     },
 
@@ -142,9 +142,9 @@ const actions = {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
         })
-        .then(() => {
-            dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid});
-            dispatch('loadAvailableVideoCourses', {token: data.token, cid: data.cid});
+        .then(async () => {
+            await dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid});
+            await dispatch('loadAvailableVideoCourses', {token: data.token, cid: data.cid});
         });
     },
 

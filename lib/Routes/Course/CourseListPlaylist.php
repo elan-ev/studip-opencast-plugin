@@ -9,6 +9,9 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Tags;
+use Opencast\Models\Filter;
+use Opencast\Models\Playlists;
 use Opencast\Models\Helpers;
 
 /**
@@ -23,6 +26,12 @@ class CourseListPlaylist extends OpencastController
         global $user, $perm;
         $course_id = $args['course_id'];
 
+        $params = $request->getQueryParams();
+
+        if (!$params['cid']) {
+            $params['cid'] = $course_id;
+        }
+
         // check if user has access to this seminar
         if (!$perm->have_studip_perm($course_id, 'user')) {
            throw new \AccessDeniedException();
@@ -32,26 +41,27 @@ class CourseListPlaylist extends OpencastController
         Helpers::checkCoursePlaylist($course_id);
 
         // find all playlists of the seminar
-        $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ? '
-            .' ORDER BY is_default DESC', [$course_id]);
+        $seminar_playlists = Playlists::getCoursePlaylists($course_id, new Filter($params), $user->id);
+        $playlist_list = [];
 
-        foreach ($seminar_playlists as $seminar_playlist) {
-            // if this is the default playlist for the course, show the list
+        foreach ($seminar_playlists['playlists'] as $seminar_playlist) {
+            $data = $seminar_playlist->toSanitizedArray();
+
+            // if this is the default playlist for the course, change the title
             if ($seminar_playlist->is_default == '1') {
-                $data = $seminar_playlist->toSanitizedArray();
                 $data['title'] = _('Kurswiedergabeliste');
-                $playlist_list[] = $data;
-            } else {
-                // check what permissions the current user has on the playlist
-                foreach($seminar_playlist->playlist->perms as $perm) {
-                    if ($perm->perm == 'owner' || $perm->perm == 'write' || $perm->perm == 'read') {
-                        // Add playlist, if the user has access
-                        $playlist_list[] = $seminar_playlist->toSanitizedArray();
-                    }
-                }
             }
+
+            $playlist_list[] = $data;
         }
 
-        return $this->createResponse($playlist_list, $response);
+        $courses_ids = PlaylistSeminars::getCoursePlaylistsCourses($course_id);
+
+        return $this->createResponse([
+            'playlists' => $playlist_list,
+            'count'     => $seminar_playlists['count'],
+            'tags'      => Tags::getCoursePlaylistsTags($course_id),
+            'courses'   => PlaylistSeminars::getCoursesArray($courses_ids),
+        ], $response);
     }
 }

@@ -51,7 +51,8 @@ class PlaylistSeminars extends \SimpleORMap
      *      ...
      *  ];
      */
-    public static function getUserVideosCourses() {
+    public static function getUserVideosCourses()
+    {
         global $user, $perm;
 
         $query = 'SELECT DISTINCT ops.seminar_id FROM oc_playlist_seminar AS ops'.
@@ -89,7 +90,8 @@ class PlaylistSeminars extends \SimpleORMap
      *      ...
      *  ];
      */
-    public static function getPlaylistVideosCourses($playlist_id, $cid) {
+    public static function getPlaylistVideosCourses($playlist_id, $cid)
+    {
         global $perm;
 
         $query = 'SELECT DISTINCT ops.seminar_id FROM oc_playlist_seminar AS ops'.
@@ -110,5 +112,98 @@ class PlaylistSeminars extends \SimpleORMap
         $stmt = \DBManager::get()->prepare($query);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get the courses from all playlists the user has access to
+     *
+     * @return array
+     *  [
+     *      course1,
+     *      course2,
+     *      course3,
+     *      ...
+     *  ];
+     */
+    public static function getUserPlaylistsCourses()
+    {
+        global $user;
+
+        $query = "SELECT DISTINCT ops.seminar_id FROM oc_playlist_seminar AS ops".
+                " LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = ops.playlist_id)".
+                " WHERE ocp.user_id = :user_id".
+                " AND ocp.perm IN ('owner', 'write', 'read')";
+        $params[':user_id'] = $user->id;
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get the courses from all playlists of a course the user has access to
+     *
+     * @return array
+     *  [
+     *      course1,
+     *      course2,
+     *      course3,
+     *      ...
+     *  ];
+     */
+    public static function getCoursePlaylistsCourses(String $cid)
+    {
+        global $user;
+
+        $query = "SELECT DISTINCT seminar_id FROM oc_playlist_seminar".
+            " WHERE playlist_id IN (".
+            " SELECT ops.playlist_id FROM oc_playlist_seminar AS ops".
+            " LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = ops.playlist_id)".
+            " WHERE seminar_id = :cid".
+            " AND (ops.is_default = 1 OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read')))";
+        $params = [
+            ':user_id'  => $user->id,
+            ':cid'      => $cid,
+        ];
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Get sanitized array of courses to send to the frontend.
+     * Only courses to which the user has access are returned.
+     *
+     * @param array $courses_ids id of courses
+     * @param String|null $user_id user id
+     * @return array sanitized array of courses
+     */
+    public static function getCoursesArray(Array $courses_ids, String $user_id = null) {
+        global $perm;
+
+        $courses = [];
+        foreach ($courses_ids as $course_id) {
+            $course = \Course::find($course_id);
+
+            // Check if user has access to this seminar
+            if ($perm->have_studip_perm($course_id, 'user', $user_id)) {
+                $lecturers = [];
+                $lecturers_obj = $course->getMembersWithStatus('dozent');
+                foreach ($lecturers_obj as $lecturer) {
+                    $lecturers[] = [
+                        'username'    => $lecturer->username,
+                        'name'  => $lecturer->getUserFullname(),
+                    ];
+                }
+
+                $courses[] = [
+                    'id'        => $course->id,
+                    'name'      => $course->getFullname('number-name'),
+                    'lecturers' => $lecturers,
+                ];
+            }
+        }
+        return $courses;
     }
 }

@@ -83,12 +83,12 @@ class VideoAddToPlaylist extends OpencastController
 
             $message = [
                 'type' => 'success',
-                'text' => _('Die Wiedergabelisten-Verknüpfungen des Videos wurden aktualisiert.')
+                'text' => _('Das Video wurde der Wiedergabeliste hinzugefügt.')
             ];
         } catch (\Throwable $th) {
             $message = [
                 'type' => 'error',
-                'text' => _('Die Wiedergabelisten-Verknüpfungen des Videos konnten nicht aktualisiert werden!') . $th->getMessage()
+                'text' => _('Das Video konnte der Wiedergabeliste nicht hinzugefügt werden!') . $th->getMessage()
             ];
         }
 
