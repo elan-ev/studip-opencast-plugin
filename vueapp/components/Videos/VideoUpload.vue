@@ -109,11 +109,11 @@
                                 Workflow
                             </span>
 
-                            <select v-model="upload.workflow" required>
+                            <select v-model="selectedWorkflow" required>
                                 <option v-for="workflow in upload_workflows"
                                     v-bind:key="workflow.id"
-                                    :value="workflow.id">
-                                    {{ workflow.name }}
+                                    :value="workflow">
+                                    {{ workflow.displayname }}
                                 </option>
                             </select>
                         </label>
@@ -122,10 +122,8 @@
                             <span class="required" v-translate>
                                 Datei(en)
                             </span>
-                            <p class="help" v-translate>
-                                Mindestens ein Video wird benötigt. Unterstützte Formate sind
-                                .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v,
-                                .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2
+                            <p class="help">
+                                {{ uploadFilesText }}
                             </p>
                         </label>
 
@@ -136,7 +134,7 @@
                                 </StudipButton>
                                 <input type="file" class="video_upload" data-flavor="presenter/source"
                                     @change="previewFiles" ref="oc-file-presenter"
-                                    accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                                    :accept=uploadFileTypes>
                             </label>
 
                                    <!--
@@ -163,7 +161,7 @@
                                 </StudipButton>
                                 <input type="file" class="video_upload" data-flavor="presentation/source"
                                     @change="previewFiles" ref="oc-file-presentation"
-                                    accept=".avi,.mkv,.mp4,.webm,.mov,.ogg,.ogv,video/mp4,video/x-m4v,video/webm,video/ogg,video/mpeg,video/*">
+                                    :accept=uploadFileTypes>
                             </label>
                                       <!--
                             <div style="display:none" class="invalid_media_type_warning">
@@ -231,11 +229,11 @@ export default {
         return {
             showAddEpisodeDialog: false,
             selectedServer: false,
+            selectedWorkflow: false,
             fileUploadError: false,
             upload: {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
-                workflow: null,
                 playlist_token: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
@@ -275,16 +273,21 @@ export default {
         },
 
         upload_workflows() {
-            let upload_wfs = [];
+            return this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
+        },
 
-            let wfs = this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
-            for (let wf of wfs) {
-                upload_wfs.push({
-                    id: wf['name'],
-                    name: wf['displayname']
-                });
-            }
-            return upload_wfs;
+        uploadFileTypes() {
+            return this.selectedWorkflow?.settings?.upload_file_types || this.config.default_upload_file_types;
+        },
+
+        uploadFilesText() {
+            let fileTypes = this.uploadFileTypes.split(',')
+                .map(type => type.trim())
+                .filter(type => type.search(/^\./) !== -1);    // Only show types starting with a dot, e.g. ".mp4"
+
+            return this.$gettext('Mindestens ein Video wird benötigt. Unterstützte Formate: %{ file_types }.', {
+                file_types: fileTypes.join(', '),
+            })
         },
 
         uploadButtonClasses() {
@@ -301,7 +304,7 @@ export default {
                     && wf_config['used_for'] === 'upload'
             )['workflow_id'];
 
-            return this.config['workflows'].find(wf => wf['id'] == wf_id)['name'];
+            return this.config['workflows'].find(wf => wf['id'] == wf_id);
         },
 
         infoText()
@@ -400,7 +403,7 @@ export default {
 
             let view = this;
 
-            this.uploadService.upload(files, uploadData, this.upload.workflow, {
+            this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, {
                 uploadProgress: (track, loaded, total) => {
                     view.uploadProgress = {
                         flavor: track.flavor,
@@ -462,7 +465,7 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
-            this.upload.workflow = this.defaultWorkflow;
+            this.selectedWorkflow = this.defaultWorkflow;
         })
 
         if (this.cid) {

@@ -142,6 +142,16 @@ class Config extends \SimpleOrMap
         }
         WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
 
+        // Update workflow settings
+        $workflow_settings = [];
+        if (isset($json['settings']['workflow_settings'])) {
+            foreach ($json['settings']['workflow_settings'] as $wf_setting) {
+                $workflow_settings[$wf_setting['id']] = $wf_setting;
+            }
+            unset($json['settings']['workflow_settings']);
+        }
+        Workflow::updateSettings($this->id, $workflow_settings);
+
         $this->setData($json);
         return $this->store();
     }
