@@ -215,14 +215,14 @@ export default {
     name: 'VideoUpload',
 
     components: {
-    StudipDialog,
-    Error,
-    MessageBox,
-    StudipButton,
-    VideoFilePreview,
-    ProgressBar,
-    MessageList
-},
+        StudipDialog,
+        Error,
+        MessageBox,
+        StudipButton,
+        VideoFilePreview,
+        ProgressBar,
+        MessageList
+    },
 
     emits: ['done', 'cancel'],
 
