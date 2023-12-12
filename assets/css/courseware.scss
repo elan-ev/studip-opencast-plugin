@@ -93,6 +93,10 @@
     background: var(--content-color-40);
 }
 
+.oc-cw-video-list tbody tr.oc-cw-video-selected {
+    background: var(--content-color-40);
+}
+
 .oc-cw-pagination {
     margin-bottom: 1em;
     display: flex;

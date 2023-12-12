@@ -1,5 +1,5 @@
 <template>
-    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" @click="$emit('setVideo', event)" style="cursor: pointer" title="Video auswählen">
+    <tr class="oc--episode" :class="{'oc-cw-video-selected' : selected}" v-if="event.refresh === undefined" :key="event.id" @click="$emit('setVideo', event)" style="cursor: pointer" title="Video auswählen">
         <td class="oc--playercontainer">
             <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
                @click="redirectAction(`/video/` + event.token)" target="_blank"
@@ -119,6 +119,10 @@ export default {
         numberOfColumns: {
             type: Number,
             required: true
+        },
+        selected: {
+            type: Boolean,
+            default: false
         }
     },
 

@@ -59,6 +59,7 @@
                             @redirectAction="redirectAction"
                             :isLTIAuthenticated="isLTIAuthenticated"
                             :simple_config_list="simple_config_list"
+                            :selected="selectedVideoId === event.token"
                         ></VideoRow>
                     </template>
                 </tbody>
