@@ -15,7 +15,7 @@
         <SearchBar v-if="!videoSortMode"
             :availableTags="videosTags"
             :availablePlaylists="playlists"
-            :availableCourses="videosCourses"
+            :availableCourses="isCourse ? null : videosCourses"
             :activePlaylist="playlist"
             @search="doSearch"
        />
