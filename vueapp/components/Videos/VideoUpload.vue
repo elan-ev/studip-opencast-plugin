@@ -285,7 +285,7 @@ export default {
                 .map(type => type.trim())
                 .filter(type => type.search(/^\./) !== -1);    // Only show types starting with a dot, e.g. ".mp4"
 
-            return this.$gettext('Mindestens ein Video wird benötigt. Unterstützte Formate: %{ file_types }.', {
+            return this.$gettext('Mindestens eine Aufzeichnung wird benötigt. Unterstützte Formate: %{ file_types }.', {
                 file_types: fileTypes.join(', '),
             })
         },
