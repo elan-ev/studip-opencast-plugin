@@ -77,12 +77,11 @@ import PaginationButtons from './PaginationButtons.vue';
 import VideoRow from './VideoRow.vue';
 import EmptyVideoRow from './EmptyVideoRow.vue';
 import LtiAuth from './LtiAuth.vue';
-import axios from 'axios';
 
 export default {
     name: "CoursewareVideoTable",
 
-    props: ['videos', 'paging', 'selectedVideoId', 'loadingVideos', 'limit', 'sorts', 'videoSort'],
+    props: ['videos', 'paging', 'selectedVideoId', 'loadingVideos', 'limit', 'sorts', 'videoSort', 'isLTIAuthenticated', 'simple_config_list'],
 
     components: {
         PaginationButtons,
@@ -95,8 +94,6 @@ export default {
         return {
             interval: null,
             interval_counter: 0,
-            isLTIAuthenticated: {},
-            simple_config_list: null,
             numberOfColumns: 5
         }
     },
@@ -116,23 +113,6 @@ export default {
                 classes.push(this.videoSort.order === 'asc' ? 'sortasc' : 'sortdesc');
             }
             return classes;
-        },
-
-        checkLTIAuthentication(server)
-        {
-            axios({
-                method: 'GET',
-                url: server.name + "/lti/info.json",
-                crossDomain: true,
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-                }
-            }).then((response) => {
-                if (response.status == 200 && response.data.user_id !== undefined) {
-                    this.$set(this.isLTIAuthenticated, server.id, true);
-                }
-            });
         },
 
         redirectAction(action) {
@@ -163,31 +143,5 @@ export default {
             this.$emit('doSort', videoSort)
         }
     },
-
-    mounted() {
-        let view = this;
-
-        axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/api/config/simple')
-            .then(({data}) => {
-                view.simple_config_list = data;
-
-                let server = data['server'];
-
-                view.interval = setInterval(() => {
-                    for (let id in server) {
-                        if (!view.isLTIAuthenticated[id]) {
-                            view.checkLTIAuthentication(server[id]);
-                        }
-                    }
-
-                    view.interval_counter++;
-
-                    // prevent spamming of oc server
-                    if (view.interval_counter > 10) {
-                        clearInterval(view.interval);
-                    }
-                }, 2000);
-            });
-    }
 }
 </script>
