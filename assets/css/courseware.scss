@@ -16,7 +16,6 @@
     width: 100%;
     float: left;
     margin-right: 5px;
-    flex: 3;
 
     display: flex;
     flex-direction: row;
@@ -39,16 +38,11 @@
     font-size: 16px;
     border: none;
     width: 100%;
+    min-width: 100%
 }
 
 .oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-input input:focus {
     outline: none;
-}
-
-.oc-cw-searchbar .oc-cw-searchbar-sorter {
-    flex: 1;
-    min-width: 12em;
-    height: 40px !important;
 }
 
 .oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-search-icon {

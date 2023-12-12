@@ -33,7 +33,6 @@
                     </label>
                     <CoursewareSearchBar
                         @doSearch="performSearch"
-                        @doSort="performSort"
                     />
                     <CoursewareVideoTable
                         :videos="videos"
