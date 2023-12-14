@@ -36,7 +36,7 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list oc--sidebar-links widget-links">
-                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos'">
+                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos' && currentUserSeries">
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                     {{ $gettext('Medien hochladen') }}
                 </li>

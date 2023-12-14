@@ -59,7 +59,24 @@ export default {
             'showCourseCopyDialog',
             'showPlaylistAddVideosDialog',
             'cid',
+            'course_config'
         ]),
+
+        canEdit() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.edit_allowed;
+        },
+
+        canUpload() {
+            if (!this.course_config || !this.course_config?.series?.series_id) {
+                return false;
+            }
+
+            return this.course_config.upload_allowed;
+        },
 
         toLayoutName() {
             if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
@@ -79,22 +96,6 @@ export default {
     },
 
     methods: {
-        canEdit() {
-            if (!this.course_config) {
-                return false;
-            }
-
-            return this.course_config.edit_allowed;
-        },
-
-        canUpload() {
-            if (!this.course_config) {
-                return false;
-            }
-
-            return this.course_config.upload_allowed;
-        },
-
         enableSortMode() {
             this.$store.dispatch('setVideoSortMode', true)
         },
@@ -131,7 +132,15 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadCurrentUser');
-        this.$store.dispatch('loadCourseConfig', this.cid);
+        this.$store.dispatch('loadCourseConfig', this.cid)
+        .then((course_config) => {
+            if (!course_config?.series?.series_id) {
+                this.$store.dispatch('addMessage', {
+                    type: 'warning',
+                    text: this.$gettext('Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
+                });
+            }
+        });
     }
 };
 </script>
