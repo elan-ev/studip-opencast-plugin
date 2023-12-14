@@ -15,6 +15,7 @@
                         :name="setting.name"
                         :checked="setting.value == true"
                         @change='setValue(true)'
+                        :required="setting.required"
                     >
                     <translate>
                         Ja
@@ -26,6 +27,7 @@
                         :name="setting.name"
                         :checked="setting.value != true"
                         @change='setValue(false)'
+                        :required="setting.required"
                     >
                     <translate>
                         Nein
@@ -44,7 +46,8 @@
                 :name="setting.name"
                 :placeholder="setting.placeholder"
                 v-model="setting.value"
-                @change="setValue(setting.value)">
+                @change="setValue(setting.value)"
+                :required="setting.required">
         </label>
 
         <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options && !isI18N(setting)">
@@ -71,7 +74,8 @@
                 :name="setting.name"
                 :placeholder="setting.placeholder"
                 v-model="setting.value"
-                @change="setValue(setting.value)">
+                @change="setValue(setting.value)"
+                :required="setting.required">
         </label>
 
         <label v-if="setting.type == 'password'">
@@ -85,11 +89,12 @@
             <div class="input-group files-search oc--admin-password">
 
                 <input :type="passwordVisible ? 'text' : 'password'"
-                    @change="updateHiddenPassword"
-                    @focusin="clearTextFieldIfHidden"
-                    @focusout="fillTextFieldIfHidden"
+                    @change="setValue(password)"
+                    @focusin="passwordFocused=true"
+                    @focusout="passwordFocused=false"
                     v-model="password"
                     :placeholder="setting.placeholder"
+                    :required="setting.required"
                 >
 
                 <span class="input-group-append ">
@@ -132,16 +137,29 @@ export default {
 
     data() {
         return {
-            password: '*****',
-            passwordVisible: false
+            passwordInput: '', // Make password initially empty, so that an empty input can be detected
+            passwordVisible: false,
+            passwordFocused: false
         }
     },
 
-    mounted() {
-        if (!this.passwordVisible && this.setting.type == 'password'
-            && this.setting.value)
-        {
-            this.password = '*****';
+    computed: {
+        password: {
+            get() {
+                if (!this.passwordVisible) {
+                    if (this.passwordFocused && this.passwordInput == '*****') {
+                        this.passwordInput = '';
+                    }
+                    else if (!this.passwordFocused && this.setting.value) {
+                        this.passwordInput = '*****';
+                    }
+                }
+
+                return this.passwordInput;
+            },
+            set(newValue) {
+                this.passwordInput = newValue;
+            }
         }
     },
 
@@ -157,28 +175,7 @@ export default {
                 this.password = this.setting.value;
                 this.passwordVisible = true;
             } else {
-                if (this.setting.value) {
-                    this.password = '*****';
-                }
                 this.passwordVisible = false;
-            }
-        },
-
-        updateHiddenPassword() {
-            this.setValue(this.password);
-        },
-
-        clearTextFieldIfHidden()
-        {
-            if (!this.passwordVisible && this.password == '*****') {
-                this.password = '';
-            }
-        },
-
-        fillTextFieldIfHidden()
-        {
-            if (!this.passwordVisible && this.password.length == 0) {
-                this.password = '*****';
             }
         },
 

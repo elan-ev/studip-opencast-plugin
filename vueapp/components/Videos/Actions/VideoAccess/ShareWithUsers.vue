@@ -58,7 +58,7 @@
         </fieldset>
         <footer>
             <StudipButton
-                :disabled="selectedUser == null"
+                :disabled="selectedUser == null || selectedUserPerm == null"
                 icon="accept"
                 @click.prevent="addShareUser()"
             >

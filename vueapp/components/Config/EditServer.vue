@@ -11,7 +11,7 @@
             @close="close"
         >
             <template v-slot:dialogContent ref="editServer-dialog">
-                <form class="default" v-if="currentConfig">
+                <form class="default" v-if="currentConfig" ref="editServer-form">
                     <fieldset>
                         <legend>
                             {{ $gettext('Grundeinstellungen') }}
@@ -175,7 +175,12 @@ export default {
         },
 
         storeConfig() {
+            if (!this.$refs['editServer-form'].reportValidity()) {
+                return false;
+            }
+
             this.disabled = true;
+
             this.$store.dispatch('clearMessages');
 
             this.currentConfig.checked = false;
