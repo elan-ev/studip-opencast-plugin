@@ -2,7 +2,7 @@
     <div class="oc--admin--section">
         <fieldset class="collapsable" v-if="!disabled">
             <legend>
-                {{ $gettext('Upload Dateitypen') }}
+                {{ $gettext('Erlaubte Dateiendungen beim Hochladen von Mediendateien') }}
             </legend>
 
             <ConfigOption v-for="setting in upload_settings"
