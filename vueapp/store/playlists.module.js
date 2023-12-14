@@ -1,7 +1,7 @@
 import ApiService from "@/common/api.service";
 
 const state = {
-    playlists: {},
+    playlists: [],
     playlist: null,
     playlistSearch: '',
     addPlaylist: false,
