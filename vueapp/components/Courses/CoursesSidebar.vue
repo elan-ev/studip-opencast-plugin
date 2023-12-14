@@ -169,7 +169,7 @@ export default {
         StudipIcon,     PlaylistAddCard
     },
 
-    emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist'],
+    emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
 
     data() {
         return {
