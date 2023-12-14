@@ -27,6 +27,8 @@
                     </fieldset>
 
                     <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form"/>
+
+                    <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
                 </form>
 
                 <MessageList :float="true"/>
@@ -57,6 +59,7 @@ import MessageList from "@/components/MessageList";
 import Error from "@/components/Error";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
+import UploadOptions from "@/components/Config/UploadOptions";
 
 import axios from "@/common/axios.service";
 
@@ -70,7 +73,8 @@ export default {
         ConfigOption,
         MessageList,
         Error,
-        WorkflowOptions
+        WorkflowOptions,
+        UploadOptions,
     },
 
     props: {
@@ -187,6 +191,19 @@ export default {
                 if (this.simple_config_list?.workflow_configs) {
                     this.currentConfig.workflow_configs = this.simple_config_list.workflow_configs;
                 }
+
+                // Add workflow settings
+                if (this.simple_config_list?.workflows) {
+                    let workflow_settings = [];
+                    for (let workflow of this.simple_config_list?.workflows) {
+                        workflow_settings.push({
+                            'id': workflow.id,
+                            ...workflow.settings,
+                        });
+                    }
+                    this.currentConfig.workflow_settings = workflow_settings;
+                }
+
                 this.$store.dispatch('configUpdate', this.currentConfig)
                 .then(({ data }) => {
                     this.$store.dispatch('configListRead', data.config);

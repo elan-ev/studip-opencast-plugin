@@ -48,15 +48,16 @@ class SimpleConfigList extends OpencastController
         $workflow_configs = new \SimpleCollection(WorkflowConfig::findBySql('1'));
 
         return $this->createResponse([
-            'server'    => $config_list ?: [],
-            'settings'  => $this->getGlobalConfig(),
-            'workflows' => $workflows->toArray(),
-            'workflow_configs' => $workflow_configs->toArray(),
-            'plugin_assets_url' => \PluginEngine::getPlugin('Opencast')->getAssetsUrl(),
-            'auth_url'          => \PluginEngine::getURL('opencast', [], 'redirect/authenticate', true),
-            'redirect_url'      => \PluginEngine::getURL('opencast', [], 'redirect/perform', true),
-            'course_id'         => \Context::getId() ?: null,
-            'user_language'     => getUserLanguage($user->id)
+            'server'                    => $config_list ?: [],
+            'settings'                  => $this->getGlobalConfig(),
+            'workflows'                 => $workflows->toArray(),
+            'workflow_configs'          => $workflow_configs->toArray(),
+            'plugin_assets_url'         => \PluginEngine::getPlugin('Opencast')->getAssetsUrl(),
+            'auth_url'                  => \PluginEngine::getURL('opencast', [], 'redirect/authenticate', true),
+            'redirect_url'              => \PluginEngine::getURL('opencast', [], 'redirect/perform', true),
+            'course_id'                 => \Context::getId() ?: null,
+            'user_language'             => getUserLanguage($user->id),
+            'default_upload_file_types' => Workflow::DEFAULT_UPLOAD_FILE_TYPES,
         ], $response);
     }
 
