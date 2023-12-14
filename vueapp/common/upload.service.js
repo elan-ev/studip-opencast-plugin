@@ -202,11 +202,36 @@ class UploadService {
             });
         }, Promise.resolve())
         .then(() => {
+            return obj.republishMetadata(episode_id);
+        })
+        .then(() => {
             uploadDone();
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
             if (error.code === 'ERR_NETWORK') {
                 obj.networkError(onError)
+            } else {
+                onError(error);
             }
+        });
+    }
+
+    async republishMetadata(episode_id) {
+        return axios({
+            url: this.service_url + "/api/workflows",
+            method: "POST",
+            data: new URLSearchParams({
+                event_identifier: episode_id,
+                workflow_definition_identifier: "republish-metadata",
+            }),
+            crossDomain: true,
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
+        })
+        .catch(function (error) {
+            return Promise.reject(error);
         });
     }
 
