@@ -64,12 +64,12 @@ export default {
             selectedCourses: [],
             add_course_error: {
                 type: 'error',
-                text: 'Beim Hinzufügen des Kurses ist ein Fehler aufgetreten.',
+                text: $gettext('Beim Hinzufügen des Kurses ist ein Fehler aufgetreten.'),
                 dialog: true
             },
             remove_course_error: {
                 type: 'error',
-                text: 'Beim Entfernen des Kurses ist ein Fehler aufgetreten.',
+                text: $gettext('Beim Entfernen des Kurses ist ein Fehler aufgetreten.'),
                 dialog: true
             }
         }
