@@ -44,7 +44,6 @@
                 <UserCourseSelectable
                     @add="addCourseToList"
                     :courses="user_courses_filtered"
-                    :selectedCourses="[]"
                 />
             </template>
         </StudipDialog>

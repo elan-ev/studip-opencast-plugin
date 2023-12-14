@@ -9,50 +9,55 @@
             </legend>
 
             <label>
-                <input type="text" :placeholder="$gettext('In Veranstaltungen suchen')" v-model="search">
-                <select v-model="currentCourse" v-if="filteredUserCourses">
-                    <template v-for="course_sem in filteredUserCourses">
-                    <optgroup v-for="(courses, semester) in course_sem" v-bind:key="semester" :label="semester">
-                        <option v-for="course in courses"
-                            :value="course.id" v-bind:key="course.id"
-                        >
-                            {{ course.name }}
-                        </option>
-                    </optgroup>
+                <studip-select :options="filteredUserCourses" v-model="currentCourse"
+                    label="name"
+                    track-by="id"
+                    :selectable="option => !option.header"
+                    :filterable="false"
+                    @search="updateSearch"
+                    placeholder="Bitte einen Kurs auswählen"
+                >
+                    <template #list-header>
+                        <li style="text-align: center">
+                            <b>{{ $gettext('Kurse') }}</b>
+                        </li>
                     </template>
-                </select>
-            </label>
+                    <template #no-options="{ search, searching, loading }">
+                        {{ $gettext('Keine Kurse gefunden!')}}
+                    </template>
+                    <template #selected-option="option">
+                        <span class="vs__option">
+                            {{ option.name }}
+                        </span>
+                    </template>
+                    <template #option="{ name, header }">
+                        <span v-if="header" class="vs__option">
+                            {{ name }}
+                        </span>
+                        <span v-else class="vs__option">
+                            {{ name }}
+                        </span>
+                    </template>
+                </studip-select >
+            </label>  
         </fieldset>
-        <footer>
-            <StudipButton
-                :disabled="currentCourse == null"
-                icon="accept"
-                @click.prevent="returnSelectedCourse()"
-            >
-                {{ $gettext('Kurs auswählen') }}
-            </StudipButton>
-        </footer>
     </form>
 </template>
 
 <script>
-import StudipButton from "@studip/StudipButton";
+import StudipSelect from '@studip/StudipSelect';
 
 export default {
     name: 'UserCourseSelectable',
 
     components: {
-        StudipButton
+        StudipSelect,
     },
 
     props: {
         courses: {
             type: Object,
             required: true
-        },
-
-        selectedCourses: {
-            type: Array
         }
     },
 
@@ -64,88 +69,71 @@ export default {
     },
 
     computed: {
-
         filteredUserCourses() {
-            let noCoursesFound = {};
-            noCoursesFound['0'] = {}
-            noCoursesFound['0'][this.$gettext('Keine Treffer')] = [{
-                id: 0,
-                name: this.$gettext('Keine Kurse gefunden.')
-            }];
-
-            if (this.courses.length == 0) {
-                this.currentCourse = null;
-                return noCoursesFound;
-            }
-
-            /*
-            if (!this.search) {
-                this.currentCourse = Object.values(Object.values(this.courses)[0])[0][0].id;
-                return this.courses;
-            }
-            */
-
-            let course_list = {};
-            let search      = this.search ? this.search.toLowerCase() : null;
+            let course_list = [];
 
             for (let id in this.courses) {
-                let courses = this.courses[id];
-                let sem     = Object.keys(courses)[0];
+                let courses    = this.courses[id];
+                let sem        = Object.keys(courses)[0];
+                let sem_search = this.search && sem.toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
+
                 courses = courses[sem];
 
+                // Handle search
+                // Only filter courses if semester does not match search
                 courses = courses.filter((course) => {
-                    return (
-                        (!this.search || course['name'].toLowerCase().indexOf(search) >= 0)
-                        &&
-                        (!this.selectedCoursesList || !this.selectedCoursesList[course['id']])
-                    );
+                    return sem_search || !this.search || course['name'].toLowerCase().indexOf(this.search.toLowerCase()) >= 0;
                 });
 
                 if (courses.length > 0) {
-                    course_list[id] = {}
-                    course_list[id][sem] = courses
+                    // Add semester as header
+                    course_list.push({
+                        name: sem,
+                        header: true
+                    })
+                    // Add courses as no header
+                    courses.forEach(course => {
+                        course_list.push({
+                            name: course.name,
+                            id: course.id,
+                            header: false
+                        })
+                    });
                 }
             }
 
-            if (Object.keys(course_list).length == 0) {
-                this.currentCourse = null;
-                return noCoursesFound;
-            }
-
-            this.currentCourse = Object.values(Object.values(course_list)[0])[0][0].id;
-
             return course_list;
-        },
-
-        selectedCoursesList() {
-            let courses = {};
-
-            for (let i = 0; i < this.selectedCourses.length; i++) {
-                courses[this.selectedCourses[i].id] = true;
-            }
-
-            return courses;
         }
     },
 
     methods: {
-        returnSelectedCourse() {
-            let course = () => {
-                let course;
+        updateSearch(search, loading) {
+            this.search = search;
+        }
+    },
 
-                for (let id1 in this.courses) {
-                    for (let id2 in this.courses[id1]) {
-                        for (let i = 0; i < this.courses[id1][id2].length; i++) {
-                            course = this.courses[id1][id2][i];
-                            if (course.id == this.currentCourse) {
-                               return course;
+    watch: {
+        // Didn't find a way to use something like onChange with studip-select, so we have to watch the currentCourse
+        currentCourse(selectedCourse) {
+            if (selectedCourse) {
+                let course = () => {
+                    let course;
+
+                    for (let id1 in this.courses) {
+                        for (let id2 in this.courses[id1]) {
+                            for (let i = 0; i < this.courses[id1][id2].length; i++) {
+                                course = this.courses[id1][id2][i];
+                                if (course.id == selectedCourse.id) {
+                                    return course;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            this.$emit('add', course());
+                this.currentCourse = null;
+                this.$emit('add', course());
+            }
         }
     }
 }
