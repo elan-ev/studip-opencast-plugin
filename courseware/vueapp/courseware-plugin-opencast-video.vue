@@ -13,6 +13,7 @@
                 <div>
                     <span v-if="!currentVideoId" v-text="$gettext('Es wurde bisher kein Video ausgewählt')"></span>
                     <span v-else-if="!currentEpisodeURL" v-text="$gettext('Dieses Video hat keinen Veröffentlichungs-URL-Link')"></span>
+                    <span v-else-if="!isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
                     <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen
@@ -33,7 +34,6 @@
                     </label>
                     <CoursewareSearchBar
                         @doSearch="performSearch"
-                        @doSort="performSort"
                     />
                     <CoursewareVideoTable
                         :videos="videos"
@@ -46,6 +46,8 @@
                         @doSort="performSort"
                         :sorts="sorts"
                         :videoSort="sortObj"
+                        :simple_config_list="simple_config_list"
+                        :isLTIAuthenticated="isLTIAuthenticated"
                     />
                 </form>
             </template>
@@ -108,6 +110,8 @@ export default {
             currentVideoId : null,
             currentEpisodeURL : null,
             currentVisible : '',
+            isLTIAuthenticated: {},
+            simple_config_list: null,
         }
     },
 
@@ -125,6 +129,11 @@ export default {
                 }) ?? {}
             );
         },
+
+        isCurrentVideoLTIAuthenticated() {
+            let currentVideo = this.videos.find(video => video.token === this.currentVideoId);
+            return this.isLTIAuthenticated[currentVideo.config_id];
+        }
     },
 
     methods: {
@@ -227,11 +236,52 @@ export default {
                     view.loadingVideos = false;
                 })
         },
+
+        checkLTIAuthentication(server)
+        {
+            axios({
+                method: 'GET',
+                url: server.name + "/lti/info.json",
+                crossDomain: true,
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                }
+            }).then((response) => {
+                if (response.status == 200 && response.data.user_id !== undefined) {
+                    this.$set(this.isLTIAuthenticated, server.id, true);
+                }
+            });
+        },
     },
 
     mounted() {
         this.initCurrentData();
         this.loadVideos();
+
+        let view = this;
+
+        axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/api/config/simple')
+            .then(({data}) => {
+                view.simple_config_list = data;
+
+                let server = data['server'];
+
+                view.interval = setInterval(() => {
+                    for (let id in server) {
+                        if (!view.isLTIAuthenticated[id]) {
+                            view.checkLTIAuthentication(server[id]);
+                        }
+                    }
+
+                    view.interval_counter++;
+
+                    // prevent spamming of oc server
+                    if (view.interval_counter > 10) {
+                        clearInterval(view.interval);
+                    }
+                }, 2000);
+            });
     },
 
     inject: ["containerComponents"],

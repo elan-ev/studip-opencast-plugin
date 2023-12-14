@@ -7,7 +7,7 @@
                     v-on:keyup.enter="doSearch"
                     v-model="inputSearch"
                     placeholder="Suche..."
-                    @submit="doSearch"
+                    @input="doSearch"
                 />
             </li>
             <li title="Suche starten"
