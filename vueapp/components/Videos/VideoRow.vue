@@ -70,6 +70,9 @@
                    @click="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
+                <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')">
+                    {{event.title}}
+                </span>
                 <span v-else>
                     {{event.title}}
                 </span>
