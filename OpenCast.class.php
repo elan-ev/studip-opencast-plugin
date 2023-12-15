@@ -278,6 +278,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         require_once __DIR__ . '/vendor/autoload.php';
 
         if (substr($unconsumed_path, 0, 3) == 'api') {
+            // make sure, slim knows if we are running https, see https://github.com/elan-ev/studip-opencast-plugin/issues/816
+            if (strpos($GLOBALS['ABSOLUTE_URI_STUDIP'], 'https') === 0) {
+                $_SERVER['HTTPS'] = 'on';
+            }
+
             $appFactory = new AppFactory();
             $app = $appFactory->makeApp($this);
             $app->group('/opencast/api', new RouteMap($app));
