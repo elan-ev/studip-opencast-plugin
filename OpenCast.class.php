@@ -356,4 +356,20 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $manifest = $plugin_manager->getPluginManifest($plugin_path);
         return $manifest;
     }
+
+    /**
+     * @inherited
+     */
+    public static function onEnable($plugin_id)
+    {
+        // add nobody role to plugin for it to function correctly
+        foreach (RolePersistence::getAllRoles() as $role) {
+            if ($role->systemtype && $role->rolename == 'Nobody') {
+                RolePersistence::assignPluginRoles($plugin_id, [$role->roleid]);
+                break;
+            }
+        }
+
+        RolePersistence::expirePluginCache($plugin_id);
+    }
 }
