@@ -62,6 +62,22 @@ export default {
 
     emits: ['done', 'cancel'],
 
+    data() {
+        return {
+            add_playlist_error: {
+                type: 'error',
+                message: this.$gettext('Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten.'),
+                dialog: true
+            },
+
+            remove_playlist_error: {
+                type: 'error',
+                message: this.$gettext('Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten.'),
+                dialog: true
+            },
+        }
+    },
+
     computed: {
     ...mapGetters(['playlists'])
     },
@@ -78,7 +94,7 @@ export default {
                 // find the index of the playlist that was just added and remove it
                 let index = this.event.playlists.findIndex(p => p.token == playlist.token);
                 this.event.playlists.splice(index, 1);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', add_playlist_error);
             });
         },
 
@@ -96,7 +112,7 @@ export default {
             .catch(() => {
                 // add the playlist back to the list
                 this.event.playlists.splice(index, 0, link);
-                this.$store.dispatch('addMessage', this.$gettext('Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten.'));
+                this.$store.dispatch('addMessage', remove_playlist_error);
             });
         },
     },

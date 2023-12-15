@@ -2,8 +2,8 @@
     <div :class="{
             'oc--messages-float': float
         }">
-        <template v-if="messages.length">
-            <MessageBox v-for="message in messages"
+        <template v-if="currentMessages.length">
+            <MessageBox v-for="message in currentMessages"
                 :key="message.id"
                 :type="message.type" @hide="removeMessage(message.id)">
                     {{ message.text }}
@@ -20,19 +20,43 @@ import MessageBox from '@/components/MessageBox';
 export default {
     name: 'MessageList',
 
-    props: ['float'],
+    props: {
+        float: {
+            type: Boolean,
+            default: false
+        },
+        dialog: {
+            type: Boolean,
+            default: false
+        }
+    },
 
     components: {
         MessageBox
     },
 
     computed: {
-        ...mapGetters(['messages'])
+        ...mapGetters(['messages']),
+
+        currentMessages() {
+            if (this.dialog) {
+                return this.messages.filter(m => m.dialog === true);
+            }
+            else {
+                return this.messages.filter(m => m.dialog === false || m.dialog === undefined);
+            }
+        }
     },
 
     methods: {
         removeMessage(id) {
             this.$store.commit('removeMessage', id);
+        }
+    },
+
+    unmounted() {
+        if (this.dialog) {
+            this.$store.dispatch("clearMessages", this.dialog);
         }
     }
 }

@@ -26,18 +26,30 @@ export const actions = {
             context.dispatch('errorClear');
         }
 
-        // If a message already exists, remove it so it appears as a new one on the bottom of the list
-        let current_message = state.messages.find(msg => msg.type == message.type && msg.text == message.text);
-        if (current_message) {
+        let messages = state.messages;
+        let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog);
+
+        if (!current_message) {
+            context.commit('incrementMessageMaxId')
+            message.id = state.message_max_id;
+            context.commit('setMessage', message);
+        } else {
             context.commit('removeMessage', current_message.id);
         }
-        context.commit('incrementMessageMaxId')
-        message.id = state.message_max_id;
-        context.commit('setMessage', message);
     },
 
-    clearMessages(context) {
-        context.commit('setMessages', []);
+    removeMessage(context, message) {
+        let id = state.messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog).id;
+        context.commit('removeMessage', id);
+    },
+
+    clearMessages(context, is_dialog) {
+        if (is_dialog) {
+            context.commit('setMessages', state.messages.filter(m => !m.dialog));
+        }
+        else {
+            context.commit('setMessages', state.messages.filter(m => m.dialog));
+        }
     }
 };
 

@@ -190,6 +190,7 @@
                 </form>
 
                 <Error :float="true"/>
+                <MessageList :float="true" :dialog="true"/>
             </template>
         </StudipDialog>
     </div>
@@ -202,6 +203,7 @@ import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
 import Error from "@/components/Error";
 import MessageBox from '@/components/MessageBox'
+import MessageList from '@/components/MessageList';
 import VideoFilePreview from '@/components/Videos/VideoFilePreview'
 import ProgressBar from '@/components/ProgressBar'
 
@@ -219,6 +221,7 @@ export default {
         StudipButton,
         VideoFilePreview,
         ProgressBar,
+        MessageList
     },
 
     emits: ['done', 'cancel'],
@@ -446,7 +449,11 @@ export default {
                     });
                 },
                 onError: (response) => {
-                    this.$store.dispatch('errorCommit', response);
+                    this.$store.dispatch('addMessage', {
+                        type: 'error',
+                        text: response,
+                        dialog: true
+                    });
                 }
             });
         },

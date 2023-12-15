@@ -31,8 +31,8 @@
                     <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
                 </form>
 
-                <MessageList :float="true"/>
                 <Error :float="true"/>
+                <MessageList :float="true" :dialog="true"/>
             </template>
 
             <template v-slot:dialogButtons>
@@ -90,8 +90,7 @@ export default {
     data() {
         return {
             currentConfig: {},
-            disabled: false,
-            newId: null
+            disabled: false
         }
     },
 
@@ -102,7 +101,7 @@ export default {
         }),
 
         currentId() {
-            return this.newId ? this.newId : this.id;
+            return this.currentConfig.id ? this.currentConfig.id : this.id;
         },
 
         settings() {
@@ -180,8 +179,7 @@ export default {
             }
 
             this.disabled = true;
-
-            this.$store.dispatch('clearMessages');
+            this.$store.dispatch('clearMessages', true);
 
             this.currentConfig.checked = false;
 
@@ -258,17 +256,19 @@ export default {
                         // Just show success message if server was edited
                         this.$store.dispatch('addMessage', {
                             type: data.message.type,
-                            text: data.message.text
+                            text: data.message.text,
+                            dialog: !lti_checked
                         });
                     }
                     else {
                         // On create, scroll to the default workflow configuration
                         this.$store.dispatch('addMessage', {
                             type: data.message.type,
-                            text: data.message.text + this.$gettext('Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.')
+                            text: data.message.text + this.$gettext(' Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'),
+                            dialog: true
                         });
 
-                        this.newId = data.config.id;
+                        this.currentConfig = data.config;
                         this.$store.dispatch('simpleConfigListRead');
 
                         let view = this;
@@ -282,7 +282,16 @@ export default {
 
                     if (!lti_checked) {
                         // Show LTI error
-                        this.postLtiCheckFailedMessage();
+                        this.$store.dispatch('addMessage', {
+                            type: 'warning',
+                            text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
+                                + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
+                                + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
+                                + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                                + 'Header zu setzen.'
+                            ),
+                            dialog: true
+                        });
                     }
                     else if (this.currentId !== 'new') {
                         // Only close dialog, if lti successfull and no new server was created
@@ -295,7 +304,8 @@ export default {
 
             this.$store.dispatch('addMessage', {
                     type: 'error',
-                    text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.')
+                    text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.'),
+                    dialog: true
             });
         },
 
@@ -323,27 +333,12 @@ export default {
             }
         },
 
-        postLtiCheckFailedMessage()
-        {
-            this.$store.dispatch('addMessage', {
-                type: 'warning',
-                text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
-                    + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
-                    + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                    + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
-                    + 'Header zu setzen.'
-                )
-            });
-        },
-
         updateValue(setting, newValue) {
             this.currentConfig[setting.name] = newValue;
         },
     },
 
     mounted() {
-        this.$store.dispatch('clearMessages');
-
         if (this.currentId !== 'new') {
             if (!this.config) {
                 this.$store.dispatch('configRead', this.currentId)

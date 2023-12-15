@@ -21,7 +21,7 @@
             </span>
             <span class="oc--admin--server-icons">
                 <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
-                    <span class="tooltip-content">
+                    <span class="tooltip-content" style="display: none">
                         {{ $gettext('Verbindungstest fehlgeschlagen.') }}
                     </span>
                     <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
@@ -49,7 +49,7 @@
         <EditServer v-if="isShow"
             :id="config ? config.id : 'new'"
             :config="config"
-            @close="closeEditServer"
+            @close="isShow = false;"
         />
     </div>
 </template>
@@ -81,12 +81,16 @@ export default {
             checkFailed: false,
             interval: null,
             interval_counter: 0,
-            error_msg: this.$gettext('Überprüfung der Verbindung fehlgeschlagen! '
-                + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
-                + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
-                + 'Header zu setzen.'
-            )
+            error_msg: {
+                type: 'error',
+                text: this.$gettext('Überprüfung der Verbindung fehlgeschlagen! '
+                    + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
+                    + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
+                    + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                    + 'Header zu setzen.'
+                ),
+                dialog: true
+            }
         }
     },
 
@@ -98,8 +102,7 @@ export default {
 
     computed: {
         ...mapGetters([
-            'isLTIAuthenticated',
-            'errors',
+            'isLTIAuthenticated'
         ])
     },
 
@@ -129,14 +132,9 @@ export default {
         showEditServer() {
             this.isShow = true;
 
-            if (this.checkFailed && !this.errors.find((e) => e === this.error_msg)) {
-                this.$store.dispatch('errorCommit', this.error_msg);
+            if (this.checkFailed) {
+                this.$store.dispatch('addMessage', this.error_msg);
             }
-        },
-
-        closeEditServer() {
-            this.$store.dispatch('errorRemove', this.error_msg);
-            this.isShow = false;
         },
 
         checkLTIPeriodically() {
@@ -148,7 +146,7 @@ export default {
                 .then(() => {
                     // Make sure error is removed when authenticated
                     if (view.isLTIAuthenticated[view.config.id]) {
-                        view.$store.dispatch('errorRemove', this.error_msg);
+                        view.$store.dispatch('removeMessage', this.error_msg);
                         view.checkFailed = false;
                         clearInterval(view.interval);
                     } else {
@@ -172,8 +170,8 @@ export default {
 
     watch: {
         checkFailed: function (newVal) {
-            if (newVal && this.isShow && !this.errors.find((e) => e === this.error_msg)) {
-                this.$store.dispatch('errorCommit', this.error_msg);
+            if (newVal && this.isShow) {
+                this.$store.dispatch('addMessage', this.error_msg);
             }
         }
     }
