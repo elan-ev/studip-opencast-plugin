@@ -72,7 +72,9 @@ Make sure to change the token and add that token to the Opencast config in Stud.
 
 6. Add role `STUDIP` in Opencast
 
-In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`
+In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`. 
+
+> :warning: **If you do not add this group, media uploads WILL fail!**
 
 ----
 
