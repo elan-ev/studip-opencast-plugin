@@ -21,7 +21,7 @@
             </span>
             <span class="oc--admin--server-icons">
                 <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
-                    <span class="tooltip-content">
+                    <span class="tooltip-content" style="display: none">
                         {{ $gettext('Verbindungstest fehlgeschlagen.') }}
                     </span>
                     <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
