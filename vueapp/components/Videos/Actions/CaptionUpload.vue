@@ -102,13 +102,13 @@ export default {
     name: 'CaptionUpload',
 
     components: {
-    StudipDialog,
-    MessageBox,
-    Error,
-    StudipButton,
-    ProgressBar,
-    MessageList
-},
+        StudipDialog,
+        MessageBox,
+        Error,
+        StudipButton,
+        ProgressBar,
+        MessageList
+    },
 
     emits: ['done', 'cancel'],
 
