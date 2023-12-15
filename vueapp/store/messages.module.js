@@ -36,10 +36,6 @@ export const actions = {
         } else {
             context.commit('removeMessage', current_message.id);
         }
-
-        context.commit('incrementMessageMaxId')
-        message.id = state.message_max_id;
-        context.commit('setMessage', message);
     },
 
     removeMessage(context, message) {
