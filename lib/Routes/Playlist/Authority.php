@@ -13,6 +13,13 @@ class Authority
             return true;
         }
 
+        // Allow if playlist belongs to a course of the current user with tutor rights
+        foreach ($playlist->courses as $course) {
+            if ($GLOBALS['perm']->have_studip_perm('tutor', $course->id)) {
+                return true;
+            }
+        }
+
         $perm_playlist = $playlist->getUserPerm();
         $perm_video = reset($video->perms->findBy('user_id', $user->id)->toArray());
 

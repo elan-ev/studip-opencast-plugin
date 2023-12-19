@@ -2,7 +2,7 @@
     <form class="default">
         <fieldset>
             <legend>
-                {{ $gettext('Zu Kurs hinzufügen') }}
+                {{ title }}
                 <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!')"
                     title="" tabindex="0"
                 ></span>
@@ -39,7 +39,7 @@
                         </span>
                     </template>
                 </studip-select >
-            </label>  
+            </label>
         </fieldset>
     </form>
 </template>
@@ -55,6 +55,10 @@ export default {
     },
 
     props: {
+        title: {
+            type: String,
+            required: true,
+        },
         courses: {
             type: Object,
             required: true

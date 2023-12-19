@@ -43,6 +43,7 @@
                 </table>
                 <UserCourseSelectable
                     @add="addCourseToList"
+                    :title="$gettext('Zu Kurs hinzufügen')"
                     :courses="user_courses_filtered"
                 />
             </template>
