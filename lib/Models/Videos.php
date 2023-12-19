@@ -558,6 +558,24 @@ class Videos extends UPMap
     }
 
     /**
+     * Check if current user has permission for a course of this video
+     */
+    public function haveCoursePerm(string $perm)
+    {
+        $video_courses = PlaylistSeminars::getCoursesOfVideo($this);
+
+        if (!empty($video_courses)) {
+            foreach ($video_courses as $video_course_id) {
+                if ($GLOBALS['perm']->have_studip_perm($perm, $video_course_id)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Updates the metadata related to this video in both opencast and local and runs republish-metadata workflow
      *
      * @param object $event the updated version of the event
