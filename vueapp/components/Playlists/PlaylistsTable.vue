@@ -225,7 +225,7 @@ export default {
             if (confirm(this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?'))) {
                 this.$store.dispatch('deletePlaylist', playlist.token)
                     .then(() => {
-                        this.$store.dispatch('loadPlaylists');
+                        this.loadPlaylists();
                     })
             }
         }
