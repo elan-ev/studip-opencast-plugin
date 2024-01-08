@@ -368,6 +368,14 @@ export default {
                     token: this.playlist.token,
                     limit: this.editable ? -1 : this.limit
                 }).then(this.loadVideosFinished);
+            } else if(this.isCourse && !this.playlist) {
+                this.$store.dispatch('loadCourseVideos', {
+                    ...this.filters,
+                    offset: this.offset,
+                    order: this.order,
+                    cid: this.cid,
+                    limit: this.limit,
+                }).then(this.loadVideosFinished);
             } else if (this.editable && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...this.filters,
@@ -648,16 +656,12 @@ export default {
         this.clearPaging()
         this.$store.commit('setVideos', {});
 
-        let loadVideos = this.playlist !== null;
-
         this.$store.dispatch('loadUserCourses');
 
         await this.$store.dispatch('authenticateLti').then(() => {
             if (this.isCourse || this.editable) {
-                if (loadVideos) {
-                    this.setDefaultSortOrder();
-                    this.loadVideos();
-                }
+                this.setDefaultSortOrder();
+                this.loadVideos();
             }
             else {
                 if (this.$route.name === 'videosTrashed') {

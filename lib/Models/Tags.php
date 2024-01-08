@@ -93,6 +93,43 @@ class Tags extends \SimpleORMap
     }
 
     /**
+     * Get the tags from all visible videos in a specific course
+     *
+     * @param string $course_id
+     *
+     * @return array
+     *  [
+     *      tag1,
+     *      tag2,
+     *      tag3,
+     *      ...
+     *  ];
+     */
+    public static function getCourseVideosTags($course_id)
+    {
+        global $perm;
+
+        $query = 'SELECT tag FROM oc_tags'.
+                ' LEFT JOIN oc_video_tags AS vt ON (vt.tag_id = id)'.
+                ' INNER JOIN oc_playlist_video AS opv ON (opv.video_id = vt.video_id)'.
+                ' INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = opv.playlist_id AND ops.seminar_id = :cid)';
+        $params = [':cid' => $course_id];
+
+        if (!$perm->have_studip_perm('dozent', $course_id)) {
+            $query .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)'.
+                ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"'.
+                ' OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL'.
+                ' OR opsv.visible_timestamp < NOW())';
+        }
+
+        $query .= ' GROUP BY tag';
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
      * Get the tags from all playlists the user has access to
      *
      * @return array

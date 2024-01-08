@@ -148,6 +148,17 @@ const actions = {
         });
     },
 
+    async loadCourseVideos({ commit, state, dispatch, rootState }, data)
+    {
+        return dispatch('loadVideos', {
+            route: 'courses/' + data.cid + '/videos',
+            filters: data,
+        })
+        .then(async () => {
+            await dispatch('loadAvailableVideoTags', {cid: data.cid});
+        });
+    },
+
     async loadAvailableVideoTags({ commit, state, dispatch, rootState }, data = []) {
         const params = new URLSearchParams();
         let route = '/tags/videos';
@@ -157,6 +168,9 @@ const actions = {
             if (data.cid) {
                 params.append('cid',  data.cid);
             }
+        } else if (data.cid) {
+            // Load tags of course videos
+            route += '/course/' + data.cid;
         }
 
         return ApiService.get(route, { params })

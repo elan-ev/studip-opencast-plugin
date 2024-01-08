@@ -33,6 +33,7 @@
                 </table>
 
                 <UserCourseSelectable @add="addCourse"
+                    :title="$gettext('Zu Kurs hinzufügen')"
                     :courses="userCourses"
                     :selectedCourses="selectedCourses"
                 />

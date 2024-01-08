@@ -5,7 +5,7 @@
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="350"
-            width="400"
+            width="500"
             @close="cancel"
         >
             <template v-slot:dialogContent ref="add-dialog">
@@ -18,6 +18,10 @@
                     <a v-if="canEdit" href="#" @click.prevent="activeDialog = 'contents'">
                         <studip-icon :shape="opencastImage" role="clickable" size="50"/>
                         {{ $gettext('Arbeitsplatz') }}
+                    </a>
+                    <a v-if="canEdit" href="#" @click.prevent="activeDialog = 'courses'">
+                        <studip-icon shape="seminar" role="clickable" size="50"/>
+                        {{ $gettext('Meine Veranstaltungen') }}
                     </a>
                 </div>
             </template>
@@ -34,6 +38,11 @@
              @done="done"
              @cancel="cancel"
         />
+
+        <VideosAddFromCourses v-if="activeDialog === 'courses'"
+            @done="done"
+            @cancel="cancel"
+        />
     </div>
 </template>
 
@@ -43,6 +52,7 @@ import { mapGetters } from 'vuex';
 import StudipDialog from '@studip/StudipDialog'
 import VideoUpload from "@/components/Videos/VideoUpload";
 import VideosAddFromContents from "@/components/Videos/VideosAddFromContents";
+import VideosAddFromCourses from "@/components/Videos/VideosAddFromCourses";
 import StudipIcon from "@studip/StudipIcon";
 
 export default {
@@ -52,6 +62,7 @@ export default {
         StudipIcon,
         VideoUpload,
         VideosAddFromContents,
+        VideosAddFromCourses,
         StudipDialog,
     },
 

@@ -13,6 +13,10 @@ class Authority
             return true;
         }
 
+        if ($playlist->haveCoursePerm('tutor') && $video->haveCoursePerm('tutor')) {
+            return true;
+        }
+
         $perm_playlist = $playlist->getUserPerm();
         $perm_video = reset($video->perms->findBy('user_id', $user->id)->toArray());
 

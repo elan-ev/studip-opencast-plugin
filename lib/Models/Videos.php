@@ -119,6 +119,46 @@ class Videos extends UPMap
     }
 
     /**
+     * Get videos for the passed course narrowed down by optional filters.
+     * This method does not further check for permissions and assumes the current user has access to the course!
+     *
+     * @param string $course_id
+     * @param Opencast\Models\Filter $filters
+     *
+     * @return array
+     *    [
+     *        'videos' => [Opencast\Models\Videos],
+     *        'sql'    => '...,
+     *        'count'  => 123
+     *    ];
+     */
+    public static function getCourseVideos($course_id, $filters)
+    {
+        global $perm;
+
+        $sql = ' INNER JOIN oc_playlist_video AS opv ON (opv.video_id = oc_video.id)
+                 INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = opv.playlist_id AND ops.seminar_id = :cid)';
+        $where = ' WHERE 1 ';
+        $params = [':cid' => $course_id];
+
+        if (!$perm->have_perm('dozent')) {
+            $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
+
+            $where = ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
+                       OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
+                       OR opsv.visible_timestamp < NOW()) ';
+        }
+
+        $query = [
+            'sql'   => $sql,
+            'where' => $where,
+            'params' => $params
+        ];
+
+        return self::getFilteredVideos($query, $filters);
+    }
+
+    /**
      * Get the list of accessible videos, faceted by the passed filters
      *
      * @param Opencast\Models\Filter $filters
@@ -515,6 +555,24 @@ class Videos extends UPMap
         }
 
         return $ret_perm;
+    }
+
+    /**
+     * Check if current user has permission for a course of this video
+     */
+    public function haveCoursePerm(string $perm)
+    {
+        $video_courses = PlaylistSeminars::getCoursesOfVideo($this);
+
+        if (!empty($video_courses)) {
+            foreach ($video_courses as $video_course_id) {
+                if ($GLOBALS['perm']->have_studip_perm($perm, $video_course_id)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

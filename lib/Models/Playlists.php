@@ -311,6 +311,19 @@ class Playlists extends UPMap
     }
 
     /**
+     * Check if current user has permission for a course of this playlist
+     */
+    public function haveCoursePerm(String $perm) {
+        foreach ($this->courses as $course) {
+            if ($GLOBALS['perm']->have_studip_perm($perm, $course->id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get sanitized array to send to the frontend
      */
     public function toSanitizedArray()

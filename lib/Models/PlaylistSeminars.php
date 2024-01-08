@@ -41,6 +41,25 @@ class PlaylistSeminars extends \SimpleORMap
     }
 
     /**
+     * Get the courses of the passed video
+     *
+     * @param Videos $video
+     * @return array course ids of the video
+     */
+    public static function getCoursesOfVideo(Videos $video) {
+        $query = 'SELECT DISTINCT ops.seminar_id FROM oc_playlist_seminar AS ops'.
+                ' INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = ops.playlist_id AND opv.video_id = :video_id)';
+
+        $params = [
+            ':video_id' => $video->id,
+        ];
+
+        $stmt = \DBManager::get()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
      * Get the courses from all videos the user has access to
      *
      * @return array

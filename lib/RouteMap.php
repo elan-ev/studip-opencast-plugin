@@ -79,6 +79,8 @@ class RouteMap
         // Course routes
         $this->app->get('/courses', Routes\Course\MyCourseList::class);
 
+        $this->app->get('/courses/{course_id}/videos', Routes\Course\CourseVideoList::class);
+
         $this->app->get('/courses/{course_id}/config', Routes\Course\CourseConfig::class);
         $this->app->get('/courses/{course_id}/playlists', Routes\Course\CourseListPlaylist::class);
 
@@ -104,6 +106,7 @@ class RouteMap
         $this->app->get('/tags', Routes\Tags\TagListForUser::class);
         $this->app->get('/tags/videos', Routes\Tags\TagListForUserVideos::class);
         $this->app->get('/tags/videos/playlist/{token}', Routes\Tags\TagListForPlaylistVideos::class);
+        $this->app->get('/tags/videos/course/{course_id}', Routes\Tags\TagListForCourseVideos::class);
 
         $this->app->get('/config/simple', Routes\Config\SimpleConfigList::class);
         $this->app->post('/log', Routes\Log\LogEntryCreate::class);
