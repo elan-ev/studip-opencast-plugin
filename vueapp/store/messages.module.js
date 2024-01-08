@@ -29,13 +29,14 @@ export const actions = {
         let messages = state.messages;
         let current_message = messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog);
 
-        if (!current_message) {
-            context.commit('incrementMessageMaxId')
-            message.id = state.message_max_id;
-            context.commit('setMessage', message);
-        } else {
+        // Romove the message if it already exists and append it to the end of the list
+        if (current_message) {
             context.commit('removeMessage', current_message.id);
         }
+
+        context.commit('incrementMessageMaxId')
+        message.id = state.message_max_id;
+        context.commit('setMessage', message);
     },
 
     removeMessage(context, message) {
