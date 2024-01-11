@@ -52,7 +52,7 @@
 
                 <UserPlaylistSelectable
                     @add="addPlaylist"
-                    :playlists="playlists"
+                    :playlists="userPlaylists"
                     :selectedPlaylists="this.event.playlists"
                 />
 
@@ -97,7 +97,7 @@ export default {
     },
 
     computed: {
-    ...mapGetters(['playlists'])
+        ...mapGetters(['userPlaylists']),
     },
 
     methods: {
@@ -154,7 +154,9 @@ export default {
     },
 
     mounted () {
-        this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('loadUserPlaylists', {
+            limit: -1,
+        });
     },
 }
 </script>

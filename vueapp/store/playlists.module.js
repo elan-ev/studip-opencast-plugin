@@ -2,6 +2,7 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: [],
+    userPlaylists: [],
     playlist: null,
     playlistSearch: '',
     addPlaylist: false,
@@ -14,6 +15,10 @@ const state = {
 const getters = {
     playlists(state) {
         return state.playlists
+    },
+
+    userPlaylists(state) {
+        return state.userPlaylists;
     },
 
     playlist(state) {
@@ -66,6 +71,25 @@ const actions = {
         return ApiService.get($route)
             .then(({ data }) => {
                 context.commit('setPlaylists', data.playlists);
+            });
+    },
+
+    async loadUserPlaylists(context, filters) {
+        // Set filters
+        const params = new URLSearchParams();
+
+        for (let key in filters) {
+            if (key === 'filters') {
+                params.append('filters', JSON.stringify(filters.filters));
+            } else {
+                params.append(key, filters[key]);
+            }
+        }
+
+        // Get playlists user has access to
+        return ApiService.get('playlists', { params })
+            .then(({ data }) => {
+                context.commit('setUserPlaylists', data.playlists);
             });
     },
 
@@ -255,6 +279,10 @@ const mutations = {
 
     setPlaylists(state, playlists) {
         state.playlists = playlists;
+    },
+
+    setUserPlaylists(state, playlists) {
+        state.userPlaylists = playlists;
     },
 
     setPlaylist(state, playlist) {
