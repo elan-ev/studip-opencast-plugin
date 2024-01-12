@@ -12,6 +12,7 @@ use Opencast\Models\SeminarSeries;
 use Opencast\Models\SeminarWorkflowConfiguration;
 use Opencast\Models\REST\SeriesClient;
 use Opencast\Providers\Perm;
+use Opencast\Models\Helpers;
 
 
 /**
@@ -61,7 +62,8 @@ class CourseConfig extends OpencastController
             'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
             'edit_allowed'   => Perm::editAllowed($course_id),
             'upload_allowed' => Perm::uploadAllowed($course_id),
-            'upload_enabled' => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0
+            'upload_enabled' => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0,
+            'has_default_playlist' => Helpers::checkCourseDefaultPlaylist($course_id)
         ];
 
         return $this->createResponse($results, $response);

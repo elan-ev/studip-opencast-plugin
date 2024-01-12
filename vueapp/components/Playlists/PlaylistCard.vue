@@ -7,6 +7,10 @@
         <td>
             <router-link :to="{ name: 'playlist', params: { token: playlist.token } }">
                 {{ playlist.title }}
+                <span v-if="playlist?.default_course_tooltip" class="tooltip tooltip-important" data-tooltip title="" tabindex="0"
+                >
+                    <span class="tooltip-content" v-html="playlist.default_course_tooltip"></span>
+                </span>
             </router-link>
 
             <div class="oc--tags oc--tags-playlist">

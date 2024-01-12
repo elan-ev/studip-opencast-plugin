@@ -10,6 +10,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Helpers;
 
 class CourseAddPlaylist extends OpencastController
 {
@@ -22,26 +23,44 @@ class CourseAddPlaylist extends OpencastController
         $playlist = Playlists::findOneByToken($args['token']);
         $course_id = $args['course_id'];
 
+        $json = $this->getRequestData($request);
+
+        $is_default = 0;
+        // Make sure the default playlist is eligible.
+        if (isset($json['is_default']) && (bool) $json['is_default'] == true) {
+            $is_default = 1;
+        }
+
         // check what permissions the current user has on the playlist and video
         $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
 
-        if (empty($perm_playlist) || !$perm->have_studip_perm('tutor', $course_id))      // allow any perm for adding playlists to course user has access to
+        // allow any perm for adding playlists to course user has access to
+        if (empty($perm_playlist) || !$perm->have_studip_perm('tutor', $course_id))
         {
             throw new \AccessDeniedException();
         }
 
+        $seminar_playlist_data = [
+            'playlist_id' => $playlist->id,
+            'seminar_id' => $course_id,
+            'visibility' => 'visible', //TODO set visibility correctly,
+        ];
 
         $playlist_seminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$course_id, $playlist->id]);
         if (empty($playlist_seminar)) {
             $playlist_seminar = new PlaylistSeminars;
         }
 
-        $playlist_seminar->setData([
-            'playlist_id' => $playlist->id,
-            'seminar_id' => $course_id,
-            'visibility' => 'visible' //TODO set visibility correctly
-        ]);
+        // if the current record is default, we doen't change it and always remains the same.
+        $seminar_playlist_data['is_default'] = $playlist_seminar->is_default ? 1 : $is_default;
+
+        $playlist_seminar->setData($seminar_playlist_data);
         $playlist_seminar->store();
+
+        // Make sure there is only one default playlist for a course at a time.
+        if ((bool) $seminar_playlist_data['is_default']) {
+            Helpers::ensureCourseHasOneDefaultPlaylist($course_id, $playlist->id);
+        }
 
         return $response->withStatus(204);
     }

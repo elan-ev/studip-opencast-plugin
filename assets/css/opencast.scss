@@ -1024,6 +1024,25 @@ label.oc--file-upload {
     }
 }
 
+.oc--playlist-title-contanier {
+    position: relative;
+    padding-right: 18px;
+    display: flex;
+    align-items: center;
+    .oc--playlist-title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .oc--playlist-default-icon {
+        position: absolute;
+        right: 1px;
+        top: 52%;
+        transform: translateY(-50%);
+    }
+}
+
 .oc--tags {
 
     &-video {

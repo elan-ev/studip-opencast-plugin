@@ -66,15 +66,21 @@ class PlaylistUpdate extends OpencastController
         $playlist->setData($json);
         $playlist->store();
 
-        $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00') 
+        $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
             ? 0 : \strtotime($playlist['mkdate']);
 
         $ret_playlist = $playlist->toSanitizedArray();
+
+        // Add extra params to send back to frontend.
         $ret_playlist['users'] = [[
             'user_id'  => $user->id,
             'fullname' => \get_fullname($user->id),
             'perm'     => $uperm
         ]];
+
+        if (isset($json['is_default'])) {
+            $ret_playlist['is_default'] = $json['is_default'];
+        }
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));
     }

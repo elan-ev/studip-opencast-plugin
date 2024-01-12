@@ -24,7 +24,7 @@
             <thead>
             <tr>
                 <th v-if="selectable">
-                    <input
+                    <input v-if="multiSelect"
                         type="checkbox"
                         :checked="allSelected"
                         @click.stop="toggleAll"
@@ -106,6 +106,10 @@ export default {
         selectable: {
             type: Boolean,
             default: false,
+        },
+        multiSelect: {
+            type: Boolean,
+            default: true,
         },
     },
 
@@ -194,12 +198,17 @@ export default {
         },
 
         togglePlaylist(data) {
+            if (!this.selectable) return
+
             if (data.checked === false) {
                 let index = this.selectedPlaylists.indexOf(data.token);
                 if (index >= 0) {
                     this.selectedPlaylists.splice(index, 1);
                 }
             } else {
+                if (!this.multiSelect) {
+                    this.selectedPlaylists = [];
+                }
                 this.selectedPlaylists.push(data.token);
             }
 
@@ -207,14 +216,16 @@ export default {
         },
 
         toggleAll(e) {
-            if (e.target.checked) {
-                // Select all playlist
-                this.selectedPlaylists = this.playlists.map(p => p.token);
-            } else {
-                this.selectedPlaylists = [];
-            }
+            if (this.selectable && this.multiSelect) {
+                if (e.target.checked) {
+                    // Select all playlist
+                    this.selectedPlaylists = this.playlists.map(p => p.token);
+                } else {
+                    this.selectedPlaylists = [];
+                }
 
-            this.$emit('selectedPlaylistsChange', this.selectedPlaylists);
+                this.$emit('selectedPlaylistsChange', this.selectedPlaylists);
+            }
         },
 
         addToCourse(playlist) {
@@ -222,7 +233,11 @@ export default {
         },
 
         deletePlaylist(playlist) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?'))) {
+            let confirm_text = this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?');
+            if (playlist?.default_course_tooltip) {
+                confirm_text += ' ' + this.$gettext('Bitte beachten Sie, dass diese Wiedergabeliste ist eine') + ' ' + playlist.default_course_tooltip;
+            }
+            if (confirm(this.$gettext(confirm_text))) {
                 this.$store.dispatch('deletePlaylist', playlist.token)
                     .then(() => {
                         this.loadPlaylists();
