@@ -344,12 +344,48 @@ class Playlists extends UPMap
         return $data;
     }
 
+    public function copy()
+    {
+        global $user;
+
+        $new_playlist = self::create([
+            'title'          => $this->title,
+            'visibility'     => $this->visibility,
+            'sort_order'     => $this->sort_order,
+            'allow_download' => $this->allow_download,
+        ]);
+
+        // Set current user as owner for this playlist
+        PlaylistsUserPerms::create([
+            'playlist_id' => $new_playlist->id,
+            'user_id'     => $user->id,
+            'perm'        => 'owner'
+        ]);
+
+        // Link videos to new playlist
+        foreach ($this->videos as $video) {
+            PlaylistVideos::create([
+                'playlist_id' => $new_playlist->id,
+                'video_id' => $video->video_id,
+            ]);
+        }
+
+        // Copy tags
+        foreach ($this->tags as $tag) {
+            $tag->copy($new_playlist->id);
+        }
+
+        $new_playlist->store();
+
+        return $new_playlist;
+    }
+
     public function store()
     {
         if (!$this->token) {
             $this->token = bin2hex(random_bytes(8));
         }
 
-        parent::store();
+        return parent::store();
     }
 }
