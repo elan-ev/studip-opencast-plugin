@@ -49,20 +49,11 @@ class Playlists extends UPMap
      */
     public static function getCoursePlaylists(String $course_id, Filter $filters, String $user_id = null)
     {
-        global $user;
-
-        if (!$user_id) {
-            $user_id = $user->id;
-        }
-
         // Check if user has access to playlist
-        $sql    = " INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)"
-                 ." LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
-        $where  = " WHERE oc_playlist_seminar.seminar_id = :course_id"
-                 ." AND (oc_playlist_seminar.is_default = 1 OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read')) ";
+        $sql    = " INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)";
+        $where  = " WHERE oc_playlist_seminar.seminar_id = :course_id ";
         $params = [
             ':course_id' => $course_id,
-            ':user_id' => $user_id,
         ];
 
         return self::getFilteredPlaylists([

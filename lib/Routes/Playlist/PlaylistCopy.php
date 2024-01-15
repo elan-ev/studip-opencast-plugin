@@ -23,7 +23,7 @@ class PlaylistCopy extends OpencastController
         $json = $this->getRequestData($request);
 
         $source_playlist = Playlists::findOneByToken($args['token']);
-        $destination_course = $json['course'];  // TODO: Check if null is possible
+        $destination_course = $json['course'];
 
         // Check playlist permissions
         $perm_playlist = $source_playlist->getUserPerm();
@@ -48,7 +48,7 @@ class PlaylistCopy extends OpencastController
                 PlaylistSeminars::create([
                     'playlist_id' => $new_playlist->id,
                     'seminar_id'  => $destination_course,
-                    'visibility'  => 'visible' //TODO set visibility correctly
+                    'visibility'  => 'visible'
                 ]);
             }
 
