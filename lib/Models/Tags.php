@@ -193,22 +193,26 @@ class Tags extends \SimpleORMap
     {
         global $user;
 
-        $new_tag = Tags::create([
-            'tag' => $this->tag,
-            'user_id' => $user->id,
-        ]);
+        // Copy tag only if user not own the tag
+        $tag = Tags::findOneBySQL('tag = ? AND user_id = ?', [$this->tag, $user->id]);
+        if (empty($tag)) {
+            $tag = Tags::create([
+                'tag' => $this->tag,
+                'user_id' => $user->id,
+            ]);
+        }
 
         if (!empty($playlist_id)) {
             PlaylistTags::create([
                 'playlist_id' => $playlist_id,
-                'tag_id' => $new_tag->id,
+                'tag_id' => $tag->id,
             ]);
         }
 
         if (!empty($video_id)) {
             VideoTags::create([
                 'video_id' => $video_id,
-                'tag_id' => $new_tag->id,
+                'tag_id' => $tag->id,
             ]);
         }
     }
