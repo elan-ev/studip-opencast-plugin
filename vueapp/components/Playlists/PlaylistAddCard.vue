@@ -18,6 +18,13 @@
                         <studip-icon shape="group" role="clickable" size="50"/>
                         {{ $gettext('Bestehende verknüpfen') }}
                     </a>
+
+                    <!--
+                    <a href="#" @click.prevent="activeDialog = 'link'">
+                        <studip-icon shape="group" role="clickable" size="50"/>
+                        {{ $gettext('Bestehende verknüpfen') }}
+                    </a>
+                    -->
                 </div>
             </template>
         </StudipDialog>
