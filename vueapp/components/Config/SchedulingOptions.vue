@@ -16,6 +16,7 @@
                         <th>{{ $gettext('Raum') }}</th>
                         <th>{{ $gettext('Capture Agent') }}</th>
                         <th>{{ $gettext('Workflow') }}</th>
+                        <th>{{ $gettext('Livestream Workflow') }}</th>
                         <th>{{ $gettext('Status') }}</th>
                         <th>{{ $gettext('Aktionen') }}</th>
                     </tr>
@@ -53,6 +54,29 @@
                             </template>
                             <template v-else-if="resource.capture_agent">
                                 <select v-model="resource.workflow_id">
+                                    <option value="" disabled selected>
+                                        <span>
+                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}'
+                                        </span>
+                                    </option>
+                                    <option v-for="workflow in compiledWDList(resource)"
+                                        :key="workflow.id"
+                                        :value="workflow.id"
+                                    >
+                                       {{ workflow.title }}
+                                    </option>
+                                </select>
+                            </template>
+                            <span v-else>
+                                {{ $gettext('Kein Workflow verfügbar') }}
+                            </span>
+                        </td>
+                        <td>
+                            <template v-if="resource.livestream_workflow_id">
+                                {{ getWorkflowTitle(resource, 'livestream') }}
+                            </template>
+                            <template v-else-if="resource.capture_agent">
+                                <select v-model="resource.livestream_workflow_id">
                                     <option value="" disabled selected>
                                         <span>
                                             {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}'
@@ -182,6 +206,7 @@ export default {
                 this.resources[resource_index]['capture_agent'] = '';
                 this.resources[resource_index]['config_id'] = '';
                 this.resources[resource_index]['workflow_id'] = '';
+                this.resources[resource_index]['livestream_workflow_id'] = '';
             }
             return;
         },
@@ -203,9 +228,10 @@ export default {
             return workflows;
         },
 
-        getWorkflowTitle(resource_obj) {
+        getWorkflowTitle(resource_obj, type = '') {
             let wd_title = '';
-            let wd_obj = this.workflow_definitions.filter(wd => wd.id == resource_obj.workflow_id && wd.config_id == resource_obj.config_id);
+            let property = type == 'livestream' ? 'livestream_workflow_id' : 'workflow_id';
+            let wd_obj = this.workflow_definitions.filter(wd => wd.id == resource_obj?.[property] && wd.config_id == resource_obj.config_id);
             if (wd_obj.length) {
                 wd_title = wd_obj[0].title;
             }

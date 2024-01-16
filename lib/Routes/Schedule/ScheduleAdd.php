@@ -30,12 +30,14 @@ class ScheduleAdd extends OpencastController
 
         $json = $this->getRequestData($request);
 
+        $livestream = !empty($json['livestream']) ? true : false;
+
         $message = [
             'type' => 'error',
             'text' => _('Aufzeichnung konnte nicht geplant werden.')
         ];
 
-        if (ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id)) {
+        if (ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id, $livestream)) {
             $message = [
                 'type' => 'success',
                 'text' => _('Aufzeichnung wurde geplant.')

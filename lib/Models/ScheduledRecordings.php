@@ -13,7 +13,7 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Adds or updates schedule recording
-     * 
+     *
      * @param string $seminar_id id of course
      * @param string $series_id id of serie
      * @param string $date_id id of termin
@@ -24,7 +24,8 @@ class ScheduledRecordings extends \SimpleORMap
      * @param string $event_id id of oc event
      * @param string $status the status of the record
      * @param string $workflow_id workflow id
-     * 
+     * @param bool $is_livestream livestream indicator
+     *
      * @return bool
      * @throws Exception
      */
@@ -38,7 +39,8 @@ class ScheduledRecordings extends \SimpleORMap
         $capture_agent,
         $event_id,
         $status = 'scheduled',
-        $workflow_id = 'full')
+        $workflow_id = 'full',
+        $is_livestream = false)
     {
         if (!empty($seminar_id) && !empty($resource_id) && !empty($date_id)) {
             if (!$scheduled_recording = self::getScheduleRecording($seminar_id, $resource_id, $date_id)) {
@@ -56,7 +58,8 @@ class ScheduledRecordings extends \SimpleORMap
                     'capture_agent',
                     'event_id',
                     'status',
-                    'workflow_id'
+                    'workflow_id',
+                    'is_livestream'
                 )
             );
             return $scheduled_recording->store();
@@ -67,12 +70,12 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Gets the schedule recording record
-     * 
+     *
      * @param string $seminar_id id of course
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
      * @param string $status the status of the record
-     * 
+     *
      * @return object|bool
      */
     public static function getScheduleRecording($seminar_id, $resource_id, $date_id, $status = '')
@@ -88,11 +91,11 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Gets the list of schedule recording based on the parameters passed
-     * 
+     *
      * @param string $resource_id id of resource
      * @param string $seminar_id id of course
      * @param string $status the status of the record
-     * 
+     *
      * @return object|bool
      */
     public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '')
@@ -123,7 +126,7 @@ class ScheduledRecordings extends \SimpleORMap
      * @param string $event_id id of oc event
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
-     * 
+     *
      * @return boolean
      */
 
@@ -146,11 +149,11 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Get scheduled recording object with scheduled as its status
-     * 
+     *
      * @param string $event_id id of oc event
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
-     * 
+     *
      * @return object|null
      */
     public static function checkScheduled($course_id, $resource_id, $date_id)

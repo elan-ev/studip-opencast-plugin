@@ -5,14 +5,14 @@
                 <col style="width: 2%">
                 <col style="width: 30%">
                 <template v-if="allow_schedule_alternate">
-                    <col style="width: 28%">
-                    <col style="width: 28%">
+                    <col style="width: 25%">
+                    <col style="width: 25%">
                 </template>
                 <template v-else>
-                    <col style="width: 56%">
+                    <col style="width: 50%">
                 </template>
                 <col style="width: 5%">
-                <col style="width: 7%">
+                <col style="width: 13%">
             </colgroup>
             <thead>
                 <tr>
@@ -23,7 +23,7 @@
                     </template>
                     <th>{{ $gettext('Titel') }}</th>
                     <th>{{ $gettext('Status') }}</th>
-                    <th>{{ $gettext('Aktionen') }}</th>
+                    <th class="oc-schedule-actions">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,19 +58,21 @@
                     </template>
                     <td>{{ date.title }}</td>
                     <td class="oc-schedule-status">
-                        <StudipIcon :shape="date.status.shape" :role="date.status.role" :title="date.status.title"/>
-                        <span v-if="date.status?.info">{{ date.status.info }}</span>
+                        <span v-if="date.status?.info" :title="date.status.title" :class="[date.status?.info_class]">{{ date.status.info }}</span>
+                        <StudipIcon v-else :shape="date.status.shape" :role="date.status.role" :title="date.status.title"/>
                     </td>
                     <td class="oc-schedule-actions">
-                        <template v-for="(action, index) in date.actions" :key="index">
-                            <a v-if="index != 'expire'" href="#" @click.stop="performAction($event, index, date.termin_id)" class="oc-schedule-action-item">
-                                <StudipIcon v-if="index != 'scheduleLive'" :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''"/>
-                                <span v-else style="font-weight: bold" :title="action?.title ? action.title : ''">
-                                    {{ action.info }}
-                                </span>
-                            </a>
-                            <StudipIcon v-else :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''" class="oc-schedule-action-item"/>
-                        </template>
+                        <div class="oc-schedule-action-item-wrapper">
+                            <template v-for="(action, index) in date.actions" :key="index">
+                                <a v-if="index != 'expire'" href="#" @click.stop="performAction($event, index, date.termin_id)" class="oc-schedule-action-item">
+                                    <StudipIcon v-if="index != 'scheduleLive'" :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''"/>
+                                    <span v-else style="font-weight: bold" :title="action?.title ? action.title : ''">
+                                        {{ action.info }}
+                                    </span>
+                                </a>
+                                <StudipIcon v-else :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''" class="oc-schedule-action-item"/>
+                            </template>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -136,6 +138,7 @@ export default {
         get_bulk_actions() {
             let bulk_actions = [
                 {value: 'schedule', text: this.$gettext('Aufzeichnungen planen')},
+                {value: 'live', text: this.$gettext('LIVE-Aufzeichnungen planen')},
                 {value: 'update', text: this.$gettext('Aufzeichnungen aktualisieren')},
                 {value: 'unschedule', text: this.$gettext('Aufzeichnungen stornieren')},
             ];

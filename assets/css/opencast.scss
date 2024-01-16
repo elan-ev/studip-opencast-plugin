@@ -1136,18 +1136,29 @@ label.oc--file-upload {
         }
     }
 
-    td.oc-schedule-actions {
-        .oc-schedule-action-item {
-            &:not(:first-of-type) {
-                margin-left: .5em;
+    td.oc-schedule-actions, th.oc-schedule-actions {
+        text-align: center;
+        .oc-schedule-action-item-wrapper {
+            width: 100%;
+            display: inline-flex;
+            justify-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            .oc-schedule-action-item {
+                &:not(:first-of-type) {
+                    margin-left: .5em;
+                }
             }
         }
     }
 
     td.oc-schedule-status {
+        text-align: center;
         span {
+            &.text-red {
+                color: var(--red);
+            }
             font-weight: bold;
-            color: var(--red);
             margin-left: .4em;
         }
     }

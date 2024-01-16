@@ -39,6 +39,9 @@ class ScheduleBulk extends OpencastController
         foreach ($termin_ids as $termin_id) {
             $result = false;
             switch ($action) {
+                case 'live':
+                    $result = ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id, true);
+                    break;
                 case 'schedule':
                     $result = ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id);
                     break;

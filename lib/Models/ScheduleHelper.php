@@ -70,9 +70,11 @@ class ScheduleHelper
         foreach ($resources as $resource) {
             $assigned_ca = null;
             $assigned_wd = null;
+            $assigned_livestream_wd = null;
             if ($assigned_resource = Resources::findByResource_id($resource['id'])) {
                 $ca_valid = false;
                 $wd_valid = false;
+                $wd_livestream_valid = false;
                 foreach ($capture_agents as $key => $agent) {
                     if ($agent->name == $assigned_resource['capture_agent']
                         && $agent->config_id == $assigned_resource['config_id']) {
@@ -88,6 +90,11 @@ class ScheduleHelper
                             $assigned_wd = $workflow_definitions[$key];
                             $wd_valid = true;
                         }
+                        if ($definition->id == $assigned_resource['livestream_workflow_id']
+                            && $definition->config_id == $assigned_ca->config_id) {
+                            $assigned_livestream_wd = $workflow_definitions[$key];
+                            $wd_livestream_valid = true;
+                        }
                     }
                 }
             }
@@ -97,6 +104,7 @@ class ScheduleHelper
                 'capture_agent' => !empty($assigned_ca) ? $assigned_ca->name : '',
                 'config_id' => !empty($assigned_ca) ? $assigned_ca->config_id : '',
                 'workflow_id' => !empty($assigned_wd) ? $assigned_wd->id : '',
+                'livestream_workflow_id' => !empty($assigned_livestream_wd) ? $assigned_livestream_wd->id : '',
             ];
         }
 
@@ -305,15 +313,15 @@ class ScheduleHelper
 
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                <dcterms:creator><![CDATA[' . urlencode($creator) . ']]></dcterms:creator>
-                                <dcterms:contributor><![CDATA[' . urlencode($contributor) . ']]></dcterms:contributor>
+                                <dcterms:creator><![CDATA[' . $creator . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . $contributor . ']]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
                                 <dcterms:temporal xsi:type="dcterms:Period">start=' . self::getDCTime($start_time) . '; end=' . self::getDCTime($end_time) . '; scheme=W3C-DTF;</dcterms:temporal>
-                                <dcterms:description><![CDATA[' . urlencode(str_replace('%', '', $description)) . ']]></dcterms:description>
-                                <dcterms:subject><![CDATA[' . urlencode(str_replace('%', '', $abstract)) . ']]></dcterms:subject>
+                                <dcterms:description><![CDATA[' . $description . ']]></dcterms:description>
+                                <dcterms:subject><![CDATA[' . $abstract . ']]></dcterms:subject>
                                 <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
-                                <dcterms:title><![CDATA[' . urlencode($title) . ']]></dcterms:title>
+                                <dcterms:title><![CDATA[' . $title . ']]></dcterms:title>
                                 <dcterms:isPartOf>' . $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
@@ -339,10 +347,11 @@ class ScheduleHelper
      *
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
+     * @param bool $livestream - indicator to schedule the event with livestream capability
      *
      * @return bool success or not
      */
-    public static function scheduleEventForSeminar($course_id, $termin_id)
+    public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false)
     {
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
@@ -353,14 +362,15 @@ class ScheduleHelper
         $oc_resource  = Resources::findByResource_id($resource_id);
         if (!$oc_resource
             || !self::checkCaptureAgent($oc_resource['config_id'], $oc_resource['capture_agent'])
-            || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])
+            || !self::validateCourseAndResource($course_id, $oc_resource['config_id']
+            || ($livestream && !empty($oc_resource['livestream_workflow_id'])))
         ) {
             return false;
         }
 
         $ingest_client = IngestClient::getInstance($oc_resource['config_id']);
         $media_package = $ingest_client->createMediaPackage();
-        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null);
+        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
         $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
@@ -368,7 +378,7 @@ class ScheduleHelper
         if ($result) {
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
-            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id);
+            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id, $livestream);
             if ($scheduled) {
                 return true;
             }
@@ -402,16 +412,22 @@ class ScheduleHelper
      * @param string $resource_id
      * @param string $date_id - Stud.IP Identifier for the event
      * @param string $event_id  - Opencast Identifier for the event
+     * @param bool $livestream  - livestream indicator
      *
      * @return boolean success
      */
-    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
+    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id, $livestream)
     {
         $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $ca = Resources::findByResource_id($resource_id);
-        $workflow_id = $ca['workflow_id'] ? $ca['workflow_id'] : 'full';
+        $workflow_id = 'full';
+        if ($livestream) {
+            $workflow_id = $ca['livestream_workflow_id'];
+        } else if (!empty($ca['workflow_id'])) {
+            $workflow_id = $ca['workflow_id'];
+        }
 
         $date = \CourseDate::find($date_id);
 
@@ -425,7 +441,8 @@ class ScheduleHelper
             $ca['capture_agent'],
             $event_id,
             'scheduled',
-            $workflow_id
+            $workflow_id,
+            $livestream
         );
 
         return $success;
@@ -439,10 +456,11 @@ class ScheduleHelper
      * @param string $config_id server config id
      * @param string $termin_id termin id
      * @param string $event_id event id
+     * @param bool $livestream whether the scheduling is intended to be a livestream
      *
      * @return array event recording metadata
      */
-    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id)
+    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id, $livestream = false)
     {
         $config = Config::find($config_id);
 
@@ -488,7 +506,7 @@ class ScheduleHelper
         $ca  = Resources::findByResource_id($resource_id);
 
         $device   = $ca['capture_agent'];
-        $workflow = $ca['workflow_id'];
+        $workflow = $livestream ? $ca['livestream_workflow_id'] : $ca['workflow_id'];
 
         $ca_client    = CaptureAgentAdminClient::getInstance($config_id);
         $device_names = '';
@@ -602,6 +620,8 @@ class ScheduleHelper
 
         $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
 
+        $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
+
         if (!$scheduled_recording_obj) {
             return false;
         }
@@ -649,11 +669,12 @@ class ScheduleHelper
         if ($update_resource) {
             $scheduled_recording_obj->resource_id = $resource_id;
             $scheduled_recording_obj->capture_agent = $resource_obj['capture_agent'];
-            $scheduled_recording_obj->workflow_id = $resource_obj['workflow_id'];
+            $workflow_id = $is_livestream ? $resource_obj['livestream_workflow_id'] : $resource_obj['workflow_id'];
+            $scheduled_recording_obj->workflow_id = $workflow_id;
             $scheduled_recording_obj->store();
         }
 
-        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id);
+        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream);
 
         $start = $scheduled_recording_obj->start * 1000;
         $end = ($scheduled_recording_obj->end - $buffer ?: 0) * 1000;
@@ -757,8 +778,13 @@ class ScheduleHelper
                         'role' => 'info',
                         'title' => _('Aufzeichnung ist bereits geplant.')
                     ];
-                    if ($scheduled && in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
+                    if (!empty($scheduled['is_livestream'])) {
                         $status['info'] = 'LIVE';
+                        $status['title'] = _('Livestream ist bereits geplant.');
+                        if (in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
+                            $status['title'] = _('Livestream läuft gerade.');
+                            $status['info_class'] = 'text-red';
+                        }
                     }
                 } else {
                     if (date($d['date']) > time()) {
@@ -780,6 +806,7 @@ class ScheduleHelper
 
             $actions = [];
             if (!empty($resource_obj)) {
+                $allow_livestream = !empty($resource_obj['livestream_workflow_id']) ? true : false;
                 if ($scheduled && (int)date($d['date']) > time()) {
                     $actions['updateSchedule'] = [
                         'shape' => 'refresh',
@@ -798,6 +825,12 @@ class ScheduleHelper
                             'role' => 'clickable',
                             'title' => _('Aufzeichnung planen')
                         ];
+                        if ($allow_livestream) {
+                            $actions['scheduleLive'] = [
+                                'info' => 'LIVE',
+                                'title' => _('Livestream planen')
+                            ];
+                        }
                     } else {
                         $actions['expire'] = [
                             'shape' => 'video+decline',
@@ -884,16 +917,17 @@ class ScheduleHelper
      * @param string $config_id id of server config
      * @param string $capture_agent name of capture agent
      * @param string $workflow_id name of workflow
+     * @param string $livestream_workflow_id (optional) id of livestream workflow
      *
      * @return bool
      */
-    public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id)
+    public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id)
     {
         // We take the current resource obj to use its data for deleteEventForSeminar,
         // to make sure that server config id is correct!
         $ex_resource_obj = Resources::findByResource_id($resource_id);
         // We Update the resource first.
-        $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id);
+        $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id);
         // If is updated.
         if ($success) {
             // We update current scheduled events that uses this resource.
