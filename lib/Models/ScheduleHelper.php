@@ -17,6 +17,7 @@ use Opencast\Models\REST\WorkflowClient;
 use Opencast\Models\REST\IngestClient;
 use Opencast\Models\REST\SchedulerClient;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\PlaylistSeminars;
 
 class ScheduleHelper
 {
@@ -972,4 +973,28 @@ class ScheduleHelper
         );
     }
 
+    /**
+     * Helper function that ensures only one course playlist has the flag for livestream or scheduled recordings.
+     *
+     * @param int $playlist_id the source playlist id
+     * @param string $course_id course id
+     * @param string $type the type of flag to change; values are ['livestreams', 'scheduled']
+     *
+     * @return bool the final success indicator.
+     */
+    public function setScheduledRecordingsPlaylist($playlist_id, $course_id, $type)
+    {
+        try {
+            $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$course_id]);
+            $column_to_update = $type == 'livestreams' ? 'contains_livestreams' : 'contains_scheduled';
+            foreach ($seminar_playlists as $seminar_playlist) {
+                $value = $seminar_playlist->playlist_id == $playlist_id ? true : false;
+                $seminar_playlist->{$column_to_update} = $value;
+                $seminar_playlist->store();
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+        return true;
+    }
 }

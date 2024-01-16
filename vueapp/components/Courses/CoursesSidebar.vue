@@ -17,7 +17,7 @@
                     active: currentView == 'schedule'
                     }"
                     v-if="canSchedule"
-                    v-on:click="getScheduleList">
+                    v-on:click="setView('schedule')">
                     <router-link :to="{ name: 'schedule' }">
                         {{ $gettext('Aufzeichnungen planen') }}
                     </router-link>
@@ -69,6 +69,41 @@
                         {{ semester.name }}
                     </option>
                 </select>
+            </div>
+        </div>
+        <div class="sidebar-widget " id="sidebar-actions" v-if="canSchedule">
+            <div class="sidebar-widget-header">
+                {{ $gettext('Aktionen') }}
+            </div>
+            <div class="sidebar-widget-content">
+                <div class="oc--sidebar-dropdown-wrapper">
+                    <span class="oc--sidebar-dropdown-text">
+                        {{ $gettext('Aufzeichnungen in Wiedergabeliste') }}
+                    </span>
+                    <select class="oc--sidebar-dropdown-select sidebar-selectlist submit-upon-select" v-model="schedulePlaylistToken" @change="updateScheduledRecordingsPlaylists('scheduled')">
+                        <option v-for="p in playlists"
+                            :key="p.token"
+                            :value="p.token"
+                            :selected="schedulePlaylistToken == p.token"
+                        >
+                            {{ p.title }}
+                        </option>
+                    </select>
+                </div>
+                <div class="oc--sidebar-dropdown-wrapper">
+                    <span class="oc--sidebar-dropdown-text">
+                        {{ $gettext('Livestreams in Wiedergabeliste') }}
+                    </span>
+                    <select class="oc--sidebar-dropdown-select sidebar-selectlist submit-upon-select" v-model="livestreamPlaylistToken" @change="updateScheduledRecordingsPlaylists('livestreams')">
+                        <option v-for="p in playlists"
+                            :key="p.token"
+                            :value="p.token"
+                            :selected="livestreamPlaylistToken == p.token"
+                        >
+                            {{ p.title }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
     </template>
@@ -175,6 +210,8 @@ export default {
         return {
             showAddDialog: false,
             semesterFilter: null,
+            schedulePlaylistToken: null,
+            livestreamPlaylistToken: null
         }
     },
 
@@ -182,7 +219,9 @@ export default {
         ...mapGetters(["playlists", "currentView", 'addPlaylist',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
-            'defaultPlaylist', 'videoSortMode', 'downloadSetting']),
+            'defaultPlaylist', 'videoSortMode', 'downloadSetting',
+            'schedule_playlist', 'livestream_playlist'
+        ]),
 
         fragment() {
             return this.$route.name;
@@ -262,14 +301,16 @@ export default {
             this.$store.dispatch('setPlaylist', playlist);
         },
 
-        getScheduleList() {
-            this.$store.dispatch('updateView', 'schedule');
-            this.$store.dispatch('clearMessages');
-            this.$store.dispatch('getScheduleList');
-        },
-
-        setView(page) {
+        async setView(page) {
             this.$store.dispatch('updateView', page);
+            if (page == 'schedule') {
+                this.$store.dispatch('clearMessages');
+                this.$store.dispatch('getScheduleList');
+                // Make sure playlists are loaded.
+                await this.$store.dispatch('loadScheduledRecordingPlaylists');
+                this.schedulePlaylistToken = this.schedule_playlist?.token;
+                this.livestreamPlaylistToken = this.livestream_playlist?.token;
+            }
         },
 
         async setVisibility(visibility) {
@@ -304,13 +345,33 @@ export default {
         getWorkflow(config_id) {
             let wf_id = this.simple_config_list?.workflow_configs.find(wf_config => wf_config['config_id'] == config_id && wf_config['used_for'] === 'studio')['workflow_id'];
             return this.simple_config_list?.workflows.find(wf => wf['id'] == wf_id)['name'];
+        },
+
+        updateScheduledRecordingsPlaylists(type) {
+            this.$store.dispatch('clearMessages');
+            if (type == 'scheduled') {
+                this.$store.dispatch('setSchedulePlaylist', this.schedulePlaylistToken)
+                .then(({data}) => {
+                    this.$store.dispatch('addMessage', data.message);
+                }).finally(async () => {
+                    await this.$store.dispatch('loadPlaylists');
+                    this.schedulePlaylistToken = this.schedule_playlist?.token;
+                });
+            } else if (type == 'livestreams') {
+                this.$store.dispatch('setLivestreamPlaylist', this.livestreamPlaylistToken)
+                .then(({data}) => {
+                    this.$store.dispatch('addMessage', data.message);
+                }).finally(async () => {
+                    await this.$store.dispatch('loadPlaylists');
+                    this.livestreamPlaylistToken = this.livestream_playlist?.token;
+                });
+            }
         }
     },
 
     mounted() {
         this.$store.dispatch('simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
-
     },
 
     watch: {

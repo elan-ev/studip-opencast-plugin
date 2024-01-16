@@ -148,7 +148,7 @@ class Helpers
     /**
      * Check and make sure, that a valid server is set.
      * If no server is detected, -1 will be stored.
-     * 
+     *
      * @return
      */
     static function validateDefaultServer() {
@@ -200,6 +200,10 @@ class Helpers
             $pcourse->seminar_id  = $course_id;
             $pcourse->visibility = 'visible';
             $pcourse->is_default = 1;
+
+            // Set the default playlist to contain livestreams and scheduled recordings as well.
+            $pcourse->contains_scheduled = 1;
+            $pcourse->contains_livestreams = 1;
 
             $pcourse->store();
         }

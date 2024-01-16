@@ -806,6 +806,21 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
+.oc--sidebar-dropdown-wrapper {
+    &:not(:first-of-type) {
+        margin-top: 7px;
+    }
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    .oc--sidebar-dropdown-text {
+        margin-left: 2px;
+    }
+    .oc--sidebar-dropdown-select {
+        width:100%;
+    }
+}
+
 .oc--loading-spinner {
     margin-top: 1em;
     text-align: center;
