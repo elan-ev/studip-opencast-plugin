@@ -357,7 +357,8 @@ class Playlists extends UPMap
         foreach ($this->videos as $video) {
             PlaylistVideos::create([
                 'playlist_id' => $new_playlist->id,
-                'video_id' => $video->video_id,
+                'video_id'    => $video->video_id,
+                'order'       => $video->order,
             ]);
         }
 
