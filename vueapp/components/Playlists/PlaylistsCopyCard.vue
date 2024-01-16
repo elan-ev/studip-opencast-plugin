@@ -29,7 +29,7 @@ import StudipDialog from "@/components/Studip/StudipDialog.vue";
 import PlaylistsTable from "@/components/Playlists/PlaylistsTable.vue";
 
 export default {
-    name: "PlaylistsLinkCard",
+    name: "PlaylistsCopyCard",
 
     components: {
         StudipDialog,
