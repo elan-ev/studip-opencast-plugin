@@ -325,6 +325,15 @@ class Playlists extends UPMap
 
         $data['tags'] = $this->tags->toArray();
 
+        $data['courses'] = [];
+        if (!empty($this->courses)) {
+            $data['courses'] = PlaylistSeminars::getCoursesArray(
+                $this->courses->map(function ($course) {
+                    return $course->id;
+                })
+            );
+        }
+
         if (!is_null($data['allow_download'])) {
             $data['allow_download'] = filter_var(
                 $data['allow_download'],

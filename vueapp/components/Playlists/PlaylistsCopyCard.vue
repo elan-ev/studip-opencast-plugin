@@ -7,7 +7,7 @@
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
-            width="800"
+            width="1200"
             @close="cancel"
             @confirm="copyPlaylistsToCourse"
         >

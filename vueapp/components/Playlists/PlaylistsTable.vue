@@ -15,10 +15,11 @@
         <table class="default">
             <colgroup>
                 <col v-if="selectable" style="width: 2%">
-                <col style="width: 50%">
-                <col style="width: 2%">
-                <col style="width: 20%">
-                <col style="width: 13%">
+                <col style="width: 40%">
+                <col style="width: 18%">
+                <col style="width: 18%">
+                <col style="width: 5%">
+                <col style="width: 15%">
                 <col v-if="showActions" style="width: 2%">
             </colgroup>
             <thead>
@@ -35,7 +36,13 @@
                     {{ $gettext('Name') }}
                 </th>
 
-                <th></th>
+                <th>
+                    {{ $gettext('Veranstaltung') }}
+                </th>
+
+                <th>
+                    {{ $gettext('Semester') }}
+                </th>
 
                 <th>
                     {{ $gettext('Videos') }}
