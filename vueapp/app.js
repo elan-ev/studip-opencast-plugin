@@ -46,7 +46,7 @@ window.addEventListener("DOMContentLoaded", function() {
             store.dispatch('axiosStop');
 
             if (error.data !== undefined) {
-                store.dispatch('errorCommit', error.response);
+                store.dispatch('addMessage', error.response);
             }
 
             // Do something with response error

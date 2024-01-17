@@ -189,7 +189,6 @@
                     </MessageBox>
                 </form>
 
-                <Error :float="true"/>
                 <MessageList :float="true" :dialog="true"/>
             </template>
         </StudipDialog>
@@ -201,7 +200,6 @@ import { mapGetters } from 'vuex';
 
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
-import Error from "@/components/Error";
 import MessageBox from '@/components/MessageBox'
 import MessageList from '@/components/MessageList';
 import VideoFilePreview from '@/components/Videos/VideoFilePreview'
@@ -216,7 +214,6 @@ export default {
 
     components: {
         StudipDialog,
-        Error,
         MessageBox,
         StudipButton,
         VideoFilePreview,

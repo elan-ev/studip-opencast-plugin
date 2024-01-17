@@ -40,10 +40,10 @@ export default {
 
         currentMessages() {
             if (this.dialog) {
-                return this.messages.filter(m => m.dialog === true);
+                return this.messages.filter(m => m.dialog === true || m.global === true);
             }
             else {
-                return this.messages.filter(m => m.dialog === false || m.dialog === undefined);
+                return this.messages.filter(m => m.dialog === false || m.dialog === undefined || m.global === true);
             }
         }
     },

@@ -17,13 +17,35 @@ export const state = { ...initialState };
 
 export const actions = {
     addMessage(context, message) {
-        if (!message.text || !message.type) {
+        // Handle axios error messages
+        if (message.data) {
+            let text = "";
+            if (message.data.errors) {
+                message.data.errors.forEach(err => {
+                    text += err.code + ": " + err.title + ". ";
+                });
+            }
+            if (message.data.message) {
+                text += message.status + ": " + message.data.message + " (" + message.config.method + ": " + message.config.baseURL + "/" + message.config.url + "). ";
+            }
+            if (message.data.error) {
+                message.data.error.forEach(err => {
+                    text += err.message + ": " + "Line " + err.line + " in file " + err.file + ". ";
+                });
+            }
+
+            message.type = "error";
+            message.global = true;
+            message.text = text;
+        }
+        
+        if (!(message.text && message.type)) {
             return false;
         }
 
         // Remove error messages if success message is displayed
         if (message.type === "success") {
-            context.dispatch('errorClear');
+            context.commit('setMessages', state.messages.filter(m => m.type !== "error"));
         }
 
         let messages = state.messages;
