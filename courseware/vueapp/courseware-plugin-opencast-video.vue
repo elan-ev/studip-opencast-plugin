@@ -131,8 +131,11 @@ export default {
         },
 
         isCurrentVideoLTIAuthenticated() {
-            let currentVideo = this.videos.find(video => video.token === this.currentVideoId);
-            return this.isLTIAuthenticated[currentVideo.config_id];
+            if (this.videos.length > 0) {
+                let currentVideo = this.videos.find(video => video.token === this.currentVideoId);
+                return this.isLTIAuthenticated[currentVideo.config_id];
+            }
+            return false;
         }
     },
 
