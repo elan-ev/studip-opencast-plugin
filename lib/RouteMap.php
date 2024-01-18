@@ -61,6 +61,7 @@ class RouteMap
         $this->app->get('/playlists/{token}', Routes\Playlist\PlaylistShow::class);
         $this->app->put('/playlists/{token}', Routes\Playlist\PlaylistUpdate::class);
         $this->app->delete('/playlists/{token}', Routes\Playlist\PlaylistDelete::class);
+        $this->app->post('/playlists/{token}/copy', Routes\Playlist\PlaylistCopy::class);
 
 
         $this->app->get('/playlists/{token}/videos', Routes\Playlist\PlaylistVideoList::class);

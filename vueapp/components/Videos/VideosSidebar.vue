@@ -19,6 +19,7 @@
                         {{ $gettext('Gelöschte Videos') }}
                     </router-link>
                 </li>
+                <!--
                 <li :class="{
                     active: fragment == 'playlists' || fragment == 'playlist'
                     }">
@@ -26,6 +27,7 @@
                         {{ $gettext('Wiedergabelisten') }}
                     </router-link>
                 </li>
+                -->
             </ul>
         </div>
     </div>

@@ -49,20 +49,11 @@ class Playlists extends UPMap
      */
     public static function getCoursePlaylists(String $course_id, Filter $filters, String $user_id = null)
     {
-        global $user;
-
-        if (!$user_id) {
-            $user_id = $user->id;
-        }
-
         // Check if user has access to playlist
-        $sql    = " INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)"
-                 ." LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
-        $where  = " WHERE oc_playlist_seminar.seminar_id = :course_id"
-                 ." AND (oc_playlist_seminar.is_default = 1 OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read')) ";
+        $sql    = " INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)";
+        $where  = " WHERE oc_playlist_seminar.seminar_id = :course_id ";
         $params = [
             ':course_id' => $course_id,
-            ':user_id' => $user_id,
         ];
 
         return self::getFilteredPlaylists([
@@ -334,6 +325,15 @@ class Playlists extends UPMap
 
         $data['tags'] = $this->tags->toArray();
 
+        $data['courses'] = [];
+        if (!empty($this->courses)) {
+            $data['courses'] = PlaylistSeminars::getCoursesArray(
+                $this->courses->map(function ($course) {
+                    return $course->id;
+                })
+            );
+        }
+
         if (!is_null($data['allow_download'])) {
             $data['allow_download'] = filter_var(
                 $data['allow_download'],
@@ -344,12 +344,49 @@ class Playlists extends UPMap
         return $data;
     }
 
+    public function copy()
+    {
+        global $user;
+
+        $new_playlist = self::create([
+            'title'          => $this->title,
+            'visibility'     => $this->visibility,
+            'sort_order'     => $this->sort_order,
+            'allow_download' => $this->allow_download,
+        ]);
+
+        // Set current user as owner for this playlist
+        PlaylistsUserPerms::create([
+            'playlist_id' => $new_playlist->id,
+            'user_id'     => $user->id,
+            'perm'        => 'owner'
+        ]);
+
+        // Link videos to new playlist
+        foreach ($this->videos as $video) {
+            PlaylistVideos::create([
+                'playlist_id' => $new_playlist->id,
+                'video_id'    => $video->video_id,
+                'order'       => $video->order,
+            ]);
+        }
+
+        // Copy tags
+        foreach ($this->tags as $tag) {
+            $tag->copy($new_playlist->id);
+        }
+
+        $new_playlist->store();
+
+        return $new_playlist;
+    }
+
     public function store()
     {
         if (!$this->token) {
             $this->token = bin2hex(random_bytes(8));
         }
 
-        parent::store();
+        return parent::store();
     }
 }

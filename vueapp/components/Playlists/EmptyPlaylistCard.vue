@@ -5,6 +5,7 @@
         <td><span class="oc--loadingbar"></span></td>
         <td><span class="oc--loadingbar"></span></td>
         <td><span class="oc--loadingbar"></span></td>
+        <td><span class="oc--loadingbar"></span></td>
         <td></td>
     </tr>
 </template>

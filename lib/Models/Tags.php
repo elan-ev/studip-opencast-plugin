@@ -188,4 +188,32 @@ class Tags extends \SimpleORMap
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
+
+    public function copy(String $playlist_id = null, Videos $video_id = null)
+    {
+        global $user;
+
+        // Copy tag only if user not own the tag
+        $tag = Tags::findOneBySQL('tag = ? AND user_id = ?', [$this->tag, $user->id]);
+        if (empty($tag)) {
+            $tag = Tags::create([
+                'tag' => $this->tag,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        if (!empty($playlist_id)) {
+            PlaylistTags::create([
+                'playlist_id' => $playlist_id,
+                'tag_id' => $tag->id,
+            ]);
+        }
+
+        if (!empty($video_id)) {
+            VideoTags::create([
+                'video_id' => $video_id,
+                'tag_id' => $tag->id,
+            ]);
+        }
+    }
 }

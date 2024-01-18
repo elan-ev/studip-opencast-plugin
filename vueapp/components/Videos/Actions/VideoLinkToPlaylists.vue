@@ -5,15 +5,27 @@
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
-            width="600"
+            width="800"
             @close="this.$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
                 <table class="default" v-if="event.playlists.length > 0">
+                    <colgroup>
+                        <col>
+                        <col style="width: 25%">
+                        <col style="width: 25%">
+                        <col style="width: 3%">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>
                                 {{ $gettext('Wiedergabeliste') }}
+                            </th>
+                            <th>
+                                {{ $gettext('Veranstaltung') }}
+                            </th>
+                            <th>
+                                {{ $gettext('Semester') }}
                             </th>
                             <th></th>
                         </tr>
@@ -24,6 +36,12 @@
                                 <router-link :to="{ name: 'playlist' , params: { token: playlist.token }}" target="_blank">
                                     {{ playlist.title }}
                                 </router-link>
+                            </td>
+                            <td>
+                                {{ getCourseName(playlist) }}
+                            </td>
+                            <td>
+                                {{ getSemester(playlist) }}
                             </td>
                             <td>
                                 <studip-icon shape="trash" role="clickable" @click="removePlaylist(index)" style="cursor: pointer"/>
@@ -83,6 +101,24 @@ export default {
     },
 
     methods: {
+        getCourseName(playlist) {
+            if (!Array.isArray(playlist.courses) || playlist.courses.length === 0) {
+                return '';
+            }
+
+            // Assume a playlist has only one course
+            return playlist.courses[0].name;
+        },
+
+        getSemester(playlist) {
+            if (!Array.isArray(playlist.courses) || playlist.courses.length === 0) {
+                return '';
+            }
+
+            // Assume a playlist has only one course
+            return playlist.courses[0].semester;
+        },
+
         addPlaylist(playlist) {
             this.event.playlists.push(playlist);
 

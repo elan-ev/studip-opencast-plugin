@@ -219,6 +219,7 @@ class PlaylistSeminars extends \SimpleORMap
                 $courses[] = [
                     'id'        => $course->id,
                     'name'      => $course->getFullname('number-name'),
+                    'semester'  => $course->getFullname('sem-duration-name'),
                     'lecturers' => $lecturers,
                 ];
             }
