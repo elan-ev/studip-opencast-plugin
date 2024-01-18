@@ -31,10 +31,6 @@ export default {
                 return this.simple_config_list.auth_url + '/' + num + '?config_id=' + config_id;
             }
         }
-    },
-
-    mounted() {
-        this.$store.dispatch('simpleConfigListRead');
     }
 }
 </script>
