@@ -1,7 +1,5 @@
 <template>
     <div class="container" id="opencast">
-        <Error />
-
         <div class="content">
             <router-view></router-view>
         </div>
@@ -14,14 +12,13 @@
 </template>
 
 <script>
-import Error from "@/components/Error";
 import LtiAuth from "@/components/LtiAuth";
 import { mapGetters } from "vuex";
 
 export default {
     name: "App",
     components: {
-        Error,  LtiAuth
+        LtiAuth
     },
 
     computed: {
