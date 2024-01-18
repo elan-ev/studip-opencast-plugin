@@ -96,6 +96,7 @@
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
                         :selectable="selectable"
+                        :isCourse="isCourse"
                         :playlistEditable="editable"
                         :showActions="showActions"
                         @doAction="doAction"
@@ -119,7 +120,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="(editable || !isCourse) && !trashBin">
+                        <span v-if="editable && !isCourse && !trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDelete')"
                                 :class="{
