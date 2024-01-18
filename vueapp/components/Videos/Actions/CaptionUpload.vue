@@ -59,7 +59,7 @@
                                     </label>
 
                                     <label class="oc--file-upload">
-                                        <StudipButton icon="accept" @click.prevent="chooseFiles('oc-file-' + language.lang)">
+                                        <StudipButton icon="add" @click.prevent="chooseFiles('oc-file-' + language.lang)">
                                             {{ $gettext('Untertiteldatei auswählen') }}
                                         </StudipButton>
                                         <input
