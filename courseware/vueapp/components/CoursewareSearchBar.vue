@@ -7,7 +7,7 @@
                     v-on:keyup.enter="doSearch"
                     v-model="inputSearch"
                     placeholder="Suche..."
-                    @input="doSearch"
+                    @input="doLiveSearch"
                 />
             </li>
             <li title="Suche starten"
@@ -28,13 +28,25 @@ export default {
 
     data() {
         return {
-            inputSearch: ''
+            inputSearch: '',
+            timer: null,
+            delay: 800 //ms
         }
     },
 
     methods: {
         doSearch() {
+            clearTimeout(this.timer);
+
             this.$emit('doSearch', this.inputSearch);
+        },
+
+        doLiveSearch() {
+            clearTimeout(this.timer);
+
+            this.timer = setTimeout(() => {
+                this.doSearch();
+            }, this.delay);
         }
     },
 }

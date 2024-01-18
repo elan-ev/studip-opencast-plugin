@@ -30,6 +30,7 @@
                     @click="showTokenSelector"
                     @blur="delayedHideTokenSelector"
                     @submit="doSearch"
+                    @input="doLiveSearch"
                 />
             </li>
             <li title="Suche starten"
@@ -155,7 +156,9 @@ export default {
             tokenSelectorPos: {
                 top: 0,
                 left: 0
-            }
+            },
+            timer: null,
+            delay: 800 // ms
         }
     },
 
@@ -309,6 +312,8 @@ export default {
         },
 
         doSearch() {
+            clearTimeout(this.timer);
+
             let filters = JSON.parse(JSON.stringify(this.searchTokens));
 
             if (this.inputSearch) {
@@ -321,6 +326,14 @@ export default {
             this.$emit('search', {
                 filters: filters,
             });
+        },
+
+        doLiveSearch() {
+            clearTimeout(this.timer);
+
+            this.timer = setTimeout(() => {
+                this.doSearch();
+            }, this.delay);
         },
     },
 
