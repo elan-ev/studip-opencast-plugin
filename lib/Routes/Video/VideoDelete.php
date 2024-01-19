@@ -30,6 +30,16 @@ class VideoDelete extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        // Prevent deleting livestreams.
+        if ((bool) $video->is_livestream) {
+            return $this->createResponse([
+                'message' => [
+                    'type' => 'warning',
+                    'text' => _('Das Livestream-Video konnte nicht gelöscht werden')
+                ],
+            ], $response->withStatus(200));
+        }
+
         $message = [
             'type' => 'success',
             'text' => _('Das Video wurde erfolgreich gelöscht')

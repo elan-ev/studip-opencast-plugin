@@ -171,6 +171,33 @@ $action-menu-icon-size: 20px;
             transform: translateY(50%);
         }
 
+        span.oc--livestream-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba($white, 0.4);
+            color: $base-color;
+            &.is-live{
+                color: $red !important;
+            }
+
+            span.oc--livestream-text {
+                font-size: $font-size-h4;
+                font-weight: $headings-font-weight;
+                text-transform: uppercase;
+            }
+
+            span.oc--livestream-timer {
+                font-size: $font-size-h5;
+            }
+        }
+
         span.oc--duration {
             position: absolute;
             background-color: $base_color;
@@ -1152,14 +1179,13 @@ label.oc--file-upload {
         }
     }
 
-    td.oc-schedule-status {
+    td.oc-schedule-status, th.oc-schedule-status {
         text-align: center;
         span {
             &.text-red {
                 color: var(--red);
             }
             font-weight: bold;
-            margin-left: .4em;
         }
     }
 

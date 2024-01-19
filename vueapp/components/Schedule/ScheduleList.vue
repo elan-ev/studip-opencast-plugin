@@ -22,7 +22,7 @@
                         <th>{{ $gettext('Aufzeichnungszeitraum') }}</th>
                     </template>
                     <th>{{ $gettext('Titel') }}</th>
-                    <th>{{ $gettext('Status') }}</th>
+                    <th class="oc-schedule-status">{{ $gettext('Status') }}</th>
                     <th class="oc-schedule-actions">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
@@ -128,7 +128,8 @@ export default {
         return {
             sliderRefs: [],
             bulkRefs: [],
-            bulkAction: ''
+            bulkAction: '',
+            refreshTimeout: null,
         }
     },
 
@@ -288,6 +289,44 @@ export default {
                 'type': type,
                 'text': text
             });
+        },
+
+        initLivestreamRefreshTimer() {
+            let nearest_refresh_time = 0;
+            for (let date of this.schedule_list) {
+                if (date?.status?.referesh_at) {
+                    let refresh_at = parseInt(date.status.referesh_at);
+                    if (nearest_refresh_time == 0 || nearest_refresh_time > refresh_at) {
+                        nearest_refresh_time = refresh_at;
+                    }
+                }
+            }
+            if (nearest_refresh_time == 0) {
+                if (this.refreshTimeout != null) {
+                    window.clearTimeout(this.refreshTimeout);
+                    this.refreshTimeout = null;
+                }
+                return;
+            }
+            let now = (new Date()).getTime();
+            let timeout = (nearest_refresh_time * 1000) - now;
+            this.refreshTimeout = setTimeout(() => {
+                this.$store.dispatch('getScheduleList');
+            }, timeout);
+        }
+    },
+
+    mounted () {
+        this.initLivestreamRefreshTimer();
+    },
+
+    updated () {
+        this.initLivestreamRefreshTimer();
+    },
+
+    beforeDestroy() {
+        if (this.refreshTimeout != null) {
+            window.clearTimeout(this.refreshTimeout);
         }
     },
 }

@@ -59,7 +59,7 @@ class ScheduleBulk extends OpencastController
             }
         }
 
-        if ($action == 'schedule') {
+        if ($action == 'schedule' || $action == 'live') {
             ScheduleHelper::sendRecordingNotifications($course_id);
         }
 

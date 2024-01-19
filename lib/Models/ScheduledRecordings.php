@@ -95,10 +95,11 @@ class ScheduledRecordings extends \SimpleORMap
      * @param string $resource_id id of resource
      * @param string $seminar_id id of course
      * @param string $status the status of the record
+     * @param bool|null $is_livestream the livestream flag of the record
      *
      * @return object|bool
      */
-    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '')
+    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '', $is_livestream = null)
     {
         $where_array = [];
         $params = [];
@@ -113,6 +114,11 @@ class ScheduledRecordings extends \SimpleORMap
         if (!empty($status)) {
             $where_array[] = "status = ?";
             $params[] = $status;
+        }
+        if (!is_null($is_livestream)) {
+            $is_livestream = (bool) $is_livestream ? 1 : 0;
+            $where_array[] = "is_livestream = ?";
+            $params[] = $is_livestream;
         }
         if (!empty($where_array)) {
             return self::findBySQL(implode(' AND ', $where_array), $params);

@@ -56,18 +56,20 @@ export default {
             }
 
             Promise.all(promises).then((values) => {
-                let success = 0;
-                let errors  = 0;
+                let success  = 0;
+                let errors   = 0;
+                let warnings = 0;
 
                 for (let i = 0; i < values.length; i++) {
                     if (values[i].data.message.type == 'error') errors++;
                     if (values[i].data.message.type == 'success') success++;
+                    if (values[i].data.message.type == 'warning') warnings++;
                 }
 
                 let type = 'success';
                 if (errors > 0 && success == 0) {
                     type = 'error';
-                } else if (errors > 0 && success > 0) {
+                } else if ((errors > 0 && success > 0) || warnings > 0) {
                     type = 'warning';
                 }
 
@@ -75,7 +77,7 @@ export default {
                     type: type,
                     text: this.$gettext('%{ num_success } Videos wurden gelöscht, bei %{ num_errors } Videos gab es Probleme.', {
                         num_success: success,
-                        num_errors:  errors
+                        num_errors:  (errors + warnings)
                     })
                 });
 

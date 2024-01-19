@@ -134,6 +134,11 @@ class RedirectController extends Opencast\Controller
                     $custom_tool = "/play/{$video->episode}";
                 }
                 break;
+            case 'livestream':
+                if (!empty($video->livestream_link)) {
+                    $custom_tool = $video->livestream_link;
+                }
+                break;
             default:
                 $custom_tool = '/ltitools';
         }

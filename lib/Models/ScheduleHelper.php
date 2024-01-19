@@ -18,9 +18,16 @@ use Opencast\Models\REST\IngestClient;
 use Opencast\Models\REST\SchedulerClient;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Videos;
+use Opencast\Models\Helpers;
+use Opencast\Models\PlaylistVideos;
+use Opencast\Models\VideoSync;
 
 class ScheduleHelper
 {
+    const LIVESTREAM_STATUS_SCHEDULED = 'scheduled';
+    const LIVESTREAM_STATUS_LIVE = 'live';
+    const LIVESTREAM_STATUS_FINISHED = 'finished';
     /**
      * Gets the list of semesters for the course to be repsresented in the semster filter dropdown
      * NOTE: expired semesters are rejected!
@@ -380,6 +387,10 @@ class ScheduleHelper
             $event_id = (string)$xml['id'];
             $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id, $livestream);
             if ($scheduled) {
+                // Create the video if it is livestream.
+                if ($livestream) {
+                    self::createOrUpdateLivestreamVideo($oc_resource['config_id'], $course_id, $event_id);
+                }
                 return true;
             }
             // If it hits here, it means opencast has the record but local database doesn't,
@@ -558,6 +569,7 @@ class ScheduleHelper
         if (!$scheduled_recording_obj) {
             return false;
         }
+        $is_livestream = (bool) $scheduled_recording_obj['is_livestream'];
         $event_id = $scheduled_recording_obj['event_id'];
 
         $config_id = null;
@@ -578,6 +590,10 @@ class ScheduleHelper
 
         if ($result) {
             ScheduledRecordings::unscheduleRecording($event_id, $resource_id, $termin_id);
+            // Remove the livestream video here!
+            if ($is_livestream) {
+                self::removeLivestreamVideo($event_id);
+            }
             \StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
             return true;
         } else {
@@ -619,8 +635,6 @@ class ScheduleHelper
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
 
         $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
-
-        $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
 
         if (!$scheduled_recording_obj) {
             return false;
@@ -665,6 +679,8 @@ class ScheduleHelper
             $scheduled_recording_obj->store();
         }
 
+        $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
+
         // Update resource
         if ($update_resource) {
             $scheduled_recording_obj->resource_id = $resource_id;
@@ -695,6 +711,11 @@ class ScheduleHelper
         );
 
         if ($result) {
+            // Create the video if it is livestream and it is now finished!
+            $now_miliseconds = time() * 1000;
+            if ($is_livestream && !empty($end) && $now_miliseconds < $end) {
+                self::createOrUpdateLivestreamVideo($resource_obj['config_id'], $course_id, $event_id);
+            }
             \StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
             return true;
         } else {
@@ -780,10 +801,21 @@ class ScheduleHelper
                     ];
                     if (!empty($scheduled['is_livestream'])) {
                         $status['info'] = 'LIVE';
-                        $status['title'] = _('Livestream ist bereits geplant.');
-                        if (in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
-                            $status['title'] = _('Livestream läuft gerade.');
+                        $start = intVal($scheduled['start']);
+                        $end = intVal($scheduled['end']);
+                        $livestream_status = self::getLivestreamTimeStatus($start, $end);
+                        if ($livestream_status == self::LIVESTREAM_STATUS_SCHEDULED) {
+                            $status['title'] = _('Livestream ist bereits geplant.');
+                            $status['referesh_at'] = $start;
+                        } else if ($livestream_status == self::LIVESTREAM_STATUS_LIVE) {
+                            $status['title'] = _('Livestream ist geplant, es wurde jedoch keine Veröffentlichung gefunden.');
+                            if (in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
+                                $status['title'] = _('Livestream läuft gerade.');
+                            }
                             $status['info_class'] = 'text-red';
+                            $status['referesh_at'] = $end;
+                        } else {
+                            $status['title'] = _('Livestream beendet.');
                         }
                     }
                 } else {
@@ -1016,7 +1048,7 @@ class ScheduleHelper
      *
      * @return bool the final success indicator.
      */
-    public function setScheduledRecordingsPlaylist($playlist_id, $course_id, $type)
+    public static function setScheduledRecordingsPlaylist($playlist_id, $course_id, $type)
     {
         try {
             $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$course_id]);
@@ -1030,5 +1062,132 @@ class ScheduleHelper
             return false;
         }
         return true;
+    }
+
+    /**
+     * Creates or Updates the Video Object that holds the livestream event. The Playlist mapping also takes palce here.
+     *
+     * @param int $config_id opencast config id
+     * @param string $course_id course id
+     * @param string $event_id event id
+     *
+     * @return bool
+     */
+    public static function createOrUpdateLivestreamVideo($config_id, $course_id, $event_id)
+    {
+        global $user;
+        $events_client = ApiEventsClient::getInstance($config_id);
+        $params = ['withmetadata' => false, 'withscheduling' => true, 'withpublications' => true];
+        $event = $events_client->getEpisode($event_id, $params);
+
+        if ($event) {
+            $video = Videos::findByEpisode($event_id);
+            if (empty($video)) {
+                $video = new Videos;
+            }
+            $publication = '';
+            if (!empty($event->publications)) {
+                $publication = json_encode($event->publications);
+            }
+            $video->setData([
+                'episode'       => $event_id,
+                'config_id'     => $config_id,
+                'title'         => $event->title,
+                'description'   => $event->description,
+                'duration'      => $event->duration,
+                'state'         => 'running',
+		        'created'       => date('Y-m-d H:i:s', strtotime($event->created)),
+		        'author'        => $event->creator,
+                'available'     => true,
+                'publication'   => $publication,
+                'is_livestream' => true,
+                // 'trashed'       => false
+            ]);
+            if (!$video->token) {
+                $video->token = bin2hex(random_bytes(8));
+            }
+            $video->store();
+
+            // add permissions to this video for current user
+            if (!empty($user)) {
+                $perm = VideosUserPerms::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
+                    ':user_id'  => $user->id,
+                    ':video_id' => $video->id
+                ]);
+
+                if (empty($perm)) {
+                    $perm = new VideosUserPerms();
+                    $perm->user_id  = $user->id;
+                    $perm->video_id = $video->id;
+                    $perm->perm     = 'owner';
+                    $perm->store();
+                }
+            }
+
+            // Finding the livestream playlist.
+            $playlist_id = null;
+            $seminar_livestream_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND contains_livestreams = 1', [$course_id]);
+
+            // Force create and get course default playlist. which then works as livestream playlist if nothing is set yet.
+            if (empty($seminar_livestream_playlist)) {
+                $default_playlist = Helpers::checkCoursePlaylist($course_id);
+                $playlist_id = $default_playlist->id;
+            } else {
+                $playlist_id = $seminar_livestream_playlist->playlist_id;
+            }
+
+            if (!is_null($playlist_id)) {
+                $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist_id]);
+
+                if (empty($pvideo)) {
+                    $pvideo = new PlaylistVideos();
+                    $pvideo->video_id    = $video->id;
+                    $pvideo->playlist_id = $playlist_id;
+                    $pvideo->store();
+                }
+            }
+
+            // we put a worker on this video to make sure everything goes as usual.
+            if (empty(VideoSync::findByVideo_id($video->id))) {
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+        }
+    }
+
+    /**
+     * Removes the video from the list only when it is as livestream.
+     *
+     * @param string $event_id the event id
+     */
+    public static function removeLivestreamVideo($event_id)
+    {
+        Videos::deleteBySql('episode = ? AND is_livestream = 1', [$event_id]);
+    }
+
+    /**
+     * Helper function to check what phase livestream is currently at.
+     *
+     * @param int $start the start timestamp of the scheduled livestream
+     * @param int $end the end timestamp of the scheduled livestream
+     *
+     * @return string the livestream status
+     */
+    public static function getLivestreamTimeStatus(int $start, int $end): string
+    {
+        $now = time();
+        if ($start > $now) {
+            return self::LIVESTREAM_STATUS_SCHEDULED;
+        } else if ($start < $now && $now < $end) {
+            return self::LIVESTREAM_STATUS_LIVE;
+        }
+        return self::LIVESTREAM_STATUS_FINISHED;
     }
 }
