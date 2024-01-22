@@ -1,6 +1,15 @@
 <template>
     <div>
+        <VideoChangeWarning
+            v-if="!showEditDialog"
+            :event="event"
+            :title="$gettext('Auswirkung der Bearbeitung')"
+            @done="showEditDialog = true"
+            @cancel="decline"
+        />
+
         <StudipDialog
+            v-if="showEditDialog"
             :title="$gettext('Video bearbeiten')"
             :closeText="$gettext('Abbrechen')"
             :confirmText="$gettext('Speichern')"
@@ -112,17 +121,20 @@ import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog';
 import StudipIcon from '@/components/Studip/StudipIcon'
 import TagBar from '@/components/TagBar.vue';
+import VideoChangeWarning from '@/components/Videos/VideoChangeWarning';
+
 
 export default {
     name: "VideoEdit",
 
     components: {
         StudipDialog, TagBar,
-        StudipIcon
+        StudipIcon,   VideoChangeWarning
     },
 
     data() {
         return {
+            showEditDialog: false,
             visibility: null,
             visible_timestamp: null,
             use_timestamp: false

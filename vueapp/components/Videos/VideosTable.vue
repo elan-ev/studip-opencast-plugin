@@ -205,6 +205,7 @@ import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermane
 import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
+import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
 import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
@@ -227,11 +228,12 @@ export default {
         StudipButton,             VideoLinkToPlaylists,
         VideoAccess,              StudipIcon,
         VideoDownload,            VideoReport,
-        VideoEdit,                VideoRestore,
-        VideoDelete,              VideoDeletePermanent,
-        VideoRemoveFromPlaylist,  CaptionUpload,
-        BulkVideoDelete,          BulkVideoDeletePermanent,
-        BulkVideoRestore,         draggable,
+        VideoEdit,                VideoCut,
+        VideoRestore,             VideoDelete,
+        VideoDeletePermanent,     VideoRemoveFromPlaylist,
+        CaptionUpload,            BulkVideoDelete,
+        BulkVideoDeletePermanent, BulkVideoRestore,
+        draggable,
     },
 
     props: {
