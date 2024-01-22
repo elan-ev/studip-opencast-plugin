@@ -1,6 +1,7 @@
 <template>
     <div>
         <VideosTable
+            v-if="playlist"
             :playlist="playlist"
             :cid="cid"
             :editable="canEdit"
