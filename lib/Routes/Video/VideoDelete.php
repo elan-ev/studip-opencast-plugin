@@ -37,7 +37,7 @@ class VideoDelete extends OpencastController
                     'type' => 'warning',
                     'text' => _('Das Livestream-Video konnte nicht gelöscht werden')
                 ],
-            ], $response->withStatus(200));
+            ], $response->withStatus(403));
         }
 
         $message = [
