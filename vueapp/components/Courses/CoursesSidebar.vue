@@ -141,7 +141,7 @@
                         <li v-if="canEdit">
                             <a @click="$emit('copyAll')">
                                 <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
-                                {{ $gettext('Videos/Wiedergabelisten übertragen') }}
+                                {{ $gettext('Kursinhalte übertragen') }}
                             </a>
                         </li>
                     </template>
