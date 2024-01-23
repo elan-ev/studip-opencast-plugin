@@ -1,5 +1,5 @@
 <template>
-    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id">
+    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow">
         <td v-if="playlistEditable && videoSortMode">
             <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
                 <img class="oc--drag-handle"
@@ -310,6 +310,16 @@ export default {
             let seconds_str  = ('' + seconds).padStart(2, '0');
             this.livestreamInfo.timer = `${hours_str}:${minutes_str}:${seconds_str}`
             return counter_seconds + 1;
+        },
+
+        handleColumnNumbers() {
+            let video_row = this.$refs.videoRow;
+            if (video_row) {
+                if (video_row?.childElementCount && video_row?.childElementCount < this.numberOfColumns) {
+                    let colspan = (this.numberOfColumns - video_row.childElementCount) + 1;
+                    video_row.lastElementChild.setAttribute('colspan', colspan);
+                }
+            }
         }
     },
 
@@ -566,6 +576,11 @@ export default {
 
     mounted () {
         this.initLivestreamChecker();
+        this.handleColumnNumbers();
+    },
+
+    updated () {
+        // this.handleColumnNumbers();
     },
 }
 </script>
