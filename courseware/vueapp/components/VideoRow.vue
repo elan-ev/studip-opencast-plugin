@@ -1,9 +1,7 @@
 <template>
     <tr class="oc--episode" :class="{'oc-cw-video-selected' : selected}" v-if="event.refresh === undefined" :key="event.id" @click="$emit('setVideo', event)" style="cursor: pointer" title="Video auswählen">
         <td class="oc--playercontainer">
-            <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
-               @click="redirectAction(`/video/` + event.token)" target="_blank"
-            >
+            <span v-if="event.publication && event.preview && (event.available && event.available != '0')">
                 <span class="oc--previewimage">
                     <img class="oc--previewimage"
                          :src="getImageSrc"
@@ -11,7 +9,6 @@
                          height="200"
                          :ref="event.id"
                     />
-                    <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
                     <span data-tooltip class="tooltip oc--views">
                         <span class="tooltip-content">
                             {{ $gettext('Aufrufe') }}
@@ -23,18 +20,17 @@
                         {{ getDuration }}
                     </span>
                 </span>
-            </a>
+            </span>
             <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
                 {{ $gettext("Video nicht verfügbar") }}
             </span>
-            <a v-else-if="event.state == 'cutting'"
-               @click="redirectAction(`/editor/` + event.token)"
-               :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
+            <span v-else-if="event.state == 'cutting'"
+               :title="$gettext('Dieses Video wartet auf den Schnitt.')"
             >
                 <span class="oc--previewimage">
                     <img class="oc--image-button" :src="cut">
                 </span>
-            </a>
+            </span>
             <span v-else-if="event.state == 'running'" class="oc--previewimage"
                   :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
             >
@@ -52,10 +48,9 @@
 
         <td class="oc--metadata-title">
             <div class="oc--title-container">
-                <a v-if="event.publication && event.preview && event.available"
-                   @click="redirectAction(`/video/` + event.token)" target="_blank">
+                <span v-if="event.publication && event.preview && event.available">
                     {{event.title}}
-                </a>
+                </span>
                 <span v-else>
                     {{event.title}}
                 </span>

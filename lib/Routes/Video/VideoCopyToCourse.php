@@ -13,6 +13,9 @@ use Opencast\Models\PlaylistVideos;
 use Opencast\Models\PlaylistSeminars;
 use Opencast\Models\Helpers;
 
+/**
+ * Copy all playlists of a course to other courses
+ */
 class VideoCopyToCourse extends OpencastController
 {
     use OpencastTrait;
@@ -30,47 +33,23 @@ class VideoCopyToCourse extends OpencastController
         $courses = $json['courses'];
         $playlists = [];
 
-        $videos = [];
         try {
             // Managing playlists.
-            $playlists = PlaylistSeminars::findBySeminar_id($course_id);
+            $playlists = Playlists::findByCourse_id($course_id);
 
-            if (!empty($courses) && (!empty($videos) || !empty($playlists))) {
+            if (!empty($courses) && !empty($playlists)) {
                 foreach ($courses as $course) {
                     if ($perm->have_studip_perm('tutor', $course['id']) && $course['id'] !== $course_id) {
-                        if (!empty($playlists)) {
-                            $target_course_playlists = PlaylistSeminars::findBySeminar_id($course['id']);
-                            foreach ($playlists as $playlist) {
-                                $playlist_id = $playlist->playlist_id;
-                                $exists = array_filter($target_course_playlists, function ($pl) use ($playlist_id) {
-                                    return intval($pl->playlist_id) === intval($playlist_id);
-                                });
-                                if (!empty($exists)) {
-                                    continue;
-                                }
+                        foreach ($playlists as $playlist) {
+                            // Copy source playlist to target course
+                            $new_playlist = $playlist->copy();
 
-                                // if this is the courses default playlist, copy the videos to the new courses default playlist
-                                if ($playlist->is_default) {
-                                    $default_playlist = Helpers::checkCoursePlaylist($course['id']);
-                                    $stmt = \DBManager::get()->prepare("INSERT INTO oc_playlist_video (playlist_id, video_id, `order`)
-                                        SELECT :target, video_id, `order` FROM oc_playlist_video
-                                            WHERE playlist_id = :source
-                                            AND NOT EXISTS (Select * FROM oc_playlist_video WHERE playlist_id = :target)");
-                                    $stmt->execute([
-                                        ':target' => $default_playlist->id,
-                                        ':source' => $playlist->id
-                                    ]);
-                                } else {
-                                    $playlist_seminar = new PlaylistSeminars;
-                                    $playlist_seminar->playlist_id = $playlist->playlist_id;
-                                    $playlist_seminar->seminar_id = $course['id'];
-                                    $playlist_seminar->visibility = 'visible';
-
-                                    $playlist_seminar->store();
-                                }
-
-
-                            }
+                            // Link playlist copy to target course
+                            PlaylistSeminars::create([
+                                'playlist_id' => $new_playlist->id,
+                                'seminar_id'  => $course['id'],
+                                'visibility'  => 'visible'
+                            ]);
                         }
                     }
                 }

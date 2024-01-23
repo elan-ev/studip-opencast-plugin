@@ -14,15 +14,28 @@
                         <studip-icon shape="add" role="clickable" size="50"/>
                         {{ $gettext('Neu erstellen') }}
                     </a>
+
+                    <a href="#" @click.prevent="activeDialog = 'copy'">
+                        <studip-icon shape="copy" role="clickable" size="50"/>
+                        {{ $gettext('Bestehende kopieren') }}
+                    </a>
+
+                    <!--
                     <a href="#" @click.prevent="activeDialog = 'link'">
                         <studip-icon shape="group" role="clickable" size="50"/>
                         {{ $gettext('Bestehende verknüpfen') }}
                     </a>
+                    -->
                 </div>
             </template>
         </StudipDialog>
 
         <PlaylistAddNewCard v-if="activeDialog === 'new'"
+            @done="done"
+            @cancel="cancel"
+        />
+
+        <PlaylistsCopyCard v-if="activeDialog === 'copy'"
             @done="done"
             @cancel="cancel"
         />
@@ -39,6 +52,7 @@
 import StudipDialog from '@studip/StudipDialog'
 import StudipIcon from "@studip/StudipIcon";
 import PlaylistAddNewCard from "@/components/Playlists/PlaylistAddNewCard";
+import PlaylistsCopyCard from "@/components/Playlists/PlaylistsCopyCard";
 import PlaylistsLinkCard from "@/components/Playlists/PlaylistsLinkCard";
 
 export default {
@@ -48,6 +62,7 @@ export default {
         StudipDialog,
         StudipIcon,
         PlaylistAddNewCard,
+        PlaylistsCopyCard,
         PlaylistsLinkCard,
     },
 

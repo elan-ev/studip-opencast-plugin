@@ -24,6 +24,18 @@ Currently there is only the German and English translation present in this plugi
 
 After extracting all present translation strings from the current code with the above commands, you can either directly edit `locale/en/LC_MESSAGES/opencast.po` or better use a tool like [Poedit](https://poedit.net/).
 
+The workflow would then be:
+```
+npm run translate
+```
+
+Then, edit the po-file, afterwards another
+
+```
+npm run translate
+```
+
+This will create the translation files for the vue-frontend and the php-backend alike. Take note that a web server restart might be necessary for php to load the modified translations!
 
 ## Compile
 

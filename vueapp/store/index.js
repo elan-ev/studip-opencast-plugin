@@ -1,6 +1,5 @@
 import { createStore } from 'vuex';
 
-import error from "./error.module";
 import config from "./config.module";
 import messages from "./messages.module";
 import opencast from "./opencast.module";
@@ -12,7 +11,6 @@ import schedule from "./schedule.module";
 
 export default createStore({
   modules: {
-    error,
     config,
     messages,
     opencast,

@@ -141,6 +141,15 @@ const actions = {
         }
     },
 
+    async copyPlaylistsToCourse(context, data) {
+        for (const playlist of data.playlists) {
+            await context.dispatch('copyPlaylist', {
+                course: data.course,
+                token: playlist,
+            });
+        }
+    },
+
     async updatePlaylistCourses(context, params) {
         return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
     },
@@ -196,6 +205,16 @@ const actions = {
                     dispatch('loadPlaylists');
                 }
             });
+    },
+
+    async copyPlaylist(context, params) {
+        let data = {};
+
+        if (params.course !== undefined) {
+            data.course = params.course;
+        }
+
+        return ApiService.post('playlists/' + params.token + '/copy', data);
     },
 
     async deletePlaylist(context, token) {

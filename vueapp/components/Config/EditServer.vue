@@ -31,7 +31,6 @@
                     <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
                 </form>
 
-                <Error :float="true"/>
                 <MessageList :float="true" :dialog="true"/>
             </template>
 
@@ -56,7 +55,6 @@ import StudipDialog from '@studip/StudipDialog'
 import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
-import Error from "@/components/Error";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
 import UploadOptions from "@/components/Config/UploadOptions";
@@ -72,7 +70,6 @@ export default {
         StudipDialog,
         ConfigOption,
         MessageList,
-        Error,
         WorkflowOptions,
         UploadOptions,
     },

@@ -14,7 +14,13 @@
             </div>
         </td>
 
-        <td></td>
+        <td>
+            {{ courseName }}
+        </td>
+
+        <td>
+            {{ semester }}
+        </td>
 
         <td>
             {{ playlist.videos_count }}
@@ -108,6 +114,24 @@ export default {
         isChecked() {
             return this.selectedPlaylists.indexOf(this.playlist.token) >= 0;
         },
+
+        course() {
+            if (!Array.isArray(this.playlist.courses) || this.playlist.courses.length === 0) {
+                return null;
+            }
+
+            // Assume a playlist has only one course
+            return this.playlist.courses[0];
+        },
+
+        courseName() {
+            return this.course?.name ?? '';
+        },
+
+        semester() {
+            // Assume a playlist has only one course
+            return this.course?.semester ?? '';
+        }
     },
 
     methods: {
