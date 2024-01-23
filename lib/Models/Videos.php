@@ -987,13 +987,13 @@ class Videos extends UPMap
         $series = SeminarSeries::findBySeries_id($episode->is_part_of);
         foreach ($series as $s) {
             // Only add video to default playlist if it is not connected to a any playlist in this course
-            $stmt = \DBManager::get()->prepare($sql = 'SELECT count(*) FROM oc_playlist_seminar
-                INNER JOIN oc_playlist_video ON (oc_playlist_video.playlist_id = oc_playlist_seminar.playlist_id)
-                WHERE oc_playlist_seminar.seminar_id = ?
-                AND oc_playlist_video.video_id = ?
+            $stmt = \DBManager::get()->prepare('SELECT count(*) FROM oc_playlist_seminar AS ops
+                INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = ops.playlist_id AND opv.video_id = ?)
+                WHERE ops.seminar_id = ?
             ');
             $stmt->execute([$video->id, $s['seminar_id']]);
-            if ($stmt->fetchColumn() == 0) {
+            $count = intVal($stmt->fetchColumn());
+            if ($count == 0) {
                 // Add video to default playlist here
                 $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
 
