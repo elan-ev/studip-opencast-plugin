@@ -22,6 +22,7 @@ use Opencast\Models\Videos;
 use Opencast\Models\Helpers;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\VideoSync;
+use Opencast\Models\PlaylistSeminarVideos;
 
 class ScheduleHelper
 {
@@ -1132,10 +1133,16 @@ class ScheduleHelper
             if (empty($seminar_livestream_playlist)) {
                 $default_playlist = Helpers::checkCoursePlaylist($course_id);
                 $playlist_id = $default_playlist->id;
+                // Make sure the livestream flag is set correctly!
+                if (self::setScheduledRecordingsPlaylist($default_playlist->id, $course_id, 'livestream')) {
+                    // Make sure the seminar_livestream_playlist is not empty.
+                    $seminar_livestream_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND contains_livestreams = 1', [$course_id]);
+                }
             } else {
                 $playlist_id = $seminar_livestream_playlist->playlist_id;
             }
 
+            // Add video into PlaylistVideos
             if (!is_null($playlist_id)) {
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist_id]);
 
@@ -1144,6 +1151,24 @@ class ScheduleHelper
                     $pvideo->video_id    = $video->id;
                     $pvideo->playlist_id = $playlist_id;
                     $pvideo->store();
+                }
+            }
+
+            // Add Video into PlaylistSeminarVideos
+            if (!empty($seminar_livestream_playlist)) {
+                $psv = PlaylistSeminarVideos::findOneBySQL(
+                    "LEFT JOIN oc_playlist_seminar AS ops ON ops.id = playlist_seminar_id
+                    WHERE video_id = ?
+                    AND playlist_id = ?
+                    AND seminar_id = ?",
+                    [$video->id, $playlist_id, $course_id]);
+                if (empty($psv)) {
+                    $psv = new PlaylistSeminarVideos();
+                    $psv->setValue('playlist_seminar_id', $seminar_livestream_playlist->id);
+                    $psv->setValue('video_id', $video->id);
+                    $psv->setValue('visibility', 'visible');
+                    $psv->setValue('visible_timestamp', date('Y-m-d H:i:s'));
+                    $psv->store();
                 }
             }
 

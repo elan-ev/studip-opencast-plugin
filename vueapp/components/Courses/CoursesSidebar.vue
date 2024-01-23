@@ -192,6 +192,7 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
 import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
@@ -211,7 +212,8 @@ export default {
             showAddDialog: false,
             semesterFilter: null,
             schedulePlaylistToken: null,
-            livestreamPlaylistToken: null
+            livestreamPlaylistToken: null,
+            targetPlaylistToken: null
         }
     },
 
@@ -366,12 +368,32 @@ export default {
                     this.livestreamPlaylistToken = this.livestream_playlist?.token;
                 });
             }
+        },
+
+        async setTargetPlaylist() {
+            if (this.targetPlaylistToken) {
+                if (this.playlist?.token == this.targetPlaylistToken) {
+                    this.targetPlaylistToken = null;
+                    return;
+                }
+                let playlist_filtered = this.playlists.filter(playlist => playlist.token == this.targetPlaylistToken)
+                if (playlist_filtered?.length) {
+                    await this.$nextTick();
+                    this.setPlaylist(playlist_filtered[0]);
+                    await this.$store.dispatch('loadPlaylists');
+                    this.targetPlaylistToken = null;
+                }
+            }
         }
     },
 
     mounted() {
         this.$store.dispatch('simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
+        const route = useRoute();
+        if (route?.query?.taget_pl_token) {
+            this.targetPlaylistToken = route.query.taget_pl_token
+        }
     },
 
     watch: {
@@ -380,6 +402,12 @@ export default {
                 this.$store.dispatch('setSemesterFilter', newValue);
                 this.$store.dispatch('clearMessages');
                 this.$store.dispatch('getScheduleList');
+            }
+        },
+
+        playlists(newValue) {
+            if (newValue?.length && this.targetPlaylistToken) {
+                this.setTargetPlaylist();
             }
         }
     }

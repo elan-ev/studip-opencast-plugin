@@ -56,7 +56,7 @@
                                 <select v-model="resource.workflow_id">
                                     <option value="" disabled selected>
                                         <span>
-                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}'
+                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
                                         </span>
                                     </option>
                                     <option v-for="workflow in compiledWDList(resource)"
@@ -79,7 +79,7 @@
                                 <select v-model="resource.livestream_workflow_id">
                                     <option value="" disabled selected>
                                         <span>
-                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}'
+                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
                                         </span>
                                     </option>
                                     <option v-for="workflow in compiledWDList(resource)"

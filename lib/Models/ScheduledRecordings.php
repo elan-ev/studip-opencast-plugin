@@ -2,6 +2,9 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Video;
+
 class ScheduledRecordings extends \SimpleORMap
 {
     protected static function configure($config = array())
@@ -165,5 +168,55 @@ class ScheduledRecordings extends \SimpleORMap
     public static function checkScheduled($course_id, $resource_id, $date_id)
     {
         return self::getScheduleRecording($course_id, $resource_id, $date_id, 'scheduled');
+    }
+
+    /**
+     * Get related video object created when the scheduled recordingd is livestream.
+     *
+     * @return Opencast\Models\Video || null
+     */
+    public function getVideo()
+    {
+        if (empty($this->event_id)) {
+            return null;
+        }
+        return Videos::findByEpisode($this->event_id);
+    }
+
+    /**
+     * Get the playlists in which the related video object is added to.
+     *
+     * @return array [\Opencast\Models\Playlists]
+     */
+    public function getPlaylists()
+    {
+        $playlists = [];
+        $video = $this->getVideo();
+        if (empty($video)) {
+            return [];
+        }
+        return $video->playlists ?? [];
+    }
+
+    /**
+     * Get the seminar playlist in which the video via (oc_playlist_seminar_video) is added to.
+     *
+     * @return array [PlaylistSeminars] or empty array
+     */
+    public function getSeminarPlaylists($seminar_id)
+    {
+        $seminar_playlists = [];
+        $video = $this->getVideo();
+        if (empty($video)) {
+            return [];
+        }
+
+        $sql = 'INNER JOIN oc_playlist_seminar_video AS opsv ON (id = opsv.playlist_seminar_id AND opsv.video_id = :video_id) WHERE seminar_id = :seminar_id';
+        $seminar_playlists = PlaylistSeminars::findBySql($sql, [
+            ':video_id' => $video->id,
+            ':seminar_id' => $seminar_id,
+        ]);
+
+        return $seminar_playlists ?? [];
     }
 }
