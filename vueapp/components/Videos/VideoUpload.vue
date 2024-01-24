@@ -374,9 +374,7 @@ export default {
                 uploadData['seriesId'] = this.course_config['series']['series_id'];
             }
 
-            uploadData['created']  = new Date(this.upload.recordDate).toISOString(),
-
-            uploadData['oc_acl']   = this.uploadService.uploadACL();
+            uploadData['created']  = new Date(this.upload.recordDate).toISOString();
 
             let files = [];
             if (this.files['presenter/source'].length) {
