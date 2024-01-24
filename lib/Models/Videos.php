@@ -11,6 +11,7 @@ use Opencast\Models\REST\ApiWorkflowsClient;
 use Opencast\Providers\Perm;
 use Opencast\Models\Helpers;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Models\ScheduledRecordings;
 
 class Videos extends UPMap
 {
@@ -994,8 +995,18 @@ class Videos extends UPMap
             $stmt->execute([$video->id, $s['seminar_id']]);
             $count = intVal($stmt->fetchColumn());
             if ($count == 0) {
-                // Add video to default playlist here
-                $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+                $playlist = null;
+                // Determine if the event is scheduled recordings.
+                $scheduled_recording = ScheduledRecordings::findOneBySql('event_id = ? AND series_id = ? AND is_livestream = 0', [$video->episode, $episode->is_part_of]);
+                if (!empty($scheduled_recording)) {
+                    $seminar_playlist = PlaylistSeminars::findOneBySql('seminar_id = ? AND contains_scheduled = 1', [$s['seminar_id']]);
+                    $playlist = !empty($seminar_playlist) ? $seminar_playlist->playlist : null;
+                }
+
+                if (empty($playlist)) {
+                    // Add video to default playlist here
+                    $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+                }
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 
