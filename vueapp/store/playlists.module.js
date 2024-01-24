@@ -173,10 +173,25 @@ const actions = {
     },
 
     async removeVideosFromPlaylist(context, data) {
+        let removedCount = 0;
+        let forbiddenCount = 0;
         for (let i = 0; i < data.videos.length; i++) {
-            await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+            try {
+                await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+                removedCount++;
+            } catch (err) {
+                // We send back 403 for those livestream video, when removing from playlist.
+                if (err?.response?.status == 403) {
+                    forbiddenCount++;
+                }
+            }
         }
-        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.length});
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
+
+        if (removedCount > 0) {
+            return Promise.resolve({removedCount, forbiddenCount});
+        }
+        return Promise.reject({removedCount, forbiddenCount});
     },
 
     addPlaylistUI({ commit }, show) {

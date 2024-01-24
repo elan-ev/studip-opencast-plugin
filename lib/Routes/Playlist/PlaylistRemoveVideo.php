@@ -36,8 +36,8 @@ class PlaylistRemoveVideo extends OpencastController
         if ((bool) $video->is_livestream) {
             return $this->createResponse([
                 'message' => [
-                    'type' => 'warning',
-                    'text' => _('Das Livestream-Video konnte nicht gelöscht werden')
+                    'type' => 'error',
+                    'text' => _('Entfernung des Livestream-Videos aus der Wiedergabeliste ist nicht erlaubt.')
                 ],
             ], $response->withStatus(403));
         }

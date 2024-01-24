@@ -581,10 +581,6 @@ export default {
     mounted () {
         this.initLivestreamChecker();
         this.handleColumnNumbers();
-    },
-
-    updated () {
-        // this.handleColumnNumbers();
-    },
+    }
 }
 </script>
