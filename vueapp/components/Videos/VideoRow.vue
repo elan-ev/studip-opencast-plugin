@@ -20,7 +20,7 @@
                         :title="livestreamInfo.text"
                     >
                         <img class="oc--previewimage"
-                            :src="defaultPreviewImageSrc"
+                            :src="defaultLightPreviewImageSrc"
                             @error="setDefaultImage()"
                             height="200"
                             :ref="event.id"
@@ -350,6 +350,10 @@ export default {
 
         defaultPreviewImageSrc() {
             return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
+        },
+
+        defaultLightPreviewImageSrc() {
+            return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview-light-40.png';
         },
 
         downloadAllowed() {
