@@ -370,9 +370,14 @@ class ScheduleHelper
         $oc_resource  = Resources::findByResource_id($resource_id);
         if (!$oc_resource
             || !self::checkCaptureAgent($oc_resource['config_id'], $oc_resource['capture_agent'])
-            || !self::validateCourseAndResource($course_id, $oc_resource['config_id']
-            || ($livestream && !empty($oc_resource['livestream_workflow_id'])))
+            || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])
         ) {
+            return false;
+        }
+
+        // Livestream workflow checker.
+        if (($livestream && empty($oc_resource['livestream_workflow_id']))) {
+            // Unlike normal scheduling, we don't allow livestream to be scheduled without a workflow!
             return false;
         }
 
