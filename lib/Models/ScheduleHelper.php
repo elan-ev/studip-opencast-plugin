@@ -439,11 +439,17 @@ class ScheduleHelper
         $serie = $series[0];
 
         $ca = Resources::findByResource_id($resource_id);
-        $workflow_id = 'full';
+
+        $workflow_id = '';
         if ($livestream) {
             $workflow_id = $ca['livestream_workflow_id'];
-        } else if (!empty($ca['workflow_id'])) {
-            $workflow_id = $ca['workflow_id'];
+        } else {
+            $workflow_id = $ca['workflow_id'] ?? 'full';
+        }
+
+        // Here again the checker for livestream, to prevent scheduling without a workflow.
+        if (empty($workflow_id)) {
+            return false;
         }
 
         $date = \CourseDate::find($date_id);
