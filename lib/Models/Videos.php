@@ -10,6 +10,8 @@ use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\ApiWorkflowsClient;
 use Opencast\Providers\Perm;
 use Opencast\Models\Helpers;
+use Opencast\Models\ScheduleHelper;
+use Opencast\Models\ScheduledRecordings;
 
 class Videos extends UPMap
 {
@@ -427,7 +429,7 @@ class Videos extends UPMap
     public static function getNumberOfNewCourseVideos($course_id, $last_visit, $user_id = null) {
         global $perm;
 
-        $sql = 'SELECT COUNT(DISTINCT video.id) 
+        $sql = 'SELECT COUNT(DISTINCT video.id)
                 FROM `oc_video` AS video
                 INNER JOIN `oc_playlist_video` AS opv ON (opv.video_id = video.id)
                 INNER JOIN `oc_playlist` AS op ON (op.id = opv.playlist_id)
@@ -437,7 +439,7 @@ class Videos extends UPMap
                   AND (UNIX_TIMESTAMP(video.chdate) > :last_visit OR UNIX_TIMESTAMP(opv.mkdate) > :last_visit)
                   AND video.trashed = 0
                   AND video.token IS NOT NULL
-                  AND video.state IS NULL 
+                  AND video.state IS NULL
                   AND video.available = 1';
 
         if (!$perm->have_perm('dozent', $user_id)) {
@@ -470,6 +472,11 @@ class Videos extends UPMap
         return self::findOneBySQL('id = ?', [$id]);
     }
 
+    public static function findByEpisode($episode_id)
+    {
+        return self::findOneBySQL('episode = ?', [$episode_id]);
+    }
+
     public function toSanitizedArray($cid = '', $playlist_id = '')
     {
         $data = $this->toArray();
@@ -491,6 +498,20 @@ class Videos extends UPMap
 
 
         $data['trashed'] = $this->trashed ? true : false;
+
+        if ((bool) $this->is_livestream) {
+            $scheduled_recording_obj = ScheduledRecordings::findOneBySQL('event_id = ? AND is_livestream = 1',[
+                $this->episode
+            ]);
+            if (!empty($scheduled_recording_obj)) {
+                $data['livestream'] = [
+                    'start' => $scheduled_recording_obj->start,
+                    'end' => $scheduled_recording_obj->end,
+                ];
+            }
+        }
+
+        unset($data['is_livestream']);
 
         return $data;
     }
@@ -763,6 +784,8 @@ class Videos extends UPMap
             $audio_download        = [];
             $annotation_tool       = false;
             $duration              = 0;
+            $track_link            = '';
+            $livestream_link       = '';
 
             foreach ((array) $episode->publications[0]->attachments as $attachment) {
                 if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
@@ -842,6 +865,9 @@ class Videos extends UPMap
                 if ($publication->channel == 'annotation-tool') {
                     $annotation_tool = $publication->url;
                 }
+                if ($publication->channel == 'engage-live' && isset($publication->url)) {
+                    $livestream_link = $publication->url;
+                }
             }
 
             ksort($presenter_download);
@@ -863,7 +889,8 @@ class Videos extends UPMap
                     'audio'        => $audio_download
                 ],
                 'annotation_tool'  => $annotation_tool,
-                'track_link'       => $track_link
+                'track_link'       => $track_link,
+                'livestream_link'  => $livestream_link,
             ]);
 
             return $video->store();
@@ -961,15 +988,25 @@ class Videos extends UPMap
         $series = SeminarSeries::findBySeries_id($episode->is_part_of);
         foreach ($series as $s) {
             // Only add video to default playlist if it is not connected to a any playlist in this course
-            $stmt = \DBManager::get()->prepare($sql = 'SELECT count(*) FROM oc_playlist_seminar
-                INNER JOIN oc_playlist_video ON (oc_playlist_video.playlist_id = oc_playlist_seminar.playlist_id)
-                WHERE oc_playlist_seminar.seminar_id = ?
-                AND oc_playlist_video.video_id = ?
+            $stmt = \DBManager::get()->prepare('SELECT count(*) FROM oc_playlist_seminar AS ops
+                INNER JOIN oc_playlist_video AS opv ON (opv.playlist_id = ops.playlist_id AND opv.video_id = ?)
+                WHERE ops.seminar_id = ?
             ');
             $stmt->execute([$video->id, $s['seminar_id']]);
-            if ($stmt->fetchColumn() == 0) {
-                // Add video to default playlist here
-                $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+            $count = intVal($stmt->fetchColumn());
+            if ($count == 0) {
+                $playlist = null;
+                // Determine if the event is scheduled recordings.
+                $scheduled_recording = ScheduledRecordings::findOneBySql('event_id = ? AND series_id = ? AND is_livestream = 0', [$video->episode, $episode->is_part_of]);
+                if (!empty($scheduled_recording)) {
+                    $seminar_playlist = PlaylistSeminars::findOneBySql('seminar_id = ? AND contains_scheduled = 1', [$s['seminar_id']]);
+                    $playlist = !empty($seminar_playlist) ? $seminar_playlist->playlist : null;
+                }
+
+                if (empty($playlist)) {
+                    // Add video to default playlist here
+                    $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+                }
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 

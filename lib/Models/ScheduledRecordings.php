@@ -2,6 +2,9 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Video;
+
 class ScheduledRecordings extends \SimpleORMap
 {
     protected static function configure($config = array())
@@ -13,7 +16,7 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Adds or updates schedule recording
-     * 
+     *
      * @param string $seminar_id id of course
      * @param string $series_id id of serie
      * @param string $date_id id of termin
@@ -24,7 +27,8 @@ class ScheduledRecordings extends \SimpleORMap
      * @param string $event_id id of oc event
      * @param string $status the status of the record
      * @param string $workflow_id workflow id
-     * 
+     * @param bool $is_livestream livestream indicator
+     *
      * @return bool
      * @throws Exception
      */
@@ -38,7 +42,8 @@ class ScheduledRecordings extends \SimpleORMap
         $capture_agent,
         $event_id,
         $status = 'scheduled',
-        $workflow_id = 'full')
+        $workflow_id = 'full',
+        $is_livestream = false)
     {
         if (!empty($seminar_id) && !empty($resource_id) && !empty($date_id)) {
             if (!$scheduled_recording = self::getScheduleRecording($seminar_id, $resource_id, $date_id)) {
@@ -56,7 +61,8 @@ class ScheduledRecordings extends \SimpleORMap
                     'capture_agent',
                     'event_id',
                     'status',
-                    'workflow_id'
+                    'workflow_id',
+                    'is_livestream'
                 )
             );
             return $scheduled_recording->store();
@@ -67,12 +73,12 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Gets the schedule recording record
-     * 
+     *
      * @param string $seminar_id id of course
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
      * @param string $status the status of the record
-     * 
+     *
      * @return object|bool
      */
     public static function getScheduleRecording($seminar_id, $resource_id, $date_id, $status = '')
@@ -88,14 +94,15 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Gets the list of schedule recording based on the parameters passed
-     * 
+     *
      * @param string $resource_id id of resource
      * @param string $seminar_id id of course
      * @param string $status the status of the record
-     * 
+     * @param bool|null $is_livestream the livestream flag of the record
+     *
      * @return object|bool
      */
-    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '')
+    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '', $is_livestream = null)
     {
         $where_array = [];
         $params = [];
@@ -111,6 +118,11 @@ class ScheduledRecordings extends \SimpleORMap
             $where_array[] = "status = ?";
             $params[] = $status;
         }
+        if (!is_null($is_livestream)) {
+            $is_livestream = (bool) $is_livestream ? 1 : 0;
+            $where_array[] = "is_livestream = ?";
+            $params[] = $is_livestream;
+        }
         if (!empty($where_array)) {
             return self::findBySQL(implode(' AND ', $where_array), $params);
         }
@@ -123,7 +135,7 @@ class ScheduledRecordings extends \SimpleORMap
      * @param string $event_id id of oc event
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
-     * 
+     *
      * @return boolean
      */
 
@@ -146,15 +158,65 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Get scheduled recording object with scheduled as its status
-     * 
+     *
      * @param string $event_id id of oc event
      * @param string $resource_id id of resource
      * @param string $date_id id of termin
-     * 
+     *
      * @return object|null
      */
     public static function checkScheduled($course_id, $resource_id, $date_id)
     {
         return self::getScheduleRecording($course_id, $resource_id, $date_id, 'scheduled');
+    }
+
+    /**
+     * Get related video object created when the scheduled recordingd is livestream.
+     *
+     * @return Opencast\Models\Video || null
+     */
+    public function getVideo()
+    {
+        if (empty($this->event_id)) {
+            return null;
+        }
+        return Videos::findByEpisode($this->event_id);
+    }
+
+    /**
+     * Get the playlists in which the related video object is added to.
+     *
+     * @return array [\Opencast\Models\Playlists]
+     */
+    public function getPlaylists()
+    {
+        $playlists = [];
+        $video = $this->getVideo();
+        if (empty($video)) {
+            return [];
+        }
+        return $video->playlists ?? [];
+    }
+
+    /**
+     * Get the seminar playlist in which the video via (oc_playlist_seminar_video) is added to.
+     *
+     * @return array [PlaylistSeminars] or empty array
+     */
+    public function getSeminarPlaylists($seminar_id)
+    {
+        $seminar_playlists = [];
+        $video = $this->getVideo();
+        if (empty($video)) {
+            return [];
+        }
+
+        $sql = 'INNER JOIN oc_playlist_seminar_video AS opsv ON (id = opsv.playlist_seminar_id AND opsv.video_id = :video_id) WHERE seminar_id = :seminar_id';
+        $seminar_playlists = PlaylistSeminars::findBySql($sql, [
+            ':video_id' => $video->id,
+            ':seminar_id' => $seminar_id,
+        ]);
+
+        return $seminar_playlists ?? [];
     }
 }

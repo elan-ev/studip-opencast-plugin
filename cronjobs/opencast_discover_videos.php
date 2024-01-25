@@ -83,17 +83,19 @@ class OpencastDiscoverVideos extends CronJob
                 echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
 
                 $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $new_event_id]);
+                $is_livestream = (bool) $video->is_livestream ?? false;
                 if (!$video) {
                     $video = new Videos;
                 }
                 $video->setData([
-                    'episode'     => $new_event_id,
-                    'config_id'   => $config['id'],
-                    'title'       => $events[$new_event_id]->title,
-                    'description' => $events[$new_event_id]->description,
-                    'duration'    => $events[$new_event_id]->duration,
-                    'state'       => 'running',
-                    'available'   => true
+                    'episode'       => $new_event_id,
+                    'config_id'     => $config['id'],
+                    'title'         => $events[$new_event_id]->title,
+                    'description'   => $events[$new_event_id]->description,
+                    'duration'      => $events[$new_event_id]->duration,
+                    'state'         => 'running',
+                    'available'     => true,
+                    'is_livestream' => $is_livestream
                 ]);
                 $video->store();
 
@@ -131,7 +133,7 @@ class OpencastDiscoverVideos extends CronJob
          * FAILED wird nur jede Stunde neu inspiziert
          * Das scheduled Feld wird genutzt, um Dinge für die Zukunft zu planen
          */
-        foreach (Videos::findBySql('preview IS NULL') as $video) {
+        foreach (Videos::findBySql('preview IS NULL AND is_livestream = 0') as $video) {
             // check, if there is already a task scheduled
             if (empty(VideoSync::findByVideo_id($video->id))) {
                 echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";

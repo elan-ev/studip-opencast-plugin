@@ -171,6 +171,32 @@ $action-menu-icon-size: 20px;
             transform: translateY(50%);
         }
 
+        span.oc--livestream-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: $base-color;
+            &.is-live{
+                color: $red !important;
+            }
+
+            span.oc--livestream-text {
+                font-size: $font-size-h4;
+                font-weight: $headings-font-weight;
+                text-transform: uppercase;
+            }
+
+            span.oc--livestream-timer {
+                font-size: $font-size-h5;
+            }
+        }
+
         span.oc--duration {
             position: absolute;
             background-color: $base_color;
@@ -806,6 +832,21 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
+.oc--sidebar-dropdown-wrapper {
+    &:not(:first-of-type) {
+        margin-top: 7px;
+    }
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    .oc--sidebar-dropdown-text {
+        margin-left: 2px;
+    }
+    .oc--sidebar-dropdown-select {
+        width:100%;
+    }
+}
+
 .oc--loading-spinner {
     margin-top: 1em;
     text-align: center;
@@ -1140,19 +1181,29 @@ label.oc--file-upload {
         }
     }
 
-    td.oc-schedule-actions {
-        .oc-schedule-action-item {
-            &:not(:first-of-type) {
-                margin-left: .5em;
+    td.oc-schedule-actions, th.oc-schedule-actions {
+        text-align: center;
+        .oc-schedule-action-item-wrapper {
+            width: 100%;
+            display: inline-flex;
+            justify-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            .oc-schedule-action-item {
+                &:not(:first-of-type) {
+                    margin-left: .5em;
+                }
             }
         }
     }
 
-    td.oc-schedule-status {
+    td.oc-schedule-status, th.oc-schedule-status {
+        text-align: center;
         span {
+            &.text-red {
+                color: var(--red);
+            }
             font-weight: bold;
-            color: var(--red);
-            margin-left: .4em;
         }
     }
 

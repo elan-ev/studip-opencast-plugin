@@ -37,6 +37,9 @@ class PlaylistSeminars extends \SimpleORMap
 
         $playlist_data['is_default'] = $this->is_default;
 
+        $playlist_data['contains_scheduled'] = (bool) $this->contains_scheduled;
+        $playlist_data['contains_livestreams'] = (bool) $this->contains_livestreams;
+
         return $playlist_data;
     }
 

@@ -32,6 +32,16 @@ class PlaylistRemoveVideo extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        // Prevent removing video from playlist when it is livestream.
+        if ((bool) $video->is_livestream) {
+            return $this->createResponse([
+                'message' => [
+                    'type' => 'error',
+                    'text' => _('Entfernung des Livestream-Videos aus der Wiedergabeliste ist nicht erlaubt.')
+                ],
+            ], $response->withStatus(403));
+        }
+
         PlaylistVideos::deleteBySQL('playlist_id = ? AND video_id = ?', [
             $playlist->id, $video->id
         ]);

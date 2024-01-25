@@ -1,5 +1,5 @@
 <template>
-    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id">
+    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow">
         <td v-if="playlistEditable && videoSortMode">
             <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
                 <img class="oc--drag-handle"
@@ -14,59 +14,87 @@
         </td>
 
         <td class="oc--playercontainer">
-            <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
-               @click="redirectAction(`/video/` + event.token)" target="_blank"
-            >
-                <span class="oc--previewimage">
-                    <img class="oc--previewimage"
-                         :src="getImageSrc"
-                         @error="setDefaultImage()"
-                         height="200"
-                         :ref="event.id"
-                    />
-                    <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
-                    <span data-tooltip class="tooltip oc--views">
-                        <span class="tooltip-content">
-                            {{ $gettext('Aufrufe') }}
+            <template v-if="isLivestream">
+                <a :disabled="!livestreamInfo.isLive" @click="redirectAction(`/livestream/` + event.token)" target="_blank">
+                    <span class="oc--previewimage"
+                        :title="livestreamInfo.text"
+                    >
+                        <img class="oc--previewimage"
+                            :src="defaultLightPreviewImageSrc"
+                            @error="setDefaultImage()"
+                            height="200"
+                            :ref="event.id"
+                        />
+                        <span :class="[
+                            'oc--livestream-overlay',
+                            {'is-live': livestreamInfo.isLive}
+                            ]"
+                        >
+                            <span class="oc--livestream-text">{{ livestreamInfo.text }}</span>
+                            <span class="oc--livestream-timer" v-html="livestreamInfo.timer" />
                         </span>
-                        <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
-                        {{ event.views }}
                     </span>
-                    <span class="oc--duration">
-                        {{ getDuration }}
+                </a>
+            </template>
+            <template v-else>
+                <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
+                   @click="redirectAction(`/video/` + event.token)" target="_blank"
+                >
+                    <span class="oc--previewimage">
+                        <img class="oc--previewimage"
+                             :src="getImageSrc"
+                             @error="setDefaultImage()"
+                             height="200"
+                             :ref="event.id"
+                        />
+                        <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
+                        <span data-tooltip class="tooltip oc--views">
+                            <span class="tooltip-content">
+                                {{ $gettext('Aufrufe') }}
+                            </span>
+                            <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
+                            {{ event.views }}
+                        </span>
+                        <span class="oc--duration">
+                            {{ getDuration }}
+                        </span>
                     </span>
+                </a>
+                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
+                    {{ $gettext("Video nicht verfügbar") }}
                 </span>
-            </a>
-            <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
-                {{ $gettext("Video nicht verfügbar") }}
-            </span>
-            <a v-else-if="event.state == 'cutting'"
-               @click="redirectAction(`/editor/` + event.token)"
-               :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
-            >
-                <span class="oc--previewimage">
-                    <img class="oc--image-button" :src="cut">
+                <a v-else-if="event.state == 'cutting'"
+                   @click="redirectAction(`/editor/` + event.token)"
+                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
+                >
+                    <span class="oc--previewimage">
+                        <img class="oc--image-button" :src="cut">
+                    </span>
+                </a>
+                <span v-else-if="event.state == 'running'" class="oc--previewimage"
+                      :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+                >
+                    <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
                 </span>
-            </a>
-            <span v-else-if="event.state == 'running'" class="oc--previewimage"
-                  :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
-            >
-                <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
-            </span>
-            <span v-else-if="event.state == 'failed'" class="oc--previewimage"
-                  :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
-            >
-                <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
-            </span>
-            <span v-else class="oc--previewimage">
-                <img class="oc--previewimage" :src="preview" height="200"/>
-                <!-- <p>No video uploaded</p> -->
-            </span>
+                <span v-else-if="event.state == 'failed'" class="oc--previewimage"
+                      :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
+                >
+                    <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
+                </span>
+                <span v-else class="oc--previewimage">
+                    <img class="oc--previewimage" :src="preview" height="200"/>
+                    <!-- <p>No video uploaded</p> -->
+                </span>
+            </template>
         </td>
 
         <td class="oc--metadata-title">
             <div class="oc--title-container">
-                <a v-if="event.publication && event.preview && event.available"
+                <a v-if="isLivestream && livestreamInfo.isLive"
+                   @click="redirectAction(`/livestream/` + event.token)" target="_blank">
+                    {{event.title}}
+                </a>
+                <a v-else-if="event.publication && event.preview && event.available"
                    @click="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
@@ -185,6 +213,12 @@ export default {
             DeleteConfirmDialog: false,
             DownloadDialog: false,
             editDialog: false,
+            livestreamInfo: {
+                isLive: false,
+                text: 'Livestream',
+                timerInterval: null,
+                timer: ''
+            }
         }
     },
 
@@ -214,6 +248,82 @@ export default {
         setDefaultImage() {
             let image = this.$refs[this.event.id];
             image.src = window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
+        },
+
+        initLivestreamChecker() {
+            if (!this.isLivestream) {
+                return;
+            }
+            let now = parseInt(((new Date()).getTime() / 1000).toFixed(0));
+            let start = this.livestream?.start ? parseInt(this.livestream.start) : 0;
+            let end = this.livestream?.end ? parseInt(this.livestream.end) : 0;
+
+            this.livestreamInfo.isLive = false;
+            this.livestreamInfo.text = this.$gettext('Livestream');
+            this.livestreamInfo.timer = '';
+            if (this.livestreamInfo.timerInterval != null) {
+                window.clearInterval(this.livestreamInfo.timerInterval);
+            }
+            this.livestreamInfo.timerInterval = null;
+
+            // If the livestream is in future.
+            if (start > now) {
+                let diff = this.livestreamCountdown(start - now);
+                this.livestreamInfo.timerInterval = setInterval(() => {
+                    if (diff == 0) {
+                        window.clearInterval(this.livestreamInfo.timerInterval);
+                        this.initLivestreamChecker();
+                    }
+                    diff = this.livestreamCountdown(diff)
+                }, 1000);
+            } else if (now >= start && now <= end) { // If it is live
+                this.livestreamInfo.isLive = true;
+                this.livestreamInfo.text = this.$gettext('Live');
+                let counter_seconds = this.livestreamDuration(now - start);
+                this.livestreamInfo.timerInterval = setInterval(() => {
+                    if ((now + counter_seconds) >= end) {
+                        window.clearInterval(this.livestreamInfo.timerInterval);
+                        this.initLivestreamChecker();
+                    }
+                    counter_seconds = this.livestreamDuration(counter_seconds)
+                }, 1000);
+            } else if (now > end) { // If it is expired
+                this.livestreamInfo.timer = this.$gettext('Beendet');
+            }
+        },
+
+        livestreamCountdown(diff) {
+            let days = Math.floor(diff / (60 * 60 * 24));
+            let days_str = ('' + days).padStart(2, '0');
+            let hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+            let hours_str = ('' + hours).padStart(2, '0');
+            let minutes = Math.floor((diff % (60 * 60)) / 60);
+            let minutes_str = ('' + minutes).padStart(2, '0');
+            let seconds = Math.floor((diff % 60));
+            let seconds_str = ('' + seconds).padStart(2, '0');
+            this.livestreamInfo.timer = (days > 0 ? `${days_str}:` : '') + `${hours_str}:${minutes_str}:${seconds_str}`
+            return diff - 1;
+        },
+
+        livestreamDuration(counter_seconds) {
+            let hours = Math.floor((counter_seconds % (60 * 60 * 24) / (60 * 60)));
+            let hours_str = ('' + hours).padStart(2, '0');
+            let minutes = Math.floor((counter_seconds % (60 * 60)) / 60);
+            let minutes_str = ('' + minutes).padStart(2, '0');
+            let seconds = Math.floor((counter_seconds % 60));
+            let seconds_str  = ('' + seconds).padStart(2, '0');
+            this.livestreamInfo.timer = `${hours_str}:${minutes_str}:${seconds_str}`
+            return counter_seconds + 1;
+        },
+
+        handleColumnNumbers() {
+            let video_row = this.$refs.videoRow;
+            if (video_row) {
+                if (video_row?.childElementCount && video_row?.childElementCount < this.numberOfColumns) {
+                    let colspan = (this.numberOfColumns - video_row.childElementCount) + 1;
+                    video_row.lastElementChild.setAttribute('colspan', colspan);
+                }
+            }
         }
     },
 
@@ -234,8 +344,16 @@ export default {
             if (this.isLTIAuthenticated[this.event.config_id]) {
                 return this.event.preview.player ? this.event.preview.player : this.event.preview.search;
             } else {
-                return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
+                return this.defaultPreviewImageSrc;
             }
+        },
+
+        defaultPreviewImageSrc() {
+            return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png';
+        },
+
+        defaultLightPreviewImageSrc() {
+            return window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview-light-40.png';
         },
 
         downloadAllowed() {
@@ -355,7 +473,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.preview?.has_previews || this.event?.state == 'cutting') {
+                    if ((this.event?.preview?.has_previews || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Schnitteditor öffnen'),
@@ -375,7 +493,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.state !== 'running') {
+                    if (this.event?.state !== 'running' && !this.isLivestream) {
                         menuItems.push({
                             id: 7,
                             label: this.$gettext('Untertitel hinzufügen'),
@@ -385,7 +503,7 @@ export default {
                         });
                     }
 
-                    if (!this.isCourse) {
+                    if (!this.isCourse && !this.isLivestream) {
                         menuItems.push({
                             id: 9,
                             label: this.$gettext('Zum Löschen markieren'),
@@ -405,7 +523,7 @@ export default {
                         });
                     }
                 }
-                if (this.downloadAllowed && this.event?.state !== 'running') {
+                if (this.downloadAllowed && this.event?.state !== 'running' && !this.isLivestream) {
                     menuItems.push({
                         id: 2,
                         label: this.$gettext('Medien runterladen'),
@@ -434,13 +552,15 @@ export default {
                 }
             }
 
-            menuItems.push({
-                id: 8,
-                label: this.$gettext('Technisches Feedback'),
-                icon: 'support',
-                emit: 'performAction',
-                emitArguments: 'VideoReport'
-            });
+            if (!this.isLivestream) {
+                menuItems.push({
+                    id: 8,
+                    label: this.$gettext('Technisches Feedback'),
+                    icon: 'support',
+                    emit: 'performAction',
+                    emitArguments: 'VideoReport'
+                });
+            }
 
             menuItems.sort((a, b) => {
                 return a.id - b.id;
@@ -451,7 +571,20 @@ export default {
 
         canEdit() {
             return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
-        }
+        },
+
+        livestream() {
+            return this.event?.livestream ?? null;
+        },
+
+        isLivestream() {
+            return this.livestream !== null;
+        },
+    },
+
+    mounted () {
+        this.initLivestreamChecker();
+        this.handleColumnNumbers();
     }
 }
 </script>

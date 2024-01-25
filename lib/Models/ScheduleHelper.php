@@ -17,9 +17,18 @@ use Opencast\Models\REST\WorkflowClient;
 use Opencast\Models\REST\IngestClient;
 use Opencast\Models\REST\SchedulerClient;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\Videos;
+use Opencast\Models\Helpers;
+use Opencast\Models\PlaylistVideos;
+use Opencast\Models\VideoSync;
+use Opencast\Models\PlaylistSeminarVideos;
 
 class ScheduleHelper
 {
+    const LIVESTREAM_STATUS_SCHEDULED = 'scheduled';
+    const LIVESTREAM_STATUS_LIVE = 'live';
+    const LIVESTREAM_STATUS_FINISHED = 'finished';
     /**
      * Gets the list of semesters for the course to be repsresented in the semster filter dropdown
      * NOTE: expired semesters are rejected!
@@ -69,9 +78,11 @@ class ScheduleHelper
         foreach ($resources as $resource) {
             $assigned_ca = null;
             $assigned_wd = null;
+            $assigned_livestream_wd = null;
             if ($assigned_resource = Resources::findByResource_id($resource['id'])) {
                 $ca_valid = false;
                 $wd_valid = false;
+                $wd_livestream_valid = false;
                 foreach ($capture_agents as $key => $agent) {
                     if ($agent->name == $assigned_resource['capture_agent']
                         && $agent->config_id == $assigned_resource['config_id']) {
@@ -87,6 +98,11 @@ class ScheduleHelper
                             $assigned_wd = $workflow_definitions[$key];
                             $wd_valid = true;
                         }
+                        if ($definition->id == $assigned_resource['livestream_workflow_id']
+                            && $definition->config_id == $assigned_ca->config_id) {
+                            $assigned_livestream_wd = $workflow_definitions[$key];
+                            $wd_livestream_valid = true;
+                        }
                     }
                 }
             }
@@ -96,6 +112,7 @@ class ScheduleHelper
                 'capture_agent' => !empty($assigned_ca) ? $assigned_ca->name : '',
                 'config_id' => !empty($assigned_ca) ? $assigned_ca->config_id : '',
                 'workflow_id' => !empty($assigned_wd) ? $assigned_wd->id : '',
+                'livestream_workflow_id' => !empty($assigned_livestream_wd) ? $assigned_livestream_wd->id : '',
             ];
         }
 
@@ -304,15 +321,15 @@ class ScheduleHelper
 
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                                <dcterms:creator><![CDATA[' . urlencode($creator) . ']]></dcterms:creator>
-                                <dcterms:contributor><![CDATA[' . urlencode($contributor) . ']]></dcterms:contributor>
+                                <dcterms:creator><![CDATA[' . $creator . ']]></dcterms:creator>
+                                <dcterms:contributor><![CDATA[' . $contributor . ']]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . self::getDCTime($start_time) . '</dcterms:created>
                                 <dcterms:temporal xsi:type="dcterms:Period">start=' . self::getDCTime($start_time) . '; end=' . self::getDCTime($end_time) . '; scheme=W3C-DTF;</dcterms:temporal>
-                                <dcterms:description><![CDATA[' . urlencode(str_replace('%', '', $description)) . ']]></dcterms:description>
-                                <dcterms:subject><![CDATA[' . urlencode(str_replace('%', '', $abstract)) . ']]></dcterms:subject>
+                                <dcterms:description><![CDATA[' . $description . ']]></dcterms:description>
+                                <dcterms:subject><![CDATA[' . $abstract . ']]></dcterms:subject>
                                 <dcterms:language><![CDATA[' . $language . ']]></dcterms:language>
                                 <dcterms:spatial>' . $device . '</dcterms:spatial>
-                                <dcterms:title><![CDATA[' . urlencode($title) . ']]></dcterms:title>
+                                <dcterms:title><![CDATA[' . $title . ']]></dcterms:title>
                                 <dcterms:isPartOf>' . $seriesId . '</dcterms:isPartOf>
                             </dublincore>';
 
@@ -338,10 +355,11 @@ class ScheduleHelper
      *
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
+     * @param bool $livestream - indicator to schedule the event with livestream capability
      *
      * @return bool success or not
      */
-    public static function scheduleEventForSeminar($course_id, $termin_id)
+    public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false)
     {
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
@@ -357,9 +375,15 @@ class ScheduleHelper
             return false;
         }
 
+        // Livestream workflow checker.
+        if (($livestream && empty($oc_resource['livestream_workflow_id']))) {
+            // Unlike normal scheduling, we don't allow livestream to be scheduled without a workflow!
+            return false;
+        }
+
         $ingest_client = IngestClient::getInstance($oc_resource['config_id']);
         $media_package = $ingest_client->createMediaPackage();
-        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null);
+        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
         $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
@@ -367,8 +391,12 @@ class ScheduleHelper
         if ($result) {
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
-            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id);
+            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id, $livestream);
             if ($scheduled) {
+                // Create the video if it is livestream.
+                if ($livestream) {
+                    self::createOrUpdateLivestreamVideo($oc_resource['config_id'], $course_id, $event_id);
+                }
                 return true;
             }
             // If it hits here, it means opencast has the record but local database doesn't,
@@ -401,16 +429,28 @@ class ScheduleHelper
      * @param string $resource_id
      * @param string $date_id - Stud.IP Identifier for the event
      * @param string $event_id  - Opencast Identifier for the event
+     * @param bool $livestream  - livestream indicator
      *
      * @return boolean success
      */
-    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id)
+    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id, $livestream)
     {
         $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
         $ca = Resources::findByResource_id($resource_id);
-        $workflow_id = $ca['workflow_id'] ? $ca['workflow_id'] : 'full';
+
+        $workflow_id = '';
+        if ($livestream) {
+            $workflow_id = $ca['livestream_workflow_id'];
+        } else {
+            $workflow_id = $ca['workflow_id'] ?? 'full';
+        }
+
+        // Here again the checker for livestream, to prevent scheduling without a workflow.
+        if (empty($workflow_id)) {
+            return false;
+        }
 
         $date = \CourseDate::find($date_id);
 
@@ -424,7 +464,8 @@ class ScheduleHelper
             $ca['capture_agent'],
             $event_id,
             'scheduled',
-            $workflow_id
+            $workflow_id,
+            $livestream
         );
 
         return $success;
@@ -438,10 +479,11 @@ class ScheduleHelper
      * @param string $config_id server config id
      * @param string $termin_id termin id
      * @param string $event_id event id
+     * @param bool $livestream whether the scheduling is intended to be a livestream
      *
      * @return array event recording metadata
      */
-    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id)
+    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id, $livestream = false)
     {
         $config = Config::find($config_id);
 
@@ -487,7 +529,7 @@ class ScheduleHelper
         $ca  = Resources::findByResource_id($resource_id);
 
         $device   = $ca['capture_agent'];
-        $workflow = $ca['workflow_id'];
+        $workflow = $livestream ? $ca['livestream_workflow_id'] : $ca['workflow_id'];
 
         $ca_client    = CaptureAgentAdminClient::getInstance($config_id);
         $device_names = '';
@@ -539,6 +581,7 @@ class ScheduleHelper
         if (!$scheduled_recording_obj) {
             return false;
         }
+        $is_livestream = (bool) $scheduled_recording_obj['is_livestream'];
         $event_id = $scheduled_recording_obj['event_id'];
 
         $config_id = null;
@@ -559,6 +602,10 @@ class ScheduleHelper
 
         if ($result) {
             ScheduledRecordings::unscheduleRecording($event_id, $resource_id, $termin_id);
+            // Remove the livestream video here!
+            if ($is_livestream) {
+                self::removeLivestreamVideo($event_id);
+            }
             \StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
             return true;
         } else {
@@ -644,15 +691,18 @@ class ScheduleHelper
             $scheduled_recording_obj->store();
         }
 
+        $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
+
         // Update resource
         if ($update_resource) {
             $scheduled_recording_obj->resource_id = $resource_id;
             $scheduled_recording_obj->capture_agent = $resource_obj['capture_agent'];
-            $scheduled_recording_obj->workflow_id = $resource_obj['workflow_id'];
+            $workflow_id = $is_livestream ? $resource_obj['livestream_workflow_id'] : $resource_obj['workflow_id'];
+            $scheduled_recording_obj->workflow_id = $workflow_id;
             $scheduled_recording_obj->store();
         }
 
-        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id);
+        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream);
 
         $start = $scheduled_recording_obj->start * 1000;
         $end = ($scheduled_recording_obj->end - $buffer ?: 0) * 1000;
@@ -673,6 +723,11 @@ class ScheduleHelper
         );
 
         if ($result) {
+            // Create the video if it is livestream and it is now finished!
+            $now_miliseconds = time() * 1000;
+            if ($is_livestream && !empty($end) && $now_miliseconds < $end) {
+                self::createOrUpdateLivestreamVideo($resource_obj['config_id'], $course_id, $event_id);
+            }
             \StudipLog::log('OC_REFRESH_SCHEDULED_EVENT', $termin_id, $course_id);
             return true;
         } else {
@@ -756,8 +811,24 @@ class ScheduleHelper
                         'role' => 'info',
                         'title' => _('Aufzeichnung ist bereits geplant.')
                     ];
-                    if ($scheduled && in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
+                    if (!empty($scheduled['is_livestream'])) {
                         $status['info'] = 'LIVE';
+                        $start = intVal($scheduled['start']);
+                        $end = intVal($scheduled['end']);
+                        $livestream_status = self::getLivestreamTimeStatus($start, $end);
+                        if ($livestream_status == self::LIVESTREAM_STATUS_SCHEDULED) {
+                            $status['title'] = _('Livestream ist bereits geplant.');
+                            $status['referesh_at'] = $start;
+                        } else if ($livestream_status == self::LIVESTREAM_STATUS_LIVE) {
+                            $status['title'] = _('Livestream ist geplant, es wurde jedoch keine Veröffentlichung gefunden.');
+                            if (in_array('engage-live', $events[$scheduled['event_id']]->publication_status)) {
+                                $status['title'] = _('Livestream läuft gerade.');
+                            }
+                            $status['info_class'] = 'text-red';
+                            $status['referesh_at'] = $end;
+                        } else {
+                            $status['title'] = _('Livestream beendet.');
+                        }
                     }
                 } else {
                     if (date($d['date']) > time()) {
@@ -779,6 +850,7 @@ class ScheduleHelper
 
             $actions = [];
             if (!empty($resource_obj)) {
+                $allow_livestream = !empty($resource_obj['livestream_workflow_id']) ? true : false;
                 if ($scheduled && (int)date($d['date']) > time()) {
                     $actions['updateSchedule'] = [
                         'shape' => 'refresh',
@@ -797,6 +869,12 @@ class ScheduleHelper
                             'role' => 'clickable',
                             'title' => _('Aufzeichnung planen')
                         ];
+                        if ($allow_livestream) {
+                            $actions['scheduleLive'] = [
+                                'info' => 'LIVE',
+                                'title' => _('Livestream planen')
+                            ];
+                        }
                     } else {
                         $actions['expire'] = [
                             'shape' => 'video+decline',
@@ -883,16 +961,17 @@ class ScheduleHelper
      * @param string $config_id id of server config
      * @param string $capture_agent name of capture agent
      * @param string $workflow_id name of workflow
+     * @param string $livestream_workflow_id (optional) id of livestream workflow
      *
      * @return bool
      */
-    public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id)
+    public static function addUpdateResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id)
     {
         // We take the current resource obj to use its data for deleteEventForSeminar,
         // to make sure that server config id is correct!
         $ex_resource_obj = Resources::findByResource_id($resource_id);
         // We Update the resource first.
-        $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id);
+        $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id);
         // If is updated.
         if ($success) {
             // We update current scheduled events that uses this resource.
@@ -972,4 +1051,179 @@ class ScheduleHelper
         );
     }
 
+    /**
+     * Helper function that ensures only one course playlist has the flag for livestream or scheduled recordings.
+     *
+     * @param int $playlist_id the source playlist id
+     * @param string $course_id course id
+     * @param string $type the type of flag to change; values are ['livestreams', 'scheduled']
+     *
+     * @return bool the final success indicator.
+     */
+    public static function setScheduledRecordingsPlaylist($playlist_id, $course_id, $type)
+    {
+        try {
+            $seminar_playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$course_id]);
+            $column_to_update = $type == 'livestreams' ? 'contains_livestreams' : 'contains_scheduled';
+            foreach ($seminar_playlists as $seminar_playlist) {
+                $value = $seminar_playlist->playlist_id == $playlist_id ? true : false;
+                $seminar_playlist->{$column_to_update} = $value;
+                $seminar_playlist->store();
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Creates or Updates the Video Object that holds the livestream event. The Playlist mapping also takes palce here.
+     *
+     * @param int $config_id opencast config id
+     * @param string $course_id course id
+     * @param string $event_id event id
+     *
+     * @return bool
+     */
+    public static function createOrUpdateLivestreamVideo($config_id, $course_id, $event_id)
+    {
+        global $user;
+        $events_client = ApiEventsClient::getInstance($config_id);
+        $params = ['withmetadata' => false, 'withscheduling' => true, 'withpublications' => true];
+        $event = $events_client->getEpisode($event_id, $params);
+
+        if ($event) {
+            $video = Videos::findByEpisode($event_id);
+            if (empty($video)) {
+                $video = new Videos;
+            }
+            $publication = '';
+            if (!empty($event->publications)) {
+                $publication = json_encode($event->publications);
+            }
+            $video->setData([
+                'episode'       => $event_id,
+                'config_id'     => $config_id,
+                'title'         => $event->title,
+                'description'   => $event->description,
+                'duration'      => $event->duration,
+                'state'         => 'running',
+		        'created'       => date('Y-m-d H:i:s', strtotime($event->created)),
+		        'author'        => $event->creator,
+                'available'     => true,
+                'publication'   => $publication,
+                'is_livestream' => true,
+                // 'trashed'       => false
+            ]);
+            if (!$video->token) {
+                $video->token = bin2hex(random_bytes(8));
+            }
+            $video->store();
+
+            // add permissions to this video for current user
+            if (!empty($user)) {
+                $perm = VideosUserPerms::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
+                    ':user_id'  => $user->id,
+                    ':video_id' => $video->id
+                ]);
+
+                if (empty($perm)) {
+                    $perm = new VideosUserPerms();
+                    $perm->user_id  = $user->id;
+                    $perm->video_id = $video->id;
+                    $perm->perm     = 'owner';
+                    $perm->store();
+                }
+            }
+
+            // Finding the livestream playlist.
+            $playlist_id = null;
+            $seminar_livestream_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND contains_livestreams = 1', [$course_id]);
+
+            // Force create and get course default playlist. which then works as livestream playlist if nothing is set yet.
+            if (empty($seminar_livestream_playlist)) {
+                $default_playlist = Helpers::checkCoursePlaylist($course_id);
+                $playlist_id = $default_playlist->id;
+                // Make sure the livestream flag is set correctly!
+                if (self::setScheduledRecordingsPlaylist($default_playlist->id, $course_id, 'livestream')) {
+                    // Make sure the seminar_livestream_playlist is not empty.
+                    $seminar_livestream_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND contains_livestreams = 1', [$course_id]);
+                }
+            } else {
+                $playlist_id = $seminar_livestream_playlist->playlist_id;
+            }
+
+            // Add video into PlaylistVideos
+            if (!is_null($playlist_id)) {
+                $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist_id]);
+
+                if (empty($pvideo)) {
+                    $pvideo = new PlaylistVideos();
+                    $pvideo->video_id    = $video->id;
+                    $pvideo->playlist_id = $playlist_id;
+                    $pvideo->store();
+                }
+            }
+
+            // Add Video into PlaylistSeminarVideos
+            if (!empty($seminar_livestream_playlist)) {
+                $psv = PlaylistSeminarVideos::findOneBySQL(
+                    "LEFT JOIN oc_playlist_seminar AS ops ON ops.id = playlist_seminar_id
+                    WHERE video_id = ?
+                    AND playlist_id = ?
+                    AND seminar_id = ?",
+                    [$video->id, $playlist_id, $course_id]);
+                if (empty($psv)) {
+                    $psv = new PlaylistSeminarVideos();
+                    $psv->setValue('playlist_seminar_id', $seminar_livestream_playlist->id);
+                    $psv->setValue('video_id', $video->id);
+                    $psv->setValue('visibility', 'visible');
+                    $psv->setValue('visible_timestamp', date('Y-m-d H:i:s'));
+                    $psv->store();
+                }
+            }
+
+            // we put a worker on this video to make sure everything goes as usual.
+            if (empty(VideoSync::findByVideo_id($video->id))) {
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+        }
+    }
+
+    /**
+     * Removes the video from the list only when it is as livestream.
+     *
+     * @param string $event_id the event id
+     */
+    public static function removeLivestreamVideo($event_id)
+    {
+        Videos::deleteBySql('episode = ? AND is_livestream = 1', [$event_id]);
+    }
+
+    /**
+     * Helper function to check what phase livestream is currently at.
+     *
+     * @param int $start the start timestamp of the scheduled livestream
+     * @param int $end the end timestamp of the scheduled livestream
+     *
+     * @return string the livestream status
+     */
+    public static function getLivestreamTimeStatus(int $start, int $end): string
+    {
+        $now = time();
+        if ($start > $now) {
+            return self::LIVESTREAM_STATUS_SCHEDULED;
+        } else if ($start < $now && $now < $end) {
+            return self::LIVESTREAM_STATUS_LIVE;
+        }
+        return self::LIVESTREAM_STATUS_FINISHED;
+    }
 }

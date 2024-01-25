@@ -77,6 +77,9 @@ class RouteMap
         $this->app->get('/playlists/{token}/courses', Routes\Playlist\PlaylistCourses::class);
         $this->app->put('/playlists/{token}/courses', Routes\Playlist\PlaylistAddToCourse::class);
 
+         // Schedule and Playlists
+         $this->app->post('/playlists/{token}/schedule/{course_id}/{type}', Routes\Playlist\PlaylistScheduleUpdate::class);
+
         // Course routes
         $this->app->get('/courses', Routes\Course\MyCourseList::class);
 

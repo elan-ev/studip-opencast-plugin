@@ -174,8 +174,12 @@ class ApiEventsClient extends RestClient
      */
     public function getAllScheduledEvents()
     {
+        // EVENTS.EVENTS.STATUS.RECORDING should also be added here... which refers to live events
         $params = [
-            'filter' => ['status' => 'EVENTS.EVENTS.STATUS.SCHEDULED'],
+            'filter' => ['status' => [
+                'EVENTS.EVENTS.STATUS.SCHEDULED',
+                'EVENTS.EVENTS.STATUS.RECORDING',
+            ]],
         ];
 
         $data = $this->getAll($params);
@@ -215,9 +219,9 @@ class ApiEventsClient extends RestClient
 
     /**
      * Return media files
-     * 
+     *
      * @param
-     * 
+     *
      * @return array
      */
     public function getMedia($eventId)
@@ -227,7 +231,7 @@ class ApiEventsClient extends RestClient
         if ($response['code'] == 200) {
             return $response['body'];
         }
-        
+
         return false;
     }
 }

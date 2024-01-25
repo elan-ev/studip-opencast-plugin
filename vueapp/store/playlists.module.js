@@ -10,6 +10,8 @@ const state = {
     playlistCourses: null,
     showPlaylistAddVideosDialog: false,
     playlistsReload: false,
+    schedule_playlist: null,
+    livestream_playlist: null,
 }
 
 const getters = {
@@ -59,7 +61,16 @@ const getters = {
 
     playlistsReload(state) {
         return state.playlistsReload;
-    }
+    },
+
+    schedule_playlist(state) {
+        return state.schedule_playlist
+    },
+
+    livestream_playlist(state) {
+        return state.livestream_playlist
+    },
+
 }
 
 
@@ -71,6 +82,9 @@ const actions = {
         return ApiService.get($route)
             .then(({ data }) => {
                 context.commit('setPlaylists', data.playlists);
+                if ($cid) {
+                    context.dispatch('loadScheduledRecordingPlaylists');
+                }
             });
     },
 
@@ -187,10 +201,25 @@ const actions = {
     },
 
     async removeVideosFromPlaylist(context, data) {
+        let removedCount = 0;
+        let forbiddenCount = 0;
         for (let i = 0; i < data.videos.length; i++) {
-            await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+            try {
+                await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
+                removedCount++;
+            } catch (err) {
+                // We send back 403 for those livestream video, when removing from playlist.
+                if (err?.response?.status == 403) {
+                    forbiddenCount++;
+                }
+            }
         }
-        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.length});
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
+
+        if (removedCount > 0) {
+            return Promise.resolve({removedCount, forbiddenCount});
+        }
+        return Promise.reject({removedCount, forbiddenCount});
     },
 
     addPlaylistUI({ commit }, show) {
@@ -282,6 +311,29 @@ const actions = {
 
     setPlaylistsReload({commit}, mode) {
         commit('setPlaylistsReload', mode)
+    },
+
+    async loadScheduledRecordingPlaylists({dispatch, commit, state}) {
+        if (state.playlists?.length) {
+            let schedule_playlists = state.playlists.filter(pl => pl.contains_scheduled == true);
+            if (schedule_playlists?.length) {
+                await commit('setSchedulePlaylist', schedule_playlists[0]);
+            }
+            let livestream_playlists = state.playlists.filter(pl => pl.contains_livestreams == true);
+            if (livestream_playlists?.length) {
+                await commit('setLivestreamPlaylist', livestream_playlists[0]);
+            }
+        }
+    },
+
+    async setSchedulePlaylist({ commit, dispatch, rootState }, token) {
+        let $cid = rootState.opencast.cid;
+        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/scheduled')
+    },
+
+    async setLivestreamPlaylist({ commit, dispatch, rootState }, token) {
+        let $cid = rootState.opencast.cid;
+        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/livestreams')
     }
 }
 
@@ -342,7 +394,15 @@ const mutations = {
 
     setPlaylistsReload(state, mode) {
         state.playlistsReload = mode;
-    }
+    },
+
+    setSchedulePlaylist(state, schedule_playlist) {
+        state.schedule_playlist = schedule_playlist
+    },
+
+    setLivestreamPlaylist(state, livestream_playlist) {
+        state.livestream_playlist = livestream_playlist
+    },
 }
 
 

@@ -5,6 +5,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\VideoSync;
 use Opencast\Models\Videos;
+use Opencast\Models\ScheduleHelper;
 use Opencast\Models\REST\ApiEventsClient;
 
 class OpencastWorker extends CronJob
@@ -48,19 +49,57 @@ class OpencastWorker extends CronJob
 
             if (!empty($video)) {
                 echo 'updating video: ' . $video->id . "\n";
+                $is_livestream = (bool) $video->is_livestream ?? false;
+                if ($is_livestream) {
+                    echo 'this video is a livestream event' . "\n";
+                }
+
                 $api_client = ApiEventsClient::getInstance($video->config_id);
-                $event = $api_client->getEpisode($video->episode, ['withpublications' => 'true']);
+                $params = [
+                    'withpublications' => true
+                ];
+                if ($is_livestream) {
+                    $params['withscheduling'] = true;
+                }
+                $event = $api_client->getEpisode($video->episode, $params);
 
                 if ($event) {
-                    if (!empty($event->publications)) {
+                    if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
+                        $video->state = 'failed';
+                    } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && $event->has_previews == true
+                    && count($event->publication_status) == 1 && $event->publication_status[0] == "internal") {
+                        $video->state = 'cutting';
+                    } else if ($event->status === "EVENTS.EVENTS.STATUS.SCHEDULED" || $event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is scheduled or live
+                        $video->state = 'running';
+                        $video->is_livestream = 1;
+                        if (!empty($event->publications)) {
+                            $video->publication = json_encode($event->publications);
+                        }
+                    } else if ($event->status === "EVENTS.EVENTS.STATUS.INGESTING" ||
+                        $event->status === "EVENTS.EVENTS.STATUS.PENDING") {
+                        $video->state = 'running';
+                    } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && !empty($event->publications)) {
                         $video->publication = json_encode($event->publications);
                         $video->state = null;
-                    } else if ($event->processing_state == 'SUCCEEDED') {
-                        $video->state = 'cutting';        // assume cutting is requested if no publications are found but the event is processed correctly
-                    } else if ($event->processing_state == 'RUNNING') {
-                        $video->state = 'running';
-                    } else if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) {
-                        $video->state = 'failed';
+                        $video->is_livestream = 0;
+                    } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && empty($event->publications)) {
+                        if ($is_livestream && !empty($event->scheduling)) {
+                            $start = strtotime($event->scheduling->start);
+                            $end = strtotime($event->scheduling->end);
+                            $livestream_status = ScheduleHelper::getLivestreamTimeStatus($start, $end);
+                            if ($livestream_status == ScheduleHelper::LIVESTREAM_STATUS_FINISHED) { // Livestream is finished.
+                                // getting video out of livestream
+                                $video->is_livestream = 0;
+                                // set the state as running, so that it will be picked up at the next run!
+                                $video->state = 'running';
+                                if (!empty($video->publication)) {
+                                    $video->publication = null;
+                                }
+                            }
+                        } else {
+                            $video->state = 'failed';
+                            $video->is_livestream = 0;
+                        }
                     }
 
                     $video->title        = $event->title;

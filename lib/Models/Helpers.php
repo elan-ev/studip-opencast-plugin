@@ -201,6 +201,10 @@ class Helpers
             $pcourse->visibility = 'visible';
             $pcourse->is_default = 1;
 
+            // Set the default playlist to contain livestreams and scheduled recordings as well.
+            $pcourse->contains_scheduled = 1;
+            $pcourse->contains_livestreams = 1;
+
             $pcourse->store();
         }
 

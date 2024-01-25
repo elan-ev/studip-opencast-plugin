@@ -74,7 +74,7 @@ const actions = {
             return;
         }
         context.commit('setScheduleLoading', true);
-        return ApiService.post('schedule/' + $cid + '/' + termin_id).finally(() => {
+        return ApiService.post('schedule/' + $cid + '/' + termin_id, {livestream: true}).finally(() => {
                 context.commit('setScheduleLoading', false);
             });
     },

@@ -8,6 +8,7 @@ require_once __DIR__ . '/bootstrap.php';
 use Opencast\Models\Helpers;
 use Opencast\Models\SeminarSeries;
 use Opencast\Models\Videos;
+use Opencast\Models\WidgetHelper;
 
 use Opencast\AppFactory;
 use Opencast\RouteMap;
@@ -16,7 +17,7 @@ use Opencast\Providers\Perm;
 
 use Courseware\CoursewarePlugin;
 
-class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin
+class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -371,5 +372,42 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         RolePersistence::expirePluginCache($plugin_id);
+    }
+
+    /**
+     * Return the template for the widget.
+     *
+     * @return Flexi_PhpTemplate The template containing the widget contents
+     */
+    public function getPortalTemplate()
+    {
+        global $perm;
+        // We need to use "nobody" rights for Upload Slides,
+        // but in here we have to prevent that right,
+        // in order to not to show the template in login page and so on.
+        if ('nobody' === $GLOBALS['user']->id) {
+            return;
+        }
+
+        $template_factory = new Flexi_TemplateFactory(__DIR__ . "/templates");
+        $template = $template_factory->open("widget.php");
+
+        $upcomings = WidgetHelper::getUpcomingLivestreams();
+        $items['upcomings'] = $upcomings;
+        $template->set_attribute('items', $items);
+
+        $empty_text = $this->_('Derzeit finden keine Livestreams in den gebuchten Kursen statt.');
+        if ($perm->have_perm('admin') || $perm->have_perm('root')) {
+            $empty_text = $this->_('Um Leistungsprobleme zu vermeiden, ist diese Funktion für Administratoren dauerhaft deaktiviert.');
+        }
+
+        $texts = [
+            'empty' => $empty_text,
+            'upcomings' => $this->_('Kommende Liveevents'),
+            'code' => $code
+        ];
+        $template->set_attribute('texts', $texts);
+
+        return $template;
     }
 }

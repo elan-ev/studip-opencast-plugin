@@ -48,6 +48,10 @@ export default {
                 });
                 this.$emit('done', 'refresh');
             }).catch(() => {
+                this.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: this.$gettext('Das Video konnte aus der Wiedergabeliste nicht entfernt werden.')
+                });
                 this.$emit('cancel');
             });
         },

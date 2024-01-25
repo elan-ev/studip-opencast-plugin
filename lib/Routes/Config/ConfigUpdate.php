@@ -40,7 +40,7 @@ class ConfigUpdate extends OpencastController
             foreach ($json['resources'] as $resource) {
                 if (!empty($resource['capture_agent'])) {
                     try {
-                        ScheduleHelper::addUpdateResource($resource['id'], $resource['config_id'], $resource['capture_agent'], $resource['workflow_id']);
+                        ScheduleHelper::addUpdateResource($resource['id'], $resource['config_id'], $resource['capture_agent'], $resource['workflow_id'], $resource['livestream_workflow_id']);
                     } catch (\Throwable $th) {
                         $messages[] = [
                             'type' => 'error',
