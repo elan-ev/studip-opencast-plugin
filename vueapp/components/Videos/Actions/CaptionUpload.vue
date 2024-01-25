@@ -1,6 +1,15 @@
 <template>
     <div>
+        <VideoChangeWarning
+            v-if="!showCaptionsDialog"
+            :event="event"
+            :title="$gettext('Auswirkung der Bearbeitung von Untertiteln')"
+            @done="showCaptionsDialog = true"
+            @cancel="decline"
+        />
+
         <StudipDialog
+            v-if="showCaptionsDialog"
             :title="$gettext('Untertitel hinzufügen')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
@@ -95,6 +104,7 @@ import MessageBox from '@/components/MessageBox'
 import MessageList from '@/components/MessageList';
 import ProgressBar from '@/components/ProgressBar'
 import UploadService from '@/common/upload.service'
+import VideoChangeWarning from '@/components/Videos/VideoChangeWarning';
 
 export default {
     name: 'CaptionUpload',
@@ -104,7 +114,8 @@ export default {
         MessageBox,
         StudipButton,
         ProgressBar,
-        MessageList
+        MessageList,
+        VideoChangeWarning
     },
 
     emits: ['done', 'cancel'],
@@ -113,7 +124,7 @@ export default {
 
     data () {
         return {
-            showAddEpisodeDialog: false,
+            showCaptionsDialog: false,
             selectedServer: false,
             fileUploadError: false,
             files: {},
