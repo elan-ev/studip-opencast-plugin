@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Wiedergabeliste anlegen')"
+            :title="title"
             :confirmText="$gettext('Erstellen')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
@@ -16,10 +16,10 @@
                     <label>
                         <span class="required">Titel</span>
                         <input type="text"
-                               maxlength="255"
-                               :placeholder="$gettext('Titel der Wiedergabeliste')"
-                               v-model="playlist.title"
-                               required
+                                maxlength="255"
+                                :placeholder="$gettext('Titel der Wiedergabeliste')"
+                                v-model="playlist.title"
+                                required
                         >
                     </label>
                 </form>
@@ -40,11 +40,25 @@ export default {
         StudipDialog
     },
 
+    props: {
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+    },
+
+    computed: {
+        title() {
+            return this.isDefault ? this.$gettext('Kurswiedergabeliste anlegen') : this.$gettext('Wiedergabeliste anlegen');
+        }
+    },
+
     data() {
         return {
             playlist: {
                 title: '',
-                visibility: 'internal'
+                visibility: 'internal',
+                is_default: false
             }
         }
     },
@@ -54,6 +68,9 @@ export default {
             if (!this.$refs['playlistAddNewCard-form'].reportValidity()) {
                 return false;
             }
+
+            this.playlist.is_default = this.isDefault;
+
             this.$store.dispatch('addPlaylist', this.playlist);
             this.$emit('done');
         }

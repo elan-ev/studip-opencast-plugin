@@ -34,11 +34,8 @@ class CourseListPlaylist extends OpencastController
 
         // check if user has access to this seminar
         if (!$perm->have_studip_perm($course_id, 'user')) {
-           throw new \AccessDeniedException();
+            throw new \AccessDeniedException();
         }
-
-        // check, if the default course playlist exists, if not create it
-        Helpers::checkCoursePlaylist($course_id);
 
         // find all playlists of the seminar
         $seminar_playlists = Playlists::getCoursePlaylists($course_id, new Filter($params), $user->id);
@@ -46,11 +43,6 @@ class CourseListPlaylist extends OpencastController
 
         foreach ($seminar_playlists['playlists'] as $seminar_playlist) {
             $data = $seminar_playlist->toSanitizedArray();
-
-            // if this is the default playlist for the course, change the title
-            if ($seminar_playlist->is_default == '1') {
-                $data['title'] = _('Kurswiedergabeliste');
-            }
 
             $playlist_list[] = $data;
         }

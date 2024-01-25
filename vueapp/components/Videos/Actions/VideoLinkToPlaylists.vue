@@ -9,53 +9,16 @@
             @close="this.$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
-                <table class="default" v-if="event.playlists.length > 0">
-                    <colgroup>
-                        <col>
-                        <col style="width: 25%">
-                        <col style="width: 25%">
-                        <col style="width: 3%">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>
-                                {{ $gettext('Wiedergabeliste') }}
-                            </th>
-                            <th>
-                                {{ $gettext('Veranstaltung') }}
-                            </th>
-                            <th>
-                                {{ $gettext('Semester') }}
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(playlist, index) in event.playlists" v-bind:key="playlist.id">
-                            <td>
-                                <router-link :to="{ name: 'playlist' , params: { token: playlist.token }}" target="_blank">
-                                    {{ playlist.title }}
-                                </router-link>
-                            </td>
-                            <td>
-                                {{ getCourseName(playlist) }}
-                            </td>
-                            <td>
-                                {{ getSemester(playlist) }}
-                            </td>
-                            <td>
-                                <studip-icon shape="trash" role="clickable" @click="removePlaylist(index)" style="cursor: pointer"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <VideoPlaylists
+                    :event="event"
+                    @removePlaylist="removePlaylist"
+                />
 
                 <UserPlaylistSelectable
                     @add="addPlaylist"
-                    :playlists="playlists"
+                    :playlists="userPlaylists"
                     :selectedPlaylists="this.event.playlists"
                 />
-
             </template>
         </StudipDialog>
     </div>
@@ -64,16 +27,17 @@
 <script>
 import { mapGetters } from "vuex";
 import StudipDialog from '@studip/StudipDialog'
-import StudipIcon from '@studip/StudipIcon';
 
 import UserPlaylistSelectable from '@/components/UserPlaylistSelectable';
+import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 
 export default {
     name: 'VideoLinkToPlaylists',
 
     components: {
-        StudipDialog, StudipIcon,
-        UserPlaylistSelectable
+        StudipDialog,
+        UserPlaylistSelectable,
+        VideoPlaylists
     },
 
     props: ['event'],
@@ -97,28 +61,10 @@ export default {
     },
 
     computed: {
-    ...mapGetters(['playlists'])
+        ...mapGetters(['userPlaylists']),
     },
 
     methods: {
-        getCourseName(playlist) {
-            if (!Array.isArray(playlist.courses) || playlist.courses.length === 0) {
-                return '';
-            }
-
-            // Assume a playlist has only one course
-            return playlist.courses[0].name;
-        },
-
-        getSemester(playlist) {
-            if (!Array.isArray(playlist.courses) || playlist.courses.length === 0) {
-                return '';
-            }
-
-            // Assume a playlist has only one course
-            return playlist.courses[0].semester;
-        },
-
         addPlaylist(playlist) {
             this.event.playlists.push(playlist);
 
@@ -130,7 +76,7 @@ export default {
                 // find the index of the playlist that was just added and remove it
                 let index = this.event.playlists.findIndex(p => p.token == playlist.token);
                 this.event.playlists.splice(index, 1);
-                this.$store.dispatch('addMessage', add_playlist_error);
+                this.$store.dispatch('addMessage', this.add_playlist_error);
             });
         },
 
@@ -148,13 +94,15 @@ export default {
             .catch(() => {
                 // add the playlist back to the list
                 this.event.playlists.splice(index, 0, link);
-                this.$store.dispatch('addMessage', remove_playlist_error);
+                this.$store.dispatch('addMessage', this.remove_playlist_error);
             });
         },
     },
 
     mounted () {
-        this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('loadUserPlaylists', {
+            limit: -1,
+        });
     },
 }
 </script>

@@ -2,6 +2,7 @@ import ApiService from "@/common/api.service";
 
 const state = {
     playlists: [],
+    userPlaylists: [],
     playlist: null,
     playlistSearch: '',
     addPlaylist: false,
@@ -14,6 +15,10 @@ const state = {
 const getters = {
     playlists(state) {
         return state.playlists
+    },
+
+    userPlaylists(state) {
+        return state.userPlaylists;
     },
 
     playlist(state) {
@@ -69,6 +74,25 @@ const actions = {
             });
     },
 
+    async loadUserPlaylists(context, filters) {
+        // Set filters
+        const params = new URLSearchParams();
+
+        for (let key in filters) {
+            if (key === 'filters') {
+                params.append('filters', JSON.stringify(filters.filters));
+            } else {
+                params.append(key, filters[key]);
+            }
+        }
+
+        // Get playlists user has access to
+        return ApiService.get('playlists', { params })
+            .then(({ data }) => {
+                context.commit('setUserPlaylists', data.playlists);
+            });
+    },
+
     async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
@@ -114,8 +138,12 @@ const actions = {
         });
     },
 
-    async addPlaylistToCourse(context, params) {
-        return ApiService.post('courses/' + params.course + '/playlist/' + params.token)
+    async addPlaylistToCourse(context, data) {
+        let params = {};
+        if (data?.is_default == true) {
+            params.is_default = true;
+        }
+        return ApiService.post('courses/' + data.course + '/playlist/' + data.token, params)
     },
 
     async addPlaylistsToCourse(context, data) {
@@ -174,17 +202,29 @@ const actions = {
 
         let $cid = rootState.opencast.cid;
 
+        let is_default = false;
+        if (playlist?.is_default == true) {
+            is_default = true;
+            delete playlist.is_default;
+        }
+
         return ApiService.post('playlists', playlist)
             .then(({ data }) => {
                 if ($cid !== null) {
                     // connect playlist to new course
                     dispatch('addPlaylistToCourse', {
                         course: $cid,
-                        token: data.token
+                        token: data.token,
+                        is_default: is_default
                     })
                     .then(() => {
                         dispatch('setPlaylistsReload', true);
                         dispatch('loadPlaylists');
+                        // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                        if (is_default) {
+                            dispatch('loadCourseConfig', $cid);
+                            dispatch('loadPlaylist', data.token);
+                        }
                     })
                 } else {
                     dispatch('setPlaylistsReload', true);
@@ -255,6 +295,10 @@ const mutations = {
 
     setPlaylists(state, playlists) {
         state.playlists = playlists;
+    },
+
+    setUserPlaylists(state, playlists) {
+        state.userPlaylists = playlists;
     },
 
     setPlaylist(state, playlist) {

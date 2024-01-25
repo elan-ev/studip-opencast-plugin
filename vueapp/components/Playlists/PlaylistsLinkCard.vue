@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Playlisten verknüpfen')"
+            :title="title"
             :confirmText="$gettext('Hinzufügen')"
             :disabled="selectedPlaylists.length === 0"
             :closeText="$gettext('Schließen')"
@@ -14,6 +14,7 @@
             <template v-slot:dialogContent>
                 <PlaylistsTable
                     :selectable="true"
+                    :multi-select="!isDefault"
                     :showActions="false"
                     @selectedPlaylistsChange="updateSelectedPlaylists"
                 />
@@ -37,6 +38,17 @@ export default {
         PlaylistsTable,
     },
 
+    props: {
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+        customTitle: {
+            type: String,
+            default: ''
+        }
+    },
+
     emits: ['done', 'cancel'],
 
     data() {
@@ -48,6 +60,13 @@ export default {
 
     computed: {
         ...mapGetters(['cid']),
+
+        title() {
+            if (this.customTitle) {
+                return this.customTitle;
+            }
+            return this.isDefault ? this.$gettext('Kurswiedergabeliste verknüpfen') : this.$gettext('Playlisten verknüpfen');
+        }
     },
 
     methods: {
@@ -60,19 +79,40 @@ export default {
         },
 
         addPlaylistsToCourse() {
-            this.$store.dispatch('addPlaylistsToCourse', {
-                course: this.cid,
-                playlists: this.selectedPlaylists
-            }).then(() => {
-                this.selectedPlaylists = [];
-                this.$store.dispatch('addMessage', {
-                    type: 'success',
-                    text: this.$gettext('Die Playlisten wurden der Veranstaltung hinzugefügt.')
+            if (this.cid && this.isDefault && this.selectedPlaylists?.[0]) {
+                let token = this.selectedPlaylists[0];
+                this.$store.dispatch('addPlaylistToCourse', {
+                        course: this.cid,
+                        token: token,
+                        is_default: true
+                })
+                .then(() => {
+                    this.selectedPlaylists = [];
+                    this.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Die Kurswiedergabeliste hinzugefügt.')
+                    });
+                    this.$store.dispatch('setPlaylistsReload', true);
+                    this.$store.dispatch('loadPlaylists');
+                    this.$store.dispatch('loadCourseConfig', this.cid);
+                    this.$store.dispatch('loadPlaylist', token);
+                    this.$emit('done');
                 });
-                this.$store.dispatch('loadPlaylists');
-                this.$store.dispatch('setPlaylistsReload', true);
-                this.$emit('done');
-            });
+            } else {
+                this.$store.dispatch('addPlaylistsToCourse', {
+                    course: this.cid,
+                    playlists: this.selectedPlaylists
+                }).then(() => {
+                    this.selectedPlaylists = [];
+                    this.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Die Playlisten wurden der Veranstaltung hinzugefügt.')
+                    });
+                    this.$store.dispatch('loadPlaylists');
+                    this.$store.dispatch('setPlaylistsReload', true);
+                    this.$emit('done');
+                });
+            }
         },
     },
 };

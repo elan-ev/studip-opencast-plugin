@@ -38,7 +38,7 @@ export const actions = {
             message.global = true;
             message.text = text;
         }
-        
+
         if (!(message.text && message.type)) {
             return false;
         }
@@ -62,8 +62,14 @@ export const actions = {
     },
 
     removeMessage(context, message) {
-        let id = state.messages.find(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog).id;
-        context.commit('removeMessage', id);
+        // Prevent message runtime errors.
+        if (state?.messages && Array.isArray(state.messages)) {
+            let found = state.messages.filter(msg => msg.type == message.type && msg.text == message.text && msg.dialog == message.dialog);
+            if (found.length) {
+                let id = found[0].id;
+                context.commit('removeMessage', id);
+            }
+        }
     },
 
     clearMessages(context, is_dialog) {

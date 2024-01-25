@@ -31,6 +31,7 @@
         </StudipDialog>
 
         <PlaylistAddNewCard v-if="activeDialog === 'new'"
+            :is-default="isDefault"
             @done="done"
             @cancel="cancel"
         />
@@ -41,6 +42,7 @@
         />
 
         <PlaylistsLinkCard v-if="activeDialog === 'link'"
+            :is-default="isDefault"
             @done="done"
             @cancel="cancel"
         />
@@ -64,6 +66,13 @@ export default {
         PlaylistAddNewCard,
         PlaylistsCopyCard,
         PlaylistsLinkCard,
+    },
+
+    props: {
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
     },
 
     emits: ['done', 'cancel'],
