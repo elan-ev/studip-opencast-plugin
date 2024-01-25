@@ -88,7 +88,7 @@ export default {
         }
     },
 
-      data() {
+    data() {
         return {
             uploadDialog: false,
             editPlaylistDialog: false,

@@ -6,16 +6,33 @@
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
-            height="275"
+            :height="dialogHeight"
+            width="600"
             @close="decline"
             @confirm="removeVideo"
         >
             <template v-slot:dialogContent>
-                <translate>
-                    Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?<br/><br/>
-                    Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.
-                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.
-                </translate>
+                <p>
+                    <translate>
+                        Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?
+                    </translate>
+                </p>
+                <p>
+                    <translate>
+                        Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.
+                        Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.
+                    </translate>
+                </p>
+
+                <span v-if="event.playlists.length > 0">
+                    <p>
+                        {{ $gettext('Beim Löschen wird die Aufzeichnung aus den folgenden Wiedergabelisten entfernt.') }}
+                    </p>
+                    <VideoPlaylists
+                        :event="event"
+                        :removable="false"
+                    />
+                </span>
             </template>
         </StudipDialog>
     </div>
@@ -25,12 +42,14 @@
 import { mapGetters } from "vuex";
 
 import StudipDialog from '@studip/StudipDialog'
+import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 
 export default {
     name: 'VideoDelete',
 
     components: {
-        StudipDialog
+        StudipDialog,
+        VideoPlaylists
     },
 
     props: ['event'],
@@ -41,6 +60,10 @@ export default {
         ...mapGetters([
             'simple_config_list'
         ]),
+
+        dialogHeight() {
+            return this.event.playlists.length > 0 ? 400 : 275;
+        },
     },
 
     methods: {

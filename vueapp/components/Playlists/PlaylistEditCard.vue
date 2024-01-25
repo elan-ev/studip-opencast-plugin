@@ -12,7 +12,7 @@
         >
             <template v-slot:dialogContent>
                 <form class="default" ref="playlistEditCard-form">
-                    <label v-if="!isDefaultCoursePlaylist">
+                    <label>
                         <span class="required">Titel</span>
                         <input type="text" v-model="eplaylist.title" required>
                     </label>
@@ -67,12 +67,8 @@ export default {
 
     computed: {
         ...mapGetters([
-            'playlist', 'cid',
+            'playlist'
         ]),
-
-        isDefaultCoursePlaylist() {
-            return this.cid && this.playlist.is_default === '1';
-        },
     },
 
     methods: {

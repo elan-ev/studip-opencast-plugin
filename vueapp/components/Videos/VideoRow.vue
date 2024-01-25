@@ -478,8 +478,8 @@ export default {
                             id: 5,
                             label: this.$gettext('Schnitteditor öffnen'),
                             icon: 'video2',
-                            emit: 'redirectAction',
-                            emitArguments: '/editor/' + this.event.token
+                            emit: 'performAction',
+                            emitArguments: 'VideoCut'
                         });
                     }
 

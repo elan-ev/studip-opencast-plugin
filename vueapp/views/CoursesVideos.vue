@@ -1,22 +1,29 @@
 <template>
     <div>
-        <VideosTable
-            :playlist="playlist"
-            :cid="cid"
-            :editable="canEdit"
-        />
+        <MessageBox type="info" v-if="!hasDefaultPlaylist">
+            {{ $gettext('Für diesen Kurs gibt es keine Standard-Kurswiedergabeliste. Versuchen Sie bitte, im Aktionsmenü eine zu erstellen.') }}
+        </MessageBox>
+        <template v-else>
+            <VideosTable
+                v-if="playlist"
+                :playlist="playlist"
+                :cid="cid"
+                :editable="canEdit"
+            />
+        </template>
     </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import VideosTable from "@/components/Videos/VideosTable";
-
+import MessageBox from '@/components/MessageBox.vue';
 
 export default {
     name: "CourseVideos",
     components: {
-      VideosTable
+        VideosTable,
+        MessageBox
     },
 
     computed: {
@@ -24,6 +31,10 @@ export default {
 
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
+        },
+
+        hasDefaultPlaylist() {
+            return this.course_config?.has_default_playlist;
         },
     },
 

@@ -226,4 +226,33 @@ class Helpers
 
         return $playlist;
     }
+
+    /**
+     * Check if the default course playlist exists
+     *
+     * @param string $course_id
+     *
+     * @return bool whether the default course playlist exists
+     */
+    public static function checkCourseDefaultPlaylist($course_id)
+    {
+        $default_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
+        return !empty($default_playlist);
+    }
+
+    /**
+     * Makes sure that there is only one default playlist in a given course at a time.
+     *
+     * @param string $course_id Course id
+     * @param string $default_playlist_id default playlist id to keep
+     *
+     * @return int then number of affected rows
+     */
+    public static function ensureCourseHasOneDefaultPlaylist($course_id, $default_playlist_id)
+    {
+        $stmt = \DBManager::get()->prepare("UPDATE `oc_playlist_seminar` SET is_default = 0 WHERE seminar_id = ? AND playlist_id != ? AND is_default = 1");
+
+        $stmt->execute([$course_id, $default_playlist_id]);
+        return $stmt->rowCount();
+    }
 }

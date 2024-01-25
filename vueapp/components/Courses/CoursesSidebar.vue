@@ -32,24 +32,37 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links oc--sidebar-links sidebar-navigation">
-                <li :class="{
-                    active: playlist?.token == p.token
-                    }"
-                    v-for="p in playlists"
-                    v-bind:key="p.token"
-                    v-on:click="setPlaylist(p)">
-                    <router-link :to="{ name: 'course' }">
-                        {{ p.is_default == 1 ?
-                            $gettext('Kurswiedergabeliste')
-                            : p.title
-                        }}
-                    </router-link>
-                </li>
+                <template v-if="hasDefaultPlaylist">
+                    <li :class="{
+                        active: playlist?.token == p.token
+                        }"
+                        v-for="p in playlists"
+                        v-bind:key="p.token"
+                        v-on:click="setPlaylist(p)">
+                        <router-link :to="{ name: 'course' }">
+                            <div class="oc--playlist-title-contanier">
+                                <span class="oc--playlist-title">
+                                    {{ p.title }}
+                                </span>
+                                <div v-if="p.is_default == 1"
+                                    class="tooltip oc--playlist-default-icon" :data-tooltip="$gettext('Standard-Kurswiedergabeliste')">
+                                    <studip-icon shape="check-circle" :role="playlist?.token == p.token ? 'info_alt' : 'clickable'" :size="16"/>
+                                </div>
+                            </div>
+                        </router-link>
+                    </li>
 
-                <li v-if="canEdit" @click="showCreatePlaylist">
-                    <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
-                    {{ $gettext('Wiedergabeliste hinzufügen') }}
-                </li>
+                    <li v-if="canEdit" @click="showCreatePlaylist">
+                        <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                        {{ $gettext('Wiedergabeliste hinzufügen') }}
+                    </li>
+                </template>
+                <template v-else>
+                    <li v-if="canEdit" @click="showCreateDefaultPlaylist">
+                        <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                        {{ $gettext('Kurswiedergabeliste hinzufügen') }}
+                    </li>
+                </template>
             </ul>
         </div>
     </div>
@@ -108,7 +121,7 @@
         </div>
     </template>
     <template v-else>
-        <div class="sidebar-widget " id="sidebar-actions" v-if="canEdit || canUpload">
+        <div class="sidebar-widget " id="sidebar-actions" v-if="(canEdit || canUpload) && hasDefaultPlaylist">
             <div class="sidebar-widget-header">
                 {{ $gettext('Aktionen') }}
             </div>
@@ -173,10 +186,14 @@
                             <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
                             {{ $gettext('Wiedergabeliste bearbeiten') }}
                         </li>
+                        <li @click="showChangeDefaultPlaylist" v-if="canEdit">
+                            <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
+                            {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
+                        </li>
                         <li v-if="canEdit">
                             <a @click="$emit('copyAll')">
                                 <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
-                                {{ $gettext('Videos/Wiedergabelisten übertragen') }}
+                                {{ $gettext('Kursinhalte übertragen') }}
                             </a>
                         </li>
                     </template>
@@ -185,9 +202,18 @@
         </div>
 
         <PlaylistAddCard v-if="addPlaylist"
+            :is-default="isDefault"
             @done="closePlaylistAdd"
             @cancel="closePlaylistAdd"
         />
+
+        <PlaylistsLinkCard v-if="showChangeDefaultDialog"
+            :is-default="true"
+            :custom-title="$gettext('Kurswiedergabeliste wechseln')"
+            @done="closeChangeDefaultPlaylist"
+            @cancel="closeChangeDefaultPlaylist"
+        />
+
     </template>
 </template>
 
@@ -197,12 +223,14 @@ import { mapGetters } from "vuex";
 
 import StudipIcon from '@studip/StudipIcon.vue';
 import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
-
+import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
 
 export default {
     name: 'episodes-action-widget',
     components: {
-        StudipIcon,     PlaylistAddCard
+        StudipIcon,
+        PlaylistAddCard,
+        PlaylistsLinkCard,
     },
 
     emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
@@ -210,6 +238,8 @@ export default {
     data() {
         return {
             showAddDialog: false,
+            isDefault: false,
+            showChangeDefaultDialog: false,
             semesterFilter: null,
             schedulePlaylistToken: null,
             livestreamPlaylistToken: null,
@@ -231,7 +261,10 @@ export default {
 
         canSchedule() {
             try {
-                return this.cid !== undefined && this.currentUser.can_edit && this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'];
+                return this.cid !== undefined &&
+                    this.currentUser.can_edit &&
+                        this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'] &&
+                        this.hasDefaultPlaylist;
             } catch (error) {
                 return false;
             }
@@ -274,7 +307,7 @@ export default {
         },
 
         uploadEnabled() {
-             if (!this.course_config) {
+            if (!this.course_config) {
                 return false;
             }
 
@@ -295,7 +328,11 @@ export default {
 
         canToggleVisibility() {
             return window.OpencastPlugin.STUDIP_VERSION == '4.6' && this.canEdit;
-        }
+        },
+
+        hasDefaultPlaylist() {
+            return this.course_config?.has_default_playlist;
+        },
     },
 
     methods: {
@@ -336,7 +373,21 @@ export default {
             this.$store.dispatch('addPlaylistUI', true);
         },
 
+        showCreateDefaultPlaylist() {
+            this.isDefault = true;
+            this.$store.dispatch('addPlaylistUI', true);
+        },
+
+        showChangeDefaultPlaylist() {
+            this.showChangeDefaultDialog = true;
+        },
+
+        closeChangeDefaultPlaylist() {
+            this.showChangeDefaultDialog = false;
+        },
+
         closePlaylistAdd() {
+            this.isDefault = false;
             this.$store.dispatch('addPlaylistUI', false);
         },
 
@@ -390,6 +441,7 @@ export default {
     mounted() {
         this.$store.dispatch('simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
+
         const route = useRoute();
         if (route?.query?.taget_pl_token) {
             this.targetPlaylistToken = route.query.taget_pl_token

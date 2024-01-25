@@ -6,12 +6,25 @@
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
-            height="175"
+            :height="dialogHeight"
+            width="500"
             @close="decline"
             @confirm="restoreVideo"
         >
             <template v-slot:dialogContent>
-                <translate>Möchten Sie die Aufzeichnung wirklich wiederherstellen?</translate>
+                <p>
+                    {{ $gettext('Möchten Sie die Aufzeichnung wirklich wiederherstellen?') }}
+                </p>
+
+                <span v-if="event.playlists.length > 0">
+                    <p>
+                        {{ $gettext('Nach der Wiederherstellung erscheint die Aufzeichnung in den folgenden Wiedergabelisten.') }}
+                    </p>
+                    <VideoPlaylists
+                        :event="event"
+                        :removable="false"
+                    />
+                </span>
             </template>
         </StudipDialog>
     </div>
@@ -19,17 +32,25 @@
 
 <script>
 import StudipDialog from '@studip/StudipDialog'
+import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 
 export default {
     name: 'VideoRestore',
 
     components: {
-        StudipDialog
+        StudipDialog,
+        VideoPlaylists
     },
 
     props: ['event'],
 
     emits: ['done', 'cancel'],
+
+    computed: {
+        dialogHeight() {
+            return this.event.playlists.length > 0 ? 350 : 200;
+        },
+    },
 
     methods: {
         async restoreVideo() {
