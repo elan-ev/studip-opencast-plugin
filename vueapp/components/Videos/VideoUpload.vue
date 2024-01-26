@@ -235,7 +235,7 @@ export default {
                 creator: this.currentUser.username,
                 contributor: this.currentUser.fullname,
                 playlist_token: null,
-                recordDate: format(new Date(), "yyyy-MM-dd'T'HH:ii", { locale: de}),
+                recordDate: format(new Date(), "yyyy-MM-dd'T'HH:mm", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
             },
             files: {
