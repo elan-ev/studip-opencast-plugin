@@ -1,7 +1,7 @@
 <template>
     <div class="sidebar-widget " id="sidebar-navigation">
-        <div class="sidebar-widget-header" v-translate>
-            Navigation
+        <div class="sidebar-widget-header">
+            {{ $gettext('Navigation') }}
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list widget-links sidebar-navigation">

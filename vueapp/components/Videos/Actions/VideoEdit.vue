@@ -15,8 +15,8 @@
                 <form class="default" style="max-width: 50em;" @submit="editVideo" ref="videoEdit-form">
                     <fieldset>
                         <label>
-                            <span class="required" v-translate>
-                                Titel
+                            <span class="required">
+                                {{ $gettext('Titel') }}
                             </span>
 
                             <input type="text" maxlength="255"
@@ -24,35 +24,35 @@
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Mitwirkende
+                            <span>
+                                {{ $gettext('Mitwirkende') }}
                             </span>
                             <input type="text" maxlength="255" name="contributor" v-model="event.contributors">
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Thema
+                            <span>
+                                {{ $gettext('Thema') }}
                             </span>
                             <input type="text" maxlength="255" name="subject" v-model="event.subject">
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Beschreibung
+                            <span>
+                                {{ $gettext('Beschreibung') }}
                             </span>
                             <textarea cols="50" rows="5" name="description" v-model="event.description"></textarea>
                         </label>
 
                         <label>
-                            Schlagworte
+                            {{ $gettext('Schlagworte') }}
                             <TagBar :taggable="event" @update="updatedTags"/>
                         </label>
 
                         <label v-if="isCourse">
                             <div>
-                                <span v-translate>
-                                    Sichtbarkeit des Videos
+                                <span>
+                                    {{ $gettext('Sichtbarkeit des Videos') }}
                                 </span>
                             </div>
 
@@ -62,9 +62,7 @@
                                         :checked="visibility == 'default'"
                                         @change="changeVisibility('default')"
                                     >
-                                    <translate>
-                                        Standard
-                                    </translate>
+                                    {{ $gettext('Standard') }}
                                 </label>
 
                                 <label>
@@ -72,9 +70,7 @@
                                         :checked="visibility == 'visible'"
                                         @change="changeVisibility('visible')"
                                     >
-                                    <translate>
-                                        Sichtbar
-                                    </translate>
+                                    {{ $gettext('Sichtbar') }}
                                 </label>
 
                                 <label>
@@ -82,16 +78,14 @@
                                         :checked="visibility == 'hidden'"
                                         @change="changeVisibility('hidden')"
                                     >
-                                    <translate>
-                                        Unsichtbar
-                                    </translate>
+                                    {{ $gettext('Unsichtbar') }}
                                 </label>
                             </section>
                         </label>
 
                         <label v-if="isCourse">
-                            <span v-translate>
-                                Zeitstempel für die Sichtbarkeit
+                            <span>
+                                {{ $gettext('Zeitstempel für die Sichtbarkeit') }}
                             </span>
                             <div class="oc--timestamp-input">
                                 <input class="oc--datetime-input" type="datetime-local" name="visibilityDate" id="visibilityDate" v-model="visible_timestamp" @change="checkVisibility">

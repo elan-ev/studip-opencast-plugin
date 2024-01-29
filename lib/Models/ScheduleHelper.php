@@ -36,7 +36,7 @@ class ScheduleHelper
         $end = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
         $selectable_semesters = $selectable_semesters->findBy('beginn', [$start, $end], '>=<=')->toArray();
 
-        $selectable_semesters[] = ['name' => 'Alle Semester', 'id' => 'all'];
+        $selectable_semesters[] = ['name' => _('Alle Semester'), 'id' => 'all'];
 
         $selectable_semesters = array_values(array_reverse($selectable_semesters));
 

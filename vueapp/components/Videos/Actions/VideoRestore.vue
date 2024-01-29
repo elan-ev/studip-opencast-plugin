@@ -11,7 +11,7 @@
             @confirm="restoreVideo"
         >
             <template v-slot:dialogContent>
-                <translate>Möchten Sie die Aufzeichnung wirklich wiederherstellen?</translate>
+               {{ $gettext('Möchten Sie die Aufzeichnung wirklich wiederherstellen?') }}
             </template>
         </StudipDialog>
     </div>

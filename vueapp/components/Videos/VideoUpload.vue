@@ -14,12 +14,12 @@
             <template v-slot:dialogContent ref="upload-dialog">
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <fieldset v-if="!uploadProgress">
-                        <legend v-translate>
-                            Allgemeine Angaben
+                        <legend>
+                            {{ $gettext('Allgemeine Angaben') }}
                         </legend>
                         <label v-if="config && config['server'] && config['server'].length > 1">
-                            <span class="required" v-translate>
-                                Server auswählen:
+                            <span class="required">
+                                {{ $gettext('Server auswählen:') }}'
                             </span>
 
                             <select v-model="selectedServer" required>
@@ -34,8 +34,8 @@
                         </label>
 
                         <label>
-                            <span class="required" v-translate>
-                                Titel
+                            <span class="required">
+                                {{ $gettext('Titel') }}
                             </span>
 
                             <input type="text" maxlength="255"
@@ -43,8 +43,8 @@
                         </label>
 
                         <label v-if="upload_playlists && upload_playlists.length">
-                            <span v-translate>
-                                Zu Wiedergabeliste hinzufügen
+                            <span>
+                                {{ $gettext('Zu Wiedergabeliste hinzufügen') }}
                             </span>
 
                             <select v-model="upload.playlist_token" required>
@@ -57,8 +57,8 @@
                         </label>
 
                         <label>
-                            <span class="required" v-translate>
-                                Aufnahmezeitpunkt
+                            <span class="required">
+                                {{ $gettext('Aufnahmezeitpunkt') }}
                             </span>
 
                             <input class="oc--datetime-input" type="datetime-local" name="recordDate"
@@ -66,32 +66,32 @@
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Mitwirkende
+                            <span>
+                                {{ $gettext('Mitwirkende') }}
                             </span>
                             <input type="text" maxlength="255" id="contributor" name="contributor"
                                    v-model="upload.contributor">
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Thema
+                            <span>
+                                {{ $gettext('Thema') }}
                             </span>
                             <input type="text" maxlength="255" id="subject"
                                    name="subject" v-model="upload.subject">
                         </label>
 
                         <label style="display:none">
-                            <span v-translate>
-                                Sprache
+                            <span>
+                                {{ $gettext('Sprache') }}
                             </span>
                             <input type="text" maxlength="255" id="language" name="language"
                                 v-model="upload.language">
                         </label>
 
                         <label>
-                            <span v-translate>
-                                Beschreibung
+                            <span>
+                                {{ $gettext('Beschreibung') }}
                             </span>
                             <textarea cols="50" rows="5"
                                 id="description" name="description" v-model="upload.description"></textarea>
@@ -100,13 +100,13 @@
                     </fieldset>
 
                     <fieldset>
-                        <legend v-translate>
-                            Video(s)
+                        <legend>
+                            {{ $gettext('Video(s)') }}
                         </legend>
 
                         <label v-if="!uploadProgress">
-                            <span v-translate>
-                                Workflow
+                            <span>
+                                {{ $gettext('Workflow') }}
                             </span>
 
                             <select v-model="selectedWorkflow" required>
@@ -119,8 +119,8 @@
                         </label>
 
                         <label for="video_upload">
-                            <span class="required" v-translate>
-                                Datei(en)
+                            <span class="required">
+                                {{ $gettext('Datei(en)') }}
                             </span>
                             <p class="help">
                                 {{ uploadFilesText }}
@@ -180,8 +180,8 @@
 
                         <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presentation/source'" :progress="uploadProgress.progress" />
 
-                        <MessageBox v-if="fileUploadError" type="error" v-translate>
-                            Sie müssen mindestens eine Datei auswählen!
+                        <MessageBox v-if="fileUploadError" type="error">
+                            {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
                         </MessageBox>
                     </fieldset>
 
@@ -445,10 +445,10 @@ export default {
                         this.$store.dispatch('setVideosReload', true);
                     });
                 },
-                onError: (response) => {
+                onError: () => {
                     this.$store.dispatch('addMessage', {
                         type: 'error',
-                        text: response,
+                        text: this.$gettext('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.'),
                         dialog: true
                     });
                 }

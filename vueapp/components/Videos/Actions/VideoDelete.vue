@@ -11,11 +11,12 @@
             @confirm="removeVideo"
         >
             <template v-slot:dialogContent>
-                <translate>
-                    Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?<br/><br/>
-                    Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.
-                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.
-                </translate>
+                {{ $gettext('Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?') }}
+                <br/><br/>
+                {{ $gettext('Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach') }}
+                {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} 
+                {{ $gettext('Tagen automatisch gelöscht.') }}
+                {{ $gettext('Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.') }}
             </template>
         </StudipDialog>
     </div>

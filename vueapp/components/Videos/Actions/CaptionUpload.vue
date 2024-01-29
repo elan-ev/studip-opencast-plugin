@@ -19,8 +19,8 @@
                                 {{ $gettext('Datei(en)') }}
                         </legend>
 
-                        <p class="help" v-translate>
-                            Unterstützt wird das WebVTT Format mit der Endung .vtt
+                        <p class="help">
+                            {{ $gettext('Unterstützt wird das WebVTT Format mit der Endung .vtt') }}
                         </p>
 
                         <div v-for="language in languages">
@@ -242,7 +242,7 @@ export default {
                     onError: (response) => {
                         this.$store.dispatch('addMessage', {
                             type: 'error',
-                            text: response,
+                            text: this.$gettext('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.'),
                             dialog: true
                         });
                     }

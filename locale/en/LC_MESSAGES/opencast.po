@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-14 12:56+0100\n"
+"POT-Creation-Date: 2024-01-29 22:01+0100\n"
 "PO-Revision-Date: 2023-12-14 12:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.1\n"
+
+#: vueapp/components/Config/ConfigOption.vue:31
+msgid "_ctx"
+msgstr ""
 
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:49
 msgid ""
@@ -35,33 +39,33 @@ msgstr ""
 "problems."
 
 #: vueapp/components/ConfirmDialog.vue:11
-#: vueapp/components/Playlists/PlaylistAddNewCard.vue:15
-#: vueapp/components/Playlists/PlaylistEditCard.vue:15
-#: vueapp/components/Schedule/ScheduleList.vue:205
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:44
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:18
+#: vueapp/components/Playlists/PlaylistEditCard.vue:19
+#: vueapp/components/Schedule/ScheduleList.vue:204
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:43
 #: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:11
 #: vueapp/components/Videos/Actions/VideoCopyToSeminar.vue:20
-#: vueapp/components/Videos/Actions/VideoDelete.vue:15
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:14
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:33
+#: vueapp/components/Videos/Actions/VideoDelete.vue:14
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:13
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:27
 #: vueapp/components/Videos/Actions/VideoDownload.vue:15
-#: vueapp/components/Videos/Actions/VideoEdit.vue:22
+#: vueapp/components/Videos/Actions/VideoEdit.vue:20
 #: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:11
-#: vueapp/components/Videos/Actions/VideoReport.vue:15
-#: vueapp/components/Videos/Actions/VideoRestore.vue:12
+#: vueapp/components/Videos/Actions/VideoReport.vue:14
+#: vueapp/components/Videos/Actions/VideoRestore.vue:11
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:16
-#: vueapp/components/Videos/BulkActions/VideoRestore.vue:12
-#: vueapp/components/Videos/VideoUpload.vue:43
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:11
+#: vueapp/components/Videos/VideoUpload.vue:42
 msgid "Abbrechen"
 msgstr "Cancel"
 
 #: vueapp/components/Config/SchedulingOptions.vue:46
 #: vueapp/components/Courses/CoursesSidebar.vue:149
-#: vueapp/components/Playlists/PlaylistAddCard.vue:22
-#: vueapp/components/Schedule/ScheduleList.vue:74
+#: vueapp/components/Playlists/PlaylistAddCard.vue:23
+#: vueapp/components/Schedule/ScheduleList.vue:73
 #: vueapp/components/Schedule/ScheduleLoading.vue:63
 #: vueapp/components/Studip/StudipActionMenu.vue:38
-#: vueapp/components/Videos/VideosSidebar.vue:75
+#: vueapp/components/Videos/VideosSidebar.vue:59
 #: vueapp/components/Videos/VideosTable.vue:151
 msgid "Aktionen"
 msgstr "Actions"
@@ -76,10 +80,10 @@ msgstr "Action menu for %{context}"
 
 #: vueapp/components/ConfirmDialog.vue:9
 #: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:9
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:12
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:11
 #: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:9
-#: vueapp/components/Videos/Actions/VideoRestore.vue:10
-#: vueapp/components/Videos/BulkActions/VideoRestore.vue:10
+#: vueapp/components/Videos/Actions/VideoRestore.vue:9
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:9
 msgid "Akzeptieren"
 msgstr "Accept"
 
@@ -91,20 +95,19 @@ msgstr "Transfer all content to other courses"
 msgid "Alle Videos auswählen"
 msgstr "Select all videos"
 
-#: vueapp/components/Playlists/PlaylistsTable.vue:68
+#: vueapp/components/Playlists/PlaylistsTable.vue:69
 msgid "Alle Wiedergabelisten auswählen"
 msgstr "Select all playlists"
 
-#: vueapp/components/Videos/VideoUpload.vue:6
-#: vueapp/components/Videos/VideoUpload.vue:3
+#: vueapp/components/Videos/VideoUpload.vue:53
 msgid "Allgemeine Angaben"
 msgstr "General information"
 
-#: vueapp/components/Videos/VideoRow.vue:251
+#: vueapp/components/Videos/VideoRow.vue:245
 msgid "Anmerkungen hinzufügen"
 msgstr "Add annotation"
 
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:50
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:51
 msgid "Arbeitsplatz"
 msgstr "Work place"
 
@@ -122,34 +125,33 @@ msgid ""
 "Freigabelink kennt"
 msgstr "Any person who knows the associated sharing link can access this list"
 
-#: vueapp/components/Videos/VideoUpload.vue:43
-#: vueapp/components/Videos/VideoUpload.vue:40
+#: vueapp/components/Videos/VideoUpload.vue:104
 msgid "Aufnahmezeitpunkt"
 msgstr "Recording time"
 
-#: vueapp/components/Videos/VideoRow.vue:115
+#: vueapp/components/Videos/VideoRow.vue:116
 msgid "Aufrufe"
 msgstr "Views"
 
-#: vueapp/components/Videos/VideoUpload.vue:285
+#: vueapp/components/Videos/VideoUpload.vue:236
 msgid "Aufzeichnung der Folien hinzufügen"
 msgstr "Add recording of the slides"
 
-#: vueapp/components/Videos/VideoUpload.vue:248
+#: vueapp/components/Videos/VideoUpload.vue:199
 msgid "Aufzeichnung des/der Vortragende*n hinzufügen"
 msgstr "Add recording of the lecturer(s)"
 
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:11
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:32
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:10
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:26
 msgid "Aufzeichnung entfernen"
 msgstr "Remove recording"
 
-#: vueapp/components/Videos/Actions/VideoRestore.vue:9
-#: vueapp/components/Videos/BulkActions/VideoRestore.vue:9
+#: vueapp/components/Videos/Actions/VideoRestore.vue:8
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:8
 msgid "Aufzeichnung Wiederherstellen"
 msgstr "Restore recording"
 
-#: vueapp/components/Videos/Actions/VideoDelete.vue:12
+#: vueapp/components/Videos/Actions/VideoDelete.vue:11
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:13
 msgid "Aufzeichnung zum Löschen markieren"
 msgstr "Mark recording for deletion"
@@ -171,13 +173,13 @@ msgstr "Cancel recording"
 msgid "Aufzeichnungsplanung konfigurieren"
 msgstr "Configure recording schedule"
 
-#: vueapp/components/Schedule/ScheduleList.vue:70
+#: vueapp/components/Schedule/ScheduleList.vue:69
 #: vueapp/components/Schedule/ScheduleLoading.vue:59
 msgid "Aufzeichnungszeitraum"
 msgstr "Recording range"
 
-#: vueapp/components/Videos/VideoRow.vue:192
-#: vueapp/components/Videos/VideosTable.vue:223
+#: vueapp/components/Videos/VideoRow.vue:275
+#: vueapp/components/Videos/VideosTable.vue:224
 msgid "Aus Wiedergabeliste entfernen"
 msgstr "Remove from playlist"
 
@@ -185,50 +187,59 @@ msgstr "Remove from playlist"
 msgid "Autor/-in"
 msgstr "Author"
 
-#: vueapp/components/Config/EditServer.vue:59
+#: vueapp/components/Config/EditServer.vue:56
 msgid "Basis URL zur Opencast Installation"
 msgstr "Base URL for Opencast system"
 
 #: vueapp/components/Playlists/PlaylistCard.vue:37
-#: vueapp/components/Videos/VideoRow.vue:182
+#: vueapp/components/Videos/VideoRow.vue:186
 msgid "Bearbeiten"
 msgstr "Edit"
 
-#: vueapp/components/Config/EditServer.vue:241
+#: vueapp/components/Config/EditServer.vue:253
 msgid ""
 "Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte "
 "erneut."
 msgstr "An error occurred during configuration. Please try again."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:63
+#: vueapp/components/Videos/Actions/VideoAccess.vue:32
 msgid "Beim Entfernen der Freigabe ist ein Fehler aufgetreten."
 msgstr "An error occurred while removing the share."
 
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:53
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:29
 msgid "Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten."
 msgstr "An error occurred while removing the link."
 
-#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:63
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:28
 msgid "Beim Entfernen des Kurses ist ein Fehler aufgetreten."
 msgstr "An error occurred while removing the course."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:45
+#: vueapp/components/Videos/Actions/VideoAccess.vue:27
 msgid "Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten."
 msgstr "An error occurred while adding the share."
 
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:35
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:23
 msgid "Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten."
 msgstr "An error occurred while adding the link."
 
-#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:44
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:23
 msgid "Beim Hinzufügen des Kurses ist ein Fehler aufgetreten."
 msgstr "An error occurred while adding the course."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:80
+#: vueapp/components/Videos/Actions/VideoAccess.vue:37
 msgid "Beim Hinzufügen des Links ist ein Fehler aufgetreten."
 msgstr "An error occurred while adding the link."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:99
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:156
+#: vueapp/components/Videos/VideoUpload.vue:253
+msgid ""
+"Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, "
+"dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut."
+msgstr ""
+"An error occurred while uploading the file. Make sure that you are connected "
+"to the Opencast server and try again."
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:42
 msgid "Beim Löschen des Links ist ein Fehler aufgetreten."
 msgstr "An error occurred while deleting the link."
 
@@ -240,10 +251,8 @@ msgstr "Permission"
 msgid "Beschäftigt"
 msgstr "Working"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:29
-#: vueapp/components/Videos/Actions/VideoEdit.vue:26
-#: vueapp/components/Videos/VideoUpload.vue:72
-#: vueapp/components/Videos/VideoUpload.vue:69
+#: vueapp/components/Videos/Actions/VideoEdit.vue:72
+#: vueapp/components/Videos/VideoUpload.vue:153
 msgid "Beschreibung"
 msgstr "Description"
 
@@ -255,12 +264,19 @@ msgstr "Description cannot be empty"
 msgid "Besitzer/in"
 msgstr "Owner"
 
-#: vueapp/components/Playlists/PlaylistAddCard.vue:44
-msgid "Bestehende verknüpfen"
-msgstr "Link existing"
+#: vueapp/components/Playlists/PlaylistAddCard.vue:45
+msgid "Bestehende kopieren"
+msgstr "Copy existing"
 
-#: vueapp/components/Videos/Actions/VideoReport.vue:10
-#: vueapp/components/Videos/Actions/VideoReport.vue:7
+#: vueapp/components/Videos/Actions/VideoDelete.vue:24
+msgid "Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen."
+msgstr "You will be able to restore the recording up to this point."
+
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:29
+msgid "Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen wiederherstellen."
+msgstr "You will be able to restore the recording up to this point."
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:39
 msgid "Bitte beschreiben Sie das aufgetretene Problem"
 msgstr "Please describe the problem you encountered"
 
@@ -268,7 +284,11 @@ msgstr "Please describe the problem you encountered"
 msgid "Bitte bestätigen Sie die Aktion"
 msgstr "Please confirm the action"
 
-#: vueapp/components/Schedule/ScheduleList.vue:181
+#: vueapp/components/UserCourseSelectable.vue:40
+msgid "Bitte einen Kurs auswählen"
+msgstr "Please choose a course"
+
+#: vueapp/components/Schedule/ScheduleList.vue:180
 msgid "Bitte wählen Sie eine Aktion."
 msgstr "Please select an action."
 
@@ -284,8 +304,7 @@ msgstr "Please select a workflow."
 msgid "Capture Agent"
 msgstr "Capture agent"
 
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:10
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:1
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:34
 msgid ""
 "Das Video wird zurzeit verarbeitet und kann deshalb nicht unwiderruflich "
 "entfernt werden. Versuchen Sie es zu einem späteren Zeitpunkt erneut."
@@ -301,9 +320,8 @@ msgstr "The video has been removed from the playlist."
 msgid "Das Video wurde zu der Wiedergabeliste hinzugefügt."
 msgstr "The video has been added to the playlist."
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:55
-#: vueapp/components/Videos/VideoUpload.vue:98
-#: vueapp/components/Videos/VideoUpload.vue:95
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:54
+#: vueapp/components/Videos/VideoUpload.vue:187
 msgid "Datei(en)"
 msgstr "File(s)"
 
@@ -311,13 +329,29 @@ msgstr "File(s)"
 msgid "Datum"
 msgstr "Date"
 
-#: vueapp/components/Config/EditServer.vue:106
+#: vueapp/components/Config/EditServer.vue:103
 msgid "Debugmodus einschalten?"
 msgstr "Enable debug mode?"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:112
+#: vueapp/components/Videos/Actions/VideoAccess.vue:132
 msgid "Der Link wurde in die Zwischenablage kopiert."
 msgstr "The link has been copied to the clipboard."
+
+#: vueapp/components/Videos/Actions/VideoDelete.vue:24
+msgid ""
+"Die Aufzeichnung wird damit in den \"Gelöschte Videos\" Bereich Ihres "
+"Arbeitsplatzes verschoben und wird nach"
+msgstr ""
+"The recording is then moved to the \"Deleted videos\" area of your Work "
+"place and is automatically deleted after"
+
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:29
+msgid ""
+"Die Aufzeichnungen werden damit in den \"Gelöschte Videos\" Bereich Ihres "
+"Arbeitsplatzes verschoben und werden nach"
+msgstr ""
+"The recording is then moved to the \"Deleted videos\" area of your Work "
+"place and is automatically deleted after"
 
 #: vueapp/components/Videos/Actions/CaptionUpload.vue:149
 msgid "Die Datei wurde erfolgreich hochgeladen."
@@ -327,15 +361,36 @@ msgstr "File upload has been successful."
 msgid "Die geplante Aufzeichnung wurde entfernt."
 msgstr "The scheduled recording has been removed."
 
+#: vueapp/views/Course.vue:103
+msgid ""
+"Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist "
+"das Hochladen von Videos momentan nicht möglich."
+msgstr ""
+"The course configuration could not be retrieved completely, therefore "
+"uploading videos is currently not possible."
+
+#: vueapp/views/Contents.vue:82
+msgid ""
+"Die Nutzerkonfiguration konnte nicht vollständig abgerufen werden, daher ist "
+"das Hochladen von Videos momentan nicht möglich."
+msgstr ""
+"The user configuration could not be retrieved completely, therefore "
+"uploading videos is currently not possible."
+
 #: vueapp/components/Playlists/PlaylistsLinkCard.vue:45
 msgid "Die Playlisten wurden der Veranstaltung hinzugefügt."
 msgstr "The playlists have been added to the course."
 
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:44
+msgid "Die Playlisten wurden in die Veranstaltung kopiert."
+msgstr "The playlists have been added to the course."
+
 #: vueapp/components/Videos/VideosAddFromContents.vue:43
+#: vueapp/components/Videos/VideosAddFromCourses.vue:50
 msgid "Die Videos wurden der Wiedergabeliste hinzugefügt."
 msgstr "The videos have been added to the playlist."
 
-#: vueapp/components/Videos/VideosTable.vue:321
+#: vueapp/components/Videos/VideosTable.vue:329
 msgid "Die Videos wurden von der Wiedergabeliste entfernt."
 msgstr "The videos have been removed from the playlist."
 
@@ -350,28 +405,29 @@ msgstr ""
 msgid "Diesen Dialog schließen"
 msgstr "Close this dialog"
 
-#: vueapp/components/Videos/VideoRow.vue:156
+#: vueapp/components/Videos/VideoRow.vue:157
 msgid ""
 "Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den "
 "Support!"
 msgstr "This video had a processing error. Please contact support!"
 
-#: vueapp/components/Videos/VideoRow.vue:131
+#: vueapp/components/Videos/VideoRow.vue:132
 msgid ""
 "Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum "
 "Schnitteditor!"
 msgstr ""
 "This video is waiting to be cut. Here you get directly to the cutting editor!"
 
-#: vueapp/components/Videos/VideoRow.vue:144
+#: vueapp/components/Videos/VideoRow.vue:145
+#: vueapp/components/Videos/VideoRow.vue:185
 msgid "Dieses Videos wird gerade von Opencast bearbeitet."
 msgstr "This video is currently being processed by Opencast."
 
-#: vueapp/components/SearchBar.vue:149 vueapp/components/SearchBar.vue:135
+#: vueapp/components/SearchBar.vue:151 vueapp/components/SearchBar.vue:138
 msgid "Dozent/-in"
 msgstr "Lecturer"
 
-#: vueapp/components/Videos/Actions/VideoReport.vue:13
+#: vueapp/components/Videos/Actions/VideoReport.vue:12
 msgid "Einsenden"
 msgstr "Submit"
 
@@ -388,7 +444,7 @@ msgstr "Save settings"
 msgid "Elemente pro Seite"
 msgstr "Elements per page"
 
-#: vueapp/components/Videos/VideoFilePreview.vue:19
+#: vueapp/components/Videos/VideoFilePreview.vue:54
 msgid "Entfernen"
 msgstr "Remove"
 
@@ -396,11 +452,11 @@ msgstr "Remove"
 msgid "Erlaubte Dateiendungen beim Hochladen von Mediendateien"
 msgstr "Allowed file extensions for media upload"
 
-#: vueapp/components/Playlists/PlaylistAddNewCard.vue:13
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:16
 msgid "Erstellen"
 msgstr "Create"
 
-#: vueapp/components/Playlists/PlaylistsTable.vue:75
+#: vueapp/components/Playlists/PlaylistsTable.vue:77
 msgid "Erstellt am"
 msgstr "Created on"
 
@@ -420,11 +476,11 @@ msgstr ""
 "There are no tags yet, just write your first tag in the search field and it "
 "will be created automatically!"
 
-#: vueapp/components/Schedule/ScheduleList.vue:88
+#: vueapp/components/Schedule/ScheduleList.vue:218
 msgid "Es gibt bisher keine Termine."
 msgstr "There are no dates yet."
 
-#: vueapp/views/Playlists.vue:5
+#: vueapp/views/Playlists.vue:16
 msgid "Es gibt bisher keine Wiedergabelisten."
 msgstr "There are no playlists yet."
 
@@ -440,7 +496,7 @@ msgstr "An error has occurred"
 msgid "Es ist ein unbekannter Fehler aufgetreten"
 msgstr "An unknown error has occurred"
 
-#: vueapp/components/Videos/VideosTable.vue:416
+#: vueapp/components/Videos/VideosTable.vue:426
 msgid ""
 "Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden "
 "Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu "
@@ -449,7 +505,7 @@ msgstr ""
 "A connection error to the Opencast server has occurred. If you encounter any "
 "issues, please contact support or try again later."
 
-#: vueapp/components/UserCourseSelectable.vue:18
+#: vueapp/components/UserCourseSelectable.vue:25
 msgid ""
 "Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!"
 msgstr "Only courses in which the Opencast plugin is activated are listed!"
@@ -462,7 +518,7 @@ msgstr ""
 "So far, no rooms have been configured with recording technology! Please "
 "consult the help pages."
 
-#: vueapp/components/Videos/VideosTable.vue:406
+#: vueapp/components/Videos/VideosTable.vue:414
 msgid "Es wurden keine Videos ausgewählt!"
 msgstr "No videos were selected!"
 
@@ -470,7 +526,7 @@ msgstr "No videos were selected!"
 msgid "Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden."
 msgstr "No videos were found for the selected view options."
 
-#: vueapp/components/Videos/VideoFilePreview.vue:6
+#: vueapp/components/Videos/VideoFilePreview.vue:35
 msgid "Folien"
 msgstr "Slides"
 
@@ -482,7 +538,7 @@ msgstr "Make accessible for users"
 msgid "Für Nutzer/in freigeben"
 msgstr "Make accessible for user"
 
-#: vueapp/components/Videos/VideosSidebar.vue:53
+#: vueapp/components/Videos/VideosSidebar.vue:48
 msgid "Gelöschte Videos"
 msgstr "Deleted videos"
 
@@ -490,8 +546,8 @@ msgstr "Deleted videos"
 msgid "Globale Einstellungen"
 msgstr "Global settings"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:76
-#: vueapp/components/Videos/VideoFilePreview.vue:15
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:71
+#: vueapp/components/Videos/VideoFilePreview.vue:43
 msgid "Größe:"
 msgstr "Size:"
 
@@ -499,18 +555,19 @@ msgstr "Size:"
 msgid "Grundeinstellungen"
 msgstr "Basic settings"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:88
-#: vueapp/components/Videos/VideoFilePreview.vue:26
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:83
+#: vueapp/components/Videos/VideoFilePreview.vue:62
 msgid "Herunterladen"
 msgstr "Download"
 
 #: vueapp/components/Playlists/PlaylistsLinkCard.vue:10
 #: vueapp/components/Videos/VideosAddFromContents.vue:10
+#: vueapp/components/Videos/VideosAddFromCourses.vue:13
 msgid "Hinzufügen"
 msgstr "Add"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:42
-#: vueapp/components/Videos/VideoUpload.vue:41
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:41
+#: vueapp/components/Videos/VideoUpload.vue:40
 msgid "Hochladen"
 msgstr "Upload"
 
@@ -518,18 +575,14 @@ msgstr "Upload"
 msgid "Idle"
 msgstr "Idle"
 
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:48
-#: vueapp/views/Contents.vue:67
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:50
+#: vueapp/views/Contents.vue:68
 msgid ""
 "Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald "
 "die Verarbeitung abgeschlossen ist."
 msgstr ""
 "Your video will now be processed. You will receive a notification once the "
 "processing is complete."
-
-#: vueapp/components/UserCourseSelectable.vue:26
-msgid "In Veranstaltungen suchen"
-msgstr "Search in courses"
 
 #: vueapp/components/UserPlaylistSelectable.vue:16
 msgid "In Wiedergabelisten suchen"
@@ -543,7 +596,7 @@ msgstr "Information"
 msgid "Intern"
 msgstr "Internal"
 
-#: vueapp/components/Config/ConfigOption.vue:14
+#: vueapp/components/Config/ConfigOption.vue:43
 #: vueapp/components/Studip/StudipDialog.vue:53
 msgid "Ja"
 msgstr "Yes"
@@ -552,7 +605,7 @@ msgstr "Yes"
 msgid "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!"
 msgstr "Every capture agent can only be assigned to one room maximum!"
 
-#: vueapp/components/ViewSwitch.vue:9
+#: vueapp/components/ViewSwitch.vue:15
 msgid "Kachelansicht"
 msgstr "Tile view"
 
@@ -568,7 +621,7 @@ msgstr "No (further) capture agent available"
 msgid "Kein Kurs gewählt."
 msgstr "No course selected."
 
-#: vueapp/components/Videos/VideoRow.vue:237
+#: vueapp/components/Videos/VideoRow.vue:243
 msgid "Kein Video vorhanden"
 msgstr "No video available"
 
@@ -576,17 +629,13 @@ msgstr "No video available"
 msgid "Kein Workflow verfügbar"
 msgstr "No workflow available"
 
-#: vueapp/components/UserCourseSelectable.vue:35
-msgid "Keine Kurse gefunden."
+#: vueapp/components/UserCourseSelectable.vue:48
+msgid "Keine Kurse gefunden!"
 msgstr "No courses found."
 
 #: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:38
 msgid "Keine Nutzenden gefunden!"
 msgstr "No users found!"
-
-#: vueapp/components/UserCourseSelectable.vue:33
-msgid "Keine Treffer"
-msgstr "No matches"
 
 #: vueapp/components/UserPlaylistSelectable.vue:34
 msgid "Keine weiteren Wiedergabelisten gefunden."
@@ -596,9 +645,17 @@ msgstr "No more playlists found."
 msgid "Keiner Wiedergabeliste hinzufügen"
 msgstr "Do not add to any playlist"
 
-#: vueapp/components/UserCourseSelectable.vue:66
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:10
+msgid "Kopieren"
+msgstr "Copy"
+
+#: vueapp/components/Videos/VideosAddFromCourses.vue:27
 msgid "Kurs auswählen"
 msgstr "Choose course"
+
+#: vueapp/components/UserCourseSelectable.vue:44
+msgid "Kurse"
+msgstr "Courses"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:98
 #: lib/Routes/Course/CourseListPlaylist.php:52
@@ -615,17 +672,17 @@ msgid "Link"
 msgstr "Link"
 
 #: vueapp/components/Playlists/PlaylistCard.vue:55
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:99
-#: vueapp/components/Videos/Actions/VideoDelete.vue:13
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:94
+#: vueapp/components/Videos/Actions/VideoDelete.vue:12
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:14
 msgid "Löschen"
 msgstr "Delete"
 
-#: vueapp/components/Config/EditServer.vue:83
+#: vueapp/components/Config/EditServer.vue:80
 msgid "LTI Consumerkey"
 msgstr "LTI Consumerkey"
 
-#: vueapp/components/Config/EditServer.vue:91
+#: vueapp/components/Config/EditServer.vue:88
 msgid "LTI Consumersecret"
 msgstr "LTI Consumersecret"
 
@@ -633,22 +690,22 @@ msgstr "LTI Consumersecret"
 msgid "Medien herunterladen"
 msgstr "Download media"
 
-#: vueapp/components/Videos/VideoUpload.vue:40
-#: vueapp/components/Videos/VideosSidebar.vue:88
+#: vueapp/components/Videos/VideoUpload.vue:39
+#: vueapp/components/Videos/VideosSidebar.vue:72
 msgid "Medien hochladen"
 msgstr "Upload media"
 
-#: vueapp/components/Videos/VideoRow.vue:279
+#: vueapp/components/Videos/VideoRow.vue:285
 msgid "Medien runterladen"
 msgstr "Download media"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:253
-#: vueapp/components/Videos/VideosSidebar.vue:130
+#: vueapp/components/Videos/VideosSidebar.vue:114
 msgid "Mediendownloads erlauben"
 msgstr "Allow media downloads"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:265
-#: vueapp/components/Videos/VideosSidebar.vue:143
+#: vueapp/components/Videos/VideosSidebar.vue:127
 msgid "Mediendownloads verbieten"
 msgstr "Prohibit media downloads"
 
@@ -656,20 +713,23 @@ msgstr "Prohibit media downloads"
 msgid "Medienupload, Stud.IP"
 msgstr "Media upload, Stud.IP"
 
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:36
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:37
 msgid "Mein Computer"
 msgstr "My computer"
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:65
+msgid "Meine Veranstaltungen"
+msgstr "My courses"
 
 #: vueapp/components/Videos/VideoUpload.vue:90
 msgid ""
 "Mindestens eine Aufzeichnung wird benötigt. Unterstützte Formate: "
 "%{ file_types }."
 msgstr ""
+"At least one recording is required. Supported formats are: %{ file_types }."
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:15
-#: vueapp/components/Videos/Actions/VideoEdit.vue:12
-#: vueapp/components/Videos/VideoUpload.vue:51
-#: vueapp/components/Videos/VideoUpload.vue:48
+#: vueapp/components/Videos/Actions/VideoEdit.vue:50
+#: vueapp/components/Videos/VideoUpload.vue:117
 msgid "Mitwirkende"
 msgstr "Contributors"
 
@@ -681,34 +741,19 @@ msgstr "Are you sure you want to remove the video from the playlist?"
 msgid "Möchten Sie das Video wirklich zu der Wiedergabeliste hinzufügen?"
 msgstr "Are you sure you want to add the video to the playlist?"
 
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:4
-#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:1
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:20
 msgid "Möchten Sie die Aufzeichnung wirklich unwiderruflich entfernen?"
 msgstr "Are you sure you want to permanently remove the recording?"
 
-#: vueapp/components/Videos/Actions/VideoRestore.vue:4
-#: vueapp/components/Videos/Actions/VideoRestore.vue:1
+#: vueapp/components/Videos/Actions/VideoRestore.vue:18
 msgid "Möchten Sie die Aufzeichnung wirklich wiederherstellen?"
 msgstr "Are you sure you want to restore the recording?"
 
-#: vueapp/components/Videos/Actions/VideoDelete.vue:4
-#: vueapp/components/Videos/Actions/VideoDelete.vue:1
-msgid ""
-"Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?<br/><br/>\n"
-"                    Die Aufzeichnung wird damit in den \"Gelöschte Videos\" "
-"Bereich Ihres Arbeitsplatzes verschoben und wird nach {{simple_config_list."
-"settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.\n"
-"                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnung "
-"wiederherstellen."
-msgstr ""
-"Are you sure you want to mark the recording for deletion?<br/><br/>\n"
-"                     The recording will then be moved to the \"Deleted "
-"Videos\" area of your workstation and will be automatically deleted after "
-"{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} days.\n"
-"                     Up to this point you can restore the recording."
+#: vueapp/components/Videos/Actions/VideoDelete.vue:21
+msgid "Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?"
+msgstr "Are you sure you want to mark the recording for deletion?"
 
-#: vueapp/components/Videos/BulkActions/VideoRestore.vue:4
-#: vueapp/components/Videos/BulkActions/VideoRestore.vue:1
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:18
 msgid "Möchten Sie die Aufzeichnungen wiederherstellen?"
 msgstr "Are you sure you want to restore the recordings?"
 
@@ -716,47 +761,34 @@ msgstr "Are you sure you want to restore the recordings?"
 msgid "Möchten Sie die Aufzeichnungen wirklich unwiderruflich entfernen?"
 msgstr "Are you sure you want to permanently remove the recordings?"
 
-#: vueapp/components/Videos/BulkActions/VideoDelete.vue:7
-#: vueapp/components/Videos/BulkActions/VideoDelete.vue:4
-msgid ""
-"Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?<br/><br/>\n"
-"                    Die Aufzeichnungen werden damit in den \"Gelöschte "
-"Videos\" Bereich Ihres Arbeitsplatzes verschoben und werden nach "
-"{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen "
-"automatisch gelöscht.\n"
-"                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen "
-"wiederherstellen."
-msgstr ""
-"Are you sure you want to mark the recording for deletion?<br/><br/>\n"
-"                     The recording will then be moved to the \"Deleted "
-"Videos\" area of your workstation and will be automatically deleted after "
-"{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} days.\n"
-"                     Up to this point you can restore the recording."
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:26
+msgid "Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?"
+msgstr "Are you sure you want to mark the recording for deletion?"
 
-#: vueapp/components/Playlists/PlaylistsTable.vue:72
+#: vueapp/components/Playlists/PlaylistsTable.vue:73
 msgid "Name"
 msgstr "Name"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:71
-#: vueapp/components/Videos/VideoFilePreview.vue:11
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:66
+#: vueapp/components/Videos/VideoFilePreview.vue:38
 msgid "Name:"
 msgstr "Name:"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:47
-#: vueapp/components/Videos/VideosSidebar.vue:2
+#: vueapp/components/Videos/VideosSidebar.vue:26
 msgid "Navigation"
 msgstr "Navigation"
 
-#: vueapp/components/Config/ConfigOption.vue:21
+#: vueapp/components/Config/ConfigOption.vue:54
 #: vueapp/components/Studip/StudipDialog.vue:73
 msgid "Nein"
 msgstr "No"
 
-#: vueapp/components/Playlists/PlaylistAddCard.vue:33
+#: vueapp/components/Playlists/PlaylistAddCard.vue:34
 msgid "Neu erstellen"
 msgstr "Create new"
 
-#: vueapp/components/Config/ServerCard.vue:82
+#: vueapp/components/Config/ServerCard.vue:85
 msgid "Neuen Server hinzufügen"
 msgstr "Add new server"
 
@@ -776,7 +808,7 @@ msgstr "User"
 msgid "Nutzer/innen"
 msgstr "Users"
 
-#: vueapp/components/Config/EditServer.vue:67
+#: vueapp/components/Config/EditServer.vue:64
 msgid "Nutzerkennung"
 msgstr "User ID"
 
@@ -796,11 +828,11 @@ msgstr "Opencast server settings"
 msgid "Opencast Version"
 msgstr "Opencast version"
 
-#: vueapp/components/Config/ServerCard.vue:87
+#: vueapp/components/Config/ServerCard.vue:90
 msgid "Opencast-Version:"
 msgstr "Opencast version:"
 
-#: vueapp/components/Config/EditServer.vue:75
+#: vueapp/components/Config/EditServer.vue:72
 msgid "Passwort"
 msgstr "Password"
 
@@ -808,7 +840,7 @@ msgstr "Password"
 msgid "Playlisten verknüpfen"
 msgstr "Link playlists"
 
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:23
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:24
 msgid "Quelle auswählen"
 msgstr "Choose source"
 
@@ -833,27 +865,31 @@ msgstr "Hide navigation tab"
 msgid "Ressourcen"
 msgstr "Resources"
 
-#: vueapp/components/SearchBar.vue:134 vueapp/components/SearchBar.vue:108
+#: vueapp/components/SearchBar.vue:136 vueapp/components/SearchBar.vue:111
 msgid "Schlagwort"
 msgstr "Tag"
 
+#: vueapp/components/Playlists/PlaylistEditCard.vue:41
 #: vueapp/components/TagBar.vue:24
+#: vueapp/components/Videos/Actions/VideoEdit.vue:83
 msgid "Schlagworte"
 msgstr "Tags"
 
 #: vueapp/components/Config/EditServer.vue:23
-#: vueapp/components/Playlists/PlaylistAddCard.vue:16
+#: vueapp/components/Playlists/PlaylistAddCard.vue:17
 #: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:18
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:16
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:17
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:12
 #: vueapp/components/Playlists/PlaylistsLinkCard.vue:12
 #: vueapp/components/Studip/StudipDialog.vue:78
 #: vueapp/components/Videos/Actions/VideoAccess.vue:35
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:18
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:24
 #: vueapp/components/Videos/VideosAddFromContents.vue:12
+#: vueapp/components/Videos/VideosAddFromCourses.vue:15
 msgid "Schließen"
 msgstr "Close"
 
-#: vueapp/components/Videos/VideoRow.vue:241
+#: vueapp/components/Videos/VideoRow.vue:235
 msgid "Schnitteditor öffnen"
 msgstr "Open cutting tool"
 
@@ -861,24 +897,28 @@ msgstr "Open cutting tool"
 msgid "Schreibrechte"
 msgstr "Write permissions"
 
+#: vueapp/components/Playlists/PlaylistsTable.vue:75
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:38
+msgid "Semester"
+msgstr "Semester"
+
 #: vueapp/components/Courses/CoursesSidebar.vue:126
 msgid "Semesterfilter"
 msgstr "Semesterfilter"
 
-#: vueapp/components/Videos/VideoUpload.vue:10
-#: vueapp/components/Videos/VideoUpload.vue:7
+#: vueapp/components/Videos/VideoUpload.vue:56
 msgid "Server auswählen:"
 msgstr "Choose server:"
 
-#: vueapp/components/Config/ServerCard.vue:59
+#: vueapp/components/Config/ServerCard.vue:62
 msgid "Server wurde erfolgreich aktiviert"
 msgstr "Server activated sucessfully"
 
-#: vueapp/components/Config/ServerCard.vue:65
+#: vueapp/components/Config/ServerCard.vue:68
 msgid "Server wurde erfolgreich deaktiviert"
 msgstr "Server deactivated sucessfully"
 
-#: vueapp/components/Config/EditServer.vue:174
+#: vueapp/components/Config/EditServer.vue:175
 msgid "Serverkonfiguration wurde entfernt"
 msgstr "Server configuration has been removed"
 
@@ -902,25 +942,22 @@ msgstr "Delete share link"
 msgid "Share-Link noch nicht verfügbar"
 msgstr "Share link not yet available"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:57
-#: vueapp/components/Videos/Actions/VideoEdit.vue:54
+#: vueapp/components/Videos/Actions/VideoEdit.vue:111
 msgid "Sichtbar"
 msgstr "Visible"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:42
-#: vueapp/components/Videos/Actions/VideoEdit.vue:39
+#: vueapp/components/Videos/Actions/VideoEdit.vue:92
 msgid "Sichtbarkeit des Videos"
 msgstr "Video visibility"
 
-#: vueapp/components/Config/EditServer.vue:211
+#: vueapp/components/Config/EditServer.vue:213
 msgid ""
 "Sie können nun die Standardworkflows einstellen oder die Konfiguration "
 "abschließen."
 msgstr "You can now set the standard workflows or complete the configuration."
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:144
-#: vueapp/components/Videos/VideoUpload.vue:149
-#: vueapp/components/Videos/VideoUpload.vue:146
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:142
+#: vueapp/components/Videos/VideoUpload.vue:270
 msgid "Sie müssen mindestens eine Datei auswählen!"
 msgstr "You must select at least one file!"
 
@@ -937,7 +974,7 @@ msgid ""
 "Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?"
 msgstr "Are you sure you want to delete the entire playlist?"
 
-#: vueapp/components/Config/EditServer.vue:165
+#: vueapp/components/Config/EditServer.vue:166
 msgid ""
 "Sind Sie sicher, dass Sie die Serverkonfiguration löschen möchten? Die damit "
 "verbundenen Videos werden danach nicht mehr in Stud.IP zur Verfügung stehen!"
@@ -945,17 +982,17 @@ msgstr ""
 "Are you sure you want to delete the server configuration? The associated "
 "videos will no longer be available in Stud.IP!"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:51
-#: vueapp/components/Videos/Actions/VideoAccess.vue:86
+#: vueapp/components/Videos/Actions/VideoAccess.vue:71
+#: vueapp/components/Videos/Actions/VideoAccess.vue:106
 msgid "Sind sie sicher, dass sie diese Freigabe entfernen möchten?"
 msgstr "Are you sure you want to remove this share?"
 
-#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:49
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:59
 msgid ""
 "Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this playlist from the course?"
 
-#: vueapp/components/Videos/VideosTable.vue:387
+#: vueapp/components/Videos/VideosTable.vue:395
 msgid ""
 "Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen "
 "möchten?"
@@ -965,7 +1002,7 @@ msgstr "Are you sure you want to remove this playlist from the course?"
 msgid "Sind sie sicher, dass Sie diesen Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this course?"
 
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:40
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:74
 msgid ""
 "Sind sie sicher, dass sie dieses Video aus der Wiedergabeliste entfernen "
 "möchten?"
@@ -976,28 +1013,26 @@ msgid "Sind sie sicher?"
 msgstr "Are you sure?"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:177
-#: vueapp/components/Videos/VideosSidebar.vue:182
+#: vueapp/components/Videos/VideosSidebar.vue:166
 msgid "Sortierung abbrechen"
 msgstr "Cancel sorting"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:164
-#: vueapp/components/Videos/VideosSidebar.vue:169
+#: vueapp/components/Videos/VideosSidebar.vue:153
 msgid "Sortierung speichern"
 msgstr "Save sorting"
 
 #: vueapp/components/Config/EditServer.vue:22
-#: vueapp/components/Playlists/PlaylistEditCard.vue:13
-#: vueapp/components/Videos/Actions/VideoEdit.vue:23
+#: vueapp/components/Playlists/PlaylistEditCard.vue:17
+#: vueapp/components/Videos/Actions/VideoEdit.vue:21
 msgid "Speichern"
 msgstr "Save"
 
-#: vueapp/components/Videos/VideoUpload.vue:65
-#: vueapp/components/Videos/VideoUpload.vue:62
+#: vueapp/components/Videos/VideoUpload.vue:141
 msgid "Sprache"
 msgstr "Language"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:50
-#: vueapp/components/Videos/Actions/VideoEdit.vue:47
+#: vueapp/components/Videos/Actions/VideoEdit.vue:102
 msgid "Standard"
 msgstr "Default"
 
@@ -1006,7 +1041,7 @@ msgid "Standardworkflows"
 msgstr "Default workflows"
 
 #: vueapp/components/Config/SchedulingOptions.vue:45
-#: vueapp/components/Schedule/ScheduleList.vue:73
+#: vueapp/components/Schedule/ScheduleList.vue:72
 #: vueapp/components/Schedule/ScheduleLoading.vue:62
 msgid "Status"
 msgstr "Status"
@@ -1023,46 +1058,56 @@ msgstr "Allow student uploads"
 msgid "Studierendenupload verbieten"
 msgstr "Prohibit student uploads"
 
-#: vueapp/components/ViewSwitch.vue:4
+#: vueapp/components/SearchBar.vue:86
+msgid "Suche starten"
+msgstr "Start search"
+
+#: vueapp/components/SearchBar.vue:75
+msgid "Suche..."
+msgstr "Search..."
+
+#: vueapp/components/ViewSwitch.vue:12
 msgid "Tabellarische Ansicht"
 msgstr "Tabular view"
 
-#: vueapp/components/Videos/Actions/VideoReport.vue:12
-#: vueapp/components/Videos/VideoRow.vue:307
+#: vueapp/components/Videos/Actions/VideoDelete.vue:24
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:29
+msgid "Tagen automatisch gelöscht."
+msgstr "days."
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:11
+#: vueapp/components/Videos/VideoRow.vue:313
 msgid "Technisches Feedback"
 msgstr "Technical feedback"
 
-#: vueapp/components/Schedule/ScheduleList.vue:68
+#: vueapp/components/Schedule/ScheduleList.vue:67
 #: vueapp/components/Schedule/ScheduleLoading.vue:57
 msgid "Termin"
 msgstr "Date"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:22
-#: vueapp/components/Videos/Actions/VideoEdit.vue:19
-#: vueapp/components/Videos/VideoUpload.vue:58
-#: vueapp/components/Videos/VideoUpload.vue:55
+#: vueapp/components/Videos/Actions/VideoEdit.vue:61
+#: vueapp/components/Videos/VideoUpload.vue:129
 msgid "Thema"
 msgstr "Topic"
 
-#: vueapp/components/Schedule/ScheduleList.vue:72
+#: vueapp/components/Playlists/PlaylistEditCard.vue:29
+#: vueapp/components/Schedule/ScheduleList.vue:71
 #: vueapp/components/Schedule/ScheduleLoading.vue:61
-#: vueapp/components/Videos/Actions/VideoEdit.vue:7
-#: vueapp/components/Videos/Actions/VideoEdit.vue:4
-#: vueapp/components/Videos/VideoUpload.vue:23
-#: vueapp/components/Videos/VideoUpload.vue:20
+#: vueapp/components/Videos/Actions/VideoEdit.vue:38
+#: vueapp/components/Videos/VideoUpload.vue:73
 #: vueapp/components/Videos/VideosTable.vue:129
 msgid "Titel"
 msgstr "Title"
 
-#: vueapp/components/Playlists/PlaylistAddNewCard.vue:29
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:32
 msgid "Titel der Wiedergabeliste"
 msgstr "Playlist title"
 
-#: vueapp/components/Schedule/ScheduleList.vue:196
+#: vueapp/components/Schedule/ScheduleList.vue:195
 msgid "Übernehmen"
 msgstr "Accept"
 
-#: vueapp/components/Config/EditServer.vue:273
+#: vueapp/components/Config/EditServer.vue:233
 msgid ""
 "Überprüfung der LTI Verbindung fehlgeschlagen! Kontrollieren Sie die "
 "eingetragenen Daten und stellen Sie sicher, dass Cross-Origin Aufrufe von "
@@ -1073,7 +1118,7 @@ msgstr ""
 "that cross-origin calls from this domain are possible! Also remember to set "
 "the correct access-control-allow-* headers in Opencast."
 
-#: vueapp/components/Config/ServerCard.vue:27
+#: vueapp/components/Config/ServerCard.vue:29
 msgid ""
 "Überprüfung der Verbindung fehlgeschlagen! Kontrollieren Sie die "
 "eingetragenen Daten und stellen Sie sicher, dass Cross-Origin Aufrufe von "
@@ -1092,40 +1137,40 @@ msgstr "Transfer"
 msgid "unbekannt"
 msgstr "unknown"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:64
-#: vueapp/components/Videos/Actions/VideoEdit.vue:61
+#: vueapp/components/Videos/Actions/VideoEdit.vue:120
 msgid "Unsichtbar"
 msgstr "Invisible"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:10
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:7
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:55
 msgid "Unterstützt wird das WebVTT Format mit der Endung .vtt"
 msgstr "The WebVTT format with the ending .vtt is supported"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:65
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:60
 msgid "Untertitel für %{ lang }"
 msgstr "Subtitles for %{ lang }"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:41
-#: vueapp/components/Videos/VideoRow.vue:261
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:40
+#: vueapp/components/Videos/VideoRow.vue:255
 msgid "Untertitel hinzufügen"
 msgstr "Add subtitles"
 
-#: vueapp/components/Videos/Actions/CaptionUpload.vue:111
+#: vueapp/components/Videos/Actions/CaptionUpload.vue:106
 msgid "Untertiteldatei auswählen"
 msgstr "Select subtitle file"
 
-#: vueapp/components/Videos/VideoRow.vue:297
-#: vueapp/components/Videos/VideosTable.vue:257
+#: vueapp/components/Videos/VideoRow.vue:303
+#: vueapp/components/Videos/VideosTable.vue:258
 msgid "Unwiderruflich entfernen"
 msgstr "Remove irrevocably"
 
-#: vueapp/components/SearchBar.vue:144 vueapp/components/SearchBar.vue:126
+#: vueapp/components/Playlists/PlaylistsTable.vue:74
+#: vueapp/components/SearchBar.vue:146 vueapp/components/SearchBar.vue:129
 #: vueapp/components/Videos/Actions/VideoCopyToSeminar.vue:31
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:37
 msgid "Veranstaltung"
 msgstr "Course"
 
-#: vueapp/components/Config/ServerCard.vue:63
+#: vueapp/components/Config/ServerCard.vue:66
 msgid "Verbindungstest fehlgeschlagen."
 msgstr "Connection test failed."
 
@@ -1141,8 +1186,8 @@ msgstr "Linked courses"
 msgid "Verknüpfung entfernen"
 msgstr "Remove link"
 
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:17
-#: vueapp/components/Videos/VideoRow.vue:222
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:23
+#: vueapp/components/Videos/VideoRow.vue:216
 msgid "Verknüpfungen"
 msgstr "Links"
 
@@ -1151,7 +1196,7 @@ msgid "Video"
 msgstr "Video"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:207
-#: vueapp/components/Videos/VideosSidebar.vue:103
+#: vueapp/components/Videos/VideosSidebar.vue:87
 msgid "Video aufnehmen"
 msgstr "Record video"
 
@@ -1159,16 +1204,16 @@ msgstr "Record video"
 msgid "Video aus Wiedergabeliste entfernen"
 msgstr "Remove video from playlist"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:21
+#: vueapp/components/Videos/Actions/VideoEdit.vue:19
 msgid "Video bearbeiten"
 msgstr "Edit video"
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:34
-#: vueapp/components/Videos/VideoRow.vue:231
+#: vueapp/components/Videos/VideoRow.vue:225
 msgid "Video freigeben"
 msgstr "Share video"
 
-#: vueapp/components/Videos/VideoRow.vue:126
+#: vueapp/components/Videos/VideoRow.vue:127
 msgid "Video nicht verfügbar"
 msgstr "Video not available"
 
@@ -1176,27 +1221,27 @@ msgstr "Video not available"
 msgid "Video zur Wiedergabeliste hinzufügen"
 msgstr "Add video to playlist"
 
-#: vueapp/components/Videos/VideoUpload.vue:81
-#: vueapp/components/Videos/VideoUpload.vue:78
+#: vueapp/components/Videos/VideoUpload.vue:167
 msgid "Video(s)"
 msgstr "Video(s)"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:58
-#: vueapp/components/Playlists/PlaylistsTable.vue:74
-#: vueapp/components/Videos/VideosSidebar.vue:41
+#: vueapp/components/Playlists/PlaylistsTable.vue:76
+#: vueapp/components/Videos/VideosSidebar.vue:36
 msgid "Videos"
 msgstr "Videos"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:192
-#: vueapp/components/Playlists/PlaylistAddVideos.vue:15
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:16
 #: vueapp/components/Playlists/PlaylistCard.vue:43
 #: vueapp/components/Videos/VideosAddFromContents.vue:9
-#: vueapp/components/Videos/VideosSidebar.vue:117
+#: vueapp/components/Videos/VideosAddFromCourses.vue:12
+#: vueapp/components/Videos/VideosSidebar.vue:101
 msgid "Videos hinzufügen"
 msgstr "Add videos"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:308
-#: vueapp/components/Videos/VideosSidebar.vue:156
+#: vueapp/components/Videos/VideosSidebar.vue:140
 msgid "Videos sortieren"
 msgstr "Sort videos"
 
@@ -1204,7 +1249,7 @@ msgstr "Sort videos"
 msgid "Videos/Wiedergabelisten übertragen"
 msgstr "Transfer videos/playlists"
 
-#: vueapp/components/Videos/VideoFilePreview.vue:3
+#: vueapp/components/Videos/VideoFilePreview.vue:32
 msgid "Vortragende*r"
 msgstr "Lecturer"
 
@@ -1212,71 +1257,71 @@ msgstr "Lecturer"
 msgid "Weiteren Wiedergabelisten hinzufügen"
 msgstr "Add to more playlists"
 
-#: vueapp/components/SearchBar.vue:139 vueapp/components/SearchBar.vue:117
-#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:29
+#: vueapp/components/SearchBar.vue:141 vueapp/components/SearchBar.vue:120
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:36
 msgid "Wiedergabeliste"
 msgstr "Playlist"
 
-#: vueapp/components/Playlists/PlaylistAddNewCard.vue:12
-#: vueapp/components/Videos/VideosSidebar.vue:195
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:15
+#: vueapp/components/Videos/VideosSidebar.vue:179
 msgid "Wiedergabeliste anlegen"
 msgstr "Add playlist"
 
-#: vueapp/components/Videos/VideosTable.vue:289
+#: vueapp/components/Videos/VideosTable.vue:290
 msgid "Wiedergabeliste aus diesem Kurs entfernen"
 msgstr "Remove playlist from course"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:321
-#: vueapp/components/Playlists/PlaylistEditCard.vue:12
+#: vueapp/components/Playlists/PlaylistEditCard.vue:16
 msgid "Wiedergabeliste bearbeiten"
 msgstr "Edit playlist"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:115
-#: vueapp/components/Playlists/PlaylistAddCard.vue:15
+#: vueapp/components/Playlists/PlaylistAddCard.vue:16
 msgid "Wiedergabeliste hinzufügen"
 msgstr "Add playlist"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:84
-#: vueapp/components/Videos/VideosSidebar.vue:65
 msgid "Wiedergabelisten"
 msgstr "Playlists"
 
-#: vueapp/components/Videos/VideoRow.vue:290
-#: vueapp/components/Videos/VideosTable.vue:270
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:9
+msgid "Wiedergabelisten kopieren"
+msgstr "Copy playlists"
+
+#: vueapp/components/Videos/VideoRow.vue:296
+#: vueapp/components/Videos/VideosTable.vue:271
 msgid "Wiederherstellen"
 msgstr "Restore"
 
 #: vueapp/components/Config/SchedulingOptions.vue:44
-#: vueapp/components/Videos/VideoUpload.vue:86
-#: vueapp/components/Videos/VideoUpload.vue:83
+#: vueapp/components/Videos/VideoUpload.vue:170
 msgid "Workflow"
 msgstr "Workflow"
 
-#: vueapp/components/Videos/Actions/VideoReport.vue:12
-#: vueapp/components/Videos/Actions/VideoReport.vue:9
+#: vueapp/components/Videos/Actions/VideoReport.vue:41
 msgid "z.B. Ton- oder Abspielprobleme etc."
 msgstr "e.g. sound or playback problems etc."
 
-#: vueapp/components/Config/EditServer.vue:99
+#: vueapp/components/Config/EditServer.vue:96
 msgid "Zeitpuffer (in Sekunden) um Überlappungen zu verhindern"
 msgstr "Time buffer (in seconds) to prevent overlapping"
 
-#: vueapp/components/Videos/Actions/VideoEdit.vue:72
-#: vueapp/components/Videos/Actions/VideoEdit.vue:69
+#: vueapp/components/Videos/Actions/VideoEdit.vue:127
 msgid "Zeitstempel für die Sichtbarkeit"
 msgstr "Timestamp for visibility"
 
-#: vueapp/components/UserCourseSelectable.vue:15
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:59
+#: vueapp/components/Videos/Actions/VideoCopyToSeminar.vue:66
 msgid "Zu Kurs hinzufügen"
 msgstr "Add to course"
 
-#: vueapp/components/Videos/VideoUpload.vue:31
-#: vueapp/components/Videos/VideoUpload.vue:28
+#: vueapp/components/Videos/VideoUpload.vue:87
 msgid "Zu Wiedergabeliste hinzufügen"
 msgstr "Add to playlist"
 
-#: vueapp/components/Videos/VideoRow.vue:270
-#: vueapp/components/Videos/VideosTable.vue:240
+#: vueapp/components/Videos/VideoRow.vue:265
+#: vueapp/components/Videos/VideosTable.vue:241
 msgid "Zum Löschen markieren"
 msgstr "Mark for deletion"
 
@@ -1288,11 +1333,17 @@ msgstr "Add to playlist"
 msgid "Zuweisung der Capture Agents"
 msgstr "Assignment of capture agents"
 
-#: app/controllers/redirect.php:39 lib/Routes/Video/VideoReport.php:23
-#: lib/Routes/Video/VideoUpdate.php:30 lib/Routes/Video/VideoRestore.php:23
+#: app/controllers/contents.php:32 app/controllers/course.php:34
+#: OpenCast.class.php:54 OpenCast.class.php:137 OpenCast.class.php:229
+#: OpenCast.class.php:230
+msgid "Opencast Videos"
+msgstr "Opencast Videos"
+
+#: app/controllers/redirect.php:39 lib/Routes/Video/VideoAddToPlaylist.php:27
+#: lib/Routes/Video/VideoSharesList.php:26 lib/Routes/Video/VideoReport.php:23
 #: lib/Routes/Video/VideoSharesUpdate.php:28
-#: lib/Routes/Video/VideoSharesList.php:26 lib/Routes/Video/VideoDelete.php:23
-#: lib/Routes/Video/VideoAddToPlaylist.php:27
+#: lib/Routes/Video/VideoRestore.php:23 lib/Routes/Video/VideoDelete.php:23
+#: lib/Routes/Video/VideoUpdate.php:30
 msgid "Das Video kann nicht gefunden werden"
 msgstr "The video cannot be found"
 
@@ -1301,12 +1352,6 @@ msgid ""
 "Das Video wurde zur Löschung markiert und kann daher nicht abgerufen werden"
 msgstr ""
 "The video has been marked for deletion and therefore cannot be retrieved"
-
-#: app/controllers/course.php:34 app/controllers/contents.php:32
-#: OpenCast.class.php:54 OpenCast.class.php:137 OpenCast.class.php:229
-#: OpenCast.class.php:230
-msgid "Opencast Videos"
-msgstr "Opencast Videos"
 
 #: app/controllers/admin.php:42
 msgid ""
@@ -1363,18 +1408,6 @@ msgstr "Opencast - Find new videos"
 msgid "Opencast: Katalogisiert neue Videos aus Opencast."
 msgstr "Opencast: Catalogs new videos from Opencast."
 
-#: cronjobs/opencast_clear_recycle_bin.php:13
-msgid "Opencast - Zum löschen markierte Videos endgültig löschen"
-msgstr "Opencast - Permanently delete videos marked for deletion"
-
-#: cronjobs/opencast_clear_recycle_bin.php:18
-msgid ""
-"Opencast: Löscht die zur endgültigen Löschung vorgesehenen Videos aus den "
-"gelöschten Videos der Nutzer."
-msgstr ""
-"Opencast: Deletes the videos intended for permanent deletion from the users' "
-"deleted videos."
-
 #: cronjobs/opencast_worker.php:15
 msgid "Opencast - Queue"
 msgstr "Opencast - Queue"
@@ -1387,6 +1420,18 @@ msgstr ""
 "Opencast: Processes scheduled tasks, such as updating metadata, ACLs "
 "(visibility), etc."
 
+#: cronjobs/opencast_clear_recycle_bin.php:13
+msgid "Opencast - Zum löschen markierte Videos endgültig löschen"
+msgstr "Opencast - Permanently delete videos marked for deletion"
+
+#: cronjobs/opencast_clear_recycle_bin.php:18
+msgid ""
+"Opencast: Löscht die zur endgültigen Löschung vorgesehenen Videos aus den "
+"gelöschten Videos der Nutzer."
+msgstr ""
+"Opencast: Deletes the videos intended for permanent deletion from the users' "
+"deleted videos."
+
 #: lib/BlockTypes/OpencastBlock.php:22
 msgid "Opencast"
 msgstr "Opencast"
@@ -1394,87 +1439,6 @@ msgstr "Opencast"
 #: lib/BlockTypes/OpencastBlock.php:27
 msgid "Stellt eine Aufzeichnung aus dem Opencast-Plugin bereit"
 msgstr "Provides a recording from the Opencast plugin"
-
-#: lib/Models/REST/CaptureAgentAdminClient.php:18
-#: lib/Models/REST/AdminNgEventClient.php:17
-#: lib/Models/REST/ApiWorkflowsClient.php:17
-#: lib/Models/REST/SchedulerClient.php:19
-#: lib/Models/REST/ApiEventsClient.php:19 lib/Models/REST/WorkflowClient.php:18
-#: lib/Models/REST/ServicesClient.php:19 lib/Models/REST/IngestClient.php:18
-#: lib/Models/REST/SeriesClient.php:19
-msgid "Die Opencast-Konfiguration wurde nicht korrekt angegeben"
-msgstr "The opencast configuration was not specified correctly"
-
-#: lib/Models/ScheduledRecordings.php:64
-msgid "Der geplante Termin wurden nicht korrekt angegeben."
-msgstr "The scheduled date was not specified correctly."
-
-#: lib/Models/ScheduleHelper.php:259 lib/Models/ScheduleHelper.php:470
-msgid "Themen: "
-msgstr "Subjects: "
-
-#: lib/Models/ScheduleHelper.php:298 lib/Models/ScheduleHelper.php:477
-#, php-format
-msgid "(%s)"
-msgstr "(%s)"
-
-#: lib/Models/ScheduleHelper.php:750
-msgid "Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht."
-msgstr "A room with recording technology has not been booked yet."
-
-#: lib/Models/ScheduleHelper.php:757
-msgid "Aufzeichnung ist bereits geplant."
-msgstr "Recording is already scheduled."
-
-#: lib/Models/ScheduleHelper.php:767
-msgid "Aufzeichnung ist noch nicht geplant."
-msgstr "Recording is not scheduled yet."
-
-#: lib/Models/ScheduleHelper.php:773 lib/Models/ScheduleHelper.php:804
-msgid ""
-"Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung "
-"planen."
-msgstr "This date is in the past. You cannot schedule a recording."
-
-#: lib/Models/ScheduleHelper.php:786
-msgid ""
-"Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren "
-"oder entsprechende Metadaten aktualisieren."
-msgstr ""
-"Recording is already scheduled. You can cancel the recording or update the "
-"metadata."
-
-#: lib/Models/ScheduleHelper.php:791
-msgid ""
-"Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu "
-"aufzuheben."
-msgstr ""
-"Recording is already scheduled. Click here to cancel the scheduled recording."
-
-#: lib/Models/ScheduleHelper.php:798
-msgid "Aufzeichnung planen"
-msgstr "Schedule recording"
-
-#: lib/Models/ScheduleHelper.php:958
-#, php-format
-msgid ""
-"Die Veranstaltung \"%s\" wird für Sie mit Bild und Ton automatisiert "
-"aufgezeichnet."
-msgstr ""
-"The course \"%s\" will be automatically recorded for you with picture and "
-"sound."
-
-#: lib/Models/Resources.php:51
-msgid "Die Resourcen wurden nicht korrekt angegeben."
-msgstr "The resources were not specified correctly."
-
-#: lib/Models/VideoCoursewareBlocks.php:39
-msgid "Falsche Informationen zum Speichern von Daten."
-msgstr "Incorrect information about storing data."
-
-#: lib/Models/Endpoints.php:47
-msgid "Die Konfigurationsparameter wurden nicht korrekt angegeben."
-msgstr "The configuration parameters were not specified correctly."
 
 #: lib/Models/Config.php:53
 msgid "Es wurde kein Servicetyp angegeben."
@@ -1533,10 +1497,197 @@ msgstr ""
 "Could not retrieve endpoints for Opencast installation with URL \"%s\". "
 "Please check the entered data."
 
+#: lib/Models/Resources.php:51
+msgid "Die Resourcen wurden nicht korrekt angegeben."
+msgstr "The resources were not specified correctly."
+
+#: lib/Models/ScheduleHelper.php:39
+#, fuzzy
+msgid "Alle Semester"
+msgstr "All semesters"
+
+#: lib/Models/ScheduleHelper.php:259 lib/Models/ScheduleHelper.php:470
+msgid "Themen: "
+msgstr "Subjects: "
+
+#: lib/Models/ScheduleHelper.php:298 lib/Models/ScheduleHelper.php:477
+#, php-format
+msgid "(%s)"
+msgstr "(%s)"
+
+#: lib/Models/ScheduleHelper.php:750
+msgid "Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht."
+msgstr "A room with recording technology has not been booked yet."
+
+#: lib/Models/ScheduleHelper.php:757
+msgid "Aufzeichnung ist bereits geplant."
+msgstr "Recording is already scheduled."
+
+#: lib/Models/ScheduleHelper.php:767
+msgid "Aufzeichnung ist noch nicht geplant."
+msgstr "Recording is not scheduled yet."
+
+#: lib/Models/ScheduleHelper.php:773 lib/Models/ScheduleHelper.php:804
+msgid ""
+"Dieses Datum liegt in der Vergangenheit. Sie können keine Aufzeichnung "
+"planen."
+msgstr "This date is in the past. You cannot schedule a recording."
+
+#: lib/Models/ScheduleHelper.php:786
+msgid ""
+"Aufzeichnung ist bereits geplant. Sie können die Aufzeichnung stornieren "
+"oder entsprechende Metadaten aktualisieren."
+msgstr ""
+"Recording is already scheduled. You can cancel the recording or update the "
+"metadata."
+
+#: lib/Models/ScheduleHelper.php:791
+msgid ""
+"Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu "
+"aufzuheben."
+msgstr ""
+"Recording is already scheduled. Click here to cancel the scheduled recording."
+
+#: lib/Models/ScheduleHelper.php:798
+msgid "Aufzeichnung planen"
+msgstr "Schedule recording"
+
+#: lib/Models/ScheduleHelper.php:958
+#, php-format
+msgid ""
+"Die Veranstaltung \"%s\" wird für Sie mit Bild und Ton automatisiert "
+"aufgezeichnet."
+msgstr ""
+"The course \"%s\" will be automatically recorded for you with picture and "
+"sound."
+
+#: lib/Models/VideoCoursewareBlocks.php:39
+msgid "Falsche Informationen zum Speichern von Daten."
+msgstr "Incorrect information about storing data."
+
+#: lib/Models/REST/SchedulerClient.php:19 lib/Models/REST/IngestClient.php:18
+#: lib/Models/REST/ServicesClient.php:19
+#: lib/Models/REST/ApiWorkflowsClient.php:17
+#: lib/Models/REST/WorkflowClient.php:18 lib/Models/REST/ApiEventsClient.php:19
+#: lib/Models/REST/SeriesClient.php:19
+#: lib/Models/REST/AdminNgEventClient.php:17
+#: lib/Models/REST/CaptureAgentAdminClient.php:18
+msgid "Die Opencast-Konfiguration wurde nicht korrekt angegeben"
+msgstr "The opencast configuration was not specified correctly"
+
+#: lib/Models/Endpoints.php:47
+msgid "Die Konfigurationsparameter wurden nicht korrekt angegeben."
+msgstr "The configuration parameters were not specified correctly."
+
 #: lib/Models/VideosUserPerms.php:125
 #, php-format
 msgid "Das Video mit dem Titel \"%s\" wurde fertig verarbeitet."
 msgstr "The video titled \"%s\" has finished processing."
+
+#: lib/Models/ScheduledRecordings.php:64
+msgid "Der geplante Termin wurden nicht korrekt angegeben."
+msgstr "The scheduled date was not specified correctly."
+
+#: lib/Routes/Schedule/ScheduleBulk.php:34
+msgid "Die angeforderte Massenaktion wurde ausgeführt."
+msgstr "The requested bulk action was performed."
+
+#: lib/Routes/Schedule/ScheduleBulk.php:66
+msgid "Die angeforderte Massenaktion ist fehlgeschlagen."
+msgstr "The requested bulk action failed."
+
+#: lib/Routes/Schedule/ScheduleBulk.php:67
+msgid "Die angeforderte Massenaktion wurde mit einigen Fehlern ausgeführt."
+msgstr "The requested bulk action was performed with some errors."
+
+#: lib/Routes/Schedule/ScheduleDelete.php:35
+msgid "Die geplante Aufzeichnung konnte nicht entfernt werden."
+msgstr "The scheduled recording could not be removed."
+
+#: lib/Routes/Schedule/ScheduleAdd.php:35
+msgid "Aufzeichnung konnte nicht geplant werden."
+msgstr "Recording could not be scheduled."
+
+#: lib/Routes/Schedule/ScheduleAdd.php:41
+msgid "Aufzeichnung wurde geplant."
+msgstr "Recording has been scheduled."
+
+#: lib/Routes/Schedule/ScheduleUpdate.php:37
+msgid "Die geplante Aufzeichnung konnte nicht aktualisiert werden."
+msgstr "The scheduled recording could not be updated."
+
+#: lib/Routes/Schedule/ScheduleUpdate.php:43
+msgid "Die geplante Aufzeichnung wurde aktualisiert."
+msgstr "The scheduled recording has been updated."
+
+#: lib/Routes/Course/CourseUpdatePlaylist.php:35
+msgid "Die Wiedergabeliste kann in der Veranstaltung nicht gefunden werden"
+msgstr "The playlist cannot be found in the course"
+
+#: lib/Routes/Course/CourseSetVisibility.php:33
+msgid "Das Seminar kann nicht gefunden werden"
+msgstr "The seminar cannot be found"
+
+#: lib/Routes/Video/VideoAddToPlaylist.php:86
+msgid "Das Video wurde der Wiedergabeliste hinzugefügt."
+msgstr "The video has been added to the playlist."
+
+#: lib/Routes/Video/VideoAddToPlaylist.php:91
+msgid "Das Video konnte der Wiedergabeliste nicht hinzugefügt werden!"
+msgstr "The video could not be added to the playlist!"
+
+#: lib/Routes/Video/VideoReport.php:38
+msgid "Feedback kann nicht gesendet werden"
+msgstr "Feedback cannot be sent"
+
+#: lib/Routes/Video/VideoReport.php:44
+msgid "Das Feedback wurde erfolgreich gesendet"
+msgstr "The feedback was sent successfully"
+
+#: lib/Routes/Video/VideoAdd.php:33
+msgid "Beim Erstellen des Videos ist ein Fehler aufgetreten."
+msgstr "An error occurred while creating the video."
+
+#: lib/Routes/Video/VideoAdd.php:72
+msgid "Das Video wurde erfolgreich erstellt."
+msgstr "The video was created successfully."
+
+#: lib/Routes/Video/VideoRestore.php:40
+msgid "Das Video wurde erfolgreich widerhergestellt"
+msgstr "The video was restored successfully"
+
+#: lib/Routes/Video/VideoCopyToCourse.php:60
+msgid "Die Übertragungen wurden ausgeführt."
+msgstr "The transfers have been made."
+
+#: lib/Routes/Video/VideoCopyToCourse.php:65
+msgid "Die Übertragungen konnten nicht abgeschlossen werden!"
+msgstr "The transfers could not be completed!"
+
+#: lib/Routes/Video/VideoDelete.php:35
+msgid "Das Video wurde erfolgreich gelöscht"
+msgstr "The video has been successfully deleted"
+
+#: lib/Routes/Video/VideoDelete.php:43
+msgid "Das Video konnte nicht gelöscht werden"
+msgstr "The video could not be deleted"
+
+#: lib/Routes/Video/VideoUpdate.php:94
+msgid "Das Video wurde erfolgreich aktualisiert."
+msgstr "The video has been updated successfully."
+
+#: lib/Routes/Video/VideoUpdate.php:102
+msgid ""
+"Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten."
+msgstr "An error occurred while transferring the changes to the video server."
+
+#: lib/Routes/Playlist/PlaylistCopy.php:57
+msgid "Die Kopiervorgänge wurden ausgeführt."
+msgstr "The copy operations are completed."
+
+#: lib/Routes/Playlist/PlaylistCopy.php:63
+msgid "Die Kopiervorgänge konnten nicht abgeschlossen werden!"
+msgstr "The copy operations could not be completed!"
 
 #: lib/Routes/Playlist/PlaylistAddToCourse.php:27
 msgid "Die Wiedergabeliste kann nicht gefunden werden"
@@ -1551,98 +1702,11 @@ msgid ""
 "Die Kurs-Verknüpfungen der Wiedergabeliste konnten nicht aktualisiert werden!"
 msgstr "The course connections for the playlist could not be updated!!"
 
-#: lib/Routes/Video/VideoAdd.php:33
-msgid "Beim Erstellen des Videos ist ein Fehler aufgetreten."
-msgstr "An error occurred while creating the video."
-
-#: lib/Routes/Video/VideoAdd.php:72
-msgid "Das Video wurde erfolgreich erstellt."
-msgstr "The video was created successfully."
-
-#: lib/Routes/Video/VideoCopyToCourse.php:81
-msgid "Die Übertragungen wurden ausgeführt."
-msgstr "The transfers have been made."
-
-#: lib/Routes/Video/VideoCopyToCourse.php:86
-msgid "Die Übertragungen konnten nicht abgeschlossen werden!"
-msgstr "The transfers could not be completed!"
-
-#: lib/Routes/Video/VideoReport.php:38
-msgid "Feedback kann nicht gesendet werden"
-msgstr "Feedback cannot be sent"
-
-#: lib/Routes/Video/VideoReport.php:44
-msgid "Das Feedback wurde erfolgreich gesendet"
-msgstr "The feedback was sent successfully"
-
-#: lib/Routes/Video/VideoUpdate.php:94
-msgid "Das Video wurde erfolgreich aktualisiert."
-msgstr "The video has been updated successfully."
-
-#: lib/Routes/Video/VideoUpdate.php:102
+#: lib/Routes/Config/ConfigAdd.php:46
+#, php-format
 msgid ""
-"Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten."
-msgstr "An error occurred while transferring the changes to the video server."
-
-#: lib/Routes/Video/VideoRestore.php:40
-msgid "Das Video wurde erfolgreich widerhergestellt"
-msgstr "The video was restored successfully"
-
-#: lib/Routes/Video/VideoDelete.php:35
-msgid "Das Video wurde erfolgreich gelöscht"
-msgstr "The video has been successfully deleted"
-
-#: lib/Routes/Video/VideoDelete.php:43
-msgid "Das Video konnte nicht gelöscht werden"
-msgstr "The video could not be deleted"
-
-#: lib/Routes/Video/VideoAddToPlaylist.php:86
-msgid "Das Video wurde der Wiedergabeliste hinzugefügt."
-msgstr "The video has been added to the playlist."
-
-#: lib/Routes/Video/VideoAddToPlaylist.php:91
-msgid "Das Video konnte der Wiedergabeliste nicht hinzugefügt werden!"
-msgstr "The video could not be added to the playlist!"
-
-#: lib/Routes/Course/CourseSetVisibility.php:33
-msgid "Das Seminar kann nicht gefunden werden"
-msgstr "The seminar cannot be found"
-
-#: lib/Routes/Course/CourseUpdatePlaylist.php:35
-msgid "Die Wiedergabeliste kann in der Veranstaltung nicht gefunden werden"
-msgstr "The playlist cannot be found in the course"
-
-#: lib/Routes/Schedule/ScheduleBulk.php:34
-msgid "Die angeforderte Massenaktion wurde ausgeführt."
-msgstr "The requested bulk action was performed."
-
-#: lib/Routes/Schedule/ScheduleBulk.php:66
-msgid "Die angeforderte Massenaktion ist fehlgeschlagen."
-msgstr "The requested bulk action failed."
-
-#: lib/Routes/Schedule/ScheduleBulk.php:67
-msgid "Die angeforderte Massenaktion wurde mit einigen Fehlern ausgeführt."
-msgstr "The requested bulk action was performed with some errors."
-
-#: lib/Routes/Schedule/ScheduleAdd.php:35
-msgid "Aufzeichnung konnte nicht geplant werden."
-msgstr "Recording could not be scheduled."
-
-#: lib/Routes/Schedule/ScheduleAdd.php:41
-msgid "Aufzeichnung wurde geplant."
-msgstr "Recording has been scheduled."
-
-#: lib/Routes/Schedule/ScheduleDelete.php:35
-msgid "Die geplante Aufzeichnung konnte nicht entfernt werden."
-msgstr "The scheduled recording could not be removed."
-
-#: lib/Routes/Schedule/ScheduleUpdate.php:37
-msgid "Die geplante Aufzeichnung konnte nicht aktualisiert werden."
-msgstr "The scheduled recording could not be updated."
-
-#: lib/Routes/Schedule/ScheduleUpdate.php:43
-msgid "Die geplante Aufzeichnung wurde aktualisiert."
-msgstr "The scheduled recording has been updated."
+"Eine Konfiguration mit der angegebenen URL ist bereits vorhanden: \"%s\""
+msgstr "A configuration with the specified URL already exists: \"%s\""
 
 #: lib/Routes/Config/ConfigUpdate.php:47
 #, php-format
@@ -1652,12 +1716,6 @@ msgstr "Capture Agent for (%s) could not be saved!"
 #: lib/Routes/Config/ConfigUpdate.php:67
 msgid "Einstellungen gespeichert"
 msgstr "Settings saved"
-
-#: lib/Routes/Config/ConfigAdd.php:46
-#, php-format
-msgid ""
-"Eine Konfiguration mit der angegebenen URL ist bereits vorhanden: \"%s\""
-msgstr "A configuration with the specified URL already exists: \"%s\""
 
 #: OpenCast.class.php:37
 msgid "Opencast Einstellungen"
@@ -1709,6 +1767,44 @@ msgstr ""
 msgid "Videos & Vorlesungsaufzeichnung"
 msgstr "Videos & lecture recording"
 
+#~ msgid ""
+#~ "Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?<br/><br/>\n"
+#~ "                    Die Aufzeichnung wird damit in den \"Gelöschte Videos"
+#~ "\" Bereich Ihres Arbeitsplatzes verschoben und wird nach "
+#~ "{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen "
+#~ "automatisch gelöscht.\n"
+#~ "                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnung "
+#~ "wiederherstellen."
+#~ msgstr ""
+#~ "Are you sure you want to mark the recording for deletion?<br/><br/>\n"
+#~ "                     The recording will then be moved to the \"Deleted "
+#~ "Videos\" area of your workstation and will be automatically deleted after "
+#~ "{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} "
+#~ "days.\n"
+#~ "                     Up to this point you can restore the recording."
+
+#~ msgid ""
+#~ "Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?<br/><br/>\n"
+#~ "                    Die Aufzeichnungen werden damit in den \"Gelöschte "
+#~ "Videos\" Bereich Ihres Arbeitsplatzes verschoben und werden nach "
+#~ "{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen "
+#~ "automatisch gelöscht.\n"
+#~ "                    Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen "
+#~ "wiederherstellen."
+#~ msgstr ""
+#~ "Are you sure you want to mark the recording for deletion?<br/><br/>\n"
+#~ "                     The recording will then be moved to the \"Deleted "
+#~ "Videos\" area of your workstation and will be automatically deleted after "
+#~ "{{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} "
+#~ "days.\n"
+#~ "                     Up to this point you can restore the recording."
+
+#~ msgid "In Veranstaltungen suchen"
+#~ msgstr "Search in courses"
+
+#~ msgid "Keine Treffer"
+#~ msgstr "No matches"
+
 #~ msgid "Element nach oben verschieben"
 #~ msgstr "Move item up"
 
@@ -1738,10 +1834,6 @@ msgstr "Videos & lecture recording"
 #~ "Die Wiedergabelisten-Verknüpfungen des Videos konnten nicht aktualisiert "
 #~ "werden!"
 #~ msgstr "The video's playlist links could not be updated!"
-
-#, fuzzy
-#~ msgid "{{ $gettext('Aktionen') }}"
-#~ msgstr "Add recording of the slides"
 
 #~ msgid "Beim Löschen der Freigabe ist ein Fehler aufgetreten."
 #~ msgstr "An error occurred while deleting the share."
@@ -1775,8 +1867,8 @@ msgstr "Videos & lecture recording"
 #~ "                             Films or music recordings are allowed to be "
 #~ "made available, provided these make up a small extent of the overall "
 #~ "work.\n"
-#~ "                             <a href=\"https://elan-ev.de/themen_p60."
-#~ "php\" target=\"_blank\">\n"
+#~ "                             <a href=\"https://elan-ev.de/themen_p60.php"
+#~ "\" target=\"_blank\">\n"
 #~ "                                 §60 UrhG summary\n"
 #~ "                             </a><br/>\n"
 #~ "                             Media found to be in breach of copyright "
@@ -1828,9 +1920,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Livestream+Aufzeichnung planen"
 #~ msgstr "Schedule livestream+recording"
 
-#~ msgid "Möchten Sie die Aufzeichnung wirklich entfernen?"
-#~ msgstr "Are you sure you want to remove the recording?"
-
 #~ msgid "Share-Link erstellt!"
 #~ msgstr "Share link created!"
 
@@ -1849,9 +1938,8 @@ msgstr "Videos & lecture recording"
 #~ msgid "Unable to send email"
 #~ msgstr "Unable to send email"
 
-#, fuzzy
 #~ msgid "Episode hinzufügen"
-#~ msgstr "Add annotation"
+#~ msgstr "Add episode"
 
 #~ msgid "Es wurde keine Service URL angegeben"
 #~ msgstr "No service URL has been provided"
@@ -1885,7 +1973,6 @@ msgstr "Videos & lecture recording"
 #~ "being a course participant when the functionality has been enabled for "
 #~ "this lecture."
 
-#, php-format
 #~ msgid ""
 #~ "Die verknüpfte Serie mit der ID \"%s\" konnte nicht in Opencast gefunden "
 #~ "werden! Verküpfen sie bitte eine andere Serie, erstellen Sie eine neue "
@@ -1917,9 +2004,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Opencast Aufzeichnungen planen"
 #~ msgstr "Schedule opencast recordings"
 
-#~ msgid "Alle Semester"
-#~ msgstr "All semesters"
-
 #~ msgid "Series wurde angelegt"
 #~ msgstr "Series created"
 
@@ -1942,7 +2026,6 @@ msgstr "Videos & lecture recording"
 #~ "ausgeblendet."
 #~ msgstr "The tab in the course navigation is now invisible for all students."
 
-#, php-format
 #~ msgid "Reiter ist %s."
 #~ msgstr "Tab is %s."
 
@@ -1973,7 +2056,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Opencast Administration"
 #~ msgstr "Opencast administration"
 
-#, php-format
 #~ msgid ""
 #~ "Sie haben mehr als einmal dieselbe URL für eine Opencast Installation "
 #~ "angegeben.\n"
@@ -1990,7 +2072,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Opencast Capture Agent Verwaltung"
 #~ msgstr "Opencast capture agent management"
 
-#, php-format
 #~ msgid "Der Capture Agent %s existiert nicht mehr und wurde entfernt."
 #~ msgstr "The capture agent %s no longer exists and has been removed."
 
@@ -2009,16 +2090,14 @@ msgstr "Videos & lecture recording"
 #~ msgid "Opencast - \"Scheduled-Events-Refresh\""
 #~ msgstr "Opencast - \"Scheduled events refresh\""
 
-#, php-format
 #~ msgid "Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n"
 #~ msgstr "Updating scheduled recordings at \"%s\" for course \"%s\"\n"
 
-#, php-format
 #~ msgid ""
 #~ "Abweichender Raum, Löschen der Aufzeichnungsdaten am %s für den Kurs %s\n"
 #~ msgstr ""
-#~ "Different room, deleting scheduled recordings at \"%s\" for course "
-#~ "\"%s\"\n"
+#~ "Different room, deleting scheduled recordings at \"%s\" for course \"%s"
+#~ "\"\n"
 
 #~ msgid "Opencast - \"Serien-Refresh\""
 #~ msgstr "Opencast \"Series refresh\""
@@ -2030,7 +2109,6 @@ msgstr "Videos & lecture recording"
 #~ "Opencast: Updates the episodes for all recorded series connected to Stud."
 #~ "IP."
 
-#, php-format
 #~ msgid ""
 #~ "Aktualisiere Episoden fuer den Kurs %s im Semester %s\n"
 #~ " "
@@ -2038,7 +2116,6 @@ msgstr "Videos & lecture recording"
 #~ "Update the recording data for the course on %s in the semester %s\n"
 #~ " "
 
-#, php-format
 #~ msgid "Es gibt %s neue Opencast Aufzeichnung(en) seit ihrem letzten Besuch."
 #~ msgstr "There are %s new opencast record(s) since your last visit."
 
@@ -2048,7 +2125,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Zur Studiengruppe"
 #~ msgstr "To the study group"
 
-#, php-format
 #~ msgid "Neue Vorlesungsaufzeichnung  \"%s\" im Kurs \"%s\""
 #~ msgstr "New lecture recording \"%s\" in course \"% s\""
 
@@ -2135,7 +2211,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Beschreibung:"
 #~ msgstr "Description:"
 
-#, php-format
 #~ msgid "Wollen Sie die Verknüpfung zur Series \"%s\" wirklich aufheben?"
 #~ msgstr "Are you sure you want to remove the link to the series \"%s\"?"
 
@@ -2336,7 +2411,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Nach Aufzeichnung suchen"
 #~ msgstr "Search for recording"
 
-#, php-format
 #~ msgid "Dies ist ein Livestream! Geplant: %s - %s Uhr"
 #~ msgstr "Livestream! Planned for %s - %s"
 
@@ -2432,9 +2506,8 @@ msgstr "Videos & lecture recording"
 #~ msgid "Datenschutzrichtlinien akzeptieren"
 #~ msgstr "Accept privacy policy"
 
-#, fuzzy
 #~ msgid "OpenCast"
-#~ msgstr "Opencast player"
+#~ msgstr "OpenCast"
 
 #~ msgid "Mindestens ein Video wird benötigt."
 #~ msgstr "At least one video is required."
@@ -2500,7 +2573,6 @@ msgstr "Videos & lecture recording"
 #~ "Updates the episode catalogue of all the series connected in Stud.IP that "
 #~ "are recorded."
 
-#, php-format
 #~ msgid ""
 #~ "Aktualisieriere Episoden für den Kurs %s im Semester %s\n"
 #~ " "
@@ -2622,11 +2694,9 @@ msgstr "Videos & lecture recording"
 #~ msgid "Daten vom Server entfernen"
 #~ msgstr "Remove data from the server"
 
-#, php-format
 #~ msgid "Vom %s"
 #~ msgstr "by %s"
 
-#, php-format
 #~ msgid ""
 #~ "Es sind keine Konfigurationsdaten für den Servicetyp **%s** vorhanden."
 #~ msgstr "There is no configiguration for the servicetype **%s**."
@@ -2634,7 +2704,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Es wurde kein gültiges URL-Schema für den Lesezugriff angegeben."
 #~ msgstr "Invalid URL scheme for read access."
 
-#, php-format
 #~ msgid ""
 #~ "Es wurden %s Endpoints für die angegebene Opencast Slave Installation "
 #~ "gefunden und eingetragen"
@@ -2662,7 +2731,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Basis URL zur optionalen Opencast Installation"
 #~ msgstr "Base URL to optional Opencast system."
 
-#, php-format
 #~ msgid ""
 #~ "Änderungen wurden erfolgreich übernommen. Es wurden %s Endpoints für die "
 #~ "angegebene Opencast Installation gefunden und in der Stud.IP "
@@ -2695,7 +2763,6 @@ msgstr "Videos & lecture recording"
 #~ msgstr ""
 #~ "Search for series from Opencast to connect with the current seminar."
 
-#, php-format
 #~ msgid ""
 #~ "Sie haben mehr als einmal dieselbe URL für eine Opencast Installation "
 #~ "angegeben.\n"
@@ -2720,7 +2787,6 @@ msgstr "Videos & lecture recording"
 #~ "length of up to 5 minutes may be provided, if these make up a small "
 #~ "extent of the whole work"
 
-#, php-format
 #~ msgid ""
 #~ "Aktualisiere die Aufzeichnungsdaten für die Veranstaltung am %s für den "
 #~ "Kurs %s\n"
@@ -2733,7 +2799,6 @@ msgstr "Videos & lecture recording"
 #~ msgid "Festplattenplatz im Tempverzeichnis"
 #~ msgstr "Diskspace on tempdir"
 
-#, php-format
 #~ msgid "Belegt: %s von %s"
 #~ msgstr "Used: %s of %s"
 

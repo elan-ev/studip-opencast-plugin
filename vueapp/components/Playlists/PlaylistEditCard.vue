@@ -13,7 +13,7 @@
             <template v-slot:dialogContent>
                 <form class="default" ref="playlistEditCard-form">
                     <label v-if="!isDefaultCoursePlaylist">
-                        <span class="required">Titel</span>
+                        <span class="required">{{ $gettext('Titel') }}</span>
                         <input type="text" v-model="eplaylist.title" required>
                     </label>
 
@@ -35,7 +35,7 @@
                     -->
 
                     <label>
-                        Schlagworte
+                        {{ $gettext('Schlagworte') }}
                         <TagBar :taggable="eplaylist" @update="updateTags" />
                     </label>
                 </form>
