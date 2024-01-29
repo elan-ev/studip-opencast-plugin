@@ -138,7 +138,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $this->_('Opencast Videos'),
             PluginEngine::getURL($this, [], 'course/#/course/videos')
         );
-        $navigation->setImage(Icon::create('video2'));
+        $navigation->setImage(Icon::create('opencast'));
 
         // Get number of new videos since last visit
         $new_videos = Videos::getNumberOfNewCourseVideos($course_id, $last_visit, $user_id);
@@ -149,7 +149,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             } else {
                 $text = $this->_('neue Videos');
             }
-            $navigation->setImage(Icon::create('video2', Icon::ROLE_ATTENTION, [
+            $navigation->setImage(Icon::create('opencast', Icon::ROLE_ATTENTION, [
                 'title' => $new_videos . ' ' . $text,
             ]));
             $navigation->setBadgeNumber($new_videos);
@@ -186,7 +186,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             return;
         }
 
-        $title      = 'Opencast Videos';
+        $title = 'Opencast Videos';
         if (SeminarSeries::getVisibilityForCourse($course_id) == 'invisible') {
             $title .= " (" . $this->_('versteckt') . ")";
         }
@@ -195,7 +195,22 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $this->_($title),
             PluginEngine::getURL($this, [], 'course#/course/videos')
         );
-        $main->setImage(Icon::create('video2'));
+        $main->setImage(Icon::create('opencast'));
+
+        // We need subnavs in order for responsive view to work properly.
+        $main->addSubNavigation('videos', new Navigation(
+            $this->_('Videos'),
+            PluginEngine::getURL($this, ['target_view' => 'videos'], 'course#/course/videos'),
+        ));
+
+        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) &&
+            Config::get()->OPENCAST_ALLOW_SCHEDULER &&
+            Helpers::checkCourseDefaultPlaylist($course_id)) {
+            $main->addSubNavigation('schedule', new Navigation(
+                $this->_('Aufzeichnungen planen'),
+                PluginEngine::getURL($this, ['target_view' => 'schedule'], 'course#/course/schedule')
+            ));
+        }
 
         return ['opencast' => $main];
     }
