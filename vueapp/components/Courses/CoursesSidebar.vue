@@ -1,5 +1,5 @@
 <template>
-    <div class="sidebar-widget " id="sidebar-navigation">
+    <div class="sidebar-widget oc--course-sidebar-widget" id="sidebar-navigation">
         <div class="sidebar-widget-header">
             {{ $gettext('Navigation') }}
         </div>
@@ -52,7 +52,7 @@
                         </router-link>
                     </li>
 
-                    <li v-if="canEdit" @click="showCreatePlaylist">
+                    <li v-if="canEdit" @click="showCreatePlaylist" data-reject-toggle-sidebar="true">
                         <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
                         {{ $gettext('Wiedergabeliste hinzufügen') }}
                     </li>
@@ -126,7 +126,7 @@
                 {{ $gettext('Aktionen') }}
             </div>
             <div class="sidebar-widget-content">
-                <ul class="widget-list oc--sidebar-links widget-links">
+                <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
                     <template v-if="videoSortMode">
                         <li @click="$emit('saveSortVideo')" v-if="canEdit && videoSortMode">
                             <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
@@ -186,7 +186,7 @@
                             <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
                             {{ $gettext('Wiedergabeliste bearbeiten') }}
                         </li>
-                        <li @click="showChangeDefaultPlaylist" v-if="canEdit">
+                        <li @click="showChangeDefaultPlaylist" v-if="canEdit" data-reject-toggle-sidebar="true">
                             <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
                             {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
                         </li>
@@ -243,7 +243,8 @@ export default {
             semesterFilter: null,
             schedulePlaylistToken: null,
             livestreamPlaylistToken: null,
-            targetPlaylistToken: null
+            targetPlaylistToken: null,
+            routeObj: null,
         }
     },
 
@@ -338,6 +339,7 @@ export default {
     methods: {
         setPlaylist(playlist) {
             this.$store.dispatch('setPlaylist', playlist);
+            this.toggleSidebarOnResponsive();
         },
 
         async setView(page) {
@@ -419,6 +421,7 @@ export default {
                     this.livestreamPlaylistToken = this.livestream_playlist?.token;
                 });
             }
+            this.toggleSidebarOnResponsive();
         },
 
         async setTargetPlaylist() {
@@ -435,17 +438,64 @@ export default {
                     this.targetPlaylistToken = null;
                 }
             }
+        },
+
+        ensureRenderedSidebarIsRemoved() {
+            const sidebars = document.querySelectorAll('.sidebar-widget');
+            for (let sidebar of sidebars) {
+                if (sidebar.classList.contains('oc--course-sidebar-widget') === false) {
+                    sidebar.remove();
+                }
+            }
+        },
+
+        /**
+         * This method is used to toggle sidebar in responsive view.
+         * This gets called on the outermost element of the action and playlist actions on ul elements.
+         * To prevent an element from toggling the sidebar:
+         *      i.e. when the dialog is opened in this component like AddPlaylis
+         *  data-reject-toggle-sidebar attribute on the element must be set to true.
+         *
+         * @param {object} [event=null]
+         *
+         */
+        toggleSidebarOnResponsive(event = null) {
+            if (event && event.target.dataset?.rejectToggleSidebar && event.target.dataset.rejectToggleSidebar != 'false') {
+                return;
+            }
+            let toggle_btn = document.getElementById('toggle-sidebar');
+            let sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('responsive-show') && toggle_btn) {
+                toggle_btn.click();
+            }
+        },
+
+        async handleView() {
+            if (this.routeObj?.path.includes('/schedule') && this.currentView != 'schedule' && this.canSchedule) {
+                await this.$store.dispatch('loadPlaylists');
+                await this.setView('schedule');
+            } else if (this.routeObj?.path.includes('/videos') && this.currentView != 'videos') {
+                await this.setView('videos');
+            }
         }
     },
 
-    mounted() {
+    async mounted() {
         this.$store.dispatch('simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
 
         const route = useRoute();
-        if (route?.query?.taget_pl_token) {
+        this.routeObj = route;
+        if (this.routeObj?.query?.taget_pl_token) {
             this.targetPlaylistToken = route.query.taget_pl_token
         }
+
+        await this.handleView();
+    },
+
+    beforeMount () {
+        // Here we remove the rendered sidebar from the DOM before mount, to avoid any conflicts.
+        this.ensureRenderedSidebarIsRemoved();
     },
 
     watch: {
@@ -455,11 +505,18 @@ export default {
                 this.$store.dispatch('clearMessages');
                 this.$store.dispatch('getScheduleList');
             }
+            this.toggleSidebarOnResponsive();
         },
 
         playlists(newValue) {
             if (newValue?.length && this.targetPlaylistToken) {
                 this.setTargetPlaylist();
+            }
+        },
+
+        canSchedule(newValue) {
+            if (newValue === true) {
+                this.handleView();
             }
         }
     }

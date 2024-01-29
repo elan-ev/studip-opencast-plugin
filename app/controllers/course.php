@@ -37,6 +37,25 @@ class CourseController extends Opencast\Controller
         $this->studip_version = $this->getStudIPVersion();
         $this->languages = json_encode($GLOBALS['CONTENT_LANGUAGES']);
 
+        // We need sidebar registration here in php side, in order for responsive navigation to work properly.
+        $this->setSidebar();
+
         $this->render_template('course/index', $GLOBALS['template_factory']->open('layouts/base.php'));
+    }
+
+    /**
+     * Adds the content to sidebar.
+     * @info: The rendered sidebar of this function gets deleted from DOM, because we are using CourseSidebar.vue,
+     * therefore, we only need this to happen in php level!
+     */
+    private function setSidebar()
+    {
+        $sidebar = Sidebar::get();
+
+        $actions = new \TemplateWidget(
+            $this->_('Aktionen'),
+            $this->get_template_factory()->open('course/action_widget')
+        );
+        $sidebar->addWidget($actions);
     }
 }
