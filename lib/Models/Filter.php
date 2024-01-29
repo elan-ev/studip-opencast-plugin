@@ -16,7 +16,7 @@ class Filter
         $trashed;
 
     private static $ALLOWED_ORDERS = [
-        'created_desc', 'created_asc', 'title_desc', 'title_asc', 'author_desc', 'author_asc', 'order_desc', 'order_asc'
+        'created_desc', 'created_asc', 'title_desc', 'title_asc', 'author_desc', 'author_asc', 'order_desc', 'order_asc', 'mkdate_desc', 'mkdate_asc'
     ];
 
     private static $ALLOWED_FILTERS = [

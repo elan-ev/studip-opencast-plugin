@@ -126,6 +126,9 @@ class Playlists extends UPMap
         $tags      = [];
         $courses   = [];
         $lecturers = [];
+        $orderable_columns = [
+            'mkdate', 'chdate', 'id', 'title', 'author'
+        ];
 
         // Apply filters
         foreach ($filters->getFilters() as $filter) {
@@ -240,8 +243,11 @@ class Playlists extends UPMap
         $stmt->execute($params);
         $count = $stmt->fetchColumn();
 
-        if ($filters->getCourseId()) {
-            $sql .= ' ORDER BY oc_playlist_seminar.is_default DESC';
+        if ($order = $filters->getOrder()) {
+            list($column, $direction) = explode('_', $order, 2);
+            if (!empty($column) && !empty($direction) && in_array($column, $orderable_columns, true)) {
+                $sql .= " ORDER BY oc_playlist.{$column} {$direction}";
+            }
         }
 
         if ($filters->getLimit() != -1) {
