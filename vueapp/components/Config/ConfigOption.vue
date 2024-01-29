@@ -5,7 +5,7 @@
                 <span :class="{
                     required: setting.required
                 }">
-                    {{ $gettext(setting.description) }}
+                    {{ setting.description }}
                 </span>
             </div>
 
