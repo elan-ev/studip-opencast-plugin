@@ -68,7 +68,7 @@
                 </tr>
             </thead>
 
-            <tbody v-if="Object.keys(videos_list).length === 0 && (axios_running || videos_loading)" class="oc--episode-table--empty">
+            <tbody v-if="Object.keys(videos_list).length === 0 && videos_loading" class="oc--episode-table--empty">
                 <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
                 <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
                 <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
