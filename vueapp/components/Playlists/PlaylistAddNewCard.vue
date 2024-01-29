@@ -12,7 +12,7 @@
             @keyup.enter="createPlaylist"
         >
             <template v-slot:dialogContent>
-                <form class="default" ref="playlistAddNewCard-form">
+                <form class="default" ref="playlistAddNewCard-form" @submit.prevent="createPlaylist">
                     <label>
                         <span class="required">Titel</span>
                         <input type="text"
