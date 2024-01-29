@@ -35,7 +35,7 @@ class CourseAddPlaylist extends OpencastController
         $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
 
         // allow any perm for adding playlists to course user has access to
-        if (empty($perm_playlist) || !$perm->have_studip_perm('tutor', $course_id))
+        if (empty($perm_playlist) && !$perm->have_studip_perm('tutor', $course_id))
         {
             throw new \AccessDeniedException();
         }
