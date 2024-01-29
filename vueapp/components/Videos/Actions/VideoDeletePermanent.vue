@@ -11,7 +11,7 @@
             @confirm="removeVideo"
         >
             <template v-slot:dialogContent>
-                <translate>Möchten Sie die Aufzeichnung wirklich unwiderruflich entfernen?</translate>
+                {{ $gettext('Möchten Sie die Aufzeichnung wirklich unwiderruflich entfernen?') }}
             </template>
         </StudipDialog>
 
@@ -24,7 +24,7 @@
             @confirm="removeVideo"
         >
             <template v-slot:dialogContent>
-                <translate>Das Video wird zurzeit verarbeitet und kann deshalb nicht unwiderruflich entfernt werden. Versuchen Sie es zu einem späteren Zeitpunkt erneut.</translate>
+                {{ $gettext('Das Video wird zurzeit verarbeitet und kann deshalb nicht unwiderruflich entfernt werden. Versuchen Sie es zu einem späteren Zeitpunkt erneut.') }}
             </template>
         </StudipDialog>
     </div>

@@ -25,7 +25,8 @@
                 <input type="text" ref="searchbar"
                     v-on:keyup="hideTokenSelector"
                     v-on:keyup.enter="doSearch"
-                    v-model="inputSearch" placeholder="Suche..."
+                    v-model="inputSearch" 
+                    :placeholder="$gettext('Suche...')"
                     @focus="showTokenSelector"
                     @click="showTokenSelector"
                     @blur="delayedHideTokenSelector"
@@ -33,7 +34,7 @@
                     @input="doLiveSearch"
                 />
             </li>
-            <li title="Suche starten"
+            <li :title="$gettext('Suche starten')"
                 class="oc--searchbar--search-icon"
                 @click="doSearch"
             >

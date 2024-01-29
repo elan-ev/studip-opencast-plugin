@@ -18,9 +18,9 @@
                 <form class="default" @submit.prevent="report">
                     <fieldset>
                         <label>
-                            <translate>Bitte beschreiben Sie das aufgetretene Problem</translate>
+                            {{ $gettext('Bitte beschreiben Sie das aufgetretene Problem') }}
                             <br>
-                            <translate>z.B. Ton- oder Abspielprobleme etc.</translate>
+                                {{ $gettext('z.B. Ton- oder Abspielprobleme etc.') }}
                             <textarea v-model="description" cols="20" rows="5"></textarea>
                         </label>
                     </fieldset>

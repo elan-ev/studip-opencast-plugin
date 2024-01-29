@@ -112,10 +112,6 @@ class UploadService {
         return str;
     }
 
-    networkError(onError) {
-        onError('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.');
-    }
-
     async getMediaPackage() {
         return axios({
             method: 'GET',
@@ -225,7 +221,7 @@ class UploadService {
             uploadDone();
         }).catch(function (error) {
             if (error.code === 'ERR_NETWORK') {
-                obj.networkError(onError)
+                onError();
             }
         });
     }
@@ -339,7 +335,7 @@ class UploadService {
                 return ingest;
             }).catch(function (error) {
                 if (error.code === 'ERR_NETWORK') {
-                    obj.networkError(onError);
+                    onError();
                 }
             });
     }

@@ -13,15 +13,13 @@
         >
             <template v-slot:dialogContent>
                 <p>
-                    <translate>
-                        Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?
-                    </translate>
+                    {{ $gettext('Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?') }}
                 </p>
                 <p>
-                    <translate>
-                        Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} Tagen automatisch gelöscht.
-                        Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.
-                    </translate>
+                    {{ $gettext('Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und wird nach') }}
+                    {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}} 
+                    {{ $gettext('Tagen automatisch gelöscht.') }}
+                    {{ $gettext('Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.') }}
                 </p>
 
                 <span v-if="event.playlists.length > 0">
