@@ -13,6 +13,7 @@
         >
             <template v-slot:dialogContent>
                 <PlaylistsTable
+                    :cid="cid ?? null"
                     :selectable="true"
                     :multi-select="!isDefault"
                     :showActions="false"
