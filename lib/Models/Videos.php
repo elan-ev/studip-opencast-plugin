@@ -51,12 +51,12 @@ class Videos extends UPMap
 
     /**
      * Returns the list of videos that are accessable. These can then be used to narrow it down by search filters
-     *
+     * @info: this method is called outside of this Model class, therefore, it needs to be public.
      * @param string $user_id
      *
      * @return array the video ids
      */
-    private static function getFilteredVideoIDs($user_id)
+    public static function getFilteredVideoIDs($user_id)
     {
         global $perm;
 
@@ -192,7 +192,7 @@ class Videos extends UPMap
 
             if ($perm->have_perm('admin', $user_id)) {
                 $where = ' WHERE oc_video.id IN (:video_ids) ';
-                $params[':video_ids'] = self::getFilteredVideoIds($user_id);
+                $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
             } else {
                 $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
                 $where = ' WHERE 1 ';

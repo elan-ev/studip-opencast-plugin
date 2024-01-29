@@ -15,13 +15,13 @@ class Tags extends \SimpleORMap
 
     /**
      * Get the tags from all videos the user has access too
-     * 
+     *
      * @return array
      *  [
      *      tag1,
      *      tag2,
      *      tag3,
-     *      ...    
+     *      ...
      *  ];
      */
     public static function getUserVideosTags()
@@ -32,12 +32,12 @@ class Tags extends \SimpleORMap
                 ' LEFT JOIN oc_video_tags AS vt ON (vt.tag_id = id)'.
                 ' LEFT JOIN oc_video_user_perms AS vup ON (vt.video_id = vup.video_id)';
         $params = [];
-        
+
         // root can access all videos, no further checking for perms is necessary
         if (!$perm->have_perm('root')) {
             if ($perm->have_perm('admin', $user->id)) {
                 $query .= ' WHERE vt.video_id IN (:video_ids) ';
-                $params[':video_ids'] = Videos::getFilteredVideoIds($user->id);
+                $params[':video_ids'] = Videos::getFilteredVideoIDs($user->id);
             } else {
                 $query .= ' WHERE vup.user_id = :user_id ';
                 $params[':user_id'] = $user->id;
@@ -54,7 +54,7 @@ class Tags extends \SimpleORMap
 
     /**
      * Get the tags from all visible videos in an specific playlist
-     * 
+     *
      * @param string $playlist_id
      * @param string $cid
      *
@@ -63,7 +63,7 @@ class Tags extends \SimpleORMap
      *      tag1,
      *      tag2,
      *      tag3,
-     *      ...    
+     *      ...
      *  ];
      */
     public static function getPlaylistVideosTags($playlist_id, $cid)
@@ -74,7 +74,7 @@ class Tags extends \SimpleORMap
                 ' LEFT JOIN oc_video_tags AS vt ON (vt.tag_id = id)'.
                 ' INNER JOIN oc_playlist_video AS opv ON (opv.video_id = vt.video_id AND opv.playlist_id = :playlist_id)';
         $params = [':playlist_id' => $playlist_id];
-        
+
         if (!(empty($cid) || $perm->have_perm('dozent'))) {
             $query .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)'.

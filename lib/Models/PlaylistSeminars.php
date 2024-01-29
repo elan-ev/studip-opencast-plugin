@@ -86,7 +86,7 @@ class PlaylistSeminars extends \SimpleORMap
         if (!$perm->have_perm('root')) {
             if ($perm->have_perm('admin', $user->id)) {
                 $query .= ' WHERE opv.video_id IN (:video_ids)';
-                $params[':video_ids'] = Videos::getFilteredVideoIds($user->id);
+                $params[':video_ids'] = Videos::getFilteredVideoIDs($user->id);
             } else {
                 $query .= ' WHERE vup.user_id = :user_id ';
                 $params[':user_id'] = $user->id;
