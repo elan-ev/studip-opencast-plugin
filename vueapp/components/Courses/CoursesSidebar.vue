@@ -123,7 +123,7 @@
     <template v-else>
         <div class="sidebar-widget " id="sidebar-actions" v-if="(canEdit || canUpload) && hasDefaultPlaylist">
             <div class="sidebar-widget-header">
-                {{ $gettext('Aktionen') }}
+                {{ $gettext('Wiedergabeliste bearbeiten') }}
             </div>
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
@@ -142,6 +142,36 @@
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                             {{ $gettext('Videos hinzufügen') }}
                         </li>
+                        <li v-if="canEdit && downloadSetting !== 'never'">
+                            <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                {{ $gettext('Mediendownloads erlauben') }}
+                            </a>
+                            <a v-else @click="setDownload(false)" target="_blank">
+                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                {{ $gettext('Mediendownloads verbieten') }}
+                            </a>
+                        </li>
+                        <li @click="$emit('sortVideo')" v-if="canEdit">
+                            <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                            {{ $gettext('Videos sortieren') }}
+                        </li>
+                        <li @click="$emit('editPlaylist')" v-if="canEdit">
+                            <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
+                            {{ $gettext('Metadaten bearbeiten') }}
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-widget " id="sidebar-actions" v-if="(canEdit || canUpload) && hasDefaultPlaylist">
+            <div class="sidebar-widget-header">
+                {{ $gettext('Veranstaltungsweite Aktionen') }}
+            </div>
+            <div class="sidebar-widget-content">
+                <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
+                    <template v-if="!videoSortMode">
                         <li>
                             <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id">
                                 <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
@@ -158,16 +188,6 @@
                                 {{ $gettext('Reiter verbergen') }}
                             </a>
                         </li>
-                        <li v-if="canEdit && downloadSetting !== 'never'">
-                            <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                                {{ $gettext('Mediendownloads erlauben') }}
-                            </a>
-                            <a v-else @click="setDownload(false)" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                                {{ $gettext('Mediendownloads verbieten') }}
-                            </a>
-                        </li>
                         <li v-if="canEdit">
                             <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
                                 <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
@@ -177,14 +197,6 @@
                                 <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
                                 {{ $gettext('Studierendenupload verbieten') }}
                             </a>
-                        </li>
-                        <li @click="$emit('sortVideo')" v-if="canEdit">
-                            <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
-                            {{ $gettext('Videos sortieren') }}
-                        </li>
-                        <li @click="$emit('editPlaylist')" v-if="canEdit">
-                            <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
-                            {{ $gettext('Wiedergabeliste bearbeiten') }}
                         </li>
                         <li @click="showChangeDefaultPlaylist" v-if="canEdit" data-reject-toggle-sidebar="true">
                             <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
