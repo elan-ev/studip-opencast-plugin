@@ -75,11 +75,25 @@ const getters = {
 
 
 const actions = {
-    async loadPlaylists(context) {
+    async loadPlaylists(context, filters= {}) {
         let $cid = context.rootState.opencast.cid;
         let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
 
-        return ApiService.get($route)
+        // Load all playlists if no limit is set
+        filters.limit = filters.limit || -1;
+
+        // Set filters
+        const params = new URLSearchParams();
+
+        for (let key in filters) {
+            if (key === 'filters') {
+                params.append('filters', JSON.stringify(filters.filters));
+            } else {
+                params.append(key, filters[key]);
+            }
+        }
+
+        return ApiService.get($route, { params })
             .then(({ data }) => {
                 context.commit('setPlaylists', data.playlists);
                 if ($cid) {
