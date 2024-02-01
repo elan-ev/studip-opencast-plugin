@@ -37,6 +37,7 @@
         />
 
         <PlaylistsCopyCard v-if="activeDialog === 'copy'"
+            :is-default="isDefault"
             @done="done"
             @cancel="cancel"
         />

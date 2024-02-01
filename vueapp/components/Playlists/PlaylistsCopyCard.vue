@@ -38,6 +38,13 @@ export default {
 
     emits: ['done', 'cancel'],
 
+    props: {
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+    },
+
     data() {
         return {
             playlists: [],
@@ -46,7 +53,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['cid']),
+        ...mapGetters(['cid', 'defaultPlaylist']),
     },
 
     methods: {
@@ -59,16 +66,32 @@ export default {
         },
 
         copyPlaylistsToCourse() {
+            const is_default = this.isDefault;
+
             this.$store.dispatch('copyPlaylistsToCourse', {
                 course: this.cid,
-                playlists: this.selectedPlaylists
+                playlists: this.selectedPlaylists,
+                is_default: is_default,
             }).then(() => {
                 this.selectedPlaylists = [];
                 this.$store.dispatch('addMessage', {
                     type: 'success',
                     text: this.$gettext('Die Playlisten wurden in die Veranstaltung kopiert.')
                 });
-                this.$store.dispatch('loadPlaylists');
+
+                if (is_default) {
+                    // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                    this.$store.dispatch('loadCourseConfig', this.cid);
+                }
+
+                this.$store.dispatch('loadPlaylists')
+                    .then(() => {
+                        if (is_default) {
+                            // Set default playlist active
+                            this.$store.dispatch('setPlaylist', this.defaultPlaylist);
+                        }
+                    });
+
                 this.$store.dispatch('setPlaylistsReload', true);
                 this.$emit('done');
             });
