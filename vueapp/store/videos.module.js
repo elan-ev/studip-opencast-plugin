@@ -225,13 +225,7 @@ const actions = {
     },
 
     async copyVideosToCourses(context, data) {
-        return ApiService.post('videos/' + data.cid + '/copy',
-            {
-                courses: data.courses,
-                tokens: data?.tokens ?? [],
-                type: data.type,
-            }
-        );
+        return ApiService.post('videos/' + data.cid + '/copy', {courses: data.courses});
     },
 
     async setVideoSort({dispatch, commit}, sort) {

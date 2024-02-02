@@ -36,19 +36,32 @@ class VideoCopyToCourse extends OpencastController
         try {
             // Managing playlists.
             $playlists = Playlists::findByCourse_id($course_id);
+            $default_playlist_seminar = PlaylistSeminars::getDefaultPlaylistSeminar($course_id);
 
             if (!empty($courses) && !empty($playlists)) {
                 foreach ($courses as $course) {
                     if ($perm->have_studip_perm('tutor', $course['id']) && $course['id'] !== $course_id) {
+                        $has_target_default_playlist = Helpers::checkCourseDefaultPlaylist($course['id']);
+
                         foreach ($playlists as $playlist) {
                             // Copy source playlist to target course
                             $new_playlist = $playlist->copy();
+
+                            $is_default = false;
+                            if (!$has_target_default_playlist
+                                && !empty($default_playlist_seminar)
+                                && $default_playlist_seminar->playlist_id === $playlist->id)
+                            {
+                                // Set default playlist of source course if target course has no default playlist
+                                $is_default = true;
+                            }
 
                             // Link playlist copy to target course
                             PlaylistSeminars::create([
                                 'playlist_id' => $new_playlist->id,
                                 'seminar_id'  => $course['id'],
-                                'visibility'  => 'visible'
+                                'visibility'  => 'visible',
+                                'is_default'  => $is_default,
                             ]);
                         }
                     }

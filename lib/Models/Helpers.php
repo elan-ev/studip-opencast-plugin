@@ -236,7 +236,7 @@ class Helpers
      */
     public static function checkCourseDefaultPlaylist($course_id)
     {
-        $default_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
+        $default_playlist = PlaylistSeminars::getDefaultPlaylistSeminar($course_id);
         return !empty($default_playlist);
     }
 

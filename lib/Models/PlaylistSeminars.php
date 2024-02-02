@@ -44,6 +44,17 @@ class PlaylistSeminars extends \SimpleORMap
     }
 
     /**
+     * Get default playlist seminar of passed course
+     *
+     * @param String $course_id
+     * @return PlaylistSeminars|null
+     */
+    public static function getDefaultPlaylistSeminar(String $course_id)
+    {
+        return self::findOneBySQL('seminar_id = ? AND is_default = 1', [$course_id]);
+    }
+
+    /**
      * Get the courses of the passed video
      *
      * @param Videos $video
