@@ -5,13 +5,11 @@
         </td>
 
         <td>
-            <router-link :to="{ name: 'playlist', params: { token: playlist.token } }">
-                {{ playlist.title }}
-                <span v-if="playlist?.default_course_tooltip" class="tooltip tooltip-important" data-tooltip title="" tabindex="0"
-                >
-                    <span class="tooltip-content" v-html="playlist.default_course_tooltip"></span>
-                </span>
-            </router-link>
+            {{ playlist.title }}
+            <span v-if="playlist?.default_course_tooltip" class="tooltip tooltip-important" data-tooltip title="" tabindex="0"
+            >
+                <span class="tooltip-content" v-html="playlist.default_course_tooltip"></span>
+            </span>
 
             <div class="oc--tags oc--tags-playlist">
             <Tag v-for="tag in playlist.tags" v-bind:key="tag.id" :tag="tag.tag" />
