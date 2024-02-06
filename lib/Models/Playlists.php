@@ -56,11 +56,28 @@ class Playlists extends UPMap
             ':course_id' => $course_id,
         ];
 
-        return self::getFilteredPlaylists([
+        $filtered_query = self::getFilteredPlaylistsQuery([
             'sql'    => $sql,
             'where'  => $where,
             'params' => $params,
         ], $filters);
+
+        $filtered_sql = $filtered_query['sql'];
+        $filtered_params = $filtered_query['params'];
+
+        // Count playlists
+        $stmt = \DBManager::get()->prepare("SELECT COUNT(*) FROM (SELECT oc_playlist_seminar.* FROM oc_playlist_seminar $filtered_sql) t");
+        $stmt->execute($filtered_params);
+        $count = $stmt->fetchColumn();
+
+        if ($filters->getLimit() != -1) {
+            $filtered_sql .= ' LIMIT '. $filters->getOffset() . ', '. $filters->getLimit();
+        }
+
+        return [
+            'playlists' => PlaylistSeminars::findBySQL($filtered_sql, $filtered_params),
+            'count'  => $count
+        ];
     }
 
     /**
@@ -70,7 +87,7 @@ class Playlists extends UPMap
      * @param String|null $user_id
      * @return array
      *  [
-     *      'playlists' => [Opencast\Models\PlaylistSeminars]
+     *      'playlists' => [Opencast\Models\Playlists]
      *      'count'     => int
      *  ];
      */
@@ -89,16 +106,33 @@ class Playlists extends UPMap
             ':user_id' => $user_id,
         ];
 
-        return self::getFilteredPlaylists([
+        $filtered_query = self::getFilteredPlaylistsQuery([
             'sql'    => $sql,
             'where'  => $where,
             'params' => $params,
         ], $filters);
+
+        $filtered_sql = $filtered_query['sql'];
+        $filtered_params = $filtered_query['params'];
+
+        // Count playlists
+        $stmt = \DBManager::get()->prepare("SELECT COUNT(*) FROM (SELECT oc_playlist.* FROM oc_playlist $filtered_sql) t");
+        $stmt->execute($filtered_params);
+        $count = $stmt->fetchColumn();
+
+        if ($filters->getLimit() != -1) {
+            $filtered_sql .= ' LIMIT '. $filters->getOffset() . ', '. $filters->getLimit();
+        }
+
+        return [
+            'playlists' => self::findBySQL($filtered_sql, $filtered_params),
+            'count'  => $count
+        ];
     }
 
 
     /**
-     * Add filters to the passed data and return playlists.
+     * Add filters to the passed data and return query with filters.
      *
      * @param array $query
      *    [
@@ -110,12 +144,11 @@ class Playlists extends UPMap
      *
      * @return array
      *    [
-     *        'videos' => [Opencast\Models\Playlist]|[Opencast\Models\PlaylistSeminars],
-     *        'sql'    => '...,
-     *        'count'  => int
+     *        'sql'    => '',
+     *        'params'  => ''
      *    ];
      */
-    private static function getFilteredPlaylists(array $query, Filter $filters)
+    private static function getFilteredPlaylistsQuery(array $query, Filter $filters)
     {
         global $perm;
 
@@ -232,17 +265,6 @@ class Playlists extends UPMap
 
         $sql .= ' GROUP BY oc_playlist.id';
 
-        // Count playlists
-        if (!$filters->getCourseId()) {
-            $count_sql = "SELECT COUNT(*) FROM (SELECT oc_playlist.* FROM oc_playlist $sql) t";
-        } else {
-            $count_sql = "SELECT COUNT(*) FROM (SELECT oc_playlist_seminar.* FROM oc_playlist_seminar $sql) t";
-        }
-
-        $stmt = \DBManager::get()->prepare($count_sql);
-        $stmt->execute($params);
-        $count = $stmt->fetchColumn();
-
         if ($order = $filters->getOrder()) {
             list($column, $direction) = explode('_', $order, 2);
             if (!empty($column) && !empty($direction) && in_array($column, $orderable_columns, true)) {
@@ -250,19 +272,9 @@ class Playlists extends UPMap
             }
         }
 
-        if ($filters->getLimit() != -1) {
-            $sql .= ' LIMIT '. $filters->getOffset() . ', '. $filters->getLimit();
-        }
-
-        $parsed_sql = 'SELECT * FROM oc_playlist '. $sql;
-        foreach ($params as $key => $value) {
-            $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
-        }
-
         return [
-            'playlists' => !$filters->getCourseId() ? self::findBySQL($sql, $params): PlaylistSeminars::findBySQL($sql, $params),
-            'sql'    => $parsed_sql,
-            'count'  => $count
+            'sql'    => $sql,
+            'params' => $params
         ];
     }
 
