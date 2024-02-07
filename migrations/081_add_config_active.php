@@ -22,7 +22,7 @@ class AddConfigActive extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec('ALTER TALBE `oc_config` DROP `active` ');
+        $db->exec('ALTER TABLE `oc_config` DROP `active` ');
 
         SimpleOrMap::expireTableScheme();
     }
