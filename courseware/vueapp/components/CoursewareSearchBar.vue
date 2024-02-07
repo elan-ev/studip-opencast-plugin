@@ -6,7 +6,7 @@
                     ref="searchbar"
                     v-on:keyup.enter="doSearch"
                     v-model="inputSearch"
-                    placeholder="Suche..."
+                    :placeholder="$gettext('Suche...')"
                     @input="doLiveSearch"
                 />
             </li>

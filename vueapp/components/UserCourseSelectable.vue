@@ -15,7 +15,7 @@
                     :selectable="option => !option.header"
                     :filterable="false"
                     @search="updateSearch"
-                    placeholder="Bitte einen Kurs auswählen"
+                    :placeholder="$gettext('Bitte einen Kurs auswählen')"
                 >
                     <template #list-header>
                         <li style="text-align: center">

@@ -2,12 +2,12 @@
     <ul class="widget-list widget-links sidebar-views">
         <li :class="active">
             <a href="#">
-                <translate>Tabellarische Ansicht</translate>
+                {{ $gettext('Tabellarische Ansicht') }}
             </a>
         </li>
         <li>
             <a href="#">
-                <translate>Kachelansicht</translate>
+                {{ $gettext('Kachelansicht') }}
             </a>
         </li>
     </ul>

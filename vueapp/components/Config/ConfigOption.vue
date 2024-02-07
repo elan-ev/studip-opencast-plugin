@@ -17,9 +17,7 @@
                         @change='setValue(true)'
                         :required="setting.required"
                     >
-                    <translate>
-                        Ja
-                    </translate>
+                    {{ $gettext('Ja') }}
                 </label>
 
                 <label>
@@ -29,9 +27,7 @@
                         @change='setValue(false)'
                         :required="setting.required"
                     >
-                    <translate>
-                        Nein
-                    </translate>
+                    {{ $gettext('Nein') }}
                 </label>
             </section>
         </span>

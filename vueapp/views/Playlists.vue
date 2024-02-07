@@ -5,9 +5,7 @@
         />
 
         <MessageBox type="info" v-if="Object.keys(playlists).length === 0 && !addPlaylist">
-            <translate>
-                Es gibt bisher keine Wiedergabelisten.
-            </translate>
+            {{ $gettext('Es gibt bisher keine Wiedergabelisten.') }}
         </MessageBox>
 
         <PlaylistAddNewCard v-if="addPlaylist"

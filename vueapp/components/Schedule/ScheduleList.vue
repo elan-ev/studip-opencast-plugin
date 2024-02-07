@@ -97,9 +97,7 @@
             </tfoot>
         </table>
         <MessageBox v-else-if="!schedule_loading" type="info">
-            <translate>
-                Es gibt bisher keine Termine.
-            </translate>
+            {{ $gettext('Es gibt bisher keine Termine.') }}
         </MessageBox>
          <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
     </div>
