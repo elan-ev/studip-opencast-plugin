@@ -73,7 +73,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userCourses', 'cid', 'courseVideosToCopy']),
+        ...mapGetters(['userCourses', 'cid']),
 
         user_courses_filtered() {
             let userCoursesFiltered = {};
@@ -112,7 +112,6 @@ export default {
             let data = {
                 cid: this.cid,
                 courses: this.courses,
-                tokens: this.courseVideosToCopy
             };
             await this.$store.dispatch('copyVideosToCourses', data)
             .then(({ data }) => {
