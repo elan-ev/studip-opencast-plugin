@@ -60,7 +60,7 @@
                     </th>
                     <th @click="setSort('author')" class="responsive-hidden" :class="sortClasses('author')">
                         <a href="#" @click.prevent>
-                            {{ $gettext('Autor/-in') }}
+                            {{ $gettext('Vortragende') }}
                         </a>
                     </th>
                     <th></th>

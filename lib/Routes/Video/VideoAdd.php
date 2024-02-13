@@ -43,7 +43,7 @@ class VideoAdd extends OpencastController
                 'duration'    => $event['duration'],
                 'state'       => $event['state'],
 		        'created'     => date('Y-m-d H:i:s'),
-		        'author'      => get_fullname($user->id),
+		        'author'      => $event['author'],
                 'available'   => true
             ]);
             if (!$video->token) {

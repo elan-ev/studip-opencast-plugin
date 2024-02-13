@@ -67,6 +67,14 @@
 
                         <label>
                             <span>
+                                {{ $gettext('Vortragende') }}
+                            </span>
+                            <input type="text" maxlength="255" id="presenter" name="presenter"
+                                   v-model="upload.creator">
+                        </label>
+
+                        <label>
+                            <span>
                                 {{ $gettext('Mitwirkende') }}
                             </span>
                             <input type="text" maxlength="255" id="contributor" name="contributor"
@@ -424,7 +432,8 @@ export default {
                         'config_id': view.selectedServer.id,
                         'title': uploadData.title,
                         'description': uploadData.description,
-                        'state': 'running'
+                        'state': 'running',
+                        'author': uploadData.creator
                     })
                     .then(({ data }) => {
                         this.$store.dispatch('addMessage', data.message);

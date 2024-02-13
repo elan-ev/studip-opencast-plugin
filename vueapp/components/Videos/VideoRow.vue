@@ -405,7 +405,7 @@ export default {
         getInfoText() {
             var txt = '';
             if (this.event.author) {
-                txt += '<div>Author: ' + this.event.author + '</div>';
+                txt += '<div>Vortragende: ' + this.event.author + '</div>';
             }
             if (this.event.contributors) {
                 txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';

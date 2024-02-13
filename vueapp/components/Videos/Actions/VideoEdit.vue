@@ -34,6 +34,13 @@
 
                         <label>
                             <span>
+                                {{ $gettext('Vortragende') }}
+                            </span>
+                            <input type="text" maxlength="255" name="presenter" v-model="event.author">
+                        </label>
+
+                        <label>
+                            <span>
                                 {{ $gettext('Mitwirkende') }}
                             </span>
                             <input type="text" maxlength="255" name="contributor" v-model="event.contributors">
