@@ -433,7 +433,8 @@ export default {
                         'title': uploadData.title,
                         'description': uploadData.description,
                         'state': 'running',
-                        'author': uploadData.creator
+                        'author': uploadData.creator,
+                        'contributors': uploadData.contributor
                     })
                     .then(({ data }) => {
                         this.$store.dispatch('addMessage', data.message);
