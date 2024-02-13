@@ -107,7 +107,7 @@ class OpencastWorker extends CronJob
                     $video->duration     = $event->duration;
 
                     $video->created      = date('Y-m-d H:i:s', strtotime($event->created));
-                    $video->author       = $event->creator;
+                    $video->author       = implode(', ', $event->presenter);
                     $video->contributors = implode(', ', $event->contributor);
 
                     $video->store();

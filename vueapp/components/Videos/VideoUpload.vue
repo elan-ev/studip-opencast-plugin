@@ -232,8 +232,8 @@ export default {
             selectedWorkflow: false,
             fileUploadError: false,
             upload: {
-                creator: this.currentUser.username,
-                contributor: this.currentUser.fullname,
+                creator: this.currentUser.fullname,
+                contributor: '',
                 playlist_token: null,
                 recordDate: format(new Date(), "yyyy-MM-dd'T'HH:mm", { locale: de}),
                 subject: this.$gettext('Medienupload, Stud.IP')
