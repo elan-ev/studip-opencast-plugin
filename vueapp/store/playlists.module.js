@@ -184,10 +184,18 @@ const actions = {
     },
 
     async copyPlaylistsToCourse(context, data) {
-        for (const playlist of data.playlists) {
+        for (const [index, playlist] of data.playlists.entries()) {
+            let is_default = false;
+
+            // Set first playlist as default
+            if (data?.is_default === true && index === 0) {
+                is_default = true;
+            }
+
             await context.dispatch('copyPlaylist', {
                 course: data.course,
                 token: playlist,
+                is_default: is_default,
             });
         }
     },
@@ -281,6 +289,7 @@ const actions = {
 
         if (params.course !== undefined) {
             data.course = params.course;
+            data.is_default = params.is_default ?? false;
         }
 
         return ApiService.post('playlists/' + params.token + '/copy', data);

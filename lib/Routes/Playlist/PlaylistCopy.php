@@ -2,6 +2,7 @@
 
 namespace Opencast\Routes\Playlist;
 
+use Opencast\Models\Helpers;
 use Opencast\Models\Playlists;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -24,6 +25,12 @@ class PlaylistCopy extends OpencastController
 
         $source_playlist = Playlists::findOneByToken($args['token']);
         $destination_course = $json['course'];
+
+        $is_default = 0;
+        // Make sure the default playlist is eligible.
+        if (isset($json['is_default']) && (bool) $json['is_default']) {
+            $is_default = 1;
+        }
 
         // Check playlist permissions
         $perm_playlist = $source_playlist->getUserPerm();
@@ -48,8 +55,14 @@ class PlaylistCopy extends OpencastController
                 PlaylistSeminars::create([
                     'playlist_id' => $new_playlist->id,
                     'seminar_id'  => $destination_course,
-                    'visibility'  => 'visible'
+                    'visibility'  => 'visible',
+                    'is_default'  => $is_default,
                 ]);
+
+                // Make sure there is only one default playlist for a course at a time.
+                if ((bool) $is_default) {
+                    Helpers::ensureCourseHasOneDefaultPlaylist($destination_course, $new_playlist->id);
+                }
             }
 
             $message = [

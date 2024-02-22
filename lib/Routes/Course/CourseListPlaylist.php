@@ -42,20 +42,17 @@ class CourseListPlaylist extends OpencastController
         // find all playlists of the seminar
         $seminar_playlists = Playlists::getCoursePlaylists($course_id, new Filter($params), $user->id);
         $playlist_list = [];
-        // Take default out, and then put it as the first item in array.
-        $default_playlists = null;
+
         foreach ($seminar_playlists['playlists'] as $seminar_playlist) {
             $data = $seminar_playlist->toSanitizedArray();
 
             if ((bool) $seminar_playlist->is_default) {
-                $default_playlists = $data;
+                // Here, we put default at first.
+                array_unshift($playlist_list, $data);
             } else {
                 $playlist_list[] = $data;
             }
         }
-
-        // Here, we put default at first.
-        $playlist_list = array_merge([$default_playlists], $playlist_list);
 
         $courses_ids = PlaylistSeminars::getCoursePlaylistsCourses($course_id);
 
