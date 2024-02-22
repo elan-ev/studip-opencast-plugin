@@ -16,6 +16,7 @@
                     <label>
                         <span class="required">Titel</span>
                         <input type="text"
+                                ref="autofocus"
                                 maxlength="255"
                                 :placeholder="$gettext('Titel der Wiedergabeliste')"
                                 v-model="playlist.title"
@@ -74,6 +75,10 @@ export default {
             this.$store.dispatch('addPlaylist', this.playlist);
             this.$emit('done');
         }
-    }
+    },
+
+    mounted() {
+        this.$refs.autofocus.focus();
+    },
 }
 </script>
