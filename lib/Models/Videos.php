@@ -220,7 +220,6 @@ class Videos extends UPMap
      * @return array
      *    [
      *        'videos' => [Opencast\Models\Videos],
-     *        'sql'    => '...,
      *        'count'  => 123
      *    ];
      */
@@ -405,14 +404,8 @@ class Videos extends UPMap
             $sql   .= ' LIMIT '. $filters->getOffset() .', '. $filters->getLimit();
         }
 
-        $parsed_sql = 'SELECT * FROM oc_video '. $sql;
-        foreach ($params as $key => $value) {
-            $parsed_sql = str_replace($key, "'". $value ."'", $parsed_sql);
-        }
-
         return [
             'videos' => self::findBySQL($sql, $params),
-            'sql'    => $parsed_sql,
             'count'  => $count
         ];
     }

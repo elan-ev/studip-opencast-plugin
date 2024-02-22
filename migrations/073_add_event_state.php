@@ -22,7 +22,7 @@ class AddEventState extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec('ALTER TALBE `oc_video` DROP `state` ');
+        $db->exec('ALTER TABLE `oc_video` DROP `state` ');
 
         SimpleOrMap::expireTableScheme();
     }

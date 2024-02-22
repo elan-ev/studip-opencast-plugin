@@ -64,7 +64,6 @@ class PlaylistVideoList extends OpencastController
         return $this->createResponse([
             'videos' => $ret,
             'count'  => $videos['count'],
-            'sql'    => $videos['sql']
         ], $response);
     }
 }
