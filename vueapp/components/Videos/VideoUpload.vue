@@ -433,7 +433,7 @@ export default {
                         'title': uploadData.title,
                         'description': uploadData.description,
                         'state': 'running',
-                        'author': uploadData.creator,
+                        'presenters': uploadData.creator,
                         'contributors': uploadData.contributor
                     })
                     .then(({ data }) => {

@@ -115,8 +115,8 @@
         </td>
         <td v-else></td>
 
-        <td class="oc--author responsive-hidden">
-            {{ event.author ?? '' }}
+        <td class="oc--presenters responsive-hidden">
+            {{ event.presenters ?? '' }}
         </td>
 
         <td class="oc--tooltips">
@@ -404,8 +404,8 @@ export default {
 
         getInfoText() {
             var txt = '';
-            if (this.event.author) {
-                txt += '<div>Vortragende: ' + this.event.author + '</div>';
+            if (this.event.presenters) {
+                txt += '<div>Vortragende: ' + this.event.presenters + '</div>';
             }
             if (this.event.contributors) {
                 txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';

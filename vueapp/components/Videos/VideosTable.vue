@@ -58,7 +58,7 @@
                             {{ $gettext('Datum') }}
                         </a>
                     </th>
-                    <th @click="setSort('author')" class="responsive-hidden" :class="sortClasses('author')">
+                    <th @click="setSort('presenters')" class="responsive-hidden" :class="sortClasses('presenters')">
                         <a href="#" @click.prevent>
                             {{ $gettext('Vortragende') }}
                         </a>

@@ -43,7 +43,7 @@ class VideoAdd extends OpencastController
                 'duration'     => $event['duration'],
                 'state'        => $event['state'],
 		        'created'      => date('Y-m-d H:i:s'),
-		        'author'       => $event['author'],
+		        'presenters'   => $event['presenters'],
                 'contributors' => $event['contributors'],
                 'available'    => true
             ]);

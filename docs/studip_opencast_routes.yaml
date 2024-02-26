@@ -1227,7 +1227,7 @@ components:
         created:
           type: string
           format: date-time
-        author:
+        presenters:
           type: string
         contributors:
           type: string

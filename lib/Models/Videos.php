@@ -599,7 +599,7 @@ class Videos extends UPMap
     public function updateMetadata($event)
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
-        $allowed_metadata_fields = ['title', 'author', 'contributors', 'subject', 'language', 'description', 'startDate'];
+        $allowed_metadata_fields = ['title', 'presenters', 'contributors', 'subject', 'language', 'description', 'startDate'];
         $metadata = [];
 
         foreach ($allowed_metadata_fields as $field_name) {
@@ -610,7 +610,7 @@ class Videos extends UPMap
                     $id = 'subjects';
                     $value = [$value];
                 }
-                if ($field_name == 'author') {
+                if ($field_name == 'presenters') {
                     $id = 'creator';
                     $value = [$value];
                 }
