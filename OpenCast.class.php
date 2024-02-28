@@ -200,7 +200,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         // We need subnavs in order for responsive view to work properly.
         $main->addSubNavigation('videos', new Navigation(
             $this->_('Videos'),
-            PluginEngine::getURL($this, ['target_view' => 'videos'], 'course#/course/videos'),
+            PluginEngine::getURL($this, ['target_view' => 'videos'], 'course#/course/videos')
         ));
 
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) &&
@@ -301,7 +301,9 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
             $appFactory = new AppFactory();
             $app = $appFactory->makeApp($this);
-            $app->group('/opencast/api', new RouteMap($app));
+            $app->setBasePath(rtrim(PluginEngine::getLink($this, [], null, true), '/'));
+            $app->group('/api', RouteMap::class);
+
             $app->run();
         } else {
             $css = VersionHelper::get()->getVersionSpecificStylesheet();

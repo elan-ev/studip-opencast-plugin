@@ -14,7 +14,7 @@ class DiscoveryIndex extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $routes = $this->container->get('router')->getRoutes();
+        $routes = $this->container->get(\Slim\App::class)->getRouteCollector()->getRoutes();
 
         foreach ($routes as $id => $route) {
             $data[] = [

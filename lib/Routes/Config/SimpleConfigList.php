@@ -65,7 +65,7 @@ class SimpleConfigList extends OpencastController
     {
         $config = [];
 
-        foreach ($this->container['opencast']['global_config_options'] as $option) {
+        foreach ($this->container->get('opencast')['global_config_options'] as $option) {
             if (in_array($option, self::BLACKLISTED_CONFIG_OPTIONS) !== false) {
                 continue;
             }

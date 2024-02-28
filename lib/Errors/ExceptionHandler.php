@@ -2,9 +2,11 @@
 
 namespace Opencast\Errors;
 
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
 use Slim\Container;
+use Slim\Psr7\Response;
 
 /**
  * Dieser spezielle Exception Handler wird in der Slim-Applikation
@@ -13,38 +15,23 @@ use Slim\Container;
  */
 class ExceptionHandler
 {
-    private $container;
-
-    /**
-     * Der Konstruktor...
-     *
-     * @param ContainerInterface $container der Dependency Container,
-     *                                      der in der Slim-Applikation verwendet wird
-     * @param callable           $previous  der zuvor installierte `Error
-     *                                      Handler` als Fallback
-     */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
     /**
      * Diese Methode wird aufgerufen, sobald es zu einer Exception
      * kam, und generiert eine entsprechende JSON-API-spezifische Response.
-     *
-     * @param Request    $request   der eingehende Request
-     * @param Response   $response  die vorbereitete ausgehende Response
-     * @param \Exception $exception die aufgetretene Exception
-     *
-     * @return Response die JSON-API-kompatible Response
      */
-    public function __invoke(Request $request, Response $response, \Exception $exception)
-    {
+    public function __invoke(
+        Request $request,
+        \Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails,
+        ?LoggerInterface $logger = null
+    ): Response {
         if ($exception instanceof Error) {
             $httpCode = $exception->getCode();
             $errors = new ErrorCollection();
 
-            if (!$this->container['settings']['displayErrorDetails']) {
+            if (!$displayErrorDetails) {
                 $exception->clearDetails();
             }
 
@@ -55,7 +42,7 @@ class ExceptionHandler
 
             $message = $exception->getMessage();
 
-            if ($this->container['settings']['displayErrorDetails']) {
+            if ($displayErrorDetails) {
                 $details = (string) $exception;
             }
 
@@ -63,13 +50,14 @@ class ExceptionHandler
             $errors->add(new Error($message, $httpCode, $details));
         }
 
+        $response = new Response();
+
         if (!empty($errors)) {
-            $response = $response
-                      ->withHeader(
-                          'Content-Type',
-                          'application/vnd.api+json'
-                      )
-                      ->write($errors->json());
+            $response->getBody()->write($errors->json());
+            $response = $response->withHeader(
+                "Content-Type",
+                "application/vnd.api+json"
+            );
         }
 
         return $response->withStatus($httpCode);

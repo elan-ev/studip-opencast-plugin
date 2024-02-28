@@ -36,8 +36,6 @@ class AdminPerms
      */
     public function __invoke(Request $request, Response $response, $next)
     {
-        $container = $this->container;
-
         if (!$GLOBALS['perm']->have_perm('root')) {
             throw new Error('Access Denied', 403);
         }

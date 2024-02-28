@@ -18,20 +18,24 @@ class UserShow extends OpencastController
         global $user, $perm;
 
         $data = [
-            'id'       => $user->id,
-            'username' => $user->username,
-            'fullname' => get_fullname($user->id),
-            'status'   => $user->perms,
-            'admin'    => \RolePersistence::isAssignedRole(
-                $GLOBALS['user']->user_id,
-                $this->container['roles']['admin']),
-            'can_edit' => $perm->have_perm('tutor')
+            "id" => $user->id,
+            "username" => $user->username,
+            "fullname" => get_fullname($user->id),
+            "status" => $user->perms,
+            "admin" => \RolePersistence::isAssignedRole(
+                $GLOBALS["user"]->user_id,
+                $this->container->get("roles")["admin"]
+            ),
+            "can_edit" => $perm->have_perm("tutor"),
         ];
 
-        return $this->createResponse([
-            'type' => 'user',
-            'id'   => $user->id,
-            'data' => $data
-        ], $response);
+        return $this->createResponse(
+            [
+                "type" => "user",
+                "id" => $user->id,
+                "data" => $data,
+            ],
+            $response
+        );
     }
 }
