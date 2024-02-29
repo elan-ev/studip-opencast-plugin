@@ -11,7 +11,14 @@ class UploadService {
         this.service_url = service_url;
     }
 
-    uploadACL(mediaPackage) {
+    /**
+     * Provides upload ACL
+     *
+     * @param mediaPackage
+     * @param uploader LTI information of uploader used to permit read and write access
+     * @returns {string} upload ACL
+     */
+    uploadACL(mediaPackage, uploader) {
         const xmlDoc = $.parseXML(mediaPackage);
         let episode_id = xmlDoc.documentElement.id;
 
@@ -70,6 +77,42 @@ class UploadService {
                 <Condition>
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">STUDIP_${episode_id}_write</AttributeValue>
+                        <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                    </Apply>
+                </Condition>
+            </Rule>
+            <Rule RuleId="user_read_Permit" Effect="Permit">
+                <Target>
+                    <Actions>
+                        <Action>
+                            <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</AttributeValue>
+                                <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                            </ActionMatch>
+                        </Action>
+                    </Actions>
+                </Target>
+                <Condition>
+                  <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${uploader.userRole}</AttributeValue>
+                    <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                  </Apply>
+                </Condition>
+            </Rule>
+            <Rule RuleId="user_write_Permit" Effect="Permit">
+                <Target>
+                    <Actions>
+                        <Action>
+                            <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">write</AttributeValue>
+                                <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
+                            </ActionMatch>
+                        </Action>
+                    </Actions>
+                </Target>
+                <Condition>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${uploader.userRole}</AttributeValue>
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
@@ -298,7 +341,17 @@ class UploadService {
         return files;
     }
 
-    upload(files, terms, workflowId, options) {
+    /**
+     * Upload video to Opencast
+     *
+     * @param files files to be uploaded
+     * @param terms DCC terms
+     * @param workflowId workflow for upload
+     * @param uploader LTI information of uploader
+     * @param options handler
+     * @returns {Promise<T | void>}
+     */
+    upload(files, terms, workflowId, uploader, options) {
         this.fixFilenames(files);
         let obj = this;
         let onProgress = options.uploadProgress;
@@ -310,7 +363,7 @@ class UploadService {
                 return obj.addDCCCatalog(data, terms)
             })
             .then(function ({ data }) {
-                let acl = obj.uploadACL(data);
+                let acl = obj.uploadACL(data, uploader);
                 return obj.addACL(data, acl)
             })
             .then(function ({ data }) {
