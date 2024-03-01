@@ -2,8 +2,9 @@
 
 namespace Opencast\Middlewares;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 
 class TokenAuthentication
 {
@@ -24,25 +25,16 @@ class TokenAuthentication
 
     /**
      * Hier muss die Autorisierung implementiert werden.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request  das
-     *                                                           PSR-7 Request-Objekt
-     * @param \Psr\Http\Message\ResponseInterface      $response das PSR-7
-     *                                                           Response-Objekt
-     * @param callable                                 $next     das nächste Middleware-Callable
-     *
-     * @return \Psr\Http\Message\ResponseInterface das neue Response-Objekt
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function __invoke(Request $request, Response $response, $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
         $token = $request->getQueryParams()['token'];
 
         if (!empty($token) && $token == $this->api_token) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
+        $response = new Response();
         return $response->withStatus(401);
     }
 }
