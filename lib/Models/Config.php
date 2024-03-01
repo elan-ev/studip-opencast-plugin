@@ -253,7 +253,7 @@ class Config extends \SimpleOrMap
                     foreach($services as $service_url => $service_type) {
                         if (in_array(
                                 strtolower($service_type),
-                                $container['opencast']['services']
+                                $container->get('opencast')['services']
                             ) !== false
                         ) {
                             Endpoints::setEndpoint($this->id, $service_url, $service_type);

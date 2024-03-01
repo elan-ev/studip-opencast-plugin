@@ -2,6 +2,8 @@
 
 namespace Opencast;
 
+use DI\Container;
+use DI\ContainerBuilder;
 use Slim\App;
 use StudipPlugin;
 use Opencast\Middlewares\RemoveTrailingSlashes;
@@ -34,33 +36,36 @@ class AppFactory
      *
      * @return \Slim\App die erstellte Slim-Applikation
      */
-    public function makeApp(StudipPlugin $plugin)
+    public function makeApp(StudipPlugin $plugin): App
     {
-        $app = new App();
-        $app = $this->configureContainer($app, $plugin);
+        $container = $this->configureContainer($plugin);
+        $app = \Slim\Factory\AppFactory::createFromContainer($container);
+        $container->set(App::class, $app);
+
         $app->add(new RemoveTrailingSlashes());
+
+        $displayErrorDetails = defined('\\Studip\\ENV') && \Studip\ENV === 'development';
+        $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, true, true);
+        $errorMiddleware->setDefaultErrorHandler(Errors\ExceptionHandler::class);
 
         return $app;
     }
 
     // hier wird der Container konfiguriert
-    private function configureContainer($app, $plugin)
+    private function configureContainer($plugin): Container
     {
-        $container = $app->getContainer();
-        $container['plugin'] = $plugin;
-        $container['settings']['displayErrorDetails'] = defined('\\Studip\\ENV') && \Studip\ENV === 'development';
+        $builder = new ContainerBuilder();
+        $builder->addDefinitions([
+            'plugin' => $plugin,
+        ]);
+        $builder->addDefinitions(
+            __DIR__ . '/Providers/StudipConfig.php',
+            __DIR__ . '/Providers/OpencastConstants.php',
+            __DIR__ . '/Providers/StudipServices.php',
+            __DIR__ . '/Providers/PluginRoles.php',
+            __DIR__ . '/Providers/Tokens.php'
+        );
 
-        // error handler
-        $container['errorHandler'] = function ($container) {
-            return new Errors\ExceptionHandler($container);
-        };
-
-        $container->register(new Providers\StudipConfig());
-        $container->register(new Providers\OpencastConstants());
-        $container->register(new Providers\StudipServices());
-        $container->register(new Providers\PluginRoles());
-        $container->register(new Providers\Tokens());
-
-        return $app;
+        return $builder->build();
     }
 }

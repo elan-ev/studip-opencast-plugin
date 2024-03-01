@@ -2,8 +2,9 @@
 
 namespace Opencast\Middlewares;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 
 class Authentication
 {
@@ -31,18 +32,8 @@ class Authentication
 
     /**
      * Hier muss die Autorisierung implementiert werden.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request  das
-     *                                                           PSR-7 Request-Objekt
-     * @param \Psr\Http\Message\ResponseInterface      $response das PSR-7
-     *                                                           Response-Objekt
-     * @param callable                                 $next     das nächste Middleware-Callable
-     *
-     * @return \Psr\Http\Message\ResponseInterface das neue Response-Objekt
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function __invoke(Request $request, Response $response, $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
         $guards = [
             new Auth\SessionStrategy(),
@@ -53,16 +44,17 @@ class Authentication
             if ($guard->check()) {
                 $request = $this->provideUser($request, $guard->user());
 
-                return $next($request, $response);
+                return $handler->handle($request);
             }
         }
 
-        return $this->generateChallenges($response, $guards);
+        return $this->generateChallenges($guards);
     }
 
     // according to RFC 2616
-    private function generateChallenges(Response $response, array $guards)
+    private function generateChallenges(array $guards)
     {
+        $response = new Response();
         $response = $response->withStatus(401);
 
         foreach ($guards as $guard) {

@@ -32,11 +32,11 @@ Trait OpencastTrait
 
     public function createResponse($data, $response)
     {
+        $response->getBody()->write(json_encode($data));
         return $response->withHeader(
             'Content-Type',
             'application/json'
-        )
-        ->write(json_encode($data));
+        );
     }
 
     public function createEmptyResponse($response)

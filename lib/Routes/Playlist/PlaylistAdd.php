@@ -28,7 +28,7 @@ class PlaylistAdd extends OpencastController
         $playlist = new Playlists;
 
         $playlist->setData($json);
-        $playlist->token = $this->container['token'];
+        $playlist->token = $this->container->get('token');
         $playlist->store();
 
         // set current user as owner for this playlist
