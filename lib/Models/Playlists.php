@@ -160,7 +160,7 @@ class Playlists extends UPMap
         $courses   = [];
         $lecturers = [];
         $orderable_columns = [
-            'mkdate', 'chdate', 'id', 'title', 'author'
+            'mkdate', 'chdate', 'id', 'title', 'presenters'
         ];
 
         // Apply filters

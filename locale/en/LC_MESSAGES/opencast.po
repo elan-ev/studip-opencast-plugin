@@ -218,8 +218,8 @@ msgid "Auswirkungen der Videoänderungen"
 msgstr "Effects of the video changes"
 
 #: vueapp/components/Videos/VideosTable.vue:147
-msgid "Autor/-in"
-msgstr "Author"
+msgid "Vortragende"
+msgstr "Presenters"
 
 #: vueapp/components/Config/EditServer.vue:56
 msgid "Basis URL zur Opencast Installation"
@@ -2806,8 +2806,8 @@ msgstr "Upcoming live events"
 #~ "Find a series in the Opencast system that you want to link to the current "
 #~ "course."
 
-#~ msgid "Autor : "
-#~ msgstr "Author:"
+#~ msgid "Vortragende : "
+#~ msgstr "Presenters:"
 
 #~ msgid "Beschreibung : "
 #~ msgstr "Description:"

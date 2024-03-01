@@ -23,7 +23,7 @@
                             </a>
                         </th>
                         <th data-sort="false" class="responsive-hidden">
-                            {{ $gettext('Autor/-in') }}
+                            {{ $gettext('Vortragende') }}
                         </th>
                     </tr>
                 </thead>

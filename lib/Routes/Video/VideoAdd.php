@@ -36,15 +36,16 @@ class VideoAdd extends OpencastController
         else {
             $video = new Videos;
             $video->setData([
-                'episode'     => $episode_id,
-                'config_id'   => $event['config_id'],
-                'title'       => $event['title'],
-                'description' => $event['description'],
-                'duration'    => $event['duration'],
-                'state'       => $event['state'],
-		        'created'     => date('Y-m-d H:i:s'),
-		        'author'      => get_fullname($user->id),
-                'available'   => true
+                'episode'      => $episode_id,
+                'config_id'    => $event['config_id'],
+                'title'        => $event['title'],
+                'description'  => $event['description'],
+                'duration'     => $event['duration'],
+                'state'        => $event['state'],
+		        'created'      => date('Y-m-d H:i:s'),
+		        'presenters'   => $event['presenters'],
+                'contributors' => $event['contributors'],
+                'available'    => true
             ]);
             if (!$video->token) {
                 $video->token = bin2hex(random_bytes(8));

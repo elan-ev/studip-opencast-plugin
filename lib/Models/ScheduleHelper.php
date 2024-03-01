@@ -1109,7 +1109,7 @@ class ScheduleHelper
                 'duration'      => $event->duration,
                 'state'         => 'running',
 		        'created'       => date('Y-m-d H:i:s', strtotime($event->created)),
-		        'author'        => $event->creator,
+		        'presenters'    => $event->creator,
                 'available'     => true,
                 'publication'   => $publication,
                 'is_livestream' => true,

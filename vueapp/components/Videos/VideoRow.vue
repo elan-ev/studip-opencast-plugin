@@ -115,8 +115,8 @@
         </td>
         <td v-else></td>
 
-        <td class="oc--author responsive-hidden">
-            {{ event.author ?? '' }}
+        <td class="oc--presenters responsive-hidden">
+            {{ event.presenters ?? '' }}
         </td>
 
         <td class="oc--tooltips">
@@ -396,7 +396,7 @@ export default {
             var txt = '';
             if (this.event.perms !== undefined) {
                 this.event.perms.forEach(perm => {
-                    txt += '<div>' + perm.fullname + ': ' + this.$filters.permname(perm.perm, this.$gettext) + '</div>'
+                    txt += '<div>' + this.$filters.permname(perm.perm, this.$gettext) + ': ' + perm.fullname + '</div>'
                 });
             }
             return txt;
@@ -404,8 +404,8 @@ export default {
 
         getInfoText() {
             var txt = '';
-            if (this.event.author) {
-                txt += '<div>Author: ' + this.event.author + '</div>';
+            if (this.event.presenters) {
+                txt += '<div>Vortragende: ' + this.event.presenters + '</div>';
             }
             if (this.event.contributors) {
                 txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';
