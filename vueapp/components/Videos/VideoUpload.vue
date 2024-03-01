@@ -256,11 +256,12 @@ export default {
 
     computed: {
         ...mapGetters({
-            'config'       : 'simple_config_list',
-            'course_config': 'course_config',
-            'cid'          : 'cid',
-            'playlist'     : 'playlist',
-            'playlists'    : 'playlists'
+            'config'        : 'simple_config_list',
+            'course_config' : 'course_config',
+            'cid'           : 'cid',
+            'playlist'      : 'playlist',
+            'playlists'     : 'playlists',
+            'currentLTIUser': 'currentLTIUser'
         }),
 
         upload_playlists() {
@@ -407,9 +408,12 @@ export default {
                 })
             }
 
+            // Opencast LTI info of current user
+            let ltiUploader = this.currentLTIUser[this.selectedServer['id']];
+
             let view = this;
 
-            this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, {
+            this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, ltiUploader, {
                 uploadProgress: (track, loaded, total) => {
                     view.uploadProgress = {
                         flavor: track.flavor,

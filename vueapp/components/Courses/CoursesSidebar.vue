@@ -295,7 +295,6 @@ export default {
             return window.STUDIP.URLHelper.getURL(
                 server.studio, {
                     'upload.seriesId'  : this.course_config['series']['series_id'],
-                    'upload.acl'       : false,
                     'upload.workflowId': this.getWorkflow(config_id),
                     'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + this.cid),
                     'return.label'     : 'Stud.IP'

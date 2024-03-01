@@ -12,7 +12,8 @@ const state = {
     axios_running: false,
     userCourses: [],
     userList: [],
-    isLTIAuthenticated: {}
+    isLTIAuthenticated: {},
+    currentLTIUser: {}
 }
 
 const getters = {
@@ -48,6 +49,9 @@ const getters = {
     },
     isLTIAuthenticated(state) {
         return state.isLTIAuthenticated;
+    },
+    currentLTIUser(state) {
+        return state.currentLTIUser;
     }
 }
 
@@ -134,8 +138,10 @@ const actions = {
         return ApiService.put('courses/' + data.cid + '/upload/' + data.upload);
     },
 
-    async checkLTIAuthentication({ commit }, server)
+    async checkLTIAuthentication({ commit, state, dispatch }, server)
     {
+        let succeeded = false;
+
         try {
             const response = await axios({
                 method: 'GET',
@@ -148,20 +154,63 @@ const actions = {
             });
     
             if (response.status === 200) {
-                commit('setLTIStatus', {
-                    server: server.id,
-                    authenticated: true
-                });
-            } else {
-                commit('setLTIStatus', {
-                    server: server.id,
-                    authenticated: false
-                });
+                // Get LTI user info
+                await dispatch('loadLTIUser', server);
+
+                if (state.currentLTIUser[server.id]) {
+                    // LTI session and LTI user are loaded successfully
+                    commit('setLTIStatus', {
+                        server: server.id,
+                        authenticated: true
+                    });
+
+                    succeeded = true;
+                }
             }
         } catch (error) {
+            succeeded = false;
+        }
+
+        if (!succeeded) {
+            // Clear lti status and user
+            commit('setCurrentLTIUser', {
+                server: server.id,
+                authenticated: null
+            });
             commit('setLTIStatus', {
                 server: server.id,
                 authenticated: false
+            });
+        }
+    },
+
+    async loadLTIUser({ commit }, server) {
+        try {
+            const response = await axios({
+                method: 'GET',
+                url: server.name + "/info/me.json",
+                crossDomain: true,
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                }
+            });
+
+            if (response.status === 200) {
+                commit('setCurrentLTIUser', {
+                    server: server.id,
+                    user: response.data
+                });
+            } else {
+                commit('setCurrentLTIUser', {
+                    server: server.id,
+                    user: null
+                });
+            }
+        } catch (error) {
+            commit('setCurrentLTIUser', {
+                server: server.id,
+                user: null
             });
         }
     }
@@ -210,6 +259,10 @@ const mutations = {
 
     setLTIStatus(state, params) {
         state.isLTIAuthenticated[params.server] = params.authenticated;
+    },
+
+    setCurrentLTIUser(state, params) {
+        state.currentLTIUser[params.server] = params.user;
     }
 }
 
