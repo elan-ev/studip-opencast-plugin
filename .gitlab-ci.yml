@@ -16,6 +16,5 @@ stage_deploy:
     - nvm install stable
     - npm run zip
   script:
-    - echo "Variables are ${NEXTCLOUD_SHARE_ID} and ${NEXTCLOUD_SHARE_PW} and ${NEXTCLOUD_SHARE_URL}"
     - "curl -k -T `ls build/*.zip` -u \"${NEXTCLOUD_SHARE_ID}:${NEXTCLOUD_SHARE_PW}\" -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/Opencast-`date '+%Y-%m-%d'`.zip"
 
