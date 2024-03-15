@@ -15,8 +15,6 @@ stage_deploy:
     - '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
     - nvm install stable
     - npm run zip
-    - ls -lah
-    - ls -lah build
   script:
-    - "curl -k -T build/`ls build/*.zip` -u '$NEXTCLOUD_SHARE_ID:$NEXTCLOUD_SHARE_PW' -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/`ls build/*.zip`"
+    - "curl -k -T`ls *.zip` -u '$NEXTCLOUD_SHARE_ID:$NEXTCLOUD_SHARE_PW' -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/`ls *.zip`"
 
