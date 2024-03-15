@@ -16,5 +16,5 @@ stage_deploy:
     - nvm install stable
     - npm run zip
   script:
-    - "curl -k -T`ls *.zip` -u '$NEXTCLOUD_SHARE_ID:$NEXTCLOUD_SHARE_PW' -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/`ls *.zip`"
+    - "curl -k -T build/`ls build/*.zip` -u '$NEXTCLOUD_SHARE_ID:$NEXTCLOUD_SHARE_PW' -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/`ls build/*.zip`"
 
