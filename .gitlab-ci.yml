@@ -1,4 +1,6 @@
 stage_deploy:
+  variables:
+    NVM_DIR: "/usr/local/nvm"
   image: forestryengland/php-npm-composer
   artifacts:
     paths:
@@ -8,6 +10,9 @@ stage_deploy:
   before_script:
     - apt-get update
     - apt-get install zip unzip curl
+    - export 
+    - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+    - '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
     - nvm install stable
     - npm run zip
   script:
