@@ -1,5 +1,5 @@
 stage_deploy:
-  image: tetraweb/php
+  image: forestryengland/php-npm-composer
   artifacts:
     paths:
       - build/
@@ -8,11 +8,6 @@ stage_deploy:
   before_script:
     - apt-get update
     - apt-get install zip unzip curl
-    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    - php composer-setup.php
-    - php -r "unlink('composer-setup.php');"
-    - php composer.phar install
-    - npm install
     - npm run zip
   script:
     - "curl -k -T build/`ls build/*.zip` -u '$NEXTCLOUD_SHARE_ID:$NEXTCLOUD_SHARE_PW' -H 'X-Requested-With: XMLHttpRequest' $NEXTCLOUD_SHARE_URL/`ls build/*.zip`"
