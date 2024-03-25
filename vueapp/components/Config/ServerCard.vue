@@ -78,7 +78,6 @@ export default {
     data() {
         return {
             isShow: false,
-            checkFailed: false,
             interval: null,
             interval_counter: 0,
             error_msg: {
@@ -103,7 +102,15 @@ export default {
     computed: {
         ...mapGetters([
             'isLTIAuthenticated'
-        ])
+        ]),
+
+        checkFailed() {
+            if (this.isAddCard) {
+                return false;
+            }
+
+            return this.isLTIAuthenticated[this.config.id] === false;
+        }
     },
 
     methods: {
@@ -136,42 +143,14 @@ export default {
                 this.$store.dispatch('addMessage', this.error_msg);
             }
         },
-
-        checkLTIPeriodically() {
-            let view = this;
-
-            // periodically check, if lti is authenticated
-            view.interval = setInterval(() => {
-                view.$store.dispatch('checkLTIAuthentication', {id: view.config.id, name: view.config.service_url})
-                .then(() => {
-                    // Make sure error is removed when authenticated
-                    if (view.isLTIAuthenticated[view.config.id]) {
-                        view.$store.dispatch('removeMessage', this.error_msg);
-                        view.checkFailed = false;
-                        clearInterval(view.interval);
-                    } else {
-                        view.checkFailed = true;
-                    }
-
-                    view.interval_counter++;
-                    if (view.interval_counter > 10) {
-                        clearInterval(view.interval);
-                    }
-                });
-            }, 2000);
-        }
-    },
-
-    mounted() {
-        if (!this.isAddCard) {
-            this.checkLTIPeriodically();
-        }
     },
 
     watch: {
         checkFailed: function (newVal) {
             if (newVal && this.isShow) {
                 this.$store.dispatch('addMessage', this.error_msg);
+            } else {
+                this.$store.dispatch('removeMessage', this.error_msg);
             }
         }
     }

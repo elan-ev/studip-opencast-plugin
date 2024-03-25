@@ -21,8 +21,15 @@ import { mapGetters } from "vuex";
 export default {
     name: "LtiAuth",
 
+    data() {
+        return {
+            interval: null,
+            interval_counter: 0
+        }
+    },
+
     computed: {
-        ...mapGetters(['simple_config_list', 'cid']),
+        ...mapGetters(['simple_config_list', 'isLTIAuthenticated', 'cid']),
     },
 
     methods: {
@@ -33,11 +40,38 @@ export default {
             } else {
                 return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id;
             }
+        },
+
+        checkLTIPeriodically() {
+            let view = this;
+
+            const server_ids = Object.keys(view.simple_config_list['server']);
+
+            // periodically check, if lti is authenticated
+            view.interval = setInterval(async () => {
+                // Create an array of promises for checking each server in parallel
+                const promises = server_ids.map(async (id) => {
+                    await view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
+                    // Remove server from list, if authenticated
+                    if (view.isLTIAuthenticated[id]) {
+                        server_ids.splice(server_ids.indexOf(id), 1);
+                    }
+                });
+                // Wait for all checks to finish
+                await Promise.all(promises);
+
+                view.interval_counter++;
+                if (view.interval_counter > 10) {
+                    clearInterval(view.interval);
+                }
+            }, 2000);
         }
     },
 
     mounted() {
-        this.$store.dispatch('simpleConfigListRead');
+        this.$store.dispatch('simpleConfigListRead').then(() => {
+            this.checkLTIPeriodically();
+        });
     }
 }
 </script>

@@ -1,8 +1,8 @@
 import ApiService from "@/common/api.service";
 
 const initialState = {
-    config_list: [],
-    simple_config_list: [],
+    config_list: {},
+    simple_config_list: {},
     config: {
         'service_url' :      null,
         'service_user':      null,
@@ -47,7 +47,18 @@ const getters = {
 export const state = { ...initialState };
 
 export const actions = {
-    async configListRead(context) {
+
+    /**
+     * Load config list
+     *
+     * @param context
+     * @param cached get cached config from state if not empty
+     */
+    async configListRead(context, cached = false) {
+        if (cached && Object.keys(context.state.config_list).length > 0) {
+            return context.state.config_list;
+        }
+
         return new Promise(resolve => {
             ApiService.get('config')
                 .then(({ data }) => {
@@ -57,7 +68,17 @@ export const actions = {
             });
     },
 
-    async simpleConfigListRead(context) {
+    /**
+     * Load simple config list
+     *
+     * @param context
+     * @param cached get cached simple config from state if not empty
+     */
+    async simpleConfigListRead(context, cached = false) {
+        if (cached && Object.keys(context.state.simple_config_list).length > 0) {
+            return context.state.simple_config_list;
+        }
+
         return new Promise(resolve => {
             ApiService.get('config/simple')
                 .then(({ data }) => {

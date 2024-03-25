@@ -8,6 +8,7 @@ return [
             "apiworkflows",
             "capture-admin",
             "ingest",
+            "apiplaylists",
             "recordings",
             "search", // ausser hier: engage-node
             "series",

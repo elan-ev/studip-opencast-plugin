@@ -333,6 +333,81 @@ class Playlists extends UPMap
     }
 
     /**
+     * Set playlist videos in playlist based on passed entries
+     *
+     * @param array $entries Opencast playlist entries
+     */
+    public function setEntries(Array $entries)
+    {
+        $playlist_videos = PlaylistVideos::findBySql(
+            'playlist_id = ?', [$this->id]
+        );
+
+        // Iterate over existing playlist videos to be removed
+        foreach ($playlist_videos as $playlist_video) {
+            $db_video = Videos::find($playlist_video->video_id);
+
+            // Check if video already exists in playlist
+            $existing_entry = null;
+            foreach ($entries as $entry) {
+                if ($entry['contentId'] === $db_video->episode) {
+                    $existing_entry = $entry;
+                    break;
+                }
+            }
+
+            // Remove video from playlist if not exist in opencast playlist entries
+            if (is_null($existing_entry)) {
+                // TODO: Should we check video permission?
+                //if (in_array($db_video->getUserPerm(), ['owner', 'write']) === true) {
+                    $playlist_video->delete();
+                //}
+            }
+        }
+
+        // Add new entries
+        foreach ($entries as $key => $entry) {
+            $db_video = Videos::findByEpisode($entry['contentId']);
+
+            if (is_null($db_video)) {
+                // Create dummy video without permissions for videos not available yet or removed from Stud.IP
+                $db_video = new Videos;
+                $db_video->setData([
+                    'episode'      => $entry['contentId'],
+                    'config_id'    => $this->config_id,
+                    'created'      => date('Y-m-d H:i:s'),
+                    'available'    => false
+                ]);
+                if (!$db_video->token) {
+                    $db_video->token = bin2hex(random_bytes(8));
+                }
+                $db_video->store();
+            }
+
+            $playlist_video = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$db_video->id, $this->id]);
+
+            if (is_null($playlist_video)) {
+                // check if user has perms on the video
+                // TODO: Should we check video permission?
+                //if (in_array($db_video->getUserPerm(), ['owner', 'write']) === true) {
+                    $playlist_video = PlaylistVideos::create([
+                        'video_id' => $db_video->id,
+                        'playlist_id' => $this->id,
+                        'service_entry_id' => $entry['id'],
+                    ]);
+               // }
+            }
+
+            if (!is_null($playlist_video)) {
+                // Always update entry id and order
+                $playlist_video->service_entry_id = $entry['id'];
+                $playlist_video->order = $key;
+                $playlist_video->store();
+            }
+        }
+    }
+
+    /**
      * Get sanitized array to send to the frontend
      */
     public function toSanitizedArray()
