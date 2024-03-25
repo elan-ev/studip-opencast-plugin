@@ -39,8 +39,8 @@ export default {
     methods: {
         async removeVideo() {
             await this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: this.playlist.token,
-                videos: [this.event.token]
+                playlist: this.playlist,
+                videos: [this.event]
             }).then(() => {
                 this.$store.dispatch('addMessage', {
                     type: 'success',

@@ -220,6 +220,7 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
+    // TODO: Remove as unused
     async updateVideoPlaylists(context, data) {
         return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
     },

@@ -59,7 +59,7 @@ export default {
 
         addVideosToPlaylist() {
             this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlist.token,
+                playlist: this.playlist,
                 videos:   this.selectedVideos
             }).then(() => {
                 this.selectedVideos = [];
@@ -69,6 +69,12 @@ export default {
                 });
                 this.$store.commit('setVideosReload', true);
                 this.$emit('done');
+            }).catch(() => {
+                this.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.')
+                });
+                this.$emit('cancel');
             });
         },
     },

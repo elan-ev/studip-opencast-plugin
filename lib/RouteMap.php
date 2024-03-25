@@ -105,6 +105,10 @@ class RouteMap
             "/playlists/{token}/videos",
             Routes\Playlist\PlaylistVideoList::class
         );
+        $group->put(
+            "/playlists/{token}/entries",
+            Routes\Playlist\PlaylistUpdateEntries::class
+        );
 
         $group->put(
             "/playlists/{token}/video/{vid_token}",

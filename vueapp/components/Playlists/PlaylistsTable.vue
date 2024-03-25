@@ -245,9 +245,15 @@ export default {
                 confirm_text += ' ' + this.$gettext('Bitte beachten Sie, dass diese Wiedergabeliste ist eine') + ' ' + playlist.default_course_tooltip;
             }
             if (confirm(this.$gettext(confirm_text))) {
-                this.$store.dispatch('deletePlaylist', playlist.token)
+                this.$store.dispatch('deletePlaylist', playlist)
                     .then(() => {
                         this.loadPlaylists();
+                    })
+                    .catch(() => {
+                        this.$store.dispatch('addMessage', {
+                            type: 'error',
+                            text: this.$gettext('Die Wiedergabeliste konnte nicht gelöscht werden.')
+                        });
                     })
             }
         }
