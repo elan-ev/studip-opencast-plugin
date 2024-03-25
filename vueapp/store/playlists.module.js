@@ -1,4 +1,6 @@
 import ApiService from "@/common/api.service";
+import PlaylistsService from "@/common/playlists.service";
+import { format } from "date-fns";
 
 const state = {
     playlists: [],
@@ -121,12 +123,57 @@ const actions = {
             });
     },
 
-    async loadPlaylist(context, token) {
+    /**
+     * Load playlist by token
+     *
+     * @param context
+     * @param token playlist token
+     */
+    async loadPlaylistByToken(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
-                context.dispatch('setDefaultSortOrder', data).then(() => {
-                    context.commit('setPlaylist', data);
+                context.dispatch('loadPlaylist', data);
+            });
+    },
+
+    /**
+     * Load playlist from Opencast and update playlist in Stud.IP
+     *
+     * @param context
+     * @param playlist playlist to be loaded
+     */
+    async loadPlaylist(context, playlist) {
+        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
+
+        // Load playlist from Opencast first
+        playlistsService.get(playlist['service_playlist_id'])
+            .then(({ data }) => {
+                // Collect updated playlist data
+                let updateData = {
+                    title: data.title,
+                    description: data.description,
+                    creator: data.creator,
+                    updated: format(new Date(data.updated), "yyyy-MM-dd HH:mm:ss"),
+                }
+                let updatedPlaylist = { ...playlist, ...updateData };
+
+                // Save updated playlist data in Stud.IP
+                Promise.all([
+                    context.dispatch('updateStudipPlaylist', updatedPlaylist),  // Save updated playlist
+                    context.dispatch('updatePlaylistEntries', { token: updatedPlaylist.token, entries: data.entries }),  // Save entries
+                    context.dispatch('setDefaultSortOrder', updatedPlaylist)
+                ]).then(() => {
+                    // Set playlist
+                    context.commit('setPlaylist', updatedPlaylist);
                 });
+            })
+            .catch(() => {
+                // Playlist could not be loaded from Opencast
+                context.dispatch('setDefaultSortOrder', playlist).then(() =>  {
+                    context.commit('setPlaylist', playlist);
+                })
             });
     },
 
@@ -145,11 +192,64 @@ const actions = {
         context.commit('setVideoSort', {field: field, order: order});
     },
 
-    async updatePlaylist(context, playlist) {
+    /**
+     * Updates playlist in Opencast and then in Stud.IP
+     *
+     * @param context
+     * @param playlist playlist data
+     */
+    async updatePlaylist(context, playlist){
+        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
+
+        // Load playlist from Opencast
+        playlistsService.get(playlist['service_playlist_id'])
+            .then(({ data }) => {
+                // Update playlist in Opencast
+                return playlistsService.update(data.id, playlist.title, playlist.description, playlist.creator, data.entries, data.accessControlEntries)
+            })
+            .then(({ data }) => {
+                // Collect updated playlist data
+                let updateData = {
+                    title: data.title,
+                    description: data.description,
+                    creator: data.creator,
+                    updated: format(new Date(data.updated), "yyyy-MM-dd HH:mm:ss"),
+                }
+                let updatedPlaylist = { ...playlist, ...updateData };
+
+                // Update playlist in Stud.IP
+                return Promise.all([
+                    context.dispatch('updateStudipPlaylist', updatedPlaylist), // Save updated playlist
+                    context.dispatch('updatePlaylistEntries', { token: updatedPlaylist.token, entries: data.entries }),  // Save entries
+                ]);
+            });
+    },
+
+    /**
+     * Update playlist only in Stud.IP
+     *
+     * @param context
+     * @param playlist playlist data
+     */
+    async updateStudipPlaylist(context, playlist) {
         return ApiService.put('playlists/' + playlist.token, playlist)
             .then(({ data }) => {
                 context.commit('updatePlaylist', data);
             });
+    },
+
+    /**
+     * Update videos of playlist with Opencast playlist entries
+     *
+     * @param context
+     * @param data playlist data
+     * @param data.token playlist token
+     * @param data.entries opencast playlist entries
+     */
+    async updatePlaylistEntries(context, data) {
+        return ApiService.put('playlists/' + data.token + '/entries', { entries: data.entries });
     },
 
     async updateAvailableTags(context) {
@@ -215,33 +315,111 @@ const actions = {
         return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
     },
 
+    /**
+     * Add videos to playlist
+     *
+     * @param context
+     * @param data data
+     * @param data.playlist playlist
+     * @param data.videos videos to add
+     */
     async addVideosToPlaylist(context, data) {
-        for (let i = 0; i < data.videos.length; i++) {
-            await ApiService.put('/playlists/' + data.playlist + '/video/' + data.videos[i]);
-        }
-        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
+        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][data.playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
+
+        // Get playlist from Opencast
+        return playlistsService.get(data.playlist['service_playlist_id'])
+            .then(( response ) => {
+                // Update playlist entries in Opencast first
+                let entries = response.data.entries;
+
+                for (const video of data.videos) {
+                    // Only add video if not contained in entries
+                    if (entries.findIndex(entry => entry['contentId'] === video['episode']) < 0) {
+                        // Append video to end of playlist entries
+                        entries.push({
+                            contentId: video['episode'],
+                            type: 'EVENT'
+                        });
+                    }
+                }
+
+                return playlistsService.updateEntries(response.data.id, entries);
+            })
+            .then(() => {
+                // Add videos to playlist in Stud.IP
+                let promises = [];
+
+                for (let i = 0; i < data.videos.length; i++) {
+                    promises.push(ApiService.put('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token));
+                }
+
+                // Wait until all operations are finished successfully
+                return Promise.all(promises)
+                    .then(() => {
+                        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
+                    })
+            });
     },
 
+    /**
+     * Remove videos from playlist
+     *
+     * @param context
+     * @param data data
+     * @param data.playlist playlist
+     * @param data.videos videos to remove
+     */
     async removeVideosFromPlaylist(context, data) {
-        let removedCount = 0;
-        let forbiddenCount = 0;
-        for (let i = 0; i < data.videos.length; i++) {
-            try {
-                await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
-                removedCount++;
-            } catch (err) {
-                // We send back 403 for those livestream video, when removing from playlist.
-                if (err?.response?.status == 403) {
-                    forbiddenCount++;
-                }
-            }
-        }
-        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
+        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][data.playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
 
-        if (removedCount > 0) {
-            return Promise.resolve({removedCount, forbiddenCount});
-        }
-        return Promise.reject({removedCount, forbiddenCount});
+        // Get playlist and remove entries in Opencast
+        return playlistsService.get(data.playlist['service_playlist_id'])
+            .then(( response ) => {
+                // Update playlist entries in Opencast first
+                let entries = response.data.entries;
+
+                for (const video of data.videos) {
+                    // Remove all occurrences of video from entries
+                    entries = entries.filter(entry => entry['contentId'] !== video['episode']);
+                }
+
+                return playlistsService.updateEntries(response.data.id, entries);
+            })
+            .then(() => {
+                // Delete videos of playlist in Stud.IP
+                let removedCount = 0;
+                let forbiddenCount = 0;
+
+                let promises = [];
+
+                for (const video of data.videos) {
+                    promises.push(ApiService.delete('/playlists/' + data.playlist['token'] + '/video/' + video['token'])
+                        .then(() => {
+                            removedCount++;
+                        })
+                        .catch((error) => {
+                            // We send back 403 for those livestream video, when removing from playlist.
+                            if (error?.response?.status === 403) {
+                                forbiddenCount++;
+                            }
+                        }));
+                }
+
+                // Wait until all operations are finished successfully
+                return Promise.all(promises)
+                    .then(() => {
+                        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
+
+                        if (removedCount > 0) {
+                            return Promise.resolve({removedCount, forbiddenCount});
+                        }
+                        return Promise.reject({removedCount, forbiddenCount});
+                    })
+            });
     },
 
     addPlaylistUI({ commit }, show) {
@@ -251,40 +429,51 @@ const actions = {
     async addPlaylist({ commit, dispatch, rootState }, playlist) {
         commit('setPlaylistAdd', false);
 
-        let $cid = rootState.opencast.cid;
+        let simpleConfigList = await dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
 
-        let is_default = false;
-        if (playlist?.is_default == true) {
-            is_default = true;
-            delete playlist.is_default;
-        }
-
-        return ApiService.post('playlists', playlist)
+        // Create empty playlist in Opencast first
+        playlistsService.create(playlist.title, playlist.description, playlist.creator, [])
             .then(({ data }) => {
-                if ($cid !== null) {
-                    // connect playlist to new course
-                    dispatch('addPlaylistToCourse', {
-                        course: $cid,
-                        token: data.token,
-                        is_default: is_default
-                    })
-                    .then(() => {
-                        dispatch('setPlaylistsReload', true);
-                        dispatch('loadPlaylists');
-                        // When is_default is true, it means it is the course playlist creation and we need to set a few things.
-                        if (is_default) {
-                            dispatch('loadCourseConfig', $cid);
-                            dispatch('loadPlaylist', data.token);
-                        }
-                    })
-                } else {
-                    dispatch('setPlaylistsReload', true);
-                    dispatch('loadPlaylists');
+                playlist.service_playlist_id = data.id;
+
+                let $cid = rootState.opencast.cid;
+
+                let is_default = false;
+                if (playlist?.is_default == true) {
+                    is_default = true;
+                    delete playlist.is_default;
                 }
+
+                // Create playlist in Stud.IP
+                return ApiService.post('playlists', playlist)
+                    .then(({ data }) => {
+                        if ($cid !== null) {
+                            // connect playlist to new course
+                            dispatch('addPlaylistToCourse', {
+                                course: $cid,
+                                token: data.token,
+                                is_default: is_default
+                            })
+                                .then(() => {
+                                    dispatch('setPlaylistsReload', true);
+                                    dispatch('loadPlaylists');
+                                    // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                                    if (is_default) {
+                                        dispatch('loadCourseConfig', $cid);
+                                        dispatch('loadPlaylist', data);
+                                    }
+                                })
+                        } else {
+                            dispatch('setPlaylistsReload', true);
+                            dispatch('loadPlaylists');
+                        }
+                    });
             });
     },
 
-    async copyPlaylist(context, params) {
+    async copyPlaylist(contexcontext, params) {
         let data = {};
 
         if (params.course !== undefined) {
@@ -295,8 +484,17 @@ const actions = {
         return ApiService.post('playlists/' + params.token + '/copy', data);
     },
 
-    async deletePlaylist(context, token) {
-        return ApiService.delete('playlists/' + token);
+    async deletePlaylist(context, playlist) {
+        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
+        let server = simpleConfigList['server'][playlist['config_id']];
+        let playlistsService = new PlaylistsService(server);
+
+        // Delete playlist in Opencast first
+        return playlistsService.delete(playlist['service_playlist_id'])
+            .then(() => {
+                // Delete playlist from Stud.IP
+                return ApiService.delete('playlists/' + playlist['token']);
+            });
     },
 
     async setPlaylistSearch({dispatch, commit}, search) {

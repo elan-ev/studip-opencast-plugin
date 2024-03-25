@@ -26,6 +26,13 @@ class RestClient
 
     public $serviceName = 'ParentRestClientClass';
 
+    /**
+     * Get singleton instance of client
+     *
+     * @param $config_id config id
+     * @return static
+     * @throws RESTError
+     */
     static function getInstance($config_id = null)
     {
         // use default config if nothing else is given

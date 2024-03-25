@@ -286,9 +286,7 @@ export default {
             selectedEvent: null,
             videosTags: [],
             videosCourses: [],
-            filters: [],
-            interval: null,
-            interval_counter: 0
+            filters: []
         }
     },
 
@@ -305,8 +303,7 @@ export default {
             'playlists',
             'course_config',
             'isLTIAuthenticated',
-            'simple_config_list',
-            'errors'
+            'simple_config_list'
         ]),
 
         numberOfColumns() {
@@ -352,6 +349,10 @@ export default {
                 }
             }
         },
+
+        serversCheckSuccessful() {
+            return Object.values(this.isLTIAuthenticated).every(server => server);
+        }
     },
 
     methods: {
@@ -435,20 +436,20 @@ export default {
 
         toggleVideo(data) {
             if (data.checked === false) {
-                let index = this.selectedVideos.indexOf(data.event_id);
+                let index = this.selectedVideos.findIndex(video => video.token === data.event.token);
                 if (index >= 0) {
                     this.updateSelectedVideos(this.selectedVideos.toSpliced(index, 1))
 
                 }
             } else {
-                this.updateSelectedVideos(this.selectedVideos.concat(data.event_id));
+                this.updateSelectedVideos(this.selectedVideos.concat(data.event));
             }
         },
 
         toggleAll(e) {
             if (e.target.checked) {
                 // select all videos on current page
-                this.updateSelectedVideos(this.loadedVideos.map(v => v.token));
+                this.updateSelectedVideos(this.loadedVideos);
             } else {
                 // deselect all videos on current page
                 this.updateSelectedVideos([]);
@@ -512,7 +513,7 @@ export default {
             let view = this;
 
             this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: this.playlist.token,
+                playlist: this.playlist,
                 videos:   this.selectedVideos
             }).then(({removedCount, forbiddenCount}) => {
                 let type = 'success';
@@ -629,45 +630,6 @@ export default {
                 });
             }
         },
-
-        checkLTIPeriodically() {
-            let view = this;
-
-            this.$store.dispatch('simpleConfigListRead').then(() => {
-
-                const error_msg = {
-                    type: 'error',
-                    text: this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.')
-                };
-                    const server_ids = Object.keys(view.simple_config_list['server']);
-
-                // periodically check, if lti is authenticated
-                view.interval = setInterval(async () => {
-                    // Create an array of promises for checking each server in parallel
-                    const promises = server_ids.map(async (id) => {
-                        await view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
-                        // Remove server from list, if authenticated
-                        if (view.isLTIAuthenticated[id]) {
-                            server_ids.splice(server_ids.indexOf(id), 1);
-                        }
-                    });
-                    // Wait for all checks to finish
-                    await Promise.all(promises);
-
-                    if (server_ids.length === 0) {
-                        view.$store.dispatch('removeMessage', error_msg);
-                        clearInterval(view.interval);
-                    } else {
-                        view.$store.dispatch('addMessage', error_msg);
-                    }
-
-                    view.interval_counter++;
-                    if (view.interval_counter > 10) {
-                        clearInterval(view.interval);
-                    }
-                }, 2000);
-            });
-        }
     },
 
     created() {
@@ -694,8 +656,6 @@ export default {
                 this.loadVideos();
             }
         })
-
-        this.checkLTIPeriodically();
     },
 
     watch: {
@@ -755,6 +715,19 @@ export default {
                 if (newmode !== false) {
                     this.$store.dispatch('setVideoSortMode', false);
                 }
+            }
+        },
+
+        serversCheckSuccessful(success) {
+            const error_msg = {
+                type: 'error',
+                text: this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.')
+            };
+
+            if (success) {
+                this.$store.dispatch('removeMessage', error_msg);
+            } else {
+                this.$store.dispatch('addMessage', error_msg);
             }
         }
     },

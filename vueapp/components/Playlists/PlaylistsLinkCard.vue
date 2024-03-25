@@ -96,7 +96,7 @@ export default {
                     this.$store.dispatch('setPlaylistsReload', true);
                     this.$store.dispatch('loadPlaylists');
                     this.$store.dispatch('loadCourseConfig', this.cid);
-                    this.$store.dispatch('loadPlaylist', token);
+                    this.$store.dispatch('loadPlaylistByToken', token);
                     this.$emit('done');
                 });
             } else {

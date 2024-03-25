@@ -13,6 +13,11 @@ class PlaylistsUserPerms extends \SimpleORMap
             'foreign_key' => 'user_id',
         ];
 
+        $config['belongs_to']['playlist'] = [
+            'class_name' => 'Opencast\\Models\\Playlists',
+            'foreign_key' => 'playlist_id',
+        ];
+
         parent::configure($config);
     }
 }
