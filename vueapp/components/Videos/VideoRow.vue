@@ -496,7 +496,7 @@ export default {
                     if (this.event?.state !== 'running' && !this.isLivestream) {
                         menuItems.push({
                             id: 7,
-                            label: this.$gettext('Untertitel hinzufügen'),
+                            label: this.$gettext('Untertitel bearbeiten'),
                             icon: 'accessibility',
                             emit: 'performAction',
                             emitArguments: 'CaptionUpload'

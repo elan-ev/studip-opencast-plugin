@@ -10,7 +10,7 @@
 
         <StudipDialog
             v-if="showCaptionsDialog"
-            :title="$gettext('Untertitel hinzufügen')"
+            :title="$gettext('Untertitel bearbeiten')"
             :confirmText="$gettext('Hochladen')"
             :confirmClass="uploadButtonClasses"
             :closeText="$gettext('Abbrechen')"
@@ -84,6 +84,11 @@
                         </div>
                     </fieldset>
 
+                    <a v-if="event.publication.annotation_tool" :href="annotation_tool_link" target="_blank">
+                        {{ $gettext('Link zum Opencast Untertiteleditor') }}
+                        <studip-icon shape="share" role="clickable"/>
+                    </a>
+
                     <MessageList :float="true" :dialog="true"/>
 
                     <MessageBox v-if="fileUploadError" type="error">
@@ -105,6 +110,7 @@ import MessageList from '@/components/MessageList';
 import ProgressBar from '@/components/ProgressBar'
 import UploadService from '@/common/upload.service'
 import VideoChangeWarning from '@/components/Videos/VideoChangeWarning';
+import StudipIcon from '@/components/Studip/StudipIcon'
 
 export default {
     name: 'CaptionUpload',
@@ -115,7 +121,8 @@ export default {
         StudipButton,
         ProgressBar,
         MessageList,
-        VideoChangeWarning
+        VideoChangeWarning,
+        StudipIcon
     },
 
     emits: ['done', 'cancel'],
@@ -147,6 +154,15 @@ export default {
 
             return 'accept';
         },
+
+        annotation_tool_link() {
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
+            let action = '/annotation/' + this.event.token;
+
+            if (redirectUrl && this.event.publication.annotation_tool) {
+                return redirectUrl + action;
+            }
+        }
     },
 
     methods: {
@@ -279,7 +295,6 @@ export default {
                 file: event.target.files[0]
             }
         }
-
     },
 
     mounted() {
