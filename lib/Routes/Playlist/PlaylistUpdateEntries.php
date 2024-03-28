@@ -32,7 +32,7 @@ class PlaylistUpdateEntries extends OpencastController
         $entries = $json['entries'];
 
         // Update playlist entries
-        $playlist->setEntries($entries);
+        $playlist->setEntries(json_decode(json_encode($entries)));  // Convert assoc array to object
 
         return $response->withStatus(200);
     }

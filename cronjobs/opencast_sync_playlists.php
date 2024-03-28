@@ -92,7 +92,7 @@ class OpencastSyncPlaylists extends CronJob
                 $playlist->store();
 
                 // Update playlist entries
-                $playlist->setEntries(json_decode(json_encode($playlists[$playlist_id]->entries), true)); // Convert entries to associative array
+                $playlist->setEntries($playlists[$playlist_id]->entries);
 
                 // TODO: Check and set permissions (ACLs, oc_playlist_user_perms) for new and existing playlists?
             }

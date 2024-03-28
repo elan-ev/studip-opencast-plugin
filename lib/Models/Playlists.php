@@ -2,6 +2,8 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\REST\ApiPlaylistsClient;
+
 class Playlists extends UPMap
 {
     protected static function configure($config = [])
@@ -333,6 +335,34 @@ class Playlists extends UPMap
     }
 
     /**
+     * Synchronize this playlist with Opencast playlist
+     *
+     * @return boolean Successfully synchronized with opencast playlist
+     */
+    public function synchronize()
+    {
+        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+
+        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+
+        if (!$oc_playlist) {
+            return false;
+        }
+
+        // Update playlist
+        $this->title = $oc_playlist->title;
+        $this->description = $oc_playlist->description;
+        $this->creator = $oc_playlist->creator;
+        $this->updated = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+        $this->setEntries($oc_playlist->entries);
+
+        $this->store();
+
+        return true;
+    }
+
+    /**
      * Set playlist videos in playlist based on passed entries
      *
      * @param array $entries Opencast playlist entries
@@ -350,7 +380,7 @@ class Playlists extends UPMap
             // Check if video already exists in playlist
             $existing_entry = null;
             foreach ($entries as $entry) {
-                if ($entry['contentId'] === $db_video->episode) {
+                if ($entry->contentId === $db_video->episode) {
                     $existing_entry = $entry;
                     break;
                 }
@@ -367,13 +397,13 @@ class Playlists extends UPMap
 
         // Add new entries
         foreach ($entries as $key => $entry) {
-            $db_video = Videos::findByEpisode($entry['contentId']);
+            $db_video = Videos::findByEpisode($entry->contentId);
 
             if (is_null($db_video)) {
                 // Create dummy video without permissions for videos not available yet or removed from Stud.IP
                 $db_video = new Videos;
                 $db_video->setData([
-                    'episode'      => $entry['contentId'],
+                    'episode'      => $entry->contentId,
                     'config_id'    => $this->config_id,
                     'created'      => date('Y-m-d H:i:s'),
                     'available'    => false
@@ -393,14 +423,14 @@ class Playlists extends UPMap
                     $playlist_video = PlaylistVideos::create([
                         'video_id' => $db_video->id,
                         'playlist_id' => $this->id,
-                        'service_entry_id' => $entry['id'],
+                        'service_entry_id' => $entry->id,
                     ]);
                // }
             }
 
             if (!is_null($playlist_video)) {
                 // Always update entry id and order
-                $playlist_video->service_entry_id = $entry['id'];
+                $playlist_video->service_entry_id = $entry->id;
                 $playlist_video->order = $key;
                 $playlist_video->store();
             }

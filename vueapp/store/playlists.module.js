@@ -124,56 +124,17 @@ const actions = {
     },
 
     /**
-     * Load playlist by token
+     * Load playlist
      *
      * @param context
      * @param token playlist token
      */
-    async loadPlaylistByToken(context, token) {
+    async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
-                context.dispatch('loadPlaylist', data);
-            });
-    },
-
-    /**
-     * Load playlist from Opencast and update playlist in Stud.IP
-     *
-     * @param context
-     * @param playlist playlist to be loaded
-     */
-    async loadPlaylist(context, playlist) {
-        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
-
-        // Load playlist from Opencast first
-        playlistsService.get(playlist['service_playlist_id'])
-            .then(({ data }) => {
-                // Collect updated playlist data
-                let updateData = {
-                    title: data.title,
-                    description: data.description,
-                    creator: data.creator,
-                    updated: format(new Date(data.updated), "yyyy-MM-dd HH:mm:ss"),
-                }
-                let updatedPlaylist = { ...playlist, ...updateData };
-
-                // Save updated playlist data in Stud.IP
-                Promise.all([
-                    context.dispatch('updateStudipPlaylist', updatedPlaylist),  // Save updated playlist
-                    context.dispatch('updatePlaylistEntries', { token: updatedPlaylist.token, entries: data.entries }),  // Save entries
-                    context.dispatch('setDefaultSortOrder', updatedPlaylist)
-                ]).then(() => {
-                    // Set playlist
-                    context.commit('setPlaylist', updatedPlaylist);
+                context.dispatch('setDefaultSortOrder', data).then(() => {
+                        context.commit('setPlaylist', data);
                 });
-            })
-            .catch(() => {
-                // Playlist could not be loaded from Opencast
-                context.dispatch('setDefaultSortOrder', playlist).then(() =>  {
-                    context.commit('setPlaylist', playlist);
-                })
             });
     },
 
@@ -462,7 +423,7 @@ const actions = {
                                     // When is_default is true, it means it is the course playlist creation and we need to set a few things.
                                     if (is_default) {
                                         dispatch('loadCourseConfig', $cid);
-                                        dispatch('loadPlaylist', data);
+                                        dispatch('loadPlaylist', data.token);
                                     }
                                 })
                         } else {

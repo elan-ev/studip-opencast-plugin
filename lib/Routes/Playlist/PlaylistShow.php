@@ -29,6 +29,9 @@ class PlaylistShow extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        // Load playlist from Opencast
+        $playlist->synchronize();
+
         $ret_playlist = $playlist->toSanitizedArray();
         $ret_playlist['users'] = [[
             'user_id'  => $user->id,

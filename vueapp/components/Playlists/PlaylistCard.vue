@@ -161,7 +161,7 @@ export default {
         },
 
         addToPlaylist(playlist) {
-            this.$store.dispatch('loadPlaylist', playlist);
+            this.$store.dispatch('loadPlaylist', playlist.token);
             this.$store.dispatch('togglePlaylistAddVideosDialog', true);
         }
     }

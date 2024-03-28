@@ -66,7 +66,7 @@ export default {
     },
 
     async mounted() {
-        await this.$store.dispatch('loadPlaylistByToken', this.token);
+        await this.$store.dispatch('loadPlaylist', this.token);
     },
 
     unmounted() {

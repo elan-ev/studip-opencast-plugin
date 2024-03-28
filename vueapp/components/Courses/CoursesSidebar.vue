@@ -350,7 +350,7 @@ export default {
 
     methods: {
         loadPlaylist(playlist) {
-            this.$store.dispatch('loadPlaylist', playlist);
+            this.$store.dispatch('loadPlaylist', playlist.token);
             this.toggleSidebarOnResponsive();
         },
 
