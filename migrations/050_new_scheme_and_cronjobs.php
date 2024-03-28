@@ -110,6 +110,8 @@ class NewSchemeAndCronjobs extends Migration
             `playlist_id` int,
             `video_id` int,
             `order` int,
+            `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             PRIMARY KEY (`playlist_id`, `video_id`),
             FOREIGN KEY (`playlist_id`) REFERENCES `oc_playlist`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
