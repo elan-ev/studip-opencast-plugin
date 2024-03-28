@@ -154,47 +154,12 @@ const actions = {
     },
 
     /**
-     * Updates playlist in Opencast and then in Stud.IP
+     * Update playlist
      *
      * @param context
      * @param playlist playlist data
      */
-    async updatePlaylist(context, playlist){
-        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
-
-        // Load playlist from Opencast
-        playlistsService.get(playlist['service_playlist_id'])
-            .then(({ data }) => {
-                // Update playlist in Opencast
-                return playlistsService.update(data.id, playlist.title, playlist.description, playlist.creator, data.entries, data.accessControlEntries)
-            })
-            .then(({ data }) => {
-                // Collect updated playlist data
-                let updateData = {
-                    title: data.title,
-                    description: data.description,
-                    creator: data.creator,
-                    updated: format(new Date(data.updated), "yyyy-MM-dd HH:mm:ss"),
-                }
-                let updatedPlaylist = { ...playlist, ...updateData };
-
-                // Update playlist in Stud.IP
-                return Promise.all([
-                    context.dispatch('updateStudipPlaylist', updatedPlaylist), // Save updated playlist
-                    context.dispatch('updatePlaylistEntries', { token: updatedPlaylist.token, entries: data.entries }),  // Save entries
-                ]);
-            });
-    },
-
-    /**
-     * Update playlist only in Stud.IP
-     *
-     * @param context
-     * @param playlist playlist data
-     */
-    async updateStudipPlaylist(context, playlist) {
+    async updatePlaylist(context, playlist) {
         return ApiService.put('playlists/' + playlist.token, playlist)
             .then(({ data }) => {
                 context.commit('updatePlaylist', data);

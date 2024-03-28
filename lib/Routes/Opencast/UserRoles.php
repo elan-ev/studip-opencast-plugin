@@ -63,7 +63,7 @@ class UserRoles extends OpencastController
             $email    = $user->email;
             $fullname = $user->getFullName();
 
-            // Add user permission to access user-bound series
+            // Add user permission to access user-bound series and own playlists
             $roles[] = 'STUDIP_' . $user_id;
 
             // Stud.IP-root has access to all videos and playlists

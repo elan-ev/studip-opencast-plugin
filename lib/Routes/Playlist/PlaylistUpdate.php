@@ -9,7 +9,6 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Playlists;
-use Opencast\Models\PlaylistsUserPerms;
 use Opencast\Models\PlaylistTags;
 use Opencast\Models\Tags;
 
@@ -63,8 +62,9 @@ class PlaylistUpdate extends OpencastController
             unset($json['tags']);
         }
 
-        $playlist->setData($json);
-        $playlist->store();
+        if (!$playlist->update($json)) {
+            throw new Error(_('Die Wiedergabeliste konnte nicht aktualisiert werden.'), 500);
+        }
 
         $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
             ? 0 : \strtotime($playlist['mkdate']);
