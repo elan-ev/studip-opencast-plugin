@@ -242,7 +242,7 @@ class UploadService {
         }, Promise.resolve(mediaPackage))
     }
 
-    async uploadCaptions(files, episode_id, options) {
+    async uploadCaptions(files, episode_id, workflowId, options) {
         this.fixFilenames(files);
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
@@ -261,12 +261,31 @@ class UploadService {
             });
         }, Promise.resolve())
         .then(() => {
-            uploadDone();
+            return this.runWorkflow(episode_id, workflowId)
+            .then(function ({ data }) {
+                uploadDone();
+            })
         }).catch(function (error) {
             if (error.code === 'ERR_NETWORK') {
                 onError();
             }
         });
+    }
+
+    runWorkflow(episode_id, workflowId) {
+        console.log("hi");
+        return axios({
+            url: this.service_url + "/api/workflows",
+            method: "POST",
+            data: new URLSearchParams({
+                event_identifier: episode_id,
+                workflow_definition_identifier: workflowId
+            }),
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
+        })
     }
 
     addTrack(data, url_path, track, onProgress, onError) {
