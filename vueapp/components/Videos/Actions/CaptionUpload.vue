@@ -80,6 +80,20 @@
                                 </div>
                             </fieldset>
 
+                            <fieldset>
+                                <legend >
+                                    {{ $gettext('Workflow') }}
+                                </legend>
+
+                                <select v-model="selectedWorkflow" required>
+                                    <option v-for="workflow in upload_workflows"
+                                        v-bind:key="workflow.id"
+                                        :value="workflow">
+                                        {{ workflow.displayname }}
+                                    </option>
+                                </select>
+                            </fieldset>
+
                             <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                         </div>
                     </fieldset>
@@ -136,7 +150,8 @@ export default {
             fileUploadError: false,
             files: {},
             uploadProgress: null,
-            languages: []
+            languages: [],
+            selectedWorkflow: false
         }
     },
 
@@ -144,7 +159,8 @@ export default {
         ...mapGetters({
             'config'       : 'simple_config_list',
             'course_config': 'course_config',
-            'videoCaptions': 'videoCaptions'
+            'videoCaptions': 'videoCaptions',
+            'config'       : 'simple_config_list',
         }),
 
         uploadButtonClasses() {
@@ -162,7 +178,20 @@ export default {
             if (redirectUrl && this.event.publication.annotation_tool) {
                 return redirectUrl + action;
             }
-        }
+        },
+
+        defaultWorkflow() {
+            let wf_id = this.config['workflow_configs'].find(wf_config =>
+                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
+                    && wf_config['used_for'] === 'upload'
+            )['workflow_id'];
+
+            return this.config['workflows'].find(wf => wf['id'] == wf_id);
+        },
+
+        upload_workflows() {
+            return this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
+        },
     },
 
     methods: {
@@ -252,7 +281,7 @@ export default {
 
             let view = this;
 
-            this.uploadService.uploadCaptions(files, this.event.episode, {
+            this.uploadService.uploadCaptions(files, this.event.episode, this.selectedWorkflow.name, {
                     uploadProgress: (track, loaded, total) => {
                         view.uploadProgress = {
                             flavor: track.flavor,
@@ -301,6 +330,7 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
+            this.selectedWorkflow = this.defaultWorkflow;
         });
         this.$store.dispatch('loadCaption', this.event.token);
 
