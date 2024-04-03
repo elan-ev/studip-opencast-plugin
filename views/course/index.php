@@ -6,6 +6,7 @@ use Opencast\Models\Pager;
 
 ?>
 
+<?= $this->render_partial('course/_lti.php') ?>
 <? $studygroup_active = true; ?>
 <? if ($flash['delete']) : ?>
     <?= $params = [
