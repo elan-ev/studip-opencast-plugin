@@ -104,7 +104,7 @@ class Pager
      * @param String $string String to translate
      * @return translated string
      */
-    public function _($string)
+    public static function _($string)
     {
         $result = \OpenCast::GETTEXT_DOMAIN === null
             ? $string
