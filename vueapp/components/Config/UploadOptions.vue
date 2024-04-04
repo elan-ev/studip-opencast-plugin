@@ -60,8 +60,7 @@ export default {
                     name: wf.id,
                     value: wf.settings?.upload_file_types || '',
                     type: 'string',
-                    placeholder: this.simple_config_list.default_upload_file_types,
-                    required: true
+                    placeholder: this.simple_config_list.default_upload_file_types
                 };
             });
         }
