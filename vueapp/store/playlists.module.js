@@ -355,47 +355,36 @@ const actions = {
     async addPlaylist({ commit, dispatch, rootState }, playlist) {
         commit('setPlaylistAdd', false);
 
-        let simpleConfigList = await dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
+        let $cid = rootState.opencast.cid;
 
-        // Create empty playlist in Opencast first
-        playlistsService.create(playlist.title, playlist.description, playlist.creator, [])
+        let is_default = false;
+        if (playlist?.is_default == true) {
+            is_default = true;
+            delete playlist.is_default;
+        }
+
+        return ApiService.post('playlists', playlist)
             .then(({ data }) => {
-                playlist.service_playlist_id = data.id;
-
-                let $cid = rootState.opencast.cid;
-
-                let is_default = false;
-                if (playlist?.is_default == true) {
-                    is_default = true;
-                    delete playlist.is_default;
-                }
-
-                // Create playlist in Stud.IP
-                return ApiService.post('playlists', playlist)
-                    .then(({ data }) => {
-                        if ($cid !== null) {
-                            // connect playlist to new course
-                            dispatch('addPlaylistToCourse', {
-                                course: $cid,
-                                token: data.token,
-                                is_default: is_default
-                            })
-                                .then(() => {
-                                    dispatch('setPlaylistsReload', true);
-                                    dispatch('loadPlaylists');
-                                    // When is_default is true, it means it is the course playlist creation and we need to set a few things.
-                                    if (is_default) {
-                                        dispatch('loadCourseConfig', $cid);
-                                        dispatch('loadPlaylist', data.token);
-                                    }
-                                })
-                        } else {
+                if ($cid !== null) {
+                    // connect playlist to new course
+                    dispatch('addPlaylistToCourse', {
+                        course: $cid,
+                        token: data.token,
+                        is_default: is_default
+                    })
+                        .then(() => {
                             dispatch('setPlaylistsReload', true);
                             dispatch('loadPlaylists');
-                        }
-                    });
+                            // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                            if (is_default) {
+                                dispatch('loadCourseConfig', $cid);
+                                dispatch('loadPlaylist', data.token);
+                            }
+                        })
+                } else {
+                    dispatch('setPlaylistsReload', true);
+                    dispatch('loadPlaylists');
+                }
             });
     },
 

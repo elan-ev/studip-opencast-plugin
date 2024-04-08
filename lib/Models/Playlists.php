@@ -381,6 +381,62 @@ class Playlists extends UPMap
     }
 
     /**
+     * Create playlist in Opencast and DB
+     *
+     * @param array $json playlist data
+     * @return Playlists|null created playlist
+     */
+    public static function createPlaylist($json)
+    {
+        $playlist_client = ApiPlaylistsClient::getInstance($json['config_id']);
+
+        // Create playlist in Opencast
+        $oc_playlist = $playlist_client->createPlaylist([
+            'title' => $json['title'],
+            'description' => $json['description'],
+            'creator' => $json['creator'],
+            'entries' => [],
+            'accessControlEntries' => self::getDefaultACL()
+        ]);
+
+        if (!$oc_playlist) {
+            return null;
+        }
+
+        // Update playlist acls in Opencast
+        $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
+            'title' => $oc_playlist->title,
+            'description' => $oc_playlist->description,
+            'creator' => $oc_playlist->creator,
+            'entries' => $oc_playlist->entries,
+            'accessControlEntries' => self::getDefaultACL($oc_playlist->id)
+        ]);
+
+        if (!$oc_playlist) {
+            return null;
+        }
+
+        // Create playlist in DB
+        $playlist = self::findOneBySQL('config_id = ? AND service_playlist_id = ?', [$json['config_id'], $oc_playlist->id]);
+
+        if (empty($playlist)) {
+            $playlist = new Playlists;
+        }
+
+        $json['service_playlist_id'] = $oc_playlist->id;
+        $json['title'] = $oc_playlist->title;
+        $json['description'] = $oc_playlist->description;
+        $json['creator'] = $oc_playlist->creator;
+        $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+        $playlist->setData($json);
+        $playlist->setEntries($oc_playlist->entries);
+        $playlist->store();
+
+        return $playlist;
+    }
+
+    /**
      * Update playlist in Opencast and DB
      *
      * @param array $json playlist data

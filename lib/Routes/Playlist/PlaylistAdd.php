@@ -25,11 +25,11 @@ class PlaylistAdd extends OpencastController
         $json = $this->getRequestData($request);
 
         // create new playlist
-        $playlist = new Playlists;
+        $playlist = Playlists::createPlaylist($json);
 
-        $playlist->setData($json);
-        $playlist->token = $this->container->get('token');
-        $playlist->store();
+        if (empty($playlist)) {
+            throw new Error(_('Die Wiedergabeliste konnte nicht erstellt werden.'), 500);
+        }
 
         // set current user as owner for this playlist
         $perm = new PlaylistsUserPerms;
