@@ -563,7 +563,7 @@ class Playlists extends UPMap
             }
         }
 
-        // Add new entries
+        // Create and update entries
         foreach ($entries as $key => $entry) {
             $db_video = Videos::findByEpisode($entry->contentId);
 

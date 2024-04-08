@@ -46,7 +46,7 @@ class VideoAddToPlaylist extends OpencastController
             foreach($playlist_videos as $playlist_video) {
                 $db_playlist = Playlists::findOneById($playlist_video->playlist_id);
 
-                // Look for a corrosponding playlist from playlists in request
+                // Look for a corresponding playlist from playlists in request
                 $playlist_key = null;
                 foreach ($playlists as $key => $playlist) {
                     if ($playlist['token'] === $db_playlist->token) {

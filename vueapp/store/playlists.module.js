@@ -1,6 +1,4 @@
 import ApiService from "@/common/api.service";
-import PlaylistsService from "@/common/playlists.service";
-import { format } from "date-fns";
 
 const state = {
     playlists: [],
@@ -250,43 +248,10 @@ const actions = {
      * @param data.videos videos to add
      */
     async addVideosToPlaylist(context, data) {
-        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][data.playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
-
-        // Get playlist from Opencast
-        return playlistsService.get(data.playlist['service_playlist_id'])
-            .then(( response ) => {
-                // Update playlist entries in Opencast first
-                let entries = response.data.entries;
-
-                for (const video of data.videos) {
-                    // Only add video if not contained in entries
-                    if (entries.findIndex(entry => entry['contentId'] === video['episode']) < 0) {
-                        // Append video to end of playlist entries
-                        entries.push({
-                            contentId: video['episode'],
-                            type: 'EVENT'
-                        });
-                    }
-                }
-
-                return playlistsService.updateEntries(response.data.id, entries);
-            })
-            .then(() => {
-                // Add videos to playlist in Stud.IP
-                let promises = [];
-
-                for (let i = 0; i < data.videos.length; i++) {
-                    promises.push(ApiService.put('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token));
-                }
-
-                // Wait until all operations are finished successfully
-                return Promise.all(promises)
-                    .then(() => {
-                        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
-                    })
-            });
+        for (let i = 0; i < data.videos.length; i++) {
+            await ApiService.put('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token);
+        }
+        context.commit('addToVideosCount', {'token': data.playlist.token, 'addToCount': data.videos.length});
     },
 
     /**
@@ -298,54 +263,25 @@ const actions = {
      * @param data.videos videos to remove
      */
     async removeVideosFromPlaylist(context, data) {
-        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][data.playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
-
-        // Get playlist and remove entries in Opencast
-        return playlistsService.get(data.playlist['service_playlist_id'])
-            .then(( response ) => {
-                // Update playlist entries in Opencast first
-                let entries = response.data.entries;
-
-                for (const video of data.videos) {
-                    // Remove all occurrences of video from entries
-                    entries = entries.filter(entry => entry['contentId'] !== video['episode']);
+        let removedCount = 0;
+        let forbiddenCount = 0;
+        for (let i = 0; i < data.videos.length; i++) {
+            try {
+                await ApiService.delete('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token);
+                removedCount++;
+            } catch (err) {
+                // We send back 403 for those livestream video, when removing from playlist.
+                if (err?.response?.status == 403) {
+                    forbiddenCount++;
                 }
+            }
+        }
+        context.commit('addToVideosCount', {'token': data.playlist.token, 'addToCount': -removedCount});
 
-                return playlistsService.updateEntries(response.data.id, entries);
-            })
-            .then(() => {
-                // Delete videos of playlist in Stud.IP
-                let removedCount = 0;
-                let forbiddenCount = 0;
-
-                let promises = [];
-
-                for (const video of data.videos) {
-                    promises.push(ApiService.delete('/playlists/' + data.playlist['token'] + '/video/' + video['token'])
-                        .then(() => {
-                            removedCount++;
-                        })
-                        .catch((error) => {
-                            // We send back 403 for those livestream video, when removing from playlist.
-                            if (error?.response?.status === 403) {
-                                forbiddenCount++;
-                            }
-                        }));
-                }
-
-                // Wait until all operations are finished successfully
-                return Promise.all(promises)
-                    .then(() => {
-                        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
-
-                        if (removedCount > 0) {
-                            return Promise.resolve({removedCount, forbiddenCount});
-                        }
-                        return Promise.reject({removedCount, forbiddenCount});
-                    })
-            });
+        if (removedCount > 0) {
+            return Promise.resolve({removedCount, forbiddenCount});
+        }
+        return Promise.reject({removedCount, forbiddenCount});
     },
 
     addPlaylistUI({ commit }, show) {
