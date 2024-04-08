@@ -489,6 +489,20 @@ class Playlists extends UPMap
     }
 
     /**
+     * Delete playlist from Opencast and DB
+     */
+    public function delete()
+    {
+        if ($this->service_playlist_id) {
+            // Delete from Opencast
+            $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+            $playlist_client->deletePlaylist($this->service_playlist_id);
+        }
+
+        return parent::delete();
+    }
+
+    /**
      * Synchronize this playlist with Opencast playlist
      *
      * @return boolean Successfully synchronized with opencast playlist

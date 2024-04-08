@@ -400,16 +400,7 @@ const actions = {
     },
 
     async deletePlaylist(context, playlist) {
-        let simpleConfigList = await context.dispatch("simpleConfigListRead", true);
-        let server = simpleConfigList['server'][playlist['config_id']];
-        let playlistsService = new PlaylistsService(server);
-
-        // Delete playlist in Opencast first
-        return playlistsService.delete(playlist['service_playlist_id'])
-            .then(() => {
-                // Delete playlist from Stud.IP
-                return ApiService.delete('playlists/' + playlist['token']);
-            });
+        return ApiService.delete('playlists/' + playlist['token']);
     },
 
     async setPlaylistSearch({dispatch, commit}, search) {
