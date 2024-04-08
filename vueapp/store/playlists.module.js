@@ -164,18 +164,6 @@ const actions = {
             });
     },
 
-    /**
-     * Update videos of playlist with Opencast playlist entries
-     *
-     * @param context
-     * @param data playlist data
-     * @param data.token playlist token
-     * @param data.entries opencast playlist entries
-     */
-    async updatePlaylistEntries(context, data) {
-        return ApiService.put('playlists/' + data.token + '/entries', { entries: data.entries });
-    },
-
     async updateAvailableTags(context) {
         return ApiService.get('tags')
             .then(({ data }) => {
