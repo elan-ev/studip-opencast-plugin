@@ -451,9 +451,11 @@ class Playlists extends UPMap
      * Create playlist in Opencast and DB
      *
      * @param array $json playlist data
+     * @param array $entries playlist entries
+     *
      * @return Playlists|null created playlist
      */
-    public static function createPlaylist($json)
+    public static function createPlaylist($json, $entries = [])
     {
         $playlist_client = ApiPlaylistsClient::getInstance($json['config_id']);
 
@@ -462,7 +464,7 @@ class Playlists extends UPMap
             'title' => $json['title'],
             'description' => $json['description'],
             'creator' => $json['creator'],
-            'entries' => [],
+            'entries' => $entries,
             'accessControlEntries' => self::getDefaultACL()
         ]);
 
@@ -497,8 +499,9 @@ class Playlists extends UPMap
         $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
 
         $playlist->setData($json);
-        $playlist->setEntries($oc_playlist->entries);
         $playlist->store();
+
+        $playlist->setEntries($oc_playlist->entries);
 
         return $playlist;
     }
@@ -702,16 +705,47 @@ class Playlists extends UPMap
         return $data;
     }
 
+    /**
+     * Copy playlist in Opencast and DB
+     *
+     * @return Playlists|null Copied playlist. Null if copy fails.
+     */
     public function copy()
     {
         global $user;
 
-        $new_playlist = self::create([
+        // Collect playlist videos
+        $stmt = \DBManager::get()->prepare("SELECT oc_video.episode FROM oc_video
+            INNER JOIN oc_playlist_video ON (oc_playlist_video.video_id = oc_video.id 
+                AND oc_playlist_video.playlist_id = ?) 
+            ORDER BY oc_playlist_video.order");
+        $stmt->execute([$this->id]);
+        $playlist_events = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+        $entries = [];
+        foreach ($playlist_events as $event) {
+            $entries[] = [
+                'contentId' => $event,
+                'type' => 'EVENT'
+            ];
+        }
+
+        $playlist_data = [
+            'config_id'      => $this->config_id,
             'title'          => $this->title,
+            'description'    => $this->description,
+            'creator'        => $this->creator,
             'visibility'     => $this->visibility,
             'sort_order'     => $this->sort_order,
-            'allow_download' => $this->allow_download,
-        ]);
+            'allow_download' => $this->allow_download
+        ];
+
+        // Create copy of playlist in Opencast and DB
+        $new_playlist = self::createPlaylist($playlist_data, $entries);
+
+        if (!$new_playlist) {
+            return null;
+        }
 
         // Set current user as owner for this playlist
         PlaylistsUserPerms::create([
@@ -720,21 +754,10 @@ class Playlists extends UPMap
             'perm'        => 'owner'
         ]);
 
-        // Link videos to new playlist
-        foreach ($this->videos as $video) {
-            PlaylistVideos::create([
-                'playlist_id' => $new_playlist->id,
-                'video_id'    => $video->video_id,
-                'order'       => $video->order,
-            ]);
-        }
-
         // Copy tags
         foreach ($this->tags as $tag) {
             $tag->copy($new_playlist->id);
         }
-
-        $new_playlist->store();
 
         return $new_playlist;
     }

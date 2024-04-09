@@ -46,6 +46,9 @@ class VideoCopyToCourse extends OpencastController
                         foreach ($playlists as $playlist) {
                             // Copy source playlist to target course
                             $new_playlist = $playlist->copy();
+                            if (!$new_playlist) {
+                                throw new Error(_('Die Wiedergabeliste konnte nicht kopiert werden.'), 500);
+                            }
 
                             $is_default = false;
                             if (!$has_target_default_playlist
