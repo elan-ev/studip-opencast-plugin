@@ -23,7 +23,6 @@ class OpencastSyncPlaylists extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $db = DBManager::get();
-        // TODO: Do we need an "available" flag for playlists removed in Opencast in order to prevent erroneous deletions?
         $stmt_ids = $db->prepare("
             SELECT service_playlist_id FROM oc_playlist WHERE config_id = :config_id
             ");
@@ -66,7 +65,7 @@ class OpencastSyncPlaylists extends CronJob
 
             $local_playlist_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
 
-            // Create new playlists or update existing playlists
+            // Update existing playlists
             foreach ($playlist_ids as $playlist_id) {
                 $playlist = Playlists::findOneBySQL(
                     'config_id = ? AND service_playlist_id = ?',
@@ -74,11 +73,11 @@ class OpencastSyncPlaylists extends CronJob
                 );
 
                 if (is_null($playlist)) {
-                    echo 'found new playlist in Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
-                    $playlist = new Playlists;
-                } else {
-                    echo 'update playlist of Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
+                    // Ignore unknown playlists possibly created externally
+                    continue;
                 }
+
+                echo 'update playlist of Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
 
                 // Update playlist data
                 $playlist->setData([
@@ -94,7 +93,8 @@ class OpencastSyncPlaylists extends CronJob
                 // Update playlist entries
                 $playlist->setEntries($playlists[$playlist_id]->entries);
 
-                // TODO: Check and set permissions (ACLs, oc_playlist_user_perms) for new and existing playlists?
+                // Check ACLs for playlist
+                Playlists::checkPlaylistACL($playlists[$playlist_id], $playlist);
             }
 
             // Check if local playlists are no longer available in OC

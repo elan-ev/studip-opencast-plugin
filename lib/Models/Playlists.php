@@ -335,7 +335,7 @@ class Playlists extends UPMap
     }
 
     /**
-     * Get default ACLs array for a playlist
+     * Get default ACLs array for a playlist containing user and playlist roles
      *
      * @param string $playlistId playlist identifier. If null, only user role will be added.
      * @return array access control list
@@ -358,26 +358,93 @@ class Playlists extends UPMap
         ];
 
         if (!is_null($playlistId)) {
-            array_push($acls,
-                [
-                    'allow'  => true,
-                    'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
-                    'action' => 'read'
-                ],
-                [
-                    'allow'  => true,
-                    'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
-                    'action' => 'read'
-                ],
-                [
-                    'allow'  => true,
-                    'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
-                    'action' => 'write'
-                ]
-            );
+            $acls = array_merge($acls, self::getPlaylistACL($playlistId));
         }
 
         return $acls;
+    }
+
+    /**
+     * Get ACLs with playlist roles only
+     *
+     * @param $playlistId
+     * @return array[]
+     */
+    private static function getPlaylistACL($playlistId)
+    {
+        return [
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
+                'action' => 'read'
+            ],
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'action' => 'read'
+            ],
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'action' => 'write'
+            ]
+        ];
+    }
+
+    /**
+     * Check that the playlist has its unique ACL and set it if necessary
+     *
+     * @param $oc_playlist object
+     * @param $playlist Playlists
+     * @return void
+     */
+    public static function checkPlaylistACL($oc_playlist, $playlist)
+    {
+        $old_acl = json_decode(json_encode($oc_playlist->accessControlEntries), true);
+        // Remove the ACL IDs
+        array_walk($old_acl, function (&$entry) {
+            unset($entry['id']);
+        });
+
+        $current_acl = $old_acl;
+
+        $acl = self::getPlaylistACL($oc_playlist->id);
+
+        foreach ($acl as $entry) {
+            $found = false;
+            foreach ($current_acl as $current_key => &$current_entry) {
+                if ($current_entry['role'] === $entry['role'] && $current_entry['action'] === $entry['action']) {
+                    if ($found) {
+                        // Remove duplicates
+                        unset($current_acl[$current_key]);
+                        continue;
+                    }
+
+                    $found = true;
+
+                    // Ensure that allowed is true
+                    $current_entry['allow'] = $entry['allow'];
+                }
+            }
+
+            if (!$found) {
+                $current_acl[] = $entry;
+            }
+        }
+
+        // Reindex keys
+        $current_acl = array_values($current_acl);
+
+        if ($old_acl <> $current_acl) {
+            $api_client = ApiPlaylistsClient::getInstance($playlist->config_id);
+            $api_client->updatePlaylist($oc_playlist->id, [
+                'title' => $oc_playlist->title,
+                'description' => $oc_playlist->description,
+                'creator' => $oc_playlist->creator,
+                'entries' => $oc_playlist->entries,
+                'accessControlEntries' => $current_acl
+            ]);
+        }
     }
 
     /**
