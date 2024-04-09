@@ -2,20 +2,6 @@
 
 return [
     "opencast" => [
-        "services" => [
-            "apievents", // alles admin-node
-            "apiseries",
-            "apiworkflows",
-            "capture-admin",
-            "ingest",
-            "apiplaylists",
-            "recordings",
-            "search", // ausser hier: engage-node
-            "series",
-            "services",
-            "upload",
-            "workflow",
-        ],
         "global_config_options" => [
             "OPENCAST_SHOW_TOS",
             "OPENCAST_TOS",

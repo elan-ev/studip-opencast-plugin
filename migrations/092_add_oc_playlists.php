@@ -5,6 +5,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiPlaylistsClient;
+use Opencast\Models\Config;
 
 class AddOcPlaylists extends Migration
 {
@@ -36,6 +37,12 @@ class AddOcPlaylists extends Migration
         );
 
         SimpleOrMap::expireTableScheme();
+
+        // Update endpoints of all configs to find playlists service
+        $configs = Config::findBySQL('1');
+        foreach ($configs as $config) {
+            $config->updateEndpoints();
+        }
 
         // TODO: Parallelize migration & Move to separate script
         // Migrate existing playlists to Opencast

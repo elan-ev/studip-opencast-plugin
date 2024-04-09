@@ -12,8 +12,23 @@ class Config extends \SimpleOrMap
 {
     use RelationshipTrait;
 
-    protected const allowed_settings_fields = [
+    protected const ALLOWED_SETTINGS_FIELDS = [
         'lti_consumerkey', 'lti_consumersecret', 'debug'
+    ];
+
+    const SERVICES = [
+        "apievents", // alles admin-node
+        "apiseries",
+        "apiworkflows",
+        "apiplaylists",
+        "capture-admin",
+        "ingest",
+        "recordings",
+        "search", // ausser hier: engage-node
+        "series",
+        "services",
+        "upload",
+        "workflow",
     ];
 
     protected static function configure($config = [])
@@ -108,7 +123,7 @@ class Config extends \SimpleOrMap
     public function sanitizeSettings($event)
     {
         foreach ($this->settings as $key => $value) {
-            if (in_array($key, self::allowed_settings_fields) === false) {
+            if (in_array($key, self::ALLOWED_SETTINGS_FIELDS) === false) {
                 unset($this->settings[$key]);
             }
         }
@@ -159,10 +174,9 @@ class Config extends \SimpleOrMap
     /**
      * load and update endpoihnts for reference OC server
      *
-     * @param Container $container
-     * @return void
+     * @return void|array message
      */
-    public function updateEndpoints($container)
+    public function updateEndpoints()
     {
         $service_url =  parse_url($this->service_url);
 
@@ -253,7 +267,7 @@ class Config extends \SimpleOrMap
                     foreach($services as $service_url => $service_type) {
                         if (in_array(
                                 strtolower($service_type),
-                                $container->get('opencast')['services']
+                                self::SERVICES
                             ) !== false
                         ) {
                             Endpoints::setEndpoint($this->id, $service_url, $service_type);
