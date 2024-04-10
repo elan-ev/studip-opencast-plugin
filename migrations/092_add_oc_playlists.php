@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__.'/../vendor/autoload.php';
 
+use Opencast\Models\Endpoints;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Models\Config;
@@ -42,6 +43,12 @@ class AddOcPlaylists extends Migration
         $configs = Config::findBySQL('1');
         foreach ($configs as $config) {
             $config->updateEndpoints();
+
+            // Check if configured opencast instances support playlists
+            if (empty(Endpoints::findOneBySQL("service_type ='apiplaylists' AND config_id = ?", [$config->id]))) {
+                throw new Exception("Der Opencast Server ({$config->service_url}) unterstützt keine Playlisten."
+                    . " Bitte stellen Sie sicher, dass Sie mindestens die Opencast Version 16 verwenden.");
+            }
         }
 
         // Migrate existing playlists to Opencast
