@@ -125,8 +125,6 @@ class UserRoles extends OpencastController
 
                 // get all playlists the user has permissions on
                 foreach (PlaylistsUserPerms::findByUser_id($user_id) as $pperm) {
-                    //if (!$pperm->playlist->service_playlist_id) continue;  // TODO: Remove if null is not allowed
-
                     if ($pperm->perm == 'owner' || $pperm->perm == 'write') {
                         $roles[$pperm->playlist->service_playlist_id . '_write'] = 'STUDIP_PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
                     } else {
