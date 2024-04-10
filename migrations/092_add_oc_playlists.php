@@ -44,7 +44,6 @@ class AddOcPlaylists extends Migration
             $config->updateEndpoints();
         }
 
-        // TODO: Parallelize migration & Move to separate script
         // Migrate existing playlists to Opencast
         $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
 
@@ -52,8 +51,11 @@ class AddOcPlaylists extends Migration
         $tries = 0;
         while (!empty($playlists) && $tries < 3) {
             foreach ($playlists as $playlist) {
-                // Default opencast server
-                $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+                $config_id = $playlist->config_id;
+                if (empty($config_id)) {
+                    // Default opencast server if playlist belongs to no opencast server
+                    $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+                }
 
                 // Get playlist videos
                 $playlist_videos = $this->getPlaylistVideos($playlist);
