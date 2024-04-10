@@ -13,7 +13,7 @@ class AddOcPlaylists extends Migration
 
     public function description()
     {
-        return 'TODO';
+        return 'Add DB columns for Opencast playlists, update Opencast endpoints to find playlists service, migrate existing playlists to Opencast and add playlist synchronize cronjob';
     }
 
     public function up()
