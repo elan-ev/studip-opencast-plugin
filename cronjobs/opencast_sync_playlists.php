@@ -17,7 +17,7 @@ class OpencastSyncPlaylists extends CronJob
 
     public static function getDescription()
     {
-        return _('Opencast: Synchronisiert Wiedergabelisten aus Opencast mit allen Wiedergabelisten in Stud.IP, indem neue Wiedergabelisten erstellt, bestehende Wiedergabelisten aktualisiert und nicht vorhandene Wiedergabelisten entfernt werden.');
+        return _('Opencast: Synchronisiert Wiedergabelisten aus Opencast mit allen Wiedergabelisten in Stud.IP, indem bestehende Wiedergabelisten aktualisiert und nicht vorhandene Wiedergabelisten entfernt werden.');
     }
 
     public function execute($last_result, $parameters = array())
@@ -48,13 +48,16 @@ class OpencastSyncPlaylists extends CronJob
             $api_client = ApiPlaylistsClient::getInstance($config['id']);
             echo 'instantiated api_client' . "\n";
 
+            // Assume the admin user has access to all playlists
+            $response = $api_client->getAll();
+            if ($response === false) {
+                echo 'cannot load playlists from opencast' . "\n";
+                continue;
+            }
+
             $playlists = [];
             $playlist_ids = [];
-
-            $api_client->getAll();
-
-            // Assume the admin user has access to all playlists
-            foreach ($api_client->getAll() as $playlist) {
+            foreach ($response as $playlist) {
                 $playlist_ids[] = $playlist->id;
                 $playlists[$playlist->id] = $playlist;
             }
