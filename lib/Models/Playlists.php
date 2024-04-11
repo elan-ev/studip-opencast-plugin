@@ -514,45 +514,49 @@ class Playlists extends UPMap
      */
     public function update(array $json)
     {
-        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+        // Only update in opencast if necessary
+        if (isset($json['title']) || isset($json['description']) || isset($json['creator'])) {
+            // Load playlist from Opencast
+            $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+            $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
 
-        // Load playlist from Opencast
-        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+            if ($oc_playlist) {
+                $acls = $oc_playlist->accessControlEntries;
+                if (empty($acls)) {
+                    $acls = self::getDefaultACL($oc_playlist->id);
+                }
 
-        if ($oc_playlist) {
-            $acls = $oc_playlist->accessControlEntries;
-            if (empty($acls)) {
-                $acls = self::getDefaultACL($oc_playlist->id);
+                // TODO: Why is it necessary to remove the id?
+                array_walk($acls, function ($acl) {
+                    unset($acl->id);
+                });
+
+                // Update playlist in Opencast
+                $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
+                    'title' => $json['title'] ?? $oc_playlist->title,
+                    'description' => $json['description'] ?? $oc_playlist->description,
+                    'creator' => $json['creator'] ?? $oc_playlist->creator,
+                    'entries' => $oc_playlist->entries,
+                    'accessControlEntries' => $acls
+                ]);
             }
 
-            // TODO: Why is it necessary to remove the id?
-            array_walk($acls, function ($acl) {
-               unset($acl->id);
-            });
+            if (!$oc_playlist) {
+                // Load or update failed in Opencast
+                return false;
+            }
 
-            // Update playlist in Opencast
-            $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
-                'title' => $json['title'],
-                'description' => $json['description'],
-                'creator' => $json['creator'],
-                'entries' => $oc_playlist->entries,
-                'accessControlEntries' => $acls
-            ]);
+            // Ensure playlist data is consistent
+            $json['title'] = $oc_playlist->title;
+            $json['description'] = $oc_playlist->description;
+            $json['creator'] = $oc_playlist->creator;
+            $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+            $this->setEntries($oc_playlist->entries);
         }
 
-        if (!$oc_playlist) {
-            // Load or update failed in Opencast
-            return false;
-        }
-
-        // Ensure playlist data is consistent
-        $json['title'] = $oc_playlist->title;
-        $json['description'] = $oc_playlist->description;
-        $json['creator'] = $oc_playlist->creator;
-        $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
-
+        // Update in DB
         $this->setData($json);
-        $this->setEntries($oc_playlist->entries);
         $this->store();
 
         return true;
@@ -601,7 +605,7 @@ class Playlists extends UPMap
     }
 
     /**
-     * Set playlist videos in playlist based on passed entries
+     * Set playlist videos in playlist based on passed entries. This function checks no permissions.
      *
      * @param array $entries Opencast playlist entries
      */
@@ -626,10 +630,7 @@ class Playlists extends UPMap
 
             // Remove video from playlist if not exist in opencast playlist entries
             if (is_null($existing_entry)) {
-                // TODO: Should we check video permission?
-                //if (in_array($db_video->getUserPerm(), ['owner', 'write']) === true) {
-                    $playlist_video->delete();
-                //}
+                $playlist_video->delete();
             }
         }
 
@@ -655,15 +656,11 @@ class Playlists extends UPMap
             $playlist_video = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$db_video->id, $this->id]);
 
             if (is_null($playlist_video)) {
-                // check if user has perms on the video
-                // TODO: Should we check video permission?
-                //if (in_array($db_video->getUserPerm(), ['owner', 'write']) === true) {
-                    $playlist_video = PlaylistVideos::create([
-                        'video_id' => $db_video->id,
-                        'playlist_id' => $this->id,
-                        'service_entry_id' => $entry->id,
-                    ]);
-               // }
+                $playlist_video = PlaylistVideos::create([
+                    'video_id' => $db_video->id,
+                    'playlist_id' => $this->id,
+                    'service_entry_id' => $entry->id,
+                ]);
             }
 
             if (!is_null($playlist_video)) {
