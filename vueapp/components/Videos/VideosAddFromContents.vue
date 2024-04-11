@@ -59,7 +59,7 @@ export default {
 
         addVideosToPlaylist() {
             this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlist,
+                playlist: this.playlist.token,
                 videos:   this.selectedVideos
             }).then(() => {
                 this.selectedVideos = [];

@@ -69,8 +69,8 @@ export default {
             this.event.playlists.push(playlist);
 
             this.$store.dispatch('addVideosToPlaylist', {
-                playlist: playlist,
-                videos: [this.event],
+                playlist: playlist.token,
+                videos: [this.event.token],
             })
             .catch(() => {
                 // find the index of the playlist that was just added and remove it
@@ -88,8 +88,8 @@ export default {
             let playlist = this.event.playlists.splice(index, 1)[0];
 
             this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: playlist,
-                videos: [this.event],
+                playlist: playlist.token,
+                videos: [this.event.token],
             })
             .catch(() => {
                 // add the playlist back to the list

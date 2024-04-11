@@ -47,18 +47,7 @@ const getters = {
 export const state = { ...initialState };
 
 export const actions = {
-
-    /**
-     * Load config list
-     *
-     * @param context
-     * @param cached get cached config from state if not empty
-     */
-    async configListRead(context, cached = false) {
-        if (cached && Object.keys(context.state.config_list).length > 0) {
-            return context.state.config_list;
-        }
-
+    async configListRead(context) {
         return new Promise(resolve => {
             ApiService.get('config')
                 .then(({ data }) => {
@@ -68,17 +57,7 @@ export const actions = {
             });
     },
 
-    /**
-     * Load simple config list
-     *
-     * @param context
-     * @param cached get cached simple config from state if not empty
-     */
-    async simpleConfigListRead(context, cached = false) {
-        if (cached && Object.keys(context.state.simple_config_list).length > 0) {
-            return context.state.simple_config_list;
-        }
-
+    async simpleConfigListRead(context) {
         return new Promise(resolve => {
             ApiService.get('config/simple')
                 .then(({ data }) => {

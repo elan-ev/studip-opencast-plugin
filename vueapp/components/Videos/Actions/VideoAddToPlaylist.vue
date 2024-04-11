@@ -39,8 +39,8 @@ export default {
     methods: {
         async addVideo() {
             await this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlist,
-                videos: [this.event]
+                playlist: this.playlist.token,
+                videos: [this.event.token]
             }).then(() => {
                 this.$store.dispatch('addMessage', {
                     type: 'success',

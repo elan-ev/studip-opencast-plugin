@@ -448,8 +448,8 @@ export default {
                             let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
                             if (playlist) {
                                 this.$store.dispatch('addVideosToPlaylist', {
-                                    playlist: playlist,
-                                    videos: [data.event],
+                                    playlist: playlist.token,
+                                    videos: [data.event.token],
                                 }).catch(() => {
                                     this.$store.dispatch('addMessage', {
                                         type: 'warning',

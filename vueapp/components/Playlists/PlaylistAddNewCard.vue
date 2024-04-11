@@ -103,8 +103,7 @@ export default {
                 .then(() => {
                     this.$emit('done');
                 })
-                .catch((error) => {
-                    console.log(error)
+                .catch(() => {
                     this.$store.dispatch('addMessage', {
                         type: 'error',
                         text: this.$gettext('Die Wiedergabeliste konnte nicht erstellt werden.')

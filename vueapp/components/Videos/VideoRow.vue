@@ -233,7 +233,7 @@ export default {
 
         toggleVideo(e) {
             this.$emit("toggle", {
-                event: this.event,
+                event_id: this.event.token,
                 checked: e.target.checked ? true : false
             });
         },
@@ -389,7 +389,7 @@ export default {
         },
 
         isChecked() {
-            return this.selectedVideos.findIndex(video => video.token === this.event.token) >= 0;
+            return this.selectedVideos.indexOf(this.event.token) >= 0;
         },
 
         getAccessText() {

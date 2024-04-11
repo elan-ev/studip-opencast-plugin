@@ -131,7 +131,7 @@ const actions = {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
                 context.dispatch('setDefaultSortOrder', data).then(() => {
-                        context.commit('setPlaylist', data);
+                    context.commit('setPlaylist', data);
                 });
             });
     },
@@ -232,14 +232,14 @@ const actions = {
      *
      * @param context
      * @param data data
-     * @param data.playlist playlist
-     * @param data.videos videos to add
+     * @param data.playlist playlist token
+     * @param data.videos list of video tokens to add
      */
     async addVideosToPlaylist(context, data) {
         for (let i = 0; i < data.videos.length; i++) {
-            await ApiService.put('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token);
+            await ApiService.put('/playlists/' + data.playlist + '/video/' + data.videos[i]);
         }
-        context.commit('addToVideosCount', {'token': data.playlist.token, 'addToCount': data.videos.length});
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
     },
 
     /**
@@ -247,15 +247,15 @@ const actions = {
      *
      * @param context
      * @param data data
-     * @param data.playlist playlist
-     * @param data.videos videos to remove
+     * @param data.playlist playlist token
+     * @param data.videos list of video tokens to remove
      */
     async removeVideosFromPlaylist(context, data) {
         let removedCount = 0;
         let forbiddenCount = 0;
         for (let i = 0; i < data.videos.length; i++) {
             try {
-                await ApiService.delete('/playlists/' + data.playlist.token + '/video/' + data.videos[i].token);
+                await ApiService.delete('/playlists/' + data.playlist + '/video/' + data.videos[i]);
                 removedCount++;
             } catch (err) {
                 // We send back 403 for those livestream video, when removing from playlist.
@@ -264,7 +264,7 @@ const actions = {
                 }
             }
         }
-        context.commit('addToVideosCount', {'token': data.playlist.token, 'addToCount': -removedCount});
+        context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -removedCount});
 
         if (removedCount > 0) {
             return Promise.resolve({removedCount, forbiddenCount});
@@ -296,15 +296,15 @@ const actions = {
                         token: data.token,
                         is_default: is_default
                     })
-                        .then(() => {
-                            dispatch('setPlaylistsReload', true);
-                            dispatch('loadPlaylists');
-                            // When is_default is true, it means it is the course playlist creation and we need to set a few things.
-                            if (is_default) {
-                                dispatch('loadCourseConfig', $cid);
-                                dispatch('loadPlaylist', data.token);
-                            }
-                        })
+                    .then(() => {
+                        dispatch('setPlaylistsReload', true);
+                        dispatch('loadPlaylists');
+                        // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                        if (is_default) {
+                            dispatch('loadCourseConfig', $cid);
+                            dispatch('loadPlaylist', data.token);
+                        }
+                    })
                 } else {
                     dispatch('setPlaylistsReload', true);
                     dispatch('loadPlaylists');
@@ -312,7 +312,7 @@ const actions = {
             });
     },
 
-    async copyPlaylist(contexcontext, params) {
+    async copyPlaylist(context, params) {
         let data = {};
 
         if (params.course !== undefined) {
@@ -323,8 +323,8 @@ const actions = {
         return ApiService.post('playlists/' + params.token + '/copy', data);
     },
 
-    async deletePlaylist(context, playlist) {
-        return ApiService.delete('playlists/' + playlist['token']);
+    async deletePlaylist(context, token) {
+        return ApiService.delete('playlists/' + token);
     },
 
     async setPlaylistSearch({dispatch, commit}, search) {

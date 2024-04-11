@@ -436,20 +436,20 @@ export default {
 
         toggleVideo(data) {
             if (data.checked === false) {
-                let index = this.selectedVideos.findIndex(video => video.token === data.event.token);
+                let index = this.selectedVideos.indexOf(data.event_id);
                 if (index >= 0) {
                     this.updateSelectedVideos(this.selectedVideos.toSpliced(index, 1))
 
                 }
             } else {
-                this.updateSelectedVideos(this.selectedVideos.concat(data.event));
+                this.updateSelectedVideos(this.selectedVideos.concat(data.event_id));
             }
         },
 
         toggleAll(e) {
             if (e.target.checked) {
                 // select all videos on current page
-                this.updateSelectedVideos(this.loadedVideos);
+                this.updateSelectedVideos(this.loadedVideos.map(v => v.token));
             } else {
                 // deselect all videos on current page
                 this.updateSelectedVideos([]);
@@ -513,7 +513,7 @@ export default {
             let view = this;
 
             this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: this.playlist,
+                playlist: this.playlist.token,
                 videos:   this.selectedVideos
             }).then(({removedCount, forbiddenCount}) => {
                 let type = 'success';

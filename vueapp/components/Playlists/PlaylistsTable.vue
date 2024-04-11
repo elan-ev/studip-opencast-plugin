@@ -245,7 +245,7 @@ export default {
                 confirm_text += ' ' + this.$gettext('Bitte beachten Sie, dass diese Wiedergabeliste ist eine') + ' ' + playlist.default_course_tooltip;
             }
             if (confirm(this.$gettext(confirm_text))) {
-                this.$store.dispatch('deletePlaylist', playlist)
+                this.$store.dispatch('deletePlaylist', playlist.token)
                     .then(() => {
                         this.loadPlaylists();
                     })

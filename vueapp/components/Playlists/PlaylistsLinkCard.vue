@@ -81,10 +81,10 @@ export default {
 
         addPlaylistsToCourse() {
             if (this.cid && this.isDefault && this.selectedPlaylists?.[0]) {
-                let playlist = this.selectedPlaylists[0];
+                let token = this.selectedPlaylists[0];
                 this.$store.dispatch('addPlaylistToCourse', {
                         course: this.cid,
-                        token: playlist.token,
+                        token: token,
                         is_default: true
                 })
                 .then(() => {
@@ -96,7 +96,7 @@ export default {
                     this.$store.dispatch('setPlaylistsReload', true);
                     this.$store.dispatch('loadPlaylists');
                     this.$store.dispatch('loadCourseConfig', this.cid);
-                    this.$store.dispatch('loadPlaylist', playlist.token);
+                    this.$store.dispatch('loadPlaylist', token);
                     this.$emit('done');
                 });
             } else {
