@@ -62,10 +62,6 @@ class RouteMap
         $group->post("/videos/{episode_id}", Routes\Video\VideoAdd::class);
 
         $group->post("/videos/{token}/report", Routes\Video\VideoReport::class);
-        $group->post(
-            "/videos/{token}/playlists",
-            Routes\Video\VideoAddToPlaylist::class
-        );
 
         $group->get(
             "/videos/{token}/captions",

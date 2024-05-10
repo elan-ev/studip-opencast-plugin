@@ -2,6 +2,8 @@
 
 namespace Opencast\Models;
 
+use Opencast\Models\REST\ApiPlaylistsClient;
+
 class Playlists extends UPMap
 {
     protected static function configure($config = [])
@@ -333,6 +335,344 @@ class Playlists extends UPMap
     }
 
     /**
+     * Get default ACLs array for a playlist containing user and playlist roles
+     *
+     * @param string $playlistId playlist identifier. If null, only user role will be added.
+     * @return array access control list
+     */
+    public static function getDefaultACL($playlistId = null)
+    {
+        global $user;
+
+        $acls = [
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_$user->user_id", // TODO: For videos we use the user role from /info/me.js. Here we have no LTI user.
+                'action' => 'read'
+            ],
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_$user->user_id",
+                'action' => 'write'
+            ],
+        ];
+
+        if (!is_null($playlistId)) {
+            $acls = array_merge($acls, self::getPlaylistACL($playlistId));
+        }
+
+        return $acls;
+    }
+
+    /**
+     * Get ACLs with playlist roles only
+     *
+     * @param $playlistId
+     * @return array[]
+     */
+    private static function getPlaylistACL($playlistId)
+    {
+        return [
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
+                'action' => 'read'
+            ],
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'action' => 'read'
+            ],
+            [
+                'allow'  => true,
+                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'action' => 'write'
+            ]
+        ];
+    }
+
+    /**
+     * Check that the playlist has its unique ACL and set it if necessary
+     *
+     * @param $oc_playlist object
+     * @param $playlist Playlists
+     * @return void
+     */
+    public static function checkPlaylistACL($oc_playlist, $playlist)
+    {
+        $old_acl = json_decode(json_encode($oc_playlist->accessControlEntries), true);
+        // Remove the ACL IDs
+        array_walk($old_acl, function (&$entry) {
+            unset($entry['id']);
+        });
+
+        $current_acl = $old_acl;
+
+        $acl = self::getPlaylistACL($oc_playlist->id);
+
+        foreach ($acl as $entry) {
+            $found = false;
+            foreach ($current_acl as $current_key => &$current_entry) {
+                if ($current_entry['role'] === $entry['role'] && $current_entry['action'] === $entry['action']) {
+                    if ($found) {
+                        // Remove duplicates
+                        unset($current_acl[$current_key]);
+                        continue;
+                    }
+
+                    $found = true;
+
+                    // Ensure that allowed is true
+                    $current_entry['allow'] = $entry['allow'];
+                }
+            }
+
+            if (!$found) {
+                $current_acl[] = $entry;
+            }
+        }
+
+        // Reindex keys
+        $current_acl = array_values($current_acl);
+
+        if ($old_acl <> $current_acl) {
+            $api_client = ApiPlaylistsClient::getInstance($playlist->config_id);
+            $api_client->updatePlaylist($oc_playlist->id, [
+                'title' => $oc_playlist->title,
+                'description' => $oc_playlist->description,
+                'creator' => $oc_playlist->creator,
+                'entries' => $oc_playlist->entries,
+                'accessControlEntries' => $current_acl
+            ]);
+        }
+    }
+
+    /**
+     * Create playlist in Opencast and DB
+     *
+     * @param array $json playlist data
+     * @param array $entries playlist entries
+     *
+     * @return Playlists|null created playlist
+     */
+    public static function createPlaylist($json, $entries = [])
+    {
+        $playlist_client = ApiPlaylistsClient::getInstance($json['config_id']);
+
+        // Create playlist in Opencast
+        $oc_playlist = $playlist_client->createPlaylist([
+            'title' => $json['title'],
+            'description' => $json['description'],
+            'creator' => $json['creator'],
+            'entries' => $entries,
+            'accessControlEntries' => self::getDefaultACL()
+        ]);
+
+        if (!$oc_playlist) {
+            return null;
+        }
+
+        // Update playlist acls in Opencast
+        $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
+            'title' => $oc_playlist->title,
+            'description' => $oc_playlist->description,
+            'creator' => $oc_playlist->creator,
+            'entries' => $oc_playlist->entries,
+            'accessControlEntries' => self::getDefaultACL($oc_playlist->id)
+        ]);
+
+        if (!$oc_playlist) {
+            return null;
+        }
+
+        // Create playlist in DB
+        $playlist = self::findOneBySQL('config_id = ? AND service_playlist_id = ?', [$json['config_id'], $oc_playlist->id]);
+
+        if (empty($playlist)) {
+            $playlist = new Playlists;
+        }
+
+        $json['service_playlist_id'] = $oc_playlist->id;
+        $json['title'] = $oc_playlist->title;
+        $json['description'] = $oc_playlist->description;
+        $json['creator'] = $oc_playlist->creator;
+        $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+        $playlist->setData($json);
+        $playlist->store();
+
+        $playlist->setEntries($oc_playlist->entries);
+
+        return $playlist;
+    }
+
+    /**
+     * Update playlist in Opencast and DB
+     *
+     * @param array $json playlist data
+     * @return boolean update successful
+     */
+    public function update(array $json)
+    {
+        // Only update in opencast if necessary
+        if (isset($json['title']) || isset($json['description']) || isset($json['creator'])) {
+            // Load playlist from Opencast
+            $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+            $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+
+            if ($oc_playlist) {
+                $acls = $oc_playlist->accessControlEntries;
+                if (empty($acls)) {
+                    $acls = self::getDefaultACL($oc_playlist->id);
+                }
+
+                // TODO: Why is it necessary to remove the id?
+                array_walk($acls, function ($acl) {
+                    unset($acl->id);
+                });
+
+                // Update playlist in Opencast
+                $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
+                    'title' => $json['title'] ?? $oc_playlist->title,
+                    'description' => $json['description'] ?? $oc_playlist->description,
+                    'creator' => $json['creator'] ?? $oc_playlist->creator,
+                    'entries' => $oc_playlist->entries,
+                    'accessControlEntries' => $acls
+                ]);
+            }
+
+            if (!$oc_playlist) {
+                // Load or update failed in Opencast
+                return false;
+            }
+
+            // Ensure playlist data is consistent
+            $json['title'] = $oc_playlist->title;
+            $json['description'] = $oc_playlist->description;
+            $json['creator'] = $oc_playlist->creator;
+            $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+            $this->setEntries($oc_playlist->entries);
+        }
+
+        // Update in DB
+        $this->setData($json);
+        $this->store();
+
+        return true;
+    }
+
+    /**
+     * Delete playlist from Opencast and DB
+     */
+    public function delete()
+    {
+        if ($this->service_playlist_id) {
+            // Delete from Opencast
+            $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+            $playlist_client->deletePlaylist($this->service_playlist_id);
+        }
+
+        return parent::delete();
+    }
+
+    /**
+     * Synchronize this playlist with Opencast playlist
+     *
+     * @return boolean Successfully synchronized with opencast playlist
+     */
+    public function synchronize()
+    {
+        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+
+        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+
+        if (!$oc_playlist) {
+            return false;
+        }
+
+        // Update playlist
+        $this->title = $oc_playlist->title;
+        $this->description = $oc_playlist->description;
+        $this->creator = $oc_playlist->creator;
+        $this->updated = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+        $this->setEntries($oc_playlist->entries);
+
+        $this->store();
+
+        return true;
+    }
+
+    /**
+     * Set playlist videos in playlist based on passed entries. This function checks no permissions.
+     *
+     * @param array $entries Opencast playlist entries
+     */
+    public function setEntries(Array $entries)
+    {
+        $playlist_videos = PlaylistVideos::findBySql(
+            'playlist_id = ?', [$this->id]
+        );
+
+        // Iterate over existing playlist videos to be removed
+        foreach ($playlist_videos as $playlist_video) {
+            $db_video = Videos::find($playlist_video->video_id);
+
+            // Check if video already exists in playlist
+            $existing_entry = null;
+            foreach ($entries as $entry) {
+                if ($entry->contentId === $db_video->episode) {
+                    $existing_entry = $entry;
+                    break;
+                }
+            }
+
+            // Remove video from playlist if not exist in opencast playlist entries
+            if (is_null($existing_entry)) {
+                $playlist_video->delete();
+            }
+        }
+
+        // Create and update entries
+        foreach ($entries as $key => $entry) {
+            $db_video = Videos::findByEpisode($entry->contentId);
+
+            if (is_null($db_video)) {
+                // Create dummy video without permissions for videos not available yet or removed from Stud.IP
+                $db_video = new Videos;
+                $db_video->setData([
+                    'episode'      => $entry->contentId,
+                    'config_id'    => $this->config_id,
+                    'created'      => date('Y-m-d H:i:s'),
+                    'available'    => false
+                ]);
+                if (!$db_video->token) {
+                    $db_video->token = bin2hex(random_bytes(8));
+                }
+                $db_video->store();
+            }
+
+            $playlist_video = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$db_video->id, $this->id]);
+
+            if (is_null($playlist_video)) {
+                $playlist_video = PlaylistVideos::create([
+                    'video_id' => $db_video->id,
+                    'playlist_id' => $this->id,
+                    'service_entry_id' => $entry->id,
+                ]);
+            }
+
+            if (!is_null($playlist_video)) {
+                // Always update entry id and order
+                $playlist_video->service_entry_id = $entry->id;
+                $playlist_video->order = $key;
+                $playlist_video->store();
+            }
+        }
+    }
+
+    /**
      * Get sanitized array to send to the frontend
      */
     public function toSanitizedArray()
@@ -362,16 +702,47 @@ class Playlists extends UPMap
         return $data;
     }
 
+    /**
+     * Copy playlist in Opencast and DB
+     *
+     * @return Playlists|null Copied playlist. Null if copy fails.
+     */
     public function copy()
     {
         global $user;
 
-        $new_playlist = self::create([
+        // Collect playlist videos
+        $stmt = \DBManager::get()->prepare("SELECT oc_video.episode FROM oc_video
+            INNER JOIN oc_playlist_video ON (oc_playlist_video.video_id = oc_video.id 
+                AND oc_playlist_video.playlist_id = ?) 
+            ORDER BY oc_playlist_video.order");
+        $stmt->execute([$this->id]);
+        $playlist_events = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+        $entries = [];
+        foreach ($playlist_events as $event) {
+            $entries[] = [
+                'contentId' => $event,
+                'type' => 'EVENT'
+            ];
+        }
+
+        $playlist_data = [
+            'config_id'      => $this->config_id,
             'title'          => $this->title,
+            'description'    => $this->description,
+            'creator'        => $this->creator,
             'visibility'     => $this->visibility,
             'sort_order'     => $this->sort_order,
-            'allow_download' => $this->allow_download,
-        ]);
+            'allow_download' => $this->allow_download
+        ];
+
+        // Create copy of playlist in Opencast and DB
+        $new_playlist = self::createPlaylist($playlist_data, $entries);
+
+        if (!$new_playlist) {
+            return null;
+        }
 
         // Set current user as owner for this playlist
         PlaylistsUserPerms::create([
@@ -380,21 +751,10 @@ class Playlists extends UPMap
             'perm'        => 'owner'
         ]);
 
-        // Link videos to new playlist
-        foreach ($this->videos as $video) {
-            PlaylistVideos::create([
-                'playlist_id' => $new_playlist->id,
-                'video_id'    => $video->video_id,
-                'order'       => $video->order,
-            ]);
-        }
-
         // Copy tags
         foreach ($this->tags as $tag) {
             $tag->copy($new_playlist->id);
         }
-
-        $new_playlist->store();
 
         return $new_playlist;
     }

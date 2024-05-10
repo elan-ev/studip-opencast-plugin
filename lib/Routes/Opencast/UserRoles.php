@@ -12,6 +12,8 @@ use Opencast\Models\VideosUserPerms;
 use Opencast\Models\Videos;
 use Opencast\Models\Filter;
 use Opencast\Models\VideosShares;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistsUserPerms;
 
 
 
@@ -61,15 +63,21 @@ class UserRoles extends OpencastController
             $email    = $user->email;
             $fullname = $user->getFullName();
 
-            // Add user permission to access user-bound series
+            // Add user permission to access user-bound series and own playlists
             $roles[] = 'STUDIP_' . $user_id;
 
-            // Stud.IP-root has access to all videos
+            // Stud.IP-root has access to all videos and playlists
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
                     $roles[] = 'STUDIP_' . $video->episode . '_write';
                 }
+
+                foreach (Playlists::findBySQL('1') as $playlist) {
+                    $roles[] = 'STUDIP_PLAYLIST_' . $playlist->service_playlist_id . '_write';
+                }
             } else {
+                // Handle video roles
+
                 // get all videos the user has permissions on
                 foreach(VideosUserPerms::findByUser_id($user_id) as $vperm) {
                     if (!$vperm->video->episode) continue;
@@ -81,22 +89,19 @@ class UserRoles extends OpencastController
                     }
                 }
 
-                // find videos with direct access
-                foreach (Videos::getUserVideos(new Filter([
-                    'limit'  => -1
-                ])) as $video) {
-                    if (!$vperm->video->episode) continue;
-
-                    $roles[$vperm->video->episode . '_read'] = 'STUDIP_' . $vperm->video->episode . '_read';
-                }
-
-
-                // first, get all courses user has access to
+                // get courses with write access ('dozent', 'tutor')
                 $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
-                    WHERE user_id = ?");
-
+                    WHERE user_id = ? AND (status = 'dozent' OR status = 'tutor')");
                 $stmt->execute([$user_id]);
-                $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                $courses_write = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+                // Get courses with read access ('autor', 'user')
+                $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
+                    WHERE user_id = ? AND (status = 'autor' OR status = 'user')");
+                $stmt->execute([$user_id]);
+                $courses_read = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+                $courses = array_merge($courses_write, $courses_read);
 
                 // find videos in accessible playlists
                 $stmt = \DBManager::get()->prepare('SELECT episode FROM oc_playlist_seminar AS ops
@@ -113,6 +118,44 @@ class UserRoles extends OpencastController
 
                 foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $episode) {
                     $roles[$episode . '_read'] = 'STUDIP_' . $episode . '_read';
+                }
+
+
+                // Handle playlist roles
+
+                // get all playlists the user has permissions on
+                foreach (PlaylistsUserPerms::findByUser_id($user_id) as $pperm) {
+                    if ($pperm->perm == 'owner' || $pperm->perm == 'write') {
+                        $roles[$pperm->playlist->service_playlist_id . '_write'] = 'STUDIP_PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
+                    } else {
+                        $roles[$pperm->playlist->service_playlist_id . '_read'] = 'STUDIP_PLAYLIST_' . $pperm->playlist->service_playlist_id . '_read';
+                    }
+                }
+
+                // find playlists with write access
+                $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
+                    INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = op.id)
+                    WHERE ops.seminar_id IN (:courses)'
+                );
+                $stmt->bindValue(':courses', $courses_write, \StudipPDO::PARAM_ARRAY);
+                $stmt->execute();
+
+                foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
+                    $roles[$service_playlist_id . '_write'] = 'STUDIP_PLAYLIST_' . $service_playlist_id . '_write';
+                }
+
+                // find playlists with read access
+                $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
+                    INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = op.id)
+                    WHERE ops.seminar_id IN (:courses)
+                    AND ops.visibility = "visible"'
+                );
+                $stmt->bindValue(':courses', $courses_read, \StudipPDO::PARAM_ARRAY);
+                $stmt->execute();
+
+                foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
+                    // All seminar members have read permission on visible playlists
+                    $roles[$service_playlist_id . '_read'] = 'STUDIP_PLAYLIST_' . $service_playlist_id . '_read';
                 }
             }
         } else {

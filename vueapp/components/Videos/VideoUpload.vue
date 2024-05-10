@@ -450,7 +450,12 @@ export default {
                                 this.$store.dispatch('addVideosToPlaylist', {
                                     playlist: playlist.token,
                                     videos: [data.event.token],
-                                })
+                                }).catch(() => {
+                                    this.$store.dispatch('addMessage', {
+                                        type: 'warning',
+                                        text: this.$gettext('Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden.')
+                                    });
+                                });
                             }
                         }
 

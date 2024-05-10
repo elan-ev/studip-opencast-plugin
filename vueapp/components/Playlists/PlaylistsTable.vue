@@ -249,6 +249,12 @@ export default {
                     .then(() => {
                         this.loadPlaylists();
                     })
+                    .catch(() => {
+                        this.$store.dispatch('addMessage', {
+                            type: 'error',
+                            text: this.$gettext('Die Wiedergabeliste konnte nicht gelöscht werden.')
+                        });
+                    })
             }
         }
     },

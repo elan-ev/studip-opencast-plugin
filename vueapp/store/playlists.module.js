@@ -121,6 +121,12 @@ const actions = {
             });
     },
 
+    /**
+     * Load playlist
+     *
+     * @param context
+     * @param token playlist token
+     */
     async loadPlaylist(context, token) {
         return ApiService.get('playlists/' + token)
             .then(({ data }) => {
@@ -145,6 +151,12 @@ const actions = {
         context.commit('setVideoSort', {field: field, order: order});
     },
 
+    /**
+     * Update playlist
+     *
+     * @param context
+     * @param playlist playlist data
+     */
     async updatePlaylist(context, playlist) {
         return ApiService.put('playlists/' + playlist.token, playlist)
             .then(({ data }) => {
@@ -215,6 +227,14 @@ const actions = {
         return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
     },
 
+    /**
+     * Add videos to playlist
+     *
+     * @param context
+     * @param data data
+     * @param data.playlist playlist token
+     * @param data.videos list of video tokens to add
+     */
     async addVideosToPlaylist(context, data) {
         for (let i = 0; i < data.videos.length; i++) {
             await ApiService.put('/playlists/' + data.playlist + '/video/' + data.videos[i]);
@@ -222,6 +242,14 @@ const actions = {
         context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
     },
 
+    /**
+     * Remove videos from playlist
+     *
+     * @param context
+     * @param data data
+     * @param data.playlist playlist token
+     * @param data.videos list of video tokens to remove
+     */
     async removeVideosFromPlaylist(context, data) {
         let removedCount = 0;
         let forbiddenCount = 0;

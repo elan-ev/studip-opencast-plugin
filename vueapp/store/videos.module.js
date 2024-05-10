@@ -220,10 +220,6 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async updateVideoPlaylists(context, data) {
-        return ApiService.post('videos/' + data.token + '/playlists', {playlists: data.playlists});
-    },
-
     async copyVideosToCourses(context, data) {
         return ApiService.post('videos/' + data.cid + '/copy', {courses: data.courses});
     },

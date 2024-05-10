@@ -56,7 +56,7 @@ class ConfigAdd extends OpencastController
         Helpers::validateDefaultServer();
 
         // check configuration and load endpoints
-        $message = $config->updateEndpoints($this->container);
+        $message = $config->updateEndpoints();
         // Dont save configuration if it failed
         if ($message['type'] == 'error') {
             Endpoints::removeEndpoint($config->id, 'services');

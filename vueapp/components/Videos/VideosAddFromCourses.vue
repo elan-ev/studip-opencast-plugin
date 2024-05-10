@@ -87,6 +87,12 @@ export default {
                 });
                 this.$store.commit('setVideosReload', true);
                 this.$emit('done');
+            }).catch(() => {
+                this.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.')
+                });
+                this.$emit('cancel');
             });
         },
     },

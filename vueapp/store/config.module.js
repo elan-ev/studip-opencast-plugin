@@ -1,8 +1,8 @@
 import ApiService from "@/common/api.service";
 
 const initialState = {
-    config_list: [],
-    simple_config_list: [],
+    config_list: {},
+    simple_config_list: {},
     config: {
         'service_url' :      null,
         'service_user':      null,

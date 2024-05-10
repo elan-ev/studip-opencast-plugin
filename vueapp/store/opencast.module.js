@@ -175,7 +175,7 @@ const actions = {
             // Clear lti status and user
             commit('setCurrentLTIUser', {
                 server: server.id,
-                authenticated: null
+                user: null
             });
             commit('setLTIStatus', {
                 server: server.id,

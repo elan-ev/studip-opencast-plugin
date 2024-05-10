@@ -38,7 +38,7 @@ class ConfigEdit extends OpencastController
         $config->updateSettings($json['config']);
 
         // check configuration and load endpoints
-        $message = $config->updateEndpoints($this->container);
+        $message = $config->updateEndpoints();
         // Restore configuration if it failed
         if ($message['type'] == 'error') {
             $config->setData($config_old);

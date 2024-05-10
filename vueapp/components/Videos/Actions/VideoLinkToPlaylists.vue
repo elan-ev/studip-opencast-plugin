@@ -68,9 +68,9 @@ export default {
         addPlaylist(playlist) {
             this.event.playlists.push(playlist);
 
-            this.$store.dispatch('updateVideoPlaylists', {
-                token: this.event.token,
-                playlists: this.event.playlists,
+            this.$store.dispatch('addVideosToPlaylist', {
+                playlist: playlist.token,
+                videos: [this.event.token],
             })
             .catch(() => {
                 // find the index of the playlist that was just added and remove it
@@ -85,15 +85,15 @@ export default {
                 return;
             }
 
-            let link = this.event.playlists.splice(index, 1)[0];
+            let playlist = this.event.playlists.splice(index, 1)[0];
 
-            this.$store.dispatch('updateVideoPlaylists', {
-                token: this.event.token,
-                playlists: this.event.playlists,
+            this.$store.dispatch('removeVideosFromPlaylist', {
+                playlist: playlist.token,
+                videos: [this.event.token],
             })
             .catch(() => {
                 // add the playlist back to the list
-                this.event.playlists.splice(index, 0, link);
+                this.event.playlists.splice(index, 0, playlist);
                 this.$store.dispatch('addMessage', this.remove_playlist_error);
             });
         },
