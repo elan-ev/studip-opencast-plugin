@@ -24,7 +24,7 @@ class RouteMap
 
         $group
             ->group("", [$this, "adminRoutes"])
-            ->add(new Middlewares\AdminPerms($container))
+            ->add(new Middlewares\AdminPerms($this->container))
             ->add(
                 new Middlewares\Authentication(
                     $this->container->get("studip-authenticator")
