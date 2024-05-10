@@ -66,6 +66,9 @@ echo install most recent version of Stud.IP Opencast plugin
 rm -rf {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast
 git clone https://github.com/elan-ev/studip-opencast-plugin.git {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast
 
+echo change max plugin version
+sed -i 's/studipMaxVersion=.*/studipMaxVersion=7.0.99/g' /usr/local/studip/main/public/plugins_packages/elan-ev/OpenCast/plugin.manifest
+
 echo build all assets for Stud.IP OCP
 cd {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast && npm run build
 
