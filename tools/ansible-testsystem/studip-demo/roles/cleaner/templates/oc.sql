@@ -1,4 +1,6 @@
-INSERT IGNORE INTO `oc_config`
+SET FOREIGN_KEY_CHECKS=0;
+
+REPLACE INTO `oc_config` 
     (`id`, `service_url`, `service_user`, `service_password`, `service_version`, `settings`) VALUES
     (1,	'{{ opencast_uri }}', 'admin', 'opencast', '15.0', '{\"lti_consumerkey\":\"CONSUMERKEY\",\"lti_consumersecret\":\"CONSUMERSECRET\"}');
 
@@ -116,7 +118,7 @@ REPLACE INTO oc_playlist
     (1, 'fce2a63c', '12345 Test Lehrveranstaltung (WS 2023/2024)', NULL, '2023-11-10 12:50:57', '2023-11-10 12:50:57', 'created_desc', NULL);
 
 REPLACE INTO `oc_playlist_seminar` (`id`, `playlist_id`, `seminar_id`, `is_default`, `visibility`) VALUES
-    (1, 1,      'a07535cf2f8a72df33c12ddfa4b53dde',     1,      'visible');
+    (1,	1,	'a07535cf2f8a72df33c12ddfa4b53dde',	1,	'visible');
 
 REPLACE INTO oc_playlist_video
     (playlist_id, video_id, `order`) VALUES
@@ -141,3 +143,24 @@ REPLACE INTO oc_playlist_video
 (1, 19, 0),
 (1, 20, 0);
 
+
+REPLACE INTO `oc_workflow` (`id`, `config_id`, `name`, `tag`, `displayname`) VALUES
+(1,	1,	'delete',	'delete',	'Delete'),
+(2,	1,	'duplicate-event',	'archive',	'Duplicate Event'),
+(3,	1,	'fast',	'schedule',	'Fast Testing Workflow'),
+(4,	1,	'fast',	'upload',	'Fast Testing Workflow'),
+(5,	1,	'schedule-and-upload',	'schedule',	'Process upon upload and schedule'),
+(6,	1,	'schedule-and-upload',	'upload',	'Process upon upload and schedule'),
+(7,	1,	'publish',	'archive',	'Publish'),
+(8,	1,	'publish',	'editor',	'Publish'),
+(9,	1,	'republish-metadata',	'archive',	'Republish metadata'),
+(10,	1,	'retract',	'archive',	'Retract');
+
+
+REPLACE INTO `oc_workflow_config` (`id`, `config_id`, `used_for`, `workflow_id`) VALUES
+(1,	1,	'schedule',	5),
+(2,	1,	'upload',	6),
+(3,	1,	'studio',	6),
+(4,	1,	'delete',	1);
+
+SET FOREIGN_KEY_CHECKS=1;
