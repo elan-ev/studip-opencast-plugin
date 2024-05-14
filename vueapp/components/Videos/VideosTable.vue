@@ -512,38 +512,30 @@ export default {
         removeVideosFromPlaylist() {
             let view = this;
 
+            if (this.selectedVideos.find(video => video?.livestream)) {
+                view.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: view.$gettext('Livestream-Videos können nicht entfernt werden.')
+                });
+                return;
+            }
+
             this.$store.dispatch('removeVideosFromPlaylist', {
                 playlist: this.playlist.token,
                 videos:   this.selectedVideos
-            }).then(({removedCount, forbiddenCount}) => {
-                let type = 'success';
-                let text = view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
-                if (forbiddenCount > 0) {
-                    type = 'warning';
-                    text = view.$gettext('%{removed_count} Video(s) wurde(n) von der Wiedergabeliste entfernt. %{forbbiden_count} Video(s) konnte(n) nicht.', {
-                        removed_count: removedCount,
-                        forbbiden_count: forbiddenCount
-                    });
-                }
+            }).then(() => {
                 this.updateSelectedVideos([]);
 
                 view.$store.dispatch('addMessage', {
-                    type: type,
-                    text: text
+                    type: 'success',
+                    text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
 
                 this.loadVideos();
-            }).catch(({forbiddenCount}) => {
-                let text = view.$gettext('Die Videos konnten von der Wiedergabeliste nicht entfernt werden.');
-                if (forbiddenCount > 0) {
-                    text += ' ' + view.$gettext('%{forbbiden_count} davon war(en) nicht erlaubt.',{
-                        forbbiden_count: forbiddenCount
-                    });
-                }
-
+            }).catch(() => {
                 view.$store.dispatch('addMessage', {
                     type: 'error',
-                    text: text
+                    text: view.$gettext('Die Videos konnten von der Wiedergabeliste nicht entfernt werden.')
                 });
             });
         },
