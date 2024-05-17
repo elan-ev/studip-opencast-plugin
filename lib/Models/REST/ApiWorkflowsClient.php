@@ -19,24 +19,6 @@ class ApiWorkflowsClient extends RestClient
     }
 
     /**
-     * Perform the "retract" workflow for an episode
-     *
-     * @param string $episode_id episode id
-     *
-     * @return boolean the status of the performed workflow
-     */
-    public function retract($episode_id)
-    {
-        // TODO: configurable workflow for retracting
-        $response = $this->opencastApi->workflowsApi->run($episode_id, 'retract');
-
-        if ($response['code'] == 201) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Republish the passed episode / event
      *
      * @param string $episode_id episode id
