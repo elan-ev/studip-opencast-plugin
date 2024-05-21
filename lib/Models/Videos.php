@@ -631,14 +631,17 @@ class Videos extends UPMap
 
         if (in_array($response['code'], [200, 204]) === true) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
-            if($api_wf_client->republish($this->episode)) {
+            
+            if ($api_wf_client->republish($this->episode)) {
                 $success = true;
                 $store_data = [];
+
                 foreach ($allowed_metadata_fields as $field_name) {
                     if (isset($event[$field_name])) {
                         $store_data[$field_name] = $event[$field_name];
                     }
                 }
+
                 if (!empty($store_data)) {
                     $this->setData($store_data);
                     $success = $this->store() !== false;

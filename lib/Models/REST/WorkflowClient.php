@@ -21,53 +21,6 @@ class WorkflowClient extends RestClient
 
 
     /**
-     * Get a specific workflow instance
-     *
-     * @param string $id The workflow instance identifier
-     *
-     * @return object|boolean A JSON representation of a workflow instance, or false when unable to get
-     */
-    public function getWorkflowInstance($id)
-    {
-        $response = $this->opencastApi->workflow->getInstance($id);
-
-        if ($response['code'] == 200) {
-            if (isset($response['body']->workflow)) {
-                return $response['body']->workflow;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns all Workflow instances for a given SeriesID
-     *
-     * @param string $series_id The series identifier
-     * 
-     * @return array|boolean Workflow Instances, or false if unable to get
-     */
-    public function getInstances($series_id = null)
-    {
-        $params = [
-            'count' => 1000,
-            'compact' => true
-        ];
-
-        if (!empty($series_id)) {
-            $params['seriesId'] = $series_id;
-        }
-
-        $response = $this->opencastApi->workflow->getInstances($params);
-
-        if ($response['code'] == 200) {
-            return $response['body'];
-        }
-
-        return false;
-    }
-
-    /**
      * Returns all available workflow definitions
      *
      * @return array|boolean Workflow Instances
@@ -80,24 +33,6 @@ class WorkflowClient extends RestClient
             if (isset($response['body']->definitions->definition) && !empty($response['body']->definitions->definition)) {
                 return $response['body']->definitions->definition;
             }
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes a workflow instance from connected Opencast
-     * 
-     * @param string $id the workflow instance id
-     * 
-     * @return boolean success or not
-     */
-    public function removeInstanceComplete($id)
-    {
-        $response = $this->opencastApi->workflow->removeInstance($id);
-
-        if (in_array($response['code'], [204, 404])) {
-            return true;
         }
 
         return false;

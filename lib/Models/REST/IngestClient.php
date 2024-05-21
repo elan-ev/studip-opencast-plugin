@@ -54,44 +54,6 @@ class IngestClient extends RestClient
     }
 
     /**
-     * Ingest the completed media package into the system, retrieving all URL-referenced files
-     *
-     * @param string $mediaPackage The media package
-     * @param string $workflowDefinitionId Workflow definition id.
-     * @param string $workflowInstanceId The workflow instance ID to associate this ingest with scheduled events.
-     *
-     * @return string augmented media package in xml format, or false if unable to add
-     */
-    public function ingest($mediaPackage, $workflowDefinitionId = '', $workflowInstanceId = '')
-    {
-        $response = $this->opencastApi->ingest->ingest($mediaPackage, $workflowDefinitionId, $workflowInstanceId);
-
-        if ($response['code'] == 200) {
-            return $response['body'];
-        }
-        return false;
-    }
-
-    /**
-     * Add a media track to a given media package using an URL.
-     *
-     * @param string $mediaPackage The media package
-     * @param string $trackURI The location of the media
-     * @param string $flavor The kind of media track
-     *
-     * @return string augmented media package in xml format, or false if unable to add
-     */
-    public function addTrack($mediaPackage, $trackURI, $flavor)
-    {
-        $response = $this->opencastApi->ingest->addTrackUrl($mediaPackage, $flavor, $trackURI);
-
-        if ($response['code'] == 200) {
-            return $response['body'];
-        }
-        return false;
-    }
-
-    /**
      * Schedule an event based on the given media package.
      *
      * @param string $mediaPackage The media package

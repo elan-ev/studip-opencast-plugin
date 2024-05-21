@@ -75,30 +75,6 @@ class ApiEventsClient extends RestClient
     }
 
     /**
-     * Retrieves a list of episode based on defined parameters and pagination.
-     * This method is intended to be consumed by front end.
-     * By default api/event GET is responsible to get the episodes,
-     * however, when advance search is defined in config, lucene search will be used to get the episodes.
-     *
-     * @param string series_id Identifier for a Series
-     * @param string course_id Course ID
-     *
-     * @return array list of consumable episodes
-     */
-    public function getEpisodes($series_id = null, $course_id = null)
-    {
-        $events = [];
-
-        if ($this->advance_search) {
-            $events = $this->episodesLookupAdvanced($series_id, $course_id);
-        } else {
-            $events = $this->episodesLookup($series_id);
-        }
-
-        return $events;
-    }
-
-    /**
      * Get all episodes from connected opencast based on defined parameters
      *
      * @param array $param an array of query params
@@ -114,57 +90,6 @@ class ApiEventsClient extends RestClient
         }
 
         return false;
-    }
-
-    /**
-     * Generates Publication for a single event
-     *
-     * @param object $oc_event opencast event object
-     * @param object $s_event opencast search event object
-     *
-     * @return object $oc_event opencast event object with generate publication
-     */
-    private function generatePublication($oc_event, $s_event)
-    {
-        $media = [];
-
-        if (!isset($s_event->mediapackage->media->track)) {
-            return $oc_event;
-        }
-
-        $tracks = is_array($s_event->mediapackage->media->track)
-            ? $s_event->mediapackage->media->track
-            : [$s_event->mediapackage->media->track];
-
-        foreach ($tracks as $track) {
-            $width = 0;
-            $height = 0;
-            if (!empty($track->video)) {
-                list($width, $height) = explode('x', $track->video->resolution);
-                $bitrate = $track->video->bitrate;
-            } else if (!empty($track->audio)) {
-                $bitrate = $track->audio->bitrate;
-            }
-
-            $obj = new \stdClass();
-            $obj->mediatype = $track->mimetype;
-            $obj->flavor    = $track->type;
-            $obj->has_video = !empty($track->video);
-            $obj->has_audio = !empty($track->audio);
-            $obj->tags      = $track->tags->tag;
-            $obj->url       = $track->url;
-            $obj->duration  = $track->duration;
-            $obj->bitrate   = $bitrate;
-            $obj->width     = $width;
-            $obj->height    = $height;
-
-            $media[] = $obj;
-        }
-
-        $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
-        $oc_event->publications[0]->media       = $media;
-
-        return $oc_event;
     }
 
     /**

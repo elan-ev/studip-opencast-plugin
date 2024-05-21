@@ -97,8 +97,6 @@ class VersionHelper46 implements VersionHelperInterface
         require_once(__DIR__ . '/Versions/4.6/OCConfig.php');
         require_once(__DIR__ . '/Versions/4.6/OpencastLTI.php');
         require_once(__DIR__ . '/Versions/4.6/LtiLink.php');
-        require_once(__DIR__ . '/Versions/4.6/OCCourseModel.php');
-        require_once(__DIR__ . '/Versions/4.6/SearchClient.php');
     }
 }
 
