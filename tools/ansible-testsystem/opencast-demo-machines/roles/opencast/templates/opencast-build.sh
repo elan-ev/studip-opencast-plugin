@@ -44,7 +44,7 @@ echo org.opencastproject.userdirectory.studip.cache.expiration=1 >> /srv/opencas
 sed -i 's/opencast-plugin-userdirectory-studip.*= off/opencast-plugin-userdirectory-studip        = on/' /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.plugin.impl.PluginManagerImpl.cfg
 
 # Configure Opencast editor
-sed -i 's/#show = false/show = true/' /srv/opencast/opencast-dist-allinone/etc/ui-config/mh_default_org/editor/editor-settings.toml
+sed -i 's/#show =.*/show = true/' /srv/opencast/opencast-dist-allinone/etc/ui-config/mh_default_org/editor/editor-settings.toml
 
 # Ensure access to log files
 mkdir -p /srv/opencast/opencast-dist-allinone/data/log
