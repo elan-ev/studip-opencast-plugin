@@ -65,7 +65,7 @@
                 </span>
                 <a v-else-if="event.state == 'cutting'"
                    @click="redirectAction(`/editor/` + event.token)"
-                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Schnitteditor!')"
+                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Editor!')"
                 >
                     <span class="oc--previewimage">
                         <img class="oc--image-button" :src="cut">
@@ -476,7 +476,7 @@ export default {
                     if ((this.event?.preview?.has_previews || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({
                             id: 5,
-                            label: this.$gettext('Schnitteditor öffnen'),
+                            label: this.$gettext('Videoeditor öffnen'),
                             icon: 'video2',
                             emit: 'performAction',
                             emitArguments: 'VideoCut'
