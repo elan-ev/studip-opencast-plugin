@@ -25,6 +25,7 @@
                         :selectable="true"
                         :showActions="false"
                         :cid="selectedCourse.id"
+                        :nolimit="true"
                         @selectedVideosChange="updateSelectedVideos"
                     />
                 </div>

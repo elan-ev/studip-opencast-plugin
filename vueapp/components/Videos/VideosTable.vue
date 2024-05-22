@@ -1,17 +1,5 @@
 <template>
     <div>
-        <!--
-        <MessageBox type="info" v-if="playlistForVideos">
-            {{ $gettext('Bitte wählen Sie die Videos aus, die zur Wiedergabeliste hinzugefügt werden sollen.') }}
-        </MessageBox>
-        <h3 v-if="playlistForVideos">
-            {{ playlistForVideos.title }}
-            <div class="oc--tags oc--tags-playlist">
-                <Tag v-for="tag in playlistForVideos.tags" v-bind:key="tag.id" :tag="tag.tag" />
-            </div>
-        </h3>
-        -->
-
         <SearchBar v-if="!videoSortMode"
             :availableTags="videosTags"
             :availablePlaylists="playlists"
@@ -20,7 +8,7 @@
             @search="doSearch"
        />
 
-        <PaginationButtons v-if="!editable"
+        <PaginationButtons v-if="!nolimit"
             :paging="paging"
             @changePage="changePage"
             @changeLimit="changeLimit"
@@ -260,6 +248,10 @@ export default {
         'trashBin' : {
             type: Boolean,
             default: false
+        },
+        'nolimit': {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -370,7 +362,7 @@ export default {
                     order: this.order,
                     cid: this.cid,
                     token: this.playlist.token,
-                    limit: this.editable ? -1 : this.limit
+                    limit: this.nolimit ? -1 : this.limit
                 }).then(this.loadVideosFinished);
             } else if(this.isCourse && !this.playlist) {
                 this.$store.dispatch('loadCourseVideos', {
