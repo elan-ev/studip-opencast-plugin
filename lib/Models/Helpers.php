@@ -237,6 +237,15 @@ class Helpers
     public static function checkCourseDefaultPlaylist($course_id)
     {
         $default_playlist = PlaylistSeminars::getDefaultPlaylistSeminar($course_id);
+
+        if (empty($default_playlist)) {
+            // set the first found playlist as default, to prevent breaking the course
+            $stmt = \DBManager::get()->prepare("UPDATE `oc_playlist_seminar` SET is_default = 1 WHERE seminar_id = ? LIMIT 1");
+            $stmt->execute([$course_id]);
+
+            $default_playlist = PlaylistSeminars::getDefaultPlaylistSeminar($course_id);
+        }
+
         return !empty($default_playlist);
     }
 

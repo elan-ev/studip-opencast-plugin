@@ -40,7 +40,12 @@ export default {
                         let options = [];
                         for (let wf of this.simple_config_list.workflows) {
                             if (wf['config_id'] == config_id &&
-                                (wf['tag'] === wf_conf['used_for'] || wf['tag'] === 'upload' && wf_conf['used_for'] === 'studio')) {
+                                (
+                                    wf['tag'] === wf_conf['used_for']
+                                    || wf['tag'] === 'upload' && wf_conf['used_for'] === 'studio'
+                                    || wf['tag'] === 'archive' && wf_conf['used_for'] === 'subtitles'
+                                )
+                            ) {
                                 options.push({
                                     'value': wf['id'],
                                     'description': wf['displayname']

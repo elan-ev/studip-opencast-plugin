@@ -26,7 +26,7 @@ class AdminController extends Opencast\Controller
     public function index_action()
     {
         $this->studip_version = $this->getStudIPVersion();
-        
+
         Navigation::activateItem('/admin/config/oc-config');
         PageLayout::setBodyElementId('opencast-plugin');
 
@@ -42,6 +42,6 @@ class AdminController extends Opencast\Controller
             PageLayout::postMessage(MessageBox::warning(_('Das Plugin benötigt die "Nobody"-Rolle, um Opencast den Abruf der Nutzendenberechtigungen zu ermöglichen. Diese Rolle wurde jedoch noch nicht zugewiesen, deshalb ist das Plugin momentan nur eingeschränkt funktionsfähig.')));
         }
 
-        WorkflowConfig::createAndUpdateAll();
+        WorkflowConfig::initWorkflows();
     }
 }

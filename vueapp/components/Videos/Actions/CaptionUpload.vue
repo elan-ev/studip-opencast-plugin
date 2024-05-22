@@ -80,20 +80,6 @@
                                 </div>
                             </fieldset>
 
-                            <fieldset>
-                                <legend >
-                                    {{ $gettext('Workflow') }}
-                                </legend>
-
-                                <select v-model="selectedWorkflow" required>
-                                    <option v-for="workflow in upload_workflows"
-                                        v-bind:key="workflow.id"
-                                        :value="workflow">
-                                        {{ workflow.displayname }}
-                                    </option>
-                                </select>
-                            </fieldset>
-
                             <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
                         </div>
                     </fieldset>
@@ -150,8 +136,7 @@ export default {
             fileUploadError: false,
             files: {},
             uploadProgress: null,
-            languages: [],
-            selectedWorkflow: false
+            languages: []
         }
     },
 
@@ -183,7 +168,7 @@ export default {
         defaultWorkflow() {
             let wf_id = this.config['workflow_configs'].find(wf_config =>
                 wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
-                    && wf_config['used_for'] === 'upload'
+                    && wf_config['used_for'] === 'subtitles'
             )['workflow_id'];
 
             return this.config['workflows'].find(wf => wf['id'] == wf_id);
@@ -281,7 +266,7 @@ export default {
 
             let view = this;
 
-            this.uploadService.uploadCaptions(files, this.event.episode, this.selectedWorkflow.name, {
+            this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
                     uploadProgress: (track, loaded, total) => {
                         view.uploadProgress = {
                             flavor: track.flavor,
@@ -330,7 +315,6 @@ export default {
         this.$store.dispatch('authenticateLti');
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
-            this.selectedWorkflow = this.defaultWorkflow;
         });
         this.$store.dispatch('loadCaption', this.event.token);
 
