@@ -77,35 +77,29 @@ class ApiEventsClient extends OCRestClient
 
         $search_service = new SearchClient($this->config_id);
 
-        // first, get list of events ids from search service
-        $search_query = '';
-        if ($search) {
-            $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
-        }
+        $search_events = $search_service->getJSON(
+            "/episode.json?sid=$series_id&q=". urlencode($search)
+            . "&sort=". urlencode($sort) ."&limit=$limit&offset=$offset"
+        );
 
-        $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
-            . ' AND oc_acl_read:' . $course_id . '_' . $type;
+        Pager::setLength($search_events->total);
 
-        $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
-            . "&sort=$sort&limit=$limit&offset=$offset");
 
-        Pager::setLength($search_events->{'search-results'}->total);
-
-        $results = is_array($search_events->{'search-results'}->result)
-            ? $search_events->{'search-results'}->result
-            : [$search_events->{'search-results'}->result];
+        $results = is_array($search_events->result)
+            ? $search_events->result
+            : [$search_events->result];
 
         // then, iterate over list and get each event from the external-api
         foreach ($results as $s_event) {
-            $cache_key = 'sop/episodes/' . $s_event->id;
+            $cache_key = 'sop/episodes/' . $s_event->mediapackage->id;
             $event = $cache->read($cache_key);
 
-            if (empty($s_event->id)) {
+            if (empty($s_event->mediapackage->id)) {
                 continue;
             }
 
             if (!$event) {
-                $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
+                $oc_event = $this->getJSON('/' . $s_event->mediapackage->id . '/?withpublications=true');
 
                 if (empty($oc_event->publications[0]->attachments)) {
                     $media = [];
@@ -136,7 +130,7 @@ class ApiEventsClient extends OCRestClient
 
                         $media[] = $obj;
                     }
-                    
+
                     $oc_event->publications[0]->media       = $media;
 
                     if (is_null($oc_event->publications[0]->attachments)) {
@@ -150,7 +144,7 @@ class ApiEventsClient extends OCRestClient
                 $cache->write($cache_key, $event, 86000);
             }
 
-            $events[$s_event->id] = $event;
+            $events[$s_event->mediapackage->id] = $event;
         }
 
         return $events;

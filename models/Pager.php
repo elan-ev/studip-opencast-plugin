@@ -72,14 +72,14 @@ class Pager
             $sort_str = \CourseConfig::get($cid)->COURSE_SORT_ORDER;
         }
         else {
-            $sort_str = 'DATE_CREATED_DESC';
+            $sort_str = 'created asc';
         }
 
         $sort_options = self::getSortOptions();
 
         // check, if selected sort options is available
         if (in_array($sort_str, array_keys($sort_options)) === false) {
-            return 'DATE_CREATED_DESC';
+            return 'created asc';
         }
 
         return $sort_str;
@@ -88,10 +88,10 @@ class Pager
     public static function getSortOptions()
     {
         return [
-            'DATE_CREATED_DESC' => self::_('Datum hochgeladen: Neueste zuerst'),
-            'DATE_CREATED'      => self::_('Datum hochgeladen: Älteste zuerst'),
-            'TITLE'             => self::_('Titel: Alphabetisch'),
-            'TITLE_DESC'        => self::_('Titel: Umgekehrt Alphabetisch')
+            'created desc' => self::_('Datum hochgeladen: Neueste zuerst'),
+            'created asc'  => self::_('Datum hochgeladen: Älteste zuerst'),
+            'title asc'    => self::_('Titel: Alphabetisch'),
+            'title desc'   => self::_('Titel: Umgekehrt Alphabetisch')
         ];
     }
 
