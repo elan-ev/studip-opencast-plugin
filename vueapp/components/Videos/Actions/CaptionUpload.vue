@@ -25,7 +25,7 @@
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <fieldset>
                         <legend >
-                                {{ $gettext('Datei(en)') }}
+                                {{ $gettext('Untertiteldatei(en)') }} - {{ $gettext('Workflow') }}: {{ defaultWorkflow.displayname }}
                         </legend>
 
                         <p class="help">
@@ -102,6 +102,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { toRaw } from "vue";
 
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
@@ -166,12 +167,19 @@ export default {
         },
 
         defaultWorkflow() {
-            let wf_id = this.config['workflow_configs'].find(wf_config =>
+
+            let workflow = this.config['workflow_configs'].find(wf_config =>
                 wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
                     && wf_config['used_for'] === 'subtitles'
-            )['workflow_id'];
+            )
 
-            return this.config['workflows'].find(wf => wf['id'] == wf_id);
+            if (workflow) {
+                let wf_id = workflow['workflow_id'];
+
+                return this.config['workflows'].find(wf => wf['id'] == wf_id);
+            }
+
+            return 'republish-metadata';
         },
 
         upload_workflows() {
