@@ -46,8 +46,6 @@ class WorkflowConfig extends \SimpleORMap
             return;
         }
 
-        // var_dump($workflows);
-
         Workflow::updateWorkflowsByConfigId($config_id);
 
         foreach (self::getTypes() as $type) {
