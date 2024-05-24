@@ -17,18 +17,14 @@ class PlaylistRemoveVideos extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $user;
+
         $playlist = Playlists::findOneByToken($args['token']);
 
-        // check what permissions the current user has on the playlist
-        $uperm = $playlist->getUserPerm();
+        $data = $this->getRequestData($request);
+        $video_tokens = $data['videos'];
+        $course_id    = $data['course_id'];
 
-        if ((empty($uperm) ||
-            $uperm != 'owner' && $uperm != 'write'))
-        {
-            throw new \AccessDeniedException();
-        }
-
-        $video_tokens = $this->getRequestData($request);
         $videos = array_map(function ($token) { return Videos::findOneByToken($token); }, $video_tokens);
 
         // Get playlist entries from Opencast
@@ -39,6 +35,10 @@ class PlaylistRemoveVideos extends OpencastController
         $entries = $oc_playlist->entries;
 
         foreach ($videos as $video) {
+            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
+                throw new \AccessDeniedException();
+            }
+
             // Prevent removing video from playlist when it is livestream.
             if ((bool) $video->is_livestream) {
                 return $this->createResponse([

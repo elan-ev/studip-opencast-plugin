@@ -236,7 +236,7 @@ const actions = {
      * @param data.videos list of video tokens to add
      */
     async addVideosToPlaylist(context, data) {
-        return ApiService.put('/playlists/' + data.playlist + '/videos', data.videos)
+        return ApiService.put('/playlists/' + data.playlist + '/videos', data)
             .then(() => {
                 context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
             });
@@ -251,7 +251,8 @@ const actions = {
      * @param data.videos list of video tokens to remove
      */
     async removeVideosFromPlaylist(context, data) {
-        return ApiService.delete('/playlists/' + data.playlist + '/videos', {data: data.videos})
+        console.log('removeVideosFromPlaylist', data);
+        return ApiService.patch('/playlists/' + data.playlist + '/videos', data)
             .then(() => {
                 context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.removedCount});
             });

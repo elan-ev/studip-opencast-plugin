@@ -1,6 +1,6 @@
 <template>
     <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow">
-        <td v-if="playlistEditable && videoSortMode">
+        <td v-if="canEdit && videoSortMode">
             <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
                 <img class="oc--drag-handle"
                      :src="dragHandle"
@@ -11,6 +11,8 @@
 
         <td v-if="showCheckbox">
             <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
+        </td>
+        <td v-else-if="canUpload">
         </td>
 
         <td class="oc--playercontainer">
@@ -194,7 +196,11 @@ export default {
         selectedVideos: {
             type: Object,
         },
-        playlistEditable: {
+        canEdit: {
+            type: Boolean,
+            default: false
+        },
+        canUpload: {
             type: Boolean,
             default: false
         },
@@ -338,7 +344,7 @@ export default {
         ]),
 
         showCheckbox() {
-            return this.selectable || this.playlistEditable;
+            return this.selectable || (this.canUpload && this.event.perm == 'owner');
         },
 
         getImageSrc() {
@@ -424,7 +430,7 @@ export default {
             let menuItems = [];
 
             if (!this.event?.trashed) {
-                if (this.canEdit) {
+                if (this.event.perm == 'owner') {
                     if (this.event?.state !== 'running') {
                         menuItems.push({
                             id: 1,
@@ -514,7 +520,7 @@ export default {
                         });
                     }
 
-                    if (this.playlistEditable && this.playlist) {
+                    if (this.canUpload && this.playlist) {
                         menuItems.push({
                             id: 10,
                             label: this.$gettext('Aus Wiedergabeliste entfernen'),

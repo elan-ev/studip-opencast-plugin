@@ -22,6 +22,10 @@ const ApiService = {
         return axios.put(`${resource}`, params);
     },
 
+    patch(resource, params) {
+        return axios.patch(`${resource}`, params);
+    },
+
     delete(resource, params) {
         return axios.delete(resource, params);
     }

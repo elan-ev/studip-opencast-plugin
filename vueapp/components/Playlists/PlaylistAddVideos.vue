@@ -10,16 +10,17 @@
         >
             <template v-slot:dialogContent ref="add-dialog">
                 <h2>{{ $gettext('Quelle auswählen') }}</h2>
+                <!-- if upload is allowed, adding videos to existing playlists is allowed from all contexts -->
                 <div class="oc--dialog-possibilities">
                     <a v-if="canUpload" href="#" @click.prevent="activeDialog = 'upload'">
                         <studip-icon shape="computer" role="clickable" size="50"/>
                         {{ $gettext('Mein Computer') }}
                     </a>
-                    <a v-if="canEdit" href="#" @click.prevent="activeDialog = 'contents'">
+                    <a v-if="canUpload" href="#" @click.prevent="activeDialog = 'contents'">
                         <studip-icon :shape="opencastImage" role="clickable" size="50"/>
                         {{ $gettext('Arbeitsplatz') }}
                     </a>
-                    <a v-if="canEdit" href="#" @click.prevent="activeDialog = 'courses'">
+                    <a v-if="canUpload" href="#" @click.prevent="activeDialog = 'courses'">
                         <studip-icon shape="seminar" role="clickable" size="50"/>
                         {{ $gettext('Meine Veranstaltungen') }}
                     </a>

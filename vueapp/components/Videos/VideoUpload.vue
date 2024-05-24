@@ -451,6 +451,7 @@ export default {
                                 await this.$store.dispatch('addVideosToPlaylist', {
                                     playlist: playlist.token,
                                     videos: [data.event.token],
+                                    course_id: this.cid
                                 }).catch(() => {
                                     this.$store.dispatch('addMessage', {
                                         type: 'warning',

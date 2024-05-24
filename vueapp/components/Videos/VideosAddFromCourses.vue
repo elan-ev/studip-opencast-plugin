@@ -60,7 +60,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlist', 'userCourses']),
+        ...mapGetters(['playlist', 'userCourses', 'cid']),
     },
 
     methods: {
@@ -78,8 +78,9 @@ export default {
 
         addVideosToPlaylist() {
             this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlist.token,
-                videos:   this.selectedVideos
+                playlist:  this.playlist.token,
+                videos:    this.selectedVideos,
+                course_id: this.cid
             }).then(() => {
                 this.selectedVideos = [];
                 this.$store.dispatch('addMessage', {
