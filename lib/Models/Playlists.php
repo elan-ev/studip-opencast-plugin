@@ -597,7 +597,9 @@ class Playlists extends UPMap
         $this->creator = $oc_playlist->creator;
         $this->updated = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
 
-        $this->setEntries($oc_playlist->entries);
+        if (is_array($oc_playlist->entries)) {
+            $this->setEntries($oc_playlist->entries);
+        }
 
         $this->store();
 
