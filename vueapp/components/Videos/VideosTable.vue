@@ -16,7 +16,7 @@
 
         <table id="episodes" class="default oc--episode-table--small">
             <colgroup>
-                <col v-if="editable && videoSortMode" style="width: 20px">
+                <col v-if="canEdit && videoSortMode" style="width: 20px">
                 <col v-if="showCheckbox" style="width: 30px">
                 <col style="width: 119px">
                 <col>
@@ -27,7 +27,7 @@
             </colgroup>
             <thead>
                 <tr class="sortable">
-                    <th v-if="editable && videoSortMode" data-sort="false"></th>
+                    <th v-if="canEdit && videoSortMode" data-sort="false"></th>
                     <th v-if="showCheckbox" data-sort="false">
                         <input
                             type="checkbox"
@@ -85,7 +85,8 @@
                         @toggle="toggleVideo"
                         :selectable="selectable"
                         :isCourse="isCourse"
-                        :playlistEditable="editable"
+                        :canEdit="canEdit"
+                        :canUpload="canUpload"
                         :showActions="showActions"
                         @doAction="doAction"
                         @redirectAction="redirectAction"
@@ -93,22 +94,16 @@
                 </template>
             </draggable>
 
-            <tfoot v-if="editable || (isCourse && playlist)">
+            <tfoot v-if="canEdit || (isCourse && playlist)">
                 <tr>
                     <td :colspan="numberOfColumns">
                         <span class="oc--bulk-actions">
-                            <!--
-                            <StudipButton v-if="playlistForVideos" icon="add" @click.stop="addVideosToPlaylist" :disabled="!hasCheckedVideos">
-                                {{ $gettext('Zur Wiedergabeliste hinzufügen') }}
-                            </StudipButton>
-                            -->
-
-                            <StudipButton v-if="editable" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
+                            <StudipButton v-if="canUpload" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>
 
-                        <span v-if="editable && !isCourse && !trashBin">
+                        <span v-if="canEdit && !isCourse && !trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDelete')"
                                 :class="{
@@ -120,7 +115,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="(editable || !isCourse) && trashBin">
+                        <span v-if="(canEdit || !isCourse) && trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDeletePermanent')"
                                 :class="{
@@ -142,7 +137,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="isCourse && playlist">
+                        <span v-if="isCourse && playlist && canEdit">
                             <StudipButton class="wrap-button"
                                           v-if="playlist.is_default != '1'"
                                           @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
@@ -233,7 +228,11 @@ export default {
             type: String,
             default: null
         },
-        'editable': {
+        'canEdit': {
+            type: Boolean,
+            default: false
+        },
+        'canUpload': {
             type: Boolean,
             default: false
         },
@@ -295,7 +294,8 @@ export default {
             'playlists',
             'course_config',
             'isLTIAuthenticated',
-            'simple_config_list'
+            'simple_config_list',
+            'cid'
         ]),
 
         numberOfColumns() {
@@ -303,7 +303,7 @@ export default {
         },
 
         showCheckbox() {
-            return this.selectable || this.editable;
+            return this.selectable || this.canEdit || this.canUpload;
         },
 
         isCourse() {
@@ -372,7 +372,7 @@ export default {
                     cid: this.cid,
                     limit: this.limit,
                 }).then(this.loadVideosFinished);
-            } else if (this.editable && this.playlist) {
+            } else if (this.canEdit && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
                     ...this.filters,
                     order: this.order,
@@ -481,7 +481,7 @@ export default {
                 }
             }
 
-            if (this.playlist && this.editable) {
+            if (this.playlist && this.canEdit) {
                 this.$store.dispatch('setPlaylistSort', {
                     token: this.playlist.token,
                     sort: videoSort
@@ -513,8 +513,9 @@ export default {
             }
 
             this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: this.playlist.token,
-                videos:   this.selectedVideos
+                playlist:  this.playlist.token,
+                videos:    this.selectedVideos,
+                course_id: this.cid
             }).then(() => {
                 this.updateSelectedVideos([]);
 
@@ -531,24 +532,6 @@ export default {
                 });
             });
         },
-
-        /*
-        addVideosToPlaylist() {
-            let view = this;
-
-            this.$store.dispatch('addVideosToPlaylist', {
-                playlist: this.playlistForVideos.token,
-                videos:   this.selectedVideos
-            }).then(() => {
-                this.selectedVideos = [];
-                view.$store.dispatch('addMessage', {
-                    type: 'success',
-                    text: view.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
-                });
-            })
-            this.$emit('addVideosDone');
-        },
-        */
 
         doAction(args) {
             if (Object.keys(this.$options.components).includes(args.actionComponent)) {
@@ -629,7 +612,7 @@ export default {
         this.$store.dispatch('loadUserCourses');
 
         await this.$store.dispatch('authenticateLti').then(() => {
-            if (this.isCourse || this.editable) {
+            if (this.isCourse || this.canEdit) {
                 this.setDefaultSortOrder();
                 this.loadVideos();
             }

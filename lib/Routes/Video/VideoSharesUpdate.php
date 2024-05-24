@@ -28,14 +28,21 @@ class VideoSharesUpdate extends OpencastController
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
+        $json = $this->getRequestData($request);
+        $course_id = $json['course_id'];
+
         $perm = $video->getUserPerm();
         // only users with owner permission are allowed to show/edit shares
-        if (empty($perm) || $perm != 'owner')
+        $access_denied = (empty($perm) || $perm != 'owner');
+        // if in a course, then dozents are allowed!
+        if ($access_denied && !empty($course_id)) {
+            $access_denied = !$GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+        }
+
+        if ($access_denied)
         {
             throw new \AccessDeniedException();
         }
-
-        $json = $this->getRequestData($request);
 
         /* * * * * * * * * * * * * * * * * * * *
          *   U S E R   P E R M I S S I O N S   *
@@ -50,7 +57,8 @@ class VideoSharesUpdate extends OpencastController
         }
 
         // collect update perms
-        foreach ($json['perms'] as $perm) {
+        $perms = $json['data']['perms'] ?? [];
+        foreach ($perms as $perm) {
             // one cannot change its own perms
             if ($perm['user_id'] != $user->id) {
                 $new_perms[] = $perm;
@@ -76,7 +84,8 @@ class VideoSharesUpdate extends OpencastController
         VideosShares::deleteBySQL('video_id = ?', [$video->id]);
 
         // set new links
-        foreach ($json['shares'] as $share) {
+        $shares = $json['data']['shares'] ?? [];
+        foreach ($shares as $share) {
             if (isset($share['is_new'])) {
                 $share['video_id'] = $video->id;
                 $share['token'] = VideosShares::generateToken();

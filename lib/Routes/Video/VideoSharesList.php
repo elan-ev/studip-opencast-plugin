@@ -26,10 +26,18 @@ class VideoSharesList extends OpencastController
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
+        $params = $request->getQueryParams();
+        $course_id = $params['course_id'] ?? null;
+
         $perm = $video->getUserPerm();
         // only users with owner permission are allowed to show/edit shares
-        if (empty($perm) || $perm != 'owner')
-        {
+        $access_denied = (empty($perm) || $perm != 'owner');
+        // if in a course, then dozents are allowed!
+        if ($access_denied && !empty($course_id)) {
+            $access_denied = !$GLOBALS['perm']->have_studip_perm('dozent', $course_id);
+        }
+
+        if ($access_denied) {
             throw new \AccessDeniedException();
         }
 
@@ -45,7 +53,7 @@ class VideoSharesList extends OpencastController
         \URLHelper::setBaseURL($old_url_helper_url);
 
         return $this->createResponse([
-            'perms'  => $video->perms->toSanitizedArray(),
+            'perms'  => $video->perms->toSanitizedArray($user->id),
             'shares' =>  $shares
         ], $response->withStatus(200));
     }

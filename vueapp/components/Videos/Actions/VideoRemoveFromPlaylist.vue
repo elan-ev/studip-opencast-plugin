@@ -33,14 +33,15 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['playlist'])
+        ...mapGetters(['playlist', 'cid'])
     },
 
     methods: {
         async removeVideo() {
             await this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: this.playlist.token,
-                videos: [this.event.token]
+                playlist:  this.playlist.token,
+                videos:    [this.event.token],
+                course_id: this.cid
             }).then(() => {
                 this.$store.dispatch('addMessage', {
                     type: 'success',

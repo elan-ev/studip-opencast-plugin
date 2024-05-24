@@ -17,11 +17,14 @@ class PlaylistAddVideos extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $user, $perm;
+        global $user;
 
         $playlist = Playlists::findOneByToken($args['token']);
 
-        $video_tokens = $this->getRequestData($request);
+        $data = $this->getRequestData($request);
+        $video_tokens = $data['videos'];
+        $course_id    = $data['course_id'];
+
         $videos = array_map(function ($token) { return Videos::findOneByToken($token); }, $video_tokens);
 
         // Get playlist entries from Opencast
@@ -32,7 +35,7 @@ class PlaylistAddVideos extends OpencastController
 
         foreach ($videos as $video) {
             // check what permissions the current user has on the playlist and video
-            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video)) {
+            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
                 throw new \AccessDeniedException();
             }
 

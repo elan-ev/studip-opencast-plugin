@@ -61,7 +61,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userPlaylists']),
+        ...mapGetters(['userPlaylists', 'cid']),
     },
 
     methods: {
@@ -88,8 +88,9 @@ export default {
             let playlist = this.event.playlists.splice(index, 1)[0];
 
             this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist: playlist.token,
-                videos: [this.event.token],
+                playlist:  playlist.token,
+                videos:    [this.event.token],
+                course_id: this.cid
             })
             .catch(() => {
                 // add the playlist back to the list

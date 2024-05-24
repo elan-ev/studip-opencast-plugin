@@ -440,16 +440,18 @@ export default {
                         'presenters': uploadData.creator,
                         'contributors': uploadData.contributor
                     })
-                    .then(({ data }) => {
+                    .then(async ({ data }) => {
                         this.$store.dispatch('addMessage', data.message);
 
                         // If a playlist is selected, connect event with playlist
                         if (data.event?.token && uploadData.playlist_token) {
                             let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
                             if (playlist) {
-                                this.$store.dispatch('addVideosToPlaylist', {
+                                // Here we need to wait for this action to complete, in order to get the latest videos list in the playlist.
+                                await this.$store.dispatch('addVideosToPlaylist', {
                                     playlist: playlist.token,
                                     videos: [data.event.token],
+                                    course_id: this.cid
                                 }).catch(() => {
                                     this.$store.dispatch('addMessage', {
                                         type: 'warning',

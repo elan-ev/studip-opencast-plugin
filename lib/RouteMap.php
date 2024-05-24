@@ -75,7 +75,7 @@ class RouteMap
 
         $group->get("/playlists/{token}/videos", Routes\Playlist\PlaylistVideoList::class);
         $group->put("/playlists/{token}/videos", Routes\Playlist\PlaylistAddVideos::class);
-        $group->delete("/playlists/{token}/videos", Routes\Playlist\PlaylistRemoveVideos::class);
+        $group->patch("/playlists/{token}/videos", Routes\Playlist\PlaylistRemoveVideos::class);
 
         $group->put("/playlists/{token}/user", Routes\Playlist\PlaylistAddUser::class);
         $group->delete("/playlists/{token}/user/{username}", Routes\Playlist\PlaylistRemoveUser::class);

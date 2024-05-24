@@ -8,7 +8,8 @@
                 v-if="playlist"
                 :playlist="playlist"
                 :cid="cid"
-                :editable="canEdit"
+                :canEdit="canEdit"
+                :canUpload="canUpload"
             />
         </template>
     </div>
@@ -31,6 +32,10 @@ export default {
 
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
+        },
+
+        canUpload() {
+            return this.course_config?.upload_allowed ?? false;
         },
 
         hasDefaultPlaylist() {
