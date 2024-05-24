@@ -284,10 +284,6 @@ class UploadService {
                     url: obj.service_url + url_path,
                     method: "POST",
                     data: data,
-                    auth: {
-                        username: 'moodle',
-                        password: '6dwt5qbuXEBkvsu'
-                    },
                     processData: false,
                     contentType: false,
                     withCredentials: true,
@@ -313,10 +309,6 @@ class UploadService {
                 workflowDefinitionId: workflowId
             }),
             withCredentials: true,
-            auth: {
-                username: 'moodle',
-                password: '6dwt5qbuXEBkvsu'
-            },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
             }
