@@ -24,14 +24,19 @@ class VideosUserPerms extends \SimpleORMap
         parent::configure($config);
     }
 
-    public function toSanitizedArray()
+    public function toSanitizedArray($comparable_user_id = null)
     {
+        global $perm;
         $data = $this->toArray();
 
         $data['fullname'] = get_fullname($data['user_id']);
 
-        return $data;
+        if (!empty($comparable_user_id) && $comparable_user_id != $data['user_id']) {
+            $target_user_perm = $perm->get_perm($comparable_user_id);
+            $data['has_higher_perm'] = $perm->have_perm($target_user_perm, $data['user_id']);
+        }
 
+        return $data;
     }
 
     /**
@@ -131,5 +136,26 @@ class VideosUserPerms extends \SimpleORMap
             }
         }
 
+    }
+
+    public static function assignCourseLecturerPermissions($course_id, $video_id, $perm_type = 'write', $member_course_status = 'dozent')
+    {
+        $course = \Course::find($course_id);
+        $lecturers_obj = $course->getMembersWithStatus($member_course_status);
+        foreach ($lecturers_obj as $lecturer) {
+            // check, if there is already an entry for this user-video combination
+            $perm_record = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                ':video_id' => $video_id,
+                ':user_id'  => $lecturer->user_id
+            ]);
+
+            if (empty($perm_record)) {
+                $perm_record = new self();
+                $perm_record->user_id  = $lecturer->user_id;
+                $perm_record->video_id = $video_id;
+                $perm_record->perm     = $perm_type;
+                $perm_record->store();
+            }
+        }
     }
 }

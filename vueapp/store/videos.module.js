@@ -201,7 +201,8 @@ const actions = {
     },
 
     async createVideo(context, event) {
-        return ApiService.post('videos/' + event.episode, {event: event});
+        let $cid = context?.rootState?.opencast?.cid ?? null;
+        return ApiService.post('videos/' + event.episode, {event: event, 'course_id': $cid});
     },
 
     async deleteVideo(context, token) {
@@ -228,15 +229,21 @@ const actions = {
         await commit('setVideoSort', sort)
     },
 
-    async loadVideoShares({ commit }, token) {
-        return ApiService.get('videos/' + token + '/shares')
+    async loadVideoShares({ rootState, commit }, token) {
+        let $cid = rootState?.opencast?.cid ?? null;
+        return ApiService.get('videos/' + token + '/shares' + ($cid ? `?course_id=${$cid}` : ''))
             .then(({ data }) => {
                 commit('setShares', data)
             });
     },
 
-    async updateVideoShares({}, data) {
-        return ApiService.put('videos/' + data.token + '/shares', data.shares);
+    async updateVideoShares({ rootState }, data) {
+        let $cid = rootState?.opencast?.cid ?? null;
+        let params = {
+            'data': data.shares,
+            'course_id': $cid
+        }
+        return ApiService.put('videos/' + data.token + '/shares', params);
     },
 
     async loadCaption({commit}, token) {

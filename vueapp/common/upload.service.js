@@ -44,7 +44,7 @@ class UploadService {
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
-            </Rule> 
+            </Rule>
             <Rule RuleId="ROLE_ADMIN_read_write_Permit" Effect="Permit">
                 <Target>
                     <Actions>
@@ -284,6 +284,10 @@ class UploadService {
                     url: obj.service_url + url_path,
                     method: "POST",
                     data: data,
+                    auth: {
+                        username: 'moodle',
+                        password: '6dwt5qbuXEBkvsu'
+                    },
                     processData: false,
                     contentType: false,
                     withCredentials: true,
@@ -309,6 +313,10 @@ class UploadService {
                 workflowDefinitionId: workflowId
             }),
             withCredentials: true,
+            auth: {
+                username: 'moodle',
+                password: '6dwt5qbuXEBkvsu'
+            },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
             }

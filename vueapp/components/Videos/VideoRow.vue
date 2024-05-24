@@ -333,7 +333,8 @@ export default {
             'playlists',
             'downloadSetting',
             'videoSortMode',
-            'isLTIAuthenticated'
+            'isLTIAuthenticated',
+            'currentUser'
         ]),
 
         showCheckbox() {
@@ -463,7 +464,7 @@ export default {
                         emitArguments: 'VideoLinkToPlaylists'
                     });
 
-                    if (this.event?.perm === 'owner') {
+                    if (this.canShare) {
                         menuItems.push({
                             id: 4,
                             label: this.$gettext('Video freigeben'),
@@ -570,7 +571,14 @@ export default {
         },
 
         canEdit() {
+            if (this.currentUser.can_edit) {
+                return true;
+            }
             return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
+        },
+
+        canShare() {
+            return this.event?.perm === 'owner' || this.currentUser.can_edit;
         },
 
         livestream() {

@@ -17,10 +17,11 @@ class VideoAdd extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-	    global $user;
+        global $user, $perm;
 
         $json = $this->getRequestData($request);
         $event = $json['event'];
+        $course_id = $json['course_id'];
 
         $episode_id = $args['episode_id'];
 
@@ -53,17 +54,22 @@ class VideoAdd extends OpencastController
             $video->store();
 
             // add permissions to this video for current user
-            $perm = VideosUserPerms::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
+            $oc_perm = VideosUserPerms::findOneBySQL('user_id = :user_id AND video_id = :video_id', [
                 ':user_id'  => $user->id,
                 ':video_id' => $video->id
             ]);
 
-            if (empty($perm)) {
-                $perm = new VideosUserPerms();
-                $perm->user_id  = $user->id;
-                $perm->video_id = $video->id;
-                $perm->perm     = 'owner';
-                $perm->store();
+            if (empty($oc_perm)) {
+                $oc_perm = new VideosUserPerms();
+                $oc_perm->user_id  = $user->id;
+                $oc_perm->video_id = $video->id;
+                $oc_perm->perm     = 'owner';
+                $oc_perm->store();
+            }
+
+            // Assign permissions to teachers of the course, when it is a student upload in a course.
+            if (!empty($course_id) && $perm->have_studip_perm($course_id, 'user', $user->id)) {
+                VideosUserPerms::assignCourseLecturerPermissions($course_id, $video->id);
             }
 
             $ret = $video->toSanitizedArray();
