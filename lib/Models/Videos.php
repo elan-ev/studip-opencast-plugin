@@ -799,7 +799,7 @@ class Videos extends UPMap
             foreach ($episode->publications[0]->media as $track) {
                 $parsed_url = parse_url($track->url);
 
-                if ($track->flavor === 'presenter/delivery') {
+                if (strpos($track->flavor, 'presenter/') === 0) {
                     if (($track->mediatype === 'video/mp4' || $track->mediatype === 'video/avi')
                         && ((in_array('atom', $track->tags) || in_array('engage-download', $track->tags))
                             && $parsed_url['scheme'] != 'rtmp' && $parsed_url['scheme'] != 'rtmps')
@@ -834,7 +834,7 @@ class Videos extends UPMap
                     }
                 }
 
-                if ($track->flavor === 'presentation/delivery' && (
+                if ((strpos($track->flavor, 'presentation/') === 0) && (
                     ($track->mediatype === 'video/mp4'
                         || $track->mediatype === 'video/avi'
                     ) && (
