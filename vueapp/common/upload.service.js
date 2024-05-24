@@ -44,7 +44,7 @@ class UploadService {
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
-            </Rule>
+            </Rule> 
             <Rule RuleId="ROLE_ADMIN_read_write_Permit" Effect="Permit">
                 <Target>
                     <Actions>
