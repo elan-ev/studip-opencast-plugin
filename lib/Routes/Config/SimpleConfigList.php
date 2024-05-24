@@ -40,6 +40,7 @@ class SimpleConfigList extends OpencastController
                 'ingest'        => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
                 'apievents'     => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apievents'", [$conf->id]))->service_url,
                 'apiplaylists'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apiplaylists'", [$conf->id]))->service_url,
+                'apiworkflows'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apiworkflows'", [$conf->id]))->service_url,
                 'studio'        => $conf->service_url . '/studio/index.html',
                 'lti_num'       => sizeof(LtiHelper::getLtiLinks($conf->id))              // used to iterate over all Opencast nodes
             ];

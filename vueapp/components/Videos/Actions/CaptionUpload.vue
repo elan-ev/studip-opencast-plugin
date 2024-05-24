@@ -207,7 +207,10 @@ export default {
                 if (this.files[flavor].url) {
                     let view = this;
                     // get correct upload endpoint url
-                    this.uploadService = new UploadService(this.selectedServer['apievents']);
+                    this.uploadService = new UploadService({
+                        'apievents':    this.selectedServer['apievents'],
+                        'apiworkflows': this.selectedServer['apiworkflows'],
+                    });
 
                     this.uploadService.uploadCaptions(files, this.event.episode, {
                         uploadProgress: () => {},
@@ -255,7 +258,10 @@ export default {
             }
 
             // get correct upload endpoint url
-            this.uploadService = new UploadService(this.selectedServer['apievents']);
+            this.uploadService = new UploadService({
+                'apievents':    this.selectedServer['apievents'],
+                'apiworkflows': this.selectedServer['apiworkflows'],
+            });
 
             let files = [];
             for (const [key, value] of Object.entries(this.files)) {
@@ -330,7 +336,8 @@ export default {
         for (let key in window.OpencastPlugin.STUDIP_LANGUAGES) {
             this.languages.push({
                 lang: window.OpencastPlugin.STUDIP_LANGUAGES[key].name,
-                flavor: 'captions/source+' + key.split('_')[0]
+                flavor: 'captions/source',
+                tag: 'lang:' + key
             });
         }
     },

@@ -7,8 +7,8 @@
 import axios from "@/common/axios.service";
 class UploadService {
 
-    constructor(service_url) {
-        this.service_url = service_url;
+    constructor(service_urls) {
+        this.service_urls = service_urls;
     }
 
     /**
@@ -158,7 +158,7 @@ class UploadService {
     async getMediaPackage() {
         return axios({
             method: 'GET',
-            url: this.service_url + "/createMediaPackage",
+            url: this.service_urls['ingest'] + "/createMediaPackage",
             crossDomain: true,
             withCredentials: true,
             headers: {
@@ -194,7 +194,7 @@ class UploadService {
         let episodeDC = this.createDCCCatalog(terms);
 
         return axios({
-            url: this.service_url + "/addDCCatalog",
+            url: this.service_urls['ingest'] + "/addDCCatalog",
             method: "POST",
             data: new URLSearchParams({
                 mediaPackage: mediaPackage,
@@ -216,7 +216,7 @@ class UploadService {
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
         return axios({
-            url: this.service_url + "/addAttachment",
+            url: this.service_urls['ingest'] + "/addAttachment",
             method: "POST",
             data: acldata,
             processData: false,
@@ -237,7 +237,7 @@ class UploadService {
                 data.append('tags', '');
                 data.append('BODY', file.file, file.file.name);
 
-                return obj.addTrack(data, "/addTrack", file, onProgress);
+                return obj.addTrack(data, obj.service_urls['ingest'] + "/addTrack", file, onProgress);
             });
         }, Promise.resolve(mediaPackage))
     }
@@ -257,7 +257,7 @@ class UploadService {
                 data.append('overwriteExisting', file.overwriteExisting);
                 data.append('track', file.file);
 
-                return obj.addTrack(data, "/" + episode_id + "/track", file, onProgress, onError);
+                return obj.addTrack(data, obj.service_urls['apievents'] + "/" + episode_id + "/track", file, onProgress, onError);
             });
         }, Promise.resolve())
         .then(() => {
@@ -273,9 +273,8 @@ class UploadService {
     }
 
     runWorkflow(episode_id, workflowId) {
-        console.log("hi");
         return axios({
-            url: this.service_url + "/api/workflows",
+            url: this.service_urls['apiworkflows'],
             method: "POST",
             data: new URLSearchParams({
                 event_identifier: episode_id,
@@ -288,7 +287,7 @@ class UploadService {
         })
     }
 
-    addTrack(data, url_path, track, onProgress, onError) {
+    addTrack(data, oc_url, track, onProgress, onError) {
         var fnOnProgress = function (event) {
             onProgress(track, event.loaded, event.total);
         };
@@ -300,7 +299,7 @@ class UploadService {
                 obj.request = axios.CancelToken.source();
 
                 return axios({
-                    url: obj.service_url + url_path,
+                    url: oc_url,
                     method: "POST",
                     data: data,
                     processData: false,
@@ -321,7 +320,7 @@ class UploadService {
 
     finishIngest(mediaPackage, workflowId = "upload") {
         return axios({
-            url: this.service_url + "/ingest",
+            url: this.service_urls['ingest'] + "/ingest",
             method: "POST",
             data: new URLSearchParams({
                 mediaPackage: mediaPackage,
