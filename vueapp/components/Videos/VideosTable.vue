@@ -85,7 +85,6 @@
                         @toggle="toggleVideo"
                         :selectable="selectable"
                         :isCourse="isCourse"
-                        :canEdit="canEdit"
                         :canUpload="canUpload"
                         :showActions="showActions"
                         @doAction="doAction"
@@ -295,7 +294,6 @@ export default {
             'course_config',
             'isLTIAuthenticated',
             'simple_config_list',
-            'cid'
         ]),
 
         numberOfColumns() {

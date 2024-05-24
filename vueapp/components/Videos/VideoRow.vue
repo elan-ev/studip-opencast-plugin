@@ -196,10 +196,6 @@ export default {
         selectedVideos: {
             type: Object,
         },
-        canEdit: {
-            type: Boolean,
-            default: false
-        },
         canUpload: {
             type: Boolean,
             default: false
