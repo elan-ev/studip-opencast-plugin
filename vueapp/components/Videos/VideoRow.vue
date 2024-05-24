@@ -533,7 +533,7 @@ export default {
                 if (this.downloadAllowed && this.event?.state !== 'running' && !this.isLivestream) {
                     menuItems.push({
                         id: 2,
-                        label: this.$gettext('Medien runterladen'),
+                        label: this.$gettext('Medien herunterladen'),
                         icon: 'download',
                         emit: 'performAction',
                         emitArguments: 'VideoDownload'
