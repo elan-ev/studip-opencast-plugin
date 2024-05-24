@@ -79,8 +79,7 @@ class WorkflowConfig extends \SimpleORMap
                 $workflow = Workflow::findOneBySql('config_id = ? AND tag = ?', [$config_id, $type]);
                 if (isset($workflow)) {
                     $entry->setValue('workflow_id', $workflow->id);
-                }
-                else {
+                } else {
                     $entry->setValue('workflow_id', null);
                 }
             }
