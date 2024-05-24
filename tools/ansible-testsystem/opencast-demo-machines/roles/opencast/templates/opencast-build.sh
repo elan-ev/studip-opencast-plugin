@@ -51,6 +51,7 @@ mkdir -p /srv/opencast/opencast-dist-allinone/data/log
 restorecon -r /srv/opencast/ || :
 chcon -Rt httpd_sys_content_t /srv/opencast/opencast-dist-allinone/data/log || :
 chcon -R system_u:object_r:bin_t:s0 /srv/opencast/opencast-dist-allinone/bin/ || :
+chown opencast: /srv/opencast -R
 
 # Clear Elasticsearch
 sudo systemctl stop elasticsearch.service
