@@ -45,7 +45,7 @@ window.addEventListener("DOMContentLoaded", function() {
         }, function (error) {
             store.dispatch('axiosStop');
 
-            if (error.data !== undefined) {
+            if (error.response.data !== undefined) {
                 store.dispatch('addMessage', error.response);
             }
 
