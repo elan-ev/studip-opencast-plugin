@@ -41,6 +41,7 @@ class OpencastRefreshScheduling extends CronJob
         foreach ($config as $conf) {
             $config_id = $conf['id'];
             $scheduled_events = [];
+            
             try {
                 $events_client = ApiEventsClient::getInstance($config_id);
                 // Adding config_id to each record for easier use later on!
@@ -48,7 +49,11 @@ class OpencastRefreshScheduling extends CronJob
                     $event->config_id = $config_id;
                     return $event;
                 }, $events_client->getAllScheduledEvents());
-            } catch (\Throwable $th) {}
+            } catch (\Throwable $th) {
+                echo 'Fehler beim abrufen der Events für config_id '. $config_id 
+                    .': '. $th->getMessage() . "\n";
+            }
+
             $oc_scheduled_events[] = [
                 'config_id' => $config_id,
                 'scheduled_events' => $scheduled_events
@@ -75,6 +80,8 @@ class OpencastRefreshScheduling extends CronJob
                 if (!$cd || !$course || !$course_config_id || !$resource_obj                                                    // Any requirement fails
                     || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])  // The server config id of the course and the oc_resource does not match
                     || $cd->room_booking->resource_id != $scheduled_events['resource_id']                                       // The resource of the record and course date does not match
+                    || $cd->room_booking->begin != $scheduled_events['start']                                                      // Start or Enddate are different 
+                    || $cd->room_booking->end != $scheduled_events['end']
                     /* || intval($cd->end_time) < $time */                                                                      // TODO: decide whether to remove those records that are expired!
                     ) {
 
@@ -88,19 +95,20 @@ class OpencastRefreshScheduling extends CronJob
 
                     $oc_event_id = $scheduled_events['event_id'];
                     $oc_config_id = $course_config_id;
-
-                    // Delete the record in SOP.
-                    ScheduledRecordings::unscheduleRecording($oc_event_id, $scheduled_events['resource_id'], $scheduled_events['date_id']);
-
-                    // Delete the record in OC.
+                   
+                    // Delete the recording in OC.
                     if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
                         $oc_config_id = $resource_obj['config_id'];
                     }
+
                     $oc_set_index = array_search($oc_config_id, array_column($oc_scheduled_events, 'config_id'));
                     $oc_event_to_delete = null;
+
+                    // search for the corresponding event in Opencast 
                     if ($oc_set_index !== false && isset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id])) {
                         $oc_event_to_delete = $oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id];
                     }
+
                     if (!empty($oc_event_to_delete)) {
                         $scheduler_client = SchedulerClient::getInstance($oc_config_id);
                         $result = $scheduler_client->deleteEvent($oc_event_id);
@@ -108,6 +116,9 @@ class OpencastRefreshScheduling extends CronJob
                             unset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id]);
                         }
                     }
+
+                    // Delete the recording in SOP.
+                    ScheduledRecordings::unscheduleRecording($oc_event_id, $scheduled_events['resource_id'], $scheduled_events['date_id']);
                 } else {
                     // If validation is passed, we try to update to the record on both sides.
                     // Update the record.
@@ -116,13 +127,26 @@ class OpencastRefreshScheduling extends CronJob
                         $cd->getFullname(), $course->name
                     );
 
-                    $result = ScheduleHelper::updateEventForSeminar($scheduled_events['seminar_id'], $scheduled_events['date_id']);
+                    $result = ScheduleHelper::updateEventForSeminar(
+                        $scheduled_events['seminar_id'], $scheduled_events['date_id']
+                    );
+
                     if ($result) {
                         $oc_set_index = array_search($course_config_id, array_column($oc_scheduled_events, 'config_id'));
                         $oc_event_id = $scheduled_events['event_id'];
                         if ($oc_set_index !== false && isset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id])) {
                             unset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id]);
                         }
+                    } else {
+                        // try to (re-)create event in opencast
+                        echo 'Eintrag fehlt im Opencast, versuche ihn zu erstellen...';
+                        $result = ScheduleHelper::scheduleEventForSeminar(
+                            $scheduled_events['seminar_id'], $scheduled_events['date_id'], 
+                            $scheduled_event['is_livestream'] ? true : false
+                        );
+
+                        echo $result ? ' erfolgreich' : 'fehlgeschlagen';
+                        echo "\n";
                     }
                 }
             } catch (\Throwable $th) {

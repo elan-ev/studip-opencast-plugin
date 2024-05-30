@@ -99,15 +99,25 @@ class ApiEventsClient extends RestClient
      */
     public function getAllScheduledEvents()
     {
+        // filters are AND concatenated, to get all events, we need to split the calls
+
         // EVENTS.EVENTS.STATUS.RECORDING should also be added here... which refers to live events
-        $params = [
+        $params[0] = [
             'filter' => ['status' => [
-                'EVENTS.EVENTS.STATUS.SCHEDULED',
-                'EVENTS.EVENTS.STATUS.RECORDING',
+                'EVENTS.EVENTS.STATUS.SCHEDULED'
             ]],
         ];
 
-        $data = $this->getAll($params);
+        $params[1] = [
+            'filter' => ['status' => [
+                'EVENTS.EVENTS.STATUS.RECORDING'
+            ]],
+        ];
+
+        $data = array_merge(
+            $this->getAll($params[0]), 
+            $this->getAll($params[1])
+        );
 
         if (is_array($data)) foreach ($data as $event) {
             $events[$event->identifier] = $event;
