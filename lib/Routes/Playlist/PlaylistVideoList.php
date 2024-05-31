@@ -63,7 +63,7 @@ class PlaylistVideoList extends OpencastController
 
         return $this->createResponse([
             'videos' => $ret,
-            'count'  => $videos['count'],
+            'count'  => $videos['count']
         ], $response);
     }
 }

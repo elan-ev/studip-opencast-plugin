@@ -10,6 +10,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\Resources;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Helpers\PlaylistMigration;
 
 class ConfigList extends OpencastController
 {
@@ -47,6 +48,10 @@ class ConfigList extends OpencastController
         $resources = Resources::getStudipResources();
         if (!empty(Endpoints::getEndpoints()) && !empty($resources)) {
             $response_data['scheduling'] = ScheduleHelper::prepareSchedulingConfig($config_list, $resources);
+        }
+
+        if (PlaylistMigration::isConverted()) {
+            $response_data['can_migrate_playlists'] = true;
         }
 
         return $this->createResponse($response_data, $response);

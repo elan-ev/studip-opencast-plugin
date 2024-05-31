@@ -10,6 +10,14 @@
             </a>
         </MessageBox>
 
+        <MessageBox type="info" v-if="canMigratePlaylists">
+            {{ $gettext('Sie verwenden Opencast 16 oder höher und können die Wiedergabelisten mit Opencast synchronisieren.') }}
+            <br>
+            <a href="#" @click="true">
+                {{ $gettext('Jetzt synchronisieren') }}
+            </a>
+        </MessageBox>
+
         <GlobalOptions :config_list="config_list"/>
 
         <SchedulingOptions v-if="is_scheduling_enabled" :config_list="config_list"/>
@@ -62,6 +70,11 @@ export default {
                     return (this.config_list.settings[key].value == true)
                 }
             }
+        },
+
+        canMigratePlaylists()
+        {
+            return this.config_list.can_migrate_playlists !== undefined;
         }
     },
 

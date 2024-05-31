@@ -10,6 +10,8 @@ use Opencast\OpencastController;
 use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Models\Playlists;
 use Opencast\Models\Videos;
+use Opencast\Models\PlaylistVideos;
+use Opencast\Helpers\PlaylistMigration;
 
 class PlaylistAddVideos extends OpencastController
 {
@@ -25,7 +27,23 @@ class PlaylistAddVideos extends OpencastController
         $video_tokens = $data['videos'];
         $course_id    = $data['course_id'];
 
-        $videos = array_map(function ($token) { return Videos::findOneByToken($token); }, $video_tokens);
+        $videos = array_map(function ($token) {
+            return Videos::findOneByToken($token);
+        }, $video_tokens);
+
+        if (!PlaylistMigration::isConverted()) {
+            foreach ($videos as $video) {
+                $plvideo = new PlaylistVideos;
+                $plvideo->setData([
+                    'playlist_id' => $playlist->id,
+                    'video_id'    => $video->id
+                ]);
+                $playlist->videos[] = $plvideo;
+            }
+
+            $playlist->videos->store();
+            return $response->withStatus(204);
+        }
 
         // Get playlist entries from Opencast
         $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);

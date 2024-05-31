@@ -30,13 +30,12 @@ class OpencastDiscoverVideos extends CronJob
          - Eintragen der Videos und setzen der Rechte (Queue)
         */
         $db = DBManager::get();
-        $stmt_ids   = $db->prepare("
+        $stmt_ids = $db->prepare("
             SELECT episode FROM oc_video WHERE config_id = :config_id AND available=true
-            ");
+        ");
 
         // iterate over all active configured oc instances
         $configs = Config::findBySql('active = 1');
-
 
         foreach ($configs as $config) {
             // check, if this opencast instance is accessible
@@ -51,6 +50,9 @@ class OpencastDiscoverVideos extends CronJob
             } else {
                 echo "found opencast with version $version, continuing\n";
             }
+
+            // update endpoints, just to make sure
+            $config->updateEndpoints();
 
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
