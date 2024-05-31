@@ -171,7 +171,6 @@ class Perm
         }
 
         foreach ($course[$course_id]->institutes as $inst) {
-            //var_dump($inst->institut_id);
             if ($inst->institut_id == $inst_id) {
                 return true;
             }
