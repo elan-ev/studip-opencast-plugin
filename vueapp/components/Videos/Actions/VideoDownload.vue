@@ -17,14 +17,16 @@
                             {{ getMediaText(media) }}
                         </StudipButton>
                     </a>
-                    <br>
-                    <label>
-                        {{ $gettext('Link zur Mediendatei') }}
-                        <input type="text" style="width: 100%"
-                            v-for="(media, index) in presentations"
-                            :key="index" :value="media.url"
-                        >
-                    </label>
+                    <template v-if="event.visibility == 'public'">
+                        <br>
+                        <label>
+                            {{ $gettext('Link zur Mediendatei') }}
+                            <input type="text" style="width: 100%"
+                                v-for="(media, index) in presenters"
+                                :key="index" :value="media.url"
+                            >
+                        </label>
+                    </template>
                 </div>
                 <br>
                 <div v-if="presentations.length">
@@ -36,6 +38,7 @@
                             {{ getMediaText(media) }}
                         </StudipButton>
                     </a>
+                    <template v-if="event.visibility == 'public'">
                     <br>
                     <label>
                         {{ $gettext('Link zur Mediendatei') }}
@@ -44,6 +47,7 @@
                             :key="index" :value="media.url"
                         >
                     </label>
+                    </template>
                 </div>
             </template>
         </StudipDialog>
