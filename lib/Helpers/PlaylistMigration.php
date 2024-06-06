@@ -3,10 +3,13 @@
 namespace Opencast\Helpers;
 
 use Opencast\Models\Playlists;
+use Opencast\Models\REST\ApiPlaylistsClient;
 use DBManager;
 
 class PlaylistMigration
 {
+    const CRONJOBS_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+
     /**
      * Convert the Stud.IP playlists to OC playlists
      *
@@ -14,6 +17,8 @@ class PlaylistMigration
      */
     public static function convert()
     {
+        $db = DBManager::get();
+
         // Migrate existing playlists to Opencast
         $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
 
@@ -58,7 +63,7 @@ class PlaylistMigration
                             SET `service_entry_id` = :service_entry_id
                             WHERE playlist_id = :playlist_id AND video_id = :video_id
                         ");
-                        $stmt->execute([
+                        $stmt->execute($data = [
                             'service_entry_id' => $oc_playlist->entries[$i]->id,
                             'playlist_id' => $playlist->id,
                             'video_id' => $playlist_videos[$i]['id']
@@ -79,15 +84,15 @@ class PlaylistMigration
 
         // Forbid playlist video without related oc playlist entry
         $db->exec('ALTER TABLE `oc_playlist_video`
-            ADD COLUMN IF NOT EXISTS `service_entry_id` BIGINT(20) UNSIGNED NOT NULL'
+            CHANGE COLUMN `service_entry_id` `service_entry_id` int NOT NULL'
         );
 
-        SimpleOrMap::expireTableScheme();
+        \SimpleOrMap::expireTableScheme();
 
         // Add playlists sync cronjob
-        $scheduler = CronjobScheduler::getInstance();
+        $scheduler = \CronjobScheduler::getInstance();
 
-        if (!$task_id = CronjobTask::findByFilename(self::CRONJOBS_DIR . 'opencast_sync_playlists.php')[0]->task_id) {
+        if (!$task_id = \CronjobTask::findByFilename(self::CRONJOBS_DIR . 'opencast_sync_playlists.php')[0]->task_id) {
             $task_id =  $scheduler->registerTask(self::CRONJOBS_DIR . 'opencast_sync_playlists.php', true);
         }
 
@@ -95,7 +100,7 @@ class PlaylistMigration
         if ($task_id) {
             $scheduler->cancelByTask($task_id);
             $scheduler->schedulePeriodic($task_id, -10);  // negative value means "every x minutes"
-            CronjobSchedule::findByTask_id($task_id)[0]->activate();
+            \CronjobSchedule::findByTask_id($task_id)[0]->activate();
         }
     }
 
@@ -106,7 +111,7 @@ class PlaylistMigration
      * @return array opencast playlist representation
      */
     public static function getOcPlaylistData($playlist, $playlist_videos) {
-        $owner_names = User::findAndMapBySQL(function ($owner) {
+        $owner_names = \User::findAndMapBySQL(function ($owner) {
                 return $owner->getFullName();
             },
             "INNER JOIN oc_playlist_user_perms as ocpp

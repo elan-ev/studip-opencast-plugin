@@ -139,6 +139,8 @@ class RouteMap
         $group->get("/config/{id}", Routes\Config\ConfigShow::class); // get config with itd
         $group->put("/config/{id}", Routes\Config\ConfigEdit::class); // update existing config
         $group->delete("/config/{id}", Routes\Config\ConfigDelete::class); // delete existing config
+
+        $group->get('/migrate_playlists', Routes\Config\ConfigMigratePlaylists::class);
     }
 
     /**

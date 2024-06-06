@@ -10,6 +10,7 @@ use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Models\Resources;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Models\REST\Config as OCConfig;
 use Opencast\Helpers\PlaylistMigration;
 
 class ConfigList extends OpencastController
@@ -50,7 +51,13 @@ class ConfigList extends OpencastController
             $response_data['scheduling'] = ScheduleHelper::prepareSchedulingConfig($config_list, $resources);
         }
 
-        if (PlaylistMigration::isConverted()) {
+        if (!PlaylistMigration::isConverted() &&
+            version_compare(
+                OCConfig::getOCBaseVersion(\Config::get()->OPENCAST_DEFAULT_SERVER),
+                '16',
+                '>='
+            )
+        ) {
             $response_data['can_migrate_playlists'] = true;
         }
 

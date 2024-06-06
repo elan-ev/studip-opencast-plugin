@@ -102,6 +102,10 @@ export const actions = {
         });
     },
 
+    configMigratePlaylists(context, params) {
+        return ApiService.get('migrate_playlists');
+    },
+
     configClear(context) {
         context.commit('configSet', {});
     },
