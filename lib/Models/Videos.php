@@ -599,7 +599,8 @@ class Videos extends UPMap
     public function updateMetadata($event)
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
-        $allowed_metadata_fields = ['title', 'presenters', 'contributors', 'subject', 'language', 'description', 'startDate'];
+        $allowed_metadata_fields = ['title', 'presenters', 'contributors',
+            'subject', 'language', 'description', 'startDate', 'visibility'];
         $metadata = [];
 
         foreach ($allowed_metadata_fields as $field_name) {
@@ -629,9 +630,15 @@ class Videos extends UPMap
         $success = false;
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
 
-        if (in_array($response['code'], [200, 204]) === true) {
+        $result = in_array($response['code'], [200, 204]) === true;
+
+        if ($this->visibility != $event['visibility']) {
+            $result = $result || $this->updateVisibility($event['visibility']);
+        }
+
+        if ($result) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
-            
+
             if ($api_wf_client->republish($this->episode)) {
                 $success = true;
                 $store_data = [];
@@ -654,6 +661,56 @@ class Videos extends UPMap
         }
 
         return $success;
+    }
+
+    /**
+     * Update visibility for this video, including setting acls and running update metadata workflow
+     *
+     * @param string $new_vis one of internal, free, or public
+     *
+     * @return boolean
+     */
+    private function updateVisibility($new_vis)
+    {
+        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        $republish = false;
+        $acls = $api_event_client->getACL($this->episode);
+
+        $result = true;
+
+        // set correct acl
+        if ($new_vis == 'public') {
+            $role_present = false;
+
+            $acl = [
+                'allow'  => true,
+                'role'   => 'ROLE_ANONYMOUS',
+                'action' => 'read'
+            ];
+
+            foreach ($acls as $acl_entry) {
+                if ($acl_entry['role'] == 'ROLE_ANONYMOUS') {
+                    $role_present = true;
+                    break;
+                }
+            }
+
+            if (!$role_present) {
+                $result = $api_event_client->setACL($this->episode, array_merge($acls, [$acl]));
+                $republish = true;
+            }
+        } else {
+            foreach ($acls as $key => $acl_entry) {
+                if ($acl_entry['role'] == 'ROLE_ANONYMOUS') {
+                    // remove acl
+                    unset($acls[$key]);
+                    $result = $api_event_client->setACL($this->episode, $acls);
+                    $republish = true;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

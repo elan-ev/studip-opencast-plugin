@@ -114,6 +114,28 @@
                             </tfoot>
                         </table>
                     </fieldset>
+
+                    <fieldset>
+                        <legend>
+                            {{ $gettext('Weltweiter Zugriff') }}
+                        </legend>
+
+                        {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. die Videodateien, ' +
+                            'deren Links sie unter "Medien herunterladen" finden, in externe Videoplayer integrieren.') }}
+                        <br>
+
+                        <template v-if="event.visibility == 'public'">
+                            {{ $gettext('Das Video ist momentanen weltweit zugreifbar') }}
+
+                            <StudipButton icon="trash" @click.prevent="setVisibility('internal')">
+                                {{ $gettext('Video nur berechtigen Personen zugreifbar machen') }}
+                            </StudipButton>
+                        </template>
+
+                        <StudipButton icon="add" @click.prevent="setVisibility('public')" v-else>
+                            {{ $gettext('Video weltweit zugreifbar machen') }}
+                        </StudipButton>
+                    </fieldset>
                 </form>
                 <MessageList :float="true" :dialog="true"/>
             </template>
@@ -267,6 +289,21 @@ export default {
             .then(() => {
                 this.shareUsers = this.videoShares.perms
             });
+        },
+
+        setVisibility(vis)
+        {
+            let event = this.event;
+            let new_event = JSON.parse(JSON.stringify(this.event));
+            new_event.visibility = vis;
+            this.$store.dispatch('updateVideo', new_event)
+            .then(({ data }) => {
+                if (data.message.type == 'success') {
+                    event.visibility = vis;
+                }
+                console.log('visibility', event.visibility);
+                this.$store.dispatch('addMessage', data.message);
+            })
         }
     },
 
