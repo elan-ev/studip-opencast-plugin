@@ -122,7 +122,7 @@
 
                         {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. die Videodateien, ' +
                             'deren Links sie unter "Medien herunterladen" finden, in externe Videoplayer integrieren.') }}
-                        <br>
+                        <br><br>
 
                         <template v-if="event.visibility == 'public'">
                             {{ $gettext('Das Video ist momentanen weltweit zugreifbar') }}

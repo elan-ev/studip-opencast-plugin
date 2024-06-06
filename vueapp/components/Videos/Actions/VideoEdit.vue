@@ -68,7 +68,7 @@
                         <label v-if="isCourse">
                             <div>
                                 <span>
-                                    {{ $gettext('Sichtbarkeit des Videos') }}
+                                    {{ $gettext('Sichtbarkeit des Videos in dieser Veranstaltung') }}
                                 </span>
                             </div>
 

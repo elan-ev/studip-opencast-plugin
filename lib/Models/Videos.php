@@ -600,7 +600,7 @@ class Videos extends UPMap
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
         $allowed_metadata_fields = ['title', 'presenters', 'contributors',
-            'subject', 'language', 'description', 'startDate', 'visibility'];
+            'subject', 'language', 'description', 'startDate'];
         $metadata = [];
 
         foreach ($allowed_metadata_fields as $field_name) {
@@ -629,11 +629,19 @@ class Videos extends UPMap
 
         $success = false;
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
-
-        $result = in_array($response['code'], [200, 204]) === true;
+        $republish = in_array($response['code'], [200, 204]) === true;
 
         if ($this->visibility != $event['visibility']) {
-            $result = $result || $this->updateVisibility($event['visibility']);
+            $result = $this->updateAcl($event['visibility']);
+
+            if ($result['republish']) {
+                $republish = true;
+            }
+
+            if ($result['update']) {
+                $this->visibility = $event['visibility'];
+                $this->store();
+            }
         }
 
         if ($result) {
@@ -661,56 +669,6 @@ class Videos extends UPMap
         }
 
         return $success;
-    }
-
-    /**
-     * Update visibility for this video, including setting acls and running update metadata workflow
-     *
-     * @param string $new_vis one of internal, free, or public
-     *
-     * @return boolean
-     */
-    private function updateVisibility($new_vis)
-    {
-        $api_event_client = ApiEventsClient::getInstance($this->config_id);
-        $republish = false;
-        $acls = $api_event_client->getACL($this->episode);
-
-        $result = true;
-
-        // set correct acl
-        if ($new_vis == 'public') {
-            $role_present = false;
-
-            $acl = [
-                'allow'  => true,
-                'role'   => 'ROLE_ANONYMOUS',
-                'action' => 'read'
-            ];
-
-            foreach ($acls as $acl_entry) {
-                if ($acl_entry['role'] == 'ROLE_ANONYMOUS') {
-                    $role_present = true;
-                    break;
-                }
-            }
-
-            if (!$role_present) {
-                $result = $api_event_client->setACL($this->episode, array_merge($acls, [$acl]));
-                $republish = true;
-            }
-        } else {
-            foreach ($acls as $key => $acl_entry) {
-                if ($acl_entry['role'] == 'ROLE_ANONYMOUS') {
-                    // remove acl
-                    unset($acls[$key]);
-                    $result = $api_event_client->setACL($this->episode, $acls);
-                    $republish = true;
-                }
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -776,37 +734,56 @@ class Videos extends UPMap
      */
     public static function checkEventACL($eventType, $episode, $video)
     {
-        $api_client      = ApiEventsClient::getInstance($video->config_id);
         $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
 
-        $current_acl = $api_client->getAcl($video->episode);
+        if ($video->updateAcl()) {
+            $workflow_client->republish($video->episode);
+        }
+    }
+
+    /**
+     * Update the ACL in Opencast if necessary
+     *
+     * @param string $new_vis The targeted new visibility. If empty, use the current on to check
+     *
+     * @return array Returns an array of the following form, stating if a republish is necessary and if the
+     *   update in was succesful:
+     *  [
+     *      republish' => boolean
+     *     'update'    => boolean
+     *  ]
+     */
+    public function updateAcl($new_vis = null)
+    {
+        $api_client  = ApiEventsClient::getInstance($this->config_id);
+        $current_acl = $api_client->getAcl($this->episode);
 
         // one ACL for reading AND for reading and writing
         $acl = [
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $video->episode .'_read',
+                'role'   => 'STUDIP_' . $this->episode .'_read',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $video->episode .'_write',
+                'role'   => 'STUDIP_' . $this->episode .'_write',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $video->episode .'_write',
+                'role'   => 'STUDIP_' . $this->episode .'_write',
                 'action' => 'write'
             ]
         ];
 
-        $oc_acl = self::filterForEpisode($video->episode, $current_acl);
+        $oc_acl = self::filterForEpisode($this->episode, $current_acl);
 
         // add anonymous role if video is world visible
-        if ($video->visibility == 'public') {
-            $acl = [
+        if (($new_vis && $new_vis == 'public') || (!$new_vis && $this->visibility == 'public')) {
+            $acl[] = [
                 'allow'  => true,
                 'role'   => 'ROLE_ANONYMOUS',
                 'action' => 'read'
@@ -814,10 +791,26 @@ class Videos extends UPMap
         }
 
         if ($acl <> $oc_acl) {
-            $new_acl = self::addEpisodeAcl($video->episode, $acl, $current_acl);
-            $api_client->setACL($video->episode, $new_acl);
-            $workflow_client->republish($video->episode);
+            $new_acl = self::addEpisodeAcl($this->episode, $acl, $current_acl);
+            $api_client->setACL($this->episode, $new_acl);
+
+            if ($result['code'] != 200) {
+                return [
+                    'republish' => false,
+                    'update'    => false
+                ];
+            }
+
+            return [
+                'republish' => true,
+                'update'    => true
+            ];
         }
+
+        return [
+            'republish' => false,
+            'update'    => true
+        ];
     }
 
     /**
