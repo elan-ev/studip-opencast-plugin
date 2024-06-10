@@ -125,10 +125,10 @@
                         <br><br>
 
                         <template v-if="event.visibility == 'public'">
-                            {{ $gettext('Das Video ist momentanen weltweit zugreifbar') }}
+                            {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}
 
                             <StudipButton icon="trash" @click.prevent="setVisibility('internal')">
-                                {{ $gettext('Video nur berechtigen Personen zugreifbar machen') }}
+                                {{ $gettext('Video nur berechtigten Personen zugreifbar machen') }}
                             </StudipButton>
                         </template>
 
