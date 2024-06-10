@@ -12,7 +12,7 @@ use OpencastApi\Rest\OcRestClient;
 
 class RestClient
 {
-    static $me;
+    static $me = [];
 
     protected $base_url,
         $username,
@@ -44,7 +44,7 @@ class RestClient
             throw new RESTError('Every child of ' . get_class() . ' needs to implement static property "$me"');
         }
 
-        if (!is_object(static::$me[$config_id])) {
+        if (@!is_object(static::$me[$config_id])) {
             static::$me[$config_id] = new static($config_id);
         }
 

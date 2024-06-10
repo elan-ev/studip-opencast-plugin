@@ -631,6 +631,8 @@ class Videos extends UPMap
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
         $republish = in_array($response['code'], [200, 204]) === true;
 
+        $result = null;
+
         if ($this->visibility != $event['visibility']) {
             $result = $this->updateAcl($event['visibility']);
 
@@ -792,7 +794,7 @@ class Videos extends UPMap
 
         if ($acl <> $oc_acl) {
             $new_acl = self::addEpisodeAcl($this->episode, $acl, $current_acl);
-            $api_client->setACL($this->episode, $new_acl);
+            $result = $api_client->setACL($this->episode, $new_acl);
 
             if ($result['code'] != 200) {
                 return [
