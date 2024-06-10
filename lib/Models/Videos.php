@@ -483,7 +483,7 @@ class Videos extends UPMap
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
-        $data['perm'] = $this->getUserPerm($user_id);
+        $data['perm'] = $this->getUserPerm();
         $data['playlists'] = $this->getPlaylists();
         $data['seminar_visibility'] = $this->getSeminarVisibility($cid, $playlist_id);
 
@@ -515,7 +515,6 @@ class Videos extends UPMap
         if (!empty($this->playlists)) {
 
             foreach ($this->playlists as $playlist) {
-                $course = $video_seminar->course;
                 $playlists[] = $playlist->toSanitizedArray();
             }
         }
@@ -796,7 +795,7 @@ class Videos extends UPMap
             $new_acl = self::addEpisodeAcl($this->episode, $acl, $current_acl);
             $result = $api_client->setACL($this->episode, $new_acl);
 
-            if ($result['code'] != 200) {
+            if (in_array($result['code'], ['200', '204']) === false) {
                 return [
                     'republish' => false,
                     'update'    => false
