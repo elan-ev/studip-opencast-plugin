@@ -16,8 +16,27 @@
                         <StudipButton @click.prevent="downloadFile(media)">
                             {{ getMediaText(media) }}
                         </StudipButton>
+
+                        <div class="oc--tooltip--copy">
+                            <div class="oc--tooltip--copy-success"
+                                :class="{
+                                    'oc--display--block': copied == media.url
+                                }"
+                            >
+                                {{ $gettext('Kopiert!') }}
+                            </div>
+
+                            <studip-icon
+                                v-if="event.visibility == 'public'"
+                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                @click="copyToClipboard(media.url)"
+                                :shape="copied == media.url ? 'accept' : 'copy'"
+                                :role="copied == media.url ? 'status-green' : 'clickable'"
+                            />
+                        </div>
                     </a>
                 </div>
+                <br>
                 <div v-if="presentations.length">
                     <h2>
                         Bildschirm
@@ -26,6 +45,24 @@
                         <StudipButton @click.prevent="downloadFile(media)">
                             {{ getMediaText(media) }}
                         </StudipButton>
+
+                        <div class="oc--tooltip--copy">
+                            <div class="oc--tooltip--copy-success"
+                                :class="{
+                                    'oc--display--block': copied == media.url
+                                }"
+                            >
+                                {{ $gettext('Kopiert!') }}
+                            </div>
+
+                            <studip-icon
+                                v-if="event.visibility == 'public'"
+                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                @click="copyToClipboard(media.url)"
+                                :shape="copied == media.url ? 'accept' : 'copy'"
+                                :role="copied == media.url ? 'status-green' : 'clickable'"
+                            />
+                        </div>
                     </a>
                 </div>
             </template>
@@ -36,6 +73,7 @@
 <script>
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
+import StudipIcon from '@studip/StudipIcon';
 
 import axios from "@/common/axios.service";
 
@@ -44,7 +82,8 @@ export default {
 
     components: {
         StudipDialog,
-        StudipButton
+        StudipButton,
+        StudipIcon
     },
 
     props: ['event'],
@@ -52,7 +91,8 @@ export default {
     data() {
         return {
             presentations: [],
-            presenters: []
+            presenters: [],
+            copied: null
         }
     },
 
@@ -95,7 +135,7 @@ export default {
                 size = Math.round(size * 10) / 10
                 text = text + ' (' + size + ' KB)'
             }
-            
+
             return text
         },
 
@@ -113,6 +153,15 @@ export default {
                 presenter.size = size;
                 this.presenters.push(presenter);
             }
+        },
+
+        copyToClipboard(text)
+        {
+            navigator.clipboard.writeText(text);
+            this.copied = text;
+            setTimeout(() => {
+                this.copied = '';
+            }, 3000);
         }
     },
 

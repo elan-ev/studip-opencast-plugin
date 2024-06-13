@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Video freigeben')"
+            :title="$gettext('Video freigeben') + ' - ' + event.title"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
@@ -114,6 +114,42 @@
                             </tfoot>
                         </table>
                     </fieldset>
+
+                    <fieldset>
+                        <legend>
+                            {{ $gettext('Weltweiter Zugriff') }}
+                        </legend>
+
+                        {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. '
+                            + 'die Videodateien in externe Videoplayer integrieren.') }}
+                        <br><br>
+                        <template v-if="event.visibility == 'public'">
+                            {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}
+                            <br>
+                            <a style="cursor: pointer" @click.stop="performAction('VideoDownload')">
+                                {{  $gettext('Links zu den Mediendateien anzeigen.') }}
+                                <studip-icon shape="link-intern" role="clickable" />
+                            </a>
+                            <br><br>
+
+                            <StudipButton icon="trash"
+                                :disabled="processing"
+                                @click.prevent="setVisibility('internal')"
+                            >
+                                {{ $gettext('Video nur berechtigten Personen zugreifbar machen') }}
+                            </StudipButton>
+                        </template>
+
+                        <StudipButton icon="add"
+                            @click.prevent="setVisibility('public')"
+                            :disabled="processing"
+                            v-else
+                        >
+                            {{ $gettext('Video weltweit zugreifbar machen') }}
+                        </StudipButton>
+
+
+                    </fieldset>
                 </form>
                 <MessageList :float="true" :dialog="true"/>
             </template>
@@ -141,11 +177,12 @@ export default {
 
     props: ['event'],
 
-    emits: ['done', 'cancel'],
+    emits: ['done', 'cancel', 'doAction'],
 
     data() {
         return {
             shareUsers: [],
+            processing: false,
             add_perm_error: {
                 type: 'error',
                 text: this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'),
@@ -267,7 +304,30 @@ export default {
             .then(() => {
                 this.shareUsers = this.videoShares.perms
             });
-        }
+        },
+
+        setVisibility(vis)
+        {
+            this.processing = true;
+
+            let view = this;
+            let event = this.event;
+            let new_event = JSON.parse(JSON.stringify(this.event));
+            new_event.visibility = vis;
+            this.$store.dispatch('updateVideo', new_event)
+            .then(({ data }) => {
+                if (data.message.type == 'success') {
+                    event.visibility = vis;
+                }
+                console.log('visibility', event.visibility);
+                view.$store.dispatch('addMessage', data.message);
+                view.processing = false;
+            })
+        },
+
+        performAction(action) {
+            this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+        },
     },
 
     mounted () {

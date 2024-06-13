@@ -10,6 +10,8 @@ use Opencast\OpencastController;
 use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Models\Playlists;
 use Opencast\Models\Videos;
+use Opencast\Models\PlaylistVideos;
+use Opencast\Helpers\PlaylistMigration;
 
 class PlaylistRemoveVideos extends OpencastController
 {
@@ -26,6 +28,22 @@ class PlaylistRemoveVideos extends OpencastController
         $course_id    = $data['course_id'];
 
         $videos = array_map(function ($token) { return Videos::findOneByToken($token); }, $video_tokens);
+
+        if (!PlaylistMigration::isConverted()) {
+            foreach ($videos as $video) {
+
+                $plvideo = PlaylistVideos::findOneBySQL(
+                    'playlist_id = :playlist_id AND video_id = :video_id',
+                    [
+                        'playlist_id' => $playlist->id,
+                        'video_id'    => $video->id
+                    ]
+                );
+                $plvideo->delete();
+            }
+
+            return $response->withStatus(204);
+        }
 
         // Get playlist entries from Opencast
         $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);

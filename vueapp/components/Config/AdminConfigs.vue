@@ -10,6 +10,14 @@
             </a>
         </MessageBox>
 
+        <MessageBox type="info" v-if="canMigratePlaylists">
+            {{ $gettext('Sie verwenden Opencast 16 oder höher und können die Wiedergabelisten mit zu Opencast übertragen und die automatische Synchronisation einschalten.') }}
+            <br>
+            <a @click.stop="migratePlaylists" style="cursor: pointer">
+                {{ $gettext('Synchronisierung aktivieren und Wiedergabelisten übertragen') }}
+            </a>
+        </MessageBox>
+
         <GlobalOptions :config_list="config_list"/>
 
         <SchedulingOptions v-if="is_scheduling_enabled" :config_list="config_list"/>
@@ -62,6 +70,11 @@ export default {
                     return (this.config_list.settings[key].value == true)
                 }
             }
+        },
+
+        canMigratePlaylists()
+        {
+            return this.config_list.can_migrate_playlists !== undefined;
         }
     },
 
@@ -95,6 +108,19 @@ export default {
                         text: view.$gettext('Einstellungen konnten nicht gespeichert werden!')
                     });
                 });
+        },
+
+        migratePlaylists()
+        {
+            this.$store.dispatch('configMigratePlaylists')
+            .then(() => {
+                this.$store.dispatch('addMessage', {
+                    'type': 'success',
+                    'text': this.$gettext('Die Wiedergabelisten wurden übertragen!')
+                })
+
+                this.config_list.can_migrate_playlists = undefined;
+            });
         }
     },
 }

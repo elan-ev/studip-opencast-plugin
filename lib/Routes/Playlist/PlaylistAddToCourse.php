@@ -58,7 +58,6 @@ class PlaylistAddToCourse extends OpencastController
                 'text' => _('Die Kurs-Verknüpfungen der Wiedergabeliste wurden aktualisiert.')
             ];
         } catch (\Throwable $th) {
-            var_dump($th);die;
             $message = [
                 'type' => 'error',
                 'text' => _('Die Kurs-Verknüpfungen der Wiedergabeliste konnten nicht aktualisiert werden!')

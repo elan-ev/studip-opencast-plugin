@@ -67,6 +67,17 @@
                     />
                 </div>
 
+                <div data-tooltip class="tooltip" v-if="event.visibility == 'public'">
+                    <span class="tooltip-content">
+                        {{ $gettext('Dieses Video ist öffentlich.') }}
+                    </span>
+                    <studip-icon
+                        shape="globe"
+                        role="status-yellow"
+                        :size="18"
+                    />
+                </div>
+
                 <div data-tooltip class="tooltip" v-if="getInfoText">
                     <span class="tooltip-content" v-html="getInfoText"></span>
                     <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>

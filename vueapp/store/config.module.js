@@ -10,7 +10,6 @@ const initialState = {
         'settings': {
             'lti_consumerkey':      null,
             'lti_consumersecret':   null,
-            'advance_search':       null,
             'time_buffer_overlap':  30,
             'debug':                null
         }
@@ -100,6 +99,10 @@ export const actions = {
         return ApiService.post('config', {
             config: params
         });
+    },
+
+    configMigratePlaylists(context, params) {
+        return ApiService.get('migrate_playlists');
     },
 
     configClear(context) {

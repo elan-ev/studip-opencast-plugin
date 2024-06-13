@@ -12,7 +12,7 @@ use OpencastApi\Rest\OcRestClient;
 
 class RestClient
 {
-    static $me;
+    static $me = [];
 
     protected $base_url,
         $username,
@@ -44,7 +44,7 @@ class RestClient
             throw new RESTError('Every child of ' . get_class() . ' needs to implement static property "$me"');
         }
 
-        if (!is_object(static::$me[$config_id])) {
+        if (@!is_object(static::$me[$config_id])) {
             static::$me[$config_id] = new static($config_id);
         }
 
@@ -64,11 +64,11 @@ class RestClient
             'password' => $config['service_password'],
             'timeout' => 30,
             'connect_timeout' => 30,
+            'features' => [
+                'lucene' => false
+            ]
         ];
         $this->opencastApi = new Opencast($oc_config);
         $this->ocRestClient = new OcRestClient($oc_config);
-        if (isset($config['settings']['advance_search'])) {
-            $this->advance_search = $config['settings']['advance_search'];
-        }
     }
 }

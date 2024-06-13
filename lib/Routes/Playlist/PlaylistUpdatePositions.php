@@ -12,6 +12,7 @@ use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\REST\ApiPlaylistsClient;
+use Opencast\Helpers\PlaylistMigration;
 
 class PlaylistUpdatePositions extends OpencastController
 {
@@ -49,10 +50,12 @@ class PlaylistUpdatePositions extends OpencastController
         }
 
         // Update entries in Opencast
-        $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
-        $oc_playlist = $playlist_client->updateEntries($playlist->service_playlist_id, $ordered_entries);
-        if (!$oc_playlist) {
-            throw new Error(_('Die Videos in der Wiedergabelisten konnten nicht sortiert werden.'), 500);
+        if (PlaylistMigration::isConverted()) {
+            $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
+            $oc_playlist = $playlist_client->updateEntries($playlist->service_playlist_id, $ordered_entries);
+            if (!$oc_playlist) {
+                throw new Error(_('Die Videos in der Wiedergabelisten konnten nicht sortiert werden.'), 500);
+            }
         }
 
         PlaylistVideos::reorder($playlist->token, $ordered_tokens);

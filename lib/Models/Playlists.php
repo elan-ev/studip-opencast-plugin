@@ -3,6 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Models\REST\ApiPlaylistsClient;
+use Opencast\Helpers\PlaylistMigration;
 
 class Playlists extends UPMap
 {
@@ -515,7 +516,9 @@ class Playlists extends UPMap
     public function update(array $json)
     {
         // Only update in opencast if necessary
-        if (isset($json['title']) || isset($json['description']) || isset($json['creator'])) {
+        if (PlaylistMigration::isConverted()
+            && (isset($json['title']) || isset($json['description']) || isset($json['creator']))
+        ) {
             // Load playlist from Opencast
             $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
             $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
@@ -583,6 +586,10 @@ class Playlists extends UPMap
      */
     public function synchronize()
     {
+        if (!PlaylistMigration::isConverted()) {
+            return true;
+        }
+
         $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
 
         $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
@@ -715,8 +722,8 @@ class Playlists extends UPMap
 
         // Collect playlist videos
         $stmt = \DBManager::get()->prepare("SELECT oc_video.episode FROM oc_video
-            INNER JOIN oc_playlist_video ON (oc_playlist_video.video_id = oc_video.id 
-                AND oc_playlist_video.playlist_id = ?) 
+            INNER JOIN oc_playlist_video ON (oc_playlist_video.video_id = oc_video.id
+                AND oc_playlist_video.playlist_id = ?)
             ORDER BY oc_playlist_video.order");
         $stmt->execute([$this->id]);
         $playlist_events = $stmt->fetchAll(\PDO::FETCH_COLUMN);

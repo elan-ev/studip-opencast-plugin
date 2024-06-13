@@ -71,7 +71,7 @@ class ApiEventsClient extends RestClient
     public function setACL($episode_id, $acl)
     {
         $response = $this->opencastApi->eventsApi->updateAcl($episode_id, $acl);
-        return $response['code'] == 200;
+        return $response;
     }
 
     /**
@@ -115,7 +115,7 @@ class ApiEventsClient extends RestClient
         ];
 
         $data = array_merge(
-            $this->getAll($params[0]), 
+            $this->getAll($params[0]),
             $this->getAll($params[1])
         );
 

@@ -133,6 +133,9 @@ export default {
         isCurrentVideoLTIAuthenticated() {
             if (this.videos.length > 0) {
                 let currentVideo = this.videos.find(video => video.token === this.currentVideoId);
+                if (!currentVideo) {
+                    return false;
+                }
                 return this.isLTIAuthenticated[currentVideo.config_id];
             }
             return false;

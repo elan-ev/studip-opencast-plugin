@@ -927,6 +927,28 @@ div.oc--dialog-possibilities {
     }
 }
 
+.oc--tooltip--copy {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+.oc--tooltip--copy-success {
+    border: 1px solid var(--content-color-20);
+    background-color: var(--content-color-20);
+    padding: 5px;
+    color: $headings-color;
+
+    position: absolute;
+    margin-top: -36px;
+
+    display: none;
+}
+
+.oc--display--block {
+    display: block;
+}
+
 
 /* * * * * * * * * * * * * * * * * * */
 /*   U P L O A D   E L E M E N T S   */
