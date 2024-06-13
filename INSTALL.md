@@ -34,7 +34,7 @@ lti.custom_role_name=Instructor
 lti.custom_roles=ROLE_STUDIO,ROLE_UI_EVENTS_DETAILS_COMMENTS_CREATE,ROLE_UI_EVENTS_DETAILS_COMMENTS_DELETE,ROLE_UI_EVENTS_DETAILS_COMMENTS_EDIT,ROLE_UI_EVENTS_DETAILS_COMMENTS_REPLY,ROLE_UI_EVENTS_DETAILS_COMMENTS_RESOLVE,ROLE_UI_EVENTS_DETAILS_COMMENTS_VIEW,ROLE_UI_EVENTS_DETAILS_MEDIA_VIEW,ROLE_UI_EVENTS_DETAILS_METADATA_EDIT,ROLE_UI_EVENTS_DETAILS_METADATA_VIEW,ROLE_UI_EVENTS_DETAILS_VIEW,ROLE_UI_EVENTS_EDITOR_EDIT,ROLE_UI_EVENTS_EDITOR_VIEW,ROLE_CAPTURE_AGENT,ROLE_API_EVENTS_TRACK_EDIT
 ```
 
-The reference entry in Opencast is neither needed nor wanted, since we are using the Stud.IP user provider. If some actions like ingesting seem to file, when this options is disabled, make sure that the user provider is working correctly. One way to check this, is to call https://opencast.me/info/me.json after opening the videos page in Stud.IP and look for `provider` -> `studip` has to be listed there.  
+The reference entry in Opencast is neither needed nor wanted, since we are using the Stud.IP user provider. If some actions like ingesting seem to file, when this options is disabled, make sure that the user provider is working correctly. One way to check this, is to call https://opencast.me/info/me.json after opening the videos page in Stud.IP and look for `provider` -> `studip` has to be listed there.
 
 4. Edit `/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg` and enable:
 
@@ -72,7 +72,7 @@ Make sure to change the token and add that token to the Opencast config in Stud.
 
 6. Add role `STUDIP` in Opencast
 
-In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`. 
+In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`.
 
 > :warning: **If you do not add this group, media uploads WILL fail!**
 
@@ -90,6 +90,19 @@ For a good example for an nginx.conf, look at:
 https://github.com/elan-ev/opencast_nginx/blob/main/templates/nginx.conf
 
 ## Opencast Workflows
+
+You can configure which workflow is used for different actions. They can be edited on the plugins admin configuration page. The following table gives an overview of the workflows and their usage / meaning
+
+| Type of workflow | Details      | Allowed Workflow-Tags |
+| ---------------- | ------------ | --------------------- |
+| schedule         | Used for videos which are planned by the scheduling feature  | schedule			  |
+| upload           | Workflow run after uploading a video                         | upload                |
+| studio           | Workflow run after creating a video OC Studio                | upload                |
+| delete           | Workflow run when a video shall be deleted permanently       | delete                |
+| subtiltes        | Workflow run after a subtitle has been added or removed      | archive               |
+
+The subtitles-Workflow needs to make sure that the changes are published, otherwise the subtiltes will not be visible.
+
 
 This plugin assumes your
 
