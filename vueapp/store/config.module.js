@@ -10,7 +10,6 @@ const initialState = {
         'settings': {
             'lti_consumerkey':      null,
             'lti_consumersecret':   null,
-            'advance_search':       null,
             'time_buffer_overlap':  30,
             'debug':                null
         }

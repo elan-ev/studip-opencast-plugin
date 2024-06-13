@@ -64,11 +64,11 @@ class RestClient
             'password' => $config['service_password'],
             'timeout' => 30,
             'connect_timeout' => 30,
+            'features' => [
+                'lucene' => false
+            ]
         ];
         $this->opencastApi = new Opencast($oc_config);
         $this->ocRestClient = new OcRestClient($oc_config);
-        if (isset($config['settings']['advance_search'])) {
-            $this->advance_search = $config['settings']['advance_search'];
-        }
     }
 }
