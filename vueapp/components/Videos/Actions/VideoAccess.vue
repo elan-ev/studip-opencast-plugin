@@ -132,12 +132,19 @@
                             </a>
                             <br><br>
 
-                            <StudipButton icon="trash" @click.prevent="setVisibility('internal')">
+                            <StudipButton icon="trash"
+                                :disabled="processing"
+                                @click.prevent="setVisibility('internal')"
+                            >
                                 {{ $gettext('Video nur berechtigten Personen zugreifbar machen') }}
                             </StudipButton>
                         </template>
 
-                        <StudipButton icon="add" @click.prevent="setVisibility('public')" v-else>
+                        <StudipButton icon="add"
+                            @click.prevent="setVisibility('public')"
+                            :disabled="processing"
+                            v-else
+                        >
                             {{ $gettext('Video weltweit zugreifbar machen') }}
                         </StudipButton>
 
@@ -175,6 +182,7 @@ export default {
     data() {
         return {
             shareUsers: [],
+            processing: false,
             add_perm_error: {
                 type: 'error',
                 text: this.$gettext('Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten.'),
@@ -300,6 +308,9 @@ export default {
 
         setVisibility(vis)
         {
+            this.processing = true;
+
+            let view = this;
             let event = this.event;
             let new_event = JSON.parse(JSON.stringify(this.event));
             new_event.visibility = vis;
@@ -309,7 +320,8 @@ export default {
                     event.visibility = vis;
                 }
                 console.log('visibility', event.visibility);
-                this.$store.dispatch('addMessage', data.message);
+                view.$store.dispatch('addMessage', data.message);
+                view.processing = false;
             })
         },
 
