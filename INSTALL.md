@@ -91,7 +91,7 @@ https://github.com/elan-ev/opencast_nginx/blob/main/templates/nginx.conf
 
 ## Opencast Workflows
 
-You can configure which workflow is used for different actions. They can be edited on the plugins admin configuration page. The following table gives an overview of the workflows and their usage / meaning
+You can configure which workflow is used for different actions. They can be edited on the plugins admin configuration page. The following table gives an overview of the workflows and their usage / meaning.
 
 | Type of workflow | Details      | Allowed Workflow-Tags |
 | ---------------- | ------------ | --------------------- |
@@ -101,7 +101,7 @@ You can configure which workflow is used for different actions. They can be edit
 | delete           | Workflow run when a video shall be deleted permanently       | delete                |
 | subtiltes        | Workflow run after a subtitle has been added or removed      | archive               |
 
-The subtitles-Workflow needs to make sure that the changes are published, otherwise the subtiltes will not be visible.
+The subtitles-Workflow needs to make sure that the changes are published, otherwise the subtitles will not be visible.
 
 ## Credentials for Opencast
 
