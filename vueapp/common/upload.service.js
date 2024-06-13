@@ -44,7 +44,7 @@ class UploadService {
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
-            </Rule> 
+            </Rule>
             <Rule RuleId="ROLE_ADMIN_read_write_Permit" Effect="Permit">
                 <Target>
                     <Actions>
@@ -234,7 +234,7 @@ class UploadService {
                 var data = new FormData();
                 data.append('mediaPackage', mediaPackage);
                 data.append('flavor', file.flavor);
-                data.append('tags', '');
+                data.append('tags', file.tag);
                 data.append('BODY', file.file, file.file.name);
 
                 return obj.addTrack(data, obj.service_urls['ingest'] + "/addTrack", file, onProgress);
@@ -244,6 +244,7 @@ class UploadService {
 
     async uploadCaptions(files, episode_id, workflowId, options) {
         this.fixFilenames(files);
+
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
         let onError = options.onError;
@@ -256,6 +257,7 @@ class UploadService {
                 data.append('flavor', file.flavor);
                 data.append('overwriteExisting', file.overwriteExisting);
                 data.append('track', file.file);
+                data.append('tags', file.tag);
 
                 return obj.addTrack(data, obj.service_urls['apievents'] + "/" + episode_id + "/track", file, onProgress, onError);
             });

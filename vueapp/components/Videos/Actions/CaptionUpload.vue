@@ -72,7 +72,9 @@
                                             {{ $gettext('Untertiteldatei auswählen') }}
                                         </StudipButton>
                                         <input
-                                            type="file" class="caption_upload" :data-flavor="language.flavor"
+                                            type="file" class="caption_upload"
+                                            :data-flavor="language.flavor"
+                                            :data-tag="language.tag"
                                             @change="previewFiles" :ref="'oc-file-' + language.lang"
                                             accept=".vtt"
                                         >
@@ -212,11 +214,12 @@ export default {
                         'apiworkflows': this.selectedServer['apiworkflows'],
                     });
 
-                    this.uploadService.uploadCaptions(files, this.event.episode, {
+                    this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
                         uploadProgress: () => {},
                         uploadDone: () => {
                             delete view.files[flavor]
-                    }})
+                        }
+                    });
                 } else {
                     delete this.files[flavor]
                 }
@@ -269,6 +272,7 @@ export default {
                     files.push({
                         file: value['file'],
                         flavor: key,
+                        tag: value['tag'],
                         overwriteExisting: true,
                         progress: {
                             loaded: 0,
@@ -315,12 +319,15 @@ export default {
 
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
+            let tag    = event.target.attributes['data-tag'].value;
+
             let language = this.languages.find(language => language.flavor === flavor).lang;
 
             this.files[flavor] = {
                 name: event.target.files[0].name,
                 size: this.$filters.filesize(event.target.files[0].size),
-                file: event.target.files[0]
+                file: event.target.files[0],
+                tag:  tag
             }
         }
     },
@@ -336,7 +343,7 @@ export default {
         for (let key in window.OpencastPlugin.STUDIP_LANGUAGES) {
             this.languages.push({
                 lang: window.OpencastPlugin.STUDIP_LANGUAGES[key].name,
-                flavor: 'captions/source',
+                flavor: 'captions/prepared',
                 tag: 'lang:' + key
             });
         }

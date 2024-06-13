@@ -35,7 +35,13 @@ class CourseController extends Opencast\Controller
         PageLayout::setBodyElementId('opencast-plugin');
 
         $this->studip_version = $this->getStudIPVersion();
-        $this->languages = json_encode($GLOBALS['CONTENT_LANGUAGES']);
+
+        $languages = [];
+        foreach ($GLOBALS['CONTENT_LANGUAGES'] as $lang => $content) {
+            $languages[str_replace('_', '-', $lang)] = $content;
+        }
+
+        $this->languages = json_encode($languages);
 
         // We need sidebar registration here in php side, in order for responsive navigation to work properly.
         $this->setSidebar();
