@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Video freigeben')"
+            :title="$gettext('Video freigeben') + ' - ' + event.title"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
@@ -120,12 +120,17 @@
                             {{ $gettext('Weltweiter Zugriff') }}
                         </legend>
 
-                        {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. die Videodateien, ' +
-                            'deren Links sie unter "Medien herunterladen" finden, in externe Videoplayer integrieren.') }}
+                        {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. '
+                            + 'die Videodateien in externe Videoplayer integrieren.') }}
                         <br><br>
-
                         <template v-if="event.visibility == 'public'">
                             {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}
+                            <br>
+                            <a style="cursor: pointer" @click.stop="performAction('VideoDownload')">
+                                {{  $gettext('Links zu den Mediendateien anzeigen.') }}
+                                <studip-icon shape="link-intern" role="clickable" />
+                            </a>
+                            <br><br>
 
                             <StudipButton icon="trash" @click.prevent="setVisibility('internal')">
                                 {{ $gettext('Video nur berechtigten Personen zugreifbar machen') }}
@@ -135,6 +140,8 @@
                         <StudipButton icon="add" @click.prevent="setVisibility('public')" v-else>
                             {{ $gettext('Video weltweit zugreifbar machen') }}
                         </StudipButton>
+
+
                     </fieldset>
                 </form>
                 <MessageList :float="true" :dialog="true"/>
@@ -163,7 +170,7 @@ export default {
 
     props: ['event'],
 
-    emits: ['done', 'cancel'],
+    emits: ['done', 'cancel', 'doAction'],
 
     data() {
         return {
@@ -304,7 +311,11 @@ export default {
                 console.log('visibility', event.visibility);
                 this.$store.dispatch('addMessage', data.message);
             })
-        }
+        },
+
+        performAction(action) {
+            this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+        },
     },
 
     mounted () {

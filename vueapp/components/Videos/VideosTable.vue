@@ -163,6 +163,7 @@
             <component :is="actionComponent"
                 @cancel="clearAction"
                 @done="doAfterAction"
+                @doAction="doAction"
                 :event="selectedEvent"
             >
             </component>
