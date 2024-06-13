@@ -103,12 +103,6 @@ You can configure which workflow is used for different actions. They can be edit
 
 The subtitles-Workflow needs to make sure that the changes are published, otherwise the subtiltes will not be visible.
 
-
-This plugin assumes your
-
-* republish workflow's ID is [`republish-metadata`](https://github.com/elan-ev/studip-opencast-plugin/issues/196)
-* retract workflow's ID is `retract`
-
 ## Credentials for Opencast
 
 This plugin requires an user account to connect to Opencast; create one or use an existing one.
