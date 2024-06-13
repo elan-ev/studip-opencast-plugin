@@ -375,7 +375,9 @@ export default {
             }
 
             // get correct upload endpoint url
-            this.uploadService = new UploadService(this.selectedServer['ingest']);
+            this.uploadService = new UploadService({
+                'ingest': this.selectedServer['ingest']
+            });
 
             let uploadData         = this.upload;
 

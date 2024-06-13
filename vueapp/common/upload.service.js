@@ -7,8 +7,8 @@
 import axios from "@/common/axios.service";
 class UploadService {
 
-    constructor(service_url) {
-        this.service_url = service_url;
+    constructor(service_urls) {
+        this.service_urls = service_urls;
     }
 
     /**
@@ -44,7 +44,7 @@ class UploadService {
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
-            </Rule> 
+            </Rule>
             <Rule RuleId="ROLE_ADMIN_read_write_Permit" Effect="Permit">
                 <Target>
                     <Actions>
@@ -158,7 +158,7 @@ class UploadService {
     async getMediaPackage() {
         return axios({
             method: 'GET',
-            url: this.service_url + "/createMediaPackage",
+            url: this.service_urls['ingest'] + "/createMediaPackage",
             crossDomain: true,
             withCredentials: true,
             headers: {
@@ -194,7 +194,7 @@ class UploadService {
         let episodeDC = this.createDCCCatalog(terms);
 
         return axios({
-            url: this.service_url + "/addDCCatalog",
+            url: this.service_urls['ingest'] + "/addDCCatalog",
             method: "POST",
             data: new URLSearchParams({
                 mediaPackage: mediaPackage,
@@ -216,7 +216,7 @@ class UploadService {
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
         return axios({
-            url: this.service_url + "/addAttachment",
+            url: this.service_urls['ingest'] + "/addAttachment",
             method: "POST",
             data: acldata,
             processData: false,
@@ -234,16 +234,17 @@ class UploadService {
                 var data = new FormData();
                 data.append('mediaPackage', mediaPackage);
                 data.append('flavor', file.flavor);
-                data.append('tags', '');
+                data.append('tags', file.tag);
                 data.append('BODY', file.file, file.file.name);
 
-                return obj.addTrack(data, "/addTrack", file, onProgress);
+                return obj.addTrack(data, obj.service_urls['ingest'] + "/addTrack", file, onProgress);
             });
         }, Promise.resolve(mediaPackage))
     }
 
-    async uploadCaptions(files, episode_id, options) {
+    async uploadCaptions(files, episode_id, workflowId, options) {
         this.fixFilenames(files);
+
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
         let onError = options.onError;
@@ -256,12 +257,16 @@ class UploadService {
                 data.append('flavor', file.flavor);
                 data.append('overwriteExisting', file.overwriteExisting);
                 data.append('track', file.file);
+                data.append('tags', file.tag);
 
-                return obj.addTrack(data, "/" + episode_id + "/track", file, onProgress, onError);
+                return obj.addTrack(data, obj.service_urls['apievents'] + "/" + episode_id + "/track", file, onProgress, onError);
             });
         }, Promise.resolve())
         .then(() => {
-            uploadDone();
+            return this.runWorkflow(episode_id, workflowId)
+            .then(function ({ data }) {
+                uploadDone();
+            })
         }).catch(function (error) {
             if (error.code === 'ERR_NETWORK') {
                 onError();
@@ -269,7 +274,22 @@ class UploadService {
         });
     }
 
-    addTrack(data, url_path, track, onProgress, onError) {
+    runWorkflow(episode_id, workflowId) {
+        return axios({
+            url: this.service_urls['apiworkflows'],
+            method: "POST",
+            data: new URLSearchParams({
+                event_identifier: episode_id,
+                workflow_definition_identifier: workflowId
+            }),
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+            }
+        })
+    }
+
+    addTrack(data, oc_url, track, onProgress, onError) {
         var fnOnProgress = function (event) {
             onProgress(track, event.loaded, event.total);
         };
@@ -281,7 +301,7 @@ class UploadService {
                 obj.request = axios.CancelToken.source();
 
                 return axios({
-                    url: obj.service_url + url_path,
+                    url: oc_url,
                     method: "POST",
                     data: data,
                     processData: false,
@@ -302,7 +322,7 @@ class UploadService {
 
     finishIngest(mediaPackage, workflowId = "upload") {
         return axios({
-            url: this.service_url + "/ingest",
+            url: this.service_urls['ingest'] + "/ingest",
             method: "POST",
             data: new URLSearchParams({
                 mediaPackage: mediaPackage,

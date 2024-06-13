@@ -25,7 +25,7 @@
                 <form class="default" style="max-width: 50em;" ref="upload-form">
                     <fieldset>
                         <legend >
-                                {{ $gettext('Datei(en)') }}
+                                {{ $gettext('Untertiteldatei(en)') }} - {{ $gettext('Workflow') }}: {{ defaultWorkflow.displayname }}
                         </legend>
 
                         <p class="help">
@@ -72,7 +72,9 @@
                                             {{ $gettext('Untertiteldatei auswählen') }}
                                         </StudipButton>
                                         <input
-                                            type="file" class="caption_upload" :data-flavor="language.flavor"
+                                            type="file" class="caption_upload"
+                                            :data-flavor="language.flavor"
+                                            :data-tag="language.tag"
                                             @change="previewFiles" :ref="'oc-file-' + language.lang"
                                             accept=".vtt"
                                         >
@@ -102,6 +104,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { toRaw } from "vue";
 
 import StudipDialog from '@studip/StudipDialog'
 import StudipButton from '@studip/StudipButton'
@@ -144,7 +147,8 @@ export default {
         ...mapGetters({
             'config'       : 'simple_config_list',
             'course_config': 'course_config',
-            'videoCaptions': 'videoCaptions'
+            'videoCaptions': 'videoCaptions',
+            'config'       : 'simple_config_list',
         }),
 
         uploadButtonClasses() {
@@ -162,7 +166,27 @@ export default {
             if (redirectUrl && this.event.publication.annotation_tool) {
                 return redirectUrl + action;
             }
-        }
+        },
+
+        defaultWorkflow() {
+
+            let workflow = this.config['workflow_configs'].find(wf_config =>
+                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
+                    && wf_config['used_for'] === 'subtitles'
+            )
+
+            if (workflow) {
+                let wf_id = workflow['workflow_id'];
+
+                return this.config['workflows'].find(wf => wf['id'] == wf_id);
+            }
+
+            return 'republish-metadata';
+        },
+
+        upload_workflows() {
+            return this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
+        },
     },
 
     methods: {
@@ -185,13 +209,17 @@ export default {
                 if (this.files[flavor].url) {
                     let view = this;
                     // get correct upload endpoint url
-                    this.uploadService = new UploadService(this.selectedServer['apievents']);
+                    this.uploadService = new UploadService({
+                        'apievents':    this.selectedServer['apievents'],
+                        'apiworkflows': this.selectedServer['apiworkflows'],
+                    });
 
-                    this.uploadService.uploadCaptions(files, this.event.episode, {
+                    this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
                         uploadProgress: () => {},
                         uploadDone: () => {
                             delete view.files[flavor]
-                    }})
+                        }
+                    });
                 } else {
                     delete this.files[flavor]
                 }
@@ -233,7 +261,10 @@ export default {
             }
 
             // get correct upload endpoint url
-            this.uploadService = new UploadService(this.selectedServer['apievents']);
+            this.uploadService = new UploadService({
+                'apievents':    this.selectedServer['apievents'],
+                'apiworkflows': this.selectedServer['apiworkflows'],
+            });
 
             let files = [];
             for (const [key, value] of Object.entries(this.files)) {
@@ -241,6 +272,7 @@ export default {
                     files.push({
                         file: value['file'],
                         flavor: key,
+                        tag: value['tag'],
                         overwriteExisting: true,
                         progress: {
                             loaded: 0,
@@ -252,7 +284,7 @@ export default {
 
             let view = this;
 
-            this.uploadService.uploadCaptions(files, this.event.episode, {
+            this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
                     uploadProgress: (track, loaded, total) => {
                         view.uploadProgress = {
                             flavor: track.flavor,
@@ -287,12 +319,15 @@ export default {
 
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
+            let tag    = event.target.attributes['data-tag'].value;
+
             let language = this.languages.find(language => language.flavor === flavor).lang;
 
             this.files[flavor] = {
                 name: event.target.files[0].name,
                 size: this.$filters.filesize(event.target.files[0].size),
-                file: event.target.files[0]
+                file: event.target.files[0],
+                tag:  tag
             }
         }
     },
@@ -308,7 +343,8 @@ export default {
         for (let key in window.OpencastPlugin.STUDIP_LANGUAGES) {
             this.languages.push({
                 lang: window.OpencastPlugin.STUDIP_LANGUAGES[key].name,
-                flavor: 'captions/source+' + key.split('_')[0]
+                flavor: 'captions/prepared',
+                tag: 'lang:' + key
             });
         }
     },
