@@ -6,6 +6,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Opencast\Models\Endpoints;
 use Opencast\Models\Playlists;
 use Opencast\Models\Config;
+use Opencast\Helpers\PlaylistMigration;
 
 class AddOcPlaylists extends Migration
 {
