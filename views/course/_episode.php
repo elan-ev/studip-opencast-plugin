@@ -85,15 +85,17 @@ $sort_orders = Pager::getSortOptions();
                             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                             <? if ($item['is_retracting']) : ?>
                                 <span class="previewimage">
-                                    <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                         data-src="<?= $image ?>" height="200"
+                                    <iframe class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                         src="<?= $controller->url_for('redirect/perform/preview/'. urlencode($image)) ?>" height="200"
                                          style="filter: grayscale(100%);">
+                                    </iframe>
                                 </span>
                             <? else: ?>
                                 <a href="<?=str_replace('%%%video_id%%%', $item['id'], $video_url) ?>" target="_blank">
                                     <span class="previewimage">
-                                        <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                             data-src="<?= $image ?>" height="200">
+                                        <iframe class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                             src="<?= $controller->url_for('redirect/perform/preview/'.  $item['id'] .'?image='. urlencode($image)) ?>" height="200">
+                                        </iframe>
 
                                         <img class="playbutton"
                                             src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">

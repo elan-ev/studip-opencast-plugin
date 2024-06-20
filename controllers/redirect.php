@@ -16,7 +16,11 @@ class RedirectController extends OpencastController
             $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
         }
 
-        $customtool = $this->getLtiCustomTool($episode_id, $action);
+        if ($action == 'preview') {
+            $customtool = $_REQUEST['image'];
+        } else {
+            $customtool = $this->getLtiCustomTool($episode_id, $action);
+        }
         $lti = LtiHelper::getLaunchData($series->config_id, $customtool);
 
 
