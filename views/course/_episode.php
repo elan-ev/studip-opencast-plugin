@@ -90,7 +90,7 @@ $sort_orders = Pager::getSortOptions();
                                          style="filter: grayscale(100%);">
                                 </span>
                             <? else: ?>
-                                <a href="<?= $video_url . $item['id'] ?>" target="_blank">
+                                <a href="<?=str_replace('%%%video_id%%%', $item['id'], $video_url) ?>" target="_blank">
                                     <span class="previewimage">
                                         <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
                                              data-src="<?= $image ?>" height="200">
@@ -106,7 +106,7 @@ $sort_orders = Pager::getSortOptions();
                         <div>
                             <h2 class="oce_metadata oce_list_title">
                                 <? if ($item['visibility'] == 'free') : ?>
-                                    <a href="<?= URLHelper::getURL($video_url . $item['id']) ?>" target="_blank">
+                                    <a href="<?= str_replace('%%%video_id%%%', $item['id'], $video_url) ?>" target="_blank">
                                         <?= Icon::create('group', 'clickable', [
                                             'style' => 'vertical-align: middle; margin-right: 3px;',
                                             'title' => 'Direktlink, Rechtskick -> Link-Adresse kopieren'
@@ -145,7 +145,7 @@ $sort_orders = Pager::getSortOptions();
                                         'mailto:' . Config::get()->OPENCAST_SUPPORT_EMAIL
                                             . '?subject=[Opencast] Feedback&body=%0D%0A%0D%0A%0D%0ALinks zum betroffenen Video:%0D%0A'
                                             . URLHelper::getLink($controller->link_for('course/index/' . $item['id'])) . "%0D%0A"
-                                            . $video_url . $item['id'],
+                                            . str_replace('%%%video_id%%%', $item['id'], $video_url),
                                         [
                                             'target' => '_blank',
                                             'rel' => 'noopener noreferrer',
@@ -168,9 +168,7 @@ $sort_orders = Pager::getSortOptions();
 
                                         <?= Studip\LinkButton::create(
                                             $_('Schnitteditor öffnen'),
-                                            version_compare($oc_version, '12', '<')
-                                                ? $config['service_url'] . '/admin-ng/index.html#!/events/events/' . $item['id'] . '/tools/editor'
-                                                : $config['service_url'] . '/editor-ui/index.html?mediaPackageId=' . $item['id'] ,
+                                                $controller->url_for('redirect/perform/editor/'. $item['id']),
                                             [
                                                 'target' => '_blank',
                                                 'class'  => 'oc_editor',
@@ -181,7 +179,7 @@ $sort_orders = Pager::getSortOptions();
                                         <? if ($item['annotation_tool']) : ?>
                                             <?= Studip\LinkButton::create(
                                                 $_('Anmerkungen hinzufügen'),
-                                                $item['annotation_tool'],
+                                                $controller->url_for('redirect/perform/annotation/'. $item['id']),
                                                 [
                                                     'target' => '_blank',
                                                     'class'  => 'oc_editor',

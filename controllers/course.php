@@ -191,7 +191,7 @@ class CourseController extends OpencastController
 
                 if (!empty($this->ordered_episode_ids)) {
                     PageLayout::setTitle(PageLayout::getTitle() . ' - ' . $this->_('Medien'));
-                    $this->video_url = $this->search_client->getBaseURL() . "/play/";
+                    $this->video_url = $this->url_for('redirect/perform/video/%%%video_id%%%',  ['cid' => $this->course_id]);
                 }
 
                 // Upload-Dialog

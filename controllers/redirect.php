@@ -10,24 +10,42 @@ class RedirectController extends OpencastController
     public function perform_action($action, $episode_id)
     {
         $video = OCSeminarEpisodes::findOneByEpisode_id($episode_id);
+        $series = OCSeminarSeries::findOneBySeries_id($video->series_id);
 
-        if ($action !== 'video' || empty($video)) {
-            // return from this route and show template containing the default oc preview image
-            $this->set_layout(null);
-            return;
+        if (empty($video)) {
+            $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
         }
 
-        $series = OCSeminarSeries::findOneBySeries_id($video->series_id);
-        $endpoint = OCEndpoints::findOneBySQL("config_id = ? AND service_type = 'search'", [$series->config_id]);
+        $customtool = $this->getLtiCustomTool($episode_id, $action);
+        $lti = LtiHelper::getLaunchData($series->config_id, $customtool);
 
-        $url = parse_url($endpoint['service_url']);
 
-        $play_url = $url['scheme'] . '://'. $url['host']
-            . ($url['port'] ? ':' . $url['port'] : '') . "/play/{$episode_id}";
+        if (empty($lti) || empty($customtool)) {
+            $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
+        }
 
-        $this->redirect($play_url);
+        // get correct endpoint for redirect type
+        if ($action == 'video') {
+            $ltilink = self::getLtiLinkFor($lti, 'search');
+        } else {
+            $ltilink = self::getLtiLinkFor($lti, 'apievents');
+        }
+
+        $this->launch_data = $ltilink['launch_data'];
+        $this->launch_url  = $ltilink['launch_url'];
+
+        if (!empty($this->error)) {
+            $this->set_layout(null);
+            $this->assets_url = rtrim($this->plugin->getPluginUrl(), '/') . '/assets';
+            $this->render_action('novideo');
+            return;
+        }
     }
 
+    public function novideo_action()
+    {
+
+    }
 
     /**
      * Directly redirect to passed LTI endpoint
@@ -59,5 +77,58 @@ class RedirectController extends OpencastController
 
         $this->launch_data = $lti[$num]['launch_data'];
         $this->launch_url  = $lti[$num]['launch_url'];
+    }
+
+        /**
+     * Returns the custom_tool parameter based on the requested action, whether edit or annotation
+     *
+     * @param object $video video object
+     * @param string $action the action
+     * @return string $custom_tool
+     */
+    private function getLtiCustomTool($video_id, $action) {
+        $custom_tool = '';
+
+        switch ($action) {
+            case 'annotation':
+                $custom_tool = "/annotation-tool/index.html?id={$video_id}";
+                break;
+
+            case 'editor':
+                $custom_tool = "/editor-ui/index.html?id={$video_id}";
+                break;
+
+            case 'video':
+                $custom_tool = "/play/{$video_id}";
+                break;
+            default:
+                $custom_tool = '/ltitools';
+        }
+
+        return $custom_tool;
+    }
+
+        /**
+     * Get lti link for the passed endpoint
+     *
+     * @param mixed $lti
+     * @param mixed $endpoint
+     * @return void
+     */
+    private function getLtiLinkFor($lti, $endpoint)
+    {
+        // if there is only one node, use it for all calls
+        if (sizeof($lti) == 1) {
+            return reset($lti);
+        }
+
+        foreach ($lti as $entry) {
+            if (in_array($endpoint, $entry['endpoints']) !== false) {
+                return $entry;
+            }
+        }
+
+        // if nothing has been found, at least try to use the first found link
+        return reset($lti);
     }
 }
