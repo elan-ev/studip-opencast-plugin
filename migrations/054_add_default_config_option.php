@@ -24,6 +24,16 @@ class AddDefaultConfigOption extends Migration
             'value'       => $config_id
         ]);
 
+        $stmt = $db->prepare('INSERT IGNORE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
+        VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
+        $stmt->execute([
+            'name'        => 'OPENCAST_ALLOW_SCHEDULER',
+            'section'     => 'opencast',
+            'description' => 'Sollen Aufzeichnungen geplant werden können?',
+            'range'       => 'global',
+            'type'        => 'boolean',
+            'value'       => true
+        ]);
 
         SimpleOrMap::expireTableScheme();
     }
@@ -34,6 +44,7 @@ class AddDefaultConfigOption extends Migration
         $db = DBManager::get();
 
         $db->exec("DELETE FROM config WHERE field = 'OPENCAST_DEFAULT_SERVER'");
+        $db->exec("DELETE FROM config WHERE field = 'OPENCAST_ALLOW_SCHEDULER'");
 
         SimpleOrMap::expireTableScheme();
     }
