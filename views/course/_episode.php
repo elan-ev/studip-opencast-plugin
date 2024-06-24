@@ -63,17 +63,13 @@ $sort_orders = Pager::getSortOptions();
                 $endTime = strtotime($item['start']) + $item['duration'] / 1000;
                 ?>
 
-                <? $image = $item['presentation_preview']; ?>
-                <? if (empty($image)) : ?>
-                    <? $image = ($item['preview'] != false) ? $item['preview'] : $plugin->getPluginURL() . '/images/default-preview.png'; ?>
-                <? endif ?>
                 <li id="<?= $item['id'] ?>"
                     class="<?= ($item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item' ?>"
                     data-courseId="<?= $course_id ?>"
                     data-visibility="<?= $item['visibility'] ?>"
                     data-pos="<?= $pos ?>"
                     data-mkdate="<?= $item['mkdate'] ?>"
-                    data-previewimage="<?= $image ?>">
+                >
                     <div class="oc_flexitem oc_flexplaycontainer">
                         <div id="oc_balls" class="la-ball-scale-ripple-multiple la-3x">
                             <div></div>
@@ -85,17 +81,17 @@ $sort_orders = Pager::getSortOptions();
                             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                             <? if ($item['is_retracting']) : ?>
                                 <span class="previewimage">
-                                    <iframe class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                         src="<?= $controller->url_for('redirect/perform/preview/'. urlencode($image)) ?>" height="200"
+                                    <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                         src="<?= $controller->url_for('redirect/preview/'.  $item['id']) ?>" height="200"
                                          style="filter: grayscale(100%);">
-                                    </iframe>
+                                    </img>
                                 </span>
                             <? else: ?>
                                 <a href="<?=str_replace('%%%video_id%%%', $item['id'], $video_url) ?>" target="_blank">
                                     <span class="previewimage">
-                                        <iframe class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
-                                             src="<?= $controller->url_for('redirect/perform/preview/'.  $item['id'] .'?image='. urlencode($image)) ?>" height="200">
-                                        </iframe>
+                                        <img class="previewimage <?= $item['visibility'] == 'false' ? 'ocinvisible' : '' ?>"
+                                             src="<?= $controller->url_for('redirect/preview/'.  $item['id']) ?>" height="200">
+                                        </img>
 
                                         <img class="playbutton"
                                             src="<?= $plugin->getPluginURL() . '/images/play.svg' ?>">

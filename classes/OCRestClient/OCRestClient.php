@@ -308,4 +308,64 @@ class OCRestClient
             throw new Exception(_("Es wurde keine Service URL angegeben"));
         }
     }
+
+
+     /**
+     *  function getJSON - performs a REST-Call and retrieves response in JSON
+     */
+    public function fileRequest($file_url)
+    {
+        if (isset($file_url)) {
+            $this->initCurl();
+
+            if ($this->debug_curl) {
+                echo '<pre>';
+                echo 'URL: <b>' . $file_url. "</b>\n";
+                $timing = microtime(true);
+                $this->debug = fopen('php://output', 'w');
+                curl_setopt($this->ochandler, CURLOPT_STDERR, $this->debug);
+            }
+
+            $options = [
+                CURLOPT_URL           => $file_url,
+                CURLOPT_FRESH_CONNECT => 1
+            ];
+
+            $options[CURLOPT_HTTPGET] = 1;
+
+            if (!$this->debug_curl) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
+                // see: https://bugs.php.net/bug.php?id=65348
+                curl_setopt($this->ochandler, CURLINFO_HEADER_OUT, true);
+            }
+            curl_setopt_array($this->ochandler, $options);
+
+
+            if ($this->getCookie()) {
+                curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, ['Cookie: ' . $this->getCookie()]);
+            }
+
+            $response = curl_exec($this->ochandler);
+            $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+
+            if ($this->debug_curl) {
+                fclose($this->debug);
+                $runtime = (microtime(true) - $timing) / 1000;
+                if ($runtime > 1) {
+                    echo '<span style="font-weight: bold; color: red">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                } else {
+                    echo '<span style="font-weight: bold">';
+                    echo "Laufzeit der Anfrage: $runtime Sekunden \n";
+                    echo '</span>';
+                }
+                echo '</pre>';
+            }
+
+            return [$response, $httpCode];
+
+        } else {
+            throw new Exception(_("Es wurde keine Service URL angegeben"));
+        }
+    }
 }

@@ -290,7 +290,7 @@ class ApiEventsClient extends OCRestClient
         return $default;
     }
 
-    private function prepareEpisode($episode)
+    public static function prepareEpisode($episode)
     {
         $new_episode = [
             'id'            => $episode->identifier,
@@ -368,13 +368,13 @@ class ApiEventsClient extends OCRestClient
                         && $parsed_url['scheme'] != 'rtmps'
                         && !empty($track->has_video)
                     ) {
-                      $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                      $quality = isset($track->size) ? $track->size : self::calculate_size(
                             $track->bitrate,
                             $track->duration
                         );
                         $presenter_download[$quality] = [
                             'url'  => $track->url,
-                            'info' => $this->getResolutionString($track->width, $track->height)
+                            'info' => self::getResolutionString($track->width, $track->height)
                         ];
 
                         $duration = $track->duration;
@@ -384,7 +384,7 @@ class ApiEventsClient extends OCRestClient
                         in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                         && !empty($track->has_audio)
                     ) {
-                        $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                        $quality = isset($track->size) ? $track->size : self::calculate_size(
                             $track->bitrate,
                             $track->duration
                         );
@@ -408,21 +408,21 @@ class ApiEventsClient extends OCRestClient
                          && $parsed_url['scheme'] != 'rtmps'
                          && !empty($track->has_video)
                   ) {
-                      $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                      $quality = isset($track->size) ? $track->size : self::calculate_size(
                           $track->bitrate,
                           $track->duration
                       );
 
                       $presentation_download[$quality] = [
                           'url'  => $track->url,
-                          'info' => $this->getResolutionString($track->width, $track->height)
+                          'info' => self::getResolutionString($track->width, $track->height)
                       ];
                    }
 
                    if (in_array($track->mediatype, ['audio/aac', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/ogg', 'audio/opus'])
                        && !empty($track->has_audio)
                    ) {
-                       $quality = isset($track->size) ? $track->size : $this->calculate_size(
+                       $quality = isset($track->size) ? $track->size : self::calculate_size(
                            $track->bitrate,
                            $track->duration
                        );
@@ -464,12 +464,12 @@ class ApiEventsClient extends OCRestClient
         return $new_episode;
     }
 
-    private function calculate_size($bitrate, $duration)
+    private static function calculate_size($bitrate, $duration)
     {
         return ($bitrate / 8) * ($duration / 1000);
     }
 
-    private function getResolutionString($width, $height)
+    private static function getResolutionString($width, $height)
     {
         return $width . ' * ' . $height . ' px';
     }

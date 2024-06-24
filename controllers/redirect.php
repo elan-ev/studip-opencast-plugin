@@ -51,6 +51,43 @@ class RedirectController extends OpencastController
 
     }
 
+    public function preview_action($episode_id)
+    {
+        global $user, $perm;
+
+        $video      = OCSeminarEpisodes::findOneByEpisode_id($episode_id);
+        $all_series = array_merge(
+            OCSeminarSeries::getSeriesByUserMemberStatus($user->id, 'dozent'),
+            OCSeminarSeries::getSeriesByUserMemberStatus($user->id, 'tutor'),
+            OCSeminarSeries::getSeriesByUserMemberStatus($user->id, 'autor')
+        );
+
+        // check, if user has permissions in the course this video belongs to
+        if ($perm->have_perm('root')
+            || in_array($video->series_id, $all_series) !== false)
+        {
+            // get event from opencast
+            $api_events = ApiEventsClient::getInstance();
+            list ($httpCode, $api_event) = $api_events->getEpisode($episode_id, true);
+            $event = ApiEventsClient::prepareEpisode($api_event);
+
+            $image = $event['presentation_preview'];
+
+            if (empty($image)) {
+                $image = ($item['preview'] != false)
+                    ? $item['preview']
+                    : ''; // PluginEngine::getLink($plugin->getPluginURL() . '/images/default-preview.png';
+            }
+
+            list ($response, $httpCode) = $api_events->fileRequest($image);
+
+            echo $response;
+            die;
+        }
+
+        throw new \Exception('Access denied!');
+    }
+
     /**
      * Directly redirect to passed LTI endpoint
      *

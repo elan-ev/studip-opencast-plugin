@@ -122,10 +122,6 @@ if ($this->connectedSeries[0]['series_id']) :
 
     <script>
         OC.ltiCall('<?= $lti_link->getLaunchURL() ?>', <?= json_encode($launch_data) ?>, function() {
-            jQuery('img.previewimage').each(function() {
-                this.src = this.dataset.src;
-            });
-
             <? if ($studio_lti_link && \Config::get()->OPENCAST_ALLOW_STUDIO) : ?>
                 OC.lti_done = 0;
                 OC.ltiCall('<?= $studio_lti_link->getLaunchURL() ?>', <?= json_encode($studio_launch_data) ?>, function() {});
