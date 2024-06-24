@@ -21,7 +21,7 @@ class ServicesClient extends RestClient
     }
 
     /**
-     * Retrieves episode system components from conntected Opencast-Matterhorn Core
+     * Retrieves episode system components from conntected Opencast Core
      *
      * @return array|boolean response of components, or false if unable to get
      */

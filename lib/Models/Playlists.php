@@ -407,9 +407,17 @@ class Playlists extends UPMap
             unset($entry['id']);
         });
 
+        $old_acl = Helpers::filterACLs($old_acl);
+
         $current_acl = $old_acl;
 
         $acl = self::getPlaylistACL($oc_playlist->id);
+
+
+        $courses = [];
+        $courses = array_merge($courses, $playlist->courses->pluck('id'));
+
+        $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
         foreach ($acl as $entry) {
             $found = false;
@@ -429,14 +437,18 @@ class Playlists extends UPMap
             }
 
             if (!$found) {
-                $current_acl[] = $entry;
+                $current_acl[$entry['role'] . '_'. $entry['action']] = $entry;
             }
         }
 
         // Reindex keys
         $current_acl = array_values($current_acl);
 
+        sort($current_acl);
+        sort($old_acl);
+
         if ($old_acl <> $current_acl) {
+            print_r($old_acl <> $current_acl);
             $api_client = ApiPlaylistsClient::getInstance($playlist->config_id);
             $api_client->updatePlaylist($oc_playlist->id, [
                 'title' => $oc_playlist->title,
