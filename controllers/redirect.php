@@ -21,8 +21,12 @@ class RedirectController extends OpencastController
         } else {
             $customtool = $this->getLtiCustomTool($episode_id, $action);
         }
-        $lti = LtiHelper::getLaunchData($series->config_id, $customtool);
 
+        if (Context::getId()) {
+            $lti = LtiHelper::getLaunchDataForCourse($series->config_id, Context::getId(), null, $customtool);
+        } else {
+            $lti = LtiHelper::getLaunchData($series->config_id, $customtool);
+        }
 
         if (empty($lti) || empty($customtool)) {
             $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');

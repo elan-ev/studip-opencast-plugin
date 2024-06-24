@@ -78,6 +78,7 @@ class LtiHelper
             if (!empty($custom_tool)) {
                 $lti['link']->addCustomParameter('tool', urlencode($custom_tool));
             }
+
             $launch_data = $lti['link']->getBasicLaunchData();
             $signature   = $lti['link']->getLaunchSignature($launch_data);
 
@@ -104,7 +105,7 @@ class LtiHelper
      *
      * @return Array             array of LtiLink
      */
-    public static function getLaunchDataForCourse($config_id, $course_id, $user_id = null)
+    public static function getLaunchDataForCourse($config_id, $course_id, $user_id = null, $custom_tool = null)
     {
         global $user, $perm;
 
@@ -118,6 +119,10 @@ class LtiHelper
         $lti_links = [];
 
         foreach(self::getLtiLinks($config_id) as $lti) {
+            if (!empty($custom_tool)) {
+                $lti['link']->addCustomParameter('tool', urlencode($custom_tool));
+            }
+
             $lti['link']->setUser($user_id, $role, true);
             $lti['link']->setCourse($course_id);
 
