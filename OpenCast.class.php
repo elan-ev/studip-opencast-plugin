@@ -73,9 +73,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 PageLayout::addScript($this->getPluginUrl() . '/static/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             }
-            if (OCModel::getConfigurationstate()) {
-                StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
-            }
+
             NotificationCenter::addObserver($this, 'NotifyUserOnNewEpisode', 'NewEpisodeForCourse');
             NotificationCenter::addObserver($this, 'cleanCourse', 'CourseDidDelete');
         }
@@ -300,82 +298,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
     public function getNotificationObjects($course_id, $since, $user_id)
     {
         return false;
-    }
-
-    public static function markupOpencast($markup, $matches, $contents)
-    {
-        $content = '';
-        $free = null;
-        $config = null;
-        $course_id = Context::getId() ?: null;
-
-        if ($course_id === null) {
-            $free = OCSeminarEpisodes::findBySQL('episode_id = ?  AND visible = "free"', [$contents]) ?: null;
-            if ($free) {
-                $tmp_series_id = OCModel::getSeriesForEpisode($contents);
-                $tmp_course_id = OCConfig::getCourseIdForSeries($tmp_series_id);
-                $config = OCConfig::getConfigForCourse($tmp_course_id);
-            }
-        } else {
-            $config = OCConfig::getConfigForCourse($course_id);
-        }
-
-        if ($config !== null) {
-            $search_client = SearchClient::getInstance($config['config_id']);
-            $embed = $search_client->getBaseURL() . '/play/' . $contents;
-
-            $id = md5(uniqid());
-            if ($course_id !== null) {
-                $connectedSeries = OCSeminarSeries::getSeries($course_id);
-                $current_user_id = $GLOBALS['auth']->auth['uid'];
-                $lti_link        = new LtiLink(
-                    OpencastLTI::getSearchUrl($course_id),
-                    $config['lti_consumerkey'],
-                    $config['lti_consumersecret']
-                );
-
-                if (OCPerm::editAllowed($course_id, $current_user_id)) {
-                    $role = 'Instructor';
-                } elseif ($GLOBALS['perm']->have_studip_perm('autor', $course_id, $current_user_id)) {
-                    $role = 'Learner';
-                }
-
-                $lti_link->setUser($current_user_id, $role, true);
-                $lti_link->setCourse($course_id);
-                $lti_link->setResource(
-                    $connectedSeries,
-                    'series',
-                    'view complete series for course'
-                );
-
-                $launch_data = $lti_link->getBasicLaunchData();
-                $signature   = $lti_link->getLaunchSignature($launch_data);
-
-                $launch_data['oauth_signature'] = $signature;
-
-                $lti_data = json_encode($launch_data);
-                $lti_url  = $lti_link->getLaunchURL();
-
-                $content .= "<script>
-                OC.ltiCall('$lti_url', $lti_data, function() {
-                    jQuery('#$id').attr('src', '$embed');
-                });
-                </script>";
-            }
-            $content .= '<iframe id="' . $id . '" ' .
-                ($course_id !== null ?: 'src="' . $embed . '"') .
-                'style="border:0px #FFFFFF none;" ' .
-                'name="Opencast - Media Player" ' .
-                'scrolling="no" ' .
-                'frameborder="0" ' .
-                'marginheight="0px" ' .
-                'marginwidth="0px" ' .
-                'width="640" height="360" ' .
-                'allow="fullscreen" webkitallowfullscreen="true" mozallowfullscreen="true" ' .
-                '></iframe><br>';
-        }
-
-        return $content;
     }
 
     public function NotifyUserOnNewEpisode($x, $data)
