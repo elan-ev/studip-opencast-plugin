@@ -77,80 +77,156 @@ class ApiEventsClient extends OCRestClient
 
         $search_service = new SearchClient($this->config_id);
 
-        // first, get list of events ids from search service
-        $search_query = '';
-        if ($search) {
-            $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
-        }
-
-        $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
-            . ' AND oc_acl_read:' . $course_id . '_' . $type;
-
-        $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
-            . "&sort=$sort&limit=$limit&offset=$offset");
-
-        Pager::setLength($search_events->{'search-results'}->total);
-
-        $results = is_array($search_events->{'search-results'}->result)
-            ? $search_events->{'search-results'}->result
-            : [$search_events->{'search-results'}->result];
-
-        // then, iterate over list and get each event from the external-api
-        foreach ($results as $s_event) {
-            $cache_key = 'sop/episodes/' . $s_event->id;
-            $event = $cache->read($cache_key);
-
-            if (empty($s_event->id)) {
-                continue;
+        if (version_compare($this->getOcVersion(), '16', '<'))
+        {
+            // first, get list of events ids from search service
+            $search_query = '';
+            if ($search) {
+                $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
             }
 
-            if (!$event) {
-                $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
+            $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
+                . ' AND oc_acl_read:' . $course_id . '_' . $type;
 
-                if (empty($oc_event->publications[0]->attachments)) {
-                    $media = [];
+            $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
+                . "&sort=$sort&limit=$limit&offset=$offset");
 
-                    foreach ($s_event->mediapackage->media->track as $track) {
-                        $width = 0;
-                        $height = 0;
-                        if (!empty($track->video)) {
-                            list($width, $height) = explode('x', $track->video->resolution);
-                            $bitrate = $track->video->bitrate;
-                        } else if (!empty($track->audio)) {
-                            $bitrate = $track->audio->bitrate;
-                        }
+            Pager::setLength($search_events->{'search-results'}->total);
 
-                        //echo '<pre>'; print_r($track); echo '</pre>';
+            $results = is_array($search_events->{'search-results'}->result)
+                ? $search_events->{'search-results'}->result
+                : [$search_events->{'search-results'}->result];
 
-                        $obj = new stdClass();
-                        $obj->mediatype = $track->mimetype;
-                        $obj->flavor    = $track->type;
-                        $obj->has_video = !empty($track->video);
-                        $obj->has_audio = !empty($track->audio);
-                        $obj->tags      = $track->tags->tag;
-                        $obj->url       = $track->url;
-                        $obj->duration  = $track->duration;
-                        $obj->bitrate   = $bitrate;
-                        $obj->width     = $width;
-                        $obj->height    = $height;
+            // then, iterate over list and get each event from the external-api
+            foreach ($results as $s_event) {
+                $cache_key = 'sop/episodes/' . $s_event->id;
+                $event = $cache->read($cache_key);
 
-                        $media[] = $obj;
-                    }
-
-                    $oc_event->publications[0]->media       = $media;
-
-                    if (is_null($oc_event->publications[0]->attachments)) {
-                        continue;
-                    }
-                    $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                if (empty($s_event->id)) {
+                    continue;
                 }
 
-                $event = self::prepareEpisode($oc_event);
+                if (!$event) {
+                    $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
 
-                $cache->write($cache_key, $event, 86000);
+                    if (empty($oc_event->publications[0]->attachments)) {
+                        $media = [];
+
+                        foreach ($s_event->mediapackage->media->track as $track) {
+                            $width = 0;
+                            $height = 0;
+                            if (!empty($track->video)) {
+                                list($width, $height) = explode('x', $track->video->resolution);
+                                $bitrate = $track->video->bitrate;
+                            } else if (!empty($track->audio)) {
+                                $bitrate = $track->audio->bitrate;
+                            }
+
+                            //echo '<pre>'; print_r($track); echo '</pre>';
+
+                            $obj = new stdClass();
+                            $obj->mediatype = $track->mimetype;
+                            $obj->flavor    = $track->type;
+                            $obj->has_video = !empty($track->video);
+                            $obj->has_audio = !empty($track->audio);
+                            $obj->tags      = $track->tags->tag;
+                            $obj->url       = $track->url;
+                            $obj->duration  = $track->duration;
+                            $obj->bitrate   = $bitrate;
+                            $obj->width     = $width;
+                            $obj->height    = $height;
+
+                            $media[] = $obj;
+                        }
+
+                        $oc_event->publications[0]->media       = $media;
+
+                        if (is_null($oc_event->publications[0]->attachments)) {
+                            continue;
+                        }
+                        $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                    }
+
+                    $event = self::prepareEpisode($oc_event);
+
+                    $cache->write($cache_key, $event, 86000);
+                }
+
+                $events[$s_event->id] = $event;
             }
+        } else {
+            /* * * * * * * * * * * * * * * * * * * * * * * * */
+            /* * * *       O P E N C A S T   1 6 +       * * */
+            /* * * * * * * * * * * * * * * * * * * * * * * * */
+            $search_events = $search_service->getJSON(
+                "/episode.json?sid=$series_id&q=". urlencode($search)
+                . "&sort=". urlencode($sort) ."&limit=$limit&offset=$offset"
+            );
 
-            $events[$s_event->id] = $event;
+            Pager::setLength($search_events->total);
+
+
+            $results = is_array($search_events->result)
+                ? $search_events->result
+                : [$search_events->result];
+
+            // then, iterate over list and get each event from the external-api
+            foreach ($results as $s_event) {
+                $cache_key = 'sop/episodes/' . $s_event->mediapackage->id;
+                $event = $cache->read($cache_key);
+
+                if (empty($s_event->mediapackage->id)) {
+                    continue;
+                }
+
+                if (!$event) {
+                    $oc_event = $this->getJSON('/' . $s_event->mediapackage->id . '/?withpublications=true');
+
+                    if (empty($oc_event->publications[0]->attachments)) {
+                        $media = [];
+
+                        foreach ($s_event->mediapackage->media->track as $track) {
+                            $width = 0;
+                            $height = 0;
+                            if (!empty($track->video)) {
+                                list($width, $height) = explode('x', $track->video->resolution);
+                                $bitrate = $track->video->bitrate;
+                            } else if (!empty($track->audio)) {
+                                $bitrate = $track->audio->bitrate;
+                            }
+
+                            //echo '<pre>'; print_r($track); echo '</pre>';
+
+                            $obj = new stdClass();
+                            $obj->mediatype = $track->mimetype;
+                            $obj->flavor    = $track->type;
+                            $obj->has_video = !empty($track->video);
+                            $obj->has_audio = !empty($track->audio);
+                            $obj->tags      = $track->tags->tag;
+                            $obj->url       = $track->url;
+                            $obj->duration  = $track->duration;
+                            $obj->bitrate   = $bitrate;
+                            $obj->width     = $width;
+                            $obj->height    = $height;
+
+                            $media[] = $obj;
+                        }
+
+                        $oc_event->publications[0]->media       = $media;
+
+                        if (is_null($oc_event->publications[0]->attachments)) {
+                            continue;
+                        }
+                        $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                    }
+
+                    $event = self::prepareEpisode($oc_event);
+
+                    $cache->write($cache_key, $event, 86000);
+                }
+
+                $events[$s_event->mediapackage->id] = $event;
+            }
         }
 
         return $events;
