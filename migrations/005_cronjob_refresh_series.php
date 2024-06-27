@@ -9,11 +9,12 @@ class CronjobRefreshSeries extends Migration
     }
     public function up()
     {
-        $task_id = CronjobScheduler::registerTask(self::FILENAME, true);
+        $scheduler = CronjobScheduler::getInstance();
+        $task_id = $scheduler->registerTask(self::FILENAME, true);
 
         // Schedule job to run every 30 minutes
         if ($task_id) {
-            CronjobScheduler::schedulePeriodic($task_id, -30);  // negative value means "every x minutes"
+            $scheduler->schedulePeriodic($task_id, -30);  // negative value means "every x minutes"
         }
 
         //add mkdate columns for suitable tables
@@ -42,8 +43,9 @@ class CronjobRefreshSeries extends Migration
     }
     function down()
     {
+        $scheduler = CronjobScheduler::getInstance();
         if ($task_id = CronjobTask::findByFilename(self::FILENAME)->task_id) {
-            CronjobScheduler::unregisterTask($task_id);
+            $scheduler->registerTask($task_id);
         }
 
 
