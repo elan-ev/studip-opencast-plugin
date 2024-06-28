@@ -432,11 +432,11 @@ class Playlists extends UPMap
         $current_acl = array_values($current_acl);
 
         sort($current_acl);
-        sort($old_acl);
+        sort($acl);
 
-        if ($old_acl <> $current_acl) {
+        if ($acl <> $current_acl) {
             // add the unknown acls to keep them untouched
-            $new_acl = array_merge($old_acls['other'], $current_acl);
+            $new_acl = array_merge($old_acls['other'], $acl);
 
             $api_client = ApiPlaylistsClient::getInstance($playlist->config_id);
             $api_client->updatePlaylist($oc_playlist->id, [
