@@ -773,7 +773,7 @@ class Videos extends UPMap
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
-        $oc_acl = Helpers::filterACLs($current_acl);
+        $oc_acls = Helpers::filterACLs($current_acl);
 
         // add anonymous role if video is world visible
         if (($new_vis && $new_vis == 'public') || (!$new_vis && $this->visibility == 'public')) {
@@ -786,8 +786,12 @@ class Videos extends UPMap
 
         sort($acl);
 
-        if ($acl <> $oc_acl) {
-            $new_acl = self::addEpisodeAcl($this->episode, $acl, $current_acl);
+        if ($acl <> $oc_acls['studip']) {
+            $new_acl = array_merge(
+                $oc_acls['other'],
+                self::addEpisodeAcl($this->episode, $acl, $current_acl)
+            );
+
             $result = $api_client->setACL($this->episode, $new_acl);
 
             if (in_array($result['code'], ['200', '204']) === false) {

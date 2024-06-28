@@ -40,10 +40,11 @@ class SeminarSeries extends \SimpleORMap
         $courses = \SimpleCollection::createFromArray($series)->pluck('seminar_id');
 
         $acl = Helpers::createACLsForCourses($courses);
-        $oc_acl = Helpers::filterACLs($series_client->getACL($series_id));
+        $oc_acls = Helpers::filterACLs($series_client->getACL($series_id));
 
-        if ($acl <> $oc_acl) {
-            $series_client->setACL($series_id, $acl);
+        if ($acl <> $oc_acls['studip']) {
+            $new_acl = array_merge($oc_acls['other'], $acl);
+            $series_client->setACL($series_id, $new_acl);
         }
 
         return $series[$series_id];

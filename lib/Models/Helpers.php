@@ -314,9 +314,9 @@ class Helpers
         ];
 
         $result = [];
-        foreach ($acl as $entry) {
+        foreach ($acls as $entry) {
             if (in_array($entry['role'], $possible_roles) !== false
-                || strpos($entry['role'], 'STUDP_') === 0
+                || strpos($entry['role'], 'STUDIP_') === 0
             ) {
                 $result[$entry['role'] .'_'. $entry['action']] = $entry;
             }
@@ -325,6 +325,9 @@ class Helpers
         $result = array_values($result);
         sort($result);
 
-        return $result;
+        return [
+            'studip' => $result,
+            'other'  => array_diff($acls, $result)
+        ];
     }
 }
