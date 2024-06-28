@@ -645,7 +645,7 @@ class Videos extends UPMap
             }
         }
 
-        if ($result) {
+        if ($republish) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
 
             if ($api_wf_client->republish($this->episode)) {
