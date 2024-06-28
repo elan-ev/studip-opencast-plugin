@@ -645,7 +645,7 @@ class Videos extends UPMap
             }
         }
 
-        if ($result) {
+        if ($republish) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
 
             if ($api_wf_client->republish($this->episode)) {
@@ -686,24 +686,6 @@ class Videos extends UPMap
         return false;
     }
 
-    private static function filterForEpisode($episode_id, $acl)
-    {
-        $possible_roles = [
-            'STUDIP_' . $episode_id . '_read',
-            'STUDIP_' . $episode_id . '_write',
-            'ROLE_ANONYMOUS'
-        ];
-
-        $result = [];
-        foreach ($acl as $entry) {
-            if (in_array($entry['role'], $possible_roles) !== false) {
-                $result[] = $entry;
-            }
-        }
-
-        return $result;
-    }
-
     private static function addEpisodeAcl($episode_id, $add_acl, $acl)
     {
         $possible_roles = [
@@ -737,7 +719,9 @@ class Videos extends UPMap
     {
         $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
 
-        if ($video->updateAcl()) {
+        $results = $video->updateAcl();
+
+        if ($results['republish'] == true) {
             $workflow_client->republish($video->episode);
         }
     }
@@ -780,7 +764,16 @@ class Videos extends UPMap
             ]
         ];
 
-        $oc_acl = self::filterForEpisode($this->episode, $current_acl);
+        $courses = [];
+
+        // add course acls
+        foreach ($this->playlists as $playlist) {
+            $courses = array_merge($courses, $playlist->courses->pluck('id'));
+        }
+
+        $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
+
+        $oc_acls = Helpers::filterACLs($current_acl);
 
         // add anonymous role if video is world visible
         if (($new_vis && $new_vis == 'public') || (!$new_vis && $this->visibility == 'public')) {
@@ -791,8 +784,14 @@ class Videos extends UPMap
             ];
         }
 
-        if ($acl <> $oc_acl) {
-            $new_acl = self::addEpisodeAcl($this->episode, $acl, $current_acl);
+        sort($acl);
+
+        if ($acl <> $oc_acls['studip']) {
+            $new_acl = array_merge(
+                $oc_acls['other'],
+                self::addEpisodeAcl($this->episode, $acl, $current_acl)
+            );
+
             $result = $api_client->setACL($this->episode, $new_acl);
 
             if (in_array($result['code'], ['200', '204']) === false) {

@@ -341,39 +341,9 @@ class Playlists extends UPMap
      * @param string $playlistId playlist identifier. If null, only user role will be added.
      * @return array access control list
      */
-    public static function getDefaultACL($playlistId = null)
+    public static function getDefaultACL($playlistId, $user_id = null)
     {
-        global $user;
-
-        $acls = [
-            [
-                'allow'  => true,
-                'role'   => "STUDIP_$user->user_id", // TODO: For videos we use the user role from /info/me.js. Here we have no LTI user.
-                'action' => 'read'
-            ],
-            [
-                'allow'  => true,
-                'role'   => "STUDIP_$user->user_id",
-                'action' => 'write'
-            ],
-        ];
-
-        if (!is_null($playlistId)) {
-            $acls = array_merge($acls, self::getPlaylistACL($playlistId));
-        }
-
-        return $acls;
-    }
-
-    /**
-     * Get ACLs with playlist roles only
-     *
-     * @param $playlistId
-     * @return array[]
-     */
-    private static function getPlaylistACL($playlistId)
-    {
-        return [
+        $acl = [
             [
                 'allow'  => true,
                 'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
@@ -390,6 +360,8 @@ class Playlists extends UPMap
                 'action' => 'write'
             ]
         ];
+
+        return $acls;
     }
 
     /**
@@ -407,9 +379,32 @@ class Playlists extends UPMap
             unset($entry['id']);
         });
 
-        $current_acl = $old_acl;
+        $old_acls = Helpers::filterACLs($old_acl);
 
-        $acl = self::getPlaylistACL($oc_playlist->id);
+        $current_acl = $old_acls['studip'];
+
+        $acl = self::getDefaultACL($oc_playlist->id);
+
+        // add user acls
+        foreach ($playlist->courses as $course) {
+            foreach($course->getMembersWithStatus('dozent') as $member) {
+                $acl[] = [
+                    'allow'  => true,
+                    'role'   => "STUDIP_" . $member->user_id,
+                    'action' => 'read'
+                ];
+                $acl[] = [
+                    'allow'  => true,
+                    'role'   => "STUDIP_" . $member->user_id,
+                    'action' => 'write'
+                ];
+            }
+        }
+
+        $courses = [];
+        $courses = array_merge($courses, $playlist->courses->pluck('id'));
+
+        $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
         foreach ($acl as $entry) {
             $found = false;
@@ -429,21 +424,27 @@ class Playlists extends UPMap
             }
 
             if (!$found) {
-                $current_acl[] = $entry;
+                $current_acl[$entry['role'] . '_'. $entry['action']] = $entry;
             }
         }
 
         // Reindex keys
         $current_acl = array_values($current_acl);
 
-        if ($old_acl <> $current_acl) {
+        sort($current_acl);
+        sort($acl);
+
+        if ($acl <> $current_acl) {
+            // add the unknown acls to keep them untouched
+            $new_acl = array_merge($old_acls['other'], $acl);
+
             $api_client = ApiPlaylistsClient::getInstance($playlist->config_id);
             $api_client->updatePlaylist($oc_playlist->id, [
-                'title' => $oc_playlist->title,
-                'description' => $oc_playlist->description,
-                'creator' => $oc_playlist->creator,
-                'entries' => $oc_playlist->entries,
-                'accessControlEntries' => $current_acl
+                'title'                => $oc_playlist->title,
+                'description'          => $oc_playlist->description,
+                'creator'              => $oc_playlist->creator,
+                'entries'              => $oc_playlist->entries,
+                'accessControlEntries' => $new_acl
             ]);
         }
     }
@@ -462,24 +463,11 @@ class Playlists extends UPMap
 
         // Create playlist in Opencast
         $oc_playlist = $playlist_client->createPlaylist([
-            'title' => $json['title'],
-            'description' => $json['description'],
-            'creator' => $json['creator'],
-            'entries' => $entries,
+            'title'                => $json['title'],
+            'description'          => $json['description'],
+            'creator'              => $json['creator'],
+            'entries'              => $entries,
             'accessControlEntries' => self::getDefaultACL()
-        ]);
-
-        if (!$oc_playlist) {
-            return null;
-        }
-
-        // Update playlist acls in Opencast
-        $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
-            'title' => $oc_playlist->title,
-            'description' => $oc_playlist->description,
-            'creator' => $oc_playlist->creator,
-            'entries' => $oc_playlist->entries,
-            'accessControlEntries' => self::getDefaultACL($oc_playlist->id)
         ]);
 
         if (!$oc_playlist) {
@@ -494,15 +482,17 @@ class Playlists extends UPMap
         }
 
         $json['service_playlist_id'] = $oc_playlist->id;
-        $json['title'] = $oc_playlist->title;
-        $json['description'] = $oc_playlist->description;
-        $json['creator'] = $oc_playlist->creator;
-        $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+        $json['title']               = $oc_playlist->title;
+        $json['description']         = $oc_playlist->description;
+        $json['creator']             = $oc_playlist->creator;
+        $json['updated']             = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
 
         $playlist->setData($json);
         $playlist->store();
 
         $playlist->setEntries($oc_playlist->entries);
+
+        self::checkPlaylistACL($oc_playlist, $playlist);
 
         return $playlist;
     }
@@ -524,36 +514,17 @@ class Playlists extends UPMap
             $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
 
             if ($oc_playlist) {
-                $acls = $oc_playlist->accessControlEntries;
-                if (empty($acls)) {
-                    $acls = self::getDefaultACL($oc_playlist->id);
-                }
-
-                // TODO: Why is it necessary to remove the id?
-                array_walk($acls, function ($acl) {
-                    unset($acl->id);
-                });
-
-                // Update playlist in Opencast
-                $oc_playlist = $playlist_client->updatePlaylist($oc_playlist->id, [
-                    'title' => $json['title'] ?? $oc_playlist->title,
-                    'description' => $json['description'] ?? $oc_playlist->description,
-                    'creator' => $json['creator'] ?? $oc_playlist->creator,
-                    'entries' => $oc_playlist->entries,
-                    'accessControlEntries' => $acls
-                ]);
-            }
-
-            if (!$oc_playlist) {
+                self::checkPlaylistACL($oc_playlist, $this);
+            } else {
                 // Load or update failed in Opencast
                 return false;
             }
 
             // Ensure playlist data is consistent
-            $json['title'] = $oc_playlist->title;
+            $json['title']       = $oc_playlist->title;
             $json['description'] = $oc_playlist->description;
-            $json['creator'] = $oc_playlist->creator;
-            $json['updated'] = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+            $json['creator']     = $oc_playlist->creator;
+            $json['updated']     = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
 
             $this->setEntries($oc_playlist->entries);
         }

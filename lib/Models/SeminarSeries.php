@@ -3,12 +3,20 @@
 namespace Opencast\Models;
 
 use Opencast\Models\REST\SeriesClient;
+use \Course;
 
 class SeminarSeries extends \SimpleORMap
 {
     protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_seminar_series';
+
+        $config['has_many']['courses'] = [
+            'class_name'        => Course::class,
+            'foreign_key'       => 'seminar_id',
+            'assoc_foreign_key' => 'Seminar_id'
+        ];
+
         parent::configure($config);
     }
 
@@ -24,6 +32,19 @@ class SeminarSeries extends \SimpleORMap
             $series[$series_id] =
                 $series_client->getSeries($series_id)
                     ? true : false;
+        }
+
+        // make sure all ACLs are correctly set
+        $series = self::findBySeries_id($series_id);
+
+        $courses = \SimpleCollection::createFromArray($series)->pluck('seminar_id');
+
+        $acl = Helpers::createACLsForCourses($courses);
+        $oc_acls = Helpers::filterACLs($series_client->getACL($series_id));
+
+        if ($acl <> $oc_acls['studip']) {
+            $new_acl = array_merge($oc_acls['other'], $acl);
+            $series_client->setACL($series_id, $new_acl);
         }
 
         return $series[$series_id];

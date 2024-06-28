@@ -68,18 +68,12 @@ class UserRoles extends OpencastController
 
             // Stud.IP-root has access to all videos and playlists
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
-                foreach(Videos::findBySQL('episode IS NOT NULL') as $video) {
-                    $roles[] = 'STUDIP_' . $video->episode . '_write';
-                }
-
-                foreach (Playlists::findBySQL('1') as $playlist) {
-                    $roles[] = 'STUDIP_PLAYLIST_' . $playlist->service_playlist_id . '_write';
-                }
+                $roles[] = 'ROLE_ADMIN';
             } else {
                 // Handle video roles
 
                 // get all videos the user has permissions on
-                foreach(VideosUserPerms::findByUser_id($user_id) as $vperm) {
+                foreach (VideosUserPerms::findByUser_id($user_id) as $vperm) {
                     if (!$vperm->video->episode) continue;
 
                     if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
@@ -95,31 +89,21 @@ class UserRoles extends OpencastController
                 $stmt->execute([$user_id]);
                 $courses_write = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
+                // add instructor roles
+                foreach ($courses_write as $course_id) {
+                    $roles[$course_id . '_Instructor'] = 'STUDIP_' . $course_id . '_Instructor';
+                }
+
                 // Get courses with read access ('autor', 'user')
                 $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
                     WHERE user_id = ? AND (status = 'autor' OR status = 'user')");
                 $stmt->execute([$user_id]);
                 $courses_read = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
-                $courses = array_merge($courses_write, $courses_read);
-
-                // find videos in accessible playlists
-                $stmt = \DBManager::get()->prepare('SELECT episode FROM oc_playlist_seminar AS ops
-                    INNER JOIN oc_playlist_video         AS opv  USING (playlist_id)
-                    INNER JOIN oc_video                  AS ov   ON    (ov.id = opv.video_id)
-                    LEFT  JOIN oc_playlist_seminar_video AS opsv ON    (opsv.playlist_seminar_id = ops.id AND opsv.video_id = ov.id)
-                    WHERE ops.seminar_id IN (:courses)
-                    AND (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
-                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
-                        OR opsv.visible_timestamp < NOW() + INTERVAL 15 MINUTE)'
-                );
-                $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
-                $stmt->execute();
-
-                foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $episode) {
-                    $roles[$episode . '_read'] = 'STUDIP_' . $episode . '_read';
+                // add learner roles
+                foreach ($courses_read as $course_id) {
+                    $roles[$course_id . '_Learner'] = 'STUDIP_' . $course_id . '_Learner';
                 }
-
 
                 // Handle playlist roles
 

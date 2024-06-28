@@ -41,21 +41,12 @@ class PlaylistMigration
                 );
 
                 if ($oc_playlist) {
-                    // Set ACLs
-                    $oc_playlist = $api_playlists_client->updatePlaylist($oc_playlist->id, [
-                        'title' => $oc_playlist->title,
-                        'description' => $oc_playlist->description,
-                        'creator' => $oc_playlist->creator,
-                        'entries' => $oc_playlist->entries,
-                        'accessControlEntries' => self::getDefaultACL($oc_playlist->id)
-                    ]);
-                }
-
-                if ($oc_playlist) {
                     // Store oc playlist reference in Stud.IP if successfully created
                     $playlist->config_id = $config_id;
                     $playlist->service_playlist_id = $oc_playlist->id;
                     $playlist->store();
+
+                    Playlists::checkPlaylistACL($oc_playlist, $playlist);
 
                     // Store entry ids
                     for ($i = 0; $i < count($playlist_videos); $i++) {
@@ -172,34 +163,6 @@ class PlaylistMigration
         $stmt = \DBManager::get()->prepare($sql);
         $stmt->execute([$playlist->id]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
-
-
-    /**
-     * Get default ACL for playlists
-     *
-     * @param string $playlist_id playlist id
-     * @return array[] ACLs list
-     */
-    public static function getDefaultACL($playlist_id)
-    {
-        return [
-            [
-                'allow' => true,
-                'role' => "STUDIP_PLAYLIST_{$playlist_id}_read",
-                'action' => 'read'
-            ],
-            [
-                'allow' => true,
-                'role' => "STUDIP_PLAYLIST_{$playlist_id}_write",
-                'action' => 'read'
-            ],
-            [
-                'allow' => true,
-                'role' => "STUDIP_PLAYLIST_{$playlist_id}_write",
-                'action' => 'write'
-            ]
-        ];
     }
 
     /**

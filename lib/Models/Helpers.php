@@ -264,4 +264,70 @@ class Helpers
         $stmt->execute([$course_id, $default_playlist_id]);
         return $stmt->rowCount();
     }
+
+    /**
+     * Create list of LTI ACLs for the passed courses. Returns an array with the read
+     * and write ACLs for Instructor and Learner
+     *
+     * @param array $course_ids
+     *
+     * @return array
+     */
+    public static function createACLsForCourses($course_ids)
+    {
+        $acl = [];
+
+        foreach ($course_ids as $course_id) {
+            $acl[] = [
+                'allow'  => true,
+                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'action' => 'read'
+            ];
+
+            $acl[] = [
+                'allow'  => true,
+                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'action' => 'write'
+            ];
+
+            $acl[] = [
+                'allow'  => true,
+                'role'   => 'STUDIP_'. $course_id . '_Learner',
+                'action' => 'read'
+            ];
+        }
+
+        return $acl;
+    }
+
+    /**
+     * Get all ACL entries Stud.IP is responsible for
+     *
+     * @param array $acls
+     *
+     * @return array
+     */
+    public static function filterACLs($acls)
+    {
+        $possible_roles = [
+            'ROLE_ANONYMOUS'
+        ];
+
+        $result = [];
+        foreach ($acls as $entry) {
+            if (in_array($entry['role'], $possible_roles) !== false
+                || strpos($entry['role'], 'STUDIP_') === 0
+            ) {
+                $result[$entry['role'] .'_'. $entry['action']] = $entry;
+            }
+        }
+
+        $result = array_values($result);
+        sort($result);
+
+        return [
+            'studip' => $result,
+            'other'  => array_diff($acls, $result)
+        ];
+    }
 }

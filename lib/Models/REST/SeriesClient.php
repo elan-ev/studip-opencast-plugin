@@ -21,7 +21,7 @@ class SeriesClient extends RestClient
     }
 
     /**
-     * Retrieves seriesmetadata for a given series identifier from conntected Opencast
+     * Retrieve series metadata for a given series identifier from Opencast
      *
      * @param string series_id Identifier for a Series
      *
@@ -39,25 +39,15 @@ class SeriesClient extends RestClient
 
 
     /**
-     * createSeriesForSeminar - creates an new Series for a given course in OC Matterhorn
+     * Create an new series for a given course in Opencast
+     *
      * @param string $course_id - course identifier
+     *
      * @return bool success or not
      */
     public function createSeriesForSeminar($course_id)
     {
         $acl = [
-            [
-                'allow'  => true,
-                'role'   => 'ROLE_ADMIN',
-                'action' => 'read'
-            ],
-
-            [
-                'allow'  => true,
-                'role'   => 'ROLE_ADMIN',
-                'action' => 'write'
-            ],
-
             [
                 'allow'  => true,
                 'role'   => $course_id . '_Instructor',
@@ -82,9 +72,10 @@ class SeriesClient extends RestClient
     }
 
     /**
-     * createSeriesDC - creates an xml representation for a new OC-Series
+     * Create an xml representation for a new OC-series
      *
      * @param string $course_id
+     *
      * @return string xml - the xml representation of the string
      */
     private static function getSeriesDC($course_id)
@@ -126,25 +117,15 @@ class SeriesClient extends RestClient
     }
 
     /**
-     * createSeriesForUser - creates an new Series for a given user in OC Matterhorn
+     * Create an new Series for a given user in Opencast
+     *
      * @param string $user_id - user identifier
+     *
      * @return bool success or not
      */
     public function createSeriesForUser($user_id)
     {
         $acl = [
-            [
-                'allow'  => true,
-                'role'   => 'ROLE_ADMIN',
-                'action' => 'read'
-            ],
-
-            [
-                'allow'  => true,
-                'role'   => 'ROLE_ADMIN',
-                'action' => 'write'
-            ],
-
             [
                 'allow'  => true,
                 'role'   => 'STUDIP_' . $user_id,
@@ -203,5 +184,35 @@ class SeriesClient extends RestClient
             "flavor" => "dublincore/series",
             'fields' => $fields
         ]];
+    }
+
+    /**
+     * Return current ACL for passed series
+     *
+     * @param string $series_id
+     *
+     * @return mixed
+     */
+    public function getACL($series_id)
+    {
+        $response = $this->opencastApi->seriesApi->getAcl($series_id);
+        if ($response['code'] == 200) {
+            return json_decode(json_encode($response['body']), true);
+        }
+
+        return false;
+    }
+
+    /**
+     * Replace ACL for passed series
+     *
+     * @param string $series_id
+     * @param array $acl
+     *
+     * @return mixed
+     */
+    public function setACL($series_id, $acl)
+    {
+        return $this->opencastApi->seriesApi->updateACL($series_id, $acl);
     }
 }
