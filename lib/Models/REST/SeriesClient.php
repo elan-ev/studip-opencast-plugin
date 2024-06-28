@@ -195,7 +195,12 @@ class SeriesClient extends RestClient
      */
     public function getACL($series_id)
     {
-        return $this->opencastApi->seriesApi->getACL($series_id);
+        $response = $this->opencastApi->seriesApi->getAcl($series_id);
+        if ($response['code'] == 200) {
+            return json_decode(json_encode($response['body']), true);
+        }
+
+        return false;
     }
 
     /**
