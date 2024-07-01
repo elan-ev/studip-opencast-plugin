@@ -467,7 +467,7 @@ class Playlists extends UPMap
             'description'          => $json['description'],
             'creator'              => $json['creator'],
             'entries'              => $entries,
-            'accessControlEntries' => self::getDefaultACL()
+            'accessControlEntries' => []
         ]);
 
         if (!$oc_playlist) {
