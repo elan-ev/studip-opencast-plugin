@@ -309,6 +309,13 @@ class Helpers
      */
     public static function filterACLs($acls)
     {
+        if (!is_array($acls)) {
+            return [
+                'studip' => [],
+                'other'  => []
+            ];
+        }
+
         $possible_roles = [
             'ROLE_ANONYMOUS'
         ];
