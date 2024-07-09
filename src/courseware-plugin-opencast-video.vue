@@ -221,9 +221,7 @@ export default {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
                     this.currentSeries  = this.episodes[id].series_id;
-                    this.currentUrl     = this.episodes[id].url
-                        ? this.episodes[id].url
-                        : STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
+                    this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
                     this.currentVisible = this.episodes[id].visible;
                     if (!this.titleFromBackend) {
                         this.currentTitle = this.episodes[id].name;
