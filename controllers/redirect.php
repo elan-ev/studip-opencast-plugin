@@ -83,7 +83,9 @@ class RedirectController extends OpencastController
                     : ''; // PluginEngine::getLink($plugin->getPluginURL() . '/images/default-preview.png';
             }
 
-            list ($response, $httpCode) = $api_events->fileRequest($image);
+            list ($response, $httpCode, $mimetype) = $api_events->fileRequest($image);
+
+            header('Content-Type: '. $mimetype);
 
             echo $response;
             die;

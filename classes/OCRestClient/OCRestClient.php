@@ -332,6 +332,7 @@ class OCRestClient
             ];
 
             $options[CURLOPT_HTTPGET] = 1;
+            $options[CURLOPT_RETURNTRANSFER] = 1;
 
             if (!$this->debug_curl) {  // CURLINFO_HEADER_OUT ist not worjing in conjunction with CURLOPT_VERBOSE
                 // see: https://bugs.php.net/bug.php?id=65348
@@ -346,6 +347,7 @@ class OCRestClient
 
             $response = curl_exec($this->ochandler);
             $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+            $mimetype = curl_getinfo($this->ochandler, CURLINFO_CONTENT_TYPE);
 
             if ($this->debug_curl) {
                 fclose($this->debug);
@@ -362,7 +364,7 @@ class OCRestClient
                 echo '</pre>';
             }
 
-            return [$response, $httpCode];
+            return [$response, $httpCode, $mimetype];
 
         } else {
             throw new Exception(_("Es wurde keine Service URL angegeben"));
