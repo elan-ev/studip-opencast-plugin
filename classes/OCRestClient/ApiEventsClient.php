@@ -84,24 +84,16 @@ class ApiEventsClient extends OCRestClient
             /* * * * * * * * * * * * * * * * * * * * * * * * */
             // first, get list of events ids from search service
 
-            // special treatment for Opencast 14 and below
-            if (version_compare($this->getOcVersion(), '15', '<')) {
-                $search_events = $search_service->getJSON(
-                    "/episode.json?sid=$series_id&q=". urlencode($search)
-                    . "&sort=". urlencode($sort) ."&limit=$limit&offset=$offset"
-                );
-            } else {
-                $search_query = '';
-                if ($search) {
-                    $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
-                }
-
-                $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
-                    . ' AND oc_acl_read:' . $course_id . '_' . $type;
-
-                $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
-                    . "&sort=$sort&limit=$limit&offset=$offset");
+            $search_query = '';
+            if ($search) {
+                $search_query = " AND ( *:(dc_title_:($search)^6.0 dc_creator_:($search)^4.0 dc_subject_:($search)^4.0 dc_publisher_:($search)^2.0 dc_contributor_:($search)^2.0 dc_abstract_:($search)^4.0 dc_description_:($search)^4.0 fulltext:($search) fulltext:(*$search*) ) OR (id:$search) )";
             }
+
+            $lucene_query = '(dc_is_part_of:' . $series_id . ')' . $search_query
+                . ' AND oc_acl_read:' . $course_id . '_' . $type;
+
+            $search_events = $search_service->getJSON('/lucene.json?q=' . urlencode($lucene_query)
+                . "&sort=$sort&limit=$limit&offset=$offset");
 
             Pager::setLength($search_events->{'search-results'}->total);
 
