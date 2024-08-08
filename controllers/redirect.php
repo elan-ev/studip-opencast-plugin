@@ -22,6 +22,25 @@ class RedirectController extends OpencastController
             $customtool = $this->getLtiCustomTool($episode_id, $action);
         }
 
+        if (Request::get('embed')) {
+            $endpoints = OCEndpoints::findByConfig_id($series->config_id);
+            foreach ($endpoints as $endpoint) {
+                if ($endpoint['service_type'] == 'search') {
+
+                    $url = parse_url($endpoint['service_url']);
+
+                    $oc_url = $url['scheme'] . '://'. $url['host']
+                        . ($url['port'] ? ':' . $url['port'] : '');
+
+                    $url = $oc_url . '/play/' . $episode_id;
+                    break;
+                }
+            }
+
+            $this->redirect($url);
+            return;
+        }
+
         if (Context::getId()) {
             $lti = LtiHelper::getLaunchDataForCourse($series->config_id, Context::getId(), null, $customtool);
         } else {

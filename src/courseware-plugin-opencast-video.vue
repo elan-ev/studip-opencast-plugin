@@ -12,15 +12,19 @@
             <template #content>
                 <h2 v-if="currentTitle">{{ currentTitle }}</h2>
                 <div v-if="context.type == 'courses'">
-                  <div v-if="currentUrl === null || ltiConnected == false">
-                      <span v-if="currentUrl === null" v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
-                      <span v-else v-translate v-text="'Das Video ist nicht verfügbar'"></span>
+                  <div v-if="currentUrl === null">
+                      <span  v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
                   </div>
-                  <div v-else>
-                    <iframe :src="currentUrl"
+                  <div v-else-if="currentUrl && (firstLTI || ltiConnected)">
+                    <iframe :src="currentUrl + ((firstLTI) ? '': '?embed=1')"
                         class="oc_courseware"
+                        @load="iframeIsLoaded"
+                        ref="ociframe"
                         allowfullscreen
                     ></iframe>
+                  </div>
+                  <div class="oc-video-loading" v-else>
+                    <span v-translate v-text="'Video wird geladen'"></span>
                   </div>
                 </div>
 
@@ -96,6 +100,8 @@
             </template>
 
             <template #info><translate>Informationen zum Opencast-Block</translate></template>
+
+            <iframe :src="ltiURL" frameborder="0"></iframe>
         </component>
     </div>
 </template>
@@ -121,12 +127,14 @@ export default {
             currentUrl      : null,
             series          : [],
             episodes        : [],
-            ltiConnected    : false,
             loadingSeries   : false,
             loadingEpisodes : false,
             currentVisible  : true,
             currentTitle    : '',
-            titleFromBackend: false
+            titleFromBackend: false,
+            ltiConnected    : false,
+            firstLTI        : false,
+            timer           : null
         }
     },
 
@@ -141,7 +149,6 @@ export default {
             const attributes = { payload: {
                 series_id : this.currentSeries,
                 episode_id: this.currentEpisode,
-                url       : this.currentUrl,
                 title     : this.currentTitle
             } };
             const container = this.$store.getters["courseware-containers/related"]({
@@ -158,14 +165,14 @@ export default {
         initCurrentData() {
             this.currentSeries  = get(this.block, "attributes.payload.series_id", "");
             this.currentEpisode = get(this.block, "attributes.payload.episode_id", "");
-            this.currentUrl     = get(this.block, "attributes.payload.url", "");;
             this.currentTitle   = get(this.block, "attributes.payload.title", "");
 
             if (this.currentTitle) {
                 this.titleFromBackend = true;
             }
 
-            if (this.currentEpisode != '' && this.currentUrl == '') {
+            if (this.currentEpisode != '') {
+                this.checkFirstLTI();
                 this.currentUrl = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
             }
         },
@@ -187,7 +194,6 @@ export default {
                             view.episodes.push(data = {
                                 series_id : view.currentSeries,
                                 id        : view.currentEpisode,
-                                url       : view.currentUrl,
                                 name      : view.currentTitle + ' (Import)',
                                 visible   : true
                             });
@@ -197,22 +203,27 @@ export default {
                 })
         },
 
-        runLTI() {
-            axios.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/ajax/getltidata/'
-                + this.currentSeries +  '?cid=' + this.context.id)
-                .then(({data}) => {
-                    if (data.lti_url && data.lti_data) {
-                        OC.ltiCall(data.lti_url, JSON.parse(data.lti_data),
-                        () => {
-                            this.ltiConnected = true;
-                        },
-                        () => {
-                            this.ltiConnected = false;
-                        });
-                    } else {
-                        this.ltiConnected = false;
-                    }
-                })
+        checkFirstLTI()
+        {
+            if (!window.OPENCAST_SEMAPHORE) {
+                window.OPENCAST_SEMAPHORE = 1;
+                this.firstLTI = true;
+            }
+        },
+
+        iframeIsLoaded()
+        {
+            if (this.firstLTI) {
+                window.OPENCAST_LTI_CONNECTED = true;
+            }
+        },
+
+        checkLTI()
+        {
+            if (window.OPENCAST_LTI_CONNECTED) {
+                this.ltiConnected = true;
+                clearInterval(this.timer);
+            }
         }
     },
 
@@ -221,6 +232,7 @@ export default {
             for (let id in this.episodes) {
                 if (this.episodes[id].id == this.currentEpisode) {
                     this.currentSeries  = this.episodes[id].series_id;
+                    this.checkFirstLTI();
                     this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
                     this.currentVisible = this.episodes[id].visible;
                     if (!this.titleFromBackend) {
@@ -234,7 +246,9 @@ export default {
     mounted() {
         this.loadEpisodes();
         this.initCurrentData();
-        this.runLTI();
+        this.timer = setInterval(() => {
+            this.checkLTI();
+        }, 300);
     },
 
     inject: ["containerComponents"],
