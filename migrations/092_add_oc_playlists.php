@@ -41,7 +41,8 @@ class AddOcPlaylists extends Migration
 
         // Update endpoints of all configs to find playlists service
         $configs = Config::findBySQL('1');
-        $migrate = true;
+        $migrate = !empty($configs);
+
         foreach ($configs as $config) {
             $config->updateEndpoints();
 

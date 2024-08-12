@@ -82,7 +82,7 @@ class Config extends \SimpleOrMap
      */
     public static function getBaseServerConf($config_id = null)
     {
-        if (is_null($config_id)) {
+        if (is_null($config_id) || $config_id == 0) {
             return \SimpleCollection::createFromArray(
                 self::findBySql('1 ORDER BY id ASC')
             )->toGroupedArray('id');

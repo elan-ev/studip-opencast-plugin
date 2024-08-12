@@ -459,19 +459,30 @@ class Playlists extends UPMap
      */
     public static function createPlaylist($json, $entries = [])
     {
-        $playlist_client = ApiPlaylistsClient::getInstance($json['config_id']);
 
-        // Create playlist in Opencast
-        $oc_playlist = $playlist_client->createPlaylist([
-            'title'                => $json['title'],
-            'description'          => $json['description'],
-            'creator'              => $json['creator'],
-            'entries'              => $entries,
-            'accessControlEntries' => []
-        ]);
+        if (PlaylistMigration::isConverted()) {
+            $playlist_client = ApiPlaylistsClient::getInstance($json['config_id']);
 
-        if (!$oc_playlist) {
-            return null;
+            // Create playlist in Opencast
+            $oc_playlist = $playlist_client->createPlaylist([
+                'title'                => $json['title'],
+                'description'          => $json['description'],
+                'creator'              => $json['creator'],
+                'entries'              => $entries,
+                'accessControlEntries' => []
+            ]);
+
+            if (!$oc_playlist) {
+                return null;
+            }
+
+            $json['service_playlist_id'] = $oc_playlist->id;
+            $json['title']               = $oc_playlist->title;
+            $json['description']         = $oc_playlist->description;
+            $json['creator']             = $oc_playlist->creator;
+            $json['updated']             = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
+
+            $entries = $oc_playlist->entries;
         }
 
         // Create playlist in DB
@@ -481,18 +492,14 @@ class Playlists extends UPMap
             $playlist = new Playlists;
         }
 
-        $json['service_playlist_id'] = $oc_playlist->id;
-        $json['title']               = $oc_playlist->title;
-        $json['description']         = $oc_playlist->description;
-        $json['creator']             = $oc_playlist->creator;
-        $json['updated']             = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
-
         $playlist->setData($json);
         $playlist->store();
 
-        $playlist->setEntries($oc_playlist->entries);
+        $playlist->setEntries($entries);
 
-        self::checkPlaylistACL($oc_playlist, $playlist);
+        if (PlaylistMigration::isConverted()) {
+            self::checkPlaylistACL($oc_playlist, $playlist);
+        }
 
         return $playlist;
     }
