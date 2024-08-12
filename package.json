@@ -1,6 +1,6 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "3.0.12",
+  "version": "3.0.13",
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
