@@ -10,6 +10,13 @@ class RedirectController extends OpencastController
     public function perform_action($action, $episode_id)
     {
         $video = OCSeminarEpisodes::findOneByEpisode_id($episode_id);
+
+        if (empty($video)) {
+            $this->set_layout(null);
+            $this->render_action('video_not_found');
+            return;
+        }
+
         $series = OCSeminarSeries::findOneBySeries_id($video->series_id);
 
         if (empty($video)) {
@@ -24,6 +31,7 @@ class RedirectController extends OpencastController
 
         if (Request::get('embed')) {
             $endpoints = OCEndpoints::findByConfig_id($series->config_id);
+
             foreach ($endpoints as $endpoint) {
                 if ($endpoint['service_type'] == 'search') {
 
@@ -35,6 +43,12 @@ class RedirectController extends OpencastController
                     $url = $oc_url . '/play/' . $episode_id;
                     break;
                 }
+            }
+
+            if (empty($url)) {
+                $this->set_layout(null);
+                $this->render_action('video_not_found');
+                return;
             }
 
             $this->redirect($url);
@@ -71,7 +85,10 @@ class RedirectController extends OpencastController
 
     public function novideo_action()
     {
+    }
 
+    public function video_not_found_action()
+    {
     }
 
     public function preview_action($episode_id)
