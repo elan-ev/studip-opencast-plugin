@@ -343,7 +343,7 @@ class Playlists extends UPMap
      */
     public static function getDefaultACL($playlistId, $user_id = null)
     {
-        $acl = [
+        return [
             [
                 'allow'  => true,
                 'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
@@ -360,8 +360,6 @@ class Playlists extends UPMap
                 'action' => 'write'
             ]
         ];
-
-        return $acls;
     }
 
     /**
