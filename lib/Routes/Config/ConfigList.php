@@ -51,7 +51,7 @@ class ConfigList extends OpencastController
             $response_data['scheduling'] = ScheduleHelper::prepareSchedulingConfig($config_list, $resources);
         }
 
-        if (!PlaylistMigration::isConverted() &&
+        if (!PlaylistMigration::isConverted() && count($config_list) &&
             version_compare(
                 OCConfig::getOCBaseVersion(\Config::get()->OPENCAST_DEFAULT_SERVER),
                 '16',
