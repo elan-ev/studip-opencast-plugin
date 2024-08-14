@@ -173,7 +173,9 @@ export default {
 
             if (this.currentEpisode != '') {
                 this.checkFirstLTI();
-                this.currentUrl = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
+                this.currentUrl = STUDIP.ABSOLUTE_URI_STUDIP
+                    + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode
+                    + '?cid=' + this.context.id;
             }
         },
 
@@ -221,8 +223,12 @@ export default {
         checkLTI()
         {
             if (window.OPENCAST_LTI_CONNECTED) {
-                this.ltiConnected = true;
                 clearInterval(this.timer);
+
+                // give another extra second time, just to be sure
+                setTimeout(() => {
+                    this.ltiConnected = true;
+                }, 1000);
             }
         }
     },
@@ -233,7 +239,9 @@ export default {
                 if (this.episodes[id].id == this.currentEpisode) {
                     this.currentSeries  = this.episodes[id].series_id;
                     this.checkFirstLTI();
-                    this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode;
+                    this.currentUrl     = STUDIP.ABSOLUTE_URI_STUDIP
+                        + 'plugins.php/opencast/redirect/perform/video/' + this.currentEpisode
+                        + '?cid=' + this.context.id;
                     this.currentVisible = this.episodes[id].visible;
                     if (!this.titleFromBackend) {
                         this.currentTitle = this.episodes[id].name;
