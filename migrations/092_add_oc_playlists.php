@@ -22,19 +22,19 @@ class AddOcPlaylists extends Migration
         $db = DBManager::get();
 
         $db->exec('ALTER TABLE `oc_playlist`
-            ADD COLUMN IF NOT EXISTS `config_id` int NULL AFTER `token`,
-            ADD COLUMN IF NOT EXISTS `service_playlist_id` varchar(64) UNIQUE NULL AFTER `config_id`,
-            ADD COLUMN IF NOT EXISTS `description` text AFTER `title`,
-            ADD COLUMN IF NOT EXISTS `creator` varchar(255) AFTER `description`,
-            ADD COLUMN IF NOT EXISTS `updated` timestamp AFTER `creator`,
-            ADD COLUMN IF NOT EXISTS `available` boolean DEFAULT false,
-            ADD FOREIGN KEY IF NOT EXISTS `oc_playlist_ibfk_1` (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-            ADD KEY IF NOT EXISTS `U.2` (`config_id`, `service_playlist_id`)'
+            ADD COLUMN `config_id` int NULL AFTER `token`,
+            ADD COLUMN `service_playlist_id` varchar(64) UNIQUE NULL AFTER `config_id`,
+            ADD COLUMN `description` text AFTER `title`,
+            ADD COLUMN `creator` varchar(255) AFTER `description`,
+            ADD COLUMN `updated` timestamp AFTER `creator`,
+            ADD COLUMN `available` boolean DEFAULT false,
+            ADD FOREIGN KEY `oc_playlist_ibfk_1` (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+            ADD KEY `U.2` (`config_id`, `service_playlist_id`)'
         );
 
         $db->exec('ALTER TABLE `oc_playlist_video`
-            ADD COLUMN IF NOT EXISTS `service_entry_id` BIGINT(20) UNSIGNED NULL AFTER `video_id`,
-            ADD KEY IF NOT EXISTS `service_entry_id` (`service_entry_id`)'
+            ADD COLUMN `service_entry_id` BIGINT(20) UNSIGNED NULL AFTER `video_id`,
+            ADD KEY `service_entry_id` (`service_entry_id`)'
         );
 
         SimpleOrMap::expireTableScheme();
@@ -65,18 +65,18 @@ class AddOcPlaylists extends Migration
         $db = DBManager::get();
 
         $db->exec('ALTER TABLE `oc_playlist`
-            DROP COLUMN IF EXISTS `config_id`,
-            DROP COLUMN IF EXISTS `service_playlist_id`,
-            DROP COLUMN IF EXISTS `description`,
-            DROP COLUMN IF EXISTS `creator`,
-            DROP COLUMN IF EXISTS `updated`,
-            DROP FOREIGN KEY IF EXISTS `oc_playlist_ibfk_1`,
-            DROP KEY IF EXISTS `U.2`'
+            DROP COLUMN `config_id`,
+            DROP COLUMN `service_playlist_id`,
+            DROP COLUMN `description`,
+            DROP COLUMN `creator`,
+            DROP COLUMN `updated`,
+            DROP FOREIGN KEY `oc_playlist_ibfk_1`,
+            DROP KEY `U.2`'
         );
 
         $db->exec('ALTER TABLE `oc_playlist_video`
-            DROP COLUMN IF EXISTS `service_entry_id`,
-            DROP KEY IF EXISTS `service_entry_id`'
+            DROP COLUMN `service_entry_id`,
+            DROP KEY `service_entry_id`'
         );
 
         SimpleOrMap::expireTableScheme();

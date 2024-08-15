@@ -11,7 +11,7 @@ class AddIsLivestreamScheduledRecordings extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec('ALTER TABLE `oc_scheduled_recordings` ADD COLUMN IF NOT EXISTS
+        $db->exec('ALTER TABLE `oc_scheduled_recordings` ADD COLUMN
             `is_livestream` boolean DEFAULT false');
 
         SimpleOrMap::expireTableScheme();
@@ -22,7 +22,7 @@ class AddIsLivestreamScheduledRecordings extends Migration
         $db = DBManager::get();
 
         $db->exec('ALTER TABLE `oc_scheduled_recordings`
-            DROP COLUMN IF EXISTS `is_livestream`');
+            DROP COLUMN `is_livestream`');
 
         SimpleOrMap::expireTableScheme();
     }
