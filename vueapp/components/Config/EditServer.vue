@@ -197,6 +197,10 @@ export default {
                     let workflow_settings = [];
                     for (let workflow of this.simple_config_list?.workflows) {
                         // Check if upload file type is set
+                        if (!Array.isArray(workflow.settings)) {
+                            workflow.settings = [];
+                        }
+
                         if (!workflow.settings.upload_file_types) {
                             workflow.settings.upload_file_types = this.simple_config_list.default_upload_file_types;
                         }

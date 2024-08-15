@@ -14,7 +14,7 @@ class AddWorkflowSettings extends Migration
         $db = DBManager::get();
 
         $db->exec("ALTER TABLE `oc_workflow`
-            ADD COLUMN `settings` TEXT NOT NULL
+            ADD COLUMN `settings` TEXT NULL
         ");
 
         SimpleOrMap::expireTableScheme();
