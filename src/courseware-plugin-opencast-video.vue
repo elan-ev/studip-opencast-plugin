@@ -16,7 +16,7 @@
                       <span  v-translate v-text="'Es wurde bisher keine Video ausgewählt'"></span>
                   </div>
                   <div v-else-if="currentUrl && (firstLTI || ltiConnected)">
-                    <iframe :src="currentUrl + ((firstLTI) ? '': '?embed=1')"
+                    <iframe :src="currentUrl + ((firstLTI) ? '': '&embed=1')"
                         class="oc_courseware"
                         @load="iframeIsLoaded"
                         ref="ociframe"
