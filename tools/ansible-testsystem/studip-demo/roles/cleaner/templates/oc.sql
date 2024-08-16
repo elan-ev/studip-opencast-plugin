@@ -1,6 +1,6 @@
 SET FOREIGN_KEY_CHECKS=0;
 
-REPLACE INTO `oc_config` 
+REPLACE INTO `oc_config`
     (`id`, `service_url`, `service_user`, `service_password`, `service_version`, `settings`) VALUES
     (1,	'{{ opencast_uri }}', 'admin', 'opencast', '15.0', '{\"lti_consumerkey\":\"CONSUMERKEY\",\"lti_consumersecret\":\"CONSUMERSECRET\"}');
 
@@ -114,8 +114,8 @@ REPLACE INTO tools_activated
 
 -- add videos to course playlist
 REPLACE INTO oc_playlist
-    (id, token, title, visibility, chdate, mkdate, sort_order, allow_download) VALUES
-    (1, 'fce2a63c', '12345 Test Lehrveranstaltung (WS 2023/2024)', NULL, '2023-11-10 12:50:57', '2023-11-10 12:50:57', 'created_desc', NULL);
+    (id, token, config_id, service_playlist_id, title, visibility, chdate, mkdate, sort_order, allow_download) VALUES
+    (1, 'fce2a63c', 1, 'studip-playlist', '12345 Test Lehrveranstaltung (WS 2023/2024)', NULL, '2023-11-10 12:50:57', '2023-11-10 12:50:57', 'created_desc', NULL);
 
 REPLACE INTO `oc_playlist_seminar` (`id`, `playlist_id`, `seminar_id`, `is_default`, `visibility`) VALUES
     (1,	1,	'a07535cf2f8a72df33c12ddfa4b53dde',	1,	'visible');

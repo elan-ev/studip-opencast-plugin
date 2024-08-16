@@ -56,8 +56,16 @@ def create_group_studip():
     endpoint = '/api/groups'
     post(endpoint, files=[('name', 'STUDIP'), ('roles', 'ROLE_ADMIN')])
 
+def create_playlist():
+    print('Creating course playlist')
+    endpoint = '/api/playlists'
+    playlist = {}
+    playlist["playlist"] = '{ "id": "studip-playlist", "title": "Opencast Playlist", "description": "This is a playlist about Opencast", "creator": "Opencast", "entries": [ { "contentId": "ID-about-opencast", "type": "EVENT" }, { "contentId": "ID-3d-print", "type": "EVENT" } ], "accessControlEntries": [ ] }'
+    post(endpoint, data=playlist)
+
 if __name__ == '__main__':
     load_config()
     create_group_studip()
     create_series()
     create_episodes()
+    create_playlist()
