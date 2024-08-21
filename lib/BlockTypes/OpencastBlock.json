@@ -8,13 +8,10 @@
         "episode_id": {
             "type": "string"
         },
-        "url": {
-            "type": "string"
-        },
         "title": {
             "type": "string"
         }
     },
-    "required": ["episode_id", "url"],
+    "required": ["episode_id"],
     "additionalProperties": true
 }
