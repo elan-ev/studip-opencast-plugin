@@ -120,3 +120,7 @@ If everything worked you can now start using the plugin!
 
 Further help can be found under:
 https://hilfe.studip.de/help/4.0/de/Basis/OpencastV3Administration
+
+## Caveats
+
+Stud.IP root users currently get `ROLE_ADMIN` and are therefore factual Opencast admins! 
