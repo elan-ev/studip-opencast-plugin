@@ -280,19 +280,19 @@ class Helpers
         foreach ($course_ids as $course_id) {
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'read'
             ];
 
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'write'
             ];
 
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Learner',
+                'role'   => $course_id . '_Learner',
                 'action' => 'read'
             ];
         }
@@ -323,7 +323,8 @@ class Helpers
         $result = [];
         foreach ($acls as $entry) {
             if (in_array($entry['role'], $possible_roles) !== false
-                || strpos($entry['role'], 'STUDIP_') === 0
+                || strpos($entry['role'], '_Instructor') === 0
+                || strpos($entry['role'], '_Learner') === 0
             ) {
                 $result[$entry['role'] .'_'. $entry['action']] = $entry;
             }

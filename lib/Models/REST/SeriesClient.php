@@ -125,16 +125,18 @@ class SeriesClient extends RestClient
      */
     public function createSeriesForUser($user_id)
     {
+        $username = strtoupper(get_username($user_id));
+
         $acl = [
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $user_id,
+                'role'   => 'ROLE_USER_'. $username,
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $user_id,
+                'role'   => 'ROLE_USER_'. $username,
                 'action' => 'write'
             ]
         ];

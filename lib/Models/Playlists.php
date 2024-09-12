@@ -346,17 +346,17 @@ class Playlists extends UPMap
         return [
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
+                'role'   => "PLAYLIST_{$playlistId}_read",
                 'action' => 'read'
             ],
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'role'   => "PLAYLIST_{$playlistId}_write",
                 'action' => 'read'
             ],
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'role'   => "PLAYLIST_{$playlistId}_write",
                 'action' => 'write'
             ]
         ];
@@ -388,12 +388,12 @@ class Playlists extends UPMap
             foreach($course->getMembersWithStatus('dozent') as $member) {
                 $acl[] = [
                     'allow'  => true,
-                    'role'   => "STUDIP_" . $member->user_id,
+                    'role'   => $member->user_id .'_Instructor',
                     'action' => 'read'
                 ];
                 $acl[] = [
                     'allow'  => true,
-                    'role'   => "STUDIP_" . $member->user_id,
+                    'role'   => $member->user_id .'_Instructor',
                     'action' => 'write'
                 ];
             }

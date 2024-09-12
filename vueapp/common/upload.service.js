@@ -40,7 +40,7 @@ class UploadService {
                 </Target>
                 <Condition>
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">STUDIP_${episode_id}_read</AttributeValue>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${episode_id}_read</AttributeValue>
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
@@ -58,7 +58,7 @@ class UploadService {
                 </Target>
                 <Condition>
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">STUDIP_${episode_id}_write</AttributeValue>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${episode_id}_write</AttributeValue>
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
@@ -76,7 +76,7 @@ class UploadService {
                 </Target>
                 <Condition>
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">STUDIP_${episode_id}_write</AttributeValue>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${episode_id}_write</AttributeValue>
                         <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
                     </Apply>
                 </Condition>
