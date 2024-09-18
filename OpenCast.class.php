@@ -149,7 +149,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         if (
             !$this->isActivated($course_id)
-            || ($visibility['visibility'] != 'visible'
+            || (!empty($visibility['visibility']) && $visibility['visibility'] !== 'visible'
                 && !OCPerm::editAllowed($course_id)
             )
         ) {
@@ -227,8 +227,8 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
 
         $visibility = OCSeriesModel::getVisibility($course_id);
         $title      = 'Opencast';
-
-        if ($visibility['visibility'] == 'invisible') {
+        $isActive = false;
+        if (!empty($visibility['visibility']) && $visibility['visibility'] === 'invisible') {
             $title .= " (" . $this->_('versteckt') . ")";
         }
         $main    = new Navigation($title);
@@ -254,10 +254,16 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
                 $main->addSubNavigation('scheduler', $scheduler);
             }
         }
-
-        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$course_id])['studygroup_id'];
-        $linkedCourseId = OCUploadStudygroup::findOneBySQL('studygroup_id = ? AND active = TRUE', [$course_id])['course_id'];
-
+        $studyGroupId = null;
+        $studyGroup = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$course_id]);
+        if ($studyGroup) {
+            $studyGroupId = $studyGroup['studygroup_id'];
+        }
+        $linkedCourseId = null;
+        $linkedCourse = OCUploadStudygroup::findOneBySQL('studygroup_id = ? AND active = TRUE', [$course_id]);
+        if ($linkedCourse) {
+            $linkedCourseId = $linkedCourse['course_id'];
+        }
         // check, if user is in course
         if (!empty($studyGroupId) && OCPerm::editAllowed($studyGroupId)) {
             foreach ($GLOBALS['SEM_CLASS'] as $id => $sem_class) {
@@ -279,7 +285,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             $main->addSubNavigation('linkedcourse', $linkedCourse);
         }
 
-        if ($visibility['visibility'] == 'visible' || OCPerm::editAllowed($course_id)) {
+        if (!empty($visibility['visibility']) && $visibility['visibility'] === 'visible' || OCPerm::editAllowed($course_id)) {
             return ['opencast' => $main];
         }
         return [];
@@ -305,7 +311,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $ocmodel = new OCCourseModel($data['course_id']);
         if ($ocmodel->getSeriesVisibility() == 'visible'
             && !empty($data['episode_id'])
-            && $data['visibility'] != 'invisible'
+            && (!empty($data['visibility']) && $data['visibility'] !== 'invisible')
         ) {
             $course  = Course::find($data['course_id']);
             $members = $course->members;
