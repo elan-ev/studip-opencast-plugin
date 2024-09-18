@@ -67,7 +67,7 @@ class RedirectController extends OpencastController
 
         // get correct endpoint for redirect type
         if ($action == 'video' || $action == 'preview') {
-            $ltilink = self::getLtiLinkFor($lti, 'search');
+            $ltilink = self::getLtiLinkFor($lti, 'redirect');
         } else {
             $ltilink = self::getLtiLinkFor($lti, 'apievents');
         }
