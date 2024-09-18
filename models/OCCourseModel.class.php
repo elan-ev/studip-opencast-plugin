@@ -229,7 +229,7 @@ class OCCourseModel
     {
         $episodes = [];
         foreach ($ordered_episodes as $episode) {
-            if (!empty($episode['visibility']) && $episode['visibility'] !== 'invisible') {
+            if (empty($episode['visibility']) || $episode['visibility'] !== 'invisible') {
                 $episodes[] = $episode;
             }
         }

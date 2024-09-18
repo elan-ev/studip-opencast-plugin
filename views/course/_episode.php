@@ -64,7 +64,7 @@ $sort_orders = Pager::getSortOptions();
                 ?>
 
                 <li id="<?= $item['id'] ?>"
-                    class="<?= (!empty($item['visibility']) && $item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item' ?>"
+                    class="<?= (empty($item['visibility']) || $item['visibility'] != 'false') ? 'oce_item' : 'hidden_ocvideodiv oce_item' ?>"
                     data-courseId="<?= $course_id ?>"
                     data-visibility="<?= $item['visibility'] ?? '' ?>"
                     data-pos="<?= $pos ?>"
@@ -81,7 +81,7 @@ $sort_orders = Pager::getSortOptions();
                             <? $plugin = PluginEngine::getPlugin('OpenCast'); ?>
                             <? if ($item['is_retracting']) : ?>
                                 <span class="previewimage">
-                                    <img class="previewimage <?= (!empty($item['visibility']) && $item['visibility'] == 'false') ? 'ocinvisible' : '' ?>"
+                                    <img class="previewimage <?= (empty($item['visibility']) || $item['visibility'] == 'false') ? 'ocinvisible' : '' ?>"
                                          src="<?= $controller->url_for('redirect/preview/'.  $item['id']) ?>" height="200"
                                          style="filter: grayscale(100%);">
                                     </img>
@@ -89,7 +89,7 @@ $sort_orders = Pager::getSortOptions();
                             <? else: ?>
                                 <a href="<?=str_replace('%%%video_id%%%', $item['id'], $video_url) ?>" target="_blank">
                                     <span class="previewimage">
-                                        <img class="previewimage <?= (!empty($item['visibility']) && $item['visibility'] == 'false') ? 'ocinvisible' : '' ?>"
+                                        <img class="previewimage <?= (empty($item['visibility']) || $item['visibility'] == 'false') ? 'ocinvisible' : '' ?>"
                                              src="<?= $controller->url_for('redirect/preview/'.  $item['id']) ?>" height="200">
                                         </img>
 
