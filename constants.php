@@ -11,6 +11,7 @@ class Constants {
         'capture-admin',
         'ingest',
         'recordings',
+        'redirect',
         'search',               // ausser hier: engage-node
         'series',
         'services',
