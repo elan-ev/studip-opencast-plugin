@@ -33,7 +33,7 @@ class RedirectController extends OpencastController
             $endpoints = OCEndpoints::findByConfig_id($series->config_id);
 
             foreach ($endpoints as $endpoint) {
-                if ($endpoint['service_type'] == 'search') {
+                if ($endpoint['service_type'] == 'redirect') {
 
                     $url = parse_url($endpoint['service_url']);
 
