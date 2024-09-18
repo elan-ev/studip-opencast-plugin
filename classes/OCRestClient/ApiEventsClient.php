@@ -113,42 +113,44 @@ class ApiEventsClient extends OCRestClient
                 if (!$event) {
                     $oc_event = $this->getJSON('/' . $s_event->id . '/?withpublications=true');
 
-                    if (empty($oc_event->publications[0]->attachments)) {
-                        $media = [];
+                    if (!empty($oc_event->publications)) {
+                        if (empty($oc_event->publications[0]->attachments)) {
+                            $media = [];
 
-                        foreach ($s_event->mediapackage->media->track as $track) {
-                            $width = 0;
-                            $height = 0;
-                            if (!empty($track->video)) {
-                                list($width, $height) = explode('x', $track->video->resolution);
-                                $bitrate = $track->video->bitrate;
-                            } else if (!empty($track->audio)) {
-                                $bitrate = $track->audio->bitrate;
+                            foreach ($s_event->mediapackage->media->track as $track) {
+                                $width = 0;
+                                $height = 0;
+                                if (!empty($track->video)) {
+                                    list($width, $height) = explode('x', $track->video->resolution);
+                                    $bitrate = $track->video->bitrate;
+                                } else if (!empty($track->audio)) {
+                                    $bitrate = $track->audio->bitrate;
+                                }
+
+                                //echo '<pre>'; print_r($track); echo '</pre>';
+
+                                $obj = new stdClass();
+                                $obj->mediatype = $track->mimetype;
+                                $obj->flavor    = $track->type;
+                                $obj->has_video = !empty($track->video);
+                                $obj->has_audio = !empty($track->audio);
+                                $obj->tags      = $track->tags->tag;
+                                $obj->url       = $track->url;
+                                $obj->duration  = $track->duration;
+                                $obj->bitrate   = $bitrate;
+                                $obj->width     = $width;
+                                $obj->height    = $height;
+
+                                $media[] = $obj;
                             }
 
-                            //echo '<pre>'; print_r($track); echo '</pre>';
+                            $oc_event->publications[0]->media       = $media;
 
-                            $obj = new stdClass();
-                            $obj->mediatype = $track->mimetype;
-                            $obj->flavor    = $track->type;
-                            $obj->has_video = !empty($track->video);
-                            $obj->has_audio = !empty($track->audio);
-                            $obj->tags      = $track->tags->tag;
-                            $obj->url       = $track->url;
-                            $obj->duration  = $track->duration;
-                            $obj->bitrate   = $bitrate;
-                            $obj->width     = $width;
-                            $obj->height    = $height;
-
-                            $media[] = $obj;
+                            if (is_null($oc_event->publications[0]->attachments)) {
+                                continue;
+                            }
+                            $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
                         }
-
-                        $oc_event->publications[0]->media       = $media;
-
-                        if (is_null($oc_event->publications[0]->attachments)) {
-                            continue;
-                        }
-                        $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
                     }
 
                     $event = self::prepareEpisode($oc_event);
