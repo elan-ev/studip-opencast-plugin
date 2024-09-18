@@ -229,7 +229,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $title      = 'Opencast';
         $isActive   = false;
 
-        if (empty($visibility['visibility']) || $visibility['visibility'] === 'invisible') {
+        if (!empty($visibility['visibility']) && $visibility['visibility'] === 'invisible') {
             $title .= " (" . $this->_('versteckt') . ")";
         }
         $main    = new Navigation($title);
@@ -312,7 +312,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         $ocmodel = new OCCourseModel($data['course_id']);
         if ($ocmodel->getSeriesVisibility() == 'visible'
             && !empty($data['episode_id'])
-            && (!empty($data['visibility']) && $data['visibility'] !== 'invisible')
+            && (empty($data['visibility']) || $data['visibility'] !== 'invisible')
         ) {
             $course  = Course::find($data['course_id']);
             $members = $course->members;
