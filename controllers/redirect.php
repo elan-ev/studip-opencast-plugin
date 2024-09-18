@@ -112,7 +112,7 @@ class RedirectController extends OpencastController
             $event = ApiEventsClient::prepareEpisode($api_event);
 
             $image = $event['preview'] ?
-                : PluginEngine::getURL($plugin->getPluginURL() . '/images/default-preview.png');
+                : URLHelper::getURL($GLOBALS['ocplugin_path'] . '/images/default-preview.png');
 
             list ($response, $httpCode, $mimetype) = $api_events->fileRequest($image);
 
