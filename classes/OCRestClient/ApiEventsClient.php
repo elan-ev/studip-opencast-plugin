@@ -169,7 +169,6 @@ class ApiEventsClient extends OCRestClient
 
             Pager::setLength($search_events->total);
 
-
             $results = is_array($search_events->result)
                 ? $search_events->result
                 : [$search_events->result];
@@ -188,6 +187,10 @@ class ApiEventsClient extends OCRestClient
 
                     if (empty($oc_event->publications[0]->attachments)) {
                         $media = [];
+
+                        if (empty($oc_event->mediapackage)) {
+                            continue;
+                        }
 
                         foreach ($s_event->mediapackage->media->track as $track) {
                             $width = 0;
@@ -214,6 +217,10 @@ class ApiEventsClient extends OCRestClient
                             $obj->height    = $height;
 
                             $media[] = $obj;
+                        }
+
+                        if (is_null($oc_event->publications[0]->media)) {
+                            continue;
                         }
 
                         $oc_event->publications[0]->media       = $media;
@@ -536,8 +543,7 @@ class ApiEventsClient extends OCRestClient
             ksort($presentation_download);
             ksort($audio_download);
 
-            $new_episode['preview']               = $preview;
-            $new_episode['presentation_preview']  = $presentation_preview;
+            $new_episode['preview']               = $preview ?: $presentation_preview;
             $new_episode['presenter_download']    = $presenter_download;
             $new_episode['presentation_download'] = $presentation_download;
             $new_episode['audio_download']        = $audio_download;
