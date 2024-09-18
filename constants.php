@@ -3,20 +3,20 @@ namespace Opencast;
 
 class Constants {
     static $SERVICES = [
-        'acl-manager',          // alles admin-node
-        'archive',
-        'apievents',
-        'apiseries',
-        'apiworkflows',
-        'capture-admin',
-        'ingest',
-        'recordings',
-        'redirect',
-        'search',               // ausser hier: engage-node
-        'series',
-        'services',
-        'workflow',
-        'admin-ngevent'
+        'org.opencastproject.authorization.xacml.manager'  => 'acl-manager',          // alles admin-node
+        'org.opencastproject.archive'                      => 'archive',
+        'org.opencastproject.external.events'              => 'apievents',
+        'org.opencastproject.external'                     => 'apiseries',
+        'org.opencastproject.external.workflows.instances' => 'apiworkflows',
+        'org.opencastproject.capture.admin'                => 'capture-admin',
+        'org.opencastproject.ingest'                       => 'ingest',
+        'org.opencastproject.scheduler'                    => 'recordings',
+        'org.opencastproject.engage.ui.player.redirect'    => 'play',                 // ausser hier: engage-node
+        'org.opencastproject.search'                       => 'search',               // ausser hier: engage-node
+        'org.opencastproject.series'                       => 'series',
+        'org.opencastproject.serviceregistry'              => 'services',
+        'org.opencastproject.workflow'                     => 'workflow',
+        'org.opencastproject.adminui.endpoint.event'       => 'admin-ngevent'
     ];
 
     static $GLOBAL_CONFIG_OPTIONS = [

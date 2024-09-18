@@ -152,7 +152,7 @@ $sort_orders = Pager::getSortOptions();
                                         ]
                                 ); ?>
                                 <? URLHelper::setBaseURL($base); ?>
-q
+
                                 <? if (OCPerm::editAllowed($course_id)) : ?>
                                     <?= Studip\LinkButton::create($_($visibility_text[$item['visibility']] ?? $_('Unbekannte Sichtbarkeit')),
                                         '', [

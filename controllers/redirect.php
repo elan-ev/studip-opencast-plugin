@@ -33,7 +33,7 @@ class RedirectController extends OpencastController
             $endpoints = OCEndpoints::findByConfig_id($series->config_id);
 
             foreach ($endpoints as $endpoint) {
-                if ($endpoint['service_type'] == 'redirect') {
+                if ($endpoint['service_type'] == 'play') {
 
                     $url = parse_url($endpoint['service_url']);
 
@@ -67,7 +67,7 @@ class RedirectController extends OpencastController
 
         // get correct endpoint for redirect type
         if ($action == 'video' || $action == 'preview') {
-            $ltilink = self::getLtiLinkFor($lti, 'redirect');
+            $ltilink = self::getLtiLinkFor($lti, 'play');
         } else {
             $ltilink = self::getLtiLinkFor($lti, 'apievents');
         }
@@ -112,7 +112,7 @@ class RedirectController extends OpencastController
             $event = ApiEventsClient::prepareEpisode($api_event);
 
             $image = $event['preview'] ?
-                : PluginEngine::getLink($plugin->getPluginURL() . '/images/default-preview.png');
+                : PluginEngine::getURL($plugin->getPluginURL() . '/images/default-preview.png');
 
             list ($response, $httpCode, $mimetype) = $api_events->fileRequest($image);
 

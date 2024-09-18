@@ -436,14 +436,21 @@ class OCModel
 
     public static function retrieveRESTservices($components, $match_protocol)
     {
-        $services = [];
+        $oc_services = Opencast\Constants::$SERVICES;
+        $services   = [];
+
         foreach ($components as $service) {
-            if (!preg_match('/remote/', $service->type)
-                && !preg_match('#https?://localhost.*#', $service->host)
+            if (!preg_match('#https?://localhost.*#', $service->host)
                 && mb_strpos($service->host, $match_protocol) === 0
             ) {
-                $services[preg_replace(["/\/docs/"], [''], $service->host . $service->path)]
-                    = preg_replace("/\//", '', $service->path);
+                // check if service is wanted, active and online
+                if (isset($oc_services[$service->type])
+                    && $service->online && $service->active
+                ) {
+                    // TODO: check duplicate entries for same service-type
+                    $services[$service->host . $service->path]
+                        = $oc_services[$service->type];
+                }
             }
         }
 
