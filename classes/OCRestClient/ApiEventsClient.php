@@ -190,7 +190,7 @@ class ApiEventsClient extends OCRestClient
                     if (empty($oc_event->publications[0]->attachments)) {
                         $media = [];
 
-                        if (empty($oc_event->mediapackage)) {
+                        if (!isset($s_event->mediapackage)) {
                             continue;
                         }
 
@@ -219,10 +219,6 @@ class ApiEventsClient extends OCRestClient
                             $obj->height    = $height;
 
                             $media[] = $obj;
-                        }
-
-                        if (is_null($oc_event->publications[0]->media)) {
-                            continue;
                         }
 
                         $oc_event->publications[0]->media       = $media;
