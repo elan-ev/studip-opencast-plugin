@@ -1,6 +1,6 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "2.14",
+  "version": "2.15",
   "description": "Stud.IP plugin for Opencast",
   "devDependencies": {
     "@babel/core": "^7.12.13",
