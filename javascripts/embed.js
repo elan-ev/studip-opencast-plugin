@@ -263,12 +263,4 @@
     var setInfoText = function(text) {
         $('#episodes_container').append('<i>' + text + '</i>');
     };
-
-    STUDIP.Toolbar.buttonSet.right = _.extend({
-        embed: {
-            label: "Opencast Video",
-            evaluate: openLinkDialog
-        }
-    }, STUDIP.Toolbar.buttonSet.right);
-
 }).call(this);
