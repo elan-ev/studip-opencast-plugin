@@ -186,7 +186,6 @@ class ApiEventsClient extends OCRestClient
 
                 if (!$event) {
                     $oc_event = $this->getJSON('/' . $s_event->mediapackage->id . '/?withpublications=true');
-
                     if (empty($oc_event->publications[0]->attachments)) {
                         $media = [];
 
@@ -221,12 +220,20 @@ class ApiEventsClient extends OCRestClient
                             $media[] = $obj;
                         }
 
-                        $oc_event->publications[0]->media       = $media;
-
-                        if (is_null($oc_event->publications[0]->attachments)) {
-                            continue;
+                        if (!isset($oc_event->publications[0])
+                            || !is_array($oc_event->publications)
+                        ) {
+                            $oc_event->publications = [
+                                0 => new stdClass()
+                            ];
                         }
+
+                        $oc_event->publications[0]->media       = $media;
                         $oc_event->publications[0]->attachments = $s_event->mediapackage->attachments->attachment;
+                    }
+
+                    if (is_null($oc_event->publications[0]->attachments)) {
+                        continue;
                     }
 
                     $event = self::prepareEpisode($oc_event);
