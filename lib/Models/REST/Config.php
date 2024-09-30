@@ -6,6 +6,22 @@ use Opencast\Models\Config as ConfigModel;
 
 class Config
 {
+    const SERVICES = [
+        'org.opencastproject.external.events'              => 'apievents',
+        'org.opencastproject.external'                     => 'apiseries',
+        'org.opencastproject.external.workflows.instances' => 'apiworkflows',
+        'org.opencastproject.external.playlists'           => 'apiplaylists',
+        'org.opencastproject.capture.admin'                => 'capture-admin',
+        'org.opencastproject.ingest'                       => 'ingest',
+        'org.opencastproject.scheduler'                    => 'recordings',
+        'org.opencastproject.engage.ui.player.redirect'    => 'play',                 // ausser hier: engage-node
+        'org.opencastproject.search'                       => 'search',               // ausser hier: engage-node
+        'org.opencastproject.series'                       => 'series',
+        'org.opencastproject.serviceregistry'              => 'services',
+        'org.opencastproject.fileupload'                   => 'upload',
+        'org.opencastproject.workflow'                     => 'workflow',
+    ];
+
     /**
      * Get the connected opencast instance version
      *
@@ -39,14 +55,26 @@ class Config
 
     public static function retrieveRESTservices($components, $match_protocol)
     {
-        $services = array();
+        $oc_services = self::SERVICES;
+        $services   = [];
+
         foreach ($components as $service) {
-            if (!preg_match('/remote/', $service->type)
-                && !preg_match('#https?://localhost.*#', $service->host)
+            if (!preg_match('#https?://localhost.*#', $service->host)
                 && mb_strpos($service->host, $match_protocol) === 0
             ) {
-                $services[preg_replace(array("/\/docs/"), array(''), $service->host.$service->path)]
-                         = preg_replace("/\//", '', $service->path);
+                // check if service is wanted, active and online
+                if (isset($oc_services[$service->type])
+                    && $service->online && $service->active
+                ) {
+                    // TODO: check duplicate entries for same service-type
+                    $services[$service->host . $service->path]
+                        = $oc_services[$service->type];
+                }
+
+                if ($service->path == '/admin-ng/event') {
+                    $services[$service->host . $service->path]
+                        = 'adming-ngevent';
+                }
             }
         }
 

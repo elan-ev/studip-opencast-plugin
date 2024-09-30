@@ -16,21 +16,6 @@ class Config extends \SimpleOrMap
         'lti_consumerkey', 'lti_consumersecret', 'debug'
     ];
 
-    const SERVICES = [
-        "apievents", // alles admin-node
-        "apiseries",
-        "apiworkflows",
-        "apiplaylists",
-        "capture-admin",
-        "ingest",
-        "recordings",
-        "search", // ausser hier: engage-node
-        "series",
-        "services",
-        "upload",
-        "workflow",
-    ];
-
     protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_config';
@@ -265,15 +250,7 @@ class Config extends \SimpleOrMap
                 } else {
 
                     foreach($services as $service_url => $service_type) {
-                        if (in_array(
-                                strtolower($service_type),
-                                self::SERVICES
-                            ) !== false
-                        ) {
-                            Endpoints::setEndpoint($this->id, $service_url, $service_type);
-                        } else {
-                            unset($services[$service_url]);
-                        }
+                        Endpoints::setEndpoint($this->id, $service_url, $service_type);
                     }
 
                     // create new entries for workflow_config table
