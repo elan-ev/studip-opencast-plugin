@@ -63,11 +63,6 @@ class UserRoles extends OpencastController
             $email    = $user->email;
             $fullname = $user->getFullName();
 
-            // Add user permission to access user-bound series and own playlists
-            // $roles[] = 'STUDIP_' . $user_id;
-            // TODO: does the default ROLE_USER_USERNAME catch all cases now?
-            // TODO: list permissions for admins and their administrated courses as well
-
             // Stud.IP-root has access to all videos and playlists
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 $roles[] = 'ROLE_ADMIN';
