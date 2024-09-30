@@ -71,6 +71,17 @@ class UserRoles extends OpencastController
             // Stud.IP-root has access to all videos and playlists
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 $roles[] = 'ROLE_ADMIN';
+            }
+
+            // Admin users have permissions on videos of all administrated courses
+            else if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
+
+                $filter = \AdminCourseFilter::get();
+                $courses = array_column($filter->fetchCourses(), 'seminar_id');
+
+                foreach ($courses as $course_id) {
+                    $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
+                }
             } else {
                 // Handle video roles
 

@@ -316,6 +316,10 @@ class Playlists extends UPMap
                 if ($course->getParticipantStatus($user->id)) {
                     return 'read';
                 }
+
+                if ($perm->have_studip_perm('dozent', $course->id)) {
+                    return 'owner';
+                }
             }
         }
 
