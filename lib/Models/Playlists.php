@@ -381,10 +381,6 @@ class Playlists extends UPMap
             unset($entry['id']);
         });
 
-        $old_acls = Helpers::filterACLs($old_acl);
-
-        $current_acl = $old_acls['studip'];
-
         $acl = self::getDefaultACL($oc_playlist->id);
 
         // add user acls
@@ -407,6 +403,10 @@ class Playlists extends UPMap
         $courses = array_merge($courses, $playlist->courses->pluck('id'));
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
+
+        $old_acls = Helpers::filterACLs($old_acl, $acl);
+
+        $current_acl = $old_acls['studip'];
 
         foreach ($acl as $entry) {
             $found = false;
