@@ -280,19 +280,19 @@ class Helpers
         foreach ($course_ids as $course_id) {
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'read'
             ];
 
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Instructor',
+                'role'   => $course_id . '_Instructor',
                 'action' => 'write'
             ];
 
             $acl[] = [
                 'allow'  => true,
-                'role'   => 'STUDIP_'. $course_id . '_Learner',
+                'role'   => $course_id . '_Learner',
                 'action' => 'read'
             ];
         }
@@ -307,7 +307,7 @@ class Helpers
      *
      * @return array
      */
-    public static function filterACLs($acls)
+    public static function filterACLs($acls, $studip_acls)
     {
         if (!is_array($acls)) {
             return [
@@ -316,15 +316,21 @@ class Helpers
             ];
         }
 
-        $possible_roles = [
-            'ROLE_ANONYMOUS'
-        ];
+        // prevent duplicate ACLs
+        $temp_acls = [];
+        foreach ($acls as $acl) {
+            $temp_acls[$acl['allow'] .'#'. $acl['role'] . $acl['action']] = $acl;
+        }
+
+        $acls = array_values($temp_acls);
+
+        $possible_roles = array_column($studip_acls, 'role');
+
+        sort($acls);
 
         $result = [];
         foreach ($acls as $entry) {
-            if (in_array($entry['role'], $possible_roles) !== false
-                || strpos($entry['role'], 'STUDIP_') === 0
-            ) {
+            if (in_array($entry['role'], $possible_roles) !== false) {
                 $result[$entry['role'] .'_'. $entry['action']] = $entry;
             }
         }
@@ -332,9 +338,21 @@ class Helpers
         $result = array_values($result);
         sort($result);
 
+
+        $diff = array_udiff($acls, $result, ['Opencast\Models\Helpers', 'compareACLs']);
+
         return [
             'studip' => $result,
-            'other'  => array_diff($acls, $result)
+            'other'  => $diff
         ];
+    }
+
+    public static function compareACLs($a, $b)
+    {
+        $comp_a = implode('#', $a);
+        $comp_b = implode('#', $b);
+
+        return $comp_a <=> $comp_b;
+
     }
 }

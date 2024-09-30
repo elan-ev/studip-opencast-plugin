@@ -689,8 +689,8 @@ class Videos extends UPMap
     private static function addEpisodeAcl($episode_id, $add_acl, $acl)
     {
         $possible_roles = [
-            'STUDIP_' . $episode_id . '_read',
-            'STUDIP_' . $episode_id . '_write',
+            $episode_id . '_read',
+            $episode_id . '_write',
             'ROLE_ANONYMOUS'
         ];
 
@@ -747,19 +747,19 @@ class Videos extends UPMap
         $acl = [
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $this->episode .'_read',
+                'role'   => $this->episode .'_read',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $this->episode .'_write',
+                'role'   => $this->episode .'_write',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $this->episode .'_write',
+                'role'   => $this->episode .'_write',
                 'action' => 'write'
             ]
         ];
@@ -773,8 +773,6 @@ class Videos extends UPMap
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
-        $oc_acls = Helpers::filterACLs($current_acl);
-
         // add anonymous role if video is world visible
         if (($new_vis && $new_vis == 'public') || (!$new_vis && $this->visibility == 'public')) {
             $acl[] = [
@@ -785,6 +783,8 @@ class Videos extends UPMap
         }
 
         sort($acl);
+
+        $oc_acls = Helpers::filterACLs($current_acl, $acl);
 
         if ($acl <> $oc_acls['studip']) {
             $new_acl = array_merge(

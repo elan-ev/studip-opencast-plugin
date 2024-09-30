@@ -21,8 +21,8 @@ class HelperFunctions
     static function filterForEpisode($episode_id, $acl)
     {
         $possible_roles = [
-            'STUDIP_' . $episode_id . '_read',
-            'STUDIP_' . $episode_id . '_write',
+            $episode_id . '_read',
+            $episode_id . '_write',
             'ROLE_ANONYMOUS'
         ];
 
@@ -39,8 +39,8 @@ class HelperFunctions
     static function addEpisodeAcl($episode_id, $add_acl, $acl)
     {
         $possible_roles = [
-            'STUDIP_' . $episode_id . '_read',
-            'STUDIP_' . $episode_id . '_write',
+            $episode_id . '_read',
+            $episode_id . '_write',
             'ROLE_ANONYMOUS'
         ];
 
@@ -81,19 +81,19 @@ class HelperFunctions
         $acl = [
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $episode_id .'_read',
+                'role'   => $episode_id .'_read',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $episode_id .'_write',
+                'role'   => $episode_id .'_write',
                 'action' => 'read'
             ],
 
             [
                 'allow'  => true,
-                'role'   => 'STUDIP_' . $episode_id .'_write',
+                'role'   => $episode_id .'_write',
                 'action' => 'write'
             ]
         ];

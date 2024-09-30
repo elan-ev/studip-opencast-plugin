@@ -316,6 +316,10 @@ class Playlists extends UPMap
                 if ($course->getParticipantStatus($user->id)) {
                     return 'read';
                 }
+
+                if ($perm->have_studip_perm('dozent', $course->id)) {
+                    return 'owner';
+                }
             }
         }
 
@@ -346,17 +350,17 @@ class Playlists extends UPMap
         return [
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_read",
+                'role'   => "PLAYLIST_{$playlistId}_read",
                 'action' => 'read'
             ],
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'role'   => "PLAYLIST_{$playlistId}_write",
                 'action' => 'read'
             ],
             [
                 'allow'  => true,
-                'role'   => "STUDIP_PLAYLIST_{$playlistId}_write",
+                'role'   => "PLAYLIST_{$playlistId}_write",
                 'action' => 'write'
             ]
         ];
@@ -377,10 +381,6 @@ class Playlists extends UPMap
             unset($entry['id']);
         });
 
-        $old_acls = Helpers::filterACLs($old_acl);
-
-        $current_acl = $old_acls['studip'];
-
         $acl = self::getDefaultACL($oc_playlist->id);
 
         // add user acls
@@ -388,12 +388,12 @@ class Playlists extends UPMap
             foreach($course->getMembersWithStatus('dozent') as $member) {
                 $acl[] = [
                     'allow'  => true,
-                    'role'   => "STUDIP_" . $member->user_id,
+                    'role'   => $member->user_id .'_Instructor',
                     'action' => 'read'
                 ];
                 $acl[] = [
                     'allow'  => true,
-                    'role'   => "STUDIP_" . $member->user_id,
+                    'role'   => $member->user_id .'_Instructor',
                     'action' => 'write'
                 ];
             }
@@ -403,6 +403,10 @@ class Playlists extends UPMap
         $courses = array_merge($courses, $playlist->courses->pluck('id'));
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
+
+        $old_acls = Helpers::filterACLs($old_acl, $acl);
+
+        $current_acl = $old_acls['studip'];
 
         foreach ($acl as $entry) {
             $found = false;

@@ -47,9 +47,14 @@ class ConfigList extends OpencastController
 
         // Checker to provide recourses.
         $resources = Resources::getStudipResources();
-        if (!empty(Endpoints::getEndpoints()) && !empty($resources)) {
+        $endpoints = Endpoints::getEndpoints();
+        $response_data['endpoints']  = $endpoints;
+
+        if (!empty($endpoints) && !empty($resources)) {
             $response_data['scheduling'] = ScheduleHelper::prepareSchedulingConfig($config_list, $resources);
         }
+
+
 
         if (!PlaylistMigration::isConverted() && count($config_list) &&
             version_compare(

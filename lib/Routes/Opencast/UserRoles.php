@@ -48,7 +48,7 @@ class UserRoles extends OpencastController
         if (!empty($share_uuid)) {
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
-                $roles[] = 'STUDIP_' . $video_share->video->episode . '_read';
+                $roles[] = $video_share->video->episode . '_read';
             } else {
                 throw new Error('Share not found', 404);
             }
@@ -63,12 +63,28 @@ class UserRoles extends OpencastController
             $email    = $user->email;
             $fullname = $user->getFullName();
 
-            // Add user permission to access user-bound series and own playlists
-            $roles[] = 'STUDIP_' . $user_id;
-
             // Stud.IP-root has access to all videos and playlists
             if ($GLOBALS['perm']->have_perm('root', $user_id)) {
                 $roles[] = 'ROLE_ADMIN';
+            }
+
+            // Admin users have permissions on videos of all administrated courses
+            else if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
+
+                $sem_user = new \Seminar_User($user_id);
+
+                $nobody = $GLOBALS['user'];
+                $GLOBALS['user'] = $sem_user;
+
+                $filter = \AdminCourseFilter::get();
+                $courses = array_column($filter->getCourses(), 'seminar_id');
+
+                $GLOBALS['user'] = $nobody;
+
+                foreach ($courses as $course_id) {
+                    $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
+                }
+
             } else {
                 // Handle video roles
 
@@ -77,9 +93,9 @@ class UserRoles extends OpencastController
                     if (!$vperm->video->episode) continue;
 
                     if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
-                        $roles[$vperm->video->episode . '_write'] = 'STUDIP_' . $vperm->video->episode . '_write';
+                        $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
                     } else {
-                        $roles[$vperm->video->episode . '_read'] = 'STUDIP_' . $vperm->video->episode . '_read';
+                        $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
                     }
                 }
 
@@ -89,9 +105,15 @@ class UserRoles extends OpencastController
                 $stmt->execute([$user_id]);
                 $courses_write = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
+                // Handle deputies ("Dozentenvertretung") as well
+                $courses_write = array_merge(
+                    $courses_write,
+                    array_column(\Deputy::findDeputyCourses($user_id)->toArray(), 'range_id')
+                );
+
                 // add instructor roles
                 foreach ($courses_write as $course_id) {
-                    $roles[$course_id . '_Instructor'] = 'STUDIP_' . $course_id . '_Instructor';
+                    $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
                 }
 
                 // Get courses with read access ('autor', 'user')
@@ -102,7 +124,7 @@ class UserRoles extends OpencastController
 
                 // add learner roles
                 foreach ($courses_read as $course_id) {
-                    $roles[$course_id . '_Learner'] = 'STUDIP_' . $course_id . '_Learner';
+                    $roles[$course_id . '_Learner'] = $course_id . '_Learner';
                 }
 
                 // Handle playlist roles
@@ -110,9 +132,9 @@ class UserRoles extends OpencastController
                 // get all playlists the user has permissions on
                 foreach (PlaylistsUserPerms::findByUser_id($user_id) as $pperm) {
                     if ($pperm->perm == 'owner' || $pperm->perm == 'write') {
-                        $roles[$pperm->playlist->service_playlist_id . '_write'] = 'STUDIP_PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
+                        $roles[$pperm->playlist->service_playlist_id . '_write'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
                     } else {
-                        $roles[$pperm->playlist->service_playlist_id . '_read'] = 'STUDIP_PLAYLIST_' . $pperm->playlist->service_playlist_id . '_read';
+                        $roles[$pperm->playlist->service_playlist_id . '_read'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_read';
                     }
                 }
 
@@ -125,7 +147,7 @@ class UserRoles extends OpencastController
                 $stmt->execute();
 
                 foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
-                    $roles[$service_playlist_id . '_write'] = 'STUDIP_PLAYLIST_' . $service_playlist_id . '_write';
+                    $roles[$service_playlist_id . '_write'] = 'PLAYLIST_' . $service_playlist_id . '_write';
                 }
 
                 // find playlists with read access
@@ -139,7 +161,7 @@ class UserRoles extends OpencastController
 
                 foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
                     // All seminar members have read permission on visible playlists
-                    $roles[$service_playlist_id . '_read'] = 'STUDIP_PLAYLIST_' . $service_playlist_id . '_read';
+                    $roles[$service_playlist_id . '_read'] = 'PLAYLIST_' . $service_playlist_id . '_read';
                 }
             }
         } else {
