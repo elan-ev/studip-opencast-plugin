@@ -49,6 +49,25 @@ class PlaylistAddVideos extends OpencastController
         $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
         $oc_playlist = $playlist_client->getPlaylist($playlist->service_playlist_id);
 
+        // var_dump($playlist);die;
+
+        if (!$oc_playlist) {
+            // something went wrong with playlist creation, try again
+            $oc_playlist = $playlist_client->createPlaylist([
+                'title'                => $playlist['title'],
+                'description'          => $playlist['description'],
+                'creator'              => $playlist['creator'],
+                'accessControlEntries' => []
+            ]);
+
+            if (!$oc_playlist) {
+                throw new Error(_('Wiedergabeliste kontte nicht zu Opencast hinzugefügt werden!'), 500);
+            }
+
+            $playlist->service_playlist_id = $oc_playlist->id;
+            $playlist->store();
+        }
+
         $entries = $oc_playlist->entries;
 
         foreach ($videos as $video) {
@@ -56,6 +75,8 @@ class PlaylistAddVideos extends OpencastController
             if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
                 throw new \AccessDeniedException();
             }
+
+            if (!$video->episode) continue;
 
             $entries[] = [
                 'contentId' => $video->episode,
