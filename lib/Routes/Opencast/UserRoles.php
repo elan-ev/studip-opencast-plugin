@@ -71,12 +71,20 @@ class UserRoles extends OpencastController
             // Admin users have permissions on videos of all administrated courses
             else if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
 
+                $sem_user = new \Seminar_User($user_id);
+
+                $nobody = $GLOBALS['user'];
+                $GLOBALS['user'] = $sem_user;
+
                 $filter = \AdminCourseFilter::get();
-                $courses = array_column($filter->fetchCourses(), 'seminar_id');
+                $courses = array_column($filter->getCourses(), 'seminar_id');
+
+                $GLOBALS['user'] = $nobody;
 
                 foreach ($courses as $course_id) {
                     $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
                 }
+
             } else {
                 // Handle video roles
 
@@ -96,6 +104,12 @@ class UserRoles extends OpencastController
                     WHERE user_id = ? AND (status = 'dozent' OR status = 'tutor')");
                 $stmt->execute([$user_id]);
                 $courses_write = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+                // Handle deputies ("Dozentenvertretung") as well
+                $courses_write = array_merge(
+                    $courses_write,
+                    array_column(\Deputy::findDeputyCourses($user_id)->toArray(), 'range_id')
+                );
 
                 // add instructor roles
                 foreach ($courses_write as $course_id) {
