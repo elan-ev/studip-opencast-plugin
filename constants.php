@@ -16,7 +16,7 @@ class Constants {
         'org.opencastproject.series'                       => 'series',
         'org.opencastproject.serviceregistry'              => 'services',
         'org.opencastproject.workflow'                     => 'workflow',
-        'org.opencastproject.adminui.endpoint.event'       => 'admin-ngevent'
+        'admin-ngevent'                                    => 'admin-ngevent'
     ];
 
     static $GLOBAL_CONFIG_OPTIONS = [
