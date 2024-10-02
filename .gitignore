@@ -10,3 +10,4 @@ app/views/admin/index.php
 app/views/contents/index.php
 .vscode
 Opencast-V*.zip
+dist
