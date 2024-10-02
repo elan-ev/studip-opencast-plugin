@@ -31,9 +31,7 @@
                             <template v-else-if="free_capture_agents.length">
                                 <select @change="assignCA($event, index)">
                                     <option value="" disabled selected>
-                                        <span>
-                                            {{ $gettext('Bitte wählen Sie einen CA.') }}
-                                        </span>
+                                        {{ $gettext('Bitte wählen Sie einen CA.') }}
                                     </option>
                                     <template v-for="(ca_obj, index) in free_capture_agents" :key="index">
                                         <optgroup style="font-weight:bold;" :label="`Server #${ca_obj.id}`">
@@ -55,9 +53,7 @@
                             <template v-else-if="resource.capture_agent">
                                 <select v-model="resource.workflow_id">
                                     <option value="" disabled selected>
-                                        <span>
-                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
-                                        </span>
+                                        {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
                                     </option>
                                     <option v-for="workflow in compiledWDList(resource)"
                                         :key="workflow.id"
@@ -78,9 +74,7 @@
                             <template v-else-if="resource.capture_agent">
                                 <select v-model="resource.livestream_workflow_id">
                                     <option value="" disabled selected>
-                                        <span>
-                                            {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
-                                        </span>
+                                        {{ $gettext('Bitte wählen Sie einen Workflow aus.') }}
                                     </option>
                                     <option v-for="workflow in compiledWDList(resource)"
                                         :key="workflow.id"
