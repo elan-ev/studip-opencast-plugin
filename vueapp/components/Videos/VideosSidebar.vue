@@ -43,7 +43,7 @@
                     {{ $gettext('Medien hochladen') }}
                 </li>
                 <li>
-                    <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries" target="_blank">
+                    <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries && canShowStudio" target="_blank">
                         <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                         {{ $gettext('Video aufnehmen') }}
                     </a>
@@ -133,8 +133,16 @@ export default {
             return false;
         },
 
+        canShowStudio() {
+            try {
+                return this.currentUserSeries && this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO']
+            } catch (error) {
+                return false;
+            }
+        },
+
         recordingLink() {
-            if (!this.simple_config_list.settings || !this.currentUserSeries) {
+            if (!this.simple_config_list.settings || !this.canShowStudio) {
                 return;
             }
 
