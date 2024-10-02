@@ -9,7 +9,7 @@
     "predev": "npm install",
     "dev": "webpack --mode development --watch",
     "prezip": "npm run build",
-    "translate": "gettext-extract --attribute v-i18n --attribute v-translate --output locale/en/LC_MESSAGES/opencast_js.pot $(find vueapp -type f -name '*.vue')  $(find vueapp -type f -name '*.js') && /bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
+    "translate": "/bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
     "zip": "mkdir -p build && zip -r build/Opencast-V$npm_package_version.zip app assets cronjobs locale migrations lib vendor static static_cw LICENSE INSTALL.md README.md bootstrap.php OpenCast.class.php plugin.manifest",
     "docs": "npx redoc-cli build docs/studip_opencast_routes.json --output docs/studip_opencast_routes.html",
     "tests": "php vendor/bin/codecept run --steps"
