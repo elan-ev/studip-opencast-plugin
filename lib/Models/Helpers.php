@@ -70,22 +70,9 @@ class Helpers
             FROM plugins WHERE pluginname = 'OpenCast'")->fetchColumn();
 
         if (!$perm->have_perm('admin')) {
-
-            // get administrated institutes (faceted by active media roles, if enabled)
-            if (\Config::get()->OPENCAST_MEDIA_ROLES) {
-                $institute_ids = Perm::getRoleInstitutes('Medienadmin', $user_id);
-            } else {
-                $institute_ids = [];
-                $institutes = new \SimpleCollection(\Institute::getMyInstitutes($user_id));
-                $institutes->filter(function ($a) use (&$institute_ids) {
-                    $institute_ids[] = $a->Institut_id;
-                });
-            }
-
-            $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_user.seminar_id  FROM seminar_user
+            // get all courses, user is lecturer or tutor in
+            $stmt = \DBManager::get()->prepare($q = "SELECT DISTINCT seminar_user.seminar_id  FROM seminar_user
                 $p_sql
-                INNER JOIN seminar_inst ON (seminar_inst.seminar_id = seminar_user.seminar_id
-                    AND seminar_inst.institut_id IN (:inst_ids))
                 WHERE user_id = :user_id
                     AND (seminar_user.status = 'dozent' OR seminar_user.status = 'tutor')
             ");
@@ -93,10 +80,31 @@ class Helpers
             $stmt->execute([
                 ':user_id'   => $user_id,
                 ':plugin_id' => $plugin_id,
-                ':inst_ids'  => $institute_ids
             ]);
 
             $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+            // add courses where user is media admin
+
+            if (\Config::get()->OPENCAST_MEDIA_ROLES) {
+                // get administrated institutes
+                $institute_ids = Perm::getRoleInstitutes('Medienadmin', $user_id);
+
+                if (!empty($institute_ids)) {
+                    $stmt = \DBManager::get()->prepare("SELECT DISTINCT seminar_user.seminar_id  FROM seminar_user
+                        $p_sql
+                        INNER JOIN seminar_inst ON (seminar_inst.seminar_id = seminar_user.seminar_id)
+                        WHERE seminar_inst.institut_id IN (:inst_ids)
+                    ");
+
+                    $stmt->execute([
+                        ':plugin_id' => $plugin_id,
+                        ':inst_ids'  => $institute_ids
+                    ]);
+
+                    $courses = array_merge($courses, $stmt->fetchAll(\PDO::FETCH_COLUMN));
+                }
+            }
         } else if (!$perm->have_perm('root')) {
             $institute_ids = [];
             $institutes = new \SimpleCollection(\Institute::getMyInstitutes($user_id));
