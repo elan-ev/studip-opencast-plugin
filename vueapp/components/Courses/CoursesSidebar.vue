@@ -138,7 +138,11 @@
                         </li>
                     </template>
                     <template v-else>
-                        <li @click="openPlaylistAddVideosDialog" v-if="canEdit || canUpload">
+                        <li @click="openPlaylistAddVideosDialog" v-if="(canEdit || canUpload)"
+                            :class="{
+                                'oc--menuentry--disabled': opencastOffline
+                            }"
+                        >
                             <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
                             {{ $gettext('Videos hinzufügen') }}
                         </li>
@@ -152,7 +156,11 @@
                                 {{ $gettext('Mediendownloads verbieten') }}
                             </a>
                         </li>
-                        <li @click="$emit('sortVideo')" v-if="canEdit">
+                        <li @click="!opencastOffline && $emit('sortVideo')" v-if="canEdit"
+                            :class="{
+                                'oc--menuentry--disabled': opencastOffline
+                            }"
+                        >
                             <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
                             {{ $gettext('Videos sortieren') }}
                         </li>
@@ -172,7 +180,7 @@
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
                     <template v-if="!videoSortMode">
-                        <li>
+                        <li v-if="!opencastOffline">
                             <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id && canShowStudio">
                                 <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                                 {{ $gettext('Video aufnehmen') }}
@@ -265,7 +273,7 @@ export default {
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
             'defaultPlaylist', 'videoSortMode', 'downloadSetting',
-            'schedule_playlist', 'livestream_playlist'
+            'schedule_playlist', 'livestream_playlist', 'opencastOffline'
         ]),
 
         fragment() {
@@ -417,6 +425,10 @@ export default {
         },
 
         openPlaylistAddVideosDialog() {
+            if (this.opencastOffline) {
+                return;
+            }
+
             this.$store.dispatch('togglePlaylistAddVideosDialog', true);
         },
 

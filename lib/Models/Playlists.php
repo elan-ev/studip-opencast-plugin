@@ -560,40 +560,6 @@ class Playlists extends UPMap
     }
 
     /**
-     * Synchronize this playlist with Opencast playlist
-     *
-     * @return boolean Successfully synchronized with opencast playlist
-     */
-    public function synchronize()
-    {
-        if (!PlaylistMigration::isConverted()) {
-            return true;
-        }
-
-        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
-
-        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
-
-        if (!$oc_playlist) {
-            return false;
-        }
-
-        // Update playlist
-        $this->title = $oc_playlist->title;
-        $this->description = $oc_playlist->description;
-        $this->creator = $oc_playlist->creator;
-        $this->updated = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
-
-        if (is_array($oc_playlist->entries)) {
-            $this->setEntries($oc_playlist->entries);
-        }
-
-        $this->store();
-
-        return true;
-    }
-
-    /**
      * Set playlist videos in playlist based on passed entries. This function checks no permissions.
      *
      * @param array $entries Opencast playlist entries
