@@ -547,7 +547,7 @@ class Videos extends UPMap
      *
      * @return string $perm the perm value
      */
-    public function getUserPerm($user_id = null)
+    public function getUserPerm($user_id = null, $course_id = null)
     {
         global $user, $perm;
 
@@ -556,6 +556,11 @@ class Videos extends UPMap
         }
 
         if ($perm->have_perm('root', $user_id)) {
+            return 'owner';
+        }
+
+        // check if user has permission on this video due to course ownership
+        if ($this->haveCoursePerm('dozent')) {
             return 'owner';
         }
 
