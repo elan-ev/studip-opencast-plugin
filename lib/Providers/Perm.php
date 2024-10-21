@@ -14,6 +14,10 @@ class Perm
      */
     public static function editAllowed($context_id = null, $user_id = null)
     {
+        if (is_null($user_id)) {
+            $user_id = $GLOBALS['user']->id;
+        }
+
         if (is_null($context_id)) {
             $context_id = \Context::getId();
         }
@@ -36,8 +40,6 @@ class Perm
                         return true;
                     }
                 }
-
-                return false;
             }
         }
 
@@ -54,12 +56,16 @@ class Perm
      */
     public static function uploadAllowed($context_id = null, $user_id = null)
     {
-        if (self::editAllowed($context_id, $user_id)) {
-            return true;
+        if (is_null($user_id)) {
+            $user_id = $GLOBALS['user']->id;
         }
 
         if (is_null($context_id)) {
             $context_id = \Context::getId();
+        }
+
+        if (self::editAllowed($context_id, $user_id)) {
+            return true;
         }
 
         // check if additional upload permissions for this course have been granted
