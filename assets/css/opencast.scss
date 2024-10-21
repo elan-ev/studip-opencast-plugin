@@ -484,6 +484,11 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
+.oc--menuentry--disabled {
+    color: $light-gray-color-40 !important;
+    cursor: default !important;
+}
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*   M U L T I   P U R P O S E   S E A R C H B A R   */

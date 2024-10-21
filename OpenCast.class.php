@@ -187,7 +187,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
         }
 
         $title = 'Opencast Videos';
-        if (SeminarSeries::getVisibilityForCourse($course_id) == 'invisible') {
+        if (SeminarSeries::getVisibilityForCourse($course_id, true) == 'invisible') {
             $title .= " (" . $this->_('versteckt') . ")";
         }
 

@@ -13,7 +13,8 @@ const state = {
     userCourses: [],
     userList: [],
     isLTIAuthenticated: {},
-    currentLTIUser: {}
+    currentLTIUser: {},
+    opencastOffline: false
 }
 
 const getters = {
@@ -52,6 +53,9 @@ const getters = {
     },
     currentLTIUser(state) {
         return state.currentLTIUser;
+    },
+    opencastOffline(state) {
+        return state.opencastOffline;
     }
 }
 
@@ -152,7 +156,7 @@ const actions = {
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                 }
             });
-    
+
             if (response.status === 200) {
                 // Get LTI user info
                 await dispatch('loadLTIUser', server);
@@ -263,6 +267,10 @@ const mutations = {
 
     setCurrentLTIUser(state, params) {
         state.currentLTIUser[params.server] = params.user;
+    },
+
+    setOpencastOffline(state, data) {
+        state.opencastOffline = data;
     }
 }
 

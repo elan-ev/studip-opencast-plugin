@@ -27,13 +27,6 @@ class SeminarSeries extends \SimpleORMap
         $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
         $series_client = new SeriesClient($config_id);
 
-        if (!isset($series[$series_id])) {
-
-            $series[$series_id] =
-                $series_client->getSeries($series_id)
-                    ? true : false;
-        }
-
         // make sure all ACLs are correctly set
         $series = self::findBySeries_id($series_id);
 
@@ -63,12 +56,14 @@ class SeminarSeries extends \SimpleORMap
         return $return;
     }
 
-    public static function getSeries($course_id)
+    public static function getSeries($course_id, $offline = false)
     {
         $return = [];
 
         foreach (self::findBySeminar_id($course_id) as $series) {
-            if (self::checkSeries($course_id, $series['series_id'])) {
+            if ($offline) {
+                $return[] = $series;
+            } else if (self::checkSeries($course_id, $series['series_id'])) {
                 $return[] = $series;
             }
         }
@@ -76,10 +71,11 @@ class SeminarSeries extends \SimpleORMap
         return $return;
     }
 
-    public static function getVisibilityForCourse($course_id)
+    public static function getVisibilityForCourse($course_id, $offline = false)
     {
         $visibility = 'visible';
-        $series     = self::getSeries($course_id);
+        $series     = self::getSeries($course_id, $offline);
+
         if ($series) {
             $visibility = $series[0]['visibility'];
         }

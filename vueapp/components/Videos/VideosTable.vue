@@ -687,12 +687,14 @@ export default {
         serversCheckSuccessful(success) {
             const error_msg = {
                 type: 'error',
-                text: this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.')
+                text: this.$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten und es wurden deshalb einige Funktionen deaktiviert. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut.')
             };
 
             if (success) {
+                this.$store.commit('setOpencastOffline', false);
                 this.$store.dispatch('removeMessage', error_msg);
             } else {
+                this.$store.commit('setOpencastOffline', true);
                 this.$store.dispatch('addMessage', error_msg);
             }
         }
