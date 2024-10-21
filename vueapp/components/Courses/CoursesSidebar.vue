@@ -173,7 +173,7 @@
                 <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
                     <template v-if="!videoSortMode">
                         <li>
-                            <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id">
+                            <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id && canShowStudio">
                                 <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                                 {{ $gettext('Video aufnehmen') }}
                             </a>
@@ -283,8 +283,19 @@ export default {
             }
         },
 
+        canShowStudio() {
+            try {
+                return this.cid !== undefined &&
+                    this.currentUser.can_edit &&
+                        this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO'] &&
+                        this.hasDefaultPlaylist;
+            } catch (error) {
+                return false;
+            }
+        },
+
         recordingLink() {
-            if (!this.simple_config_list.settings || !this.course_config) {
+            if (!this.simple_config_list.settings || !this.course_config || !this.canShowStudio) {
                 return;
             }
 
