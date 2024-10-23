@@ -124,7 +124,9 @@
                         </legend>
 
                         {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. '
-                            + 'die Videodateien in externe Videoplayer integrieren.') }}
+                            + 'die Videodateien in externe Videoplayer integrieren. Bitte beachten Sie, '
+                            + 'dass es mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist.'
+                            + 'Währenddessen ist es nicht möglich, den Status erneut zu ändern!') }}
                         <br><br>
                         <template v-if="event.visibility == 'public'">
                             {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-23 11:00+0200\n"
-"PO-Revision-Date: 2024-10-23 11:01+0200\n"
+"POT-Creation-Date: 2024-10-23 12:24+0200\n"
+"PO-Revision-Date: 2024-10-23 12:24+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -67,7 +67,7 @@ msgstr "Cancel"
 #: vueapp/components/Schedule/ScheduleLoading.vue:36
 #: vueapp/components/Studip/StudipActionMenu.vue:33
 #: vueapp/components/Videos/VideosSidebar.vue:59
-#: vueapp/components/Videos/VideosTable.vue:144 app/controllers/course.php:62
+#: vueapp/components/Videos/VideosTable.vue:156 app/controllers/course.php:62
 msgid "Aktionen"
 msgstr "Actions"
 
@@ -92,7 +92,7 @@ msgstr "Accept"
 msgid "Alle Inhalte in weitere Kurse übertragen"
 msgstr "Transfer all content to other courses"
 
-#: vueapp/components/Videos/VideosTable.vue:110
+#: vueapp/components/Videos/VideosTable.vue:122
 msgid "Alle Videos auswählen"
 msgstr "Select all videos"
 
@@ -184,7 +184,7 @@ msgid "Aufzeichnungszeitraum"
 msgstr "Recording range"
 
 #: vueapp/components/Videos/VideoRow.vue:366
-#: vueapp/components/Videos/VideosTable.vue:216
+#: vueapp/components/Videos/VideosTable.vue:228
 msgid "Aus Wiedergabeliste entfernen"
 msgstr "Remove from playlist"
 
@@ -207,6 +207,14 @@ msgstr "Effects of the video changes"
 #: vueapp/components/Config/EditServer.vue:56
 msgid "Basis URL zur Opencast Installation"
 msgstr "Base URL for Opencast system"
+
+#: vueapp/components/Videos/VideosTable.vue:83
+msgid ""
+"Beachten Sie bitte, dass Sie hier keine Videos einbinden können, an denen "
+"Sie nur Leserechte besitzen."
+msgstr ""
+"Please note that you cannot add videos here for which you only have read "
+"rights."
 
 #: vueapp/components/Playlists/PlaylistCard.vue:37
 #: vueapp/components/Videos/VideoRow.vue:277
@@ -341,7 +349,7 @@ msgid ""
 "Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden."
 msgstr "The video could not be added to the playlist."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:174
+#: vueapp/components/Videos/Actions/VideoAccess.vue:176
 msgid "Das Video ist momentan weltweit zugreifbar."
 msgstr "The video ist currently publicly visible."
 
@@ -373,7 +381,7 @@ msgstr "The video has been added to the playlist."
 msgid "Datei(en)"
 msgstr "File(s)"
 
-#: vueapp/components/Videos/VideosTable.vue:131
+#: vueapp/components/Videos/VideosTable.vue:143
 msgid "Datum"
 msgstr "Date"
 
@@ -445,7 +453,7 @@ msgstr "The playlists have been added to the course."
 msgid "Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden."
 msgstr "The video could not be added to the playlist."
 
-#: vueapp/components/Videos/VideosTable.vue:356
+#: vueapp/components/Videos/VideosTable.vue:364
 msgid "Die Videos konnten von der Wiedergabeliste nicht entfernt werden."
 msgstr "The videos could not be removed from the playlist."
 
@@ -454,7 +462,7 @@ msgstr "The videos could not be removed from the playlist."
 msgid "Die Videos wurden der Wiedergabeliste hinzugefügt."
 msgstr "The videos have been added to the playlist."
 
-#: vueapp/components/Videos/VideosTable.vue:349
+#: vueapp/components/Videos/VideosTable.vue:357
 msgid "Die Videos wurden von der Wiedergabeliste entfernt."
 msgstr "The videos have been removed from the playlist."
 
@@ -576,16 +584,16 @@ msgstr "An error has occurred"
 msgid "Es ist ein unbekannter Fehler aufgetreten"
 msgstr "An unknown error has occurred"
 
-#: vueapp/components/Videos/VideosTable.vue:516
-#, fuzzy
+#: vueapp/components/Videos/VideosTable.vue:524
 msgid ""
 "Es ist ein Verbindungsfehler zum Opencast Server aufgetreten und es wurden "
 "deshalb einige Funktionen deaktiviert. Bitte wenden Sie sich bei "
 "auftretenden Problemen an den Support oder versuchen Sie es zu einem "
 "späteren Zeitpunkt erneut."
 msgstr ""
-"A connection error to the Opencast server has occurred. If you encounter any "
-"issues, please contact support or try again later."
+"A connection error to the Opencast server occurred and some functions have "
+"been disabled. If you experience any problems, please contact support or try "
+"again later."
 
 #: vueapp/components/UserCourseSelectable.vue:25
 msgid ""
@@ -600,11 +608,11 @@ msgstr ""
 "So far, no rooms have been configured with recording technology! Please "
 "consult the help pages."
 
-#: vueapp/components/Videos/VideosTable.vue:421
+#: vueapp/components/Videos/VideosTable.vue:429
 msgid "Es wurden keine Videos ausgewählt!"
 msgstr "No videos were selected!"
 
-#: vueapp/components/Videos/VideosTable.vue:174
+#: vueapp/components/Videos/VideosTable.vue:186
 msgid "Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden."
 msgstr "No videos were found for the selected view options."
 
@@ -790,7 +798,7 @@ msgstr "Link to the opencast subtitle editor"
 msgid "Link zur Mediendatei in die Zwischenablage kopieren"
 msgstr "Copy link to media file to clipboard"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:180
+#: vueapp/components/Videos/Actions/VideoAccess.vue:182
 msgid "Links zu den Mediendateien anzeigen."
 msgstr "Show links to the media files."
 
@@ -810,7 +818,7 @@ msgstr "Livestream"
 msgid "Livestream Workflow"
 msgstr "Livestream Workflow"
 
-#: vueapp/components/Videos/VideosTable.vue:335
+#: vueapp/components/Videos/VideosTable.vue:343
 msgid "Livestream-Videos können nicht entfernt werden."
 msgstr "Livestream videos can not be deleted."
 
@@ -1105,10 +1113,14 @@ msgstr "Video visibility in this course"
 #: vueapp/components/Videos/Actions/VideoAccess.vue:168
 msgid ""
 "Sie können das Video weltweit zugreifbar machen und dadurch z.B. die "
-"Videodateien in externe Videoplayer integrieren."
+"Videodateien in externe Videoplayer integrieren. Bitte beachten Sie, dass es "
+"mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist."
+"Währenddessen ist es nicht möglich, den Status erneut zu ändern!"
 msgstr ""
-"You can make the video accessible worldwide and thus, for example, integrate "
-"the video files into external video players."
+"You can make the video accessible worldwide and thereby, for example, "
+"integrate the video files into external video players. Please note that it "
+"may take several minutes before the change is completed. During this time, "
+"it is not possible to change the status again!"
 
 #: vueapp/components/Config/EditServer.vue:222
 msgid ""
@@ -1160,7 +1172,7 @@ msgid ""
 "Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this playlist from the course?"
 
-#: vueapp/components/Videos/VideosTable.vue:402
+#: vueapp/components/Videos/VideosTable.vue:410
 msgid ""
 "Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen "
 "möchten?"
@@ -1274,7 +1286,7 @@ msgstr "Topic"
 #: vueapp/components/Schedule/ScheduleLoading.vue:34
 #: vueapp/components/Videos/Actions/VideoEdit.vue:50
 #: vueapp/components/Videos/VideoUpload.vue:73
-#: vueapp/components/Videos/VideosTable.vue:122
+#: vueapp/components/Videos/VideosTable.vue:134
 msgid "Titel"
 msgstr "Title"
 
@@ -1346,7 +1358,7 @@ msgid "Untertiteldatei(en)"
 msgstr "Subtitle file(s)"
 
 #: vueapp/components/Videos/VideoRow.vue:394
-#: vueapp/components/Videos/VideosTable.vue:250
+#: vueapp/components/Videos/VideosTable.vue:262
 msgid "Unwiderruflich entfernen"
 msgstr "Remove irrevocably"
 
@@ -1382,7 +1394,7 @@ msgstr "Remove link"
 msgid "Verknüpfungen"
 msgstr "Links"
 
-#: vueapp/components/Videos/VideosTable.vue:114
+#: vueapp/components/Videos/VideosTable.vue:126
 msgid "Video"
 msgstr "Video"
 
@@ -1408,11 +1420,11 @@ msgstr "Share video"
 msgid "Video nicht verfügbar"
 msgstr "Video not available"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:194
+#: vueapp/components/Videos/Actions/VideoAccess.vue:196
 msgid "Video nur berechtigten Personen zugreifbar machen"
 msgstr "Make video accessible to authorized persons only"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:206
+#: vueapp/components/Videos/Actions/VideoAccess.vue:208
 msgid "Video weltweit zugreifbar machen"
 msgstr "Make video publicly accessible"
 
@@ -1450,7 +1462,7 @@ msgstr "Sort videos"
 
 #: vueapp/components/Videos/Actions/VideoEdit.vue:62
 #: vueapp/components/Videos/VideoUpload.vue:117
-#: vueapp/components/Videos/VideosTable.vue:140
+#: vueapp/components/Videos/VideosTable.vue:152
 msgid "Vortragende"
 msgstr "Presenters"
 
@@ -1487,7 +1499,7 @@ msgstr "Playlist"
 msgid "Wiedergabeliste anlegen"
 msgstr "Add playlist"
 
-#: vueapp/components/Videos/VideosTable.vue:282
+#: vueapp/components/Videos/VideosTable.vue:294
 msgid "Wiedergabeliste aus diesem Kurs entfernen"
 msgstr "Remove playlist from course"
 
@@ -1515,7 +1527,7 @@ msgid "Wiedergabelisten kopieren"
 msgstr "Copy playlists"
 
 #: vueapp/components/Videos/VideoRow.vue:387
-#: vueapp/components/Videos/VideosTable.vue:263
+#: vueapp/components/Videos/VideosTable.vue:275
 msgid "Wiederherstellen"
 msgstr "Restore"
 
@@ -1547,7 +1559,7 @@ msgid "Zu Wiedergabeliste hinzufügen"
 msgstr "Add to playlist"
 
 #: vueapp/components/Videos/VideoRow.vue:356
-#: vueapp/components/Videos/VideosTable.vue:233
+#: vueapp/components/Videos/VideosTable.vue:245
 msgid "Zum Löschen markieren"
 msgstr "Mark for deletion"
 
@@ -2086,11 +2098,11 @@ msgstr ""
 msgid "Videos & Vorlesungsaufzeichnung"
 msgstr "Videos & lecture recording"
 
-#: OpenCast.class.php:416
+#: OpenCast.class.php:424
 msgid "Derzeit finden keine Livestreams in den gebuchten Kursen statt."
 msgstr "There are currently no livestreams in the booked courses."
 
-#: OpenCast.class.php:418
+#: OpenCast.class.php:426
 msgid ""
 "Um Leistungsprobleme zu vermeiden, ist diese Funktion für Administratoren "
 "dauerhaft deaktiviert."
@@ -2098,6 +2110,13 @@ msgstr ""
 "To avoid performance problems, this function is permanently deactivated for "
 "administrators."
 
-#: OpenCast.class.php:423
+#: OpenCast.class.php:431
 msgid "Kommende Liveevents"
 msgstr "Upcoming live events"
+
+#~ msgid ""
+#~ "Sie können das Video weltweit zugreifbar machen und dadurch z.B. die "
+#~ "Videodateien in externe Videoplayer integrieren."
+#~ msgstr ""
+#~ "You can make the video accessible worldwide and thus, for example, "
+#~ "integrate the video files into external video players."
