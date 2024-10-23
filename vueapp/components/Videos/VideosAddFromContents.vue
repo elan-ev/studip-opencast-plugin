@@ -15,6 +15,7 @@
                 <VideosTable
                     :selectable="true"
                     :showActions="false"
+                    :noReadPerms="true"
                     @selectedVideosChange="updateSelectedVideos"
                 />
             </template>

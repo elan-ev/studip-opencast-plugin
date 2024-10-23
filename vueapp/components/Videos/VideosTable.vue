@@ -14,6 +14,10 @@
             @changeLimit="changeLimit"
         />
 
+        <MessageBox type="info" v-if="noReadPerms">
+            {{ $gettext('Beachten Sie bitte, dass Sie hier keine Videos einbinden können, an denen Sie nur Leserechte besitzen.') }}
+        </MessageBox>
+
         <table id="episodes" class="default oc--episode-table--small">
             <colgroup>
                 <col v-if="canEdit && videoSortMode" style="width: 20px">
@@ -251,6 +255,10 @@ export default {
         'nolimit': {
             type: Boolean,
             default: false
+        },
+        noReadPerms: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -389,11 +397,15 @@ export default {
         },
 
         loadVideosFinished() {
-            this.loadedVideos = this.videos;
+            this.loadedVideos = this.filterVideos(this.videos);
             this.videosTags = this.availableVideoTags;
             this.videosCourses = this.availableVideoCourses;
             this.updatePaging();
             this.videos_loading = false;
+        },
+
+        filterVideos(videos) {
+            return videos.filter(v => !this.noReadPerms || v.perm != 'read');
         },
 
         changeLimit(limit) {
