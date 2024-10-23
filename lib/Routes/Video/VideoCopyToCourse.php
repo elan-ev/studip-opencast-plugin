@@ -22,7 +22,7 @@ class VideoCopyToCourse extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
+        global $perm, $user;
 
         $course_id = $args['course_id'];
         if (!$perm->have_studip_perm('tutor', $course_id)) {
@@ -33,6 +33,10 @@ class VideoCopyToCourse extends OpencastController
         $courses = $json['courses'];
         $playlists = [];
 
+
+        // get courses user has perms on, to consider courses with media admin or tutor rights as well
+        $my_courses = array_flip(Helpers::getMyCourses($user->id));
+
         try {
             // Managing playlists.
             $playlists = Playlists::findByCourse_id($course_id);
@@ -40,7 +44,7 @@ class VideoCopyToCourse extends OpencastController
 
             if (!empty($courses) && !empty($playlists)) {
                 foreach ($courses as $course) {
-                    if ($perm->have_studip_perm('tutor', $course['id']) && $course['id'] !== $course_id) {
+                    if (isset($my_courses[$course['id']]) && $course['id'] !== $course_id) {
                         $has_target_default_playlist = Helpers::checkCourseDefaultPlaylist($course['id']);
 
                         foreach ($playlists as $playlist) {
