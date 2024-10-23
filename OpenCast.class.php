@@ -283,6 +283,14 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
      */
     public function isActivatableForContext(Range $context)
     {
+        if ($context->getSemType()->getClass()['studygroup_mode']) {
+            if (\Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
+                return true;
+            }
+
+            return false;
+        }
+
         return true;
     }
 
