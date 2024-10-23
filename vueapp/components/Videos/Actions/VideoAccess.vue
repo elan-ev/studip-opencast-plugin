@@ -30,12 +30,15 @@
                                 <tr v-for="(share, index) in videoShares.perms" v-bind:key="share.id">
                                     <td>
                                         {{ share.fullname }}
+                                        <template v-if="share.user_id == currentUser.id">
+                                            {{  $gettext('(sie selbst)') }}
+                                        </template>
                                     </td>
                                     <td>
                                         {{ $filters.permname(share.perm, $gettext) }}
                                     </td>
                                     <td>
-                                        <studip-icon v-if="!share?.has_higher_perm"
+                                        <studip-icon v-if="share.user_id != currentUser.id"
                                             shape="trash" role="clickable"
                                             @click="removePerm(index)" style="cursor: pointer"/>
                                         <studip-icon v-else shape="trash" role="inactive"/>
@@ -207,7 +210,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['videoShares'])
+        ...mapGetters(['videoShares', 'currentUser'])
     },
 
     methods: {

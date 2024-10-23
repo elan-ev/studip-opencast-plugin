@@ -24,17 +24,12 @@ class VideosUserPerms extends \SimpleORMap
         parent::configure($config);
     }
 
-    public function toSanitizedArray($comparable_user_id = null)
+    public function toSanitizedArray()
     {
         global $perm;
         $data = $this->toArray();
 
         $data['fullname'] = get_fullname($data['user_id']);
-
-        if (!empty($comparable_user_id) && $comparable_user_id != $data['user_id']) {
-            $target_user_perm = $perm->get_perm($comparable_user_id);
-            $data['has_higher_perm'] = $perm->have_perm($target_user_perm, $data['user_id']);
-        }
 
         return $data;
     }

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 11:59+0200\n"
-"PO-Revision-Date: 2024-10-21 11:59+0200\n"
+"POT-Creation-Date: 2024-10-23 11:00+0200\n"
+"PO-Revision-Date: 2024-10-23 11:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.2\n"
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:57
+msgid "(sie selbst)"
+msgstr "(yourself)"
 
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:51
 msgid ""
@@ -57,7 +61,7 @@ msgid "Abbrechen"
 msgstr "Cancel"
 
 #: vueapp/components/Config/SchedulingOptions.vue:55
-#: vueapp/components/Courses/CoursesSidebar.vue:202
+#: vueapp/components/Courses/CoursesSidebar.vue:203
 #: vueapp/components/Playlists/PlaylistAddCard.vue:23
 #: vueapp/components/Schedule/ScheduleList.vue:69
 #: vueapp/components/Schedule/ScheduleLoading.vue:36
@@ -157,11 +161,11 @@ msgstr "Mark recording for deletion"
 msgid "Aufzeichnungen aktualisieren"
 msgstr "Update recording"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:205
+#: vueapp/components/Courses/CoursesSidebar.vue:206
 msgid "Aufzeichnungen in Wiedergabeliste"
 msgstr "Recordings in playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:96
+#: vueapp/components/Courses/CoursesSidebar.vue:97
 #: vueapp/components/Schedule/ScheduleList.vue:33 OpenCast.class.php:210
 msgid "Aufzeichnungen planen"
 msgstr "Schedule recording"
@@ -337,7 +341,7 @@ msgid ""
 "Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden."
 msgstr "The video could not be added to the playlist."
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:167
+#: vueapp/components/Videos/Actions/VideoAccess.vue:174
 msgid "Das Video ist momentan weltweit zugreifbar."
 msgstr "The video ist currently publicly visible."
 
@@ -540,7 +544,7 @@ msgstr "Created on"
 msgid "Erstellt am:"
 msgstr "Created on:"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:139
+#: vueapp/components/Videos/Actions/VideoAccess.vue:146
 msgid "Es gibt bisher kein Share-Link"
 msgstr "There is no share link yet"
 
@@ -573,10 +577,12 @@ msgid "Es ist ein unbekannter Fehler aufgetreten"
 msgstr "An unknown error has occurred"
 
 #: vueapp/components/Videos/VideosTable.vue:516
+#, fuzzy
 msgid ""
-"Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Bitte wenden "
-"Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu "
-"einem späteren Zeitpunkt erneut."
+"Es ist ein Verbindungsfehler zum Opencast Server aufgetreten und es wurden "
+"deshalb einige Funktionen deaktiviert. Bitte wenden Sie sich bei "
+"auftretenden Problemen an den Support oder versuchen Sie es zu einem "
+"späteren Zeitpunkt erneut."
 msgstr ""
 "A connection error to the Opencast server has occurred. If you encounter any "
 "issues, please contact support or try again later."
@@ -747,7 +753,7 @@ msgstr "Choose course"
 msgid "Kurse"
 msgstr "Courses"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:464
+#: vueapp/components/Courses/CoursesSidebar.vue:473
 msgid "Kursinhalte übertragen"
 msgstr "Transfer course contents"
 
@@ -755,7 +761,7 @@ msgstr "Transfer course contents"
 msgid "Kurswiedergabeliste anlegen"
 msgstr "Create course playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:169
+#: vueapp/components/Courses/CoursesSidebar.vue:170
 msgid "Kurswiedergabeliste hinzufügen"
 msgstr "Add course playlist"
 
@@ -763,7 +769,7 @@ msgstr "Add course playlist"
 msgid "Kurswiedergabeliste verknüpfen"
 msgstr "Link course playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:486
+#: vueapp/components/Courses/CoursesSidebar.vue:495
 msgid "Kurswiedergabeliste wechseln"
 msgstr "Change course playlist"
 
@@ -771,7 +777,7 @@ msgstr "Change course playlist"
 msgid "Leserechte"
 msgstr "Read permissions"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:91
+#: vueapp/components/Videos/Actions/VideoAccess.vue:98
 msgid "Link"
 msgstr "Link"
 
@@ -784,7 +790,7 @@ msgstr "Link to the opencast subtitle editor"
 msgid "Link zur Mediendatei in die Zwischenablage kopieren"
 msgstr "Copy link to media file to clipboard"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:173
+#: vueapp/components/Videos/Actions/VideoAccess.vue:180
 msgid "Links zu den Mediendateien anzeigen."
 msgstr "Show links to the media files."
 
@@ -808,7 +814,7 @@ msgstr "Livestream Workflow"
 msgid "Livestream-Videos können nicht entfernt werden."
 msgstr "Livestream videos can not be deleted."
 
-#: vueapp/components/Courses/CoursesSidebar.vue:223
+#: vueapp/components/Courses/CoursesSidebar.vue:224
 msgid "Livestreams in Wiedergabeliste"
 msgstr "Livestreams in playlist"
 
@@ -837,12 +843,12 @@ msgstr "Download media"
 msgid "Medien hochladen"
 msgstr "Upload media"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:309
+#: vueapp/components/Courses/CoursesSidebar.vue:313
 #: vueapp/components/Videos/VideosSidebar.vue:114
 msgid "Mediendownloads erlauben"
 msgstr "Allow media downloads"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:321
+#: vueapp/components/Courses/CoursesSidebar.vue:325
 #: vueapp/components/Videos/VideosSidebar.vue:127
 msgid "Mediendownloads verbieten"
 msgstr "Prohibit media downloads"
@@ -859,7 +865,7 @@ msgstr "My computer"
 msgid "Meine Veranstaltungen"
 msgstr "My courses"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:348
+#: vueapp/components/Courses/CoursesSidebar.vue:355
 msgid "Metadaten bearbeiten"
 msgstr "Edit metadata"
 
@@ -923,7 +929,7 @@ msgstr "Name"
 msgid "Name:"
 msgstr "Name:"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:70
+#: vueapp/components/Courses/CoursesSidebar.vue:71
 #: vueapp/components/Videos/VideosSidebar.vue:26
 msgid "Navigation"
 msgstr "Navigation"
@@ -945,7 +951,7 @@ msgstr "Add new server"
 msgid "Nicht gelistet"
 msgstr "Not listed"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:106
+#: vueapp/components/Videos/Actions/VideoAccess.vue:113
 msgid "Noch nicht erstellt!"
 msgstr "Not created yet!"
 
@@ -1002,11 +1008,11 @@ msgstr "Room"
 msgid "Rechte"
 msgstr "Permissions"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:395
+#: vueapp/components/Courses/CoursesSidebar.vue:404
 msgid "Reiter sichtbar schalten"
 msgstr "Show navigation tab"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:407
+#: vueapp/components/Courses/CoursesSidebar.vue:416
 msgid "Reiter verbergen"
 msgstr "Hide navigation tab"
 
@@ -1047,7 +1053,7 @@ msgstr "Write permissions"
 msgid "Semester"
 msgstr "Semester"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:181
+#: vueapp/components/Courses/CoursesSidebar.vue:182
 msgid "Semesterfilter"
 msgstr "Semesterfilter"
 
@@ -1068,23 +1074,23 @@ msgstr "Server deactivated sucessfully"
 msgid "Serverkonfiguration wurde entfernt"
 msgstr "Server configuration has been removed"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:83
+#: vueapp/components/Videos/Actions/VideoAccess.vue:90
 msgid "Share Links"
 msgstr "Share links"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:150
+#: vueapp/components/Videos/Actions/VideoAccess.vue:157
 msgid "Share-Link hinzufügen"
 msgstr "Add share link"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:123
+#: vueapp/components/Videos/Actions/VideoAccess.vue:130
 msgid "Share-Link kopieren"
 msgstr "Copy share link"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:130
+#: vueapp/components/Videos/Actions/VideoAccess.vue:137
 msgid "Share-Link löschen"
 msgstr "Delete share link"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:116
+#: vueapp/components/Videos/Actions/VideoAccess.vue:123
 msgid "Share-Link noch nicht verfügbar"
 msgstr "Share link not yet available"
 
@@ -1096,7 +1102,7 @@ msgstr "Visible"
 msgid "Sichtbarkeit des Videos in dieser Veranstaltung"
 msgstr "Video visibility in this course"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:161
+#: vueapp/components/Videos/Actions/VideoAccess.vue:168
 msgid ""
 "Sie können das Video weltweit zugreifbar machen und dadurch z.B. die "
 "Videodateien in externe Videoplayer integrieren."
@@ -1174,12 +1180,12 @@ msgstr "Are you sure you want to remove this video from the playlist?"
 msgid "Sind sie sicher?"
 msgstr "Are you sure?"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:278
+#: vueapp/components/Courses/CoursesSidebar.vue:279
 #: vueapp/components/Videos/VideosSidebar.vue:166
 msgid "Sortierung abbrechen"
 msgstr "Cancel sorting"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:265
+#: vueapp/components/Courses/CoursesSidebar.vue:266
 #: vueapp/components/Videos/VideosSidebar.vue:153
 msgid "Sortierung speichern"
 msgstr "Save sorting"
@@ -1198,11 +1204,11 @@ msgstr "Language"
 msgid "Standard"
 msgstr "Default"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:128
+#: vueapp/components/Courses/CoursesSidebar.vue:129
 msgid "Standard-Kurswiedergabeliste"
 msgstr "Standard course playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:451
+#: vueapp/components/Courses/CoursesSidebar.vue:460
 msgid "Standard-Kurswiedergabeliste ändern"
 msgstr "Change standard course playlist"
 
@@ -1220,11 +1226,11 @@ msgstr "Status"
 msgid "Status unbekannt"
 msgstr "Status unknown"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:424
+#: vueapp/components/Courses/CoursesSidebar.vue:433
 msgid "Studierendenupload erlauben"
 msgstr "Allow student uploads"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:436
+#: vueapp/components/Courses/CoursesSidebar.vue:445
 msgid "Studierendenupload verbieten"
 msgstr "Prohibit student uploads"
 
@@ -1351,7 +1357,7 @@ msgstr "Remove irrevocably"
 msgid "Veranstaltung"
 msgstr "Course"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:358
+#: vueapp/components/Courses/CoursesSidebar.vue:365
 msgid "Veranstaltungsweite Aktionen"
 msgstr "Coursewide actions"
 
@@ -1380,7 +1386,7 @@ msgstr "Links"
 msgid "Video"
 msgstr "Video"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:378
+#: vueapp/components/Courses/CoursesSidebar.vue:386
 #: vueapp/components/Videos/VideosSidebar.vue:87
 msgid "Video aufnehmen"
 msgstr "Record video"
@@ -1402,11 +1408,11 @@ msgstr "Share video"
 msgid "Video nicht verfügbar"
 msgstr "Video not available"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:187
+#: vueapp/components/Videos/Actions/VideoAccess.vue:194
 msgid "Video nur berechtigten Personen zugreifbar machen"
 msgstr "Make video accessible to authorized persons only"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:199
+#: vueapp/components/Videos/Actions/VideoAccess.vue:206
 msgid "Video weltweit zugreifbar machen"
 msgstr "Make video publicly accessible"
 
@@ -1422,13 +1428,13 @@ msgstr "Video(s)"
 msgid "Videoeditor öffnen"
 msgstr "Open video editor"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:81
+#: vueapp/components/Courses/CoursesSidebar.vue:82
 #: vueapp/components/Playlists/PlaylistsTable.vue:74
 #: vueapp/components/Videos/VideosSidebar.vue:36 OpenCast.class.php:202
 msgid "Videos"
 msgstr "Videos"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:293
+#: vueapp/components/Courses/CoursesSidebar.vue:297
 #: vueapp/components/Playlists/PlaylistAddVideos.vue:16
 #: vueapp/components/Playlists/PlaylistCard.vue:43
 #: vueapp/components/Videos/VideosAddFromContents.vue:9
@@ -1437,7 +1443,7 @@ msgstr "Videos"
 msgid "Videos hinzufügen"
 msgstr "Add videos"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:335
+#: vueapp/components/Courses/CoursesSidebar.vue:342
 #: vueapp/components/Videos/VideosSidebar.vue:140
 msgid "Videos sortieren"
 msgstr "Sort videos"
@@ -1456,7 +1462,7 @@ msgstr "Lecturer"
 msgid "Weiteren Wiedergabelisten hinzufügen"
 msgstr "Add to more playlists"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:160
+#: vueapp/components/Videos/Actions/VideoAccess.vue:167
 msgid "Weltweiter Zugriff"
 msgstr "Public access"
 
@@ -1489,17 +1495,17 @@ msgstr "Remove playlist from course"
 msgid "Wiedergabeliste auswählen"
 msgstr "Select playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:247
+#: vueapp/components/Courses/CoursesSidebar.vue:248
 #: vueapp/components/Playlists/PlaylistEditCard.vue:16
 msgid "Wiedergabeliste bearbeiten"
 msgstr "Edit playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:154
+#: vueapp/components/Courses/CoursesSidebar.vue:155
 #: vueapp/components/Playlists/PlaylistAddCard.vue:16
 msgid "Wiedergabeliste hinzufügen"
 msgstr "Add playlist"
 
-#: vueapp/components/Courses/CoursesSidebar.vue:107
+#: vueapp/components/Courses/CoursesSidebar.vue:108
 #: vueapp/components/UserPlaylistSelectable.vue:29
 msgid "Wiedergabelisten"
 msgstr "Playlists"
@@ -1834,7 +1840,7 @@ msgstr ""
 msgid "Falsche Informationen zum Speichern von Daten."
 msgstr "Incorrect information about storing data."
 
-#: lib/Models/VideosUserPerms.php:130
+#: lib/Models/VideosUserPerms.php:125
 #, php-format
 msgid "Das Video mit dem Titel \"%s\" wurde fertig verarbeitet."
 msgstr "The video titled \"%s\" has finished processing."

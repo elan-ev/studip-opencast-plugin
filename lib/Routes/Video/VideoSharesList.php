@@ -53,7 +53,7 @@ class VideoSharesList extends OpencastController
         \URLHelper::setBaseURL($old_url_helper_url);
 
         return $this->createResponse([
-            'perms'  => $video->perms->toSanitizedArray($user->id),
+            'perms'  => $video->perms->toSanitizedArray(),
             'shares' =>  $shares
         ], $response->withStatus(200));
     }
