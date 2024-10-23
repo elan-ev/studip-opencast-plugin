@@ -104,12 +104,16 @@ class VersionHelper50 implements VersionHelperInterface
 {
     function addMainNavigation(\Navigation $navigation)
     {
-        \Navigation::addItem('/contents/opencast', $navigation);
+        if (\Navigation::hasItem('/contents')) {
+            \Navigation::addItem('/contents/opencast', $navigation);
+        }
     }
 
     function activateContentNavigation()
     {
-        \Navigation::activateItem('/contents/opencast');
+        if (\Navigation::hasItem('/contents')) {
+            \Navigation::activateItem('/contents/opencast');
+        }
     }
 
     function getPluginActivatedSQL()
