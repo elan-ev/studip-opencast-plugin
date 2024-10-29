@@ -1,6 +1,6 @@
 <? $uid = uniqid(); ?>
 <article class="studip" id="oc--widget-anchor-<?= $uid ?>">
-    <? if (count($items)): ?>
+    <? if (!empty($items['upcomings'])): ?>
         <article class="studip toggle <?= \ContentBoxHelper::classes('oc-widget-upcomings') ?>" id="oc-widget-upcomings">
             <header>
                 <h1>

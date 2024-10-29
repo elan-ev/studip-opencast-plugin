@@ -40,9 +40,11 @@ class WidgetHelper
         $upcoming_livestreams = [];
         foreach ($courses as $course) {
             $livestreams = ScheduledRecordings::getScheduleRecordingList(null, $course->id, '', true);
+
             if (empty($livestreams)) {
-                return [[], 'NOLIVESTREAM'];
+                return [];
             }
+
             foreach ($livestreams as $livestream) {
                 $start = intVal($livestream->start);
                 $end = intVal($livestream->end);
