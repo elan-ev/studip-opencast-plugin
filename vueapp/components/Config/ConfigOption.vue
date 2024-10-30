@@ -16,6 +16,7 @@
                         :checked="setting.value == true"
                         @change='setValue(true)'
                         :required="setting.required"
+                        :disabled="disabled"
                     >
                     {{ $gettext('Ja') }}
                 </label>
@@ -26,6 +27,7 @@
                         :checked="setting.value != true"
                         @change='setValue(false)'
                         :required="setting.required"
+                        :disabled="disabled"
                     >
                     {{ $gettext('Nein') }}
                 </label>
@@ -43,7 +45,9 @@
                 :placeholder="setting.placeholder"
                 v-model="setting.value"
                 @change="setValue(setting.value)"
-                :required="setting.required">
+                :required="setting.required"
+                :disabled="disabled"
+            >
         </label>
 
         <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options && !isI18N(setting)">
@@ -71,7 +75,9 @@
                 :placeholder="setting.placeholder"
                 v-model="setting.value"
                 @change="setValue(setting.value)"
-                :required="setting.required">
+                :required="setting.required"
+                :disabled="disabled"
+            >
         </label>
 
         <label v-if="setting.type == 'password'">
@@ -91,6 +97,7 @@
                     v-model="password"
                     :placeholder="setting.placeholder"
                     :required="setting.required"
+                    :disabled="disabled"
                 >
 
                 <span class="input-group-append ">
@@ -102,7 +109,8 @@
             </div>
         </label>
 
-        <label v-if="setting.type == 'string' && isI18N(setting)">
+
+        <label v-if="setting.type == 'string' && isI18N(setting) && !disabled">
             <span :class="{
                 required: setting.required
             }">
@@ -125,7 +133,7 @@ import I18NText from "@/components/Config/I18NText";
 export default {
     name: "ConfigOption",
 
-    props: ['setting', 'languages'],
+    props: ['setting', 'languages', 'disabled'],
 
     components: {
         StudipIcon, StudipSelect, I18NText

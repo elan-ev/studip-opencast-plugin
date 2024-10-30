@@ -6,9 +6,74 @@
                 {{ $gettext('Globale Einstellungen') }}
             </legend>
 
-            <ConfigOption v-for="setting in global_settings"
+            <ConfigOption v-for="setting in settings.global"
                 :key="setting.name" :setting="setting"
                 :languages="config_list.languages"
+                :disabled="deactivatedOptions[setting.name]"
+                @updateValue="updateValue"
+            />
+        </fieldset>
+    </div>
+
+    <div class="oc--admin--section">
+        <fieldset>
+            <legend>
+                <OpencastIcon small/>
+                {{ $gettext('Funktionen') }}
+            </legend>
+
+            <ConfigOption v-for="setting in settings.functions"
+                :key="setting.name" :setting="setting"
+                :languages="config_list.languages"
+                :disabled="deactivatedOptions[setting.name]"
+                @updateValue="updateValue"
+            />
+        </fieldset>
+    </div>
+
+    <div class="oc--admin--section">
+        <fieldset>
+            <legend>
+                <OpencastIcon small/>
+                {{ $gettext('Rechte') }}
+            </legend>
+
+            <ConfigOption v-for="setting in settings.perms"
+                :key="setting.name" :setting="setting"
+                :languages="config_list.languages"
+                :disabled="deactivatedOptions[setting.name]"
+                @updateValue="updateValue"
+            />
+        </fieldset>
+    </div>
+
+    <div class="oc--admin--section">
+        <fieldset>
+            <legend>
+                <OpencastIcon small/>
+                {{ $gettext('Oberfläche / Texte') }}
+            </legend>
+
+            <ConfigOption v-for="setting in settings.ui"
+                :key="setting.name" :setting="setting"
+                :languages="config_list.languages"
+                :disabled="deactivatedOptions[setting.name]"
+                @updateValue="updateValue"
+            />
+        </fieldset>
+    </div>
+
+    <div class="oc--admin--section">
+        <fieldset>
+            <legend>
+                <OpencastIcon small/>
+                {{ $gettext('Automatisierte Aufzeichnungen') }}
+            </legend>
+
+            <ConfigOption v-for="setting in settings.scheduling"
+                :key="setting.name" :setting="setting"
+                :languages="config_list.languages"
+                :disabled="deactivatedOptions[setting.name]"
                 @updateValue="updateValue"
             />
         </fieldset>
@@ -31,6 +96,12 @@ export default {
 
     props: ['config_list'],
 
+    data() {
+        return {
+            deactivatedOptions: {}
+        }
+    },
+
     computed: {
         ...mapGetters(['config']),
 
@@ -39,41 +110,49 @@ export default {
          *
          * @return {Object} settings list
          */
-        global_settings() {
-            let settings = [];
+        settings() {
+            let settings = {
+                global: [],
+                functions: [],
+                perms: [],
+                scheduling: [],
+                ui: []
+            };
+
             for (let id in this.config_list.settings) {
-                if (this.config_list.settings[id].name == 'OPENCAST_MEDIADOWNLOAD') {
-                    let setting = this.config_list.settings[id];
+                let option = this.config_list.settings[id];
+                if (option.name == 'OPENCAST_MEDIADOWNLOAD') {
+                    let setting = option;
                     setting.options = this.downloadOptions;
-                    settings.push(setting);
+                    settings[option.tag].push(setting);
                 }
-                else if (this.config_list.settings[id].name == 'OPENCAST_DEFAULT_SERVER') {
-                    let setting = this.config_list.settings[id];
+                else if (option.name == 'OPENCAST_DEFAULT_SERVER') {
+                    let setting = option;
                     setting.options = this.defaultServerOptions;
-                    settings.push(setting);
+                    settings[option.tag].push(setting);
                 }
-                else {
-                    if (this.config_list.settings[id].name == 'OPENCAST_TOS') {
-                        if (this.showTos) {
-                            settings.push(this.config_list.settings[id]);
-                        }
-                    } else {
-                        settings.push(this.config_list.settings[id]);
-                    }
+                else if (
+                    option.name == 'OPENCAST_MANAGE_ALL_OC_EVENTS'
+                    || option.name == 'OPENCAST_ALLOW_ALTERNATE_SCHEDULE'
+                    || option.name == 'OPENCAST_RESOURCE_PROPERTY_ID'
+                ) {
+                    this.deactivatedOptions[option.name] =
+                        !this.getOption('OPENCAST_ALLOW_SCHEDULER').value;
+
+                    settings[option.tag].push(option);
+                }
+                else if (option.name == 'OPENCAST_TOS') {
+                    this.deactivatedOptions[option.name] =
+                        !this.getOption('OPENCAST_SHOW_TOS').value;
+
+                    settings[option.tag].push(option);
+
+                } else {
+                    settings[option.tag].push(option);
                 }
             }
 
-            return settings
-        },
-
-        showTos() {
-            for (let id in this.config_list.settings) {
-                if (this.config_list.settings[id].name == 'OPENCAST_SHOW_TOS') {
-                    return this.config_list.settings[id].value == true
-                }
-            }
-
-            return false;
+            return settings;
         },
 
         downloadOptions() {
@@ -124,6 +203,17 @@ export default {
                     return;
                 }
             }
+        },
+
+        getOption(option)
+        {
+            for (let id in this.config_list.settings) {
+                if (this.config_list.settings[id].name == option) {
+                    return this.config_list.settings[id]
+                }
+            }
+
+            return false;
         }
     }
 }

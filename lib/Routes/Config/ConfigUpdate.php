@@ -27,7 +27,7 @@ class ConfigUpdate extends OpencastController
 
         // Storing General Configs.
         foreach ($json['settings'] as $config) {
-            if (in_array($config['name'], $constants['global_config_options'])) {
+            if (in_array($config['name'], array_map(function($e) { return $e['name']; }, $constants['global_config_options']))) {
                 \Config::get()->store($config['name'], $config['value']);
             }
         }

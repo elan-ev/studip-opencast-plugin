@@ -3,23 +3,74 @@
 return [
     "opencast" => [
         "global_config_options" => [
-            "OPENCAST_SHOW_TOS",
-            "OPENCAST_TOS",
-            "OPENCAST_ALLOW_ALTERNATE_SCHEDULE",
-            "OPENCAST_MEDIADOWNLOAD",
-            "OPENCAST_ALLOW_STUDIO",
-            "OPENCAST_ALLOW_SCHEDULER",
-            "OPENCAST_HIDE_EPISODES",
-            "OPENCAST_TUTOR_EPISODE_PERM",
-            "OPENCAST_MEDIA_ROLES",
-            "OPENCAST_ALLOW_STUDYGROUP_CONF",
-            "OPENCAST_MANAGE_ALL_OC_EVENTS",
-            "OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL",
-            "OPENCAST_RESOURCE_PROPERTY_ID",
-            "OPENCAST_SUPPORT_EMAIL",
-            "OPENCAST_API_TOKEN",
-            "OPENCAST_DEFAULT_SERVER",
-            "OPENCAST_UPLOAD_INFO_TEXT_BODY",
+            [
+                'name' => "OPENCAST_DEFAULT_SERVER",
+                'tag' => 'global'
+            ],
+            [
+                'name' => "OPENCAST_ALLOW_SCHEDULER",
+                'tag' => 'scheduling'
+            ],
+            [
+                'name' => "OPENCAST_MANAGE_ALL_OC_EVENTS",
+                'tag' => 'scheduling'
+            ],
+            [
+                'name' => "OPENCAST_ALLOW_ALTERNATE_SCHEDULE",
+                'tag' => 'scheduling'
+            ],
+            [
+                'name' => "OPENCAST_RESOURCE_PROPERTY_ID",
+                'tag' => 'scheduling'
+            ],
+            [
+                'name' => "OPENCAST_HIDE_EPISODES",
+                'tag' => 'perms'
+            ],
+            [
+                'name' => "OPENCAST_MEDIADOWNLOAD",
+                'tag' => 'perms'
+            ],
+            [
+                'name' => "OPENCAST_TUTOR_EPISODE_PERM",
+                'tag' => 'perms'
+            ],
+            [
+                'name' => "OPENCAST_MEDIA_ROLES",
+                'tag' => 'perms'
+            ],
+            [
+                'name' => "OPENCAST_ALLOW_STUDIO",
+                'tag' => 'functions'
+            ],
+            [
+                'name' => "OPENCAST_ALLOW_STUDYGROUP_CONF",
+                'tag' => 'functions'
+            ],
+            [
+                'name' => "OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL",
+                'tag' => 'global'
+            ],
+            [
+                'name' => "OPENCAST_SUPPORT_EMAIL",
+                'tag' => 'global'
+            ],
+            [
+                'name' => "OPENCAST_API_TOKEN",
+                'tag' => 'global'
+            ],
+            [
+                'name' => "OPENCAST_SHOW_TOS",
+                'tag' => 'ui'
+            ],
+            [
+                'name' => "OPENCAST_TOS",
+                'tag' => 'ui'
+            ],
+            [
+                'name' => "OPENCAST_UPLOAD_INFO_TEXT_BODY",
+                'tag' => 'ui'
+            ],
         ],
     ],
 ];

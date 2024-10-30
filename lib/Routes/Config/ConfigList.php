@@ -74,12 +74,13 @@ class ConfigList extends OpencastController
         $config = [];
 
         foreach ($this->container->get('opencast')['global_config_options'] as $option) {
-            $data = \Config::get()->getMetadata($option);
+            $data = \Config::get()->getMetadata($option['name']);
             $config[] = [
-                'name'        => $option,
+                'name'        => $option['name'],
                 'description' => $data['description'],
-                'value'       => \Config::get()->$option,
-                'type'        => $data['type']
+                'value'       => \Config::get()->{$option['name']},
+                'type'        => $data['type'],
+                'tag'         => $option['tag']
             ];
         }
 
