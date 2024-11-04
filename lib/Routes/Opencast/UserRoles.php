@@ -99,11 +99,24 @@ class UserRoles extends OpencastController
                     }
                 }
 
-                // get courses with write access ('dozent', 'tutor')
-                $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
-                    WHERE user_id = ? AND (status = 'dozent' OR status = 'tutor')");
-                $stmt->execute([$user_id]);
-                $courses_write = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
+                        WHERE user_id = ? AND status IN (:status)");
+
+                // configure which global role has access to courses
+                $course_write_perms = $course_read_perms = [];
+
+                if (\Config::get()->OPENCAST_TUTOR_EPISODE_PERM) {
+                    $course_write_perms = ['dozent', 'tutor'];
+                    $course_read_perms  = ['autor', 'user'];
+                } else {
+                    $course_write_perms = ['dozent'];
+                    $course_read_perms  = ['tutor', 'autor', 'user'];
+                }
+
+                // get courses with write access
+                $stmt_courses->bindValue(':status', $course_write_perms, \StudipPDO::PARAM_ARRAY);
+                $stmt_courses->execute([$user_id]);
+                $courses_write = $stmt_courses->fetchAll(\PDO::FETCH_COLUMN);
 
                 // Handle deputies ("Dozentenvertretung") as well
                 $courses_write = array_merge(
@@ -116,11 +129,10 @@ class UserRoles extends OpencastController
                     $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
                 }
 
-                // Get courses with read access ('autor', 'user')
-                $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
-                    WHERE user_id = ? AND (status = 'autor' OR status = 'user')");
-                $stmt->execute([$user_id]);
-                $courses_read = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                // Get courses with read access
+                $stmt_courses->bindValue(':status', $course_read_perms, \StudipPDO::PARAM_ARRAY);
+                $stmt_courses->execute([$user_id]);
+                $courses_read = $stmt_courses->fetchAll(\PDO::FETCH_COLUMN);
 
                 // add learner roles
                 foreach ($courses_read as $course_id) {
