@@ -118,7 +118,7 @@
                         </table>
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
                         <legend>
                             {{ $gettext('Weltweiter Zugriff') }}
                         </legend>
@@ -212,7 +212,11 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['videoShares', 'currentUser'])
+        ...mapGetters({
+            'videoShares' : 'videoShares',
+            'currentUser' : 'currentUser',
+            'config'      : 'simple_config_list'
+        })
     },
 
     methods: {

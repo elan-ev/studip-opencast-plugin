@@ -637,7 +637,9 @@ class Videos extends UPMap
 
         $result = null;
 
-        if ($this->visibility != $event['visibility']) {
+        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING
+            && $this->visibility != $event['visibility']
+        ) {
             $result = $this->updateAcl($event['visibility']);
 
             if ($result['republish']) {
@@ -696,8 +698,11 @@ class Videos extends UPMap
         $possible_roles = [
             $episode_id . '_read',
             $episode_id . '_write',
-            'ROLE_ANONYMOUS'
         ];
+
+        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
+            $possible_roles[] = 'ROLE_ANONYMOUS';
+        }
 
         $result = [];
         foreach ($acl as $entry) {
@@ -779,7 +784,10 @@ class Videos extends UPMap
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
         // add anonymous role if video is world visible
-        if (($new_vis && $new_vis == 'public') || (!$new_vis && $this->visibility == 'public')) {
+        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING && (
+            ($new_vis && $new_vis == 'public')
+            || (!$new_vis && $this->visibility == 'public')
+        )) {
             $acl[] = [
                 'allow'  => true,
                 'role'   => 'ROLE_ANONYMOUS',

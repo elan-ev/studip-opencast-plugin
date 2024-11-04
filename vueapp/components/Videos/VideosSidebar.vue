@@ -32,18 +32,18 @@
         </div>
     </div>
 
-    <div class="sidebar-widget" id="sidebar-actions" v-if="fragment != 'videosTrashed'">
+    <div class="sidebar-widget" id="sidebar-actions" v-if="fragment != 'videosTrashed' && (fragment == playlist || canShowStudio || canShowUpload)">
         <div class="sidebar-widget-header">
             {{ $gettext('Aktionen') }}
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list oc--sidebar-links widget-links">
-                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos' && currentUserSeries">
+                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos' && currentUserSeries && canShowUpload">
                     <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
                     {{ $gettext('Medien hochladen') }}
                 </li>
-                <li>
-                    <a :href="recordingLink" v-if="fragment == 'videos' && currentUserSeries && canShowStudio" target="_blank">
+                <li v-if="fragment == 'videos' && currentUserSeries && canShowStudio">
+                    <a :href="recordingLink" target="_blank">
                         <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
                         {{ $gettext('Video aufnehmen') }}
                     </a>
@@ -118,7 +118,8 @@ export default {
         ...mapGetters([
             'videoSortMode', 'playlist',
             'axios_running', 'downloadSetting',
-            'simple_config_list', 'currentUserSeries'
+            'simple_config_list', 'currentUserSeries',
+            'currentUser'
         ]),
 
         isDownloadAllowedForPlaylist() {
@@ -136,6 +137,19 @@ export default {
         canShowStudio() {
             try {
                 return this.currentUserSeries && this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO']
+            } catch (error) {
+                return false;
+            }
+        },
+
+        canShowUpload()
+        {
+            try {
+                return this.currentUserSeries
+                    && (
+                        this.simple_config_list['settings']['OPENCAST_ALLOW_STUDENT_WORKSPACE_UPLOAD']
+                        || ['root', 'admin', 'dozent'].includes(this.currentUser.status)
+                    )
             } catch (error) {
                 return false;
             }

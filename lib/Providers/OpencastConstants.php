@@ -48,6 +48,14 @@ return [
                 'tag' => 'functions'
             ],
             [
+                'name' => "OPENCAST_ALLOW_PUBLIC_SHARING",
+                'tag' => 'functions'
+            ],
+            [
+                'name' => "OPENCAST_ALLOW_STUDENT_WORKSPACE_UPLOAD",
+                'tag' => 'functions'
+            ],
+            [
                 'name' => "OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL",
                 'tag' => 'global'
             ],
