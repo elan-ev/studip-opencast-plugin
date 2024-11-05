@@ -619,13 +619,13 @@ class Playlists extends UPMap
                 $playlist_video = PlaylistVideos::create([
                     'video_id' => $db_video->id,
                     'playlist_id' => $this->id,
-                    'service_entry_id' => $entry->id,
+                    'service_entry_id' => isset($entry->id) ?: null,
                 ]);
             }
 
             if (!is_null($playlist_video)) {
                 // Always update entry id and order
-                $playlist_video->service_entry_id = $entry->id;
+                $playlist_video->service_entry_id = isset($entry->id) ?: null;
                 $playlist_video->order = $key;
                 $playlist_video->store();
             }

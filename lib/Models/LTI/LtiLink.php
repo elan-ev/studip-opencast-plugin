@@ -320,10 +320,14 @@ class LtiLink
      */
     public function getLaunchSignature($launch_params)
     {
-        list($launch_url, $fragment) = explode('#', $this->launch_url);
-        list($launch_url, $query)    = explode('?', $launch_url);
+        $launch_url = $this->launch_url;
 
-        if (isset($query)) {
+        if (strpos($this->launch_url, '#') !== false) {
+            list($launch_url, $fragment) = @explode('#', $this->launch_url);
+        }
+
+        if (strpos($this->launch_url, '?') !== false) {
+            list($launch_url, $query)    = @explode('?', $launch_url);
             parse_str($query, $query_params);
             $launch_params += $query_params;
         }

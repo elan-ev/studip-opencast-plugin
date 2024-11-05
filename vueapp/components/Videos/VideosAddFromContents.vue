@@ -67,7 +67,7 @@ export default {
                 this.selectedVideos = [];
                 this.$store.dispatch('addMessage', {
                     type: 'success',
-                    text: this.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt.')
+                    text: this.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt.')
                 });
                 this.$store.commit('setVideosReload', true);
                 this.$emit('done');

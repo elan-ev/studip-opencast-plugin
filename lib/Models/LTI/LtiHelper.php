@@ -34,9 +34,9 @@ class LtiHelper
             $url = parse_url($endpoint['service_url']);
 
             $lti_url = $url['scheme'] . '://'. $url['host']
-                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+                . (isset($url['port']) ? ':' . $url['port'] : '') . '/lti';
 
-            if (!$links[$lti_url]) {
+            if (empty($links[$lti_url])) {
                 $links[$lti_url] = [
                     'link' => new LtiLink(
                         $lti_url,

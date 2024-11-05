@@ -263,7 +263,7 @@ class Config extends \SimpleOrMap
 
                     $message = [
                         'type' => 'success',
-                        'text' => implode('<br>', $success_message)
+                        'text' => implode('<br>', (array)$success_message)
                     ];
                 }
             } else {

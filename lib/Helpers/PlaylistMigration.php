@@ -122,7 +122,7 @@ class PlaylistMigration
         return [
             'title' => $playlist->title,
             'description' => '',
-            'creator' => implode(', ', $owner_names),
+            'creator' => implode(', ', (array)$owner_names),
             'entries' => $entries,
             'accessControlEntries' => [],
         ];

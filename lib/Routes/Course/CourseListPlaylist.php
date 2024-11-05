@@ -28,7 +28,7 @@ class CourseListPlaylist extends OpencastController
 
         $params = $request->getQueryParams();
 
-        if (!$params['cid']) {
+        if (empty($params['cid'])) {
             $params['cid'] = $course_id;
         }
 

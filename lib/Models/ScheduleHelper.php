@@ -273,7 +273,7 @@ class ScheduleHelper
                 } else $issue_titles =  my_substr($issue->getTitle(), 0 ,80 );
             }
             if(is_array($issue_titles)){
-                $issue_titles = _("Themen: ") . my_substr(implode(', ', $issue_titles), 0 ,80 );
+                $issue_titles = _("Themen: ") . my_substr(implode(', ', (array)$issue_titles), 0 ,80 );
             }
         }
 
@@ -509,7 +509,7 @@ class ScheduleHelper
             }
 
             if (is_array($issue_titles)) {
-                $issue_titles = _("Themen: ") . my_substr(implode(', ', $issue_titles), 0, 80);
+                $issue_titles = _("Themen: ") . my_substr(implode(', ', (array)$issue_titles), 0, 80);
             }
         }
 

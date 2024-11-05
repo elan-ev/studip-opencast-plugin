@@ -38,7 +38,11 @@ class PlaylistAddVideos extends OpencastController
                     'playlist_id' => $playlist->id,
                     'video_id'    => $video->id
                 ]);
-                $playlist->videos[] = $plvideo;
+
+                try {
+                    $playlist->videos[] = $plvideo;
+                } catch (\InvalidArgumentException $e) {
+                }
             }
 
             $playlist->videos->store();
@@ -48,8 +52,6 @@ class PlaylistAddVideos extends OpencastController
         // Get playlist entries from Opencast
         $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
         $oc_playlist = $playlist_client->getPlaylist($playlist->service_playlist_id);
-
-        // var_dump($playlist);die;
 
         if (!$oc_playlist) {
             // something went wrong with playlist creation, try again
