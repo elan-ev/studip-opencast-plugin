@@ -67,9 +67,10 @@ class RedirectController extends Opencast\Controller
         $this->launch_url  = $ltilink['launch_url'];
 
         if (!empty($this->error)) {
-            $this->set_layout(null);
             $this->assets_url = rtrim($this->plugin->getPluginUrl(), '/') . '/assets';
         }
+
+        $this->set_layout(null);
     }
 
     /**
