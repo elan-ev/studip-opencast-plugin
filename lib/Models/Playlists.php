@@ -485,10 +485,13 @@ class Playlists extends UPMap
             $json['updated']             = date('Y-m-d H:i:s', strtotime($oc_playlist->updated));
 
             $entries = $oc_playlist->entries;
-        }
 
-        // Create playlist in DB
-        $playlist = self::findOneBySQL('config_id = ? AND service_playlist_id = ?', [$json['config_id'], $oc_playlist->id]);
+            // load playlist from DB, if present
+            $playlist = self::findOneBySQL('config_id = ? AND service_playlist_id = ?', [$json['config_id'], $oc_playlist->id]);
+        } else {
+            // convert the entries to an array of objects, otherwise setEntries will complain
+            $entries = json_decode(json_encode($entries));
+        }
 
         if (empty($playlist)) {
             $playlist = new Playlists;
@@ -560,7 +563,9 @@ class Playlists extends UPMap
     }
 
     /**
-     * Set playlist videos in playlist based on passed entries. This function checks no permissions.
+     * Set playlist videos in playlist based on passed entries.
+     * This function checks no permissions.
+     * IMPORTANT: This functions expects the entries to be an array of objects!
      *
      * @param array $entries Opencast playlist entries
      */
