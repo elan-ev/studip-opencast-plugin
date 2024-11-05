@@ -100,6 +100,7 @@ class ApiEventsClient extends RestClient
     public function getAllScheduledEvents()
     {
         // filters are AND concatenated, to get all events, we need to split the calls
+        $events = [];
 
         // EVENTS.EVENTS.STATUS.RECORDING should also be added here... which refers to live events
         $params[0] = [
