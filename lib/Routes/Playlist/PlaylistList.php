@@ -29,8 +29,6 @@ class PlaylistList extends OpencastController
 
         $playlist_list = [];
         foreach ($playlists['playlists'] as $playlist) {
-            $playlist['mkdate'] = ($playlist['mkdate'] == '0000-00-00 00:00:00')
-            ? 0 : \strtotime($playlist['mkdate']);
             $playlist_list[$playlist->id] = $playlist->toSanitizedArray();
 
             // Adding the tooltip text for the playlist that is default in a course.

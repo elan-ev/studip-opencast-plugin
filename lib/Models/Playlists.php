@@ -639,6 +639,10 @@ class Playlists extends UPMap
     {
         $data = $this->toArray();
         unset($data['id']);
+
+        $data['mkdate'] = ($this->mkdate == '0000-00-00 00:00:00')
+            ? 0 : \strtotime($this->mkdate);
+
         $data['videos_count'] = count($this->videos);
 
         $data['tags'] = $this->tags->toArray();
