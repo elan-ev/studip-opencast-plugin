@@ -33,6 +33,11 @@ class OpencastRefreshScheduling extends CronJob
 
     public function execute($last_result, $parameters = array())
     {
+        // if scheduling is disabled in the config, do NOT run this cronjob!
+        if (!StudipConfig::get()->OPENCAST_ALLOW_SCHEDULER) {
+            return;
+        }
+
         $oc_scheduled_events = [];
         $config = Config::findBySql(1);
         $oc_se_count = 0;
@@ -41,7 +46,7 @@ class OpencastRefreshScheduling extends CronJob
         foreach ($config as $conf) {
             $config_id = $conf['id'];
             $scheduled_events = [];
-            
+
             try {
                 $events_client = ApiEventsClient::getInstance($config_id);
                 // Adding config_id to each record for easier use later on!
@@ -50,7 +55,7 @@ class OpencastRefreshScheduling extends CronJob
                     return $event;
                 }, $events_client->getAllScheduledEvents());
             } catch (\Throwable $th) {
-                echo 'Fehler beim abrufen der Events für config_id '. $config_id 
+                echo 'Fehler beim abrufen der Events für config_id '. $config_id
                     .': '. $th->getMessage() . "\n";
             }
 
@@ -80,7 +85,7 @@ class OpencastRefreshScheduling extends CronJob
                 if (!$cd || !$course || !$course_config_id || !$resource_obj                                                    // Any requirement fails
                     || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])  // The server config id of the course and the oc_resource does not match
                     || $cd->room_booking->resource_id != $scheduled_events['resource_id']                                       // The resource of the record and course date does not match
-                    || $cd->room_booking->begin != $scheduled_events['start']                                                      // Start or Enddate are different 
+                    || $cd->room_booking->begin != $scheduled_events['start']                                                      // Start or Enddate are different
                     || $cd->room_booking->end != $scheduled_events['end']
                     /* || intval($cd->end_time) < $time */                                                                      // TODO: decide whether to remove those records that are expired!
                     ) {
@@ -95,7 +100,7 @@ class OpencastRefreshScheduling extends CronJob
 
                     $oc_event_id = $scheduled_events['event_id'];
                     $oc_config_id = $course_config_id;
-                   
+
                     // Delete the recording in OC.
                     if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
                         $oc_config_id = $resource_obj['config_id'];
@@ -104,7 +109,7 @@ class OpencastRefreshScheduling extends CronJob
                     $oc_set_index = array_search($oc_config_id, array_column($oc_scheduled_events, 'config_id'));
                     $oc_event_to_delete = null;
 
-                    // search for the corresponding event in Opencast 
+                    // search for the corresponding event in Opencast
                     if ($oc_set_index !== false && isset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id])) {
                         $oc_event_to_delete = $oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id];
                     }
@@ -141,7 +146,7 @@ class OpencastRefreshScheduling extends CronJob
                         // try to (re-)create event in opencast
                         echo 'Eintrag fehlt im Opencast, versuche ihn zu erstellen...';
                         $result = ScheduleHelper::scheduleEventForSeminar(
-                            $scheduled_events['seminar_id'], $scheduled_events['date_id'], 
+                            $scheduled_events['seminar_id'], $scheduled_events['date_id'],
                             $scheduled_event['is_livestream'] ? true : false
                         );
 
