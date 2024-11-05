@@ -150,7 +150,7 @@ $action-menu-icon-size: 20px;
             object-fit: contain;
         }
 
-        img.oc--image-button {
+        > img.oc--image-button {
             position: absolute;
             width: 50%;
             left: 25%;
@@ -207,9 +207,12 @@ $action-menu-icon-size: 20px;
 
         span.oc--views {
             img {
-                margin-bottom: -3px;
+                height: auto !important;
             }
 
+            display: flex;
+            align-items: center;
+            gap: 3px;
             position: absolute;
             background-color: $base_color;
             color: white;
