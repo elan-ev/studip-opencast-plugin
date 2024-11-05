@@ -265,7 +265,7 @@ export default {
         }),
 
         upload_playlists() {
-            let upload_playlists = this.playlists
+            let upload_playlists = [...this.playlists];
 
             if (!this.playlists.length) {
                 return null;
