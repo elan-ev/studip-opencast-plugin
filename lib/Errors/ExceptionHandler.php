@@ -37,6 +37,9 @@ class ExceptionHandler
 
             $errors->add($exception);
         } else {
+            // Log always php exceptions
+            error_log($exception);
+
             $httpCode = 500;
             $details = null;
 
