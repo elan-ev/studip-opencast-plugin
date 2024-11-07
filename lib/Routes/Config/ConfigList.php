@@ -56,7 +56,9 @@ class ConfigList extends OpencastController
 
 
 
-        if (!PlaylistMigration::isConverted() && count($config_list) &&
+        if (!PlaylistMigration::isConverted() &&
+            count($config_list) &&
+            \Config::get()->OPENCAST_DEFAULT_SERVER != -1 &&
             version_compare(
                 OCConfig::getOCBaseVersion(\Config::get()->OPENCAST_DEFAULT_SERVER),
                 '16',
