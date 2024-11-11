@@ -1,10 +1,10 @@
 <?php
 
-class RemovePositionCol extends Migration {
+class RemovePositionCol extends Migration
+{
     function down()
     {
-        DBManager::get()->query("ALTER TABLE `oc_seminar_episodes` ADD COLUMN
-              `position` smallint(6) NOT NULL;");
+
     }
 
     function up()

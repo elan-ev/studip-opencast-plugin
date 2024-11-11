@@ -1,7 +1,7 @@
 <?php
 class AddAclCronjob extends Migration
 {
-    const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/opencast_sync_acls.php';
+    const FILENAME = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/opencast_sync_acls.php';
 
     function description()
     {

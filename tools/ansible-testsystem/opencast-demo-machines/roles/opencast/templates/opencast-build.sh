@@ -38,7 +38,7 @@ echo 'lti.oauth.highly_trusted_consumer_key.1=CONSUMERKEY' >> /srv/opencast/open
 
 # Configure Stud.IP user provider
 cp /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.userdirectory.studip-default.cfg.template /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.userdirectory.studip-default.cfg
-sed -i 's_https://my-studip.de/studip5/plugins.php/opencast/api/_{{ studip_uri }}/plugins.php/opencast/api/_' /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.userdirectory.studip-default.cfg
+sed -i 's_https://my-studip.de/studip5/plugins.php/opencastv3/api/_{{ studip_uri }}/plugins.php/opencastv3/api/_' /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.userdirectory.studip-default.cfg
 echo org.opencastproject.userdirectory.studip.cache.expiration=1 >> /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.userdirectory.studip-default.cfg
 
 sed -i 's/opencast-plugin-userdirectory-studip.*= off/opencast-plugin-userdirectory-studip        = on/' /srv/opencast/opencast-dist-allinone/etc/org.opencastproject.plugin.impl.PluginManagerImpl.cfg

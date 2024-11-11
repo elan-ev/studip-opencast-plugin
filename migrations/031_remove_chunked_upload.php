@@ -3,7 +3,7 @@
 class RemoveChunkedUpload extends Migration
 {
     const FILENAMES = [
-        'public/plugins_packages/elan-ev/OpenCast/cronjobs/try_reupload_failed_jobs.php'
+        'public/plugins_packages/elan-ev/OpencastV3/cronjobs/try_reupload_failed_jobs.php'
     ];
 
     public function description()

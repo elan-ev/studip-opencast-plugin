@@ -10,7 +10,7 @@ use Opencast\Models\CoursewareBlockMappings;
  * @author  Ron Lucke <lucke@elan-ev.de>
  * @license GPL2 or any later version
  */
-class OpencastBlock extends BlockType
+class OpencastBlockV3 extends BlockType
 {
     public static function getType(): string
     {
@@ -19,12 +19,12 @@ class OpencastBlock extends BlockType
 
     public static function getTitle(): string
     {
-        return dcgettext(Opencast::GETTEXT_DOMAIN, 'Opencast', LC_MESSAGES);
+        return dcgettext(OpencastV3::GETTEXT_DOMAIN, 'Opencast', LC_MESSAGES);
     }
 
     public static function getDescription(): string
     {
-        return dcgettext(Opencast::GETTEXT_DOMAIN, 'Stellt eine Aufzeichnung aus dem Opencast-Plugin bereit', LC_MESSAGES);
+        return dcgettext(OpencastV3::GETTEXT_DOMAIN, 'Stellt eine Aufzeichnung aus dem Opencast-Plugin bereit', LC_MESSAGES);
     }
 
     public function initialPayload(): array
@@ -36,7 +36,7 @@ class OpencastBlock extends BlockType
 
     public static function getJsonSchema(): Schema
     {
-        $schemaFile = __DIR__ . '/OpencastBlock.json';
+        $schemaFile = __DIR__ . '/OpencastBlockV3.json';
 
         return Schema::fromJsonString(file_get_contents($schemaFile));
     }

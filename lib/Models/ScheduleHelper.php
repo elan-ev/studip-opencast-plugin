@@ -1038,13 +1038,13 @@ class ScheduleHelper
             htmlReady($course->name)
         );
 
-        $plugin = \PluginEngine::getPlugin('OpenCast');
+        $plugin = \PluginEngine::getPlugin('OpencastV3');
         $assetsUrl = rtrim($plugin->getPluginURL(), '/') . '/assets';
         $icon =  \Icon::create($assetsUrl . '/images/opencast-black.svg');
 
         \PersonalNotifications::add(
             $users,
-            \PluginEngine::getURL('opencast', ['cid' => $course_id], 'course'),
+            \PluginEngine::getURL('opencastv3', ['cid' => $course_id], 'course'),
             $notification,
             $course_id,
             $icon

@@ -56,7 +56,7 @@ The reference entry in Opencast is neither needed nor wanted, since we are using
 org.opencastproject.userdirectory.studip.org=mh_default_org
 
 # The URL and token for the Studip REST webservice
-org.opencastproject.userdirectory.studip.url=http://studip.me/studip/4.6/plugins.php/opencast/api/
+org.opencastproject.userdirectory.studip.url=http://studip.me/studip/4.6/plugins.php/opencastv3/api/
 org.opencastproject.userdirectory.studip.token=mytoken1234abcdef
 
 # The maximum number of users to cache
@@ -123,4 +123,4 @@ https://hilfe.studip.de/help/4.0/de/Basis/OpencastV3Administration
 
 ## Caveats
 
-Stud.IP root users currently get `ROLE_ADMIN` and are therefore factual Opencast admins! 
+Stud.IP root users currently get `ROLE_ADMIN` and are therefore factual Opencast admins!

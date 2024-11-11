@@ -67,7 +67,7 @@ class Helpers
 
         // get id of opencast plugin to check if it is activated for selected courses
         $plugin_id = \DBManager::get()->query("SELECT pluginid
-            FROM plugins WHERE pluginname = 'OpenCast'")->fetchColumn();
+            FROM plugins WHERE pluginname = 'OpencastV3'")->fetchColumn();
 
         if (!$perm->have_perm('admin')) {
             // get all courses, user is lecturer or tutor in

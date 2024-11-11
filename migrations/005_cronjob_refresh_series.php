@@ -2,7 +2,6 @@
 
 class CronjobRefreshSeries extends Migration
 {
-    //const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_series.php';
     public function description()
     {
         return 'adds a cronjob for refreshing the episodes of an scheduled series in Stud.IP';
@@ -35,10 +34,6 @@ class CronjobRefreshSeries extends Migration
     }
     function down()
     {
-        DBManager::get()->query("ALTER TABLE `oc_seminar_episodes` DROP COLUMN `mkdate`;");
-        DBManager::get()->query("ALTER TABLE `oc_seminar_series` DROP COLUMN `mkdate`;");
-        DBManager::get()->query("ALTER TABLE `oc_seminar_workflows` DROP COLUMN `mkdate`;");
 
-        DBManager::get()->query("DROP TABLE IF EXISTS `oc_series_cache`;");
     }
 }

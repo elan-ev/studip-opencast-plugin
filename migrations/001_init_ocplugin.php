@@ -70,19 +70,18 @@ class InitOcplugin extends Migration {
 
     }
 
-    function down() {
-        DBManager::get()->query("DROP TABLE IF EXISTS `oc_series`,`oc_config`,`oc_endpoints`, `oc_seminar_series`, `oc_resources`, `oc_seminar_episodes`, `oc_scheduled_recordings`;");
-        if (StudipVersion::newerThan('4.4'))
-        {
-            DBManager::get()->query("DELETE FROM  resource_properties
-        WHERE property_id IN(SELECT property_id FROM resource_property_definitions WHERE name = 'Opencast Capture Agent' );");
-            DBManager::get()->query("DELETE FROM resource_property_definitions WHERE name = 'Opencast Capture Agent';");
-        }
-        else {
-            DBManager::get()->query("DELETE FROM  resources_objects_properties
-        WHERE property_id IN(SELECT property_id FROM resources_properties WHERE name = 'Opencast Capture Agent' );");
-            DBManager::get()->query("DELETE FROM resources_properties WHERE name = 'Opencast Capture Agent';");
+    function down()
+    {
+        $db = DBManager::get();
+
+        // clean out the whole oc config
+        $contents = file_get_contents(__DIR__ . '/../tools/completely_remove_opencast_tables_and_settings.sql');
+
+        $statements = preg_split("/;[[:space:]]*\n/", $contents, -1, PREG_SPLIT_NO_EMPTY);
+
+
+        foreach ($statements as $statement) {
+            $db->exec($statement);
         }
     }
-
 }

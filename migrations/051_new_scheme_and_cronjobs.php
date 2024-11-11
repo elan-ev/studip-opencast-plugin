@@ -1,8 +1,8 @@
 <?php
 class NewSchemeAndCronjobs extends Migration
 {
-    const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/opencast_refresh_scheduling.php';
-    const BASE_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+    const FILENAME = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/opencast_refresh_scheduling.php';
+    const BASE_DIR = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/';
 
     function description()
     {
@@ -11,6 +11,10 @@ class NewSchemeAndCronjobs extends Migration
 
     function up()
     {
+        if (class_exists('OpenCast')) {
+            throw new \Error('Please make sure the Opencast plugin version 2.x is disabled before trying to install version 3.x!');
+        }
+
         $db = DBManager::get();
 
         // update TOS config
@@ -41,8 +45,7 @@ class NewSchemeAndCronjobs extends Migration
             `sort_order` varchar(30) NOT NULL DEFAULT 'created_desc',
             PRIMARY KEY (`id`),
             KEY `U.1` (`token`)
-          );
-        ";
+        );";
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_workflow_config` (
             `id` int NOT NULL AUTO_INCREMENT,
@@ -52,8 +55,7 @@ class NewSchemeAndCronjobs extends Migration
             PRIMARY KEY (`id`),
             FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             KEY `U.1` (`config_id`, `workflow`)
-          );
-        ";
+        );";
 
         $sql[] = "ALTER TABLE `oc_config`
             ADD `upload` int NULL,
@@ -64,31 +66,31 @@ class NewSchemeAndCronjobs extends Migration
         ";
 
         $sql[] = "ALTER TABLE oc_endpoints
-          DROP service_host,
-          ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            DROP service_host,
+            ADD FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ";
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video` (
-          `id` int NOT NULL AUTO_INCREMENT,
-          `token` varchar(12),
-          `config_id` int,
-          `episode` varchar(64) UNIQUE,
-          `title` text,
-          `description` text,
-          `duration` int,
-          `views` int,
-          `preview` text,
-          `publication` text,
-          `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
-          `created` timestamp,
-          `author` varchar(255),
-          `contributors` varchar(1000),
-          `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-          `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-          PRIMARY KEY (`id`),
-          FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,   # disallow deletion of config if videos are assigned to that config
-          KEY `U.1` (`token`),
-          KEY `U.2` (`config_id`, `episode`)
+            `id` int NOT NULL AUTO_INCREMENT,
+            `token` varchar(12),
+            `config_id` int,
+            `episode` varchar(64) UNIQUE,
+            `title` text,
+            `description` text,
+            `duration` int,
+            `views` int,
+            `preview` text,
+            `publication` text,
+            `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
+            `created` timestamp,
+            `author` varchar(255),
+            `contributors` varchar(1000),
+            `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`),
+            FOREIGN KEY (`config_id`) REFERENCES `oc_config`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,   # disallow deletion of config if videos are assigned to that config
+            KEY `U.1` (`token`),
+            KEY `U.2` (`config_id`, `episode`)
         );
         ";
 

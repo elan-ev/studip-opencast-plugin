@@ -24,14 +24,7 @@ class AddConfigidColumn extends Migration {
 
     function down()
     {
-        $db = DBManager::get();
 
-        $db->query("ALTER TABLE `oc_config` DROP COLUMN `config_id`;");
-        $db->query("ALTER TABLE `oc_config` DROP INDEX `service_url`,  ADD PRIMARY KEY (`service_url`);");
-        $db->query("ALTER TABLE `oc_endpoints` DROP COLUMN `config_id`;");
-        $db->query("ALTER TABLE `oc_resources` DROP COLUMN `config_id`;");
-        $db->query("ALTER TABLE `oc_seminar_series` DROP COLUMN `config_id`;");
-        $db->query("ALTER TABLE `oc_seminar_workflows` DROP COLUMN `config_id`;");
 
     }
 }

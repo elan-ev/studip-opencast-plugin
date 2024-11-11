@@ -107,7 +107,7 @@ class Controller extends PluginController
     {
         $studip_version = \StudipVersion::getStudipVersion(true);
         if (empty($studip_version)) {
-            $manifest = OpenCast::getPluginManifestInfo();
+            $manifest = OpencastV3::getPluginManifestInfo();
             $studip_version = isset($manifest["studipMinVersion"]) ? $manifest["studipMinVersion"] : 4.6;
         }
 

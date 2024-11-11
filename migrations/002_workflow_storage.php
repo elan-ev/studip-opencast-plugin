@@ -13,7 +13,7 @@ class WorkflowStorage extends Migration {
     }
 
     function down() {
-        DBManager::get()->query("DROP TABLE IF EXISTS `oc_seminar_workflows`;");
+
     }
 
 }
