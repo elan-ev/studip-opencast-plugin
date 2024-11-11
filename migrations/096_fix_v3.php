@@ -39,6 +39,11 @@ class FixV3 extends Migration
                 ':old' => $old_plugin_id
             ]);
         }
+
+        // clear cache for autoloader classes
+        $cache     = StudipCacheFactory::getCache();
+        $cache_key = 'STUDIP#autoloader-classes';
+        $cache->expire($cache_key);
     }
 
     public function down()
