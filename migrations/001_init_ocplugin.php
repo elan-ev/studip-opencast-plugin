@@ -72,11 +72,14 @@ class InitOcplugin extends Migration {
 
     function down()
     {
+        $db = DBManager::get();
+
         // clean out the whole oc config
-        $$contents = file_get_contents(__DIR__ . '/../completely_remove_opencast_tables_and_settings.sql');
+        $contents = file_get_contents(__DIR__ . '/../tools/completely_remove_opencast_tables_and_settings.sql');
+
         $statements = preg_split("/;[[:space:]]*\n/", $contents, -1, PREG_SPLIT_NO_EMPTY);
 
-        $db = DBManager::get();
+
         foreach ($statements as $statement) {
             $db->exec($statement);
         }
