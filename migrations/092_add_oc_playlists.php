@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../bootstrap_migrations.php';
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Endpoints;
@@ -10,7 +10,7 @@ use Opencast\Helpers\PlaylistMigration;
 
 class AddOcPlaylists extends Migration
 {
-    const CRONJOBS_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+    const CRONJOBS_DIR = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/';
 
     public function description()
     {

@@ -5,16 +5,23 @@ class UpdateCoursewarePayload extends Migration
     {
         $db = DBManager::get();
 
-        $link = str_replace('/', '\\/',
-            PluginEngine::getLink('opencast', [], 'redirect/perform/video/')
-        );
+        $stmt = $db->prepare('UPDATE cw_blocks
+            SET payload = :payload
+            WHERE id = :id');
 
-        $stmt = $db->exec($query = "UPDATE cw_blocks
-            SET payload = REGEXP_REPLACE(payload, '\"url\":\".*\\\\/(.*?)\",\"', '\"url\":\"" .
-                $link
-            . "\\\\1\",\"')
-            WHERE block_type = 'plugin-opencast-video'
-        ");
+        $result = $db->query("SELECT id, payload FROM cw_blocks
+            WHERE block_type = 'plugin-opencast-video'");
+
+        while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
+            $payload = json_decode($data['payload'], true);
+
+            unset($payload['url']);
+
+            $stmt->execute([
+                ':payload' => json_encode($payload),
+                ':id'      => $data['id']
+            ]);
+        }
     }
 
     public function down()

@@ -2,7 +2,7 @@
 
 class AddVideoTrash extends Migration
 {
-    const BASE_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+    const BASE_DIR = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/';
 
     public function description()
     {

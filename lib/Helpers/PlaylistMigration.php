@@ -8,7 +8,7 @@ use DBManager;
 
 class PlaylistMigration
 {
-    const CRONJOBS_DIR = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
+    const CRONJOBS_DIR = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/';
 
     /**
      * Convert the Stud.IP playlists to OC playlists

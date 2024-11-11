@@ -1,8 +1,9 @@
 <?php
 
 /**
- * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
+ * OpencastV3.class.php - A course plugin for Stud.IP which includes an opencast player
  */
+
 require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\Models\Helpers;
@@ -17,7 +18,7 @@ use Opencast\Providers\Perm;
 
 use Courseware\CoursewarePlugin;
 
-class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
+class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -349,7 +350,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
      */
     public function registerBlockTypes(array $otherBlockTypes): array
     {
-        $otherBlockTypes[] = OpencastBlock::class;
+        $otherBlockTypes[] = OpencastBlockV3::class;
 
         return $otherBlockTypes;
     }
@@ -396,7 +397,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin, Cou
             }
         }
 
-        RolePersistence::expirePluginCache($plugin_id);
+        RolePersistence::expirePluginCache();
     }
 
     /**

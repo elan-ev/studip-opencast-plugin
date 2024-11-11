@@ -2,7 +2,6 @@
 
 class CronjobRefreshSeries extends Migration
 {
-    //const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/refresh_series.php';
     public function description()
     {
         return 'adds a cronjob for refreshing the episodes of an scheduled series in Stud.IP';

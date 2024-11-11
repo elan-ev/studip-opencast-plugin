@@ -73,7 +73,7 @@ class WidgetHelper
                                 // To avoid redundancy, we also check if the upcoming array contains the date id.
                                 if (!empty($seminar_playlist_video) && !isset($upcoming_livestreams[$date->id])) {
                                     $url_with_playlist_token = \PluginEngine::getURL(
-                                        'opencast',
+                                        'opencastv3',
                                         ['cid' => $course->id],
                                         'course#/course/videos?taget_pl_token=' . $seminar_playlist->playlist->token
                                     );

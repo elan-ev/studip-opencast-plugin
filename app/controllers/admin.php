@@ -30,7 +30,7 @@ class AdminController extends Opencast\Controller
         Navigation::activateItem('/admin/config/oc-config');
         PageLayout::setBodyElementId('opencast-plugin');
 
-        $plugin_id = PluginManager::getInstance()->getPluginInfo('OpenCast')['id'];
+        $plugin_id = PluginManager::getInstance()->getPluginInfo('OpencastV3')['id'];
         $plugin_roles = RolePersistence::getAssignedPluginRoles($plugin_id);
         $has_role = false;
         foreach ($plugin_roles as $plugin_role) {

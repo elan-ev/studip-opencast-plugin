@@ -1,7 +1,7 @@
 <?php
 class NewCoursewareBlock extends Migration
 {
-    const FILENAME = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/opencast_courseware_block_copy_mapping.php';
+    const FILENAME = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/opencast_courseware_block_copy_mapping.php';
 
     public function description()
     {

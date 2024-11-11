@@ -7,15 +7,6 @@ require_once 'vendor/trails/trails.php';
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
 
-/* Courseware Block */
-if (\StudipVersion::newerThan('4.6')) {
-    require_once 'lib/BlockTypes/OpencastBlockV3.php';
-} else {
-    if (!interface_exists('Courseware\CoursewarePlugin')) {
-        require_once 'lib/FakeCoursewareInterface.php';
-    }
-}
-
 StudipAutoloader::addAutoloadPath(__DIR__, 'ElanEv');
 StudipAutoloader::addAutoloadPath(__DIR__ . '/lib', 'Opencast');
 

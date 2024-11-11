@@ -6,7 +6,7 @@ class AddCoursewarePlugin extends Migration
     {
         DBManager::get()->query("UPDATE plugins
             SET plugintype = 'StandardPlugin,StudipModule,SystemPlugin,Courseware\\\\CoursewarePlugin'
-            WHERE pluginclassname = 'OpenCast'");
+            WHERE pluginclassname = 'OpencastV3'");
 
         SimpleOrMap::expireTableScheme();
     }

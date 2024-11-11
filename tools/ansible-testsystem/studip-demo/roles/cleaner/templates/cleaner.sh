@@ -63,21 +63,21 @@ echo run migrations
 cd {{ studip_base_dir }} && php ./cli/studip migrate
 
 echo install most recent version of Stud.IP Opencast plugin
-rm -rf {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast
-git clone https://github.com/elan-ev/studip-opencast-plugin.git {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast
+rm -rf {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpencastV3
+git clone https://github.com/elan-ev/studip-opencast-plugin.git {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpencastV3
 
 echo change max plugin version
-sed -i 's/studipMaxVersion=.*/studipMaxVersion=7.0.99/g' /usr/local/studip/main/public/plugins_packages/elan-ev/OpenCast/plugin.manifest
+sed -i 's/studipMaxVersion=.*/studipMaxVersion=7.0.99/g' /usr/local/studip/main/public/plugins_packages/elan-ev/OpencastV3/plugin.manifest
 
 echo build all assets for Stud.IP OCP
-cd {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpenCast && npm run build
+cd {{ studip_base_dir }}/public/plugins_packages/elan-ev/OpencastV3 && npm run build
 
 echo register and activate Stud.IP OCP
-cd {{ studip_base_dir }} && php ./cli/studip plugin:register public/plugins_packages/elan-ev/OpenCast
-cd {{ studip_base_dir }} && php ./cli/studip plugin:activate OpenCast
+cd {{ studip_base_dir }} && php ./cli/studip plugin:register public/plugins_packages/elan-ev/OpencastV3
+cd {{ studip_base_dir }} && php ./cli/studip plugin:activate OpencastV3
 
 echo run Stud.IP OCP migrations
-cd {{ studip_base_dir }} && php ./cli/studip plugin:migrate OpenCast
+cd {{ studip_base_dir }} && php ./cli/studip plugin:migrate OpencastV3
 
 echo configure Stud.IP OCP
 mysql -u {{ studip_db.user }} --password={{ studip_db.password }} {{ studip_db.name }} < {{ studip_cronjob_dir }}/oc.sql
