@@ -7,8 +7,7 @@ class AddWorkflowCol extends Migration {
     }
 
     function down() {
-        DBManager::get()->query("ALTER TABLE `oc_resources`
-            DROP COLUMN `workflow_id`;");
+
     }
 
 }

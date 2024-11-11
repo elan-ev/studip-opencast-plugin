@@ -24,12 +24,7 @@ class WorkflowConfiguration extends Migration {
 
 
     function down() {
-        DBManager::get()->query("DROP TABLE IF EXISTS `oc_seminar_workflow_configuration`;");
-        DBManager::get()->query("ALTER TABLE `oc_scheduled_recordings`
-                                  DROP COLUMN `workflow_id`,
-                                  DROP COLUMN `mktime`,
-                                  DROP COLUMN `chdate`,
-                                  CHANGE status status ENUM('scheduled','recorded') NOT NULL DEFAULT 'scheduled';");
+
     }
 
 }

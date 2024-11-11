@@ -16,10 +16,6 @@ class AddIsRetractingFlagToEpisodes extends \Migration
 
     function down()
     {
-        \DBManager::get()->query(
-            "ALTER TABLE `oc_seminar_episodes` DROP COLUMN `is_retracting`;"
-        );
 
-        SimpleOrMap::expireTableScheme();
     }
 }

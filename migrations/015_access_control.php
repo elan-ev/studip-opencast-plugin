@@ -38,30 +38,7 @@ class AccessControl extends Migration
 
     function down()
     {
-        DBManager::get()->query("DROP TABLE `oc_access_control`");
 
-        $result = DBManager::get()->query("SELECT seminar_id, episode_id FROM `oc_seminar_episodes`
-            WHERE visible = 'invisible'");
-        $data = $result->fetchAll(PDO::FETCH_KEY_PAIR);
-
-        DBManager::get()->query("ALTER TABLE `oc_seminar_episodes`
-            MODIFY `visible` ENUM('true', 'false') NOT NULL DEFAULT 'true'");
-
-        DBManager::get()->exec("UPDATE `oc_seminar_episodes`
-            SET visible = 'true'
-            WHERE 1");
-
-        $stmt = DBManager::get()->prepare("UPDATE `oc_seminar_episodes`
-            SET visible = 'false'
-            WHERE seminar_id = ?
-                AND episode_id = ?");
-
-        foreach ($data as $course_id => $episode_id) {
-            $stmt->execute([$course_id, $episode_id]);
-        }
-
-        // Expire orm cache, so the change can take effect
-        SimpleORMap::expireTableScheme();
     }
 
 }
