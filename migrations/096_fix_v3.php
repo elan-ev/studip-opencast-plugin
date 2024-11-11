@@ -24,7 +24,9 @@ class FixV3 extends Migration
 
         // fix tool activations and plugin activations
         $old_plugin_id = $db->query("SELECT pluginid FROM plugins WHERE pluginclassname = 'OpenCast'")->fetchColumn();
-        $new_plugin_id = $db->query("SELECT pluginid FROM plugins WHERE pluginclassname = 'OpencastV3'")->fetchColumn();
+
+        // guess new plugin id
+        $new_plugin_id = $db->query("SELECT MAX(pluginid) FROM plugins")->fetchColumn() + 1;
 
         if (!empty($old_plugin_id) && !empty($new_plugin_id)) {
             $stmt = $db->prepare("UPDATE tools_activated SET plugin_id = ':new' WHERE plugin_id = ':old'");
@@ -40,10 +42,12 @@ class FixV3 extends Migration
             ]);
         }
 
-        // clear cache for autoloader classes
+        // Clear the whole Stud.IP cache to make the plugin work correctlu
         $cache     = StudipCacheFactory::getCache();
-        $cache_key = 'STUDIP#autoloader-classes';
-        $cache->expire($cache_key);
+        $cache->flush();
+
+        // disable migrations for old plugin to prevent accidential deletion of oc-data
+        $db->exec("DELETE FROM schema_version WHERE domain = 'OpenCast'");
     }
 
     public function down()
