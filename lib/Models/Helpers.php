@@ -338,7 +338,10 @@ class Helpers
 
         $result = [];
         foreach ($acls as $entry) {
-            if (in_array($entry['role'], $possible_roles) !== false) {
+            // Add if existing role exists in new acls or is a legacy course role
+            if ((in_array($entry['role'], $possible_roles) !== false) ||
+                preg_match('/[0-9a-f]{32}_(?:Instructor|Learner)/', $entry['role'])
+            ){
                 $result[$entry['role'] .'_'. $entry['action']] = $entry;
             }
         }
