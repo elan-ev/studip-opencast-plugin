@@ -316,7 +316,7 @@ export default {
                     'upload.seriesId'  : this.course_config['series']['series_id'],
                     'upload.acl'       : true,
                     'upload.workflowId': this.getWorkflow(config_id),
-                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + this.cid),
+                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencastv3/course?cid=' + this.cid),
                     'return.label'     : 'Stud.IP'
                 }
             );

@@ -169,7 +169,7 @@ export default {
                     'upload.seriesId'  : this.currentUserSeries,
                     'upload.acl'       : false,
                     'upload.workflowId': this.getWorkflow(config_id),
-                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencast/contents/index#/contents/videos'),
+                    'return.target'    : window.STUDIP.URLHelper.getURL('plugins.php/opencastv3/contents/index#/contents/videos'),
                     'return.label'     : 'Stud.IP'
                 }
             );
