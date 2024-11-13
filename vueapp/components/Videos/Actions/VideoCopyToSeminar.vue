@@ -94,7 +94,7 @@ export default {
     methods: {
 
         getCourseLink(course) {
-            return window.STUDIP.URLHelper.getURL('plugins.php/opencast/course?cid=' + course.id)
+            return window.STUDIP.URLHelper.getURL('plugins.php/opencastv3/course?cid=' + course.id)
         },
 
         addCourseToList(course) {

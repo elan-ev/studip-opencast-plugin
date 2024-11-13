@@ -45,7 +45,7 @@ class VideoSharesList extends OpencastController
         $old_url_helper_url = \URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
         foreach ($video->shares->toArray() as $share) {
             $share['link'] = \URLHelper::getURL(
-                "plugins.php/opencast/redirect/perform/share/{$share['token']}",
+                "plugins.php/opencastv3/redirect/perform/share/{$share['token']}",
                 ['cancel_login' => 1]
             );
             $shares[] = $share;

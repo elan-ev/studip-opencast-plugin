@@ -177,7 +177,7 @@ export default {
 
         performSelectVideo(video) {
             this.currentVideoId = video.token;
-            this.currentEpisodeURL = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + video.token;
+            this.currentEpisodeURL = STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/perform/video/' + video.token;
             this.currentVisible = video?.visibility || 'public';
         },
 
@@ -208,7 +208,7 @@ export default {
 
         initCurrentData() {
             this.currentVideoId = get(this.block, "attributes.payload.token", "");
-            this.currentEpisodeURL =STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencast/redirect/perform/video/' + this.currentVideoId;
+            this.currentEpisodeURL =STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/perform/video/' + this.currentVideoId;
             this.currentVisible = get(this.block, "attributes.payload.visible", "");
 
             let copied_from = get(this.block, "attributes.payload.copied_from", "");
