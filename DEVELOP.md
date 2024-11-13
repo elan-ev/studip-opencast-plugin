@@ -112,3 +112,15 @@ Now:
 # Changes in permission checking (16.10.2023)
 
 New design paradigm for checking permissions in single routes: Based on the way permission checking is handled in the Stud.IP core (f.e.: https://gitlab.studip.de/studip/studip/-/blob/abb58e943a83665f8f9db36a6d4d1ecd64c5970f/lib/classes/JsonApi/Routes/Wiki/Authority.php ), there shall be a class called `Authority.php` in every directory under `lib/Routes`. In `lib/Routes/Playlist/` there is such an authority-file now which can be used as reference. Basically the class shall only consits of static methods of the style `canUserDoY` which return a boolean.
+
+# Renaming of plugin
+
+## Things to do as a developer
+
+To get things up and running again after the renaming to `OpencastV3`, developers can follow this list:
+1. `git pull`
+2. `npm run build`
+3. Run plugin migrations
+4. Run `install/install.sql` on the DB
+5. Renamen plugin folder from `OpenCast` to `OpencastV3`
+6. Change settings in Opencast config for the Stud.IP user provider and change `opencast` to `opencastv3`
