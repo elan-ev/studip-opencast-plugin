@@ -117,10 +117,10 @@ New design paradigm for checking permissions in single routes: Based on the way 
 
 ## Things to do as a developer
 
-To get things up and running again after the renaming to `OpencastV3`, developers can follow this list:
+To get things up and running again after the renaming to `OpencastV3`, developers can follow this list (the order of the steps IS important!):
 1. `git pull`
 2. `npm run build`
-3. Run plugin migrations
-4. Run `install/install.sql` on the DB
+3. Run `install/install.sql` on the DB
+4. Run plugin migrations
 5. Renamen plugin folder from `OpenCast` to `OpencastV3`
 6. Change settings in Opencast config for the Stud.IP user provider and change `opencast` to `opencastv3`
