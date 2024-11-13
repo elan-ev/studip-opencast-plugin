@@ -134,7 +134,7 @@ class VersionHelper50 implements VersionHelperInterface
         $icon = new \Icon($plugin->assetsUrl . '/images/opencast-courseware.svg');
 
         \PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
-            background-image:url(' . $icon->asImagePath() . ')
+            background-image:url(' . $icon->asImagePath() . ') !important;
         }');
 
         \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
