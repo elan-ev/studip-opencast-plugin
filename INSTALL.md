@@ -1,4 +1,4 @@
-# Stud.IP Opencast Plugin
+# Installation of Stud.IP Opencast Plugin
 
 The Opencast plugin is using LTI and the Stud.IP User Provider to present the videos and enforce permissions. You need to configure your Opencast system to make this plugin work.
 
@@ -124,3 +124,15 @@ https://hilfe.studip.de/help/4.0/de/Basis/OpencastV3Administration
 ## Caveats
 
 Stud.IP root users currently get `ROLE_ADMIN` and are therefore factual Opencast admins!
+
+# Migrating from older versions of the plugin
+
+The plugin has been renamed to `OpencastV3`. When updating from V2 or and older V3, the plugin takes steps to rename things to make it work for the new plugin versions. After these steps, the old version of the plugin will remain in your Stud.IP installation in a deactivated state with a DB version of `0` and can be safely deinstalled in that case. Make sure the plugin is really showing a `0` before uninstalling it, otherwise bad things WILL happen!
+
+If you are migrating from version 2.x of this plugin, you can use `tools/pre_migrate_acls.php` in the weeks before installing the new version to shift workload on opencast before the installation. The Cronjobs should take care of anything missing nonetheless, so this step is useful but not absolutely necessary. Just keep in mind, that ALL videos in your Opencast system will have to run through a `republish-metadata`-workflow in order for all plugin functions to work correctly!
+
+
+# Feedback and Help
+
+You can join our Matrix channel if you have feedback or need help:  
+https://matrix.to/#/#studip-opencast-plugin:uni-osnabrueck.de
