@@ -62,8 +62,8 @@ class RestClient
             'url' => $config['service_url'],
             'username' => $config['service_user'],
             'password' => $config['service_password'],
-            'timeout' => 5,
-            'connect_timeout' => 5,
+            'timeout' => 60,
+            'connect_timeout' => 60,
             'features' => [
                 'lucene' => false
             ]
