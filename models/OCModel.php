@@ -454,7 +454,7 @@ class OCModel
 
                 if ($service->path == '/admin-ng/event') {
                     $services[$service->host . $service->path]
-                        = 'adming-ngevent';
+                        = 'admin-ngevent';
                 }
             }
         }
