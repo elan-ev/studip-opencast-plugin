@@ -113,6 +113,8 @@ class PlaylistMigration
 
         $entries = [];
         foreach ($playlist_videos as $playlist_video) {
+            if (!$playlist_video['episode']) continue;
+
             $entries[] = [
                 'contentId' => $playlist_video['episode'],
                 'type' => 'EVENT'
