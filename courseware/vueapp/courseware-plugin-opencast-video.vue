@@ -13,8 +13,8 @@
                 <div>
                     <span v-if="!currentVideoId" v-text="$gettext('Es wurde bisher kein Video ausgewählt')"></span>
                     <span v-else-if="!currentEpisodeURL" v-text="$gettext('Dieses Video hat keinen Veröffentlichungs-URL-Link')"></span>
-                    <span v-else-if="!isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
-                    <iframe v-else :src="currentEpisodeURL"
+                    <span v-else-if="isCurrentVideoLTIChecked && !isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
+                    <iframe v-else-if="isCurrentVideoLTIChecked" :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen
                     ></iframe>
@@ -111,7 +111,7 @@ export default {
                     lastPage: 0,
                     items: 0
                 },
-            videos: {},
+            videos: [],
             loadingVideos : false,
             currentVideoId : null,
             currentEpisodeURL : null,
@@ -136,15 +136,22 @@ export default {
             );
         },
 
-        isCurrentVideoLTIAuthenticated() {
-            if (this.videos.length > 0) {
-                let currentVideo = this.videos.find(video => video.token === this.currentVideoId);
-                if (!currentVideo) {
-                    return false;
-                }
-                return this.isLTIAuthenticated[currentVideo.config_id];
+        currentVideo() {
+            return this.videos.find(video => video.token === this.currentVideoId);
+        },
+
+        isCurrentVideoLTIChecked() {
+            if (!this.currentVideo) {
+                return false;
             }
-            return false;
+            return this.isLTIAuthenticated[this.currentVideo.config_id] !== undefined;
+        },
+
+        isCurrentVideoLTIAuthenticated() {
+            if (!this.currentVideo) {
+                return false;
+            }
+            return this.isLTIAuthenticated[this.currentVideo.config_id] === true;
         }
     },
 
@@ -262,7 +269,11 @@ export default {
             }).then((response) => {
                 if (response.status == 200 && response.data.user_id !== undefined) {
                     this.$set(this.isLTIAuthenticated, server.id, true);
+                } else {
+                    this.$set(this.isLTIAuthenticated, server.id, false);
                 }
+            }).catch(() => {
+                this.$set(this.isLTIAuthenticated, server.id, false);
             });
         },
     },
