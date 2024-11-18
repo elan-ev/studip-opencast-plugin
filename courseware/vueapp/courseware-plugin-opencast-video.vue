@@ -25,6 +25,10 @@
                             Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
                         </translate>
                     </div>
+
+                    <LtiAuth v-if="simple_config_list"
+                        :simple_config_list="simple_config_list"
+                    />
                 </div>
             </template>
             <template v-if="canEdit" #edit>
@@ -61,6 +65,7 @@
 const get = window._.get.bind(window._);
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex';
+import LtiAuth from "./components/LtiAuth.vue";
 import CoursewareSearchBar from './components/CoursewareSearchBar.vue';
 import CoursewareVideoTable from './components/CoursewareVideoTable.vue';
 
@@ -68,6 +73,7 @@ export default {
     name: "courseware-plugin-opencast-video",
 
     components: {
+        LtiAuth,
         CoursewareSearchBar,
         CoursewareVideoTable,
     },
