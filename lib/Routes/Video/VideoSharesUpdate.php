@@ -21,6 +21,10 @@ class VideoSharesUpdate extends OpencastController
 
         global $user;
 
+        if (!\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
+            throw new \AccessDeniedException();
+        }
+
         $token = $args['token'];
         $video = Videos::findByToken($token);
 

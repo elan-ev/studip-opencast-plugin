@@ -16,8 +16,11 @@ class VideoSharesList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-
         global $user;
+
+        if (!\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
+            throw new \AccessDeniedException();
+        }
 
         $token = $args['token'];
         $video = Videos::findByToken($token);

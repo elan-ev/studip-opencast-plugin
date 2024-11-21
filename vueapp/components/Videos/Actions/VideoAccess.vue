@@ -53,7 +53,7 @@
                         />
                     </fieldset>
                 </form>
-                <form class="default">
+                <form class="default" v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
                     <fieldset>
                         <legend>
                             {{ $gettext('Share Links') }}
@@ -118,7 +118,7 @@
                         </table>
                     </fieldset>
 
-                    <fieldset v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
+                    <fieldset>
                         <legend>
                             {{ $gettext('Weltweiter Zugriff') }}
                         </legend>
@@ -339,8 +339,13 @@ export default {
         },
     },
 
-    mounted () {
-        this.initVideoShares();
+    mounted ()
+    {
+        this.$nextTick(() => {
+            if (this.config.settings.OPENCAST_ALLOW_PUBLIC_SHARING) {
+                this.initVideoShares();
+            }
+        });
     },
 }
 </script>
