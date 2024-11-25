@@ -11,7 +11,8 @@
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
         ROUTE      : 'course',
         REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/perform', true) ?>',
-        AUTH_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate', true) ?>'
+        AUTH_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate', true) ?>',
+        PREVIEW_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/preview') ?>'
     };
     <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;

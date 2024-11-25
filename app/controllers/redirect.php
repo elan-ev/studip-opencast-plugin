@@ -3,6 +3,7 @@
 use Opencast\Models\Videos;
 use Opencast\Models\VideosShares;
 use Opencast\Models\LTI\LtiHelper;
+use Opencast\Models\REST\ApiEventsClient;
 
 class RedirectController extends Opencast\Controller
 {
@@ -173,5 +174,42 @@ class RedirectController extends Opencast\Controller
 
         // if nothing has been found, at least try to use the first found link
         return reset($lti);
+    }
+
+    /**
+     * Load preview image from opencast and show it
+     *
+     * @param String $episode_id
+     *
+     * @return void
+     */
+    public function preview_action($token)
+    {
+        global $user, $perm;
+
+        $this->set_layout(null);
+
+        $video = Videos::findByToken($token);
+
+        if (!$video->getUserPerm($user->id)) {
+            throw new \Exception('Access denied!');
+        }
+
+        // get preview image
+        $previews = json_decode($video->preview, true);
+        $preview = $previews['player'] ?: $previews['search'];
+
+        $api_events = ApiEventsClient::getInstance();
+
+        // var_Dump($preview);die;
+        $image = $preview ?
+            : URLHelper::getURL($this->plugin->getPluginUrl() . '/assets/images/default-preview.png');
+
+        $response = $api_events->fileRequest($image);
+
+        header('Content-Type: '. $response['mimetype']);
+
+        echo $response['body'];
+        die;
     }
 }

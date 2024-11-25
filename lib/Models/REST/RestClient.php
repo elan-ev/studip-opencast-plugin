@@ -71,4 +71,26 @@ class RestClient
         $this->opencastApi = new Opencast($oc_config);
         $this->ocRestClient = new OcRestClient($oc_config);
     }
+
+    public function fileRequest($file_url)
+    {
+        $response = $this->ocRestClient->get($file_url, [
+            'auth'            => [$this->username, $this->password],
+            'timeout'         => 60,
+            'connect_timeout' => 60,
+        ]);
+
+        $result = [];
+        $result['code']   = $response->getStatusCode();
+        $result['reason'] = $response->getReasonPhrase();
+        $body = '';
+        if ($result['code'] < 400 && !empty((string) $response->getBody())) {
+            $body = $response->getBody();
+        }
+
+        $result['body']     = $body;
+        $result['mimetype'] = $response->getHeader('Content-Type');
+
+        return $result;
+    }
 }

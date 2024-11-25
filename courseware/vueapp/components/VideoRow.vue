@@ -119,7 +119,6 @@ export default {
 
     props: {
         event: Object,
-        isLTIAuthenticated: Object,
         simple_config_list: Object,
 
         numberOfColumns: {
@@ -182,11 +181,7 @@ export default {
 
     computed: {
         getImageSrc() {
-            if (this.isLTIAuthenticated[this.event.config_id]) {
-                return this.event.preview.player ? this.event.preview.player : this.event.preview.search;
-            } else {
-                return this.simple_config_list.plugin_assets_url + '/images/default-preview.png';
-            }
+            return STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + this.event.token;
         },
 
         getDuration() {

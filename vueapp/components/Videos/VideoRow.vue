@@ -346,7 +346,6 @@ export default {
             'playlists',
             'downloadSetting',
             'videoSortMode',
-            'isLTIAuthenticated',
             'currentUser'
         ]),
 
@@ -355,11 +354,7 @@ export default {
         },
 
         getImageSrc() {
-            if (this.isLTIAuthenticated[this.event.config_id]) {
-                return this.event.preview.player ? this.event.preview.player : this.event.preview.search;
-            } else {
-                return this.defaultPreviewImageSrc;
-            }
+            return window.OpencastPlugin.PREVIEW_URL + '/' + this.event.token;
         },
 
         defaultPreviewImageSrc() {
