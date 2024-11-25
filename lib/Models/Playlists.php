@@ -406,32 +406,8 @@ class Playlists extends UPMap
 
         $old_acls = Helpers::filterACLs($old_acl, $acl);
 
-        $current_acl = $old_acls['studip'];
-
-        foreach ($acl as $entry) {
-            $found = false;
-            foreach ($current_acl as $current_key => &$current_entry) {
-                if ($current_entry['role'] === $entry['role'] && $current_entry['action'] === $entry['action']) {
-                    if ($found) {
-                        // Remove duplicates
-                        unset($current_acl[$current_key]);
-                        continue;
-                    }
-
-                    $found = true;
-
-                    // Ensure that allowed is true
-                    $current_entry['allow'] = $entry['allow'];
-                }
-            }
-
-            if (!$found) {
-                $current_acl[$entry['role'] . '_'. $entry['action']] = $entry;
-            }
-        }
-
         // Reindex keys
-        $current_acl = array_values($current_acl);
+        $current_acl = array_values($old_acls['studip']);
 
         sort($current_acl);
         sort($acl);
