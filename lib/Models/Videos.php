@@ -693,27 +693,6 @@ class Videos extends UPMap
         return false;
     }
 
-    private static function addEpisodeAcl($episode_id, $add_acl, $acl)
-    {
-        $possible_roles = [
-            $episode_id . '_read',
-            $episode_id . '_write',
-        ];
-
-        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
-            $possible_roles[] = 'ROLE_ANONYMOUS';
-        }
-
-        $result = [];
-        foreach ($acl as $entry) {
-            if (in_array($entry['role'], $possible_roles) === false) {
-                $result[] = $entry;
-            }
-        }
-
-        return array_merge($result, $add_acl);
-    }
-
     /**
      * Check that the episode has its unique ACL and set it if necessary
      *
@@ -781,6 +760,8 @@ class Videos extends UPMap
             $courses = array_merge($courses, $playlist->courses->pluck('id'));
         }
 
+        $courses = array_unique($courses);
+
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
         // add anonymous role if video is world visible
@@ -800,10 +781,7 @@ class Videos extends UPMap
         $oc_acls = Helpers::filterACLs($current_acl, $acl);
 
         if ($acl <> $oc_acls['studip']) {
-            $new_acl = array_merge(
-                $oc_acls['other'],
-                self::addEpisodeAcl($this->episode, $acl, $current_acl)
-            );
+            $new_acl = array_merge($oc_acls['other'], $acl);
 
             $result = $api_client->setACL($this->episode, $new_acl);
 
