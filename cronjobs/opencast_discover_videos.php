@@ -51,6 +51,9 @@ class OpencastDiscoverVideos extends CronJob
                 echo "found opencast with version $version, continuing\n";
             }
 
+            // update endpoints, just to make sure
+            $config->updateEndpoints();
+
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
             echo 'instantiated api_client' . "\n";

@@ -185,8 +185,6 @@ class Config extends \SimpleOrMap
             try {
                 $version = RESTConfig::getOCBaseVersion($this->id);
 
-                Endpoints::deleteBySql('config_id = ?', [$this->id]);
-
                 $this->service_version = $version;
                 $this->store();
 
@@ -248,6 +246,8 @@ class Config extends \SimpleOrMap
                         )
                     ];
                 } else {
+                    // clear the endpoints before setting the new ones to get rid of obsolete ones
+                    Endpoints::deleteBySql('config_id = ?', [$this->id]);
 
                     foreach($services as $service_url => $service_type) {
                         Endpoints::setEndpoint($this->id, $service_url, $service_type);
