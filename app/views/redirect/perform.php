@@ -1,6 +1,6 @@
-<? if (!empty($this->error)) : ?>
 <DOCTYPE html>
 <html>
+<? if (!empty($this->error)) : ?>
     <head>
         <style>
             h1 {
@@ -26,20 +26,20 @@
             <?= htmlReady($this->error) ?>
         </h1>
     </body>
-</html>
 <? else : ?>
-<form class="default" action="<?= $launch_url ?>" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">
-    <div class="oc--loading-spinner oc--loading-redirect">
-        <div class="oc--spinner"></div>
-    </div>
-    <? foreach ($launch_data as $name => $value) : ?>
-        <input type="hidden" name="<?= htmlspecialchars($name) ?>" value="<?= htmlspecialchars($value) ?>">
-    <? endforeach ?>
-</form>
-
-<script type="text/javascript">
-    jQuery(function ($) {
-        $('#ltiLaunchForm').submit();
-    });
-</script>
+    <head>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById('ltiLaunchForm').submit();
+            });
+        </script>
+    </head>
+    <body>
+        <form class="default" action="<?= $launch_url ?>" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">
+            <? foreach ($launch_data as $name => $value) : ?>
+                <input type="hidden" name="<?= htmlspecialchars($name) ?>" value="<?= htmlspecialchars($value) ?>">
+            <? endforeach ?>
+        </form>
+    </body>
 <? endif ?>
+</html>
