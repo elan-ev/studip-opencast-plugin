@@ -65,10 +65,6 @@
                 </tbody>
             </table>
         </div>
-
-        <LtiAuth v-if="simple_config_list"
-            :simple_config_list="simple_config_list"
-        />
     </div>
 </template>
 
