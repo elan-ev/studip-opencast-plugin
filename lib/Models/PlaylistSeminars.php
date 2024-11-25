@@ -27,7 +27,6 @@ class PlaylistSeminars extends \SimpleORMap
     public function toSanitizedArray()
     {
         $playlist_data = $this->playlist->toSanitizedArray();
-        $playlist_data['videos_count'] = count($this->seminar_videos);
         $playlist_data['visibility'] = $this->visibility;
 
         // Always prioritise allow download property of seminar playlist
