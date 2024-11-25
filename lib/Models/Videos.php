@@ -732,6 +732,11 @@ class Videos extends UPMap
         $api_client  = ApiEventsClient::getInstance($this->config_id);
         $current_acl = $api_client->getAcl($this->episode);
 
+        // prevent updating acl if something went wrong
+        if (!is_array($acl)) {
+            return;
+        }
+
         // one ACL for reading AND for reading and writing
         $acl = [
             [
