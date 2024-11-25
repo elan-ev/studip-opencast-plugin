@@ -115,7 +115,8 @@ class OpencastWorker extends CronJob
                     // task is done, delete it
                     $task->delete();
 
-                    // send out Notification for video discovery plugins to react
+                    // send out Notifications for video discovery plugins to react
+                    NotificationCenter::postNotification('OpencastCourseSync', $event, $video);
                     NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
                 } else {
                     // event is missing or has no publications.
