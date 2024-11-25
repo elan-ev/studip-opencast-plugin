@@ -757,12 +757,10 @@ class Videos extends UPMap
 
         // add course acls
         foreach ($this->playlists as $playlist) {
-            foreach ($playlist->courses->pluck('id') as $course_id) {
-                $courses[$course_id] = null;
-            }
+            $courses = array_merge($courses, $playlist->courses->pluck('id'));
         }
 
-        $courses = array_keys($courses);
+        $courses = array_unique($courses);
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
