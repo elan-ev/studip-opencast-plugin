@@ -11,8 +11,7 @@
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
         ROUTE      : 'videos',
         REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/perform') ?>',
-        AUTH_URL   : '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate') ?>',
-        PREVIEW_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/preview') ?>'
+        AUTH_URL   : '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate') ?>'
     };
     <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;

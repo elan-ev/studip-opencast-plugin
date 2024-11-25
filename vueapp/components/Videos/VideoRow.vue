@@ -354,7 +354,7 @@ export default {
         },
 
         getImageSrc() {
-            return window.OpencastPlugin.PREVIEW_URL + '/' + this.event.token;
+            return STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + this.event.token;
         },
 
         defaultPreviewImageSrc() {
