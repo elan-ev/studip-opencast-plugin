@@ -352,7 +352,17 @@ class OpencastLTI
 
         // check, if the calculated and actual acls differ and update if so
         if ($oc_acl <> $acl->toArray()) {
-            $client->setACL($target_id, $acl);
+            // To only touch ACLs set by the Stud.IP plugin,
+            // copy over existing ACLs which aren't handled by Stud.IP.
+            foreach ($oc_acl as $oc_acl_entry) {
+                if (!preg_match('~(?:[0-9a-f]{32}_(?:Instructor|Learner)|ROLE_ANONYMOUS|ROLE_ADMIN)~', $oc_acl_entry['role'])) {
+                    $e = new \AccessControlEntity($oc_acl_entry['role'], $oc_acl_entry['action'], $oc_acl_entry['allow']);
+                    $acl->add_ace($e);
+                }
+            }
+            if ($oc_acl <> $acl->toArray()) {
+                $client->setACL($target_id, $acl);
+            }
         }
     }
 
