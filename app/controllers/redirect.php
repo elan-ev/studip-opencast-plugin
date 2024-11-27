@@ -199,7 +199,7 @@ class RedirectController extends Opencast\Controller
         $previews = json_decode($video->preview, true);
         $preview = $previews['player'] ?: $previews['search'];
 
-        $api_events = ApiEventsClient::getInstance();
+        $api_events = ApiEventsClient::getInstance($video->config_id);
 
         // var_Dump($preview);die;
         $image = $preview ?
