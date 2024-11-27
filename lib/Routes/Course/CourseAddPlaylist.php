@@ -11,6 +11,7 @@ use Opencast\OpencastController;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistSeminars;
 use Opencast\Models\Helpers;
+use Opencast\Providers\Perm;
 
 class CourseAddPlaylist extends OpencastController
 {
@@ -23,6 +24,10 @@ class CourseAddPlaylist extends OpencastController
         $playlist = Playlists::findOneByToken($args['token']);
         $course_id = $args['course_id'];
 
+        if (!Perm::editAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
+        }
+
         $json = $this->getRequestData($request);
 
         $is_default = 0;
@@ -34,8 +39,7 @@ class CourseAddPlaylist extends OpencastController
         // check what permissions the current user has on the playlist and video
         $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
 
-        // allow any perm for adding playlists to course user has access to
-        if (empty($perm_playlist) && !$perm->have_studip_perm('tutor', $course_id))
+        if (empty($perm_playlist))
         {
             throw new \AccessDeniedException();
         }
