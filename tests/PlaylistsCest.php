@@ -2,9 +2,15 @@
 
 class PlaylistsCest
 {
+    private $config_id;
+
     public function _before(ApiTester $I)
     {
-        $I->amHttpAuthenticated('apitester', 'apitester');
+        $config = $I->getConfig();
+
+        $this->config_id = $config['config_id'];
+
+        $I->amHttpAuthenticated($config['user'], $config['password']);
     }
 
     // tests
@@ -13,7 +19,8 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -29,7 +36,8 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -51,13 +59,15 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $playlist2 = [
             'title'       => 'Meine Videos 2',
             'description' => 'Videoliste 2',
-            'visibility'  => 'free'
+            'visibility'  => 'free',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -83,7 +93,8 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -171,13 +182,15 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $playlist2 = [
             'title'       => 'Meine Videos 2' ,
             'description' => 'Videoliste 2',
-            'visibility'  => 'free'
+            'visibility'  => 'free',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -212,13 +225,15 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $playlist2 = [
             'title'       => 'Meine Videos 2' ,
             'description' => 'Videoliste 2',
-            'visibility'  => 'free'
+            'visibility'  => 'free',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -251,13 +266,15 @@ class PlaylistsCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $playlist2 = [
             'title'       => 'Meine Videos 2' ,
             'description' => 'Videoliste 2',
-            'visibility'  => 'free'
+            'visibility'  => 'free',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);

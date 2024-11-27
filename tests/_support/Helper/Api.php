@@ -6,5 +6,9 @@ namespace Helper;
 
 class Api extends \Codeception\Module
 {
+    protected $requiredFields = ['user', 'password', 'config_id', 'course_id'];
 
+    public function getConfig(): array {
+        return $this->config;
+    }
 }

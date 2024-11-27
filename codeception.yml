@@ -6,8 +6,13 @@ suites:
         modules:
             enabled:
                 - REST:
-                    url: https://studip.me/testip/plugins.php/opencast/api
+                    url: '%REST_URL%'
                     depends: PhpBrowser
+                - \Helper\Api:
+                    user: '%USER%'
+                    password: '%PASSWORD%'
+                    config_id: '%CONFIG_ID%'
+                    course_id: '%COURSE_ID%'
         step_decorators:
             - \Codeception\Step\AsJson
 
@@ -20,3 +25,7 @@ paths:
 settings:
     shuffle: false
     lint: true
+
+params:
+    - env
+    - tests/.env

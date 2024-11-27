@@ -4,7 +4,8 @@ class UsersCest
 {
     public function _before(ApiTester $I)
     {
-        $I->amHttpAuthenticated('apitester', 'apitester');
+        $config = $I->getConfig();
+        $I->amHttpAuthenticated($config['user'], $config['password']);
     }
 
     // tests
