@@ -6,9 +6,11 @@ namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
 use Opencast\Errors\RESTError;
-use \Context;
 use OpencastApi\Opencast;
 use OpencastApi\Rest\OcRestClient;
+
+use \Context;
+use \Config as StudipConfig;
 
 class RestClient
 {
@@ -37,7 +39,8 @@ class RestClient
     {
         // use default config if nothing else is given
         if (is_null($config_id) || $config_id === false) {
-            $config_id = Config::getConfigIdForCourse(Context::getId()) ?: 1;
+            $config_id = Config::getConfigIdForCourse(Context::getId()) ?
+                : StudipConfig::get()->OPENCAST_DEFAULT_SERVER;
         }
 
         if (!property_exists(get_called_class(), 'me')) {
