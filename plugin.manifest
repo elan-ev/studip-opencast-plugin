@@ -1,7 +1,7 @@
 pluginname=OpencastV3
 pluginclassname=OpencastV3
 origin=elan-ev
-version=3.19
+version=3.20
 studipMinVersion=5.1
 studipMaxVersion=5.5.99
 dbscheme=install/install.sql
