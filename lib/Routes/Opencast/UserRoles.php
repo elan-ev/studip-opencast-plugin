@@ -14,6 +14,7 @@ use Opencast\Models\Filter;
 use Opencast\Models\VideosShares;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistsUserPerms;
+use Opencast\Models\VideoCoursewareBlocks;
 
 
 
@@ -97,6 +98,18 @@ class UserRoles extends OpencastController
                     } else {
                         $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
                     }
+                }
+
+                // get all videos in courseware blocks in courses and add them to the permission list as well
+                $stmt_courseware = \DBManager::get()->prepare("SELECT episode FROM oc_video_cw_blocks
+                    LEFT JOIN oc_video USING (token)
+                    LEFT JOIN seminar_user USING (seminar_id)
+                    WHERE seminar_user.user_id = :user_id");#
+
+                $stmt_courseware->execute([':user_id' => $user_id]);
+
+                while($episode = $stmt_courseware->fetchColumn()) {
+                    $roles[$episode . '_read'] = $episode . '_read';
                 }
 
                 $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user

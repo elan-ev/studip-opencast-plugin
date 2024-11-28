@@ -53,6 +53,7 @@ class RouteMap
         // Video routes
         $group->get("/videos", Routes\Video\VideoList::class);
 
+        $group->get("/videos/{token}", Routes\Video\VideoShow::class);
         $group->put("/videos/{token}", Routes\Video\VideoUpdate::class);
         $group->put("/videos/{token}/restore", Routes\Video\VideoRestore::class);
         $group->delete("/videos/{token}", Routes\Video\VideoDelete::class);
