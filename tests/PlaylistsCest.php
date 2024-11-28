@@ -4,11 +4,16 @@ class PlaylistsCest
 {
     private $config_id;
 
+    private $author_name;
+    private $author_password;
+
     public function _before(ApiTester $I)
     {
         $config = $I->getConfig();
 
         $this->config_id = $config['config_id'];
+        $this->author_name = $config['author_name'];
+        $this->author_password = $config['author_password'];
 
         $I->amHttpAuthenticated($config['user'], $config['password']);
     }
@@ -205,13 +210,13 @@ class PlaylistsCest
 
         // give write perms to other user
         $response = $I->sendPutAsJson('/playlists/' . $token .'/user', [
-            'username' => "apitester_autor1",
+            'username' => $this->author_name,
             'perm'     => 'write'
         ]);
         $I->seeResponseCodeIs(200);
 
         // then, try to edit it as a different user
-        $I->amHttpAuthenticated('apitester_autor1', 'apitester_autor1');
+        $I->amHttpAuthenticated($this->author_name, $this->author_password);
 
         $response = $I->sendPutAsJson('/playlists/' . $token, $playlist2);
         $I->seeResponseCodeIs(200);
@@ -248,13 +253,13 @@ class PlaylistsCest
 
         // give write perms to other user
         $response = $I->sendPutAsJson('/playlists/' . $token .'/user', [
-            'username' => "apitester_autor1",
+            'username' => $this->author_name,
             'perm'     => 'read'
         ]);
         $I->seeResponseCodeIs(200);
 
         // then, try to edit it as a different user
-        $I->amHttpAuthenticated('apitester_autor1', 'apitester_autor1');
+        $I->amHttpAuthenticated($this->author_name, $this->author_password);
 
         $response = $I->sendPutAsJson('/playlists/' . $token, $playlist2);
         $I->seeResponseCodeIs(500);
@@ -289,17 +294,17 @@ class PlaylistsCest
 
         // give write perms to other user
         $response = $I->sendPutAsJson('/playlists/' . $token .'/user', [
-            'username' => "apitester_autor1",
+            'username' => $this->author_name,
             'perm'     => 'write'
         ]);
         $I->seeResponseCodeIs(200);
 
         // remove write perms for user
-        $response = $I->sendDelete('/playlists/' . $token .'/user/apitester_autor1');
+        $response = $I->sendDelete('/playlists/' . $token .'/user/' . $this->author_name);
         $I->seeResponseCodeIs(204);
 
         // then, try to edit it as a different user
-        $I->amHttpAuthenticated('apitester_autor1', 'apitester_autor1');
+        $I->amHttpAuthenticated($this->author_name, $this->author_password);
 
         $response = $I->sendPutAsJson('/playlists/' . $token, $playlist2);
         $I->seeResponseCodeIs(500);

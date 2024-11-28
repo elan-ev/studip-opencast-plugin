@@ -6,13 +6,18 @@ suites:
         modules:
             enabled:
                 - REST:
-                    url: '%REST_URL%'
+                    url: '%STUDIP_REST_URL%'
                     depends: PhpBrowser
                 - \Helper\Api:
                     user: '%USER%'
                     password: '%PASSWORD%'
+                    author_name: '%AUTHOR_NAME%'
+                    author_password: '%AUTHOR_PASSWORD%'
+                    course_student: '%COURSE_STUDENT%'
                     config_id: '%CONFIG_ID%'
                     course_id: '%COURSE_ID%'
+                    opencast_rest_url: '%OPENCAST_REST_URL%'
+                    api_token: '%API_TOKEN%'
         step_decorators:
             - \Codeception\Step\AsJson
 
