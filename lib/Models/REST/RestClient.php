@@ -69,8 +69,12 @@ class RestClient
             'connect_timeout' => 60,
             'features' => [
                 'lucene' => false
+            ],
+            'guzzle' => [
+                'verify' => $config['settings']['ssl_ignore_cert_errors'] === true ? false : true
             ]
         ];
+
         $this->opencastApi = new Opencast($oc_config);
         $this->ocRestClient = new OcRestClient($oc_config);
     }

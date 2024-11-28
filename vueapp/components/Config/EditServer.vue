@@ -156,6 +156,13 @@ export default {
                     value: this.currentConfig.debug,
                     type: 'boolean',
                     required: false
+                },
+                {
+                    description: this.$gettext('SSL Zertifkatsfehler ignorieren?'),
+                    name: 'ssl_ignore_cert_errors',
+                    value: this.currentConfig.ssl_ignore_cert_errors,
+                    type: 'boolean',
+                    required: false
                 }
             ];
         },

@@ -8,10 +8,11 @@ const initialState = {
         'service_user':      null,
         'service_password':  null,
         'settings': {
-            'lti_consumerkey':      null,
-            'lti_consumersecret':   null,
-            'time_buffer_overlap':  30,
-            'debug':                null
+            'lti_consumerkey':        null,
+            'lti_consumersecret':     null,
+            'time_buffer_overlap':    30,
+            'debug':                  null,
+            'ssl_ignore_cert_errors': null
         }
     },
     course_config: null
