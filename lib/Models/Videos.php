@@ -547,7 +547,7 @@ class Videos extends UPMap
      *
      * @return string $perm the perm value
      */
-    public function getUserPerm($user_id = null, $course_id = null)
+    public function getUserPerm($user_id = null)
     {
         global $user, $perm;
 
@@ -569,6 +569,13 @@ class Videos extends UPMap
         foreach ($this->perms as $uperm) {
             if ($uperm->user_id == $user_id) {
                 $ret_perm = $uperm->perm;
+            }
+        }
+
+        if (!$ret_perm) {
+            // check if at least read perms are present due to course participation
+            if ($this->haveCoursePerm('user')) {
+                return 'read';
             }
         }
 

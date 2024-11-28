@@ -185,13 +185,11 @@ class RedirectController extends Opencast\Controller
      */
     public function preview_action($token)
     {
-        global $user, $perm;
-
         $this->set_layout(null);
 
         $video = Videos::findByToken($token);
 
-        if (!$video->getUserPerm($user->id)) {
+        if (!$video->getUserPerm()) {
             throw new \Exception('Access denied!');
         }
 
