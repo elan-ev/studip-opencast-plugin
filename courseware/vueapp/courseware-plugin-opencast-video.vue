@@ -230,30 +230,43 @@ export default {
             }
         },
 
-        loadVideos() {
+        loadVideos()
+        {
             let view = this;
-            view.loadingVideos = true;
-            const params = new URLSearchParams();
-            params.append('offset', this.paging.currPage * this.limit);
-            params.append('limit', this.limit);
-            if (this.sortObj) {
-                params.append('order', this.sortObj.field + "_" + this.sortObj.order)
+
+            // if user can edit this block, load all accesible videos
+            if (this.canEdit) {
+                view.loadingVideos = true;
+                const params = new URLSearchParams();
+                params.append('offset', this.paging.currPage * this.limit);
+                params.append('limit', this.limit);
+                if (this.sortObj) {
+                    params.append('order', this.sortObj.field + "_" + this.sortObj.order)
+                }
+                if (this.searchText) {
+                    let filters = [{
+                        type: 'text',
+                        value: this.searchText
+                    }];
+                    params.append('filters', JSON.stringify(filters));
+                }
+                axios
+                    .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/api/videos', { params })
+                    .then(({ data }) => {
+                        view.paging.items = parseInt(data.count);
+                        view.paging.lastPage = parseInt(view.paging.items / view.limit);
+                        view.videos = data.videos;
+                        view.loadingVideos = false;
+                    })
+            } else {
+                // load only the current video if user has no edit perms
+                axios
+                    .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/api/videos/' + view.currentVideoId)
+                    .then(({ data }) => {
+                        view.videos = [];
+                        view.videos.push(data.video);
+                    });
             }
-            if (this.searchText) {
-                let filters = [{
-                    type: 'text',
-                    value: this.searchText
-                }];
-                params.append('filters', JSON.stringify(filters));
-            }
-            axios
-                .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/api/videos', { params })
-                .then(({ data }) => {
-                    view.paging.items = parseInt(data.count);
-                    view.paging.lastPage = parseInt(view.paging.items / view.limit);
-                    view.videos = data.videos;
-                    view.loadingVideos = false;
-                })
         },
 
         checkLTIAuthentication(server)

@@ -1,5 +1,11 @@
 <template>
-    <tr class="oc--episode" :class="{'oc-cw-video-selected' : selected}" v-if="event.refresh === undefined" :key="event.id" @click="$emit('setVideo', event)" style="cursor: pointer" title="Video auswählen">
+    <tr class="oc--episode" :class="{'oc-cw-video-selected' : selected}"
+        v-if="event.refresh === undefined"
+        :key="event.id"
+        @click="$emit('setVideo', event)"
+        style="cursor: pointer"
+        title="Video auswählen"
+    >
         <td class="oc--playercontainer">
             <span v-if="event.publication && event.preview && (event.available && event.available != '0')">
                 <span class="oc--previewimage">
