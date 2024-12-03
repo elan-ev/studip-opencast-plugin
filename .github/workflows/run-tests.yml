@@ -1,11 +1,11 @@
 name: Run plugin tests
 on:
   push:
-#    branches:
-#      - main
+    branches:
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   tests:
