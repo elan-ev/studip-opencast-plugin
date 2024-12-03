@@ -34,9 +34,9 @@ jobs:
         run: docker compose up --wait
 
       # Needed as studip directory has root owner and chown on whole directory takes too long
-      - name: Change ownership to user www-data for data and plugin directory
+      - name: Allow read, write and execute for all users in data and plugin directory
         working-directory: ./.github/docker
-        run: docker compose exec studip chown -R www-data data public/plugins_packages
+        run: docker compose exec studip chmod -R 777 data public/plugins_packages
 
       # Auto migrate in studip image seems to be broken
       - name: Migrate studip
