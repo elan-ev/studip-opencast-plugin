@@ -1,0 +1,46 @@
+services:
+  opencast_opensearch:
+    image: opensearchproject/opensearch:1
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: 'true'
+      OPENSEARCH_JAVA_OPTS: -Xms128m -Xmx512m
+      DISABLE_INSTALL_DEMO_CONFIG: 'true'
+      DISABLE_SECURITY_PLUGIN: 'true'
+    volumes:
+      - opencast_opensearch:/usr/share/opensearch/data
+
+  opencast:
+    image: quay.io/opencast/allinone:16.6
+    network_mode: host
+    environment:
+      ORG_OPENCASTPROJECT_SERVER_URL: http://127.0.0.1:8081
+      ORG_OPENCASTPROJECT_DOWNLOAD_URL: http://127.0.0.1:8081/static
+      ORG_OPENCASTPROJECT_SECURITY_ADMIN_USER: admin
+      ORG_OPENCASTPROJECT_SECURITY_ADMIN_PASS: opencast
+      ORG_OPENCASTPROJECT_SECURITY_DIGEST_USER: opencast_system_account
+      ORG_OPENCASTPROJECT_SECURITY_DIGEST_PASS: CHANGE_ME
+      ELASTICSEARCH_SERVER_HOST: localhost
+    #ports:
+    #  - "8080:8080"
+    volumes:
+      - opencast_data:/data
+      - ./opencast/etc/opencast/security/mh_default_org.xml:/opencast/etc/security/mh_default_org.xml
+      - ./opencast/etc/opencast/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg:/opencast/etc/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg
+      - ./opencast/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg:/opencast/etc/org.opencastproject.plugin.impl.PluginManagerImpl.cfg
+      - ./opencast/etc/opencast/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg:/opencast/etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg
+      - ./opencast/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg:/opencast/etc/org.opencastproject.userdirectory.studip-default.cfg
+
+  opencast_nginx:
+    image: nginx:1.24
+    network_mode: host
+    #ports:
+    #  - "8081:8081"
+    volumes:
+      - ./opencast/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+
+volumes:
+  opencast_opensearch: {}
+  opencast_data: {}

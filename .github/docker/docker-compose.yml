@@ -1,0 +1,3 @@
+include:
+  - docker-compose.opencast.yml
+  - docker-compose.studip.yml

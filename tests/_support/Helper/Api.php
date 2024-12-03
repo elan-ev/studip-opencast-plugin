@@ -7,15 +7,17 @@ namespace Helper;
 class Api extends \Codeception\Module
 {
     protected $requiredFields = [
-        'user',
-        'password',
+        'opencast_rest_url',
+        'config_id',
+        'api_token',
+        'opencast_admin_user',
+        'opencast_admin_password',
+        'dozent_name',
+        'dozent_password',
+        'course_student',
         'author_name',
         'author_password',
-        'course_student',
-        'config_id',
         'course_id',
-        'opencast_rest_url',
-        'api_token',
     ];
 
     public function getConfig(): array {

@@ -15,7 +15,7 @@ class PlaylistsCest
         $this->author_name = $config['author_name'];
         $this->author_password = $config['author_password'];
 
-        $I->amHttpAuthenticated($config['user'], $config['password']);
+        $I->amHttpAuthenticated($config['dozent_name'], $config['dozent_password']);
     }
 
     // tests

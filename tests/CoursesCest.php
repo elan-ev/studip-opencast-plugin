@@ -12,7 +12,7 @@ class CoursesCest
         $this->config_id = $config['config_id'];
         $this->course_id = $config['course_id'];
 
-        $I->amHttpAuthenticated($config['user'], $config['password']);
+        $I->amHttpAuthenticated($config['dozent_name'], $config['dozent_password']);
     }
 
     // tests
