@@ -27,7 +27,7 @@ jobs:
           node-version: 22.x
 
       - name: Build Opencast plugin
-        run: npm run build
+        run: npm run build-dev
 
       - name: Start containers
         working-directory: ./.github/docker
@@ -59,7 +59,7 @@ jobs:
         run: curl http://localhost/plugins.php/opencastv3/api/migrate_playlists -u root@studip:testing
 
       - name: Run tests
-        run: composer install && npm run tests
+        run: npm run tests
 
       - name: Stop containers
         working-directory: ./.github/docker
