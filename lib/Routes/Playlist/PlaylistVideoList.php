@@ -33,7 +33,7 @@ class PlaylistVideoList extends OpencastController
         // check if playlist is connected to the passed course and user is part of that course as well
         $permission = false;
         if ($params['cid']) {
-            if ($perm->have_studip_perm($params['cid'], 'user')) {
+            if ($perm->have_studip_perm('user', $params['cid'])) {
                 $permission = true;
             }
         }

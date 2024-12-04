@@ -1,0 +1,67 @@
+name: Run plugin tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Build Opencast plugin
+        run: npm run build-dev
+
+      - name: Start containers
+        working-directory: ./.github/docker
+        run: docker compose up --wait
+
+      # Needed as studip directory has root owner and chown on whole directory takes too long
+      - name: Allow read, write and execute for all users in data and plugin directory
+        working-directory: ./.github/docker
+        run: docker compose exec studip chmod -R 777 data public/plugins_packages
+
+      # Auto migrate in studip image seems to be broken
+      - name: Migrate studip
+        working-directory: ./.github/docker
+        run: docker compose exec studip php ./cli/studip migrate
+
+      - name: Register plugin
+        working-directory: ./.github/docker
+        run: docker compose exec studip php ./cli/studip plugin:register public/plugins_packages/elan-ev/OpencastV3
+
+      - name: Activate plugin
+        working-directory: ./.github/docker
+        run: docker compose exec studip php ./cli/studip plugin:activate OpencastV3
+
+      - name: Configure plugin
+        working-directory: ./.github/docker
+        run: docker compose exec -T studip_db mysql -u studip_user --password=studip_password studip_db < ./oc.sql
+
+      - name: Trigger playlists migration to Opencast
+        run: curl http://localhost/plugins.php/opencastv3/api/migrate_playlists -u root@studip:testing
+
+      - name: Run tests
+        run: npm run tests
+
+      - name: Stop containers
+        working-directory: ./.github/docker
+        if: always()
+        run: docker compose down

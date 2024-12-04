@@ -33,7 +33,7 @@ class CourseListPlaylist extends OpencastController
         }
 
         // check if user has access to this seminar
-        if (!$perm->have_studip_perm($course_id, 'user')) {
+        if (!$perm->have_studip_perm('user', $course_id)) {
             throw new \AccessDeniedException();
         }
 

@@ -1,0 +1,43 @@
+services:
+  studip_db:
+    image: mariadb:10.4
+    volumes:
+      - studip_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command: mysqld --sql_mode=""
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: studip_db
+      MYSQL_USER: studip_user
+      MYSQL_PASSWORD: studip_password
+  studip:
+    image: studip/studip:5.4
+    network_mode: host
+    depends_on:
+      - studip_db
+    volumes:
+      - studip_data:/var/www/studip/data
+      - ../..:/var/www/studip/public/plugins_packages/elan-ev/OpencastV3
+    restart: always
+    environment:
+      MYSQL_DATABASE: studip_db
+      MYSQL_USER: studip_user
+      MYSQL_PASSWORD: studip_password
+      MYSQL_HOST: 127.0.0.1
+      STUDIP_MAIL_TRANSPORT: debug
+
+      # Use automigrate to migrate your instance on startup
+      AUTO_MIGRATE: 1
+
+      # Use proxy url OR autoproxy if run behind a proxy
+      # PROXY_URL: https://studip.example.com/
+      # AUTO_PROXY: 1
+
+      # Demo data for your studip instance
+      DEMO_DATA: 1
+
+volumes:
+  studip_data: {}
+  studip_db_data: {}

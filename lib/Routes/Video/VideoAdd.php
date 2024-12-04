@@ -68,7 +68,7 @@ class VideoAdd extends OpencastController
             }
 
             // Assign permissions to teachers of the course, when it is a student upload in a course.
-            if (!empty($course_id) && $perm->have_studip_perm($course_id, 'user', $user->id)) {
+            if (!empty($course_id) && $perm->have_studip_perm('user', $course_id, $user->id)) {
                 VideosUserPerms::assignCourseLecturerPermissions($course_id, $video->id);
             }
 

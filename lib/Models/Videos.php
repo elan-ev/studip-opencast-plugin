@@ -281,7 +281,7 @@ class Videos extends UPMap
                     $course = \Course::find($filter['value']);
 
                     // check, if user has access to this seminar
-                    if (!empty($course) && $perm->have_studip_perm($course->id, 'user')) {
+                    if (!empty($course) && $perm->have_studip_perm('user', $course->id)) {
                         $course_ids[$course->id] = [
                             'id' => $course->id,
                             'compare' => $filter['compare']

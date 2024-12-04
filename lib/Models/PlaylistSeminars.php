@@ -219,7 +219,7 @@ class PlaylistSeminars extends \SimpleORMap
             $course = \Course::find($course_id);
 
             // Check if user has access to this seminar
-            if ($perm->have_studip_perm($course_id, 'user', $user_id)) {
+            if ($perm->have_studip_perm('user', $course_id, $user_id)) {
                 $lecturers = [];
                 $lecturers_obj = $course->getMembersWithStatus('dozent');
                 foreach ($lecturers_obj as $lecturer) {
