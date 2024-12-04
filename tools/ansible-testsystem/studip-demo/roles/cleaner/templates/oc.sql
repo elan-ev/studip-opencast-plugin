@@ -162,6 +162,6 @@ REPLACE INTO `oc_workflow_config` (`id`, `config_id`, `used_for`, `workflow_id`)
 (2,	1,	'upload',	6),
 (3,	1,	'studio',	6),
 (4,	1,	'delete',	1),
-(4,	1,	'subtitles',	9);
+(5,	1,	'subtitles',	9);
 
 SET FOREIGN_KEY_CHECKS=1;
