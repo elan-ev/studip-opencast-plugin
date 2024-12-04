@@ -20,11 +20,6 @@ services:
     volumes:
       - studip_data:/var/www/studip/data
       - ../..:/var/www/studip/public/plugins_packages/elan-ev/OpencastV3
-
-    # Use port to redirect port
-    #ports:
-    #  - "8032:80"
-
     restart: always
     environment:
       MYSQL_DATABASE: studip_db
