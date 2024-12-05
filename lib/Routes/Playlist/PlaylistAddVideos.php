@@ -63,7 +63,7 @@ class PlaylistAddVideos extends OpencastController
             ]);
 
             if (!$oc_playlist) {
-                throw new Error(_('Wiedergabeliste kontte nicht zu Opencast hinzugefügt werden!'), 500);
+                throw new Error(_('Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!'), 500);
             }
 
             $playlist->service_playlist_id = $oc_playlist->id;
@@ -80,18 +80,13 @@ class PlaylistAddVideos extends OpencastController
 
             if (!$video->episode) continue;
 
-            $entries[] = [
-                'contentId' => $video->episode,
-                'type' => 'EVENT'
-            ];
-
             // Only add video if not contained in entries
             $entry_exists = current(array_filter($entries, function($e) use ($video) {
                 return $e->contentId === $video->episode;
             }));
 
             if (!$entry_exists) {
-                $entries[] = [
+                $entries[] = (object) [
                     'contentId' => $video->episode,
                     'type' => 'EVENT'
                 ];
