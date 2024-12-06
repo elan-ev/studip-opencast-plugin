@@ -855,47 +855,6 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
-.oc--loading-spinner {
-    margin-top: 1em;
-    text-align: center;
-
-    &.oc--loading-redirect {
-        margin: 0;
-        text-align: left;
-
-        .oc--spinner {
-            transform: scale(0.5);
-        }
-    }
-
-    .oc--spinner {
-        display: inline-block;
-        width: 80px;
-        height: 80px;
-    }
-
-    .oc--spinner:after {
-        content: " ";
-        display: block;
-        width: 64px;
-        height: 64px;
-        margin: 8px;
-        border-radius: 50%;
-        border: 6px solid $origin-base-color;
-        border-color: $origin-base-color transparent $origin-base-color transparent;
-        animation: oc-spinner 1.2s linear infinite;
-    }
-
-    @keyframes oc-spinner {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-    }
-}
-
 /* * * * * * * * * * * * * * * * * * */
 /*   D I A L O G   E L E M E N T S   */
 /* * * * * * * * * * * * * * * * * * */
