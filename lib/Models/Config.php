@@ -232,7 +232,7 @@ class Config extends \SimpleOrMap
             }
 
             if ($comp) {
-                $services = RESTConfig::retrieveRESTservices($comp, $service_url['scheme']);
+                $services = RESTConfig::retrieveRESTservices($comp, $service_url);
 
                 if (empty($services)) {
                     Endpoints::removeEndpoint($this->id, 'services');
