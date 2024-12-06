@@ -11,10 +11,11 @@
         >
             <template #content>
                 <div>
+                    <span v-if="isCurrentVideoLTIChecked && !isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
+
                     <span v-if="!currentVideoId" v-text="$gettext('Es wurde bisher kein Video ausgewählt')"></span>
                     <span v-else-if="!currentEpisodeURL" v-text="$gettext('Dieses Video hat keinen Veröffentlichungs-URL-Link')"></span>
-                    <span v-else-if="isCurrentVideoLTIChecked && !isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
-                    <iframe v-else-if="isCurrentVideoLTIChecked" :src="currentEpisodeURL"
+                    <iframe v-else :src="currentEpisodeURL"
                         class="oc_cw_iframe"
                         allowfullscreen
                     ></iframe>
@@ -25,10 +26,6 @@
                             Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
                         </translate>
                     </div>
-
-                    <LtiAuth v-if="simple_config_list"
-                        :simple_config_list="simple_config_list"
-                    />
                 </div>
             </template>
             <template v-if="canEdit" #edit>
@@ -65,7 +62,6 @@
 const get = window._.get.bind(window._);
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex';
-import LtiAuth from "./components/LtiAuth.vue";
 import CoursewareSearchBar from './components/CoursewareSearchBar.vue';
 import CoursewareVideoTable from './components/CoursewareVideoTable.vue';
 
@@ -73,7 +69,6 @@ export default {
     name: "courseware-plugin-opencast-video",
 
     components: {
-        LtiAuth,
         CoursewareSearchBar,
         CoursewareVideoTable,
     },
