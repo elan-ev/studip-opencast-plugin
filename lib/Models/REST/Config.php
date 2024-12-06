@@ -53,14 +53,14 @@ class Config
         return false;
     }
 
-    public static function retrieveRESTservices($components, $match_protocol)
+    public static function retrieveRESTservices($components, $service_url)
     {
         $oc_services = self::SERVICES;
         $services   = [];
 
         foreach ($components as $service) {
-            if (!preg_match('#https?://localhost.*#', $service->host)
-                && mb_strpos($service->host, $match_protocol) === 0
+            if (($service_url['host'] == "localhost" || !preg_match('#https?://localhost.*#', $service->host))
+                && mb_strpos($service->host, $service_url['scheme']) === 0
             ) {
                 // check if service is wanted, active and online
                 if (isset($oc_services[$service->type])

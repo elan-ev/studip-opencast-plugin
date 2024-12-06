@@ -31,13 +31,13 @@ class Helpers
        return $dates;
     }
 
-    static function retrieveRESTservices($components, $match_protocol)
+    static function retrieveRESTservices($components, $service_url)
     {
         $services = array();
         foreach ($components as $service) {
             if (!preg_match('/remote/', $service->type)
-                && !preg_match('#https?://localhost.*#', $service->host)
-                && mb_strpos($service->host, $match_protocol) === 0
+                && ($service_url['host'] == "localhost" || !preg_match('#https?://localhost.*#', $service->host))
+                && mb_strpos($service->host, $service_url['scheme']) === 0
             ) {
                 $services[preg_replace(array("/\/docs/"), array(''), $service->host.$service->path)]
                          = preg_replace("/\//", '', $service->path);
