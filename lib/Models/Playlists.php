@@ -499,14 +499,24 @@ class Playlists extends UPMap
         ) {
             // Load playlist from Opencast
             $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
-            $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
 
-            if ($oc_playlist) {
-                self::checkPlaylistACL($oc_playlist, $this);
-            } else {
-                // Load or update failed in Opencast
+            // Update playlist in Opencast
+            $oc_update_data = [];
+            foreach (['title', 'description', 'creator'] as $key) {
+                if (array_key_exists($key, $json)) {
+                    $oc_update_data[$key] = $json[$key];
+                }
+            }
+
+            $oc_playlist = $playlist_client->updatePlaylist($this->service_playlist_id, $oc_update_data);
+
+            if (!$oc_playlist) {
+                // Update failed in Opencast
                 return false;
             }
+
+            // Ensure playlist acls are correct
+            self::checkPlaylistACL($oc_playlist, $this);
 
             // Ensure playlist data is consistent
             $json['title']       = $oc_playlist->title;
