@@ -12,41 +12,6 @@ use Opencast\Providers\Perm;
 
 class Helpers
 {
-    static function getMetadata($metadata, $type = 'title')
-    {
-        foreach($metadata->metadata as $data) {
-            if($data->key == $type) {
-                $return = $data->value;
-            }
-        }
-        return $return;
-    }
-
-    static function getDates($seminar_id)
-    {
-       $stmt = DBManager::get()->prepare("SELECT * FROM `termine` WHERE `range_id` = ?");
-
-       $stmt->execute(array($seminar_id));
-       $dates =  $stmt->fetchAll(PDO::FETCH_ASSOC);
-       return $dates;
-    }
-
-    static function retrieveRESTservices($components, $service_url)
-    {
-        $services = array();
-        foreach ($components as $service) {
-            if (!preg_match('/remote/', $service->type)
-                && ($service_url['host'] == "localhost" || !preg_match('#https?://localhost.*#', $service->host))
-                && mb_strpos($service->host, $service_url['scheme']) === 0
-            ) {
-                $services[preg_replace(array("/\/docs/"), array(''), $service->host.$service->path)]
-                         = preg_replace("/\//", '', $service->path);
-            }
-        }
-
-        return $services;
-    }
-
     static function getConfigurationstate()
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config WHERE active = 1");
