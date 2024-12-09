@@ -740,7 +740,7 @@ class Videos extends UPMap
         $current_acl = $api_client->getAcl($this->episode);
 
         // prevent updating acl if something went wrong
-        if (!is_array($acl)) {
+        if (!is_array($current_acl)) {
             return;
         }
 
