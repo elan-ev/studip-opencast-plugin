@@ -2,11 +2,17 @@
 
 class CoursesCest
 {
-    private $course_id = 'a07535cf2f8a72df33c12ddfa4b53dde';
+    private $config_id;
+    private $course_id;
 
     public function _before(ApiTester $I)
     {
-        $I->amHttpAuthenticated('apitester', 'apitester');
+        $config = $I->getConfig();
+
+        $this->config_id = $config['config_id'];
+        $this->course_id = $config['course_id'];
+
+        $I->amHttpAuthenticated($config['dozent_name'], $config['dozent_password']);
     }
 
     // tests
@@ -16,7 +22,8 @@ class CoursesCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -29,13 +36,18 @@ class CoursesCest
         list($token) = $I->grabDataFromResponseByJsonPath('$.token');
 
         // Add playlist to course
-        $response = $I->sendPut('/courses/' . $this->course_id . '/playlist/' . $token);
+        $response = $I->sendPost('/courses/' . $this->course_id . '/playlist/' . $token);
         $I->seeResponseCodeIs(204);
 
-        $response = $I->sendGet('/courses/' . $this->course_id . '/playlist');
+        $response = $I->sendGet('/courses/' . $this->course_id . '/playlists');
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
-        $I->seeResponseContainsJson($playlist);
+        $I->seeResponseContainsJson([
+            'title' => $playlist['title'],
+            'description' => $playlist['description'],
+            'visibility' => 'visible',
+            'config_id' => $playlist['config_id'],
+        ]);
     }
 
     public function testAddPlaylist(ApiTester $I)
@@ -44,7 +56,8 @@ class CoursesCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -57,7 +70,7 @@ class CoursesCest
         list($token) = $I->grabDataFromResponseByJsonPath('$.token');
 
         // Add playlist to course
-        $response = $I->sendPut('/courses/' . $this->course_id . '/playlist/' . $token);
+        $response = $I->sendPost('/courses/' . $this->course_id . '/playlist/' . $token);
         $I->seeResponseCodeIs(204);
     }
 
@@ -67,7 +80,8 @@ class CoursesCest
         $playlist = [
             'title'       => 'Meine Videos' ,
             'description' => 'Videoliste',
-            'visibility'  => 'internal'
+            'visibility'  => 'internal',
+            'config_id'   => $this->config_id,
         ];
 
         $response = $I->sendPostAsJson('/playlists', $playlist);
@@ -80,7 +94,7 @@ class CoursesCest
         list($token) = $I->grabDataFromResponseByJsonPath('$.token');
 
         // Add playlist to course
-        $response = $I->sendPut('/courses/' . $this->course_id . '/playlist/' . $token);
+        $response = $I->sendPost('/courses/' . $this->course_id . '/playlist/' . $token);
         $I->seeResponseCodeIs(204);
 
         // Remove playlist from course

@@ -2,9 +2,15 @@
 
 class UsersCest
 {
+    private $dozent_name;
+
     public function _before(ApiTester $I)
     {
-        $I->amHttpAuthenticated('apitester', 'apitester');
+        $config = $I->getConfig();
+
+        $this->dozent_name = $config['dozent_name'];
+
+        $I->amHttpAuthenticated($config['dozent_name'], $config['dozent_password']);
     }
 
     // tests
@@ -17,7 +23,7 @@ class UsersCest
         $I->seeResponseContainsJson([
             'type' => 'user',
             'data' => [
-                'username' => 'apitester'
+                'username' => $this->dozent_name,
             ]
         ]);
     }

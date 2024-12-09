@@ -5,6 +5,7 @@
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
     "build": "composer install --no-dev && npm install && webpack --mode production -d source-map && cd courseware; sh prebuild.sh",
+    "build-dev": "composer install && npm install && webpack --mode development -d source-map && cd courseware; sh devbuild.sh",
     "devcw": "cd courseware; sh watch.sh",
     "predev": "npm install",
     "dev": "webpack --mode development --watch",
