@@ -2,7 +2,7 @@
 
 class AclCest
 {
-    private $opencast_rest_url;
+    private $opencast_url;
     private $config_id;
     private $api_token;
     private $opencast_admin_user;
@@ -15,7 +15,7 @@ class AclCest
     {
         $config = $I->getConfig();
 
-        $this->opencast_rest_url = $config['opencast_rest_url'];
+        $this->opencast_url = $config['opencast_url'];
         $this->config_id = $config['config_id'];
         $this->api_token = $config['api_token'];
         $this->opencast_admin_user = $config['opencast_admin_user'];
@@ -65,7 +65,7 @@ class AclCest
         // Login as opencast admin
         $I->amHttpAuthenticated($this->opencast_admin_user, $this->opencast_admin_password);
 
-        $response = $I->sendGetAsJson($this->opencast_rest_url . '/playlists/' . $service_playlist_id);
+        $response = $I->sendGetAsJson($this->opencast_url . '/api/playlists/' . $service_playlist_id);
         $I->seeResponseContainsJson(['accessControlEntries' => [
             ['allow' => true, 'role' => 'PLAYLIST_' . $service_playlist_id . '_read', 'action' => 'read'],
             ['allow' => true, 'role' => 'PLAYLIST_' . $service_playlist_id . '_write', 'action' => 'read'],
@@ -148,12 +148,12 @@ class AclCest
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
 
-        $I->dontseeResponseContainsJson([
-            'username' => $this->course_student,
-            'roles' => [
-                'PLAYLIST_' . $service_playlist_id . '_read',
-                'PLAYLIST_' . $service_playlist_id . '_write',
-            ]
-        ]);
+        $roles = ['PLAYLIST_' . $service_playlist_id . '_read', 'PLAYLIST_' . $service_playlist_id . '_write'];
+        foreach ($roles as $role) {
+            $I->dontseeResponseContainsJson([
+                'username' => $this->course_student,
+                'roles' => [$role]
+            ]);
+        }
     }
 }
