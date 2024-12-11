@@ -11,7 +11,9 @@
         >
             <template #content>
                 <div>
+                    <!--
                     <span v-if="isCurrentVideoLTIChecked && !isCurrentVideoLTIAuthenticated" v-text="$gettext('Es ist ein Verbindungsfehler zum Opencast Server aufgetreten. Das ausgewählte Video kann zurzeit nicht angezeigt werden.')"></span>
+                    -->
 
                     <span v-if="!currentVideoId" v-text="$gettext('Es wurde bisher kein Video ausgewählt')"></span>
                     <span v-else-if="!currentEpisodeURL" v-text="$gettext('Dieses Video hat keinen Veröffentlichungs-URL-Link')"></span>
