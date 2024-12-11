@@ -85,6 +85,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
@@ -94,6 +96,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip_root_user.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
@@ -103,6 +107,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip_default_data.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
@@ -112,6 +118,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip_resources_default_data.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
@@ -121,6 +129,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip_demo_data.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
@@ -131,6 +141,8 @@
       name: '{{studip_db.name}}'
       state: import
       target: '{{studip_base_dir}}/db/studip_resources_demo_data.sql'
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      config_file: /etc/mysql/my.cnf
     become: yes
     tags:
     - root-task
