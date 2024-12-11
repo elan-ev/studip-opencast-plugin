@@ -4,7 +4,7 @@ namespace Opencast\Models;
 
 use Opencast\Models\REST\SeriesClient;
 
-class UserSeries extends \SimpleORMap
+class UserSeries extends UPMap
 {
     protected static function configure($config = [])
     {

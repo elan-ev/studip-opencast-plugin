@@ -5,7 +5,7 @@ namespace Opencast\Models;
 use Opencast\Models\REST\SeriesClient;
 use \Course;
 
-class SeminarSeries extends \SimpleORMap
+class SeminarSeries extends UPMap
 {
     protected static function configure($config = [])
     {
