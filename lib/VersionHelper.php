@@ -104,7 +104,9 @@ class VersionHelper50 implements VersionHelperInterface
 {
     function addMainNavigation(\Navigation $navigation)
     {
-        if (\Navigation::hasItem('/contents')) {
+        global $user;
+
+        if (\Navigation::hasItem('/contents') && $user->perms != 'admin') {
             \Navigation::addItem('/contents/opencast', $navigation);
         }
     }
