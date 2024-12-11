@@ -153,7 +153,7 @@ class OpencastDiscoverVideos extends CronJob
         }
 
         // fix any broken playlists visibility
-        DBManager::get("UPDATE oc_playlist_seminar SET visibility = 'visible'
+        DBManager::get()->exec("UPDATE oc_playlist_seminar SET visibility = 'visible'
             WHERE visibility IS NULL or visibility = ''");
 
     }
