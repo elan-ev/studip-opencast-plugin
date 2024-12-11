@@ -81,6 +81,8 @@ class OpencastWorker extends CronJob
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && !empty($event->publications)) {
                         $video->publication = json_encode($event->publications);
                         $video->state = null;
+                        $video->available = 1;
+                        $video->version   = $event->archive_version;
                         $video->is_livestream = 0;
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && empty($event->publications)) {
                         if ($is_livestream && !empty($event->scheduling)) {

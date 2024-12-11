@@ -31,7 +31,7 @@ class OpencastDiscoverVideos extends CronJob
         */
         $db = DBManager::get();
         $stmt_ids = $db->prepare("
-            SELECT episode FROM oc_video WHERE config_id = :config_id AND available=true
+            SELECT episode, version FROM oc_video WHERE config_id = :config_id AND available=true
         ");
 
         // iterate over all active configured oc instances
@@ -61,24 +61,39 @@ class OpencastDiscoverVideos extends CronJob
             $event_ids = [];
             $events = [];
 
+            // get all known events in Stud.IP
+            $stmt_ids->execute([':config_id' => $config['id']]);
+
+            $local_events = $stmt_ids->fetchAll(PDO::FETCH_KEY_PAIR);
+            $local_event_ids = array_keys($local_events);
+
+            // load events from opencast filter the processed ones
             foreach ($api_client->getAll() as $event) {
                 // only add videos / reinspect videos if they are readily processed
                 if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
                     $event_ids[] = $event->identifier;
                     $events[$event->identifier] = $event;
+
+                    // check archive versions and if they differ, reinspect the video
+                    if (isset($local_events[$event->identifier])
+                        && $local_events[$event->identifier] != $event->archive_version
+                    ) {
+                        $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $event->identifier]);
+                        echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ")\n";
+
+                        // create task to update permissions and everything else
+                        $task = new VideoSync;
+
+                        $task->setData([
+                            'video_id'  => $video->id,
+                            'state'     => 'scheduled',
+                            'scheduled' => date('Y-m-d H:i:s')
+                        ]);
+
+                        $task->store();
+                    }
                 }
             }
-
-            // check if these event_ids have a corresponding entry in Stud.IP
-
-            $stmt_ids->execute([':config_id' => $config['id']]);
-
-            $local_event_ids = $stmt_ids->fetchAll(PDO::FETCH_COLUMN);
-            //echo 'found oc events:' . "\n";
-            //print_r($events);
-
-            //echo 'found local events:' . "\n";
-            //print_r($local_event_ids);
 
             // Find new videos available in OC but not locally
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
@@ -135,7 +150,7 @@ class OpencastDiscoverVideos extends CronJob
          * FAILED wird nur jede Stunde neu inspiziert
          * Das scheduled Feld wird genutzt, um Dinge für die Zukunft zu planen
          */
-        foreach (Videos::findBySql('preview IS NULL AND is_livestream = 0') as $video) {
+        foreach (Videos::findBySql('(preview IS NULL OR available = 0) AND is_livestream = 0') as $video) {
             // check, if there is already a task scheduled
             if (empty(VideoSync::findByVideo_id($video->id))) {
                 echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
