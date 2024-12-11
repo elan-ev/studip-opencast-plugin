@@ -2,7 +2,7 @@
 
 namespace Opencast\Models;
 
-class VideoSync extends \SimpleORMap
+class VideoSync extends UPMap
 {
     protected static function configure($config = [])
     {
