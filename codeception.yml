@@ -8,8 +8,9 @@ suites:
                 - REST:
                     url: '%STUDIP_REST_URL%'
                     depends: PhpBrowser
+                - Asserts
                 - \Helper\Api:
-                    opencast_rest_url: '%OPENCAST_REST_URL%'
+                    opencast_url: '%OPENCAST_URL%'
                     api_token: '%API_TOKEN%'
                     opencast_admin_user: '%OPENCAST_ADMIN_NAME%'
                     opencast_admin_password: '%OPENCAST_ADMIN_PASSWORD%'

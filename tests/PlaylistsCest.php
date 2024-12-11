@@ -2,8 +2,13 @@
 
 class PlaylistsCest
 {
+    private $opencast_url;
     private $config_id;
+    private $api_token;
+    private $opencast_admin_user;
+    private $opencast_admin_password;
 
+    private $dozent_name;
     private $author_name;
     private $author_password;
 
@@ -11,7 +16,12 @@ class PlaylistsCest
     {
         $config = $I->getConfig();
 
+        $this->opencast_url = $config['opencast_url'];
         $this->config_id = $config['config_id'];
+        $this->api_token = $config['api_token'];
+        $this->opencast_admin_user = $config['opencast_admin_user'];
+        $this->opencast_admin_password = $config['opencast_admin_password'];
+        $this->dozent_name = $config['dozent_name'];
         $this->author_name = $config['author_name'];
         $this->author_password = $config['author_password'];
 
@@ -34,6 +44,33 @@ class PlaylistsCest
 
         $I->seeResponseContainsJson($playlist);
         $I->seeResponseContainsJson(['users' => [['perm' => 'owner']]]);
+
+        list($service_playlist_id) = $I->grabDataFromResponseByJsonPath('$.service_playlist_id');
+
+        // Check if user has correct playlist role
+        $response = $I->sendGetAsJson('/opencast/user/' . $this->dozent_name, ['token' => $this->api_token]);
+
+        $I->seeResponseCodeIs(200);
+        $I->seeResponseIsJson();
+
+        $I->seeResponseContainsJson([
+            'username' => $this->dozent_name,
+            'roles' => [
+                'PLAYLIST_' . $service_playlist_id . '_write',
+            ]
+        ]);
+
+        // Check ACLs in Opencast
+
+        // Login as opencast admin
+        $I->amHttpAuthenticated($this->opencast_admin_user, $this->opencast_admin_password);
+
+        $response = $I->sendGetAsJson($this->opencast_url . '/api/playlists/' . $service_playlist_id);
+        $I->seeResponseContainsJson(['accessControlEntries' => [
+            ['allow' => true, 'role' => 'PLAYLIST_' . $service_playlist_id . '_read', 'action' => 'read'],
+            ['allow' => true, 'role' => 'PLAYLIST_' . $service_playlist_id . '_write', 'action' => 'read'],
+            ['allow' => true, 'role' => 'PLAYLIST_' . $service_playlist_id . '_write', 'action' => 'write'],
+        ]]);
     }
 
     public function testDeletePlaylist(ApiTester $I)
