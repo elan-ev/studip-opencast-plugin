@@ -83,7 +83,7 @@
 
                         <label>
                             <span>
-                                {{ $gettext('Thema') }}
+                                {{ $gettext('Betreff') }}
                             </span>
                             <input type="text" maxlength="255" id="subject"
                                    name="subject" v-model="upload.subject">

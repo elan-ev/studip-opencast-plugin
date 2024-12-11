@@ -48,7 +48,7 @@
 
                         <label>
                             <span>
-                                {{ $gettext('Thema') }}
+                                {{ $gettext('Betreff') }}
                             </span>
                             <input type="text" maxlength="255" name="subject" v-model="event.subject">
                         </label>
