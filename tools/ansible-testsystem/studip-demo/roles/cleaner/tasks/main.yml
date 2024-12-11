@@ -31,7 +31,7 @@
   - name: Copy PHP CLI settings for Stud.IP
     template:
       src: 'studip.ini'
-      dest: '/etc/php/7.4/cli/conf.d/studip.ini'
+      dest: '/etc/php/8.2/cli/conf.d/studip.ini'
       mode: '0750'
       owner: root
       group: root

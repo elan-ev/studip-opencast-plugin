@@ -8,7 +8,7 @@
 
 - name: apache - enabled mod_php
   apache2_module:
-    name: "php7.4"
+    name: "php8.2"
     state: "present"
 
 - name: apache - enabled mod_rewrite
