@@ -17,7 +17,7 @@ class VideoCest
         'flavor' => 'presenter/source',
         'title' => 'Test with Audio',
         'creator' => 'Test Dozent',
-        'identifier' => 'ID-test',
+        'identifier' => null,
         'config_id' => null,
         'token' => null,
     ];
@@ -55,10 +55,12 @@ class VideoCest
                 ['name' => 'flavor', 'contents' => $this->video['flavor']],
                 ['name' => 'title', 'contents' => $this->video['title']],
                 ['name' => 'creator', 'contents' => $this->video['creator']],
-                ['name' => 'identifier', 'contents' => $this->video['identifier']],
                 ['name' => 'BODY', 'contents' => fopen(codecept_data_dir('test-with-audio.mp4'), 'r')],
             ]
         ]);
+
+        $video_xml = simplexml_load_string($response->getBody());
+        $this->video['identifier'] = (string) $video_xml->xpath('//wf:mediaPackageId')[0];
 
         $I->assertEquals($response->getStatusCode(), 200, 'Video is ingested');
 
