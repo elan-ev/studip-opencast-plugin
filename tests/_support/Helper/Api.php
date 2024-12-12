@@ -22,7 +22,7 @@ class Api extends \Codeception\Module
         'course_id',
     ];
 
-    const STUDIP_DIR = __DIR__ . '/../../../../../../../';
+    const STUDIP_CLI = __DIR__ . '/../../../../../../../cli/studip';
 
     public function getConfig(): array {
         return $this->config;
@@ -63,9 +63,9 @@ class Api extends \Codeception\Module
      */
     public function runCronjob(string $cronjob)
     {
-        if (is_dir(self::STUDIP_DIR)) {
-            // Run cronjob on host if studip code exist
-            $studip_cli = self::STUDIP_DIR . "cli/studip";
+        if (file_exists(self::STUDIP_CLI)) {
+            // Run cronjob on host if studip cli exist
+            $studip_cli = self::STUDIP_CLI;
             $command = "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')";
         } else {
             // Run cronjob in docker container
