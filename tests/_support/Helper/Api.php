@@ -63,12 +63,16 @@ class Api extends \Codeception\Module
      */
     public function runCronjob(string $cronjob)
     {
-        $studip_cli = self::STUDIP_DIR . "cli/studip";
-        exec(
-            "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')",
-            $output,
-            $result_code
-        );
+        if (is_dir(self::STUDIP_DIR)) {
+            // Run cronjob on host if studip code exist
+            $studip_cli = self::STUDIP_DIR . "cli/studip";
+            $command = "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')";
+        } else {
+            // Run cronjob in docker container
+            $compose_file = __DIR__ . '/../../../.github/docker/docker-compose.yml';
+            $command = "docker compose -f $compose_file exec studip bash -c \"php ./cli/studip cronjobs:execute \\$(php ./cli/studip cronjobs:list | grep '$cronjob' | awk '{print \\$1}')\"";
+        }
+        exec($command, $output, $result_code);
 
         $this->assertEquals(0, $result_code, 'Cronjob run successful');
     }
