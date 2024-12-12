@@ -60,7 +60,7 @@ class VideoCest
             ]
         ]);
 
-        $I->assertIsScalar($response->getStatusCode(), 200, 'Video is ingested');
+        $I->assertEquals($response->getStatusCode(), 200, 'Video is ingested');
 
         // Add video to studip, fails if video is already added
         $response = $I->sendPostAsJson('/videos/' . $this->video['identifier'], [
@@ -80,11 +80,8 @@ class VideoCest
         $I->seeVideoIsProcessed($this->video['identifier']);
 
         // Start cronjobs
-        $success = $I->runCronjob(self::CRONJOB_DISCOVER);
-        $I->assertTrue($success, 'Cronjob run successful');
-
-        $success = $I->runCronjob(self::CRONJOB_QUEUE);
-        $I->assertTrue($success, 'Cronjob run successful');
+        $I->runCronjob(self::CRONJOB_DISCOVER);
+        $I->runCronjob(self::CRONJOB_QUEUE);
 
         $I->seeVideoIsProcessed($this->video['identifier']);
     }

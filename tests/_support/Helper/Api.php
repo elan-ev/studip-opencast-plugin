@@ -60,9 +60,8 @@ class Api extends \Codeception\Module
      * Run studip cronjob
      *
      * @param string $cronjob cronjob description
-     * @return bool success?
      */
-    public function runCronjob(string $cronjob): bool
+    public function runCronjob(string $cronjob)
     {
         $studip_cli = self::STUDIP_DIR . "cli/studip";
         exec(
@@ -71,6 +70,6 @@ class Api extends \Codeception\Module
             $result_code
         );
 
-        return $result_code === 0;
+        $this->assertEquals(0, $result_code, 'Cronjob run successful');
     }
 }
