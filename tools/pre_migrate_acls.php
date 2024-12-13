@@ -9,12 +9,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 
 use OpencastApi\Opencast;
-use OpencastApi\Rest\OcRestClient;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // maximum number of concurrent running jobs
-$CONCURRENT_JOBS = 3;
+$CONCURRENT_JOBS = 50;
 
 class HelperFunctions
 {
