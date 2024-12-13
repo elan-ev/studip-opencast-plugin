@@ -22,7 +22,7 @@ class Api extends \Codeception\Module
         'course_id',
     ];
 
-    const STUDIP_DIR = __DIR__ . '/../../../../../../../';
+    const STUDIP_CLI = __DIR__ . '/../../../../../../../cli/studip';
 
     public function getConfig(): array {
         return $this->config;
@@ -60,17 +60,20 @@ class Api extends \Codeception\Module
      * Run studip cronjob
      *
      * @param string $cronjob cronjob description
-     * @return bool success?
      */
-    public function runCronjob(string $cronjob): bool
+    public function runCronjob(string $cronjob)
     {
-        $studip_cli = self::STUDIP_DIR . "cli/studip";
-        exec(
-            "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')",
-            $output,
-            $result_code
-        );
+        if (file_exists(self::STUDIP_CLI)) {
+            // Run cronjob on host if studip cli exist
+            $studip_cli = self::STUDIP_CLI;
+            $command = "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')";
+        } else {
+            // Run cronjob in docker container
+            $compose_file = __DIR__ . '/../../../.github/docker/docker-compose.yml';
+            $command = "docker compose -f $compose_file exec studip bash -c \"php ./cli/studip cronjobs:execute \\$(php ./cli/studip cronjobs:list | grep '$cronjob' | awk '{print \\$1}')\"";
+        }
+        exec($command, $output, $result_code);
 
-        return $result_code === 0;
+        $this->assertEquals(0, $result_code, 'Cronjob run successful');
     }
 }

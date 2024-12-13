@@ -17,7 +17,7 @@ class VideoCest
         'flavor' => 'presenter/source',
         'title' => 'Test with Audio',
         'creator' => 'Test Dozent',
-        'identifier' => 'ID-test',
+        'identifier' => null,
         'config_id' => null,
         'token' => null,
     ];
@@ -55,12 +55,14 @@ class VideoCest
                 ['name' => 'flavor', 'contents' => $this->video['flavor']],
                 ['name' => 'title', 'contents' => $this->video['title']],
                 ['name' => 'creator', 'contents' => $this->video['creator']],
-                ['name' => 'identifier', 'contents' => $this->video['identifier']],
                 ['name' => 'BODY', 'contents' => fopen(codecept_data_dir('test-with-audio.mp4'), 'r')],
             ]
         ]);
 
-        $I->assertIsScalar($response->getStatusCode(), 200, 'Video is ingested');
+        $video_xml = simplexml_load_string($response->getBody());
+        $this->video['identifier'] = (string) $video_xml->xpath('//wf:mediaPackageId')[0];
+
+        $I->assertEquals($response->getStatusCode(), 200, 'Video is ingested');
 
         // Add video to studip, fails if video is already added
         $response = $I->sendPostAsJson('/videos/' . $this->video['identifier'], [
@@ -80,11 +82,8 @@ class VideoCest
         $I->seeVideoIsProcessed($this->video['identifier']);
 
         // Start cronjobs
-        $success = $I->runCronjob(self::CRONJOB_DISCOVER);
-        $I->assertTrue($success, 'Cronjob run successful');
-
-        $success = $I->runCronjob(self::CRONJOB_QUEUE);
-        $I->assertTrue($success, 'Cronjob run successful');
+        $I->runCronjob(self::CRONJOB_DISCOVER);
+        $I->runCronjob(self::CRONJOB_QUEUE);
 
         $I->seeVideoIsProcessed($this->video['identifier']);
     }
