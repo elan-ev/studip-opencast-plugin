@@ -429,7 +429,7 @@ class Videos extends UPMap
                 INNER JOIN `oc_playlist_seminar` AS ops ON (ops.playlist_id = op.id)';
 
         $where = 'WHERE ops.seminar_id = :course_id
-                  AND (UNIX_TIMESTAMP(video.chdate) > :last_visit OR UNIX_TIMESTAMP(opv.mkdate) > :last_visit)
+                  AND (UNIX_TIMESTAMP(video.mkdate) > :last_visit OR UNIX_TIMESTAMP(opv.mkdate) > :last_visit)
                   AND video.trashed = 0
                   AND video.token IS NOT NULL
                   AND video.state IS NULL
