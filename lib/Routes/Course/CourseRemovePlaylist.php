@@ -27,18 +27,13 @@ class CourseRemovePlaylist extends OpencastController
             throw new \AccessDeniedException();
         }
 
-        // check what permissions the current user has on the playlist and video
-        $perm_playlist = reset($playlist->perms->findBy('user_id', $user->id)->toArray());
-
-        if (empty($perm_playlist))
-        {
-            throw new \AccessDeniedException();
-        }
-
         PlaylistSeminars::deleteBySql('playlist_id = :playlist_id AND seminar_id = :course_id',[
             ':playlist_id' => $playlist->id,
             ':course_id'   => $course_id
         ]);
+
+        // Remove playlist completely to prevent ghost playlists because playlists are disabled in work place
+        $playlist->delete();
 
         return $response->withStatus(204);
     }
