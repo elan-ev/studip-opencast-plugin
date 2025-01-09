@@ -58,7 +58,7 @@
                     </li>
                 </template>
                 <template v-else>
-                    <li v-if="canEdit" @click="showCreateDefaultPlaylist">
+                    <li v-if="canEdit" @click="showCreatePlaylist">
                         <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
                         {{ $gettext('Kurswiedergabeliste hinzufügen') }}
                     </li>
@@ -206,7 +206,7 @@
                                 {{ $gettext('Studierendenupload verbieten') }}
                             </a>
                         </li>
-                        <li @click="showChangeDefaultPlaylist" v-if="canEdit" data-reject-toggle-sidebar="true">
+                        <li @click="$emit('changeDefaultPlaylist')" v-if="canEdit" data-reject-toggle-sidebar="true">
                             <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
                             {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
                         </li>
@@ -220,19 +220,6 @@
                 </ul>
             </div>
         </div>
-
-        <PlaylistAddCard v-if="addPlaylist"
-            :is-default="isDefault"
-            @done="closePlaylistAdd"
-            @cancel="closePlaylistAdd"
-        />
-
-        <PlaylistsLinkCard v-if="showChangeDefaultDialog"
-            :is-default="true"
-            :custom-title="$gettext('Kurswiedergabeliste wechseln')"
-            @done="closeChangeDefaultPlaylist"
-            @cancel="closeChangeDefaultPlaylist"
-        />
 
     </template>
 </template>
@@ -253,13 +240,20 @@ export default {
         PlaylistsLinkCard,
     },
 
-    emits: ['uploadVideo', 'recordVideo', 'copyAll', 'editPlaylist', 'sortVideo', 'saveSortVideo', 'cancelSortVideo'],
+    emits: [
+        'uploadVideo',
+        'recordVideo',
+        'copyAll',
+        'editPlaylist',
+        'sortVideo',
+        'saveSortVideo',
+        'cancelSortVideo',
+        'changeDefaultPlaylist'
+    ],
 
     data() {
         return {
             showAddDialog: false,
-            isDefault: false,
-            showChangeDefaultDialog: false,
             semesterFilter: null,
             schedulePlaylistToken: null,
             livestreamPlaylistToken: null,
@@ -269,11 +263,11 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentView", 'addPlaylist',
+        ...mapGetters(["playlists", "currentView", 'opencastOffline',
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
             'defaultPlaylist', 'videoSortMode', 'downloadSetting',
-            'schedule_playlist', 'livestream_playlist', 'opencastOffline'
+            'schedule_playlist', 'livestream_playlist'
         ]),
 
         fragment() {
@@ -404,24 +398,6 @@ export default {
 
         showCreatePlaylist() {
             this.$store.dispatch('addPlaylistUI', true);
-        },
-
-        showCreateDefaultPlaylist() {
-            this.isDefault = true;
-            this.$store.dispatch('addPlaylistUI', true);
-        },
-
-        showChangeDefaultPlaylist() {
-            this.showChangeDefaultDialog = true;
-        },
-
-        closeChangeDefaultPlaylist() {
-            this.showChangeDefaultDialog = false;
-        },
-
-        closePlaylistAdd() {
-            this.isDefault = false;
-            this.$store.dispatch('addPlaylistUI', false);
         },
 
         openPlaylistAddVideosDialog() {
