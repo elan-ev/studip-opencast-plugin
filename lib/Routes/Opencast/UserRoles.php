@@ -50,6 +50,7 @@ class UserRoles extends OpencastController
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
                 $roles[] = $video_share->video->episode . '_read';
+                $roles[] = 'ROLE_EPISODE_' . $video_share->video->episode . '_READ';
             } else {
                 throw new Error('Share not found', 404);
             }
@@ -95,8 +96,11 @@ class UserRoles extends OpencastController
 
                     if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
                         $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
+                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_WRITE'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_WRITE';
                     } else {
                         $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
+                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
                     }
                 }
 
@@ -110,6 +114,7 @@ class UserRoles extends OpencastController
 
                 while($episode = $stmt_courseware->fetchColumn()) {
                     $roles[$episode . '_read'] = $episode . '_read';
+                    $roles['ROLE_EPISODE_' . $episode . '_READ'] = 'ROLE_EPISODE_' . $episode . '_READ';
                 }
 
                 $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
