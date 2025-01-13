@@ -12,6 +12,7 @@ services:
       MYSQL_DATABASE: studip_db
       MYSQL_USER: studip_user
       MYSQL_PASSWORD: studip_password
+      TZ: Europe/Berlin
 
   studip:
     image: studip/studip:5.4
