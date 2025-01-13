@@ -143,10 +143,10 @@
                         <span v-if="isCourse && playlist && canEdit">
                             <StudipButton class="wrap-button"
                                           v-if="playlist.is_default != '1'"
-                                          @click.prevent="removePlaylistFromCourse(playlist.token, cid)"
+                                          @click.prevent="removePlaylist(playlist.token, cid)"
                             >
                                 <studip-icon shape="trash" role="clickable" />
-                                {{ $gettext('Wiedergabeliste aus diesem Kurs entfernen') }}
+                                {{ $gettext('Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>
                     </td>
@@ -584,8 +584,8 @@ export default {
             this.selectedEvent = null;
         },
 
-        removePlaylistFromCourse(token, cid) {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie diese Wiedergabeliste aus dem Kurs entfernen möchten?'))) {
+        removePlaylist(token, cid) {
+            if (confirm(this.$gettext('Sind Sie sicher, dass Sie diese Wiedergabeliste entfernen möchten?'))) {
                 this.$store.dispatch('setPlaylist', null);
                 this.$store.dispatch('removePlaylistFromCourse', {
                     token: token,
