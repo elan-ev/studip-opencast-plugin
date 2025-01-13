@@ -7,9 +7,16 @@
                 @saveSortVideo="saveSort"
                 @cancelSortVideo="cancelSort"
                 @editPlaylist="editPlaylistDialog = true"
+                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
                 @copyAll="copyAll">
             </CoursesSidebar>
         </Teleport>
+
+        <PlaylistAddCard v-if="addPlaylist"
+            :is-default="!hasDefaultPlaylist"
+            @done="closePlaylistAddDialog"
+            @cancel="closePlaylistAddDialog"
+        />
 
         <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
             :canEdit="canEdit"
@@ -28,6 +35,13 @@
             @cancel="closeCopyDialog"
         />
 
+        <PlaylistsLinkCard v-if="showChangeDefaultPlaylistDialog"
+            :is-default="true"
+            :custom-title="$gettext('Kurswiedergabeliste wechseln')"
+            @done="showChangeDefaultPlaylistDialog = false"
+            @cancel="showChangeDefaultPlaylistDialog = false"
+        />
+
         <MessageList />
 
         <router-view></router-view>
@@ -39,6 +53,8 @@ import CoursesSidebar from "@/components/Courses/CoursesSidebar";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
+import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
+import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
 import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
 import VideoCopyToSeminar from '@/components/Videos/Actions/VideoCopyToSeminar.vue';
 
@@ -48,6 +64,7 @@ export default {
     name: "Course",
 
     components: {
+        PlaylistsLinkCard, PlaylistAddCard,
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
         MessageList, VideoCopyToSeminar
@@ -58,6 +75,7 @@ export default {
             'currentUser',
             'showCourseCopyDialog',
             'showPlaylistAddVideosDialog',
+            'addPlaylist',
             'cid',
             'course_config'
         ]),
@@ -78,6 +96,10 @@ export default {
             return this.course_config.upload_allowed;
         },
 
+        hasDefaultPlaylist() {
+            return this.course_config?.has_default_playlist;
+        },
+
         toLayoutName() {
             if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
                 return "#sidebar";
@@ -92,6 +114,7 @@ export default {
         return {
             uploadDialog: false,
             editPlaylistDialog: false,
+            showChangeDefaultPlaylistDialog: false,
         }
     },
 
@@ -114,6 +137,10 @@ export default {
 
         closePlaylistAddVideosDialog() {
             this.$store.dispatch('togglePlaylistAddVideosDialog', false);
+        },
+
+        closePlaylistAddDialog() {
+            this.$store.dispatch('addPlaylistUI', false);
         },
 
         closeCopyDialog() {
