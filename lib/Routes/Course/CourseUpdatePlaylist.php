@@ -57,9 +57,6 @@ class CourseUpdatePlaylist extends OpencastController
         $playlist->store();
 
         $ret_playlist = $playlist_seminar->toSanitizedArray();
-        if ($playlist_seminar->is_default == '1') {
-            $ret_playlist['title'] = _('Kurswiedergabeliste');
-        }
 
         return $this->createResponse($ret_playlist, $response->withStatus(200));
     }
