@@ -38,7 +38,7 @@
                         }"
                         v-for="p in playlists"
                         v-bind:key="p.token"
-                        v-on:click="loadPlaylist(p)">
+                        v-on:click="setPlaylist(p)">
                         <router-link :to="{ name: 'course' }">
                             <div class="oc--playlist-title-contanier">
                                 <span class="oc--playlist-title">
@@ -362,8 +362,8 @@ export default {
     },
 
     methods: {
-        loadPlaylist(playlist) {
-            this.$store.dispatch('loadPlaylist', playlist.token);
+        setPlaylist(playlist) {
+            this.$store.dispatch('setPlaylist', playlist);
             this.toggleSidebarOnResponsive();
         },
 
@@ -444,7 +444,7 @@ export default {
                 let playlist_filtered = this.playlists.filter(playlist => playlist.token == this.targetPlaylistToken)
                 if (playlist_filtered?.length) {
                     await this.$nextTick();
-                    this.loadPlaylist(playlist_filtered[0]);
+                    this.setPlaylist(playlist_filtered[0]);
                     await this.$store.dispatch('loadPlaylists');
                     this.targetPlaylistToken = null;
                 }
