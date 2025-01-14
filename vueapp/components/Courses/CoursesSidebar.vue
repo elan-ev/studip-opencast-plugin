@@ -173,50 +173,50 @@
             </div>
         </div>
 
-        <div class="sidebar-widget " id="sidebar-actions" v-if="(canEdit || canUpload) && hasDefaultPlaylist">
+        <div class="sidebar-widget " id="sidebar-actions"
+            v-if="(canEdit || canUpload && canShowStudio) && hasDefaultPlaylist && !videoSortMode"
+        >
             <div class="sidebar-widget-header">
                 {{ $gettext('Veranstaltungsweite Aktionen') }}
             </div>
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
-                    <template v-if="!videoSortMode">
-                        <li v-if="!opencastOffline">
-                            <a :href="recordingLink" target="_blank" v-if="canUpload && course_config?.series?.series_id && canShowStudio">
-                                <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                                {{ $gettext('Video aufnehmen') }}
-                            </a>
-                        </li>
-                        <li v-if="canToggleVisibility">
-                            <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
-                                {{ $gettext('Reiter sichtbar schalten') }}
-                            </a>
-                            <a v-else @click="setVisibility('invisible')" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
-                                {{ $gettext('Reiter verbergen') }}
-                            </a>
-                        </li>
-                        <li v-if="canEdit">
-                            <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                                {{ $gettext('Studierendenupload erlauben') }}
-                            </a>
-                            <a v-else @click="setUpload(0)" target="_blank">
-                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                                {{ $gettext('Studierendenupload verbieten') }}
-                            </a>
-                        </li>
-                        <li @click="$emit('changeDefaultPlaylist')" v-if="canEdit" data-reject-toggle-sidebar="true">
-                            <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
-                            {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
-                        </li>
-                        <li v-if="canEdit">
-                            <a @click="$emit('copyAll')">
-                                <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
-                                {{ $gettext('Kursinhalte übertragen') }}
-                            </a>
-                        </li>
-                    </template>
+                    <li v-if="!opencastOffline && canUpload && course_config?.series?.series_id && canShowStudio">
+                        <a :href="recordingLink" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                            {{ $gettext('Video aufnehmen') }}
+                        </a>
+                    </li>
+                    <li v-if="canToggleVisibility">
+                        <a v-if="course_config['series']['visibility'] === 'invisible'" @click="setVisibility('visible')" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="visibility-invisible" role="clickable"/>
+                            {{ $gettext('Reiter sichtbar schalten') }}
+                        </a>
+                        <a v-else @click="setVisibility('invisible')" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="visibility-visible" role="clickable"/>
+                            {{ $gettext('Reiter verbergen') }}
+                        </a>
+                    </li>
+                    <li v-if="canEdit">
+                        <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                            {{ $gettext('Studierendenupload erlauben') }}
+                        </a>
+                        <a v-else @click="setUpload(0)" target="_blank">
+                            <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                            {{ $gettext('Studierendenupload verbieten') }}
+                        </a>
+                    </li>
+                    <li @click="$emit('changeDefaultPlaylist')" v-if="canEdit" data-reject-toggle-sidebar="true">
+                        <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
+                        {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
+                    </li>
+                    <li v-if="canEdit">
+                        <a @click="$emit('copyAll')">
+                            <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
+                            {{ $gettext('Kursinhalte übertragen') }}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
