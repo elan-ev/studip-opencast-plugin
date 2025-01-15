@@ -54,7 +54,7 @@ class OpencastSyncAcls extends CronJob
             }
 
             // update endpoints, just to make sure
-            $config->updateEndpoints();
+            // $config->updateEndpoints();
 
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
