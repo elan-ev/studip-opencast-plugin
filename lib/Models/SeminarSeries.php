@@ -40,7 +40,7 @@ class SeminarSeries extends UPMap
             $series_client->setACL($series_id, $new_acl);
         }
 
-        return $series[$series_id];
+        return (bool) $series;
     }
 
     public static function getMissingSeries($course_id)
