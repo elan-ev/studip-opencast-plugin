@@ -25,11 +25,7 @@ services:
       ELASTICSEARCH_SERVER_HOST: localhost
     volumes:
       - opencast_data:/data
-      - ./opencast/etc/opencast/security/mh_default_org.xml:/opencast/etc/security/mh_default_org.xml
-      - ./opencast/etc/opencast/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg:/opencast/etc/org.opencastproject.kernel.security.OAuthConsumerDetailsService.cfg
-      - ./opencast/etc/opencast/org.opencastproject.plugin.impl.PluginManagerImpl.cfg:/opencast/etc/org.opencastproject.plugin.impl.PluginManagerImpl.cfg
-      - ./opencast/etc/opencast/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg:/opencast/etc/org.opencastproject.security.lti.LtiLaunchAuthenticationHandler.cfg
-      - ./opencast/etc/opencast/org.opencastproject.userdirectory.studip-default.cfg:/opencast/etc/org.opencastproject.userdirectory.studip-default.cfg
+      - ./opencast/etc:/etc/opencast
 
   opencast_nginx:
     image: nginx:1.24
