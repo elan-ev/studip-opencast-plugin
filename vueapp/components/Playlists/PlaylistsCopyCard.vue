@@ -88,7 +88,7 @@ export default {
                     .then(() => {
                         if (is_default) {
                             // Set default playlist active
-                            this.$store.dispatch('loadPlaylist', this.defaultPlaylist.token);
+                            this.$store.dispatch('setPlaylist', this.defaultPlaylist);
                         }
                     });
 

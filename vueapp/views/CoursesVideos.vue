@@ -45,7 +45,7 @@ export default {
 
     mounted() {
         this.$store.dispatch('loadPlaylists').then(() => {
-            this.$store.dispatch('loadPlaylist', this.defaultPlaylist.token);
+            this.$store.dispatch('setPlaylist', this.defaultPlaylist);
         });
     },
 };
