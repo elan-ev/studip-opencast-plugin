@@ -209,7 +209,7 @@ export default {
 
         getAccessText() {
             var txt = '';
-            this.event.perms.forEach(perm => {
+            this.event.perms?.forEach(perm => {
                 txt += '<div>' + perm.fullname + ': ' + this.permname(perm.perm) + '</div>'
             });
             return txt;
