@@ -36,6 +36,7 @@
                         <translate>Videos</translate>
                     </label>
                     <CoursewareSearchBar
+                        :showCurrentCourse="showCurrentCourse"
                         @doSearch="performSearch"
                     />
                     <CoursewareVideoTable
@@ -100,6 +101,7 @@ export default {
 
         return {
             searchText: '',
+            showCurrentCourse: undefined,
             sorts: sorts,
             sortObj: sorts[0],
             limit: 15,
@@ -131,6 +133,10 @@ export default {
                 relationship: "container",
                 }) ?? {}
             );
+        },
+
+        isCourse() {
+            return this.context.type === 'courses';
         },
 
         currentVideo() {
@@ -168,8 +174,9 @@ export default {
                 };
         },
 
-        performSearch(searchText) {
+        performSearch({searchText, showCurrentCourse}) {
             this.searchText = searchText;
+            this.showCurrentCourse = showCurrentCourse;
             // this.resetPaging();
             this.loadVideos();
         },
@@ -217,6 +224,7 @@ export default {
         },
 
         initCurrentData() {
+            this.showCurrentCourse = this.isCourse;
             this.currentVideoId = get(this.block, "attributes.payload.token", "");
             this.currentEpisodeURL =STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/perform/video/' + this.currentVideoId;
             this.currentVisible = get(this.block, "attributes.payload.visible", "");
@@ -240,11 +248,24 @@ export default {
                 if (this.sortObj) {
                     params.append('order', this.sortObj.field + "_" + this.sortObj.order)
                 }
+
+                let filters = [];
                 if (this.searchText) {
-                    let filters = [{
+                    filters.push({
                         type: 'text',
                         value: this.searchText
-                    }];
+                    });
+                }
+
+                if (this.showCurrentCourse) {
+                    filters.push({
+                        type: 'course',
+                        compare: '=',
+                        value: this.context.id
+                    });
+                }
+
+                if (filters.length > 0) {
                     params.append('filters', JSON.stringify(filters));
                 }
                 axios
