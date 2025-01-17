@@ -21,9 +21,8 @@
         "lib": "lib/BlockTypes"
     },
     "scripts": {
-        "prebuild": "npm install",
-        "build": "webpack --mode production --config ./webpack-courseware.config.js",
-        "build-dev": "webpack --mode development --config ./webpack-courseware.config.js",
+        "build": "npm install && webpack --mode production --config ./webpack-courseware.config.js",
+        "build-dev": "npm install && webpack --mode development --config ./webpack-courseware.config.js",
         "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
         "dev": "webpack --mode development --watch --config ./webpack-courseware.config.js"
     },
