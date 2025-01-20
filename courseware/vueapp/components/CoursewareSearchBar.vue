@@ -1,6 +1,13 @@
 <template>
     <div class="oc-cw-searchbar">
         <ul class="oc-cw-searchbar-container">
+            <li class="oc-cw-searchbar-token" v-show="showCurrentCourse">
+                <span>{{ $gettext('Diese Veranstaltung') }}</span>
+                <studip-icon
+                    shape="decline" role="clickable" class="oc-cw-remove-filter"
+                    @click="removeCourse"
+                />
+            </li>
             <li class="oc-cw-searchbar-input">
                 <input type="text"
                     ref="searchbar"
@@ -26,6 +33,15 @@
 export default {
     name: "CoursewareSearchBar",
 
+    props: {
+        showCurrentCourse: {
+            type: Boolean,
+            default: true,
+        },
+    },
+
+    emits: ['doSearch'],
+
     data() {
         return {
             inputSearch: '',
@@ -38,7 +54,10 @@ export default {
         doSearch() {
             clearTimeout(this.timer);
 
-            this.$emit('doSearch', this.inputSearch);
+            this.$emit('doSearch', {
+                searchText: this.inputSearch,
+                showCurrentCourse: this.showCurrentCourse,
+            });
         },
 
         doLiveSearch() {
@@ -47,6 +66,11 @@ export default {
             this.timer = setTimeout(() => {
                 this.doSearch();
             }, this.delay);
+        },
+
+        removeCourse() {
+            this.showCurrentCourse = false;
+            this.doSearch();
         }
     },
 }

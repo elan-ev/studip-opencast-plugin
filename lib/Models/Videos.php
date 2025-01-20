@@ -60,14 +60,14 @@ class Videos extends UPMap
     {
         global $perm;
 
-        if ($perm->have_perm('admin', $user_id)) {
+        if ($perm->have_perm('tutor', $user_id)) {
             // get all courses and their playlists this user has access to. Only courses with activated OC plugin are included
             $courses = Helpers::getMyCourses($user_id);
 
             $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
                 JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
-                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id)
+                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id AND oc_video.id = oc_playlist_video.video_id)
                 WHERE 1
             ');
 
@@ -190,8 +190,8 @@ class Videos extends UPMap
                 ':user_id'=> $user_id
             ];
 
-            if ($perm->have_perm('admin', $user_id)) {
-                $where = ' WHERE oc_video.id IN (:video_ids) ';
+            if ($perm->have_perm('tutor', $user_id)) {
+                $where = ' WHERE oc_video.id IN (:video_ids) OR p.user_id = :user_id';
                 $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
             } else {
                 $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';

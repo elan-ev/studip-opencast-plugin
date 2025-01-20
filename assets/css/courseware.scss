@@ -28,6 +28,26 @@
     white-space: nowrap;
 }
 
+.oc-cw-searchbar .oc-cw-searchbar-token {
+    margin: 3px;
+    padding: 5px;
+    border: solid thin $black;
+    background-color: $content-color-20;
+
+    display: inline;
+
+    span {
+        margin: 0 5px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .oc-cw-remove-filter {
+        vertical-align: middle;
+        cursor: pointer;
+    }
+}
+
 .oc-cw-searchbar .oc-cw-searchbar-container .oc-cw-searchbar-input {
     padding: 8px;
     width: 100%;
