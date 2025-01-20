@@ -67,7 +67,7 @@ class Videos extends UPMap
             $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
                 JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
                 JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
-                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id)
+                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id AND oc_video.id = oc_playlist_video.video_id)
                 WHERE 1
             ');
 
