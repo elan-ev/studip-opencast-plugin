@@ -49,8 +49,8 @@ class PlaylistRemoveVideos extends OpencastController
         $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
         $oc_playlist = $playlist_client->getPlaylist($playlist->service_playlist_id);
 
-        $old_entries = $oc_playlist->entries;
-        $entries = $oc_playlist->entries;
+        $old_entries = (array)$oc_playlist->entries;
+        $entries = (array)$oc_playlist->entries;
 
         foreach ($videos as $video) {
             if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
@@ -82,7 +82,7 @@ class PlaylistRemoveVideos extends OpencastController
         }
 
         // Update playlist videos in DB
-        $playlist->setEntries($oc_playlist->entries);
+        $playlist->setEntries((array)$oc_playlist->entries);
 
         return $response->withStatus(204);
     }
