@@ -10,7 +10,7 @@
         ASSETS_URL : '<?= Assets::url('') ?>',
         PLUGIN_ASSET_URL : '<?= $plugin->getAssetsUrl() ?>',
         ROUTE      : 'videos',
-        REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/perform') ?>',
+        REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect') ?>',
         AUTH_URL   : '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate') ?>'
     };
     <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;

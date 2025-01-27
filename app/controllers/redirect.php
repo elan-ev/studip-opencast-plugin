@@ -74,6 +74,38 @@ class RedirectController extends Opencast\Controller
         $this->set_layout(null);
     }
 
+    public function download_action($token, $type, $index)
+    {
+        $video = null;
+        $video = Videos::findByToken($token);
+
+        if (empty($video)) {
+            $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
+        } else if ($video->trashed) {
+            $this->error = _('Das Video wurde zur Löschung markiert und kann daher nicht abgerufen werden.');
+        }
+
+        $perm = $video->getUserPerm();
+
+        if ($perm) {
+
+            $publication = $video->publication? json_decode($video->publication, true) : null;
+            if (!empty($publication) && isset($publication['downloads'][$type][$index]['url'])) {
+                $url = $publication['downloads'][$type][$index]['url'];
+
+                $api_events = ApiEventsClient::getInstance($video->config_id);
+                $response = $api_events->fileRequest($url);
+
+                header('Content-Type: '. $response['mimetype']);
+
+                echo $response['body'];
+                die;
+            }
+        }
+
+        throw new \AccessDeniedException();
+    }
+
     /**
      * Directly redirect to passed LTI endpoint
      *

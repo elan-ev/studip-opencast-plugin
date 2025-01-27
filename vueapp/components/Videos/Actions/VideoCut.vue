@@ -27,7 +27,7 @@ export default {
 
     methods: {
         openEditor() {
-            let redirectUrl = window.OpencastPlugin.REDIRECT_URL + '/editor/' + this.event.token;
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL + '/perform/editor/' + this.event.token;
             window.open(redirectUrl, '_blank');
             this.$emit('done');
         },
