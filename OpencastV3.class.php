@@ -300,12 +300,18 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
      */
     public function perform($unconsumed_path)
     {
+        if (!empty($GLOBALS['ABSOLUTE_URI_STUDIP'])) {
+            URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+        }
+
         require_once __DIR__ . '/vendor/autoload.php';
 
         if (substr($unconsumed_path, 0, 3) == 'api') {
             // make sure, slim knows if we are running https, see https://github.com/elan-ev/studip-opencast-plugin/issues/816
-            if (strpos($GLOBALS['ABSOLUTE_URI_STUDIP'], 'https') === 0) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
                 $_SERVER['HTTPS'] = 'on';
+                $_SERVER['SERVER_PORT'] = 443;
+
             }
 
             $appFactory = new AppFactory();
