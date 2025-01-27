@@ -84,6 +84,29 @@ class OpencastWorker extends CronJob
                         $video->available = 1;
                         $video->version   = $event->archive_version;
                         $video->is_livestream = 0;
+
+                        // get the first course the video is assigned to
+                        if (!empty($video->playlists) && !empty($video->playlists[0]->courses)) {
+                            $course_id = $video->playlists[0]->courses[0]->id;
+                        }
+
+                        // notify user
+                        foreach($video->perms->findBySQL("perm = 'owner'")[0] as $vuser) {
+                            $url = \URLHelper::getURL('plugins.php/opencastv3/contents/index', [], true);
+
+                            if (!empty($course_id)) {
+                                $url = \URLHelper::getURL('plugins.php/opencastv3/course/index', ['cid' => $course_id], true);
+                            }
+
+                            \PersonalNotifications::add(
+                                $vuser->user_id, $url,
+                                sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $video->title),
+                                "opencast_" . $event->identifier,
+                                \Icon::create('video'),
+                                false
+                            );
+                        }
+
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && empty($event->publications)) {
                         if ($is_livestream && !empty($event->scheduling)) {
                             $start = strtotime($event->scheduling->start);
