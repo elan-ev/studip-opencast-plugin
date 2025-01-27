@@ -65,15 +65,16 @@ class OpencastWorker extends CronJob
 
                 if ($event) {
                     if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
-                        $video->state = 'failed';
-
-                        NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+                        if ($video->state != 'failed') {
+                            $video->state = 'failed';
+                            NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+                        }
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && $event->has_previews == true
                     && count($event->publication_status) == 1 && $event->publication_status[0] == "internal") {
-                        $video->state = 'cutting';
-
-                        NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
-
+                        if ($video->state != 'cutting') {
+                            $video->state = 'cutting';
+                            NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+                        }
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.SCHEDULED" || $event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is scheduled or live
                         $video->state = 'running';
                         $video->is_livestream = 1;
