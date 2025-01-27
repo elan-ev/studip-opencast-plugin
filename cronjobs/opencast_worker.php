@@ -66,9 +66,14 @@ class OpencastWorker extends CronJob
                 if ($event) {
                     if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
                         $video->state = 'failed';
+
+                        NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && $event->has_previews == true
                     && count($event->publication_status) == 1 && $event->publication_status[0] == "internal") {
                         $video->state = 'cutting';
+
+                        NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.SCHEDULED" || $event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is scheduled or live
                         $video->state = 'running';
                         $video->is_livestream = 1;
@@ -85,27 +90,7 @@ class OpencastWorker extends CronJob
                         $video->version   = $event->archive_version;
                         $video->is_livestream = 0;
 
-                        // get the first course the video is assigned to
-                        if (!empty($video->playlists) && !empty($video->playlists[0]->courses)) {
-                            $course_id = $video->playlists[0]->courses[0]->id;
-                        }
-
-                        // notify user
-                        foreach($video->perms->findBySQL("perm = 'owner'")[0] as $vuser) {
-                            $url = \URLHelper::getURL('plugins.php/opencastv3/contents/index', [], true);
-
-                            if (!empty($course_id)) {
-                                $url = \URLHelper::getURL('plugins.php/opencastv3/course/index', ['cid' => $course_id], true);
-                            }
-
-                            \PersonalNotifications::add(
-                                $vuser->user_id, $url,
-                                sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $video->title),
-                                "opencast_" . $event->identifier,
-                                \Icon::create('video'),
-                                false
-                            );
-                        }
+                        NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
 
                     } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && empty($event->publications)) {
                         if ($is_livestream && !empty($event->scheduling)) {
