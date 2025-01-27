@@ -300,10 +300,6 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
      */
     public function perform($unconsumed_path)
     {
-        if (!empty($GLOBALS['ABSOLUTE_URI_STUDIP'])) {
-            URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-        }
-
         require_once __DIR__ . '/vendor/autoload.php';
 
         if (substr($unconsumed_path, 0, 3) == 'api') {
@@ -311,7 +307,6 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
             if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
                 $_SERVER['HTTPS'] = 'on';
                 $_SERVER['SERVER_PORT'] = 443;
-
             }
 
             $appFactory = new AppFactory();
@@ -321,6 +316,10 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
             $app->run();
         } else {
+            if (!empty($GLOBALS['ABSOLUTE_URI_STUDIP'])) {
+                URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+            }
+
             $css = VersionHelper::get()->getVersionSpecificStylesheet();
 
             if ($css) {
