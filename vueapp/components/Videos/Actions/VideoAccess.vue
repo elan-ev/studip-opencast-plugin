@@ -328,7 +328,6 @@ export default {
                 if (data.message.type == 'success') {
                     event.visibility = vis;
                 }
-                console.log('visibility', event.visibility);
                 view.$store.dispatch('addMessage', data.message);
                 view.processing = false;
             })

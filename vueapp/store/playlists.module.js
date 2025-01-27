@@ -251,7 +251,6 @@ const actions = {
      * @param data.videos list of video tokens to remove
      */
     async removeVideosFromPlaylist(context, data) {
-        console.log('removeVideosFromPlaylist', data);
         return ApiService.patch('/playlists/' + data.playlist + '/videos', data)
             .then(() => {
                 context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.removedCount});

@@ -100,7 +100,6 @@ export default {
         async downloadFile(media, type, index) {
             let url = window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + type + '/' + index;
 
-            console.log('Download URL:', url);
             axios.get(url, {
                 responseType: 'blob'
             }).then(response => {
