@@ -13,7 +13,7 @@
                         ReferentIn
                     </h2>
                     <a v-for="(media, index) in presenters" :key="index">
-                        <StudipButton @click.prevent="downloadFile(media)">
+                        <StudipButton @click.prevent="downloadFile(media, 'presenter', media.size)">
                             {{ getMediaText(media) }}
                         </StudipButton>
 
@@ -42,7 +42,7 @@
                         Bildschirm
                     </h2>
                     <a v-for="(media, index) in presentations" :key="index">
-                        <StudipButton @click.prevent="downloadFile(media)">
+                        <StudipButton @click.prevent="downloadFile(media, 'presentation', media.size)">
                             {{ getMediaText(media) }}
                         </StudipButton>
 
@@ -97,10 +97,10 @@ export default {
     },
 
     methods: {
-        async downloadFile(media) {
-            axios.get(media.url, {
-                crossDomain: true,
-                withCredentials: true,
+        async downloadFile(media, type, index) {
+            let url = window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + type + '/' + index;
+
+            axios.get(url, {
                 responseType: 'blob'
             }).then(response => {
                 const blob = new Blob([response.data]);

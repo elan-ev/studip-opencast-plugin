@@ -12,7 +12,7 @@
         ICON_URL   : '<?= Assets::url('images/icons/') ?>',
         ASSETS_URL : '<?= Assets::url('') ?>',
         ROUTE      : 'admin',
-        REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect/perform', true) ?>',
+        REDIRECT_URL: '<?= PluginEngine::getURL('opencastv3', [], 'redirect', true) ?>',
         AUTH_URL   : '<?= PluginEngine::getURL('opencastv3', [], 'redirect/authenticate', true) ?>'
     };
     <?= isset($languages) ? "window.OpencastPlugin.STUDIP_LANGUAGES = $languages;" : '' ?>;

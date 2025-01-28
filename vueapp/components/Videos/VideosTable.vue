@@ -562,7 +562,7 @@ export default {
         },
 
         redirectAction(action) {
-            let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL + '/perform';
 
             if (redirectUrl) {
                 redirectUrl = redirectUrl + action;

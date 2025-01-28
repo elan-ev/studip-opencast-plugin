@@ -560,7 +560,7 @@ class Videos extends UPMap
         }
 
         // check if user has permission on this video due to course ownership
-        if ($this->haveCoursePerm('dozent')) {
+        if ($this->haveCoursePerm('dozent', $user_id)) {
             return 'owner';
         }
 
@@ -574,7 +574,7 @@ class Videos extends UPMap
 
         if (!$ret_perm) {
             // check if at least read perms are present due to course participation
-            if ($this->haveCoursePerm('user')) {
+            if ($this->haveCoursePerm('user', $user_id)) {
                 return 'read';
             }
         }
@@ -585,13 +585,19 @@ class Videos extends UPMap
     /**
      * Check if current user has permission for a course of this video
      */
-    public function haveCoursePerm(string $perm)
+    public function haveCoursePerm(string $course_perm, string $user_id = null)
     {
+        global $user, $perm;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
+
         $video_courses = PlaylistSeminars::getCoursesOfVideo($this);
 
         if (!empty($video_courses)) {
             foreach ($video_courses as $video_course_id) {
-                if ($GLOBALS['perm']->have_studip_perm($perm, $video_course_id)) {
+                if ($perm->have_studip_perm($course_perm, $video_course_id, $user_id)) {
                     return true;
                 }
             }

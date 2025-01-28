@@ -160,7 +160,7 @@ export default {
         },
 
         annotation_tool_link() {
-            let redirectUrl = window.OpencastPlugin.REDIRECT_URL;
+            let redirectUrl = window.OpencastPlugin.REDIRECT_URL + '/perform';
             let action = '/annotation/' + this.event.token;
 
             if (redirectUrl && this.event.publication.annotation_tool) {
