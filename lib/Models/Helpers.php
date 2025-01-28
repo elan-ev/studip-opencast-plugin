@@ -335,4 +335,38 @@ class Helpers
         return $comp_a <=> $comp_b;
 
     }
+
+    public static function notifyUsers($eventType, $event, $video)
+    {
+        // get the first course the video is assigned to
+        if (!empty($video->playlists) && !empty($video->playlists[0]->courses)) {
+            $course_id = $video->playlists[0]->courses[0]->id;
+        }
+
+        // notify user
+        foreach($video->perms->findBySQL("perm = 'owner'")[0] as $vuser) {
+            $url = \URLHelper::getURL('plugins.php/opencastv3/contents/index', [], true);
+
+            if (!empty($course_id)) {
+                $url = \URLHelper::getURL('plugins.php/opencastv3/course/index', ['cid' => $course_id], true);
+            }
+
+            $title = sprintf(_('Das Video mit dem Titel "%s" wurde fertig verarbeitet.'), $video->title);
+
+            if ($video->state == 'cutting') {
+                $title = sprintf(_('Das Video mit dem Titel "%s" wartet auf den Schnitt.'), $video->title);
+            }
+
+            if ($video->state == 'failed') {
+                $title = sprintf(_('Das Video mit dem Titel "%s" hat einen Verarbeitungsfehler!'), $video->title);
+            }
+
+            \PersonalNotifications::add(
+                $vuser->user_id, $url, $title,
+                "opencast_" . $event->identifier,
+                \Icon::create('video'),
+                false
+            );
+        }
+    }
 }
