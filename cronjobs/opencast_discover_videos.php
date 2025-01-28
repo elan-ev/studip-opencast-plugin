@@ -31,7 +31,8 @@ class OpencastDiscoverVideos extends CronJob
         */
         $db = DBManager::get();
         $stmt_ids = $db->prepare("
-            SELECT episode, version FROM oc_video WHERE config_id = :config_id AND available=true
+            SELECT episode, version FROM oc_video
+            WHERE config_id = :config_id AND available = 1
         ");
 
         // iterate over all active configured oc instances
@@ -92,6 +93,10 @@ class OpencastDiscoverVideos extends CronJob
 
                         $task->store();
                     }
+                } else {
+                    // the event at least exists
+                    $event_ids[] = $event->identifier;
+                    $events[$event->identifier] = $event;
                 }
             }
 

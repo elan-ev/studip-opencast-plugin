@@ -27,8 +27,12 @@
                     </span>
                 </span>
             </span>
-            <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
-                {{ $gettext("Video nicht verfügbar") }}
+            <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
+                :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
+            >
+                <span class="oc--previewimage">
+                    <img class="oc--image-button" :src="failed">
+                </span>
             </span>
             <span v-else-if="event.state == 'cutting'"
                :title="$gettext('Dieses Video wartet auf den Schnitt.')"
@@ -141,7 +145,8 @@ export default {
         return {
             preview:  this.simple_config_list.plugin_assets_url + '/images/default-preview.png',
             play:  this.simple_config_list.plugin_assets_url + '/images/play.svg',
-            cut:  this.simple_config_list.plugin_assets_url + '/images/cut.svg'
+            cut:  this.simple_config_list.plugin_assets_url + '/images/cut.svg',
+            failed:  this.simple_config_list.plugin_assets_url + '/images/failed.svg'
         }
     },
 

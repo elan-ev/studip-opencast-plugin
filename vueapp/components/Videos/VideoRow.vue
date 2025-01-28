@@ -62,8 +62,12 @@
                         </span>
                     </span>
                 </a>
-                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable">
-                    {{ $gettext("Video nicht verfügbar") }}
+                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
+                    :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
+                >
+                    <span class="oc--previewimage">
+                        <img class="oc--image-button" :src="failed">
+                    </span>
                 </span>
                 <a v-else-if="event.state == 'cutting'"
                    @click="redirectAction(`/editor/` + event.token)"
@@ -219,9 +223,10 @@ export default {
 
     data() {
         return {
-            preview:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
-            play:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
-            cut:  window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
+            preview:    window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
+            play:       window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
+            cut:        window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
+            failed:     window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/failed.svg',
             dragHandle: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/grabber_grey.svg',
             DeleteConfirmDialog: false,
             DownloadDialog: false,
