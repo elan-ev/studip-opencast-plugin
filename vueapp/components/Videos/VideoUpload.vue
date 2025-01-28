@@ -191,6 +191,10 @@
                         <MessageBox v-if="fileUploadError" type="error">
                             {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
                         </MessageBox>
+
+                        <MessageBox v-if="fileFormatError" type="error">
+                            {{ $gettext('Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!') }}
+                        </MessageBox>
                     </fieldset>
 
                     <MessageBox type="info" v-if="infoText" v-html="infoText">
@@ -239,6 +243,7 @@ export default {
             selectedServer: false,
             selectedWorkflow: false,
             fileUploadError: false,
+            fileFormatError: false,
             upload: {
                 creator: this.currentUser.fullname,
                 contributor: '',
@@ -363,7 +368,24 @@ export default {
                 !this.files['presentation/source'].length
             ) {
                 this.fileUploadError = true;
+            }
 
+            this.fileFormatError = false;
+
+            if (this.files['presenter/source'].length &&
+                this.files['presentation/source'].length
+            ) {
+                let ext1 = this.files['presenter/source'][0].name.split('.').pop();
+                let ext2 = this.files['presentation/source'][0].name.split('.').pop();
+
+                if (ext1 == 'webm' && ext2 =='mp4'
+                    || ext2 == 'webm' && ext1 == 'mp4'
+                ) {
+                    this.fileFormatError = true;
+                }
+            }
+
+            if (this.fileUploadError || this.fileFormatError) {
                 // scroll to error message to make it visible to the user
                 this.$refs['upload-form'].parentNode.scrollTo({
                     top: 1000,
