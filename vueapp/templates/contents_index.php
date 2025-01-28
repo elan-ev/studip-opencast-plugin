@@ -1,3 +1,6 @@
+<?php
+    URLHelper::removeLinkParam('cid');
+?>
 <div class="container" id="opencast">
     <h1 class="display-1 text-center">Starte Anwendung&hellip;</h1>
 </div>
