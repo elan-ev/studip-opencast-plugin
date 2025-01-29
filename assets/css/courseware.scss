@@ -28,6 +28,37 @@
     white-space: nowrap;
 }
 
+.oc-cw-searchbar .oc-cw-tokenselector {
+    position: absolute;
+    z-index: 10;
+    border: thin solid $content-color-40;
+    background-color: $white;
+    margin-top: 12px;
+    min-width: 130px;
+
+    @include arrow-top-border(9px, white, 1px, $content-color-40, 12px);
+
+    &::before, &::after {
+        right: 90%;
+    }
+
+    ul, li {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        display: block;
+        padding: 0.5em;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $light-gray-color-20;
+        }
+    }
+}
+
 .oc-cw-searchbar .oc-cw-searchbar-token {
     margin: 3px;
     padding: 5px;

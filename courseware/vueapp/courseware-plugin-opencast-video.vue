@@ -36,6 +36,7 @@
                         <translate>Videos</translate>
                     </label>
                     <CoursewareSearchBar
+                        :currentCourseSelectable="isCourse"
                         :showCurrentCourse="showCurrentCourse"
                         @doSearch="performSearch"
                     />
