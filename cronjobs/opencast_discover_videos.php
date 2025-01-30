@@ -68,8 +68,20 @@ class OpencastDiscoverVideos extends CronJob
             $local_events = $stmt_ids->fetchAll(PDO::FETCH_KEY_PAIR);
             $local_event_ids = array_keys($local_events);
 
+            // paginated fetch of events from opencast
+            $oc_events = [];
+            $offset = 0;
+            $limit  = 100;
+
+            do {
+                $paged_events = $api_client->getAll(['limit' => $limit, 'offset' => $offset]);
+                $oc_events = array_merge($oc_events, $paged_events);
+
+                $offset += $limit;
+            } while (sizeof($paged_events) > 0);
+
             // load events from opencast filter the processed ones
-            foreach ($api_client->getAll() as $event) {
+            foreach ($oc_events as $event) {
                 // only add videos / reinspect videos if they are readily processed
                 if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
                     $event_ids[] = $event->identifier;
