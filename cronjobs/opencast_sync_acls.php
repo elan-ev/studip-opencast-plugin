@@ -59,7 +59,23 @@ class OpencastSyncAcls extends CronJob
             // call opencast to get all event ids
             $api_client = ApiEventsClient::getInstance($config['id']);
 
-            foreach ($api_client->getAll(['sort' => 'date:DESC']) as $event) {
+            // paginated fetch of events from opencast
+            $oc_events = [];
+            $offset = 0;
+            $limit  = 100;
+
+            do {
+                $paged_events = $api_client->getAll([
+                    'limit' => $limit,
+                    'offset' => $offset,
+                    'sort' => 'date:DESC'
+                ]);
+                $oc_events = array_merge($oc_events, $paged_events);
+
+                $offset += $limit;
+            } while (sizeof($paged_events) > 0);
+
+            foreach ($oc_events as $event) {
                 // only add videos / reinspect videos if they are readily processed
                 if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
                     // check if video exists in Stud.IP
