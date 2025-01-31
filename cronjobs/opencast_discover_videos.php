@@ -91,20 +91,23 @@ class OpencastDiscoverVideos extends CronJob
                     if (isset($local_events[$event->identifier])
                         && $local_events[$event->identifier] != $event->archive_version
                     ) {
-                        $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
-                        echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ")\n";
+                        // only add for reinspection if not already scheduled
+                        if (empty(VideoSync::findByVideo_id($video->id))) {
+                            $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
+                            echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ")\n";
 
-                        // create task to update permissions and everything else
-                        $task = new VideoSync;
+                            // create task to update permissions and everything else
+                            $task = new VideoSync;
 
-                        $task->setData([
-                            'config_id' => $config['id'],
-                            'video_id'  => $video->id,
-                            'state'     => 'scheduled',
-                            'scheduled' => date('Y-m-d H:i:s')
-                        ]);
+                            $task->setData([
+                                'config_id' => $config['id'],
+                                'video_id'  => $video->id,
+                                'state'     => 'scheduled',
+                                'scheduled' => date('Y-m-d H:i:s')
+                            ]);
 
-                        $task->store();
+                            $task->store();
+                        }
                     }
                 } else {
                     // the event at least exists
