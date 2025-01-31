@@ -311,14 +311,15 @@ class Playlists extends UPMap
         }
 
         if (!$ret_perm) {
-            // check if user has read access through a linked course
+            // check if user is lecturer and therefore has owner rights or at least
+            // has read access through a linked course
             foreach ($this->courses as $course) {
-                if ($course->getParticipantStatus($user->id)) {
-                    return 'read';
-                }
-
                 if ($perm->have_studip_perm('dozent', $course->id)) {
                     return 'owner';
+                }
+
+                if ($course->getParticipantStatus($user->id)) {
+                    $ret_perm = 'read';
                 }
             }
         }
