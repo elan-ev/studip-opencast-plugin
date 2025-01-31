@@ -91,13 +91,14 @@ class OpencastDiscoverVideos extends CronJob
                     if (isset($local_events[$event->identifier])
                         && $local_events[$event->identifier] != $event->archive_version
                     ) {
-                        $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $event->identifier]);
+                        $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
                         echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ")\n";
 
                         // create task to update permissions and everything else
                         $task = new VideoSync;
 
                         $task->setData([
+                            'config_id' => $config['id'],
                             'video_id'  => $video->id,
                             'state'     => 'scheduled',
                             'scheduled' => date('Y-m-d H:i:s')
@@ -116,7 +117,7 @@ class OpencastDiscoverVideos extends CronJob
             foreach (array_diff($event_ids, $local_event_ids) as $new_event_id) {
                 echo 'found new video in Opencast #'. $config['id'] .': ' . $new_event_id . ' (' . $events[$new_event_id]->title . ")\n";
 
-                $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $new_event_id]);
+                $video = Videos::findOneBySql("episode = ?", [$new_event_id]);
                 $is_livestream = (bool) $video->is_livestream ?? false;
                 if (!$video) {
                     $video = new Videos;
