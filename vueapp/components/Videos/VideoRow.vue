@@ -77,8 +77,8 @@
                         <img class="oc--image-button" :src="cut">
                     </span>
                 </a>
-                <span v-else-if="event.state == 'running'" class="oc--previewimage"
-                      :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+                <span v-else-if="event.state == 'running' || event.seminar_visiblity.available == '0'" class="oc--previewimage"
+                      :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
                 >
                     <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
                 </span>

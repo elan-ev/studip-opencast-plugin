@@ -534,8 +534,9 @@ class Videos extends UPMap
 
             if (!empty($psv)) {
                 return [
-                    'visibility' => $psv->getValue('visibility'),
-                    'visible_timestamp' => $psv->getValue('visible_timestamp')
+                    'visibility'        => $psv->getValue('visibility'),
+                    'visible_timestamp' => $psv->getValue('visible_timestamp'),
+                    'available'         => $psv->getValue('available')
                 ];
             }
         }
