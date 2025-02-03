@@ -21,9 +21,7 @@ class VideoSharesUpdate extends OpencastController
 
         global $user;
 
-        if (!\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
-            throw new \AccessDeniedException();
-        }
+        $sharing = \Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING ? true : false;
 
         $token = $args['token'];
         $video = Videos::findByToken($token);
@@ -87,18 +85,21 @@ class VideoSharesUpdate extends OpencastController
         // clear out all links
         VideosShares::deleteBySQL('video_id = ?', [$video->id]);
 
-        // set new links
-        $shares = $json['data']['shares'] ?? [];
-        foreach ($shares as $share) {
-            if (isset($share['is_new'])) {
-                $share['video_id'] = $video->id;
-                $share['token'] = VideosShares::generateToken();
-                $share['uuid'] = VideosShares::generateUuid();
-                unset($share['is_new']);
+        // only add share links it is globally allowed
+        if ($sharing) {
+            // set new links
+            $shares = $json['data']['shares'] ?? [];
+            foreach ($shares as $share) {
+                if (isset($share['is_new'])) {
+                    $share['video_id'] = $video->id;
+                    $share['token'] = VideosShares::generateToken();
+                    $share['uuid'] = VideosShares::generateUuid();
+                    unset($share['is_new']);
+                }
+                $nshare = new VideosShares();
+                $nshare->setData($share);
+                $nshare->store();
             }
-            $nshare = new VideosShares();
-            $nshare->setData($share);
-            $nshare->store();
         }
 
         $video = Videos::findByToken($token);

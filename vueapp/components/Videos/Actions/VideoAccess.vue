@@ -341,9 +341,7 @@ export default {
     mounted ()
     {
         this.$nextTick(() => {
-            if (this.config.settings.OPENCAST_ALLOW_PUBLIC_SHARING) {
                 this.initVideoShares();
-            }
         });
     },
 }
