@@ -173,7 +173,7 @@ class OpencastDiscoverVideos extends CronJob
          */
         foreach (Videos::findBySql('(preview IS NULL OR available = 0) AND is_livestream = 0') as $video) {
             // check, if there is already a task scheduled
-            if (empty(VideoSync::findByVideo_id($video->id))) {
+            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'video'", [$video->id]))) {
                 echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
                 // create task to update permissions and everything else
                 $task = new VideoSync;
@@ -182,6 +182,26 @@ class OpencastDiscoverVideos extends CronJob
                     'video_id'  => $video->id,
                     'state'     => 'scheduled',
                     'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+        }
+
+        // search for all inaccessible videos in course playlists and add them for reinspection
+        foreach (PlaylistVideos::findBySql('available = 0') as $video) {
+            // check, if there is already a task scheduled
+            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'course_video'", [$video->id]))) {
+                echo 'schedule course video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
+                // create task to update permissions and everything else
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->id,
+                    'state'     => 'scheduled',
+                    'type'      => 'coursevideo',
+                    'scheduled' => date('Y-m-d H:i:s'),
+                    'content'   => json_encode(['course_id' => $video->playlist_seminar_id])
                 ]);
 
                 $task->store();
