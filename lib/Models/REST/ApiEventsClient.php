@@ -151,11 +151,6 @@ class ApiEventsClient extends RestClient
     {
         $response = $this->opencastApi->eventsApi->delete($episode_id);
 
-        // if the video does not exists (anymore) in opencast, it still shall be deleted in Stud.IP
-        if ($response['code'] == 404) {
-            return true;
-        }
-
         return $response['code'] < 400;
     }
 
