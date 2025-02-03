@@ -39,6 +39,11 @@ export default {
         },
 
         hasDefaultPlaylist() {
+            // if the course config is not available, assume it has a default playlist
+            if (!this.course_config) {
+                return true;
+            }
+
             return this.course_config?.has_default_playlist;
         },
     },
