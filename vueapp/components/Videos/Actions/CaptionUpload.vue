@@ -42,27 +42,27 @@
                                     }}
                                 </legend>
 
-                                <div class="oc--file-preview" v-if="files[language.flavor] && files[language.flavor].size">
+                                <div class="oc--file-preview" v-if="files[language.tag] && files[language.tag].size">
                                     <span class="oc--file-name">
-                                        <b>{{ $gettext('Name:') }}</b> {{ files[language.flavor].name }}
+                                        <b>{{ $gettext('Name:') }}</b> {{ files[language.tag].name }}
                                     </span>
 
-                                    <span class="oc--file-size" v-if="files[language.flavor].size">
-                                        <b>{{ $gettext('Größe:') }}</b> {{files[language.flavor].size }}
+                                    <span class="oc--file-size" v-if="files[language.tag].size">
+                                        <b>{{ $gettext('Größe:') }}</b> {{files[language.tag].size }}
                                     </span>
                                 </div>
 
                                 <div class="oc--button-bar">
-                                    <label v-if="files[language.flavor] && files[language.flavor].url">
-                                        <a :href="files[language.flavor].url">
+                                    <label v-if="files[language.tag] && files[language.tag].url">
+                                        <a :href="files[language.tag].url">
                                             <button class='button download' type=button>
                                                 {{ $gettext('Herunterladen') }}
                                             </button>
                                         </a>
                                     </label>
 
-                                    <label v-if="files[language.flavor]">
-                                        <StudipButton icon="trash" @click.prevent="removeCaption(language.flavor)">
+                                    <label v-if="files[language.tag]">
+                                        <StudipButton icon="trash" @click.prevent="removeCaption(language.tag)">
                                             {{ $gettext('Löschen') }}
                                         </StudipButton>
                                     </label>
@@ -73,7 +73,6 @@
                                         </StudipButton>
                                         <input
                                             type="file" class="caption_upload"
-                                            :data-flavor="language.flavor"
                                             :data-tag="language.tag"
                                             @change="previewFiles" :ref="'oc-file-' + language.lang"
                                             accept=".vtt"
@@ -82,7 +81,7 @@
                                 </div>
                             </fieldset>
 
-                            <ProgressBar v-if="uploadProgress && uploadProgress.flavor == language.flavor" :progress="uploadProgress.progress" />
+                            <ProgressBar v-if="uploadProgress && uploadProgress[language.tag]" :progress="uploadProgress[language.tag].progress" />
                         </div>
                     </fieldset>
 
@@ -152,7 +151,7 @@ export default {
         }),
 
         uploadButtonClasses() {
-            if (this.uploadProgress) {
+            if (this.uploadProgress && Object.keys(this.uploadProgress).length > 0) {
                 return 'accept disabled';
             }
 
@@ -190,15 +189,15 @@ export default {
     },
 
     methods: {
-        removeCaption(flavor) {
-            if (this.uploadProgress) {
+        removeCaption(tag) {
+            if (this.uploadProgress && Object.keys(this.uploadProgress).length > 0) {
                 return;
             }
 
             if (confirm(this.$gettext('Sind sie sicher?'))) {
                 let files = [{
                     file: undefined,
-                    flavor: flavor,
+                    tag: tag,
                     overwriteExisting: true,
                     progress: {
                         loaded: 0,
@@ -206,7 +205,7 @@ export default {
                     }
                 }];
 
-                if (this.files[flavor].url) {
+                if (this.files[tag].url) {
                     let view = this;
                     // get correct upload endpoint url
                     this.uploadService = new UploadService({
@@ -215,20 +214,22 @@ export default {
                     });
 
                     this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
-                        uploadProgress: () => {},
+                        uploadProgress: {
+                            [tag]: () => {},
+                        },
                         uploadDone: () => {
-                            delete view.files[flavor]
+                            delete view.files[tag]
                         }
                     });
                 } else {
-                    delete this.files[flavor]
+                    delete this.files[tag]
                 }
 
             }
         },
 
         async accept() {
-            if (this.uploadProgress) {
+            if (this.uploadProgress && Object.keys(this.uploadProgress).length > 0) {
                 return;
             }
 
@@ -242,7 +243,7 @@ export default {
             // validate file upload
             this.fileUploadError = true;
             this.languages.every(language => {
-                if (this.files[language.flavor]) {
+                if (this.files[language.tag]) {
                     this.fileUploadError = false;
                     return false;
                 }
@@ -271,7 +272,6 @@ export default {
                 if (value['file']) {
                     files.push({
                         file: value['file'],
-                        flavor: key,
                         tag: value['tag'],
                         overwriteExisting: true,
                         progress: {
@@ -287,7 +287,7 @@ export default {
             this.uploadService.uploadCaptions(files, this.event.episode, this.defaultWorkflow.name, {
                     uploadProgress: (track, loaded, total) => {
                         view.uploadProgress = {
-                            flavor: track.flavor,
+                            tag: track.tag,
                             progress: parseInt(Math.round((loaded / total) * 100 ))
                         }
                     },
@@ -318,12 +318,11 @@ export default {
         },
 
         previewFiles(event) {
-            let flavor = event.target.attributes['data-flavor'].value;
             let tag    = event.target.attributes['data-tag'].value;
 
-            let language = this.languages.find(language => language.flavor === flavor).lang;
+            let language = this.languages.find(language => language.tag === tag).lang;
 
-            this.files[flavor] = {
+            this.files[tag] = {
                 name: event.target.files[0].name,
                 size: this.$filters.filesize(event.target.files[0].size),
                 file: event.target.files[0],
@@ -352,15 +351,15 @@ export default {
     watch: {
         videoCaptions(newCaptions) {
             if (Object.keys(newCaptions).length > 0) {
-            for (var flavor in newCaptions) {
-                let language = this.languages.find(language => language.flavor === flavor);
+            for (var tag in newCaptions) {
+                let language = this.languages.find(language => language.tag === tag);
 
                 if (language) {
-                    this.files[flavor] = {
-                        'url': newCaptions[flavor].url,
-                        'name': newCaptions[flavor].url.split('/').pop()
+                    this.files[tag] = {
+                        'url': newCaptions[tag].url,
+                        'name': newCaptions[tag].url.split('/').pop()
                     };
-                    this.files[flavor]['language'] = language.lang;
+                    this.files[tag]['language'] = language.lang;
                 }
             }
         }
