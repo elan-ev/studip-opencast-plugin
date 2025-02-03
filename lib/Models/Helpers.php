@@ -164,6 +164,7 @@ class Helpers
         } else {
             // create new playlist
             $playlist = new Playlists();
+            $playlist->config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
             $playlist->title = $course->getFullname('number-name-semester');
             $playlist->store();
 
