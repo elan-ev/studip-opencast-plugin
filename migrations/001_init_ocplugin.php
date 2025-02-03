@@ -12,7 +12,7 @@ class InitOcplugin extends Migration {
               )  ROW_FORMAT=DYNAMIC;");
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_series` (
-                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `seminar_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 `series_id` VARCHAR( 64 ) NOT NULL ,
                 `visibility` ENUM(  'visible',  'invisible' )NOT NULL ,
                 `schedule` TINYINT( 1 ) NOT NULL DEFAULT '0',
@@ -20,7 +20,7 @@ class InitOcplugin extends Migration {
                 );");
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_resources` (
-                `resource_id` VARCHAR( 32 ) NOT NULL ,
+                `resource_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 `capture_agent` VARCHAR( 64 ) NOT NULL ,
                 PRIMARY KEY (  `resource_id` ,  `capture_agent` )
                 );");
@@ -39,7 +39,7 @@ class InitOcplugin extends Migration {
         }
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_episodes` (
-                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `seminar_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 `episode_id` VARCHAR( 64 ) NOT NULL ,
                 `visible` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true',
                 PRIMARY KEY ( `seminar_id` , `episode_id` )
@@ -47,13 +47,13 @@ class InitOcplugin extends Migration {
 
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_scheduled_recordings` (
-                `seminar_id` VARCHAR( 32 ) NOT NULL ,
+                `seminar_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 `series_id` VARCHAR( 64 ) NOT NULL ,
                 `date_id` VARCHAR( 32 ) NOT NULL ,
-                `resource_id` VARCHAR( 32 ) NOT NULL ,
+                `resource_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 `capture_agent` VARCHAR( 64 ) NOT NULL ,
                 `event_id` VARCHAR( 64 ) NOT NULL,
-                `status` ENUM( 'scheduled', 'recorded' ) NOT NULL ,
+                `status` ENUM( 'scheduled', 'recorded' ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
                 PRIMARY KEY ( `seminar_id` , `series_id` , `date_id` , `resource_id` , `capture_agent` )
                 );");
 

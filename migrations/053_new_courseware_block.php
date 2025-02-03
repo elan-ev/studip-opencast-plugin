@@ -23,7 +23,7 @@ class NewCoursewareBlock extends Migration
             `id` int NOT NULL AUTO_INCREMENT,
             `token` varchar(32),
             `video_id` int,
-            `new_seminar_id` varchar(32),
+            `new_seminar_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin,
             PRIMARY KEY (`id`)
         );");
 

@@ -11,7 +11,7 @@ class AlterLinkshareTable extends Migration
         $db = DBManager::get();
 
         $db->exec("ALTER TABLE `oc_video_shares`
-            CHANGE `password` `uuid` varchar(32) NULL,
+            CHANGE `password` `uuid` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NULL,
             MODIFY `token` varchar(16) NOT NULL,
             DROP PRIMARY KEY,
             DROP COLUMN `id`,

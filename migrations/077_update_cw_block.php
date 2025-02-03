@@ -14,7 +14,7 @@ class UpdateCwBlock extends Migration
         $db->exec('START TRANSACTION');
 
         $db->exec('ALTER TABLE oc_video_cw_blocks
-            ADD `token` varchar(12) AFTER video_id');
+            ADD `token` varchar(12) CHARACTER SET latin1 COLLATE latin1_bin AFTER video_id');
 
 
         $stmt = $db->prepare('UPDATE oc_video_cw_blocks
