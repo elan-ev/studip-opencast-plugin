@@ -20,8 +20,8 @@ class AddTos extends Migration
         $db->exec("ALTER TABLE oc_config ADD tos TEXT NULL");
 
         $db->exec("CREATE TABLE IF NOT EXISTS `oc_tos` (
-            `seminar_id` varchar(32) NOT NULL,
-            `user_id` varchar(32) NOT NULL,
+            `seminar_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+            `user_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
             PRIMARY KEY (`seminar_id`, `user_id`)
         )");
 

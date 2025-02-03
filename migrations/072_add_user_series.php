@@ -13,9 +13,9 @@ class AddUserSeries extends Migration
 
         $db->exec("CREATE TABLE IF NOT EXISTS `oc_user_series` (
             `config_id` INT NOT NULL DEFAULT 1,
-            `user_id` VARCHAR( 32 ) NOT NULL ,
+            `user_id` VARCHAR( 32 ) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
             `series_id` VARCHAR( 64 ) NOT NULL ,
-            `visibility` ENUM(  'visible',  'invisible' )NOT NULL ,
+            `visibility` ENUM('visible', 'invisible') CHARACTER SET latin1 COLLATE latin1_bin NOT NULL ,
             `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             PRIMARY KEY (`user_id` ,`series_id` ),

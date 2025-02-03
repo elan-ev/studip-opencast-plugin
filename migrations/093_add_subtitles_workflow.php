@@ -12,7 +12,7 @@ class AddSubtitlesWorkflow extends Migration
         $db = DBManager::get();
 
         $db->exec("ALTER TABLE `oc_workflow_config`
-            MODIFY `used_for` enum('schedule','upload','studio','delete','subtitles')
+            MODIFY `used_for` enum('schedule','upload','studio','delete','subtitles') CHARACTER SET latin1 COLLATE latin1_bin
         ");
 
         SimpleOrMap::expireTableScheme();

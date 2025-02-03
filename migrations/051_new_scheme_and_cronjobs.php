@@ -37,12 +37,12 @@ class NewSchemeAndCronjobs extends Migration
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist` (
             `id` int NOT NULL AUTO_INCREMENT,
-            `token` varchar(8),
+            `token` varchar(8) CHARACTER SET latin1 COLLATE latin1_bin UNIQUE,
             `title` varchar(255),
-            `visibility` enum('internal','free','public'),
+            `visibility` enum('internal','free','public') CHARACTER SET latin1 COLLATE latin1_bin,
             `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
             `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-            `sort_order` varchar(30) NOT NULL DEFAULT 'created_desc',
+            `sort_order` varchar(30) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT 'created_desc',
             PRIMARY KEY (`id`),
             KEY `U.1` (`token`)
         );";
@@ -72,7 +72,7 @@ class NewSchemeAndCronjobs extends Migration
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video` (
             `id` int NOT NULL AUTO_INCREMENT,
-            `token` varchar(12),
+            `token` varchar(12) CHARACTER SET latin1 COLLATE latin1_bin UNIQUE,
             `config_id` int,
             `episode` varchar(64) UNIQUE,
             `title` text,
@@ -81,7 +81,7 @@ class NewSchemeAndCronjobs extends Migration
             `views` int,
             `preview` text,
             `publication` text,
-            `visibility` enum('internal','free','public') NOT NULL DEFAULT 'internal',
+            `visibility` enum('internal','free','public') CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT 'internal',
             `created` timestamp,
             `author` varchar(255),
             `contributors` varchar(1000),
@@ -97,7 +97,7 @@ class NewSchemeAndCronjobs extends Migration
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_sync` (
             `id` int NOT NULL AUTO_INCREMENT,
             `video_id` int,
-            `state` enum('running','scheduled','failed'),
+            `state` enum('running','scheduled','failed') CHARACTER SET latin1 COLLATE latin1_bin,
             `scheduled` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP,
             `trys` int,
             `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -123,7 +123,7 @@ class NewSchemeAndCronjobs extends Migration
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_tags` (
             `id` int NOT NULL AUTO_INCREMENT,
-            `user_id` VARCHAR(32) NOT NULL,
+            `user_id` VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
             `tag` varchar(255) NOT NULL,
             PRIMARY KEY (`id`),
             KEY `U.1` (`tag`, `user_id`)
@@ -154,8 +154,8 @@ class NewSchemeAndCronjobs extends Migration
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_seminar` (
             `id` int NOT NULL AUTO_INCREMENT,
             `playlist_id` int,
-            `seminar_id` varchar(32),
-            `visibility` enum('hidden','visible'),
+            `seminar_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin,
+            `visibility` enum('hidden','visible') CHARACTER SET latin1 COLLATE latin1_bin,
             PRIMARY KEY (`id`),
             FOREIGN KEY (`playlist_id`) REFERENCES `oc_playlist`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             KEY `U.1` (`playlist_id`, `seminar_id`)
@@ -166,7 +166,7 @@ class NewSchemeAndCronjobs extends Migration
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_seminar_video` (
             `playlist_seminar_id` int,
             `video_id` int,
-            `visibility` enum('hidden','visible'),
+            `visibility` enum('hidden','visible') CHARACTER SET latin1 COLLATE latin1_bin,
             PRIMARY KEY (`playlist_seminar_id`, `video_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             FOREIGN KEY (`playlist_seminar_id`) REFERENCES `oc_playlist_seminar`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -176,7 +176,7 @@ class NewSchemeAndCronjobs extends Migration
         // video directlu associated to a seminar - without playlist
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_seminar` (
             `video_id` int,
-            `seminar_id` varchar(32),
+            `seminar_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin,
             `visibility` enum('hidden','visible'),
             PRIMARY KEY (`video_id`, `seminar_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`)  ON DELETE CASCADE ON UPDATE CASCADE
@@ -192,8 +192,8 @@ class NewSchemeAndCronjobs extends Migration
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_user_perms` (
             `video_id` int,
-            `user_id` varchar(32),
-            `perm` enum('owner','write','read','share'),
+            `user_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+            `perm` enum('owner','write','read','share') CHARACTER SET latin1 COLLATE latin1_bin,
             PRIMARY KEY (`video_id`, `user_id`),
             FOREIGN KEY (`video_id`) REFERENCES `oc_video`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
@@ -210,8 +210,8 @@ class NewSchemeAndCronjobs extends Migration
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_user_perms` (
             `playlist_id` int,
-            `user_id` varchar(32),
-            `perm` enum('owner','write','read','share'),
+            `user_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+            `perm` enum('owner','write','read','share') CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
             PRIMARY KEY (`playlist_id`, `user_id`, `perm`),
             FOREIGN KEY (`playlist_id`) REFERENCES `oc_playlist`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
           );
