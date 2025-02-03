@@ -50,8 +50,8 @@ class OpencastWorker extends CronJob
             if (!empty($video)) {
                 echo 'updating video: ' . $video->id . "\n";
 
-                if ($task->type == 'video') {
-                    try {
+                try {
+                    if ($task->type == 'video') {
                         $is_livestream = (bool) $video->is_livestream ?? false;
                         if ($is_livestream) {
                             echo 'this video is a livestream event' . "\n";
@@ -165,30 +165,30 @@ class OpencastWorker extends CronJob
 
                             //$video->delete();
                         }
-                    } catch (\Exception $e) {
-                        echo 'Error updating video '. $video->id .': '. $e->getMessage(). "\n";
-                        continue;
-                    }
-                } else {
-                    echo 'checking playlist video: '. $video->id. "\n";
+                    } else {
+                        echo 'checking playlist video: '. $video->id. "\n";
 
-                    if ($event->processing_state != "RUNNING") {
-                        $data = json_decode($task->data, true);
+                        if ($event->processing_state != "RUNNING") {
+                            $data = json_decode($task->data, true);
 
-                        $pvideo = PlaylistVideos::findOneBySQL(
-                            'playlist_seminar_id = ? AND video_id = ?',
-                            [$video->id, $data['playlist_seminar_id']]
-                        );
+                            $pvideo = PlaylistVideos::findOneBySQL(
+                                'playlist_seminar_id = ? AND video_id = ?',
+                                [$video->id, $data['playlist_seminar_id']]
+                            );
 
-                        if ($pvideo) {
-                            $pvideo->avaiable = 1;
-                            $pvideo->store();
-                            $task->delete();
+                            if ($pvideo) {
+                                $pvideo->avaiable = 1;
+                                $pvideo->store();
+                                $task->delete();
+                            }
+
+                            $task->trys;
+                            $taks->store();
                         }
-
-                        $task->trys;
-                        $taks->store();
                     }
+                } catch (\Exception $e) {
+                    echo 'Error updating video '. $video->id .': '. $e->getMessage(). "\n";
+                    continue;
                 }
             }
 
