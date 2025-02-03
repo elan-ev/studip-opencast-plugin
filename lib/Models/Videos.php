@@ -700,10 +700,18 @@ class Videos extends UPMap
     public function removeVideo()
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
-        if ($api_event_client->deleteEpisode($this->episode)) {
-            return $this->delete();
+
+        // if the video exists in opencast, make sure it is deleted
+        if ($api_event_client->getEpisode($this->episode)) {
+            if ($api_event_client->deleteEpisode($this->episode)) {
+                return $this->delete();
+            } else {
+                return false;
+            }
         }
-        return false;
+
+        // if its not there anymore, just remove it from Stud.IP
+        return $this->delete();
     }
 
     /**
