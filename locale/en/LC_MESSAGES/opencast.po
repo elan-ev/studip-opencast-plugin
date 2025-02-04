@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-04 16:52+0100\n"
-"PO-Revision-Date: 2024-10-23 12:24+0200\n"
+"POT-Creation-Date: 2025-02-04 17:03+0100\n"
+"PO-Revision-Date: 2025-02-04 17:03+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:60
 msgid "(sie selbst)"
@@ -200,9 +200,8 @@ msgid "Auswirkungen der Videoänderungen"
 msgstr "Effects of the video changes"
 
 #: vueapp/components/Config/GlobalOptions.vue:86
-#, fuzzy
 msgid "Automatisierte Aufzeichnungen"
-msgstr "Opencast recordings"
+msgstr "Automated recordings"
 
 #: vueapp/components/Config/EditServer.vue:56
 msgid "Basis URL zur Opencast Installation"
@@ -346,7 +345,7 @@ msgstr "Capture agent"
 
 #: vueapp/components/Playlists/PlaylistsTable.vue:163
 msgid "confirm_text"
-msgstr ""
+msgstr "confirm_text"
 
 #: vueapp/components/Videos/VideoUpload.vue:272
 msgid ""
@@ -386,9 +385,8 @@ msgid "Datei(en)"
 msgstr "File(s)"
 
 #: vueapp/components/Videos/VideoUpload.vue:293
-#, fuzzy
 msgid "Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!"
-msgstr "The playlist could not be deleted."
+msgstr "Files in WebM and MP4 formats cannot be mixed!"
 
 #: vueapp/components/Videos/VideosTable.vue:143
 msgid "Datum"
@@ -514,7 +512,6 @@ msgstr ""
 "This video is waiting to be cut. Here you get directly to the cutting editor!"
 
 #: vueapp/components/Videos/VideoRow.vue:203
-#, fuzzy
 msgid "Dieses Video wird gerade von Opencast vearbeitet."
 msgstr "This video is currently being processed by Opencast."
 
@@ -632,9 +629,8 @@ msgid "Folien"
 msgstr "Slides"
 
 #: vueapp/components/Config/GlobalOptions.vue:35
-#, fuzzy
 msgid "Funktionen"
-msgstr "Actions"
+msgstr "Functions"
 
 #: vueapp/views/CoursesVideos.vue:14
 msgid ""
@@ -705,7 +701,7 @@ msgstr "Internal"
 
 #: vueapp/components/Config/EditServer.vue:103
 msgid "Ist rollenbasierter Zugriff per Event-ID aktiviert?"
-msgstr ""
+msgstr "Is role-based access via event ID enabled?"
 
 #: vueapp/components/Config/ConfigOption.vue:44
 #: vueapp/components/Studip/StudipDialog.vue:53
@@ -988,7 +984,7 @@ msgstr "User ID"
 
 #: vueapp/components/Config/GlobalOptions.vue:69
 msgid "Oberfläche / Texte"
-msgstr ""
+msgstr "Interface / Texts"
 
 #: vueapp/components/Playlists/PlaylistVisibility.vue:46
 msgid "Öffentlich"
@@ -1188,9 +1184,8 @@ msgid ""
 msgstr "Are you sure you want to remove this playlist from the course?"
 
 #: vueapp/components/Videos/VideosTable.vue:409
-#, fuzzy
 msgid "Sind Sie sicher, dass Sie diese Wiedergabeliste entfernen möchten?"
-msgstr "Are you sure you want to remove this playlist from the course?"
+msgstr "Are you sure you want to remove this playlist?"
 
 #: vueapp/components/Videos/Actions/VideoCopyToSeminar.vue:51
 msgid "Sind sie sicher, dass Sie diesen Kurs entfernen möchten?"
@@ -1224,7 +1219,7 @@ msgstr "Language"
 
 #: vueapp/components/Config/EditServer.vue:117
 msgid "SSL Zertifkatsfehler ignorieren?"
-msgstr ""
+msgstr "Ignore SSL certificate errors?"
 
 #: vueapp/components/Videos/Actions/VideoEdit.vue:125
 msgid "Standard"
@@ -1278,7 +1273,7 @@ msgstr "Tabular view"
 
 #: vueapp/components/Videos/BulkActions/VideoDelete.vue:27
 msgid "Tagen automatisch gelöscht."
-msgstr ""
+msgstr "days automatically deleted."
 
 #: vueapp/components/Videos/Actions/VideoReport.vue:9
 #: vueapp/components/Videos/VideoRow.vue:401
@@ -1410,7 +1405,7 @@ msgstr "Share video"
 
 #: vueapp/components/Videos/VideoRow.vue:177
 msgid "Video nicht (mehr) in Opencast vorhanden"
-msgstr ""
+msgstr "Video no longer available in Opencast"
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:200
 msgid "Video nur berechtigten Personen zugreifbar machen"
@@ -1501,9 +1496,8 @@ msgid "Wiedergabeliste bearbeiten"
 msgstr "Edit playlist"
 
 #: vueapp/components/Videos/VideosTable.vue:294
-#, fuzzy
 msgid "Wiedergabeliste entfernen"
-msgstr "Remove from playlist"
+msgstr "Remove playlist"
 
 #: vueapp/components/Courses/CoursesSidebar.vue:153
 #: vueapp/components/Playlists/PlaylistAddCard.vue:16
@@ -1727,7 +1721,6 @@ msgid "Die Wiedergabeliste konnte nicht aktualisiert werden."
 msgstr "The playlist could not be updated."
 
 #: lib/Routes/Playlist/PlaylistAddVideos.php:69
-#, fuzzy
 msgid "Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!"
 msgstr "Playlist could not be added to Opencast!"
 
@@ -2039,14 +2032,14 @@ msgid "Die Opencast-Konfiguration wurde nicht korrekt angegeben"
 msgstr "The opencast configuration was not specified correctly"
 
 #: lib/Models/Helpers.php:358
-#, fuzzy, php-format
+#, php-format
 msgid "Das Video mit dem Titel \"%s\" wartet auf den Schnitt."
-msgstr "The video titled \"%s\" has finished processing."
+msgstr "The video with title \"%s\" is waiting to be edited."
 
 #: lib/Models/Helpers.php:362
-#, fuzzy, php-format
+#, php-format
 msgid "Das Video mit dem Titel \"%s\" hat einen Verarbeitungsfehler!"
-msgstr "The video titled \"%s\" has finished processing."
+msgstr "The video with title \"%s\" has a processing error!"
 
 #: OpencastV3.class.php:39
 msgid "Opencast Einstellungen"
