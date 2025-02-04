@@ -195,7 +195,6 @@ import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
-import CaptionUpload from '@/components/Videos/Actions/CaptionUpload.vue';
 
 import BulkVideoDelete from '@/components/Videos/BulkActions/VideoDelete.vue';
 import BulkVideoDeletePermanent from '@/components/Videos/BulkActions/VideoDeletePermanent.vue';
@@ -218,8 +217,8 @@ export default {
         VideoEdit,                VideoCut,
         VideoRestore,             VideoDelete,
         VideoDeletePermanent,     VideoRemoveFromPlaylist,
-        CaptionUpload,            BulkVideoDelete,
-        BulkVideoDeletePermanent, BulkVideoRestore,
+        BulkVideoDelete,          BulkVideoDeletePermanent,
+        BulkVideoRestore,
         draggable,
     },
 

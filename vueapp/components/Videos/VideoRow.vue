@@ -513,7 +513,7 @@ export default {
                             label: this.$gettext('Untertitel bearbeiten'),
                             icon: 'accessibility',
                             emit: 'performAction',
-                            emitArguments: 'CaptionUpload'
+                            emitArguments: 'VideoCut'
                         });
                     }
 
