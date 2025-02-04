@@ -120,7 +120,7 @@ class HelperFunctions
 
         $oc_acl = self::filterForEpisode($episode_id, $current_acl);
 
-        if ($acl <> $oc_acl || true) {
+        if ($acl <> $oc_acl) {
             $new_acl = self::addEpisodeAcl($episode_id, $acl, $current_acl);
 
             // wait for free slot to process update
@@ -129,8 +129,6 @@ class HelperFunctions
                 $opencastApi->workflowsApi->run($episode_id, 'republish-metadata');
             }
         }
-
-        return true;
     }
 
     public static function waitForSlot($opencastApi)
