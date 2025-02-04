@@ -11,4 +11,4 @@ app/views/contents/index.php
 .vscode
 Opencast-V*.zip
 dist
-test/.env
+tests/.env
