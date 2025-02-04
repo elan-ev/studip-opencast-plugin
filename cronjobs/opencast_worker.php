@@ -182,7 +182,7 @@ class OpencastWorker extends CronJob
                         } else {
                             // reschedule task to be run again in 3 minutes
                             $task->state = 'scheduled';
-                            $task->scheduled = $task->scheduled = date('Y-m-d H:i:s', strtotime('+'. ($task->trys * 3) .' minutes'));
+                            $task->scheduled = date('Y-m-d H:i:s', strtotime('+'. ($task->trys * 3) .' minutes'));
                             $task->store();
                         }
 
