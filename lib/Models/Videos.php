@@ -43,6 +43,11 @@ class Videos extends UPMap
             'thru_assoc_key' => 'playlist_id',
         ];
 
+        $config['belongs_to']['config'] = [
+            'class_name' => 'Opencast\Models\Config',
+            'foreign_key' => 'config_id',
+        ];
+
         parent::configure($config);
     }
 
@@ -765,26 +770,31 @@ class Videos extends UPMap
             return;
         }
 
-        // one ACL for reading AND for reading and writing
-        $acl = [
-            [
-                'allow'  => true,
-                'role'   => $this->episode .'_read',
-                'action' => 'read'
-            ],
+        $acl = [];
 
-            [
-                'allow'  => true,
-                'role'   => $this->episode .'_write',
-                'action' => 'read'
-            ],
+        // Don't set event id roles if episode id role access is activated by user
+        if (!$this->config->settings['episode_id_role_access'] ?? true) {
+            // one ACL for reading AND for reading and writing
+            $acl = [
+                [
+                    'allow'  => true,
+                    'role'   => $this->episode .'_read',
+                    'action' => 'read'
+                ],
 
-            [
-                'allow'  => true,
-                'role'   => $this->episode .'_write',
-                'action' => 'write'
-            ]
-        ];
+                [
+                    'allow'  => true,
+                    'role'   => $this->episode .'_write',
+                    'action' => 'read'
+                ],
+
+                [
+                    'allow'  => true,
+                    'role'   => $this->episode .'_write',
+                    'action' => 'write'
+                ]
+            ];
+        }
 
         $courses = [];
 

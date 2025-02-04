@@ -13,7 +13,7 @@ class Config extends \SimpleOrMap
     use RelationshipTrait;
 
     protected const ALLOWED_SETTINGS_FIELDS = [
-        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors'
+        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access'
     ];
 
     protected static function configure($config = [])
@@ -219,16 +219,13 @@ class Config extends \SimpleOrMap
             } catch (AccessDeniedException $e) {
                 Endpoints::removeEndpoint($this->id, 'services');
 
-                $message = [
+                return [
                     'type' => 'error',
                     'text' => sprintf(
                         _('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingegebenen Daten.'),
                         $service_host
                     )
                 ];
-
-                $this->redirect('admin/config');
-                return;
             }
 
             if ($comp) {

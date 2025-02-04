@@ -151,6 +151,13 @@ export default {
                     required: false
                 },
                 {
+                    description: this.$gettext('Ist rollenbasierter Zugriff per Event-ID aktiviert?'),
+                    name: 'episode_id_role_access',
+                    value: this.currentConfig.episode_id_role_access ?? false,
+                    type: 'boolean',
+                    required: false
+                },
+                {
                     description: this.$gettext('Debugmodus einschalten?'),
                     name: 'debug',
                     value: this.currentConfig.debug,
