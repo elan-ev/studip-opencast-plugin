@@ -22,6 +22,8 @@ class HelperFunctions
         $possible_roles = [
             'ROLE_EPISODE_' . $episode_id .'_READ',
             'ROLE_EPISODE_' . $episode_id .'_WRITE',
+            $episode_id .'_read',
+            $episode_id .'_write',
             'ROLE_ANONYMOUS'
         ];
 
@@ -40,6 +42,8 @@ class HelperFunctions
         $possible_roles = [
             'ROLE_EPISODE_' . $episode_id .'_READ',
             'ROLE_EPISODE_' . $episode_id .'_WRITE',
+            $episode_id .'_read',
+            $episode_id .'_write',
             'ROLE_ANONYMOUS'
         ];
 
@@ -93,6 +97,23 @@ class HelperFunctions
             [
                 'allow'  => true,
                 'role'   => 'ROLE_EPISODE_' . $episode_id .'_WRITE',
+                'action' => 'write'
+            ],
+            [
+                'allow'  => true,
+                'role'   => $episode_id .'_read',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => $episode_id .'_write',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => $episode_id .'_write',
                 'action' => 'write'
             ]
         ];
