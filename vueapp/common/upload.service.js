@@ -242,38 +242,6 @@ class UploadService {
         }, Promise.resolve(mediaPackage))
     }
 
-    async uploadCaptions(files, episode_id, workflowId, options) {
-        this.fixFilenames(files);
-
-        let onProgress = options.uploadProgress;
-        let uploadDone = options.uploadDone;
-        let onError = options.onError;
-
-        let obj = this;
-        return files.reduce(function(promise, file) {
-            return promise.then(function () {
-
-                var data = new FormData();
-                data.append('flavor', file.flavor);
-                data.append('overwriteExisting', file.overwriteExisting);
-                data.append('track', file.file);
-                data.append('tags', file.tag);
-
-                return obj.addTrack(data, obj.service_urls['apievents'] + "/" + episode_id + "/track", file, onProgress, onError);
-            });
-        }, Promise.resolve())
-        .then(() => {
-            return this.runWorkflow(episode_id, workflowId)
-            .then(function ({ data }) {
-                uploadDone();
-            })
-        }).catch(function (error) {
-            if (error.code === 'ERR_NETWORK') {
-                onError();
-            }
-        });
-    }
-
     runWorkflow(episode_id, workflowId) {
         return axios({
             url: this.service_urls['apiworkflows'],
