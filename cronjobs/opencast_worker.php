@@ -52,35 +52,35 @@ class OpencastWorker extends CronJob
                 echo 'updating video: ' . $video->id . "\n";
 
                 try {
-                    if ($task->type == 'video') {
-                        $is_livestream = (bool) $video->is_livestream ?? false;
-                        if ($is_livestream) {
-                            echo 'this video is a livestream event' . "\n";
-                        }
+                    $is_livestream = (bool) $video->is_livestream ?? false;
+                    if ($is_livestream) {
+                        echo 'this video is a livestream event' . "\n";
+                    }
 
-                        if (empty($video->config_id)) {
-                            echo 'No config_id for video '. $video->id. "\n";
-                            $task->delete();
-                            continue;
-                        }
+                    if (empty($video->config_id)) {
+                        echo 'No config_id for video '. $video->id. "\n";
+                        $task->delete();
+                        continue;
+                    }
 
-                        $api_client = ApiEventsClient::getInstance($video->config_id);
-                        $params = [
-                            'withpublications' => true
-                        ];
-                        if ($is_livestream) {
-                            $params['withscheduling'] = true;
-                        }
+                    $api_client = ApiEventsClient::getInstance($video->config_id);
+                    $params = [
+                        'withpublications' => true
+                    ];
+                    if ($is_livestream) {
+                        $params['withscheduling'] = true;
+                    }
 
-                        if (empty($video->episode)) {
-                            echo 'No episode_id for video '. $video->id. "\n";
-                            $task->delete();
-                            continue;
-                        }
+                    if (empty($video->episode)) {
+                        echo 'No episode_id for video '. $video->id. "\n";
+                        $task->delete();
+                        continue;
+                    }
 
-                        $event = $api_client->getEpisode($video->episode, $params);
+                    $event = $api_client->getEpisode($video->episode, $params);
 
-                        if ($event) {
+                    if ($event) {
+                        if ($task->type == 'video') {
                             if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
                                 if ($video->state != 'failed') {
                                     $video->state = 'failed';
@@ -144,48 +144,49 @@ class OpencastWorker extends CronJob
 
                             // task is done, delete it
                             $task->delete();
-
-                            // send out Notifications for video discovery plugins to react
-                            NotificationCenter::postNotification('OpencastCourseSync', $event, $video);
-                            NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
                         } else {
-                            echo 'could not find event for video '. $video->id.  ' in opencast, tried '. $task->trys ." times.\n";
-                            // event is missing or has no publications.
-                            if ($task->trys >= 10) {
-                                // if we tried 10 times, we give up, event seems to be missing/broken in opencast!
-                                echo 'giving up on video '. $video->id. "\n";
+                            echo 'checking playlist video: '. $video->id. "\n";
+                            $data = json_decode($task->data, true);
 
-                                $task->state = 'failed';
-                                $task->store();
+                            $pvideo = PlaylistVideos::findOneBySQL(
+                                'playlist_id = ? AND video_id = ?',
+                                [$data['playlist_id'], $video->id]
+                            );
+
+                            if ($pvideo && $event->processing_state != "RUNNING"
+                                && $data['version'] != $event->archive_version
+                            ) {
+                                echo 'video '. $video->id .' is now available' . "\n";
+                                $pvideo->available = 1;
+                                $pvideo->store();
+                                $task->delete();
                             } else {
-                                // reschedule task to be run again in 3 minutes
                                 $task->state = 'scheduled';
-                                $task->scheduled = date('Y-m-d H:i:s', strtotime('+3 minutes'));
+                                $task->scheduled = date('Y-m-d H:i:s', strtotime('+'. ($task->trys * 3) .' minutes'));
                                 $task->store();
                             }
-
-                            //$video->delete();
                         }
+
+                        // send out Notifications for video discovery plugins to react
+                        NotificationCenter::postNotification('OpencastCourseSync', $event, $video);
+                        NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
                     } else {
-                        echo 'checking playlist video: '. $video->id. "\n";
-                        $data = json_decode($task->data, true);
+                        echo 'could not find event for video '. $video->id.  ' in opencast, tried '. $task->trys ." times.\n";
+                        // event is missing or has no publications.
+                        if ($task->trys >= 10) {
+                            // if we tried 10 times, we give up, event seems to be missing/broken in opencast!
+                            echo 'giving up on video '. $video->id. "\n";
 
-                        $pvideo = PlaylistVideos::findOneBySQL(
-                            'playlist_id = ? AND video_id = ?',
-                            [$data['playlist_id'], $video->id]
-                        );
-
-                        if ($pvideo && $event->processing_state != "RUNNING"
-                            && $data['version'] != $event->version
-                        ) {
-                            $pvideo->available = 1;
-                            $pvideo->store();
-                            $task->delete();
+                            $task->state = 'failed';
+                            $task->store();
                         } else {
+                            // reschedule task to be run again in 3 minutes
                             $task->state = 'scheduled';
-                            $task->scheduled = date('Y-m-d H:i:s', strtotime('+3 minutes'));
+                            $task->scheduled = $task->scheduled = date('Y-m-d H:i:s', strtotime('+'. ($task->trys * 3) .' minutes'));
                             $task->store();
                         }
+
+                        //$video->delete();
                     }
                 } catch (\Exception $e) {
                     echo 'Error updating video '. $video->id .': '. $e->getMessage(). "\n";

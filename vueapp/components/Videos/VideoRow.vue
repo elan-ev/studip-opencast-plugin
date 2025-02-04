@@ -604,19 +604,9 @@ export default {
 
         isProcessing()
         {
-            console.log(this.event.sate, this.event.video_user_available);
-
-            // if the video is currently processing, no one can/should access it
-            if (this.event.state == 'running') {
-                return true;
-            }
-
-            // if the current user has now owner rights, the video is not accessible as well
-            if (this.event.perm != 'owner' && this.event.video_user_available === false) {
-                return true;
-            }
-
-            return false;
+            // if the video is currently processing or not availabe yet processed in this course,
+            // no one can/should access it
+            return (this.event.state == 'running' || this.event.video_user_available === false);
         }
     },
 
