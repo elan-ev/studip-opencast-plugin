@@ -7,6 +7,7 @@ use Opencast\Models\Config;
 use Opencast\Models\REST\Config as OCConfig;
 use Opencast\Models\Videos;
 use Opencast\Models\VideoSync;
+use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
 
@@ -92,9 +93,11 @@ class OpencastDiscoverVideos extends CronJob
                         && $local_events[$event->identifier] != $event->archive_version
                     ) {
                         // only add for reinspection if not already scheduled
+                        $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
+
                         if (empty(VideoSync::findByVideo_id($video->id))) {
-                            $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
-                            echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ")\n";
+                            echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ') '
+                                . ' Local version: '. $local_events[$event->identifier] . ', OC version: '. $event->archive_version . "\n";
 
                             // create task to update permissions and everything else
                             $task = new VideoSync;
@@ -173,7 +176,7 @@ class OpencastDiscoverVideos extends CronJob
          */
         foreach (Videos::findBySql('(preview IS NULL OR available = 0) AND is_livestream = 0') as $video) {
             // check, if there is already a task scheduled
-            if (empty(VideoSync::findByVideo_id($video->id))) {
+            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'video'", [$video->id]))) {
                 echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
                 // create task to update permissions and everything else
                 $task = new VideoSync;
@@ -182,6 +185,29 @@ class OpencastDiscoverVideos extends CronJob
                     'video_id'  => $video->id,
                     'state'     => 'scheduled',
                     'scheduled' => date('Y-m-d H:i:s')
+                ]);
+
+                $task->store();
+            }
+        }
+
+        // search for all inaccessible videos in course playlists and add them for reinspection
+        foreach (PlaylistVideos::findBySql('available = 0') as $video) {
+            // check, if there is already a task scheduled
+            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'playlistvideo'", [$video->video_id]))) {
+                echo 'schedule playlist video for re-inspection: ' . $video->video_id . ' ('. $video->video->title .', Playlist ID: ' . $video->playlist_id . ")\n";
+                // create task to update permissions and everything else
+                $task = new VideoSync;
+
+                $task->setData([
+                    'video_id'  => $video->video_id,
+                    'state'     => 'scheduled',
+                    'type'      => 'playlistvideo',
+                    'scheduled' => date('Y-m-d H:i:s'),
+                    'data'   => json_encode([
+                        'playlist_id' => $video->playlist_id,
+                        'version'     => $video->video->version
+                    ])
                 ]);
 
                 $task->store();

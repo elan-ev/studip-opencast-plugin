@@ -39,7 +39,7 @@
                 </a>
             </template>
             <template v-else>
-                <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
+                <a v-if="event.publication && event.preview && (event.available && event.available != '0') && !isProcessing"
                    @click="redirectAction(`/video/` + event.token)" target="_blank"
                 >
                     <span class="oc--previewimage">
@@ -77,8 +77,8 @@
                         <img class="oc--image-button" :src="cut">
                     </span>
                 </a>
-                <span v-else-if="event.state == 'running'" class="oc--previewimage"
-                      :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+                <span v-else-if="isProcessing" class="oc--previewimage"
+                      :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
                 >
                     <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
                 </span>
@@ -601,6 +601,13 @@ export default {
         isLivestream() {
             return this.livestream !== null;
         },
+
+        isProcessing()
+        {
+            // if the video is currently processing or not availabe yet processed in this course,
+            // no one can/should access it
+            return (this.event.state == 'running' || this.event.video_user_available === false);
+        }
     },
 
     mounted () {

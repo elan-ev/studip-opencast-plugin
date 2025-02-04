@@ -151,6 +151,9 @@ class VideoCest
         ]);
         $I->seeResponseCodeIs(204);
 
+        // Start cronjobs
+        sleep(30);
+        $I->runCronjob(self::CRONJOB_QUEUE);
 
         // Check if lecturer of course has instructor role
         $response = $I->sendGetAsJson('/opencast/user/' . $this->dozent_name, ['token' => $this->api_token]);
@@ -190,7 +193,6 @@ class VideoCest
         // Check ACLs in Opencast
 
         // Ensure video is processed and acls are set
-        /* TODO: Re-add when missing acls issue is fixed
         $I->seeVideoIsProcessed($this->video['identifier']);
 
         // Login as opencast admin
@@ -205,7 +207,6 @@ class VideoCest
             ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'read'],
             ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'write'],
         ]);
-        */
     }
 
     /**
@@ -221,10 +222,13 @@ class VideoCest
         $I->seeResponseCodeIs(204);
 
 
+        // Start cronjobs
+        sleep(30);
+        $I->runCronjob(self::CRONJOB_QUEUE);
+
         // Check ACLs in Opencast
 
         // Ensure video is processed and acls are set
-        /* TODO: Re-add when missing acls issue is fixed
         $I->seeVideoIsProcessed($this->video['identifier']);
 
         // Login as opencast admin
@@ -240,6 +244,5 @@ class VideoCest
         $I->dontSeeResponseContainsJson(['allow' => true, 'role' => $this->course_id . '_Learner', 'action' => 'read']);
         $I->dontSeeResponseContainsJson(['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'read']);
         $I->dontSeeResponseContainsJson(['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'write']);
-        */
     }
 }

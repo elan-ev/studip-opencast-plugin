@@ -575,9 +575,10 @@ class Playlists extends UPMap
                 }
             }
 
-            // Remove video from playlist if not exist in opencast playlist entries
+            // Remove video from playlist if not exists in opencast playlist entries
             if (is_null($existing_entry)) {
                 $playlist_video->delete();
+                Videos::checkEventACL(null, null, $db_video);
             }
         }
 
@@ -604,10 +605,13 @@ class Playlists extends UPMap
 
             if (is_null($playlist_video)) {
                 $playlist_video = PlaylistVideos::create([
-                    'video_id' => $db_video->id,
-                    'playlist_id' => $this->id,
-                    'service_entry_id' => $entry->id ?? null,
+                    'video_id'          => $db_video->id,
+                    'playlist_id'       => $this->id,
+                    'service_entry_id'  => $entry->id ?? null,
+                    'available'         => false                      // this video is not available in courses yet
                 ]);
+
+                Videos::checkEventACL(null, null, $db_video);
             }
 
             if (!is_null($playlist_video)) {

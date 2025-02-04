@@ -8,6 +8,12 @@ class PlaylistVideos extends UPMap
     {
         $config['db_table'] = 'oc_playlist_video';
 
+        $config['has_one']['video'] = [
+            'class_name'        => 'Opencast\\Models\\Videos',
+            'assoc_foreign_key' => 'id',
+            'foreign_key'       => 'video_id',
+        ];
+
         parent::configure($config);
     }
 

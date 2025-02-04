@@ -7,7 +7,7 @@
         title="Video auswählen"
     >
         <td class="oc--playercontainer">
-            <span v-if="event.publication && event.preview && (event.available && event.available != '0')">
+            <span v-if="event.publication && event.preview && (event.available && event.available != '0' && !isProcessing)">
                 <span class="oc--previewimage">
                     <img class="oc--previewimage"
                          :src="getImageSrc"
@@ -41,7 +41,7 @@
                     <img class="oc--image-button" :src="cut">
                 </span>
             </span>
-            <span v-else-if="event.state == 'running'" class="oc--previewimage"
+            <span v-else-if="isProcessing" class="oc--previewimage"
                   :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
             >
                 <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
@@ -187,7 +187,7 @@ export default {
             }
 
             return translations[perm] ? translations[perm] : ''
-        }
+        },
     },
 
     computed: {
@@ -239,6 +239,12 @@ export default {
 
         canEdit() {
             return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
+        },
+
+        isProcessing()
+        {
+            // if the video is currently processing, no one can/should access it
+            return (this.event.state == 'running' );
         }
     }
 }
