@@ -10,6 +10,54 @@
       "output": [
         "type=docker"
       ]
+    },
+
+    "opencast_opensearch": {
+      "cache-from": [
+        "type=registry,ref=ghcr.io/elan-ev/opencast_opensearch:cache"
+      ],
+      "cache-to": [
+        "type=registry,ref=ghcr.io/elan-ev/opencast_opensearch:cache"
+      ],
+      "output": [
+        "type=docker"
+      ]
+    },
+
+    "opencast_nginx": {
+      "cache-from": [
+        "type=registry,ref=ghcr.io/elan-ev/opencast:cache"
+      ],
+      "cache-to": [
+        "type=registry,ref=ghcr.io/elan-ev/opencast:cache"
+      ],
+      "output": [
+        "type=docker"
+      ]
+    },
+
+    "studip": {
+      "cache-from": [
+        "type=registry,ref=ghcr.io/elan-ev/studip:cache"
+      ],
+      "cache-to": [
+        "type=registry,ref=ghcr.io/elan-ev/studip:cache"
+      ],
+      "output": [
+        "type=docker"
+      ]
+    },
+
+    "studip_db": {
+      "cache-from": [
+        "type=registry,ref=ghcr.io/elan-ev/studip_db:cache"
+      ],
+      "cache-to": [
+        "type=registry,ref=ghcr.io/elan-ev/studip_db:cache"
+      ],
+      "output": [
+        "type=docker"
+      ]
     }
   }
 }
