@@ -67,6 +67,8 @@ class Api extends \Codeception\Module
             // Run cronjob on host if studip cli exist
             $studip_cli = self::STUDIP_CLI;
             $command = "php $studip_cli cronjobs:execute $(php $studip_cli cronjobs:list | grep '$cronjob' | awk '{print $1}')";
+        } else if ($this->config['docker_command']) {
+            $command = str_replace('CRONJOB', $cronjob, $this->config['docker_command']);
         } else {
             // Run cronjob in docker container
             $compose_file = __DIR__ . '/../../../.github/docker/docker-compose.yml';

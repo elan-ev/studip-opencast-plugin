@@ -21,6 +21,7 @@ suites:
                     author_password: '%AUTHOR_PASSWORD%'
                     config_id: '%CONFIG_ID%'
                     course_id: '%COURSE_ID%'
+                    docker_command: '%DOCKER_COMMAND%'
         step_decorators:
             - \Codeception\Step\AsJson
 
