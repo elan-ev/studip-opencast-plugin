@@ -151,6 +151,9 @@ class VideoCest
         ]);
         $I->seeResponseCodeIs(204);
 
+        // Start cronjobs
+        sleep(30);
+        $I->runCronjob(self::CRONJOB_QUEUE);
 
         // Check if lecturer of course has instructor role
         $response = $I->sendGetAsJson('/opencast/user/' . $this->dozent_name, ['token' => $this->api_token]);
@@ -218,6 +221,10 @@ class VideoCest
         ]));
         $I->seeResponseCodeIs(204);
 
+
+        // Start cronjobs
+        sleep(30);
+        $I->runCronjob(self::CRONJOB_QUEUE);
 
         // Check ACLs in Opencast
 
