@@ -14,7 +14,7 @@ class AddOcPlaylists extends Migration
 
     public function description()
     {
-        return 'Add DB columns for Opencast playlists, update Opencast endpoints to find playlists service, migrate existing playlists to Opencast and add playlist synchronize cronjob';
+        return 'Add DB columns for Opencast playlists, update Opencast endpoints to find playlists service and add playlist synchronize cronjob';
     }
 
     public function up()
@@ -41,22 +41,8 @@ class AddOcPlaylists extends Migration
 
         // Update endpoints of all configs to find playlists service
         $configs = Config::findBySQL('1');
-        $migrate = !empty($configs);
-
         foreach ($configs as $config) {
             $config->updateEndpoints();
-
-            // Check if configured opencast instances support playlists
-            if (empty(Endpoints::findOneBySQL("service_type ='apiplaylists' AND config_id = ?", [$config->id]))) {
-                // throw new Exception("Der Opencast Server ({$config->service_url}) unterstützt keine Playlisten."
-                //     . " Bitte stellen Sie sicher, dass Sie mindestens die Opencast Version 16 verwenden.");
-                $migrate = false;
-            }
-        }
-
-        if ($migrate) {
-            // all opencast system seem to support playlist, do the migration right away
-            PlaylistMigration::convert();
         }
     }
 
