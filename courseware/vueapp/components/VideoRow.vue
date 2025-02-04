@@ -27,7 +27,7 @@
                     </span>
                 </span>
             </span>
-            <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
+            <span v-else-if="!isAvailable" class="oc--unavailable"
                 :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
             >
                 <span class="oc--previewimage">
@@ -187,7 +187,7 @@ export default {
             }
 
             return translations[perm] ? translations[perm] : ''
-        }
+        },
     },
 
     computed: {
@@ -239,6 +239,13 @@ export default {
 
         canEdit() {
             return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
+        },
+
+        isAvailable() {
+            console.log(this.event.perms);
+            return (this.event.available && (
+
+            ));
         }
     }
 }

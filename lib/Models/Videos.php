@@ -3,14 +3,11 @@
 namespace Opencast\Models;
 
 use Error;
-use Opencast\Models\Filter;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\ApiWorkflowsClient;
-use Opencast\Providers\Perm;
 use Opencast\Models\Helpers;
-use Opencast\Models\ScheduleHelper;
 use Opencast\Models\ScheduledRecordings;
 
 class Videos extends UPMap
@@ -483,12 +480,21 @@ class Videos extends UPMap
         $data['preview']     = json_decode($data['preview'], true);
         $data['publication'] = json_decode($data['publication'], true);
 
-        $data['perm'] = $this->getUserPerm();
-        $data['playlists'] = $this->getPlaylists();
-        $data['seminar_visibility'] = $this->getSeminarVisibility($cid, $playlist_id);
+        $data['perm']                 = $this->getUserPerm();
+        $data['playlists']            = $this->getPlaylists();
+        $data['seminar_visibility']   = $this->getSeminarVisibility($cid, $playlist_id);
+        $data['video_user_available'] = true;
+
+        // get availability for this video in this playlist
+        if (!empty($playlist_id)) {
+            $pv = PlaylistVideos::findOneBySQL('playlist_id = ? AND video_id = ?', [
+                $playlist_id, $this->id
+            ]);
+
+            $data['video_user_available'] = (bool)$pv->available;
+        }
 
         $data['tags'] = $this->tags->toArray();
-
 
         $data['trashed'] = $this->trashed ? true : false;
 

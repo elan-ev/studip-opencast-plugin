@@ -39,7 +39,7 @@
                 </a>
             </template>
             <template v-else>
-                <a v-if="event.publication && event.preview && (event.available && event.available != '0')"
+                <a v-if="event.publication && event.preview && (event.available && event.available != '0') && !isProcessing"
                    @click="redirectAction(`/video/` + event.token)" target="_blank"
                 >
                     <span class="oc--previewimage">
@@ -77,7 +77,7 @@
                         <img class="oc--image-button" :src="cut">
                     </span>
                 </a>
-                <span v-else-if="event.state == 'running' || event.seminar_visiblity.available == '0'" class="oc--previewimage"
+                <span v-else-if="isProcessing" class="oc--previewimage"
                       :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
                 >
                     <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
@@ -601,6 +601,23 @@ export default {
         isLivestream() {
             return this.livestream !== null;
         },
+
+        isProcessing()
+        {
+            console.log(this.event.sate, this.event.video_user_available);
+
+            // if the video is currently processing, no one can/should access it
+            if (this.event.state == 'running') {
+                return true;
+            }
+
+            // if the current user has now owner rights, the video is not accessible as well
+            if (this.event.perm != 'owner' && this.event.video_user_available === false) {
+                return true;
+            }
+
+            return false;
+        }
     },
 
     mounted () {

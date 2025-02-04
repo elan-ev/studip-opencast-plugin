@@ -6,6 +6,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Opencast\Models\VideoSync;
 use Opencast\Models\Videos;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Models\PlaylistVideos;
 use Opencast\Models\REST\ApiEventsClient;
 
 class OpencastWorker extends CronJob
@@ -167,23 +168,23 @@ class OpencastWorker extends CronJob
                         }
                     } else {
                         echo 'checking playlist video: '. $video->id. "\n";
+                        $data = json_decode($task->data, true);
 
-                        if ($event->processing_state != "RUNNING") {
-                            $data = json_decode($task->data, true);
+                        $pvideo = PlaylistVideos::findOneBySQL(
+                            'playlist_id = ? AND video_id = ?',
+                            [$data['playlist_id'], $video->id]
+                        );
 
-                            $pvideo = PlaylistVideos::findOneBySQL(
-                                'playlist_seminar_id = ? AND video_id = ?',
-                                [$video->id, $data['playlist_seminar_id']]
-                            );
-
-                            if ($pvideo) {
-                                $pvideo->avaiable = 1;
-                                $pvideo->store();
-                                $task->delete();
-                            }
-
-                            $task->trys;
-                            $taks->store();
+                        if ($pvideo && $event->processing_state != "RUNNING"
+                            && $data['version'] != $event->version
+                        ) {
+                            $pvideo->available = 1;
+                            $pvideo->store();
+                            $task->delete();
+                        } else {
+                            $task->state = 'scheduled';
+                            $task->scheduled = date('Y-m-d H:i:s', strtotime('+3 minutes'));
+                            $task->store();
                         }
                     }
                 } catch (\Exception $e) {

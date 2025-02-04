@@ -604,9 +604,10 @@ class Playlists extends UPMap
 
             if (is_null($playlist_video)) {
                 $playlist_video = PlaylistVideos::create([
-                    'video_id' => $db_video->id,
-                    'playlist_id' => $this->id,
-                    'service_entry_id' => $entry->id ?? null,
+                    'video_id'          => $db_video->id,
+                    'playlist_id'       => $this->id,
+                    'service_entry_id'  => $entry->id ?? null,
+                    'available'         => false                      // this video is not available in courses yet
                 ]);
             }
 
