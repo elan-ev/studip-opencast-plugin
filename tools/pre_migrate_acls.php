@@ -20,6 +20,8 @@ class HelperFunctions
     static function filterForEpisode($episode_id, $acl)
     {
         $possible_roles = [
+            'ROLE_EPISODE_' . $episode_id .'_READ',
+            'ROLE_EPISODE_' . $episode_id .'_WRITE',
             $episode_id . '_read',
             $episode_id . '_write',
             'ROLE_ANONYMOUS'
@@ -38,6 +40,8 @@ class HelperFunctions
     static function addEpisodeAcl($episode_id, $add_acl, $acl)
     {
         $possible_roles = [
+            'ROLE_EPISODE_' . $episode_id .'_READ',
+            'ROLE_EPISODE_' . $episode_id .'_WRITE',
             $episode_id . '_read',
             $episode_id . '_write',
             'ROLE_ANONYMOUS'
@@ -78,6 +82,23 @@ class HelperFunctions
 
         // one ACL for reading AND for reading and writing
         $acl = [
+            [
+                'allow'  => true,
+                'role'   => 'ROLE_EPISODE_' . $episode_id .'_READ',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => 'ROLE_EPISODE_' . $episode_id .'_WRITE',
+                'action' => 'read'
+            ],
+
+            [
+                'allow'  => true,
+                'role'   => 'ROLE_EPISODE_' . $episode_id .'_WRITE',
+                'action' => 'write'
+            ],
             [
                 'allow'  => true,
                 'role'   => $episode_id .'_read',
@@ -163,12 +184,34 @@ class HelperFunctions
             print_r($oc_config, 1)
         ]);
 
-        // get ALL events in Opencast
-        $response = $opencastApi->eventsApi->getAll();
+        // get ALL events in Opencast, paginated
+        $events = [];
+        $offset = 0;
+        $limit  = 300;
+        $spinner = ['|', '/', '-', '\\'];
+        $spinnerIndex = 0;
 
-        if ($response['code'] == 200) {
-            $events = $response['body'];
-        } else {
+        $output->write('Fetching events ');
+        do {
+            $paged_events = $opencastApi->eventsApi->getAll(['limit' => $limit, 'offset' => $offset]);
+            $events = array_merge($events, $paged_events['body']);
+
+            // Update and display the spinner
+            $output->write("\r" . 'Fetching events ' . $spinner[$spinnerIndex] . ' (' . count($events) . ' so far)');
+            $spinnerIndex = ($spinnerIndex + 1) % 4;
+            $offset += $limit;
+        } while (sizeof($paged_events['body']) > 0);
+
+        $output->writeln(''); // Move to the next line after fetching is complete
+
+        if (empty($events)) {
+            // could not retrieve events
+            return Command::FAILURE;
+        }
+
+        $count = sizeof($events);
+
+        if (empty($events)) {
             // could not retrieve events
             return Command::FAILURE;
         }
