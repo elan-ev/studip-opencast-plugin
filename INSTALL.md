@@ -72,7 +72,27 @@ org.opencastproject.userdirectory.studip.cache.expiration=1
 
 Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP to have the `nobody` role for it to work.
 
-6. Add role `STUDIP` in Opencast
+6. Recommended for Opencast Version >= 17, edit `/etc/opencast/custom.properties` and enable: 
+
+```
+# Allow episode ID based access control via roles.
+# If activated, users with a role like ROLE_EPISODE_<ID>_<ACTION> will have access to the episode with the given
+# identifier, without this having to be explicitly stated in the ACL attached to the episode.
+#
+# For example, ROLE_EPISODE_872dc4ec-ca8a-4e12-8dac-ce99784d6d29_READ will allow the user to get read access to episode
+# 872dc4ec-ca8a-4e12-8dac-ce99784d6d29.
+#
+# To make this work for the Admin UI and External API, the Elasticsearch index needs to be updated with modified
+# ACLs. You can achieve this by calling the /index/rebuild/AssetManager/ACL endpoint AFTER activating this feature.
+# The endpoint will reindex only event ACLs.
+#
+# Default: false
+org.opencastproject.episode.id.role.access = true
+```
+
+This feature can then be activated in the plugin's Opencast settings (see below).
+
+7. Add role `STUDIP` in Opencast
 
 In the Opencast Admin UI, go to Organisation -> Groups and add a group named `STUDIP`.
 
@@ -118,6 +138,9 @@ The user needs to following role:
 Install the most recent version of this plugin, make sure that all migrations worked properly.
 
 After that go to "Admin" -> "System" -> "Opencast settings" and add a new server. Enter the URL and all the credentials for the Opencast system. Also make sure to assign to `nobody`-role to the plugin as well as entering the API-token for the user provider (see above).
+
+If you have Opencast Version 17 and the recommended feature enabled, you can enable the role based access via event id. This function removes the need for the plugin to set video ID roles on the videos, which reduces the number of roles on the videos and simplifies the migration to version 3. Without this function, the ACLs of all OC videos must be updated during migration.
+
 If everything worked you can now start using the plugin!
 
 Further help can be found under:
