@@ -549,6 +549,96 @@ class Playlists extends UPMap
         return parent::delete();
     }
 
+    public function addEntries(Array $videos)
+    {
+        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+
+        if (!$oc_playlist) {
+            // something went wrong with playlist creation, try again
+            $oc_playlist = $playlist_client->createPlaylist([
+                'title'                => $this->title,
+                'description'          => $this->description,
+                'creator'              => $this->creator,
+                'accessControlEntries' => []
+            ]);
+
+            if (!$oc_playlist) {
+                throw new Error(_('Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!'), 500);
+            }
+
+            $this->service_playlist_id = $oc_playlist->id;
+            $this->store();
+        }
+
+        $entries = $oc_playlist->entries;
+
+        foreach ($videos as $video) {
+            if (!$video->episode) continue;
+
+            // Only add video if not contained in entries
+            $entry_exists = current(array_filter($entries, function($e) use ($video) {
+                return $e->contentId === $video->episode;
+            }));
+
+            if (!$entry_exists) {
+                $entries[] = (object) [
+                    'contentId' => $video->episode,
+                    'type' => 'EVENT'
+                ];
+            }
+        }
+
+        // Update videos in playlist of Opencast
+        $oc_playlist = $playlist_client->updateEntries($oc_playlist->id, $entries);
+        if (!$oc_playlist) {
+            throw new Error(_('Die Videos konnten nicht hinzugefügt werden.'), 500);
+        }
+
+        // Update playlist videos in DB
+        $this->setEntries($oc_playlist->entries);
+    }
+
+    public function removeEntries(Array $videos)
+    {
+        // Get playlist entries from Opencast
+        $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
+        $oc_playlist = $playlist_client->getPlaylist($this->service_playlist_id);
+
+        $old_entries = (array)$oc_playlist->entries;
+        $entries = (array)$oc_playlist->entries;
+
+        foreach ($videos as $video) {
+
+            // Prevent removing video from playlist when it is livestream.
+            if ((bool) $video->is_livestream) {
+                continue;
+                // return $this->createResponse([
+                //     'message' => [
+                //         'type' => 'error',
+                //         'text' => _('Entfernung eines Livestream-Videos aus der Wiedergabeliste ist nicht erlaubt.')
+                //     ],
+                // ], $response->withStatus(403));
+            }
+
+            // Remove all occurrences of video from entries
+            $entries = array_values(array_filter($entries, function ($entry) use ($video) {
+                return $entry->contentId !== $video->episode;
+            }));
+        }
+
+        if (count($entries) < count($old_entries)) {
+            // Remove videos in playlist of Opencast
+            $oc_playlist = $playlist_client->updateEntries($oc_playlist->id, $entries);
+            if (!$oc_playlist) {
+                throw new Error(_('Die Videos konnten nicht entfernt werden.'), 500);
+            }
+        }
+
+        // Update playlist videos in DB
+        $this->setEntries((array)$oc_playlist->entries);
+    }
+
     /**
      * Set playlist videos in playlist based on passed entries.
      * This function checks no permissions.
