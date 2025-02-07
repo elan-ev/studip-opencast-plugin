@@ -2,8 +2,6 @@
 
 namespace Opencast\Models;
 
-use Opencast\Models\REST\SeriesClient;
-
 class SeminarWorkflowConfiguration extends \SimpleORMap
 {
     protected static function configure($config = [])

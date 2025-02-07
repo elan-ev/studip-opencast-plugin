@@ -3,6 +3,7 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
+use Opencast\Models\Helpers;
 
 class SeriesClient extends RestClient
 {
@@ -47,19 +48,7 @@ class SeriesClient extends RestClient
      */
     public function createSeriesForSeminar($course_id)
     {
-        $acl = [
-            [
-                'allow'  => true,
-                'role'   => $course_id . '_Instructor',
-                'action' => 'read'
-            ],
-
-            [
-                'allow'  => true,
-                'role'   => $course_id . '_Instructor',
-                'action' => 'write'
-            ]
-        ];
+        $acl = Helpers::createACLsForCourses([$course_id]);
 
         $metadata = self::getSeriesDC($course_id);
         $response = $this->opencastApi->seriesApi->create($metadata, $acl);
