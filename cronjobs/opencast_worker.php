@@ -59,7 +59,9 @@ class OpencastWorker extends CronJob
 
                     if (empty($video->config_id)) {
                         echo 'No config_id for video '. $video->id. "\n";
-                        $task->delete();
+                        $task->state = 'failed';
+                        $task->data = json_encode(['error' => 'No config_id for video '. $video->id]);
+                        $task->store();
                         continue;
                     }
 
