@@ -959,6 +959,11 @@ class Videos extends UPMap
 
             $video->duration = $duration;
 
+            // fill other metadata from event
+            $video->subject      = implode(', ', (array)$episode->subjects);
+            $video->presenters   = implode(', ', (array)$episode->presenter);
+            $video->contributors = implode(', ', (array)$episode->contributor);
+
             $video->preview = json_encode([
                 'search' => $preview,
                 'player' => $presentation_preview,
