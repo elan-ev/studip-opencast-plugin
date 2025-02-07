@@ -31,6 +31,14 @@ class PlaylistAddVideos extends OpencastController
             return Videos::findOneByToken($token);
         }, $video_tokens);
 
+        /* Permission check */
+        foreach ($videos as $video) {
+            // check what permissions the current user has on the playlist and video
+            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
+                throw new \AccessDeniedException();
+            }
+        }
+
         if (!PlaylistMigration::isConverted()) {
             foreach ($videos as $video) {
                 $plvideo = new PlaylistVideos;
@@ -52,58 +60,7 @@ class PlaylistAddVideos extends OpencastController
             return $response->withStatus(204);
         }
 
-        // Get playlist entries from Opencast
-        $playlist_client = ApiPlaylistsClient::getInstance($playlist->config_id);
-        $oc_playlist = $playlist_client->getPlaylist($playlist->service_playlist_id);
-
-        if (!$oc_playlist) {
-            // something went wrong with playlist creation, try again
-            $oc_playlist = $playlist_client->createPlaylist([
-                'title'                => $playlist['title'],
-                'description'          => $playlist['description'],
-                'creator'              => $playlist['creator'],
-                'accessControlEntries' => []
-            ]);
-
-            if (!$oc_playlist) {
-                throw new Error(_('Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!'), 500);
-            }
-
-            $playlist->service_playlist_id = $oc_playlist->id;
-            $playlist->store();
-        }
-
-        $entries = $oc_playlist->entries;
-
-        foreach ($videos as $video) {
-            // check what permissions the current user has on the playlist and video
-            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
-                throw new \AccessDeniedException();
-            }
-
-            if (!$video->episode) continue;
-
-            // Only add video if not contained in entries
-            $entry_exists = current(array_filter($entries, function($e) use ($video) {
-                return $e->contentId === $video->episode;
-            }));
-
-            if (!$entry_exists) {
-                $entries[] = (object) [
-                    'contentId' => $video->episode,
-                    'type' => 'EVENT'
-                ];
-            }
-        }
-
-        // Update videos in playlist of Opencast
-        $oc_playlist = $playlist_client->updateEntries($oc_playlist->id, $entries);
-        if (!$oc_playlist) {
-            throw new Error(_('Die Videos konnten nicht hinzugefügt werden.'), 500);
-        }
-
-        // Update playlist videos in DB
-        $playlist->setEntries($oc_playlist->entries);
+        $playlist->addEntries($videos);
 
         return $response->withStatus(204);
     }

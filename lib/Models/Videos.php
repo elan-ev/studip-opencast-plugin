@@ -1098,6 +1098,9 @@ class Videos extends UPMap
                     $pvideo->video_id    = $video->id;
                     $pvideo->playlist_id = $playlist->id;
                     $pvideo->store();
+
+                    // update playlist in opencast as well
+                    $playlist->addEntries([$video]);
                 }
             }
         }
