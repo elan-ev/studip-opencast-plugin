@@ -713,7 +713,7 @@ class Videos extends UPMap
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
 
         // if the video exists in opencast, make sure it is deleted
-        if ($api_event_client->getEpisode($this->episode)) {
+        if ($this->episode && $api_event_client->getEpisode($this->episode)) {
             if ($api_event_client->deleteEpisode($this->episode)) {
                 return $this->delete();
             } else {
