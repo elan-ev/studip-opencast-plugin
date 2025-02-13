@@ -266,18 +266,11 @@ export default {
                     return;
                 }
                 else if (data.message.type === 'success') {
-                    // Check if LTI connection is available
-                    let lti_checked = false;
-                    this.checkLti(data.lti).then((result) => {
-                        lti_checked = result;
-                    });
-
                     if (this.currentId !== 'new') {
                         // Just show success message if server was edited
                         this.$store.dispatch('addMessage', {
                             type: data.message.type,
-                            text: data.message.text,
-                            dialog: !lti_checked
+                            text: data.message.text
                         });
                     }
                     else {
@@ -300,21 +293,8 @@ export default {
                         }, 10);
                     }
 
-                    if (!lti_checked) {
-                        // Show LTI error
-                        this.$store.dispatch('addMessage', {
-                            type: 'warning',
-                            text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
-                                + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
-                                + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                                + 'DenkenSieauch daran, in Opencast die korrekten access-control-allow-* '
-                                + 'Header zu setzen.'
-                            ),
-                            dialog: true
-                        });
-                    }
-                    else if (this.currentId !== 'new') {
-                        // Only close dialog, if lti successfull and no new server was created
+                    if (this.currentId !== 'new') {
+                        // Only close dialog, if no new server was created
                         this.$emit('close');
                     }
 
@@ -327,30 +307,6 @@ export default {
                     text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.'),
                     dialog: true
             });
-        },
-
-        async checkLti(data)
-        {
-            await this.$store.dispatch('authenticateLti');
-
-            // make an lti call to make sure it worked, there are some caveats though...
-            // - already succesful calls will not be revoked
-            // - unsuccesful calls will persist even if it worked now
-            try {
-                const response = await axios({
-                    url: data[0].launch_url,
-                    method: "GET",
-                    withCredentials: true,
-                });
-
-                if (response.user_id == undefined) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (error) {
-                return false;
-            }
         },
 
         updateValue(setting, newValue) {
