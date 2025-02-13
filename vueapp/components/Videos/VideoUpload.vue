@@ -67,7 +67,7 @@
 
                         <label>
                             <span>
-                                {{ $gettext('Vortragende') }}
+                                {{ $gettext('Vortragende(r)') }}
                             </span>
                             <input type="text" maxlength="255" id="presenter" name="presenter"
                                    v-model="upload.creator">

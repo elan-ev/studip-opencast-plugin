@@ -223,7 +223,7 @@ export default {
         getInfoText() {
             var txt = '';
             if (this.event.presenters) {
-                txt += '<div>Vortragende: ' + this.event.presenters + '</div>';
+                txt += '<div>Vortragende(r): ' + this.event.presenters + '</div>';
             }
             if (this.event.contributors) {
                 txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';

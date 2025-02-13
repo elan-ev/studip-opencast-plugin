@@ -23,7 +23,7 @@
                             </a>
                         </th>
                         <th data-sort="false" class="responsive-hidden">
-                            {{ $gettext('Vortragende') }}
+                            {{ $gettext('Vortragende(r)') }}
                         </th>
                     </tr>
                 </thead>
