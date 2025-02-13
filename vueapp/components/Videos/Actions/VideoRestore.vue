@@ -1,7 +1,7 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Aufzeichnung Wiederherstellen')"
+            :title="$gettext('Aufzeichnung wiederherstellen')"
             :confirmText="$gettext('Akzeptieren')"
             :confirmClass="'accept'"
             :closeText="$gettext('Abbrechen')"

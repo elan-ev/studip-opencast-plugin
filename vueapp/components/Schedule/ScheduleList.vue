@@ -233,7 +233,7 @@ export default {
             }
 
             if (dispatchAction == 'unschedule' && !confirm(
-                    this.$gettext('Sind sie sicher, dass sie die geplante Aufzeichnung entfernen möchten?')
+                    this.$gettext('Sind Sie sicher, dass Sie die geplante Aufzeichnung entfernen möchten?')
             )) {
                 return;
             }

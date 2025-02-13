@@ -49,7 +49,7 @@ class Resources extends \SimpleORMap
             $resource->setData(compact('config_id', 'resource_id', 'capture_agent', 'workflow_id', 'livestream_workflow_id'));
             return $resource->store();
         } else {
-            throw new \Exception(_('Die Resourcen wurden nicht korrekt angegeben.'));
+            throw new \Exception(_('Die Ressourcen wurden nicht korrekt angegeben.'));
         }
     }
 

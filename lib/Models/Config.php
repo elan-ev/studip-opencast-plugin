@@ -222,7 +222,7 @@ class Config extends \SimpleOrMap
                 return [
                     'type' => 'error',
                     'text' => sprintf(
-                        _('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingegebenen Daten.'),
+                        _('Fehlerhafte Zugangsdaten für die Opencast-Installation mit der URL "%s". Überprüfen Sie bitte die eingegebenen Daten.'),
                         $service_host
                     )
                 ];
@@ -236,8 +236,8 @@ class Config extends \SimpleOrMap
                     $message = [
                         'type' => 'error',
                         'text' => sprintf(
-                            _('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
-                                . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
+                            _('Es wurden keine Endpoints für die Opencast-Installation mit der URL "%s" gefunden. '
+                                . 'Überprüfen Sie bitte die eingegebenen Daten. Achten Sie dabei auch auf http vs. https und '
                                 . 'ob ihre Opencast-Installation https unterstützt.'),
                             $service_host
                         )
@@ -254,7 +254,7 @@ class Config extends \SimpleOrMap
                     WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
 
                     $success_message[] = sprintf(
-                        _('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
+                        _('Die Opencast-Installation "%s" wurde erfolgreich konfiguriert.'),
                         $service_host
                     );
 
@@ -267,7 +267,7 @@ class Config extends \SimpleOrMap
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(
-                        _('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
+                        _('Es wurden keine Endpoints für die Opencast-Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
                         $service_host
                     )
                 ];

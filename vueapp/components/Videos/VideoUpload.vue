@@ -337,7 +337,7 @@ export default {
     methods: {
         confirmCancel()
         {
-            if (confirm(this.$gettext('Sind sie sicher, dass sie das Hochladen abbrechen möchten?'))) {
+            if (confirm(this.$gettext('Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?'))) {
                 if (this.uploadProgress) {
                     this.uploadService.cancel();
                 }

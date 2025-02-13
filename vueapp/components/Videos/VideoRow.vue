@@ -71,7 +71,7 @@
                 </span>
                 <a v-else-if="event.state == 'cutting'"
                    @click="redirectAction(`/editor/` + event.token)"
-                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Editor!')"
+                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!')"
                 >
                     <span class="oc--previewimage">
                         <img class="oc--image-button" :src="cut">
@@ -83,7 +83,7 @@
                     <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
                 </span>
                 <span v-else-if="event.state == 'failed'" class="oc--previewimage"
-                      :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
+                      :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')"
                 >
                     <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
                 </span>
@@ -104,7 +104,7 @@
                    @click="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
-                <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')">
+                <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')">
                     {{event.title}}
                 </span>
                 <span v-else>

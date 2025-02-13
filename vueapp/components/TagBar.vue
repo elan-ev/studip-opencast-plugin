@@ -12,7 +12,7 @@
                 </li>
             </template>
             <template #no-options="{ search, searching, loading }">
-                {{ $gettext('Es gibt bisher keine Schlagworte, schreiben sie einfach in das Suchfeld ihr erstes eigenes Schlagwort, dieses wird dann automatisch erstellt!')}}
+                {{ $gettext('Es existieren bisher keine Schlagworte. Wenn Sie Ihr erstes eigenes Schlagwort in das Suchfeld eingeben, wird dieses automatisch erstellt.')}}
             </template>
             <template #selected-option="option">
                 <studip-icon shape="tag" role="info"/>

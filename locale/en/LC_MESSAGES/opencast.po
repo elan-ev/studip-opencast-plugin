@@ -2,21 +2,22 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Opencast package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Till Glöggler <gloeggler@elan-ev.de>, 2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-13 15:29+0100\n"
-"PO-Revision-Date: 2025-02-04 17:03+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2025-02-13 16:19+0100\n"
+"PO-Revision-Date: 2025-02-13 16:13+0100\n"
+"Last-Translator: Till Glöggler <gloeggler@elan-ev.de>\n"
+"Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Gtranslator 47.1\n"
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:60
 msgid "(sie selbst)"
@@ -148,7 +149,7 @@ msgstr "Remove recording"
 
 #: vueapp/components/Videos/Actions/VideoRestore.vue:11
 #: vueapp/components/Videos/BulkActions/VideoRestore.vue:8
-msgid "Aufzeichnung Wiederherstellen"
+msgid "Aufzeichnung wiederherstellen"
 msgstr "Restore recording"
 
 #: vueapp/components/Videos/Actions/VideoDelete.vue:11
@@ -204,7 +205,7 @@ msgid "Automatisierte Aufzeichnungen"
 msgstr "Automated recordings"
 
 #: vueapp/components/Config/EditServer.vue:56
-msgid "Basis URL zur Opencast Installation"
+msgid "Basis URL zur Opencast-Installation"
 msgstr "Base URL for Opencast system"
 
 #: vueapp/components/Videos/VideosTable.vue:83
@@ -466,6 +467,8 @@ msgid ""
 "Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in "
 "der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt."
 msgstr ""
+"The videos have been added to the playlist. Videos that are already in the "
+"playlist have not been re-added."
 
 #: vueapp/components/Videos/VideosTable.vue:356
 msgid "Die Videos wurden von der Wiedergabeliste entfernt."
@@ -497,7 +500,7 @@ msgstr "Close this dialog"
 
 #: vueapp/components/Videos/VideoRow.vue:215
 msgid ""
-"Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den "
+"Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den "
 "Support!"
 msgstr "This video had a processing error. Please contact support!"
 
@@ -507,16 +510,16 @@ msgstr "This video is public."
 
 #: vueapp/components/Videos/VideoRow.vue:190
 msgid ""
-"Dieses Video wartet auf den Schnitt. Hier gelangen sie direkt zum Editor!"
+"Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!"
 msgstr ""
-"This video is waiting to be cut. Here you get directly to the cutting editor!"
+"This video is waiting to be edited. Click here to go directly to the editor!"
+
+#: vueapp/components/Videos/VideoRow.vue:250
+msgid "Dieses Video wird gerade von Opencast bearbeitet."
+msgstr "This video is currently being processed by Opencast."
 
 #: vueapp/components/Videos/VideoRow.vue:203
 msgid "Dieses Video wird gerade von Opencast vearbeitet."
-msgstr "This video is currently being processed by Opencast."
-
-#: vueapp/components/Videos/VideoRow.vue:250
-msgid "Dieses Videos wird gerade von Opencast bearbeitet."
 msgstr "This video is currently being processed by Opencast."
 
 #: vueapp/components/SearchBar.vue:151 vueapp/components/SearchBar.vue:136
@@ -560,17 +563,17 @@ msgstr "Created on"
 msgid "Erstellt am:"
 msgstr "Created on:"
 
-#: vueapp/components/Videos/Actions/VideoAccess.vue:150
-msgid "Es gibt bisher kein Share-Link"
-msgstr "There is no share link yet"
-
 #: vueapp/components/TagBar.vue:28
 msgid ""
-"Es gibt bisher keine Schlagworte, schreiben sie einfach in das Suchfeld ihr "
-"erstes eigenes Schlagwort, dieses wird dann automatisch erstellt!"
+"Es existieren bisher keine Schlagworte. Wenn Sie Ihr erstes eigenes "
+"Schlagwort in das Suchfeld eingeben, wird dieses automatisch erstellt."
 msgstr ""
-"There are no tags yet, just write your first tag in the search field and it "
-"will be created automatically!"
+"There are no keywords yet. If you enter your first keyword in the search "
+"field, it will be created automatically."
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:150
+msgid "Es existiert bisher kein Share-Link"
+msgstr "There is no share link yet"
 
 #: vueapp/components/Schedule/ScheduleList.vue:220
 msgid "Es gibt bisher keine Termine."
@@ -634,11 +637,11 @@ msgstr "Functions"
 
 #: vueapp/views/CoursesVideos.vue:14
 msgid ""
-"Für diesen Kurs gibt es keine Standard-Kurswiedergabeliste. Versuchen Sie "
-"bitte, im Aktionsmenü eine zu erstellen."
+"Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte "
+"erstellen Sie diese über das Aktionsmenü."
 msgstr ""
-"There is no standard course playlist for this course. Please try to create "
-"one in the action menu."
+"There is no standard course playlist for this course yet. Please create one "
+"using the action menu."
 
 #: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:21
 msgid "Für Nutzende freigeben"
@@ -1153,16 +1156,16 @@ msgstr ""
 "Opencast and turn on automatic synchronization."
 
 #: vueapp/components/Videos/VideoUpload.vue:130
-msgid "Sind sie sicher, dass sie das Hochladen abbrechen möchten?"
+msgid "Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?"
 msgstr "Are you sure you want to cancel the upload?"
 
 #: vueapp/components/Schedule/ScheduleList.vue:130
-msgid "Sind sie sicher, dass sie die geplante Aufzeichnung entfernen möchten?"
+msgid "Sind Sie sicher, dass Sie die geplante Aufzeichnung entfernen möchten?"
 msgstr "Are you sure you want to remove the scheduled recording?"
 
 #: vueapp/components/Playlists/PlaylistsTable.vue:159
 msgid ""
-"Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?"
+"Sind Sie sicher, dass Sie die komplette Wiedergabeliste löschen möchten?"
 msgstr "Are you sure you want to delete the entire playlist?"
 
 #: vueapp/components/Config/EditServer.vue:189
@@ -1175,12 +1178,12 @@ msgstr ""
 
 #: vueapp/components/Videos/Actions/VideoAccess.vue:76
 #: vueapp/components/Videos/Actions/VideoAccess.vue:111
-msgid "Sind sie sicher, dass sie diese Freigabe entfernen möchten?"
+msgid "Sind Sie sicher, dass Sie diese Freigabe entfernen möchten?"
 msgstr "Are you sure you want to remove this share?"
 
 #: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:59
 msgid ""
-"Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?"
+"Sind Sie sicher, dass Sie diese Playlist aus dem Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this playlist from the course?"
 
 #: vueapp/components/Videos/VideosTable.vue:409
@@ -1188,12 +1191,12 @@ msgid "Sind Sie sicher, dass Sie diese Wiedergabeliste entfernen möchten?"
 msgstr "Are you sure you want to remove this playlist?"
 
 #: vueapp/components/Videos/Actions/VideoCopyToSeminar.vue:51
-msgid "Sind sie sicher, dass Sie diesen Kurs entfernen möchten?"
+msgid "Sind Sie sicher, dass Sie diesen Kurs entfernen möchten?"
 msgstr "Are you sure you want to remove this course?"
 
 #: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:57
 msgid ""
-"Sind sie sicher, dass sie dieses Video aus der Wiedergabeliste entfernen "
+"Sind Sie sicher, dass Sie dieses Video aus der Wiedergabeliste entfernen "
 "möchten?"
 msgstr "Are you sure you want to remove this video from the playlist?"
 
@@ -1218,7 +1221,7 @@ msgid "Sprache"
 msgstr "Language"
 
 #: vueapp/components/Config/EditServer.vue:117
-msgid "SSL Zertifkatsfehler ignorieren?"
+msgid "SSL-Zertifkatsfehler ignorieren?"
 msgstr "Ignore SSL certificate errors?"
 
 #: vueapp/components/Videos/Actions/VideoEdit.vue:125
@@ -1310,7 +1313,7 @@ msgstr "Accept"
 msgid ""
 "Überprüfung der LTI Verbindung fehlgeschlagen! Kontrollieren Sie die "
 "eingetragenen Daten und stellen Sie sicher, dass Cross-Origin Aufrufe von "
-"dieser Domain aus möglich sind! Denken sie auch daran, in Opencast die "
+"dieser Domain aus möglich sind! DenkenSieauch daran, in Opencast die "
 "korrekten access-control-allow-* Header zu setzen."
 msgstr ""
 "LTI connection verification failed! Check the entered data and make sure "
@@ -1321,7 +1324,7 @@ msgstr ""
 msgid ""
 "Überprüfung der Verbindung fehlgeschlagen! Kontrollieren Sie die "
 "eingetragenen Daten und stellen Sie sicher, dass Cross-Origin Aufrufe von "
-"dieser Domain aus möglich sind! Denken sie auch daran, in Opencast die "
+"dieser Domain aus möglich sind! Denken Sie auch daran, in Opencast die "
 "korrekten access-control-allow-* Header zu setzen."
 msgstr ""
 "Connection verification failed! Check the entered data and make sure that "
@@ -1662,7 +1665,7 @@ msgid "Opencast Server Config:"
 msgstr "Opencast server settings:"
 
 #: cronjobs/opencast_clear_recycle_bin.php:13
-msgid "Opencast - Zum löschen markierte Videos endgültig löschen"
+msgid "Opencast - Zum Löschen markierte Videos endgültig löschen"
 msgstr "Opencast - Permanently delete videos marked for deletion"
 
 #: cronjobs/opencast_clear_recycle_bin.php:18
@@ -1809,7 +1812,7 @@ msgid ""
 msgstr "An error occurred while transferring the changes to the video server."
 
 #: lib/Routes/Video/VideoRestore.php:40
-msgid "Das Video wurde erfolgreich widerhergestellt"
+msgid "Das Video wurde erfolgreich wiederhergestellt"
 msgstr "The video was restored successfully"
 
 #: lib/Routes/Video/VideoReport.php:38
@@ -1844,14 +1847,14 @@ msgid "Stellt eine Aufzeichnung aus dem Opencast-Plugin bereit"
 msgstr "Provides a recording from the Opencast plugin"
 
 #: lib/Models/ScheduledRecordings.php:70
-msgid "Der geplante Termin wurden nicht korrekt angegeben."
+msgid "Der geplante Termin wurde nicht korrekt angegeben."
 msgstr "The scheduled date was not specified correctly."
 
 #: lib/Models/Resources.php:52
-msgid "Die Resourcen wurden nicht korrekt angegeben."
+msgid "Die Ressourcen wurden nicht korrekt angegeben."
 msgstr "The resources were not specified correctly."
 
-#: lib/Models/VideosUserPerms.php:126 lib/Models/Helpers.php:355
+#: lib/Models/VideosUserPerms.php:126 lib/Models/Helpers.php:357
 #, php-format
 msgid "Das Video mit dem Titel \"%s\" wurde fertig verarbeitet."
 msgstr "The video titled \"%s\" has finished processing."
@@ -1882,35 +1885,35 @@ msgstr "%s"
 #: lib/Models/Config.php:225
 #, php-format
 msgid ""
-"Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL \"%s\". "
+"Fehlerhafte Zugangsdaten für die Opencast-Installation mit der URL \"%s\". "
 "Überprüfen Sie bitte die eingegebenen Daten."
 msgstr ""
-"Incorrect access data for the Opencast installation with the URL \"%s\". "
-"Please check the data entered."
+"Incorrect login details for the Opencast installation with the URL \"%s\". "
+"Please check the entered data."
 
 #: lib/Models/Config.php:239
 #, php-format
 msgid ""
-"Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
-"gefunden. Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch "
-"auf http vs https und ob ihre Opencast-Installation https unterstützt."
+"Es wurden keine Endpoints für die Opencast-Installation mit der URL \"%s\" "
+"gefunden. Überprüfen Sie bitte die eingegebenen Daten. Achten Sie dabei auch "
+"auf http vs. https und ob ihre Opencast-Installation https unterstützt."
 msgstr ""
 "No endpoints were found for the Opencast installation with the URL \"%s\". "
-"Please check the entered data, also pay attention to http vs https and "
+"Please check the data you entered. Also pay attention to http vs. https and "
 "whether your Opencast installation supports https."
 
 #: lib/Models/Config.php:257
 #, php-format
-msgid "Die Opencast Installation \"%s\" wurde erfolgreich konfiguriert."
-msgstr "Opencast \"%s\" has been configured."
+msgid "Die Opencast-Installation \"%s\" wurde erfolgreich konfiguriert."
+msgstr "The Opencast installation \"%s\" was successfully configured."
 
 #: lib/Models/Config.php:270
 #, php-format
 msgid ""
-"Es wurden keine Endpoints für die Opencast Installation mit der URL \"%s\" "
+"Es wurden keine Endpoints für die Opencast-Installation mit der URL \"%s\" "
 "gefunden. Überprüfen Sie bitte die eingebenen Daten."
 msgstr ""
-"Could not retrieve endpoints for Opencast installation with URL \"%s\". "
+"No endpoints were found for the Opencast installation with the URL \"%s\". "
 "Please check the entered data."
 
 #: lib/Models/VideoCoursewareBlocks.php:39
@@ -2023,12 +2026,12 @@ msgstr "The videos could not be removed."
 msgid "Die Opencast-Konfiguration wurde nicht korrekt angegeben"
 msgstr "The opencast configuration was not specified correctly"
 
-#: lib/Models/Helpers.php:358
+#: lib/Models/Helpers.php:360
 #, php-format
 msgid "Das Video mit dem Titel \"%s\" wartet auf den Schnitt."
 msgstr "The video with title \"%s\" is waiting to be edited."
 
-#: lib/Models/Helpers.php:362
+#: lib/Models/Helpers.php:364
 #, php-format
 msgid "Das Video mit dem Titel \"%s\" hat einen Verarbeitungsfehler!"
 msgstr "The video with title \"%s\" has a processing error!"
@@ -2058,25 +2061,24 @@ msgid ""
 "Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
 "(Opencast) in einer Stud.IP-Veranstaltung angezeigt werden. Die Videos "
 "können aus dem eigenen Videobereich der Veranstaltung hinzugefügt, direkt in "
-"der Veranstaltung hochgeladen oder mit dem Online-Tool Opencast Studio auch "
-"direkt selbst erstellt werden. Auch auch komplette Wiedergabelisten können "
+"der Veranstaltung hochgeladen oder mit dem Online-Tool Opencast Studio "
+"direkt selbst erstellt werden. Auch komplette Wiedergabelisten können "
 "eingebunden werden. "
 msgstr ""
-"With this tool, videos from the lecture recording system (Opencast) can be "
-"displayed in a Stud.IP course. The videos can be added from the event's own "
-"video area, uploaded directly to the course or created directly using the "
-"online tool Opencast Studio. Complete playlists can also be connected to "
-"courses. "
+"This tool can be used to display videos from the lecture recording system "
+"(Opencast) in a Stud.IP event. The videos can be added from the event's own "
+"video area, uploaded directly to the event, or created directly using the "
+"online tool Opencast Studio. Complete playlists can also be integrated."
 
 #: OpencastV3.class.php:258
 msgid ""
-"Darüberhinaus ist es mit dieser Integration möglich die komplette "
+"Darüber hinaus ist es mit dieser Integration möglich, die komplette "
 "Aufzeichnungsplanung für eine Veranstaltung abzubilden. Voraussetzung "
 "hierfür sind entsprechende Einträge im Ablaufplan und eine gebuchte "
 "Ressource mit einem Opencast-Capture-Agent."
 msgstr ""
-"In addition, with this integration it is possible to completely manage the "
-"recording schedule for a course. This requires appropriate entries in the "
+"In addition, this integration makes it possible to map the complete "
+"recording planning for an event. This requires corresponding entries in the "
 "schedule and a booked resource with an Opencast capture agent."
 
 #: OpencastV3.class.php:266

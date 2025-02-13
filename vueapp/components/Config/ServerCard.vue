@@ -85,7 +85,7 @@ export default {
                 text: this.$gettext('Überprüfung der Verbindung fehlgeschlagen! '
                     + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
                     + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                    + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                    + 'Denken Sie auch daran, in Opencast die korrekten access-control-allow-* '
                     + 'Header zu setzen.'
                 ),
                 dialog: true

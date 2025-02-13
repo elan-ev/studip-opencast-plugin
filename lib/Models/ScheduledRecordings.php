@@ -67,7 +67,7 @@ class ScheduledRecordings extends \SimpleORMap
             );
             return $scheduled_recording->store();
         } else {
-            throw new \Exception(_('Der geplante Termin wurden nicht korrekt angegeben.'));
+            throw new \Exception(_('Der geplante Termin wurde nicht korrekt angegeben.'));
         }
     }
 

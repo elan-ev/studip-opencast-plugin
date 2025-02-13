@@ -240,7 +240,7 @@ export default {
         },
 
         deletePlaylist(playlist) {
-            let confirm_text = this.$gettext('Sind sie sicher, dass sie die komplette Wiedergabeliste löschen möchten?');
+            let confirm_text = this.$gettext('Sind Sie sicher, dass Sie die komplette Wiedergabeliste löschen möchten?');
             if (playlist?.default_course_tooltip) {
                 confirm_text += ' ' + this.$gettext('Bitte beachten Sie, dass diese Wiedergabeliste ist eine') + ' ' + playlist.default_course_tooltip;
             }
