@@ -193,7 +193,7 @@ class Videos extends UPMap
             ];
 
             if ($perm->have_perm('tutor', $user_id)) {
-                $where = ' WHERE oc_video.id IN (:video_ids) OR p.user_id = :user_id';
+                $where = ' WHERE (oc_video.id IN (:video_ids) OR p.user_id = :user_id)';
                 $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
             } else {
                 $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
