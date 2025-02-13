@@ -641,11 +641,11 @@ class Videos extends UPMap
                 }
                 if ($field_name == 'presenters') {
                     $id = 'creator';
-                    $value = [$value];
+                    $value = array_map('trim', explode(',', $value));
                 }
                 if ($field_name == 'contributors') {
                     $id = 'contributor';
-                    $value = [$value];
+                    $value = array_map('trim', explode(',', $value));
                 }
 
                 $metadata[] = [
