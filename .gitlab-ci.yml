@@ -6,11 +6,11 @@ stage_deploy:
     paths:
       - build/
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "main"
   before_script:
     - apt-get update
     - apt-get install zip unzip curl
-    - export 
+    - export
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
     - '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
     - nvm install stable
