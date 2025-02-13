@@ -17,7 +17,7 @@ jobs:
         uses: jesusvasquez333/verify-pr-label-action@v1.4.0
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
-          valid-labels: 'type:accessibility, type:bug, type:dependencies, type:documentation, type:enhancement, type:feature, type:infrastructure, type:mobile, type:security, type:tests, type:usability, type:visual-clarity'
+          valid-labels: 'type:accessibility, type:bug, type:dependencies, type:documentation, type:enhancement, type:feature, type:infrastructure, type:mobile, type:security, type:tests, type:usability, type:visual-clarity, type:translations'
           invalid-labels: 'status:duplicate, status:conflicts, status:wontfix, status:backlog, status:feedback-required, status:needs-testing, status:user-story'
           pull-request-number: '${{ github.event.pull_request.number }}'
           disable-reviews: true
