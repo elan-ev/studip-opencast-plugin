@@ -53,8 +53,8 @@
                         />
                     </fieldset>
                 </form>
-                <form class="default" v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
-                    <fieldset>
+                <form class="default" v-if="config.settings.OPENCAST_ALLOW_SHARING || config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
+                    <fieldset v-if="config.settings.OPENCAST_ALLOW_SHARING">
                         <legend>
                             {{ $gettext('Share Links') }}
                         </legend>
@@ -118,7 +118,7 @@
                         </table>
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
                         <legend>
                             {{ $gettext('Weltweiter Zugriff') }}
                         </legend>
