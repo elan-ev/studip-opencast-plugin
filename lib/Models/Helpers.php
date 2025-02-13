@@ -163,10 +163,12 @@ class Helpers
             $playlist = $playlists[0]->playlist;
         } else {
             // create new playlist
-            $playlist = new Playlists();
-            $playlist->config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
-            $playlist->title = $course->getFullname('number-name-semester');
-            $playlist->store();
+            $playlist = Playlists::createPlaylist([
+                'config_id'      => \Config::get()->OPENCAST_DEFAULT_SERVER,
+                'title'          => $course->getFullname('number-name-semester'),
+                'description'    => '',
+                'creator'        => '',
+            ]);
 
             // connect playlist to course
             $pcourse = new PlaylistSeminars();
