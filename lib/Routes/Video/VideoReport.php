@@ -4,7 +4,6 @@ namespace Opencast\Routes\Video;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
@@ -16,6 +15,10 @@ class VideoReport extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        if (!\Config::get()->OPENCAST_ALLOW_TECHNICAL_FEEDBACK) {
+            throw new \AccessDeniedException();
+        }
+
         $token = $args['token'];
         $video = Videos::findByToken($token);
 
@@ -24,7 +27,7 @@ class VideoReport extends OpencastController
         }
 
         $perm = $video->getUserPerm();
-        if (empty($perm) || 
+        if (empty($perm) ||
             ($perm != 'owner' && $perm != 'write'))
         {
             throw new \AccessDeniedException();

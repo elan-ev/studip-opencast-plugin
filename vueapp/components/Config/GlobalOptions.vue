@@ -146,6 +146,12 @@ export default {
                         !this.getOption('OPENCAST_SHOW_TOS').value;
 
                     settings[option.tag].push(option);
+                }
+                else if (option.name == 'OPENCAST_SUPPORT_EMAIL') {
+                    this.deactivatedOptions[option.name] =
+                        !this.getOption('OPENCAST_ALLOW_TECHNICAL_FEEDBACK').value;
+
+                    settings[option.tag].push(option);
 
                 } else {
                     settings[option.tag].push(option);

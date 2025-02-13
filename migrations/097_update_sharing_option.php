@@ -15,10 +15,10 @@ class UpdateSharingOption extends Migration
         $stmt = $db->prepare('REPLACE INTO config (field, value, section, type, `range`, mkdate, chdate, description)
             VALUES (:name, :value, :section, :type, :range, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description)');
 
-       $stmt->execute([
+        $stmt->execute([
             'name'        => 'OPENCAST_ALLOW_PUBLIC_SHARING',
             'section'     => 'opencast',
-            'description' => 'Sollen Nutzende Videos teilen oder weltweit öffentlich freigeben können?',
+            'description' => 'Sollen Nutzende Videos weltweit öffentlich freigeben können?',
             'range'       => 'global',
             'type'        => 'boolean',
             'value'       => true

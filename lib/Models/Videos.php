@@ -1024,6 +1024,10 @@ class Videos extends UPMap
     {
         global $UNI_CONTACT, $user;
 
+        if (!\Config::get()->OPENCAST_ALLOW_TECHNICAL_FEEDBACK) {
+            throw new \AccessDeniedException();
+        }
+
         try {
             $opencast_support_email = \Config::get()->OPENCAST_SUPPORT_EMAIL;
             if (!filter_var($opencast_support_email, FILTER_VALIDATE_EMAIL)) {

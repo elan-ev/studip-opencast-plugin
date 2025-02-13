@@ -351,7 +351,8 @@ export default {
             'playlists',
             'downloadSetting',
             'videoSortMode',
-            'currentUser'
+            'currentUser',
+            'simple_config_list'
         ]),
 
         showCheckbox() {
@@ -566,7 +567,7 @@ export default {
                 }
             }
 
-            if (!this.isLivestream) {
+            if (!this.isLivestream && this.simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK) {
                 menuItems.push({
                     id: 8,
                     label: this.$gettext('Technisches Feedback'),
