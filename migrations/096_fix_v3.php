@@ -42,9 +42,13 @@ class FixV3 extends Migration
             ]);
         }
 
-        // Clear the whole Stud.IP cache to make the plugin work correctlu
-        $cache     = StudipCacheFactory::getCache();
-        $cache->flush();
+        // Clear the specific Stud.IP cache entries to make the plugin work correctly
+        \RolePersistence::expirePluginCache($old_plugin_id);
+
+        $cache = StudipCacheFactory::getCache();
+        $cache->expire("STUDIP#autoloader-classes");
+
+        $db->exec("DELETE FROM cache WHERE cache_key LIKE 'StudipCachedArray//PluginActivations%'");
 
         // disable migrations for old plugin to prevent accidential deletion of oc-data
         $db->exec("DELETE FROM schema_version WHERE domain = 'OpenCast'");
