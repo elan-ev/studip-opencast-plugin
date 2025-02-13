@@ -61,10 +61,6 @@ class WorkflowConfig extends \SimpleORMap
                 case 'studio';
                     $type = 'upload';
                     break;
-
-                case 'subtitles';
-                    $type = 'archive';
-                    break;
             }
 
             $workflow_id = isset($workflows[$entry->id])
