@@ -100,7 +100,6 @@ class VideoUpdate extends OpencastController
             $message = [
                 'type' => 'error',
                 'text' => _('Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
-                //    . ': '. $response['code'] . ' - '. $response['message'] // TODO this throws error
             ];
         }
 
