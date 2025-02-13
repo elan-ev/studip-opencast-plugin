@@ -641,11 +641,11 @@ class Videos extends UPMap
                 }
                 if ($field_name == 'presenters') {
                     $id = 'creator';
-                    $value = [$value];
+                    $value = array_map('trim', explode(',', $value));
                 }
                 if ($field_name == 'contributors') {
                     $id = 'contributor';
-                    $value = [$value];
+                    $value = array_map('trim', explode(',', $value));
                 }
 
                 $metadata[] = [
@@ -958,6 +958,11 @@ class Videos extends UPMap
             ksort($audio_download);
 
             $video->duration = $duration;
+
+            // fill other metadata from event
+            $video->subject      = implode(', ', (array)$episode->subjects);
+            $video->presenters   = implode(', ', (array)$episode->presenter);
+            $video->contributors = implode(', ', (array)$episode->contributor);
 
             $video->preview = json_encode([
                 'search' => $preview,

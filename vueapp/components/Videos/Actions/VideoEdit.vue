@@ -34,7 +34,7 @@
 
                         <label>
                             <span>
-                                {{ $gettext('Vortragende') }}
+                                {{ $gettext('Vortragende(r)') }}
                             </span>
                             <input type="text" maxlength="255" name="presenter" v-model="event.presenters">
                         </label>

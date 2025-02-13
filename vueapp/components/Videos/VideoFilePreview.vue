@@ -2,7 +2,7 @@
     <div>
         <div v-for="file in files" class="oc--file-preview" :key="file.id">
             <h3 class="oc--file-type" v-if="type == 'presenter'">
-                {{ $gettext('Vortragende*r') }}
+                {{ $gettext('Vortragende(r)') }}
             </h3>
             <h3 class="oc--file-type" v-if="type == 'presentation'">
                 {{ $gettext('Folien') }}
@@ -11,14 +11,14 @@
             <span class="oc--file-name">
                 <b>
                     {{ $gettext('Name:') }}
-                </b> 
+                </b>
                 {{ file.name }}
             </span>
 
             <span class="oc--file-size" v-if="file.size">
                 <b>
                     {{ $gettext('Größe:') }}
-                </b> 
+                </b>
                 {{ $filters.filesize(file.size) }}
             </span>
 

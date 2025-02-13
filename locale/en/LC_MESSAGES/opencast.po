@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Opencast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-04 17:03+0100\n"
+"POT-Creation-Date: 2025-02-13 15:29+0100\n"
 "PO-Revision-Date: 2025-02-04 17:03+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1448,14 +1448,11 @@ msgid "Videos sortieren"
 msgstr "Sort videos"
 
 #: vueapp/components/Videos/Actions/VideoEdit.vue:62
+#: vueapp/components/Videos/VideoFilePreview.vue:32
 #: vueapp/components/Videos/VideoUpload.vue:117
 #: vueapp/components/Videos/VideosTable.vue:152
-msgid "Vortragende"
+msgid "Vortragende(r)"
 msgstr "Presenters"
-
-#: vueapp/components/Videos/VideoFilePreview.vue:32
-msgid "Vortragende*r"
-msgstr "Lecturer"
 
 #: vueapp/components/UserPlaylistSelectable.vue:14
 msgid "Weiteren Wiedergabelisten hinzufügen"
@@ -1720,14 +1717,6 @@ msgstr "The scheduled recording could not be removed."
 msgid "Die Wiedergabeliste konnte nicht aktualisiert werden."
 msgstr "The playlist could not be updated."
 
-#: lib/Routes/Playlist/PlaylistAddVideos.php:69
-msgid "Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!"
-msgstr "Playlist could not be added to Opencast!"
-
-#: lib/Routes/Playlist/PlaylistAddVideos.php:102
-msgid "Die Videos konnten nicht hinzugefügt werden."
-msgstr "The videos could not be added."
-
 #: lib/Routes/Playlist/PlaylistAddToCourse.php:27
 #: lib/Routes/Playlist/PlaylistScheduleUpdate.php:37
 msgid "Die Wiedergabeliste kann nicht gefunden werden"
@@ -1770,15 +1759,6 @@ msgstr "The playlist could not be applied."
 #: lib/Routes/Playlist/PlaylistScheduleUpdate.php:52
 msgid "Die Wiedergabeliste ist ausgewählt."
 msgstr "The playlist is selected."
-
-#: lib/Routes/Playlist/PlaylistRemoveVideos.php:67
-msgid ""
-"Entfernung eines Livestream-Videos aus der Wiedergabeliste ist nicht erlaubt."
-msgstr "Removing a livestream video from the playlist is not permitted."
-
-#: lib/Routes/Playlist/PlaylistRemoveVideos.php:82
-msgid "Die Videos konnten nicht entfernt werden."
-msgstr "The videos could not be removed."
 
 #: lib/Routes/Video/VideoCopyToCourse.php:54
 msgid "Die Wiedergabeliste konnte nicht kopiert werden."
@@ -2021,12 +2001,24 @@ msgstr ""
 "The course \"%s\" will be automatically recorded for you with picture and "
 "sound."
 
+#: lib/Models/Playlists.php:567
+msgid "Wiedergabeliste konnte nicht zu Opencast hinzugefügt werden!"
+msgstr "Playlist could not be added to Opencast!"
+
+#: lib/Models/Playlists.php:595
+msgid "Die Videos konnten nicht hinzugefügt werden."
+msgstr "The videos could not be added."
+
+#: lib/Models/Playlists.php:634
+msgid "Die Videos konnten nicht entfernt werden."
+msgstr "The videos could not be removed."
+
 #: lib/Models/REST/ApiEventsClient.php:19
 #: lib/Models/REST/ApiWorkflowsClient.php:17
 #: lib/Models/REST/ServicesClient.php:19 lib/Models/REST/WorkflowClient.php:18
 #: lib/Models/REST/CaptureAgentAdminClient.php:18
 #: lib/Models/REST/ApiPlaylistsClient.php:17
-#: lib/Models/REST/SchedulerClient.php:19 lib/Models/REST/SeriesClient.php:19
+#: lib/Models/REST/SchedulerClient.php:19 lib/Models/REST/SeriesClient.php:20
 #: lib/Models/REST/IngestClient.php:18
 msgid "Die Opencast-Konfiguration wurde nicht korrekt angegeben"
 msgstr "The opencast configuration was not specified correctly"
@@ -2106,6 +2098,14 @@ msgstr ""
 #: OpencastV3.class.php:437
 msgid "Kommende Liveevents"
 msgstr "Upcoming live events"
+
+#~ msgid "Vortragende*r"
+#~ msgstr "Lecturer"
+
+#~ msgid ""
+#~ "Entfernung eines Livestream-Videos aus der Wiedergabeliste ist nicht "
+#~ "erlaubt."
+#~ msgstr "Removing a livestream video from the playlist is not permitted."
 
 #~ msgid "Auswirkung der Bearbeitung von Untertiteln"
 #~ msgstr "Effect of editing subtitles"
