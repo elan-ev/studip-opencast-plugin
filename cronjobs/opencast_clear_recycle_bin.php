@@ -10,7 +10,7 @@ class OpencastClearRecycleBin extends CronJob
 
     public static function getName()
     {
-        return _('Opencast - Zum löschen markierte Videos endgültig löschen');
+        return _('Opencast - Zum Löschen markierte Videos endgültig löschen');
     }
 
     public static function getDescription()

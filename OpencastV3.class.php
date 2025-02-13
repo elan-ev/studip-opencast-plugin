@@ -250,13 +250,13 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
             "Mit diesem Tool können Videos aus dem Vorlesungsaufzeichnungssystem "
                 . "(Opencast) in einer Stud.IP-Veranstaltung angezeigt werden. Die Videos können aus dem eigenen "
                 . "Videobereich der Veranstaltung hinzugefügt, direkt in der Veranstaltung hochgeladen oder "
-                . "mit dem Online-Tool Opencast Studio auch direkt selbst erstellt werden. "
-                . "Auch auch komplette Wiedergabelisten können eingebunden werden. "
+                . "mit dem Online-Tool Opencast Studio direkt selbst erstellt werden. "
+                . "Auch komplette Wiedergabelisten können eingebunden werden. "
         );
 
         if (Config::get()->OPENCAST_ALLOW_SCHEDULER) {
-            $description .= $this->_("Darüberhinaus ist es mit "
-                . "dieser Integration möglich die komplette Aufzeichnungsplanung für eine Veranstaltung "
+            $description .= $this->_("Darüber hinaus ist es mit "
+                . "dieser Integration möglich, die komplette Aufzeichnungsplanung für eine Veranstaltung "
                 . "abzubilden. Voraussetzung hierfür sind entsprechende Einträge im Ablaufplan und eine "
                 . "gebuchte Ressource mit einem Opencast-Capture-Agent."
             );
@@ -434,8 +434,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
         $texts = [
             'empty' => $empty_text,
-            'upcomings' => $this->_('Kommende Liveevents'),
-            'code' => $code
+            'upcomings' => $this->_('Kommende Liveevents')
         ];
         $template->set_attribute('texts', $texts);
 

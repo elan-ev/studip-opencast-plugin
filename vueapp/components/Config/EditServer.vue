@@ -104,7 +104,7 @@ export default {
         settings() {
             return [
                 {
-                    description: this.$gettext('Basis URL zur Opencast Installation'),
+                    description: this.$gettext('Basis URL zur Opencast-Installation'),
                     name: 'service_url',
                     value: this.currentConfig.service_url,
                     type: 'string',
@@ -165,7 +165,7 @@ export default {
                     required: false
                 },
                 {
-                    description: this.$gettext('SSL Zertifkatsfehler ignorieren?'),
+                    description: this.$gettext('SSL-Zertifkatsfehler ignorieren?'),
                     name: 'ssl_ignore_cert_errors',
                     value: this.currentConfig.ssl_ignore_cert_errors,
                     type: 'boolean',
@@ -307,7 +307,7 @@ export default {
                             text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
                                 + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
                                 + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
-                                + 'Denken sie auch daran, in Opencast die korrekten access-control-allow-* '
+                                + 'DenkenSieauch daran, in Opencast die korrekten access-control-allow-* '
                                 + 'Header zu setzen.'
                             ),
                             dialog: true

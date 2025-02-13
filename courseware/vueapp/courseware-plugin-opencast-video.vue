@@ -25,7 +25,7 @@
                     <div v-if="currentVisible == 'intern' && canEdit" class="messagebox messagebox_warning cw-canvasblock-text-info">
                         <translate>
                             Dieses Video ist für die Teilnehmenden dieser Veranstaltung nicht sichtbar!
-                            Korrigieren sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
+                            Korrigieren Sie die Sichtbarkeitseinstellungen im Opencast-Reiter.
                         </translate>
                     </div>
                 </div>

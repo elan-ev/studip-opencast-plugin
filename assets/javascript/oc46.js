@@ -29,7 +29,7 @@ const OC = {
                     } else {
                         STUDIP.Dialog.show('Es konnte keine Verbindung zum LTI ' +
                                             'in Opencast hergestellt werden. ' +
-                                            'Laden sie die Seite neu. Falls das ' +
+                                            'Laden Sie die Seite neu. Falls das ' +
                                             'nicht hilft, wenden sich an ' +
                                             'eine/n Systemadministrator/in', {
                             title: 'LTI Fehler',

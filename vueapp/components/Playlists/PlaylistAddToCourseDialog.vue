@@ -101,7 +101,7 @@ export default {
         },
 
         removeCourse(index) {
-            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Playlist aus dem Kurs entfernen möchten?'))) {
+            if (!confirm(this.$gettext('Sind Sie sicher, dass Sie diese Playlist aus dem Kurs entfernen möchten?'))) {
                 return;
             }
 

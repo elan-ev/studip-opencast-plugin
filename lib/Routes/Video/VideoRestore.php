@@ -37,7 +37,7 @@ class VideoRestore extends OpencastController
 
         $message = [
             'type' => 'success',
-            'text' => _('Das Video wurde erfolgreich widerhergestellt')
+            'text' => _('Das Video wurde erfolgreich wiederhergestellt')
         ];
 
         return $this->createResponse([

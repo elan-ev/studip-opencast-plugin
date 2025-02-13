@@ -102,7 +102,7 @@
                             <tbody v-else>
                                 <tr>
                                     <td colspan="2">
-                                        {{ $gettext('Es gibt bisher kein Share-Link') }}
+                                        {{ $gettext('Es existiert bisher kein Share-Link') }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -238,7 +238,7 @@ export default {
 
         removePerm(index)
         {
-            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Freigabe entfernen möchten?'))) {
+            if (!confirm(this.$gettext('Sind Sie sicher, dass Sie diese Freigabe entfernen möchten?'))) {
                 return;
             }
 
@@ -273,7 +273,7 @@ export default {
 
         removeLinkShare(index)
         {
-            if (!confirm(this.$gettext('Sind sie sicher, dass sie diese Freigabe entfernen möchten?'))) {
+            if (!confirm(this.$gettext('Sind Sie sicher, dass Sie diese Freigabe entfernen möchten?'))) {
                 return;
             }
 

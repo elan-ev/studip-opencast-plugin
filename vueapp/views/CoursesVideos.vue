@@ -1,7 +1,7 @@
 <template>
     <div>
         <MessageBox type="info" v-if="!hasDefaultPlaylist">
-            {{ $gettext('Für diesen Kurs gibt es keine Standard-Kurswiedergabeliste. Versuchen Sie bitte, im Aktionsmenü eine zu erstellen.') }}
+            {{ $gettext('Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte erstellen Sie diese über das Aktionsmenü.') }}
         </MessageBox>
         <template v-else>
             <VideosTable

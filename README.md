@@ -46,7 +46,7 @@ der Cronjob `Opencast - "Scheduled-Events-Refresh"` alle Ereignisse aus Open-
 cast, die keinem geplanten Event-Termin einer Stud.IP Veranstaltung zugeordnet
 werden können.
 * Ist die Option `OPENCAST_SHOW_TOS` ("Müssen Lehrende einem Datenschutztext
-zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden
+zustimmen, bevor Sie das Opencast-Plugin in einer Veranstaltung verwenden
 können?") aktiviert, so muss mindestens ein Lehrender, Tutor oder Admin den
 ToS zugestimmt haben, bevor Studierende (ggf. von roots hochgeladene) Videos
 sehen können.

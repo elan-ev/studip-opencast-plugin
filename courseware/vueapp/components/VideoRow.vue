@@ -42,12 +42,12 @@
                 </span>
             </span>
             <span v-else-if="isProcessing" class="oc--previewimage"
-                  :title="$gettext('Dieses Videos wird gerade von Opencast bearbeitet.')"
+                  :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')"
             >
                 <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
             </span>
             <span v-else-if="event.state == 'failed'" class="oc--previewimage"
-                  :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden sie sich an den Support!')"
+                  :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')"
             >
                 <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
             </span>

@@ -102,7 +102,7 @@ export default {
         },
 
         confirmDelete(course_index) {
-            if (confirm(this.$gettext('Sind sie sicher, dass Sie diesen Kurs entfernen möchten?'))) {
+            if (confirm(this.$gettext('Sind Sie sicher, dass Sie diesen Kurs entfernen möchten?'))) {
                 this.courses.splice(course_index, 1);
             }
         },

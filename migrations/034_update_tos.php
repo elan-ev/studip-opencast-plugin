@@ -30,7 +30,7 @@ class UpdateTos extends Migration
         } catch (PDOException $e) {}
 
         $db->exec("UPDATE config
-            SET description = 'Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?'
+            SET description = 'Müssen Lehrende einem Datenschutztext zustimmen, bevor Sie das Opencast-Plugin in einer Veranstaltung verwenden können?'
             WHERE field = 'OPENCAST_SHOW_TOS'
         ");
 

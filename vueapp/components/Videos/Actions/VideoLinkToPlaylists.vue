@@ -81,7 +81,7 @@ export default {
         },
 
         removePlaylist(index) {
-            if (!confirm(this.$gettext('Sind sie sicher, dass sie dieses Video aus der Wiedergabeliste entfernen möchten?'))) {
+            if (!confirm(this.$gettext('Sind Sie sicher, dass Sie dieses Video aus der Wiedergabeliste entfernen möchten?'))) {
                 return;
             }
 
