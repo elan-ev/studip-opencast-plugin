@@ -72,7 +72,7 @@ org.opencastproject.userdirectory.studip.cache.expiration=1
 
 Make sure to change the token and add that token to the Opencast config in Stud.IP. Furthermore configure the Opencast-Plugin in Stud.IP to have the `nobody` role for it to work.
 
-6. Recommended for Opencast Version >= 17, edit `/etc/opencast/custom.properties` and enable: 
+6. Recommended for Opencast Version >= 17, edit `/etc/opencast/custom.properties` and enable:
 
 ```
 # Allow episode ID based access control via roles.
@@ -121,9 +121,6 @@ You can configure which workflow is used for different actions. They can be edit
 | upload           | Workflow run after uploading a video                         | upload                |
 | studio           | Workflow run after creating a video OC Studio                | upload                |
 | delete           | Workflow run when a video shall be deleted permanently       | delete                |
-| subtiltes        | Workflow run after a subtitle has been added or removed      | archive               |
-
-The subtitles-Workflow needs to make sure that the changes are published, otherwise the subtitles will not be visible.
 
 ## Credentials for Opencast
 

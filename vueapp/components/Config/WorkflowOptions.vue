@@ -43,7 +43,6 @@ export default {
                                 (
                                     wf['tag'] === wf_conf['used_for']
                                     || wf['tag'] === 'upload' && wf_conf['used_for'] === 'studio'
-                                    || wf['tag'] === 'archive' && wf_conf['used_for'] === 'subtitles'
                                 )
                             ) {
                                 options.push({
