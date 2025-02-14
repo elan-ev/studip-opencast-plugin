@@ -5,7 +5,6 @@ namespace Opencast\Routes\Playlist;
 use Opencast\Models\Videos;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;

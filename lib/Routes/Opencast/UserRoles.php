@@ -4,17 +4,12 @@ namespace Opencast\Routes\Opencast;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\VideosUserPerms;
-use Opencast\Models\Videos;
-use Opencast\Models\Filter;
 use Opencast\Models\VideosShares;
-use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistsUserPerms;
-use Opencast\Models\VideoCoursewareBlocks;
 
 
 

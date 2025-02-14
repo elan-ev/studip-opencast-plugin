@@ -6,14 +6,10 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Models\Helpers;
 use Opencast\Models\Config;
-use Opencast\Models\Endpoints;
-use Opencast\Models\SeminarEpisodes;
 use Opencast\Models\LTI\LtiHelper;
-
-use Opencast\Models\I18N as _;
+use Opencast\Errors\Error;
 
 class ConfigEdit extends OpencastController
 {

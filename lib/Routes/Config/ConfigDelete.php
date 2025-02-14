@@ -4,7 +4,6 @@ namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
@@ -31,7 +30,7 @@ class ConfigDelete extends OpencastController
         if (!$config->delete()) {
             throw new Error('Could not delete config.', 500);
         }
-        
+
         // Validate that a correct default server is set
         Helpers::validateDefaultServer();
 

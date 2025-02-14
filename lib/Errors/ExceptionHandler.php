@@ -2,10 +2,8 @@
 
 namespace Opencast\Errors;
 
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
-use Slim\Container;
 use Slim\Psr7\Response;
 
 /**

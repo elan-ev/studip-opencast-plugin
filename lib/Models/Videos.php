@@ -2,7 +2,7 @@
 
 namespace Opencast\Models;
 
-use Error;
+use Opencast\Errors\Error;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiEventsClient;

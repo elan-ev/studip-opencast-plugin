@@ -4,6 +4,7 @@ namespace Opencast\Models;
 
 use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Helpers\PlaylistMigration;
+use Opencast\Errors\Error;
 
 class Playlists extends UPMap
 {
