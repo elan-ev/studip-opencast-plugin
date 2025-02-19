@@ -29,9 +29,8 @@ class VideoSharesList extends OpencastController
         $params = $request->getQueryParams();
         $course_id = $params['course_id'] ?? null;
 
-        $perm = $video->getUserPerm();
         // only users with owner permission are allowed to show/edit shares
-        $access_denied = (empty($perm) || $perm != 'owner');
+        $access_denied = (!$video->havePerm('owner'));
         // if in a course, then dozents are allowed!
         if ($access_denied && !empty($course_id)) {
             $access_denied = !$GLOBALS['perm']->have_studip_perm('dozent', $course_id);

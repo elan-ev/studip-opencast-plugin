@@ -26,9 +26,7 @@ class VideoReport extends OpencastController
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
-        $perm = $video->getUserPerm();
-        if (empty($perm) ||
-            ($perm != 'owner' && $perm != 'write'))
+        if (!$video->havePerm('write'))
         {
             throw new \AccessDeniedException();
         }
