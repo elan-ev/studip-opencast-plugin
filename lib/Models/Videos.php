@@ -584,7 +584,8 @@ class Videos extends UPMap
         }
 
         // check if user has write permission on this video due to course ownership
-        if ($this->haveCoursePerm('dozent', $user_id)) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if ($this->haveCoursePerm($required_course_perm, $user_id)) {
             return 'write';
         }
 
