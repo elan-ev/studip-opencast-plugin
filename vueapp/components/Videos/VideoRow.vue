@@ -438,7 +438,7 @@ export default {
             let menuItems = [];
 
             if (!this.event?.trashed) {
-                if (this.event.perm == 'owner') {
+                if (this.event.perm == 'owner' || this.event.perm == 'write') {
                     if (this.event?.state !== 'running') {
                         menuItems.push({
                             id: 1,
