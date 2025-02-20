@@ -225,18 +225,15 @@ const actions = {
     },
 
     async loadVideoShares({ rootState, commit }, token) {
-        let $cid = rootState?.opencast?.cid ?? null;
-        return ApiService.get('videos/' + token + '/shares' + ($cid ? `?course_id=${$cid}` : ''))
+        return ApiService.get('videos/' + token + '/shares')
             .then(({ data }) => {
                 commit('setShares', data)
             });
     },
 
     async updateVideoShares({ rootState }, data) {
-        let $cid = rootState?.opencast?.cid ?? null;
         let params = {
             'data': data.shares,
-            'course_id': $cid
         }
         return ApiService.put('videos/' + data.token + '/shares', params);
     },

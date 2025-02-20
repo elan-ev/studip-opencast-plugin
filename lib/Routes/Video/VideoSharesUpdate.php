@@ -30,16 +30,9 @@ class VideoSharesUpdate extends OpencastController
         }
 
         $json = $this->getRequestData($request);
-        $course_id = $json['course_id'];
 
-        // only users with owner permission are allowed to show/edit shares
-        $access_denied = (!$video->havePerm('owner'));
-        // if in a course, then dozents are allowed!
-        if ($access_denied && !empty($course_id)) {
-            $access_denied = !$GLOBALS['perm']->have_studip_perm('dozent', $course_id);
-        }
-
-        if ($access_denied)
+        // only users with write permission are allowed to show/edit shares
+        if (!$video->havePerm('write'))
         {
             throw new \AccessDeniedException();
         }
