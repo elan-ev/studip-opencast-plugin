@@ -585,14 +585,11 @@ export default {
         },
 
         canEdit() {
-            if (this.currentUser.can_edit) {
-                return true;
-            }
-            return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
+            return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 
         canShare() {
-            return this.event?.perm === 'owner' || this.currentUser.can_edit;
+            return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 
         livestream() {
