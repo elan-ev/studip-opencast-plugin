@@ -356,7 +356,7 @@ export default {
         ]),
 
         showCheckbox() {
-            return this.selectable || (this.canUpload && this.event.perm == 'owner');
+            return this.selectable || (this.canUpload && (this.event.perm == 'owner' || this.event.perm == 'write'));
         },
 
         getImageSrc() {
