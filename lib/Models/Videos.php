@@ -60,24 +60,24 @@ class Videos extends UPMap
      */
     public static function getFilteredVideoIDs($user_id)
     {
-        global $perm;
+        // get all courses and their playlists this user has access to. Only courses with activated OC plugin are included
+        $courses = Helpers::getMyCourses($user_id);
 
-        if ($perm->have_perm('tutor', $user_id)) {
-            // get all courses and their playlists this user has access to. Only courses with activated OC plugin are included
-            $courses = Helpers::getMyCourses($user_id);
-
-            $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
-                JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
-                JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
-                JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id AND oc_video.id = oc_playlist_video.video_id)
-                WHERE 1
-            ');
-
-            $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($courses)) {
+            return [];
         }
+
+        $stmt = \DBManager::get()->prepare($sql = 'SELECT oc_video.id FROM oc_video
+            JOIN oc_playlist_seminar ON (oc_playlist_seminar.seminar_id IN (:courses))
+            JOIN oc_playlist         ON (oc_playlist_seminar.playlist_id = oc_playlist.id)
+            JOIN oc_playlist_video   ON (oc_playlist.id = oc_playlist_video.playlist_id AND oc_video.id = oc_playlist_video.video_id)
+            WHERE 1
+        ');
+
+        $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
     /**
@@ -102,7 +102,9 @@ class Videos extends UPMap
         $where = ' WHERE 1 ';
         $params = [':playlist_id' => $playlist_id];
 
-        if (!(empty($filters->getCourseId()) || $perm->have_perm('dozent'))) {
+        $cid = $filters->getCourseId();
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if (!(empty($cid) || $perm->have_studip_perm($required_course_perm, $cid))) {
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
@@ -110,7 +112,7 @@ class Videos extends UPMap
                        OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL
                        OR opsv.visible_timestamp < NOW()) ';
 
-            $params[':cid'] = $filters->getCourseId();
+            $params[':cid'] = $cid;
         }
 
         $query = [
@@ -145,7 +147,8 @@ class Videos extends UPMap
         $where = ' WHERE 1 ';
         $params = [':cid' => $course_id];
 
-        if (!$perm->have_perm('dozent')) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
             $where = ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"
@@ -163,7 +166,7 @@ class Videos extends UPMap
     }
 
     /**
-     * Get the list of accessible videos, faceted by the passed filters
+     * Get the list of videos where the user has owner perm, faceted by the passed filters
      *
      * @param Opencast\Models\Filter $filters
      * @param string $user_id
@@ -192,13 +195,50 @@ class Videos extends UPMap
                 ':user_id'=> $user_id
             ];
 
-            if ($perm->have_perm('tutor', $user_id)) {
-                $where = ' WHERE (oc_video.id IN (:video_ids) OR p.user_id = :user_id)';
-                $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
-            } else {
-                $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
-                $where = ' WHERE 1 ';
-            }
+            // Show video where the user has owner perm
+            $sql  = ' INNER JOIN oc_video_user_perms AS p ON (p.user_id = :user_id AND p.video_id = oc_video.id) ';
+            $where = " WHERE p.perm = 'owner'";
+        }
+
+        return self::getFilteredVideos([
+            'sql'    => $sql,
+            'where'  => $where,
+            'params' => $params
+        ], $filters);
+    }
+
+    /**
+     * Get the list of accessible videos by explicit perms or by course lecturer memberships, faceted by the passed filters
+     *
+     * @param Opencast\Models\Filter $filters
+     * @param string $user_id
+     *
+     * @return array
+     *   [
+     *       'videos' => [Opencast\Models\Videos],
+     *       'count'  => int
+     *   ];
+     */
+    public static function getCoursewareVideos($filters, $user_id = null)
+    {
+        global $user, $perm;
+
+        if (!$user_id) {
+            $user_id = $user->id;
+        }
+
+        $sql    = ' LEFT JOIN oc_video_user_perms AS p ON (p.video_id = oc_video.id)';
+        $params = [];
+        $where  = ' WHERE 1 ';
+
+        // root can access all videos, no further checking for perms is necessary
+        if (!$perm->have_perm('root')) {
+            $params = [
+                ':user_id'=> $user_id
+            ];
+
+            $where = ' WHERE (oc_video.id IN (:video_ids) OR p.user_id = :user_id)';
+            $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
         }
 
         return self::getFilteredVideos([
