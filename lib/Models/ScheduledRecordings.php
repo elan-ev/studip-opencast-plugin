@@ -35,6 +35,7 @@ class ScheduledRecordings extends \SimpleORMap
     public static function setScheduleRecording(
         $seminar_id,
         $series_id,
+        $user_id,
         $date_id,
         $resource_id,
         $start,
@@ -54,6 +55,7 @@ class ScheduledRecordings extends \SimpleORMap
                 compact(
                     'seminar_id',
                     'series_id',
+                    'user_id',
                     'date_id',
                     'resource_id',
                     'start',
