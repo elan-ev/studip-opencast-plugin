@@ -32,7 +32,7 @@ class OCConfig extends \SimpleORMap
     {
         static $config;
 
-        if (!$config[$course_id]) {
+        if (empty($config[$course_id])) {
             $config_id = self::getConfigIdForCourse($course_id);
             if ($config_id) {
                 $settings  = Configuration::instance($config_id);

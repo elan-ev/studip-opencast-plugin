@@ -50,7 +50,7 @@ class WorkflowClient extends OCRestClient
 
         if (!empty($wf_defs->definitions->definition)) {
             foreach ($wf_defs->definitions->definition as $wdef) {
-                if (is_array($wdef->tags->tag)) {
+                if (!empty($wdef->tags) && is_array($wdef->tags->tag)) {
                     $tagged_wfs[] = [
                         'id'          => $wdef->id,
                         'title'       => $wdef->title,

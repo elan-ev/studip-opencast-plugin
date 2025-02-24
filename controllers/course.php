@@ -114,7 +114,8 @@ class CourseController extends OpencastController
         }
 
         // check, if studygroup upload is enabled and if the user is participant there
-        $studyGroupId = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$this->course_id])['studygroup_id'];
+        $studyGroup = OCUploadStudygroup::findOneBySQL('course_id = ? AND active = TRUE', [$this->course_id]);
+        $studyGroupId = !empty($studyGroup) ? $studyGroup['studygroup_id'] : null;
         if ($studyGroupId && !OCPerm::editAllowed($studyGroupId)) {
             PageLayout::postWarning($this->_(
                 'Sie können nicht auf die Studiengruppe für den Studierendenupload zugreifen, '
@@ -418,7 +419,7 @@ class CourseController extends OpencastController
         $events        = $events_client->getBySeries($this->cseries[0]['series_id'], $this->course_id);
 
         foreach ($events as $event) {
-            $this->events[$event->identifier] = $event;
+            $this->events[$event['id']] = $event;
         }
     }
 

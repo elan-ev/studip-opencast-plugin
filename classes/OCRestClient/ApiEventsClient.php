@@ -330,13 +330,13 @@ class ApiEventsClient extends OCRestClient
         return $result[1] == 204;
     }
 
-    public function getVisibilityForEpisode($episode, $course_id = null)
+    public function getVisibilityForEpisode(array $episode, $course_id = null)
     {
         if (is_null($course_id)) {
             $course_id = Context::getId();
         }
 
-        $acls = $episode->acl;
+        $acls = $episode['acl'] ?? [];
 
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
@@ -345,8 +345,8 @@ class ApiEventsClient extends OCRestClient
             ? 'invisible'
             : 'visible';
 
-        if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
+        if ($acls) {
+            OCModel::setVisibilityForEpisode($course_id, $episode['id'], $default);
             return $default;
         }
 
@@ -384,7 +384,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode->id, $default);
+        OCModel::setVisibilityForEpisode($course_id, $episode['id'], $default);
         return $default;
     }
 
@@ -418,10 +418,11 @@ class ApiEventsClient extends OCRestClient
             $duration              = 0;
 
             foreach ((array) $engage_publication->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
+                $type = $attachment->type ?? '';
+                if ($attachment->flavor === "presenter/search+preview" || $type === "presenter/search+preview") {
                     $preview = $attachment->url;
                 }
-                if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
+                if ($attachment->flavor === "presentation/player+preview" || $type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;
                 }
                 if ($attachment->flavor === "presenter/search+preview" && !$preview) {
