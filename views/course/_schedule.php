@@ -36,7 +36,8 @@
                 <tr>
                     <? $date = new SingleDate($d['termin_id']); ?>
                     <? $resource = $date->getResourceID(); ?>
-                    <? $scheduled = reset(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) ?>
+                    <? $scheduled = OCModel::checkScheduled($course_id, $resource, $date->termin_id); ?>
+                    <? $scheduled = reset($scheduled) ?>
                     <td>
                         <? if (isset($resource) && OCModel::checkResource($resource) && (date($d['date']) > time())) : ?>
                             <input name="dates[<?= $date->termin_id ?>]" type="checkbox" value="<?= $resource ?>">
@@ -93,8 +94,8 @@
                                         'title' => $_('Aufzeichnung ist bereits geplant.')
                                     ]
                                 ) ?>
-
-                                <? if ($scheduled && $events[$scheduled['event_id']]->publication_status[0] == 'engage-live') : ?>
+                                <? $publication_status = $scheduled && isset($events[$scheduled['event_id']]['publication_status'][0]) ? $events[$scheduled['event_id']]['publication_status'][0] : '' ?>
+                                <? if ($publication_status == 'engage-live') : ?>
                                     <span style="font-weight: bold; color: red">LIVE</span>
                                 <? endif ?>
                             <? else : ?>

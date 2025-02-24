@@ -89,7 +89,7 @@ class LtiLink
         $this->addLaunchParameters([
             'resource_link_id' => $this->variables['ResourceLink.id'],
             'resource_link_title' => $this->variables['ResourceLink.title'],
-            'resource_link_description' => $this->variables['ResourceLink.description'],
+            'resource_link_description' => $this->variables['ResourceLink.description'] ?? '',
         ]);
     }
 
@@ -296,10 +296,14 @@ class LtiLink
      */
     public function getLaunchSignature($launch_params)
     {
-        list($launch_url, $fragment) = explode('#', $this->launch_url);
-        list($launch_url, $query)    = explode('?', $launch_url);
 
-        if (isset($query)) {
+        $split_by_fragment = explode('#', $this->launch_url);
+        $launch_url = $split_by_fragment[0];
+        $split_by_q = explode('?', $launch_url);
+        $launch_url = $split_by_q[0];
+        $query = $split_by_q[1] ?? null;
+
+        if ($query) {
             parse_str($query, $query_params);
             $launch_params += $query_params;
         }

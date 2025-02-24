@@ -99,7 +99,7 @@ class OpencastLTI
 
             $entry = OCSeminarEpisodes::findOneBySQL(
                 'series_id = ? AND episode_id = ? AND seminar_id = ?',
-                [$series['series_id'], $episode->id, $course_id]
+                [$series['series_id'], $episode['id'], $course_id]
             );
 
             if ($entry && $entry->visible != $vis) {
@@ -380,8 +380,8 @@ class OpencastLTI
 
             $url = parse_url($search_config['service_url']);
 
-            return $url['scheme'] . '://' . $url['host']
-                . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+            $port = isset($url['port']) ? ':' . $url['port'] : '';
+            return $url['scheme'] . '://'. $url['host'] . ($port) . '/lti';
         }
 
         return '';

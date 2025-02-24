@@ -75,10 +75,10 @@ class Pager
         $sort_str = '';
         $cid      = \Context::getId();
 
-        if ($_SESSION['opencast']['sort_order']) {
+        if (!empty($_SESSION['opencast']['sort_order'])) {
             $sort_str = $_SESSION['opencast']['sort_order'];
         }
-        else if (\CourseConfig::get($cid)->COURSE_SORT_ORDER) {
+        else if (!empty(\CourseConfig::get($cid)->COURSE_SORT_ORDER)) {
             $sort_str = \CourseConfig::get($cid)->COURSE_SORT_ORDER;
         }
         else {

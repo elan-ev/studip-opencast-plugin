@@ -40,7 +40,7 @@ use Opencast\Models\Pager;
 <script>
     jQuery(function() {
         STUDIP.hasperm = <?= var_export(OCPerm::editAllowed($course_id)) ?>;
-        OC.states = <?= json_encode($states) ?>;
+        OC.states = <?= json_encode($states ?? '') ?>;
         OC.initIndexpage();
     });
 </script>
