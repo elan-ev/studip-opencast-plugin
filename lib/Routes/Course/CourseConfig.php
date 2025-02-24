@@ -47,7 +47,6 @@ class CourseConfig extends OpencastController
                         'config_id'  => $config_id,
                         'seminar_id' => $course_id,
                         'series_id'  => $series_id,
-                        'visibility' => 'visible'
                     ]);
                     $series->store();
                 }
@@ -57,7 +56,6 @@ class CourseConfig extends OpencastController
         $results = [
             'series'    => [
                 'series_id'  => $series->series_id,
-                'visibility' => $series->visibility
             ],
             'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
             'edit_allowed'   => Perm::editAllowed($course_id),

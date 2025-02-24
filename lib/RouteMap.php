@@ -102,7 +102,6 @@ class RouteMap
         $group->put("/courses/{course_id}/playlist/{token}", Routes\Course\CourseUpdatePlaylist::class);
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
 
-        $group->put("/courses/{course_id}/visibility/{visibility}", Routes\Course\CourseSetVisibility::class);
         $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class); // TODO: document in api docs
 
         $group->get("/courses/videos", Routes\Course\CourseListForUserVideos::class);
