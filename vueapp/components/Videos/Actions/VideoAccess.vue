@@ -9,7 +9,7 @@
             @close="$emit('done', 'refresh')"
         >
             <template v-slot:dialogContent>
-                <form class="default">
+                <form class="default" v-if="config.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT">
                     <fieldset>
                         <legend>
                             {{ $gettext('Rechte') }}

@@ -52,6 +52,10 @@ return [
                 'tag' => 'functions'
             ],
             [
+                'name' => "OPENCAST_ALLOW_PERMISSION_ASSIGNMENT",
+                'tag' => 'functions'
+            ],
+            [
                 'name' => "OPENCAST_ALLOW_SHARING",
                 'tag' => 'functions'
             ],

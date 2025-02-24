@@ -21,6 +21,7 @@ class VideoSharesUpdate extends OpencastController
         global $user;
 
         $sharing = \Config::get()->OPENCAST_ALLOW_SHARING ? true : false;
+        $perm_assignment = \Config::get()->OPENCAST_ALLOW_PERMISSION_ASSIGNMENT ? true : false;
 
         $token = $args['token'];
         $video = Videos::findByToken($token);
@@ -48,33 +49,35 @@ class VideoSharesUpdate extends OpencastController
         /* * * * * * * * * * * * * * * * * * * *
          *   U S E R   P E R M I S S I O N S   *
          * * * * * * * * * * * * * * * * * * * */
-        $new_perms = [];
-        // first, check current perms
-        foreach($video->perms as $perm) {
-            if ($perm->user_id == $user->id) {
-                // retain my own perms
-                $new_perms[] = $perm->toArray();
+        if ($perm_assignment) {
+            $new_perms = [];
+            // first, check current perms
+            foreach($video->perms as $perm) {
+                if ($perm->user_id == $user->id) {
+                    // retain my own perms
+                    $new_perms[] = $perm->toArray();
+                }
             }
-        }
 
-        // collect update perms
-        $perms = $json['data']['perms'] ?? [];
-        foreach ($perms as $perm) {
-            // one cannot change its own perms
-            if ($perm['user_id'] != $user->id) {
-                $new_perms[] = $perm;
+            // collect update perms
+            $perms = $json['data']['perms'] ?? [];
+            foreach ($perms as $perm) {
+                // one cannot change its own perms
+                if ($perm['user_id'] != $user->id) {
+                    $new_perms[] = $perm;
+                }
             }
-        }
 
 
-        // clear out all perms and set the new perms
-        VideosUserPerms::deleteBySQL('video_id = ?', [$video->id]);
+            // clear out all perms and set the new perms
+            VideosUserPerms::deleteBySQL('video_id = ?', [$video->id]);
 
-        foreach ($new_perms as $perm) {
-            $uperm = new VideosUserPerms();
-            $uperm->video_id = $video->id;
-            $uperm->setData($perm);
-            $uperm->store();
+            foreach ($new_perms as $perm) {
+                $uperm = new VideosUserPerms();
+                $uperm->video_id = $video->id;
+                $uperm->setData($perm);
+                $uperm->store();
+            }
         }
 
         /* * * * * * * * * * * * * * * * * * * *
