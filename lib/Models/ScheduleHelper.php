@@ -736,16 +736,18 @@ class ScheduleHelper
     }
 
     /**
-     * Gets the list of scheduling dates for a course to be displayed in the scheduling list in a course
+     * Gets the list of scheduling dates for a course to be displayed in the scheduling list in a course,
+     * and return a livestream flag indicating if livestream is available in some date
      *
      * @param string $course_id course id
      * @param string $semester_filter semester id
      *
-     * @return array the scheudling list to be displayed in a course
+     * @return array the scheduling list to be displayed in a course and the livestream available flag
      */
     public static function getScheduleList($course_id, $semester_filter)
     {
         $allow_schedule_alternate = \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE;
+        $livestream_available = false;
 
         $dates = self::getDatesForSemester($course_id, $semester_filter);
         $events = self::getCourseEvents($course_id);
@@ -851,6 +853,7 @@ class ScheduleHelper
             $actions = [];
             if (!empty($resource_obj)) {
                 $allow_livestream = !empty($resource_obj['livestream_workflow_id']) ? true : false;
+                $livestream_available |= $allow_livestream;
                 if ($scheduled && (int)date($d['date']) > time()) {
                     $actions['updateSchedule'] = [
                         'shape' => 'refresh',
@@ -889,7 +892,10 @@ class ScheduleHelper
             $schedule_list[] = $date_obj;
         }
 
-        return $schedule_list;
+        return [
+            'schedule_list' => $schedule_list,
+            'livestream_available' => $livestream_available,
+        ];
     }
 
     /**

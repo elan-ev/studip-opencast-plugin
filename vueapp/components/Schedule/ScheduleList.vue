@@ -132,15 +132,20 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["schedule_list", "allow_schedule_alternate", "cid", 'schedule_loading']),
+        ...mapGetters(["schedule_list", "livestream_available", "allow_schedule_alternate", "cid", 'schedule_loading']),
 
         get_bulk_actions() {
-            let bulk_actions = [
-                {value: 'schedule', text: this.$gettext('Aufzeichnungen planen')},
-                {value: 'live', text: this.$gettext('LIVE-Aufzeichnungen planen')},
+            let bulk_actions = [];
+            bulk_actions.push({value: 'schedule', text: this.$gettext('Aufzeichnungen planen')});
+
+            if (this.livestream_available) {
+                bulk_actions.push({value: 'live', text: this.$gettext('LIVE-Aufzeichnungen planen')});
+            }
+
+            bulk_actions.push(
                 {value: 'update', text: this.$gettext('Aufzeichnungen aktualisieren')},
-                {value: 'unschedule', text: this.$gettext('Aufzeichnungen stornieren')},
-            ];
+                {value: 'unschedule', text: this.$gettext('Aufzeichnungen stornieren')}
+            );
 
             return bulk_actions;
         }

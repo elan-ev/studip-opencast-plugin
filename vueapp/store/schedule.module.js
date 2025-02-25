@@ -4,6 +4,7 @@ const state = {
     schedule_list: [],
     semester_list: [],
     semester_filter: 'all',
+    livestream_available: false,
     allow_schedule_alternate: false,
     schedule_loading: false
 }
@@ -15,6 +16,10 @@ const getters = {
 
     semester_list(state) {
         return state.semester_list;
+    },
+
+    livestream_available(state) {
+        return state.livestream_available;
     },
 
     allow_schedule_alternate(state) {
@@ -47,6 +52,9 @@ const actions = {
                 }
                 if (data?.schedule_list) {
                     context.commit('setScheduleList', data.schedule_list);
+                }
+                if (data?.livestream_available) {
+                    context.commit('setLivestreamAvailable', data.livestream_available);
                 }
                 if (data?.allow_schedule_alternate) {
                     context.commit('setAllowAlternate', data.allow_schedule_alternate);
@@ -150,6 +158,10 @@ const mutations = {
 
     setSemesterList(state, list) {
         state.semester_list = list;
+    },
+
+    setLivestreamAvailable(state, available) {
+        state.livestream_available = available;
     },
 
     setAllowAlternate(state, allow) {
