@@ -166,7 +166,7 @@ class OpencastDiscoverVideos extends CronJob
             WorkflowConfig::createAndUpdateByConfigId($config['id']);
         }
 
-        // now check all videos which have no preview url (these were not yet ready when whe inspected them)
+        // now check all videos which have no preview url and no scheduled task (these were not yet ready when whe inspected them)
 
         // TODO:
         /* current event state in oc_videos speichern
@@ -174,44 +174,46 @@ class OpencastDiscoverVideos extends CronJob
          * FAILED wird nur jede Stunde neu inspiziert
          * Das scheduled Feld wird genutzt, um Dinge für die Zukunft zu planen
          */
-        foreach (Videos::findBySql('(preview IS NULL OR available = 0) AND is_livestream = 0') as $video) {
-            // check, if there is already a task scheduled
-            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'video'", [$video->id]))) {
-                echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
-                // create task to update permissions and everything else
-                $task = new VideoSync;
+        $videos = Videos::findBySql(
+            "LEFT JOIN oc_video_sync AS ovs ON (ovs.video_id = oc_video.id AND ovs.type = 'video')
+            WHERE ovs.video_id IS NULL AND (preview IS NULL OR available = 0) AND is_livestream = 0"
+        );
+        foreach ($videos as $video) {
+            echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
+            // create task to update permissions and everything else
+            $task = new VideoSync;
 
-                $task->setData([
-                    'video_id'  => $video->id,
-                    'state'     => 'scheduled',
-                    'scheduled' => date('Y-m-d H:i:s')
-                ]);
+            $task->setData([
+                'video_id'  => $video->id,
+                'state'     => 'scheduled',
+                'scheduled' => date('Y-m-d H:i:s')
+            ]);
 
-                $task->store();
-            }
+            $task->store();
         }
 
-        // search for all inaccessible videos in course playlists and add them for reinspection
-        foreach (PlaylistVideos::findBySql('available = 0') as $video) {
-            // check, if there is already a task scheduled
-            if (empty(VideoSync::findBySQL("video_id = ? AND type = 'playlistvideo'", [$video->video_id]))) {
-                echo 'schedule playlist video for re-inspection: ' . $video->video_id . ' ('. $video->video->title .', Playlist ID: ' . $video->playlist_id . ")\n";
-                // create task to update permissions and everything else
-                $task = new VideoSync;
+        // search for all inaccessible videos in course playlists with no scheduled task and add them for reinspection
+        $videos = PlaylistVideos::findBySql(
+            "LEFT JOIN oc_video_sync AS ovs ON (ovs.video_id = oc_playlist_video.video_id AND ovs.type = 'playlistvideo')
+            WHERE ovs.video_id IS NULL AND oc_playlist_video.available = 0"
+        );
+        foreach ($videos as $video) {
+            echo 'schedule playlist video for re-inspection: ' . $video->video_id . ' ('. $video->video->title .', Playlist ID: ' . $video->playlist_id . ")\n";
+            // create task to update permissions and everything else
+            $task = new VideoSync;
 
-                $task->setData([
-                    'video_id'  => $video->video_id,
-                    'state'     => 'scheduled',
-                    'type'      => 'playlistvideo',
-                    'scheduled' => date('Y-m-d H:i:s'),
-                    'data'   => json_encode([
-                        'playlist_id' => $video->playlist_id,
-                        'version'     => $video->video->version
-                    ])
-                ]);
+            $task->setData([
+                'video_id'  => $video->video_id,
+                'state'     => 'scheduled',
+                'type'      => 'playlistvideo',
+                'scheduled' => date('Y-m-d H:i:s'),
+                'data'   => json_encode([
+                    'playlist_id' => $video->playlist_id,
+                    'version'     => $video->video->version
+                ])
+            ]);
 
-                $task->store();
-            }
+            $task->store();
         }
 
         // fix any broken playlists visibility
