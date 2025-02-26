@@ -278,8 +278,7 @@ export default {
             try {
                 return this.cid !== undefined &&
                     this.currentUser.can_edit &&
-                        this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'] &&
-                        this.hasDefaultPlaylist;
+                        this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'];
             } catch (error) {
                 return false;
             }
