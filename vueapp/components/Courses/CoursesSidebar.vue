@@ -91,7 +91,7 @@
             <div class="sidebar-widget-content">
                 <div class="oc--sidebar-dropdown-wrapper">
                     <span class="oc--sidebar-dropdown-text">
-                        {{ $gettext('Aufzeichnungen in Wiedergabeliste') }}
+                        {{ $gettext('Zielwiedergabeliste für Aufzeichnungen') }}
                     </span>
                     <select class="oc--sidebar-dropdown-select sidebar-selectlist submit-upon-select" v-model="schedulePlaylistToken" @change="updateScheduledRecordingsPlaylists('scheduled')">
                         <option v-for="p in playlists"
@@ -105,7 +105,7 @@
                 </div>
                 <div class="oc--sidebar-dropdown-wrapper">
                     <span class="oc--sidebar-dropdown-text">
-                        {{ $gettext('Livestreams in Wiedergabeliste') }}
+                        {{ $gettext('Zielwiedergabeliste für Livestreams') }}
                     </span>
                     <select class="oc--sidebar-dropdown-select sidebar-selectlist submit-upon-select" v-model="livestreamPlaylistToken" @change="updateScheduledRecordingsPlaylists('livestreams')">
                         <option v-for="p in playlists"
