@@ -83,7 +83,7 @@ export default {
                 this.selectedPlaylists = [];
                 this.$store.dispatch('addMessage', {
                     type: 'success',
-                    text: this.$gettext('Die Playlisten wurden in die Veranstaltung kopiert.')
+                    text: this.$gettext('Die Wiedergabelisten wurden in die Veranstaltung kopiert.')
                 });
 
                 if (is_default) {
