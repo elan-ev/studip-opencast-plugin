@@ -70,8 +70,11 @@ class OpencastBlockV3 extends BlockType
 
     public function setPayload($payload): void
     {
-        $rangeId = $this->block->container->structural_element->range_id;
-        VideoCoursewareBlocks::setRecord($rangeId, $payload['token'], $this->block['id']);
+        if (!empty($payload['token'])) {
+            $rangeId = $this->block->container->structural_element->range_id;
+            VideoCoursewareBlocks::setRecord($rangeId, $payload['token'], $this->block['id']);
+        }
+
         parent::setPayload($payload);
     }
 }
