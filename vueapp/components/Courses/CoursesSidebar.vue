@@ -84,7 +84,7 @@
                 </select>
             </div>
         </div>
-        <div class="sidebar-widget " id="sidebar-actions" v-if="canSchedule">
+        <div class="sidebar-widget " id="sidebar-actions" v-if="canSchedule && (schedule_list.length || !schedule_loading)">
             <div class="sidebar-widget-header">
                 {{ $gettext('Aktionen') }}
             </div>
@@ -103,7 +103,7 @@
                         </option>
                     </select>
                 </div>
-                <div class="oc--sidebar-dropdown-wrapper">
+                <div class="oc--sidebar-dropdown-wrapper" v-if="this.livestream_available">
                     <span class="oc--sidebar-dropdown-text">
                         {{ $gettext('Livestreams in Wiedergabeliste') }}
                     </span>
@@ -267,7 +267,8 @@ export default {
             "cid", "semester_list", "semester_filter", 'currentUser',
             'simple_config_list', 'course_config', 'playlist',
             'defaultPlaylist', 'videoSortMode', 'downloadSetting',
-            'schedule_playlist', 'livestream_playlist'
+            'schedule_playlist', 'livestream_playlist', 'livestream_available',
+            'schedule_list', 'schedule_loading'
         ]),
 
         fragment() {
