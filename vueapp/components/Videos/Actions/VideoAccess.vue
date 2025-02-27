@@ -38,10 +38,14 @@
                                         {{ $filters.permname(share.perm, $gettext) }}
                                     </td>
                                     <td>
-                                        <studip-icon v-if="share.user_id != currentUser.id"
-                                            shape="trash" role="clickable"
-                                            @click="removePerm(index)" style="cursor: pointer"/>
-                                        <studip-icon v-else shape="trash" role="inactive"/>
+                                        <a v-if="share.user_id != currentUser.id"
+                                           href="#" @click.prevent="removePerm(index)"
+                                        >
+                                            <studip-icon shape="trash" role="clickable" style="cursor: pointer"/>
+                                        </a>
+                                        <div v-else>
+                                            <studip-icon shape="trash" role="inactive"/>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

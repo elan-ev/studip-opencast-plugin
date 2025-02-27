@@ -52,15 +52,19 @@
                         </router-link>
                     </li>
 
-                    <li v-if="canEdit" @click="showCreatePlaylist" data-reject-toggle-sidebar="true">
-                        <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
-                        {{ $gettext('Wiedergabeliste hinzufügen') }}
+                    <li v-if="canEdit" data-reject-toggle-sidebar="true">
+                        <a href="#" @click.prevent="showCreatePlaylist">
+                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            {{ $gettext('Wiedergabeliste hinzufügen') }}
+                        </a>
                     </li>
                 </template>
                 <template v-else>
-                    <li v-if="canEdit" @click="showCreatePlaylist">
-                        <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
-                        {{ $gettext('Kurswiedergabeliste hinzufügen') }}
+                    <li v-if="canEdit">
+                        <a href="#" @click.prevent="showCreatePlaylist">
+                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            {{ $gettext('Kurswiedergabeliste hinzufügen') }}
+                        </a>
                     </li>
                 </template>
             </ul>
@@ -128,45 +132,55 @@
             <div class="sidebar-widget-content">
                 <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
                     <template v-if="videoSortMode">
-                        <li @click="$emit('saveSortVideo')" v-if="canEdit && videoSortMode">
-                            <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                            {{ $gettext('Sortierung speichern') }}
+                        <li v-if="canEdit && videoSortMode">
+                            <a href="#" @click.prevent="$emit('saveSortVideo')">
+                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                {{ $gettext('Sortierung speichern') }}
+                            </a>
                         </li>
-                        <li @click="$emit('cancelSortVideo')" v-if="canEdit && videoSortMode">
-                            <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                            {{ $gettext('Sortierung abbrechen') }}
+                        <li v-if="canEdit && videoSortMode">
+                            <a href="#" @click.prevent="$emit('cancelSortVideo')">
+                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                {{ $gettext('Sortierung abbrechen') }}
+                            </a>
                         </li>
                     </template>
                     <template v-else>
-                        <li @click="openPlaylistAddVideosDialog" v-if="(canEdit || canUpload)"
+                        <li v-if="(canEdit || canUpload)"
                             :class="{
                                 'oc--menuentry--disabled': opencastOffline
                             }"
                         >
-                            <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                            {{ $gettext('Videos hinzufügen') }}
+                            <a href="#" @click.prevent="openPlaylistAddVideosDialog">
+                                <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                                {{ $gettext('Videos hinzufügen') }}
+                            </a>
                         </li>
                         <li v-if="canEdit && downloadSetting !== 'never'">
-                            <a v-if="!downloadEnabled" @click="setDownload(true)" target="_blank">
+                            <a v-if="!downloadEnabled" href="#" @click.prevent="setDownload(true)">
                                 <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
                                 {{ $gettext('Mediendownloads erlauben') }}
                             </a>
-                            <a v-else @click="setDownload(false)" target="_blank">
+                            <a v-else href="#" @click.prevent="setDownload(false)">
                                 <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
                                 {{ $gettext('Mediendownloads verbieten') }}
                             </a>
                         </li>
-                        <li @click="!opencastOffline && $emit('sortVideo')" v-if="canEdit"
+                        <li v-if="canEdit"
                             :class="{
                                 'oc--menuentry--disabled': opencastOffline
                             }"
                         >
-                            <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
-                            {{ $gettext('Videos sortieren') }}
+                            <a href="#" @click.prevent="!opencastOffline && $emit('sortVideo')">
+                                <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                                {{ $gettext('Videos sortieren') }}
+                            </a>
                         </li>
-                        <li @click="$emit('editPlaylist')" v-if="canEdit">
-                            <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
-                            {{ $gettext('Metadaten bearbeiten') }}
+                        <li v-if="canEdit">
+                            <a href="#" @click.prevent="$emit('editPlaylist')">
+                                <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
+                                {{ $gettext('Metadaten bearbeiten') }}
+                            </a>
                         </li>
                     </template>
                 </ul>
@@ -188,21 +202,23 @@
                         </a>
                     </li>
                     <li v-if="canEdit">
-                        <a v-if="!uploadEnabled" @click="setUpload(1)" target="_blank">
+                        <a href="#" v-if="!uploadEnabled" @click.prevent="setUpload(1)">
                             <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
                             {{ $gettext('Studierendenupload erlauben') }}
                         </a>
-                        <a v-else @click="setUpload(0)" target="_blank">
+                        <a v-else href="#" @click.prevent="setUpload(0)">
                             <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
                             {{ $gettext('Studierendenupload verbieten') }}
                         </a>
                     </li>
-                    <li @click="$emit('changeDefaultPlaylist')" v-if="canEdit" data-reject-toggle-sidebar="true">
-                        <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
-                        {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
+                    <li v-if="canEdit" data-reject-toggle-sidebar="true">
+                        <a href="#" @click.prevent="$emit('changeDefaultPlaylist')">
+                            <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
+                            {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
+                        </a>
                     </li>
                     <li v-if="canEdit">
-                        <a @click="$emit('copyAll')">
+                        <a href="#" @click.prevent="$emit('copyAll')">
                             <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
                             {{ $gettext('Kursinhalte übertragen') }}
                         </a>
