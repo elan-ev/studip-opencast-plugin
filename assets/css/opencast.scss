@@ -312,7 +312,8 @@ $action-menu-icon-size: 20px;
                 gap: 5px;
 
                 margin: 0;
-                overflow-wrap: anywhere;
+                hyphens: auto;
+                overflow-wrap: break-word;
             }
 
             a {
@@ -325,21 +326,8 @@ $action-menu-icon-size: 20px;
                 row-gap: 5px;
 
                 margin-top: 8px;
-                white-space: nowrap;
                 overflow: auto;
             }
-        }
-
-        .oc--date {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .oc--presenters {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .oc--metadata--empty {
@@ -353,15 +341,10 @@ $action-menu-icon-size: 20px;
             .tooltip {
                 margin: 5px 0 0 5px;
             }
-        }
-    }
 
-    .oc--sort-options {
-        text-align: right;
-        white-space: nowrap;
-
-        img {
-            cursor: pointer;
+            .oc--tooltip-access.responsive-show {
+                display: none;
+            }
         }
     }
 
@@ -1022,6 +1005,18 @@ label.oc--file-upload {
     @extend .oc--pagination;
     visibility: hidden;
     display: none;
+}
+
+@media only screen and (max-width: $major-breakpoint-medium) {
+    .oc--episode-table--small {
+        .oc--episode {
+            .oc--tooltips {
+                .oc--tooltip-access.responsive-show {
+                    display: unset;
+                }
+            }
+        }
+    }
 }
 
 @media only screen and (max-width: $major-breakpoint-small) {
