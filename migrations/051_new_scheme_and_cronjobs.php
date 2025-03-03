@@ -3,6 +3,7 @@ class NewSchemeAndCronjobs extends Migration
 {
     const FILENAME = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/opencast_refresh_scheduling.php';
     const BASE_DIR = 'public/plugins_packages/elan-ev/OpencastV3/cronjobs/';
+    const BASE_DIR_V2 = 'public/plugins_packages/elan-ev/OpenCast/cronjobs/';
 
     function description()
     {
@@ -259,8 +260,8 @@ class NewSchemeAndCronjobs extends Migration
         $scheduler = CronjobScheduler::getInstance();
 
         foreach ([
-            self::BASE_DIR . 'refresh_scheduled_events.php',
-            self::BASE_DIR . 'refresh_series.php'
+            self::BASE_DIR_V2 . 'refresh_scheduled_events.php',
+            self::BASE_DIR_V2 . 'refresh_series.php'
         ] as $filename) {
             if ($task_id = CronjobTask::findByFilename($filename)[0]->task_id) {
                 $scheduler->cancelByTask($task_id);
