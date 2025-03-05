@@ -270,7 +270,7 @@ export default {
                     params.append('filters', JSON.stringify(filters));
                 }
                 axios
-                    .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/api/videos', { params })
+                    .get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/api/courseware/videos', { params })
                     .then(({ data }) => {
                         view.paging.items = parseInt(data.count);
                         view.paging.lastPage = parseInt(view.paging.items / view.limit);

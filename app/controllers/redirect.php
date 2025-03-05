@@ -43,9 +43,7 @@ class RedirectController extends Opencast\Controller
         }
 
         /*
-        $perm = $video->getUserPerm();
-        if (empty($perm) ||
-            ($perm != 'owner' && $perm != 'write'))
+        if (!$video->havePerm('write'))
         {
             throw new \AccessDeniedException();
         }
@@ -85,9 +83,7 @@ class RedirectController extends Opencast\Controller
             $this->error = _('Das Video wurde zur Löschung markiert und kann daher nicht abgerufen werden.');
         }
 
-        $perm = $video->getUserPerm();
-
-        if ($perm) {
+        if ($video->havePerm('read')) {
 
             $publication = $video->publication? json_decode($video->publication, true) : null;
             if (!empty($publication) && isset($publication['downloads'][$type][$index]['url'])) {
@@ -221,7 +217,7 @@ class RedirectController extends Opencast\Controller
 
         $video = Videos::findByToken($token);
 
-        if (!$video->getUserPerm()) {
+        if (!$video->havePerm('read')) {
             throw new \Exception('Access denied!');
         }
 

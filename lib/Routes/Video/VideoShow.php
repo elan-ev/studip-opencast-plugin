@@ -22,7 +22,7 @@ class VideoShow extends OpencastController
 
         // if no perms are found only return the token back with the config_id the video resides on,
         // so the courseware-block can do its magic
-        if (empty($video) || !$video->getUserPerm()) {
+        if (empty($video) || !$video->havePerm('read')) {
             return $this->createResponse([
                 'video' => [
                     'token'     => $video->token,

@@ -15,9 +15,9 @@ class AddAclCronjob extends Migration
         // add new scheduling cronjob
         $task_id = $scheduler->registerTask(self::FILENAME, true);
 
-        // Schedule job to run every 120 minutes
+        // Schedule job to run every 2 hours
         if ($task_id) {
-            $scheduler->schedulePeriodic($task_id, -120);  // negative value means "every x minutes"
+            $scheduler->schedulePeriodic($task_id, 0, -2);  // negative value means "every x hours"
         }
     }
 

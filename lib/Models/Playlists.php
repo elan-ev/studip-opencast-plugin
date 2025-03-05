@@ -314,8 +314,9 @@ class Playlists extends UPMap
         if (!$ret_perm) {
             // check if user is lecturer and therefore has owner rights or at least
             // has read access through a linked course
+            $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
             foreach ($this->courses as $course) {
-                if ($perm->have_studip_perm('dozent', $course->id)) {
+                if ($perm->have_studip_perm($required_course_perm, $course->id)) {
                     return 'owner';
                 }
 

@@ -435,6 +435,8 @@ class ScheduleHelper
      */
     private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id, $livestream)
     {
+        global $user;
+
         $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
 
@@ -457,6 +459,7 @@ class ScheduleHelper
         $success = ScheduledRecordings::setScheduleRecording(
             $course_id,
             $serie['series_id'],
+            $user->id,
             $date_id,
             $resource_id,
             $date->date,

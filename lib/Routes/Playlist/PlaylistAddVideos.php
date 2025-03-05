@@ -34,7 +34,7 @@ class PlaylistAddVideos extends OpencastController
         /* Permission check */
         foreach ($videos as $video) {
             // check what permissions the current user has on the playlist and video
-            if (!Authority::canAddVideoToPlaylist($user, $playlist, $video, $course_id)) {
+            if (!Authority::canAddAndRemoveVideoInPlaylist($user, $playlist, $video, $course_id)) {
                 throw new \AccessDeniedException();
             }
         }
