@@ -3,7 +3,7 @@
         <StudipDialog
             :title="$gettext('Wiedergabelisten kopieren')"
             :confirmText="$gettext('Kopieren')"
-            :disabled="selectedPlaylists.length === 0"
+            :disabled="selectedPlaylists.length === 0 || isCopying"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
@@ -12,6 +12,9 @@
             @confirm="copyPlaylistsToCourse"
         >
             <template v-slot:dialogContent>
+                <messageBox :type="'info'" v-show="isCopying">
+                    {{ $gettext('Die ausgewählten Wiedergabelisten werden derzeit kopiert.') }}
+                </messageBox>
                 <PlaylistsTable
                     :selectable="true"
                     :showActions="false"
@@ -27,11 +30,13 @@ import { mapGetters } from "vuex";
 
 import StudipDialog from "@/components/Studip/StudipDialog.vue";
 import PlaylistsTable from "@/components/Playlists/PlaylistsTable.vue";
+import MessageBox from "@/components/MessageBox.vue";
 
 export default {
     name: "PlaylistsCopyCard",
 
     components: {
+        MessageBox,
         StudipDialog,
         PlaylistsTable,
     },
@@ -49,6 +54,7 @@ export default {
         return {
             playlists: [],
             selectedPlaylists: [],
+            isCopying: false,
         }
     },
 
@@ -67,6 +73,7 @@ export default {
 
         copyPlaylistsToCourse() {
             const is_default = this.isDefault;
+            this.isCopying = true;
 
             this.$store.dispatch('copyPlaylistsToCourse', {
                 course: this.cid,
@@ -76,7 +83,7 @@ export default {
                 this.selectedPlaylists = [];
                 this.$store.dispatch('addMessage', {
                     type: 'success',
-                    text: this.$gettext('Die Playlisten wurden in die Veranstaltung kopiert.')
+                    text: this.$gettext('Die Wiedergabelisten wurden in die Veranstaltung kopiert.')
                 });
 
                 if (is_default) {
@@ -93,6 +100,7 @@ export default {
                     });
 
                 this.$store.dispatch('setPlaylistsReload', true);
+                this.isCopying = false;
                 this.$emit('done');
             });
         },
