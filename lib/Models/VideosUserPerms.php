@@ -54,6 +54,29 @@ class VideosUserPerms extends \SimpleORMap
             return;
         }
 
+        // Determine if the event is scheduled recordings
+        $scheduled_recording = ScheduledRecordings::findOneBySql(
+            'event_id = ? AND series_id = ? AND user_id IS NOT NULL AND is_livestream = 0',
+            [$video->episode, $episode->is_part_of]
+        );
+        if (!empty($scheduled_recording)) {
+            // check, if there is already an entry for this user-video combination
+            $perm = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
+                ':video_id' => $video->id,
+                ':user_id'  => $scheduled_recording->user_id
+            ]);
+
+            if (empty($perm)) {
+                $perm = new self();
+                $perm->user_id  = $scheduled_recording->user_id;
+                $perm->video_id = $video->id;
+                $perm->perm     = 'owner';
+                $perm->store();
+            }
+
+            return;
+        }
+
         // check if a series is assigned to this event
         if ($episode->is_part_of) {
             // get the courses this series belongs to
@@ -131,26 +154,5 @@ class VideosUserPerms extends \SimpleORMap
             }
         }
 
-    }
-
-    public static function assignCourseLecturerPermissions($course_id, $video_id, $perm_type = 'write', $member_course_status = 'dozent')
-    {
-        $course = \Course::find($course_id);
-        $lecturers_obj = $course->getMembersWithStatus($member_course_status);
-        foreach ($lecturers_obj as $lecturer) {
-            // check, if there is already an entry for this user-video combination
-            $perm_record = self::findOneBySQL('video_id = :video_id AND user_id = :user_id', [
-                ':video_id' => $video_id,
-                ':user_id'  => $lecturer->user_id
-            ]);
-
-            if (empty($perm_record)) {
-                $perm_record = new self();
-                $perm_record->user_id  = $lecturer->user_id;
-                $perm_record->video_id = $video_id;
-                $perm_record->perm     = $perm_type;
-                $perm_record->store();
-            }
-        }
     }
 }
