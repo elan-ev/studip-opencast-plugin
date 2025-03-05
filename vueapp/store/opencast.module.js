@@ -134,10 +134,6 @@ const actions = {
         return dispatch('simpleConfigListRead');
     },
 
-    setVisibility({ commit }, data) {
-        return ApiService.put('courses/' + data.cid + '/visibility/' + data.visibility);
-    },
-
     setUpload({ commit }, data) {
         return ApiService.put('courses/' + data.cid + '/upload/' + data.upload);
     },

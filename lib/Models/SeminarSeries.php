@@ -70,16 +70,4 @@ class SeminarSeries extends UPMap
 
         return $return;
     }
-
-    public static function getVisibilityForCourse($course_id, $offline = false)
-    {
-        $visibility = 'visible';
-        $series     = self::getSeries($course_id, $offline);
-
-        if ($series) {
-            $visibility = $series[0]['visibility'];
-        }
-
-        return $visibility;
-    }
 }

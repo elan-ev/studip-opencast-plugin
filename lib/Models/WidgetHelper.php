@@ -23,12 +23,15 @@ class WidgetHelper
     static function getUpcomingLivestreams()
     {
         global $perm, $user;
+
+        $plugin_id = \PluginManager::getInstance()->getPluginInfo('OpencastV3')['id'];
+
         $courses = [];
         if (!$perm->have_perm('admin') && !$perm->have_perm('root')) {
             $courses = Course::findBySQL(
                 'INNER JOIN seminar_user AS su USING(Seminar_id)
                     INNER JOIN oc_seminar_series AS oc_sem ON seminare.Seminar_id = oc_sem.seminar_id
-                    WHERE su.user_id = ? AND oc_sem.visibility = "visible" AND series_id IS NOT NULL',
+                    WHERE su.user_id = ? AND series_id IS NOT NULL',
                 [$user->id]
             );
         }
@@ -39,6 +42,12 @@ class WidgetHelper
 
         $upcoming_livestreams = [];
         foreach ($courses as $course) {
+            // Check if opencast tool is activated and visible
+            $opencast_tool = \ToolActivation::find([$course->id, $plugin_id]);
+            if (empty($opencast_tool) || $opencast_tool->metadata['visibility'] == 'tutor') {
+                continue;
+            }
+
             $livestreams = ScheduledRecordings::getScheduleRecordingList(null, $course->id, '', true);
 
             if (empty($livestreams)) {
