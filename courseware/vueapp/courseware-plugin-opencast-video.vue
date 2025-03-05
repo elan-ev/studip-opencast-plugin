@@ -169,22 +169,22 @@ export default {
 
         resetPaging() {
             this.paging = {
-                    currPage: 0,
-                    lastPage: 0,
-                    items: 0
-                };
+                currPage: 0,
+                lastPage: 0,
+                items: 0
+            };
         },
 
         performSearch({searchText, showCurrentCourse}) {
             this.searchText = searchText;
             this.showCurrentCourse = showCurrentCourse;
-            // this.resetPaging();
+            this.resetPaging();
             this.loadVideos();
         },
 
         performSort(sortObj) {
             this.sortObj = sortObj;
-            // this.resetPaging();
+            this.resetPaging();
             this.loadVideos();
         },
 
