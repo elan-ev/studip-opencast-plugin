@@ -40,6 +40,32 @@ class Playlists extends UPMap
     }
 
     /**
+     * Returns the list of playlists that are accessible by the user via the user's courses.
+     *
+     * @param string $user_id
+     *
+     * @return array the playlist ids
+     */
+    public static function getUserCoursesPlaylistIDs($user_id)
+    {
+        // get all courses this user has access to. Only courses with activated OC plugin are included
+        $courses = Helpers::getMyCourses($user_id);
+
+        if (empty($courses)) {
+            return [];
+        }
+
+        $stmt = \DBManager::get()->prepare($sql = 'SELECT playlist_id FROM oc_playlist_seminar
+            WHERE seminar_id IN (:courses)
+        ');
+
+        $stmt->bindValue(':courses', $courses, \StudipPDO::PARAM_ARRAY);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
      * Get the list of accessible course playlists, faceted by the passed filters
      *
      * @param String $course_id
@@ -103,11 +129,12 @@ class Playlists extends UPMap
             $user_id = $user->id;
         }
 
-        // Check if user has access to playlist
-        $sql    = " INNER JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
-        $where  = " WHERE ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read') ";
+        // Check if user has access to playlist via explicit perms or user's courses
+        $sql    = " LEFT JOIN oc_playlist_user_perms AS ocp ON (ocp.playlist_id = oc_playlist.id)";
+        $where  = " WHERE (oc_playlist.id IN (:playlist_ids) OR ocp.user_id = :user_id AND ocp.perm IN ('owner', 'write', 'read')) ";
         $params = [
             ':user_id' => $user_id,
+            ':playlist_ids' => self::getUserCoursesPlaylistIDs($user_id),
         ];
 
         $filtered_query = self::getFilteredPlaylistsQuery([
