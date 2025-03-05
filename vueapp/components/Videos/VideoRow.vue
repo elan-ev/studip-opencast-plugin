@@ -589,6 +589,13 @@ export default {
         },
 
         canShare() {
+            if (!this.simple_config_list.settings.OPENCAST_ALLOW_SHARING
+                && !this.simple_config_list.settings.OPENCAST_ALLOW_PUBLIC_SHARING
+                && !this.simple_config_list.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT
+            ) {
+                return false;
+            }
+
             return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 
