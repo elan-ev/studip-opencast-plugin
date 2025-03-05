@@ -129,6 +129,7 @@ class OpencastWorker extends CronJob
                                     }
                                 } else {
                                     $video->state = 'failed';
+                                    $video->version   = $event->archive_version;
                                     $video->is_livestream = 0;
                                 }
                             }
