@@ -109,7 +109,7 @@ const actions = {
             .then(({ data }) => {
                 commit('setVideos', data.videos);
 
-                if (data.count) {
+                if (data.count !== undefined) {
                     commit('setVideosCount', data.count);
                     commit('updatePaging', {
                         currPage: state.paging.currPage,

@@ -460,6 +460,9 @@ export default {
 
         doSearch(filters) {
             this.filters = filters;
+            if (this.$route.name === 'videosTrashed') {
+                this.filters.trashed = true;
+            }
             this.changePage(0);
             this.loadVideos();
         },

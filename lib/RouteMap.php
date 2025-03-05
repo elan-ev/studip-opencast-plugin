@@ -65,6 +65,9 @@ class RouteMap
         $group->put("/videos/{token}/shares", Routes\Video\VideoSharesUpdate::class);
         $group->post("/videos/{course_id}/copy", Routes\Video\VideoCopyToCourse::class);
 
+        // Courseware routes
+        $group->get("/courseware/videos", Routes\Courseware\CoursewareVideoList::class);
+
         // Playlist routes
         $group->get("/playlists", Routes\Playlist\PlaylistList::class);
         $group->post("/playlists", Routes\Playlist\PlaylistAdd::class);
