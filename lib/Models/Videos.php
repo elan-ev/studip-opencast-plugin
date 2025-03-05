@@ -558,8 +558,9 @@ class Videos extends UPMap
      *
      * @return string $perm the perm value
      */
-    public function getUserPerm($user_id = null)
+    private function getUserPerm($user_id = null)
     {
+        // Important: The order of checks from high to low is crucial to get the highest user permission
         global $user, $perm;
 
         if (!$user_id) {
@@ -570,27 +571,66 @@ class Videos extends UPMap
             return 'owner';
         }
 
-        // check if user has permission on this video due to course ownership
-        if ($this->haveCoursePerm('dozent', $user_id)) {
-            return 'owner';
-        }
+        // get explicit user perm
+        $uperm = VideosUserPerms::findOneBySQL('video_id = ? AND user_id = ?', [$this->id, $user_id]);
 
-        $ret_perm = false;
-
-        foreach ($this->perms as $uperm) {
-            if ($uperm->user_id == $user_id) {
-                $ret_perm = $uperm->perm;
+        // check first highest explicit permissions
+        if ($uperm) {
+            if ($uperm->perm == 'owner') {
+                return 'owner';
+            } elseif ($uperm->perm == 'write') {
+                return 'write';
             }
         }
 
-        if (!$ret_perm) {
-            // check if at least read perms are present due to course participation
-            if ($this->haveCoursePerm('user', $user_id)) {
+        // check if user has write permission on this video due to course ownership
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if ($this->haveCoursePerm($required_course_perm, $user_id)) {
+            return 'write';
+        }
+
+        // check if read perms are present due to course participation
+        if ($this->haveCoursePerm('user', $user_id)) {
+            return 'read';
+        }
+
+        // check remaining explicit permissions
+        if ($uperm) {
+            if ($uperm->perm == 'read') {
                 return 'read';
+            } elseif ($uperm->perm == 'share') {
+                return 'share';
             }
         }
 
-        return $ret_perm;
+        // user has no perms on this video
+        return false;
+    }
+
+    /**
+     * Check if current user has at least given permission on the video
+     *
+     * @param string $required_perm required permission: read, write, owner
+     * @return bool user has at least provided permission on the video
+     */
+    public function havePerm($required_perm, $user_id = null)
+    {
+        $uperm = $this->getUserPerm($user_id);
+
+        // Check if required perm is included in user perm
+        if ($required_perm == 'owner' && $uperm == 'owner') {
+            return true;
+        }
+
+        if ($required_perm == 'write' && in_array($uperm, ['write', 'owner'])) {
+            return true;
+        }
+
+        if ($required_perm == 'read' && in_array($uperm, ['read', 'write', 'owner'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

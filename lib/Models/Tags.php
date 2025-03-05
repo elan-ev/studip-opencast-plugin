@@ -75,7 +75,7 @@ class Tags extends \SimpleORMap
                 ' INNER JOIN oc_playlist_video AS opv ON (opv.video_id = vt.video_id AND opv.playlist_id = :playlist_id)';
         $params = [':playlist_id' => $playlist_id];
 
-        if (!(empty($cid) || $perm->have_perm('dozent'))) {
+        if (!(empty($cid) || $perm->have_studip_perm('dozent', $cid))) {
             $query .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)'.
                     ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"'.

@@ -356,7 +356,7 @@ export default {
         ]),
 
         showCheckbox() {
-            return this.selectable || (this.canUpload && this.event.perm == 'owner');
+            return this.selectable || (this.canUpload && (this.event.perm == 'owner' || this.event.perm == 'write'));
         },
 
         getImageSrc() {
@@ -438,7 +438,7 @@ export default {
             let menuItems = [];
 
             if (!this.event?.trashed) {
-                if (this.event.perm == 'owner') {
+                if (this.event.perm == 'owner' || this.event.perm == 'write') {
                     if (this.event?.state !== 'running') {
                         menuItems.push({
                             id: 1,
@@ -585,14 +585,11 @@ export default {
         },
 
         canEdit() {
-            if (this.currentUser.can_edit) {
-                return true;
-            }
-            return this.event?.perm && (this.event.perm == 'owner' || this.event.perm == 'write');
+            return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 
         canShare() {
-            return this.event?.perm === 'owner' || this.currentUser.can_edit;
+            return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 
         livestream() {
