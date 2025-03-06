@@ -3,6 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Errors\Error;
+use Opencast\Helpers\PlaylistMigration;
 use Opencast\Models\Tags;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiEventsClient;
@@ -1189,7 +1190,9 @@ class Videos extends UPMap
                     $pvideo->store();
 
                     // update playlist in opencast as well
-                    $playlist->addEntries([$video]);
+                    if (PlaylistMigration::isConverted()) {
+                        $playlist->addEntries([$video]);
+                    }
                 }
             }
         }
