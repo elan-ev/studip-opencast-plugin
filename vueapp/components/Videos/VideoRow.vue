@@ -125,6 +125,10 @@
             {{ event.presenters ?? '' }}
         </td>
 
+        <td v-if="showOwnerColumn" class="responsive-hidden">
+            {{ getOwners ?? '' }}
+        </td>
+
         <td class="oc--tooltips">
             <div data-tooltip class="tooltip" v-if="getInfoText">
                 <span class="tooltip-content" v-html="getInfoText"></span>
@@ -142,7 +146,9 @@
                 />
             </div>
 
-            <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
+            <div data-tooltip class="tooltip oc--tooltip-access" :class="{ 'responsive-show': showOwnerColumn }"
+                v-if="getAccessText && canEdit"
+            >
                 <span class="tooltip-content" v-html="getAccessText"></span>
                 <studip-icon
                     shape="group2"
@@ -201,6 +207,10 @@ export default {
             default: false
         },
         selectable: {
+            type: Boolean,
+            default: false
+        },
+        showOwnerColumn: {
             type: Boolean,
             default: false
         },
@@ -405,6 +415,10 @@ export default {
 
         isChecked() {
             return this.selectedVideos.indexOf(this.event.token) >= 0;
+        },
+
+        getOwners() {
+            return this.event.perms?.flatMap(perm => perm.perm === 'owner' ? [perm.fullname] : []).join(', ');
         },
 
         getAccessText() {

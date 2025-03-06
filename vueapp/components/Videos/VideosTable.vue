@@ -26,6 +26,7 @@
                 <col>
                 <col style="width: 180px" class="responsive-hidden">
                 <col style="width: 150px" class="responsive-hidden">
+                <col v-if="showOwnerColumn" style="width: 150px" class="responsive-hidden">
                 <col style="width: 18px">
                 <col v-if="showActions && !videoSortMode" style="width: 64px">
             </colgroup>
@@ -54,6 +55,9 @@
                         <a href="#" @click.prevent>
                             {{ $gettext('Vortragende(r)') }}
                         </a>
+                    </th>
+                    <th v-if="showOwnerColumn"  data-sort="false" class="responsive-hidden">
+                        {{ $gettext('Besitzer/-in') }}
                     </th>
                     <th></th>
                     <th v-if="showActions && !videoSortMode" class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
@@ -88,6 +92,7 @@
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
                         :selectable="selectable"
+                        :showOwnerColumn="showOwnerColumn"
                         :isCourse="isCourse"
                         :canUpload="canUpload"
                         :showActions="showActions"
@@ -305,11 +310,23 @@ export default {
         ]),
 
         numberOfColumns() {
-          return 7 - (this.showCheckbox ? 0 : 1) - (this.showActions ? 0 : 1);
+          return 5 + (this.showCheckbox ? 1 : 0) + (this.showActions ? 1 : 0) + (this.showOwnerColumn ? 1 : 0);
         },
 
         showCheckbox() {
             return this.selectable || this.canEdit || this.canUpload;
+        },
+
+        showOwnerColumn() {
+            if (this.simple_config_list?.settings === undefined || this.simple_config_list.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT) {
+                return false;
+            }
+
+            if (this.isCourse && this.playlist) {
+                return this.canEdit;
+            }
+
+            return true;
         },
 
         isCourse() {
