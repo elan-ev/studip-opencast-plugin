@@ -66,9 +66,10 @@ class OpencastSyncAcls extends CronJob
 
             do {
                 $paged_events = $api_client->getAll([
-                    'limit' => $limit,
-                    'offset' => $offset,
-                    'sort' => 'date:DESC'
+                    'limit'   => $limit,
+                    'offset'  => $offset,
+                    'sort'    => 'date:DESC',
+                    'withacl' => 'true'
                 ]);
                 $oc_events = array_merge($oc_events, $paged_events);
 
@@ -86,7 +87,7 @@ class OpencastSyncAcls extends CronJob
                         continue;
                     }
 
-                    Videos::checkEventACL(null, null, $video);
+                    Videos::checkEventACL(null, $event, $video);
                 }
             }
         }
