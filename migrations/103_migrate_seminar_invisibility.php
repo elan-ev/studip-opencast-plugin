@@ -12,7 +12,7 @@ class MigrateSeminarInvisibility extends Migration
 
         $plugin_id = $db->query("SELECT pluginid FROM plugins WHERE pluginclassname = 'OpencastV3'")->fetchColumn();
 
-        $invisible_courses = $db->query("SELECT DISTINCT seminar_id FROM `oc_seminar_series` 
+        $invisible_courses = $db->query("SELECT DISTINCT seminar_id FROM `oc_seminar_series`
             WHERE visibility = 'invisible'")->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($invisible_courses as $course_id) {
@@ -25,6 +25,8 @@ class MigrateSeminarInvisibility extends Migration
         }
 
         $db->exec("ALTER TABLE `oc_seminar_series` DROP COLUMN `visibility`");
+
+        SimpleORMap::expireTableScheme();
     }
 
     public function down()
@@ -48,5 +50,7 @@ class MigrateSeminarInvisibility extends Migration
                 ':seminar_id' => $tool->range_id,
             ]);
         }
+
+        SimpleORMap::expireTableScheme();
     }
 }

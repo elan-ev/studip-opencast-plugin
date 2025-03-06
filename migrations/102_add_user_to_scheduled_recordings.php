@@ -13,6 +13,8 @@ class AddUserToScheduledRecordings extends Migration
 
         $db->exec('ALTER TABLE `oc_scheduled_recordings`
             ADD COLUMN `user_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NULL AFTER `series_id`');
+
+        SimpleORMap::expireTableScheme();
     }
 
     public function down()
@@ -20,5 +22,7 @@ class AddUserToScheduledRecordings extends Migration
         $db = DBManager::get();
 
         $db->exec('ALTER TABLE `oc_scheduled_recordings` DROP COLUMN `user_id`');
+
+        SimpleORMap::expireTableScheme();
     }
 }
