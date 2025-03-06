@@ -38,9 +38,11 @@
         </div>
         <div class="sidebar-widget-content">
             <ul class="widget-list oc--sidebar-links widget-links">
-                <li @click="$emit('uploadVideo')" v-if="fragment == 'videos' && currentUserSeries && canShowUpload">
-                    <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
-                    {{ $gettext('Medien hochladen') }}
+                <li v-if="fragment == 'videos' && currentUserSeries && canShowUpload">
+                    <a href="#" @click.prevent="$emit('uploadVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
+                        {{ $gettext('Medien hochladen') }}
+                    </a>
                 </li>
                 <li v-if="fragment == 'videos' && currentUserSeries && canShowStudio">
                     <a :href="recordingLink" target="_blank">
@@ -49,39 +51,51 @@
                     </a>
                 </li>
 
-                <li @click="openPlaylistAddVideosDialog" v-if="fragment == 'playlist'">
-                    <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                    {{ $gettext('Videos hinzufügen') }}
+                <li v-if="fragment == 'playlist'">
+                    <a href="#" @click.prevent="openPlaylistAddVideosDialog">
+                        <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                        {{ $gettext('Videos hinzufügen') }}
+                    </a>
                 </li>
 
-                <li @click="$emit('allowDownloadForPlaylist')"
-                    v-if="fragment == 'playlist' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                    {{ $gettext('Mediendownloads erlauben') }}
+                <li v-if="fragment == 'playlist' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
+                    <a href="#" @click.prevent="$emit('allowDownloadForPlaylist')">
+                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        {{ $gettext('Mediendownloads erlauben') }}
+                    </a>
                 </li>
 
-                <li @click="$emit('disallowDownloadForPlaylist')"
-                    v-if="fragment == 'playlist' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
-                    <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
-                   {{ $gettext('Mediendownloads verbieten') }}
+                <li v-if="fragment == 'playlist' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
+                    <a href="#" @click.prevent="$emit('disallowDownloadForPlaylist')">
+                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        {{ $gettext('Mediendownloads verbieten') }}
+                    </a>
                 </li>
 
-                <li @click="$emit('sortVideo')" v-if="fragment == 'playlist' && !videoSortMode">
-                    <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
-                    {{ $gettext('Videos sortieren') }}
+                <li v-if="fragment == 'playlist' && !videoSortMode">
+                    <a href="#" @click.prevent="$emit('sortVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                        {{ $gettext('Videos sortieren') }}
+                    </a>
                 </li>
-                <li @click="$emit('saveSortVideo')" v-if="fragment == 'playlist' && videoSortMode">
-                    <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
-                    {{ $gettext('Sortierung speichern') }}
+                <li v-if="fragment == 'playlist' && videoSortMode">
+                    <a href="#" @click.prevent="$emit('saveSortVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                        {{ $gettext('Sortierung speichern') }}
+                    </a>
                 </li>
-                <li @click="$emit('cancelSortVideo')" v-if="fragment == 'playlist' && videoSortMode">
-                    <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
-                    {{ $gettext('Sortierung abbrechen') }}
+                <li v-if="fragment == 'playlist' && videoSortMode">
+                    <a href="#" @click.prevent="$emit('cancelSortVideo')">
+                        <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                        {{ $gettext('Sortierung abbrechen') }}
+                    </a>
                 </li>
 
-                <li @click="createPlaylist" v-if="fragment == 'playlists'">
-                    <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
-                    {{ $gettext('Wiedergabeliste anlegen') }}
+                <li v-if="fragment == 'playlists'">
+                    <a href="#" @click.prevent="createPlaylist">
+                        <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                        {{ $gettext('Wiedergabeliste anlegen') }}
+                    </a>
                 </li>
             </ul>
         </div>

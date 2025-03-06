@@ -17,7 +17,7 @@
 
         <td class="oc--playercontainer">
             <template v-if="isLivestream">
-                <a :disabled="!livestreamInfo.isLive" @click="redirectAction(`/livestream/` + event.token)" target="_blank">
+                <a href="#" :disabled="!livestreamInfo.isLive" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
                     <span class="oc--previewimage"
                         :title="livestreamInfo.text"
                     >
@@ -40,7 +40,7 @@
             </template>
             <template v-else>
                 <a v-if="event.publication && event.preview && (event.available && event.available != '0') && !isProcessing"
-                   @click="redirectAction(`/video/` + event.token)" target="_blank"
+                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank"
                 >
                     <span class="oc--previewimage">
                         <img class="oc--previewimage"
@@ -97,11 +97,11 @@
         <td class="oc--metadata-title">
             <div class="oc--title-container">
                 <a v-if="isLivestream && livestreamInfo.isLive"
-                   @click="redirectAction(`/livestream/` + event.token)" target="_blank">
+                   href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
                 <a v-else-if="event.publication && event.preview && event.available"
-                   @click="redirectAction(`/video/` + event.token)" target="_blank">
+                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
                 <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')">
@@ -142,14 +142,15 @@
                 />
             </div>
 
-            <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
-                <span class="tooltip-content" v-html="getAccessText"></span>
-                <studip-icon
-                    shape="group2"
-                    role="active"
-                    :size="18"
-                    @click="performAction('VideoAccess')"
-                />
+            <div v-if="getAccessText && canEdit">
+                <a href="#" data-tooltip class="tooltip" @click.prevent="performAction('VideoAccess')">
+                    <span class="tooltip-content" v-html="getAccessText"></span>
+                    <studip-icon
+                        shape="group2"
+                        role="active"
+                        :size="18"
+                    />
+                </a>
             </div>
         </td>
 
