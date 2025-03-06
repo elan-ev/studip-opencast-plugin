@@ -821,7 +821,7 @@ class Videos extends UPMap
     {
         $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
 
-        $results = $video->updateAcl();
+        $results = $video->updateAcl(null, json_decode(json_encode($episode->acl), true));
 
         if ($results['republish'] == true) {
             $workflow_client->republish($video->episode);
@@ -840,10 +840,12 @@ class Videos extends UPMap
      *     'update'    => boolean
      *  ]
      */
-    public function updateAcl($new_vis = null)
+    public function updateAcl($new_vis = null, $current_acl = null)
     {
         $api_client  = ApiEventsClient::getInstance($this->config_id);
-        $current_acl = $api_client->getAcl($this->episode);
+        if (empty($current_acl)) {
+            $current_acl = $api_client->getAcl($this->episode);
+        }
 
         // prevent updating acl if something went wrong
         if (!is_array($current_acl)) {
