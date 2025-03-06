@@ -32,13 +32,14 @@ class Workflow extends \SimpleORMap
 
             foreach ($wf_defs as $wf_def) {
                 $found = false;
-                foreach ($db_workflows as $db_workflow) {
+                foreach ($db_workflows as $key => $db_workflow) {
                     if ($db_workflow['name'] === $wf_def['id'] && $db_workflow['tag'] === $wf_def['tag']) {
                         $entry = self::findOneBySql('config_id = ? AND name = ? AND tag = ?', [$config_id, $wf_def['id'], $wf_def['tag']]);
                         $entry->setValue('displayname', $wf_def['title']);
                         $entry->store();
 
                         $found = true;
+                        unset($db_workflows[$key]);
                         break;
                     }
                 }
@@ -59,6 +60,11 @@ class Workflow extends \SimpleORMap
                 }
             }
         } catch (\Throwable $th) {
+        }
+
+        // the remaining entries or workflow - tag combinations that are not there anymore and need to be deleted from Stud.IP
+        foreach ($db_workflows as $db_workflow) {
+            $db_workflow->delete();
         }
     }
 
