@@ -184,12 +184,20 @@ class NewSchemeAndCronjobs extends Migration
           );
         ";
 
-        $sql[] = "ALTER TABLE `oc_tos`
-            DROP `seminar_id`,
-            ADD  `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-            DROP PRIMARY KEY,
-            ADD PRIMARY KEY (`user_id`);
-        ";
+        // Remove duplicates, keeping only one entry per user_id
+        $sql[] = "ALTER TABLE oc_tos
+            RENAME TO oc_tos_old";
+
+        $sql[] = "CREATE TABLE `oc_tos` (
+            `user_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`user_id`)
+        )";
+
+        $sql[] = "INSERT INTO oc_tos (user_id) SELECT user_id FROM oc_tos_old GROUP BY user_id";
+
+        $sql[] = "DROP TABLE oc_tos_old";
+
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_user_perms` (
             `video_id` int,
