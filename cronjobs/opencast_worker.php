@@ -44,7 +44,7 @@ class OpencastWorker extends CronJob
 
             // always make sure the video token is set
             if (!$video->token) {
-                $video->token = bin2hex(random_bytes(8));
+                $video->token = bin2hex(random_bytes(6));
                 $video->store();
             }
 
