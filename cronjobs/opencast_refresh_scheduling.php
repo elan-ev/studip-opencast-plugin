@@ -68,7 +68,7 @@ class OpencastRefreshScheduling extends CronJob
         echo 'In Opencast geplante Events: ' . $oc_se_count . "\n";
 
         // 2. Get all scheduled recordings stored in StudIP.
-        $sop_scheduled_events = ScheduledRecordings::findBySql(1);
+        $sop_scheduled_events = ScheduledRecordings::findBySql('start >= :start', [':start' => time()]);
         echo 'In SOP geplante Events: ' . sizeof($sop_scheduled_events) . "\n";
 
         $time = time();
