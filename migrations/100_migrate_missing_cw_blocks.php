@@ -11,7 +11,9 @@ class MigrateMissingCwBlocks extends Migration
         $db = DBManager::get();
 
         // add tokens to all videos, otherwise this migration will not work
-        $db->exec('UPDATE oc_video SET token = LOWER(HEX(RANDOM_BYTES(6)))
+        // Mysql 5.6+ has RANDOM_BYTES() available, but to be compatible with older versions
+        // we use another approach
+        $db->exec('UPDATE oc_video SET token = LOWER(SUBSTRING(MD5(RAND()), 1, 12))
             WHERE token IS NULL');
 
         // Database statements
