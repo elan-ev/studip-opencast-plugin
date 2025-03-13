@@ -24,6 +24,7 @@ class OpencastWorker extends CronJob
 
     public function execute($last_result, $parameters = array())
     {
+        return;
         $start_time = time();
         // get next task and run it
         // if 5 minutes have already passed, stop executing tasks and finish the cronjob

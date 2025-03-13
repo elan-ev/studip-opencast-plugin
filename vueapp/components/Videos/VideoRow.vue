@@ -39,7 +39,7 @@
                 </a>
             </template>
             <template v-else>
-                <a v-if="event.publication && event.preview && (event.available && event.available != '0') && !isProcessing"
+                <a v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
                    href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank"
                 >
                     <span class="oc--previewimage">

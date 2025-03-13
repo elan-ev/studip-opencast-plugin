@@ -9,7 +9,7 @@
         tabindex="0"
     >
         <td class="oc--playercontainer">
-            <span v-if="event.publication && event.preview && (event.available && event.available != '0' && !isProcessing)">
+            <span v-if="event.publication && (event.available && event.available != '0' && !isProcessing)">
                 <span class="oc--previewimage">
                     <img class="oc--previewimage"
                          :src="getImageSrc"

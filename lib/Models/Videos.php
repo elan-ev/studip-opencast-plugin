@@ -954,8 +954,12 @@ class Videos extends UPMap
             $livestream_link       = '';
 
             foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
-                    $preview = $attachment->url;
+                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview"
+                    ||  $attachment->type === "presenter/player+preview")
+                {
+                    if (empty($preview)) {
+                        $preview = $attachment->url;
+                    }
                 }
                 if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
                     $presentation_preview = $attachment->url;

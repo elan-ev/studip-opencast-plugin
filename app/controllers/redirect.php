@@ -161,12 +161,12 @@ class RedirectController extends Opencast\Controller
 
             case 'share':
             case 'video':
-                $preview = $video->preview ? json_decode($video->preview, true) : null;
-                if (!empty($preview)) {
+                // $preview = $video->preview ? json_decode($video->preview, true) : null;
+                // if (!empty($preview)) {
                     $video->views += 1;
                     $video->store();
                     $custom_tool = "/play/{$video->episode}";
-                }
+                // }
                 break;
             case 'livestream':
                 if (!empty($video->livestream_link)) {

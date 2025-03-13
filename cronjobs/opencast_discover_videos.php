@@ -75,7 +75,7 @@ class OpencastDiscoverVideos extends CronJob
             $limit  = 100;
 
             do {
-                $paged_events = $api_client->getAll(['limit' => $limit, 'offset' => $offset]);
+                $paged_events = $api_client->getAll(['limit' => $limit, 'offset' => $offset, 'withpublications' => 'true']);
                 $oc_events = array_merge($oc_events, $paged_events);
 
                 $offset += $limit;
@@ -99,17 +99,7 @@ class OpencastDiscoverVideos extends CronJob
                             echo 'schedule video for re-inspection, archive versions differ: ' . $video->id . ' (' . $video->title . ') '
                                 . ' Local version: '. $local_events[$event->identifier] . ', OC version: '. $event->archive_version . "\n";
 
-                            // create task to update permissions and everything else
-                            $task = new VideoSync;
-
-                            $task->setData([
-                                'config_id' => $config['id'],
-                                'video_id'  => $video->id,
-                                'state'     => 'scheduled',
-                                'scheduled' => date('Y-m-d H:i:s')
-                            ]);
-
-                            $task->store();
+                            self::parseEvent($event, $video);
                         }
                     }
                 } else if ($event->status != 'EVENTS.EVENTS.STATUS.SCHEDULED') {
@@ -140,16 +130,11 @@ class OpencastDiscoverVideos extends CronJob
                 ]);
                 $video->store();
 
-                // create task to update permissions and everything else
-                $task = new VideoSync;
-
-                $task->setData([
-                    'video_id'  => $video->id,
-                    'state'     => 'scheduled',
-                    'scheduled' => date('Y-m-d H:i:s')
-                ]);
-
-                $task->store();
+                if (isset($events[$new_event_id])) {
+                    self::parseEvent($events[$new_event_id], $video);
+                } else {
+                    echo 'Could not found video in Opencast (new video): '. $video->episode ."\n";
+                }
             }
 
             // Check if local videos are not longer available in OC
@@ -180,46 +165,105 @@ class OpencastDiscoverVideos extends CronJob
         );
         foreach ($videos as $video) {
             echo 'schedule video for re-inspection: ' . $video->id . ' (' . $video->title . ")\n";
-            // create task to update permissions and everything else
-            $task = new VideoSync;
 
-            $task->setData([
-                'video_id'  => $video->id,
-                'state'     => 'scheduled',
-                'scheduled' => date('Y-m-d H:i:s')
-            ]);
-
-            $task->store();
+            if (isset($events[$video->episode])) {
+                self::parseEvent($events[$video->episode], $video);
+            } else {
+                echo 'Could not found video in Opencast: '. $video->episode ."\n";
+            }
         }
 
         // search for all inaccessible videos in course playlists with no scheduled task and add them for reinspection
-        $videos = PlaylistVideos::findBySql(
-            "LEFT JOIN oc_video_sync AS ovs ON (ovs.video_id = oc_playlist_video.video_id AND ovs.type = 'playlistvideo')
-            WHERE ovs.video_id IS NULL AND oc_playlist_video.available = 0"
-        );
+        $videos = PlaylistVideos::findBySql('oc_playlist_video.available = 0');
+
         foreach ($videos as $video) {
             echo 'schedule playlist video for re-inspection: ' . $video->video_id . ' ('. $video->video->title .', Playlist ID: ' . $video->playlist_id . ")\n";
-            // create task to update permissions and everything else
-            $task = new VideoSync;
-
-            $task->setData([
-                'video_id'  => $video->video_id,
-                'state'     => 'scheduled',
-                'type'      => 'playlistvideo',
-                'scheduled' => date('Y-m-d H:i:s'),
-                'data'   => json_encode([
-                    'playlist_id' => $video->playlist_id,
-                    'version'     => $video->video->version
-                ])
-            ]);
-
-            $task->store();
+            if (isset($events[$video->video->episode])) {
+                self::parseEvent($events[$video->video->episode], $video->video);
+                $video->available = 1;
+                $video->store();
+            } else {
+                echo 'Could not found video in Opencast (playlist video): '. $video->video->episode ."\n";
+            }
         }
 
         // fix any broken playlists visibility
         DBManager::get()->exec("UPDATE oc_playlist_seminar SET visibility = 'visible'
             WHERE visibility IS NULL or visibility = ''");
 
+    }
+
+    private static function parseEvent($event, $video)
+    {
+        if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
+            if ($video->state != 'failed') {
+                $video->state = 'failed';
+            }
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && $event->has_previews == true
+        && count($event->publication_status) == 1 && $event->publication_status[0] == "internal") {
+            if ($video->state != 'cutting') {
+                $video->state = 'cutting';
+                NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+            }
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.SCHEDULED" || $event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is scheduled or live
+            $video->state = 'running';
+            $video->is_livestream = 1;
+            if (!empty($event->publications)) {
+                $video->publication = json_encode($event->publications);
+            }
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.INGESTING" ||
+            $event->status === "EVENTS.EVENTS.STATUS.PENDING") {
+            $video->state = 'running';
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && !empty($event->publications)) {
+            $video->publication = json_encode($event->publications);
+            $video->state = null;
+            $video->available = 1;
+            $video->version   = $event->archive_version;
+            $video->is_livestream = 0;
+
+            // TODO: only notify for successful publication events. Currently no easily possible,
+            // but an Opencast webhook will be facilitated in the near future.
+            // NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
+
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && empty($event->publications)) {
+            if ($is_livestream && !empty($event->scheduling)) {
+                $start = strtotime($event->scheduling->start);
+                $end = strtotime($event->scheduling->end);
+                $livestream_status = ScheduleHelper::getLivestreamTimeStatus($start, $end);
+                if ($livestream_status == ScheduleHelper::LIVESTREAM_STATUS_FINISHED) { // Livestream is finished.
+                    // getting video out of livestream
+                    $video->is_livestream = 0;
+                    // set the state as running, so that it will be picked up at the next run!
+                    $video->state = 'running';
+                    if (!empty($video->publication)) {
+                        $video->publication = null;
+                    }
+                }
+            } else {
+                $video->state = 'failed';
+                $video->version   = $event->archive_version;
+                $video->is_livestream = 0;
+            }
+        }
+
+        if (!$video->token) {
+            $video->token = bin2hex(random_bytes(6));
+        }
+
+        $video->title        = $event->title;
+        $video->description  = $event->description;
+        $video->duration     = $event->duration;
+
+        $video->created      = date('Y-m-d H:i:s', strtotime($event->created));
+        $video->presenters   = implode(', ', (array)$event->presenter);
+        $video->contributors = implode(', ', (array)$event->contributor);
+
+        echo 'storing video '. $video->id. " to database... \n";
+        $video->store();
+
+        // send out Notifications for video discovery plugins to react
+        NotificationCenter::postNotification('OpencastCourseSync', $event, $video);
+        NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
     }
 
 }
