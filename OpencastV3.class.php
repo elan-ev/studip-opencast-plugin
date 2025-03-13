@@ -281,7 +281,13 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
      */
     public function isActivatableForContext(Range $context)
     {
-        if ($context->getSemType()->getClass()['studygroup_mode']) {
+        // This plugin does not work in institutes
+        if (!$context instanceof Course) {
+            return false;
+        }
+
+        if ($context->getSemType()->getClass()['studygroup_mode'])
+        {
             if (\Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
                 return true;
             }
