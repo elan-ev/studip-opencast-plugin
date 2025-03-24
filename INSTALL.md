@@ -1,3 +1,19 @@
+# Table of Contents
+
+1. [Installation of Stud.IP Opencast Plugin](#installation-of-studip-opencast-plugin)
+   1. [Requirements](#requirements)
+   2. [Configure Opencast](#configure-opencast)
+   3. [Opencast - CORS](#opencast---cors)
+   4. [Opencast Workflows](#opencast-workflows)
+   5. [Credentials for Opencast](#credentials-for-opencast)
+   6. [Configure Stud.IP](#configure-studip)
+   7. [Caveats](#caveats)
+
+2. [Migrating from older versions of the plugin](#migrating-from-older-versions-of-the-plugin)
+   1. [Steps to follow for an upgrade](#steps-to-follow-for-an-upgrade)
+
+3. [Feedback and Help](#feedback-and-help)
+
 # Installation of Stud.IP Opencast Plugin
 
 The Opencast plugin is using LTI and the Stud.IP User Provider to present the videos and enforce permissions. You need to configure your Opencast system to make this plugin work.
@@ -155,6 +171,14 @@ Another thing to note is, that the URL in the user provider is changed! See the 
 
 If you are migrating from version 2.x of this plugin, you can use `tools/pre_migrate_acls.php` in the weeks before installing the new version to shift workload on opencast before the installation. The Cronjobs should take care of anything missing nonetheless, so this step is useful but not absolutely necessary. Just keep in mind, that ALL videos in your Opencast system will have to run through a `republish-metadata`-workflow in order for all plugin functions to work correctly!
 
+## Steps to follow for an upgrade:
+- Deactivate the plugin version 2
+- Install or register existing plugin V3 -> Migrations are run
+- Deinstall the old plugin if has schema version 0
+- Check the "Opencast settings" page, add the token from the Stud.IP User provider
+- If you are using Opencast 16 or above, migrate the playlists to Opencast by clicking the link in the messagebox on the settings page
+- In the Opencast server settings configure the correct workflows
+- Enable the cronjobs and at least run every cronjob once, starting with the "Discover new videos" one
 
 # Feedback and Help
 
