@@ -222,12 +222,9 @@ class RedirectController extends Opencast\Controller
         }
 
         // get preview image
-        $previews = json_decode($video->preview, true);
-        $preview = $previews['player'] ?: $previews['search'];
-
         $api_events = ApiEventsClient::getInstance($video->config_id);
 
-        $image = $preview ?
+        $image = $video->preview ?
             : URLHelper::getURL($this->plugin->getPluginUrl() . '/assets/images/default-preview.png');
 
         $response = $api_events->fileRequest($image);
