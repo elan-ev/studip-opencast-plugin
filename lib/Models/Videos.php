@@ -930,7 +930,7 @@ class Videos extends UPMap
     }
 
     /**
-     * Extract data from the OC event and adds it to the videos db entry
+     * Extract data from the OC event and add it to the videos db entry
      *
      * @Notification OpencastVideoSync
      *
