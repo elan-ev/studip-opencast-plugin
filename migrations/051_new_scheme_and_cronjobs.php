@@ -22,7 +22,9 @@ class NewSchemeAndCronjobs extends Migration
         $results = $db->query("SELECT * FROM config_values WHERE field = 'OPENCAST_TOS'")->fetch();
 
         if (json_decode($results['value']) == false) {
-            $lang = array_pop(array_keys($GLOBALS['CONTENT_LANGUAGES']));
+            $languages = array_keys($GLOBALS['CONTENT_LANGUAGES']);
+            $lang = reset($languages);
+
             $new_value = json_encode([
                 $lang => $results['value']
             ]);
