@@ -22,7 +22,7 @@ class NewSchemeAndCronjobs extends Migration
         $results = $db->query("SELECT * FROM config_values WHERE field = 'OPENCAST_TOS'")->fetch();
 
         if (json_decode($results['value']) == false) {
-            $lang = reset(array_keys($GLOBALS['CONTENT_LANGUAGES']));
+            $lang = array_pop(array_keys($GLOBALS['CONTENT_LANGUAGES']));
             $new_value = json_encode([
                 $lang => $results['value']
             ]);
@@ -93,20 +93,6 @@ class NewSchemeAndCronjobs extends Migration
             KEY `U.1` (`token`),
             KEY `U.2` (`config_id`, `episode`)
         );
-        ";
-
-        $sql[] = "CREATE TABLE IF NOT EXISTS `oc_video_sync` (
-            `id` int NOT NULL AUTO_INCREMENT,
-            `video_id` int,
-            `state` enum('running','scheduled','failed') CHARACTER SET latin1 COLLATE latin1_bin,
-            `scheduled` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP,
-            `trys` int,
-            `chdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-            `mkdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-            PRIMARY KEY (`id`),
-            KEY `U.1` (`video_id`),
-            FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-          );
         ";
 
         $sql[] = "CREATE TABLE IF NOT EXISTS `oc_playlist_video` (
@@ -286,19 +272,6 @@ class NewSchemeAndCronjobs extends Migration
         if ($task_id) {
             $scheduler->cancelByTask($task_id);
             $scheduler->schedulePeriodic($task_id, -10);  // negative value means "every x minutes"
-            CronjobSchedule::findByTask_id($task_id)[0]->activate();
-        }
-
-
-        // add worker cronjob
-        if (!$task_id = CronjobTask::findByFilename(self::BASE_DIR . 'opencast_worker.php')[0]->task_id) {
-            $task_id =  $scheduler->registerTask(self::BASE_DIR . 'opencast_worker.php', true);
-        }
-
-        // add the new cronjobs
-        if ($task_id) {
-            $scheduler->cancelByTask($task_id);
-            $scheduler->schedulePeriodic($task_id, -5);  // negative value means "every x minutes"
             CronjobSchedule::findByTask_id($task_id)[0]->activate();
         }
 

@@ -37,7 +37,7 @@ class OptimizeDB extends Migration
         $db->exec("ALTER TABLE `oc_playlist`
             MODIFY `token` varchar(8) CHARACTER SET latin1 COLLATE latin1_bin UNIQUE,
             MODIFY `visibility` enum ('internal', 'free', 'public') CHARACTER SET latin1 COLLATE latin1_bin,
-            MODIFY `sort_order` varchar(30) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT 'created_desc' 
+            MODIFY `sort_order` varchar(30) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL DEFAULT 'created_desc'
         ");
 
         $db->exec("ALTER TABLE `oc_cw_block_copy_mapping`
@@ -113,10 +113,6 @@ class OptimizeDB extends Migration
         $db->exec("ALTER TABLE `oc_video_shares`
             MODIFY `token` varchar(16) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
             MODIFY `uuid` varchar(32) CHARACTER SET latin1 COLLATE latin1_bin
-        ");
-
-        $db->exec("ALTER TABLE `oc_video_sync`
-            MODIFY `state` enum ('running', 'scheduled', 'failed') CHARACTER SET latin1 COLLATE latin1_bin
         ");
 
         $db->exec("ALTER TABLE `oc_video_user_perms`

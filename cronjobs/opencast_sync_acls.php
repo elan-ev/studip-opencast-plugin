@@ -3,11 +3,8 @@ require_once __DIR__.'/../bootstrap.php';
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
-use Opencast\Models\VideoSync;
 use Opencast\Models\Videos;
-use Opencast\Models\ScheduleHelper;
 use Opencast\Models\REST\ApiEventsClient;
-use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Models\REST\Config as OCConfig;
 
 class OpencastSyncAcls extends CronJob

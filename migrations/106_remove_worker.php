@@ -15,8 +15,12 @@ class RemoveWorker extends Migration
 
         // remove worker cronjob
         if ($task_id = CronjobTask::findByFilename($cronjob_file)[0]->task_id) {
-            $scheduler->cancelByTask($task_id);
+            $scheduler->unregisterTask($task_id);
         }
+
+        $db = DBManager::get();
+
+        $db->exec('DROP TABLE IF EXISTS `oc_video_sync`');
     }
 
     public function down()

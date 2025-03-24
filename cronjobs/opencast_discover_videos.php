@@ -6,7 +6,6 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Opencast\Models\Config;
 use Opencast\Models\REST\Config as OCConfig;
 use Opencast\Models\Videos;
-use Opencast\Models\VideoSync;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
