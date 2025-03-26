@@ -24,7 +24,6 @@ class VideoCest
     private $playlist_token;
 
     const CRONJOB_DISCOVER = 'Opencast: Katalogisiert neue Videos aus Opencast.';
-    const CRONJOB_QUEUE = 'Opencast: Arbeitet vorgemerkte Aufgaben ab, wie Aktualisierung der Metadaten, ACLs (Sichtbarkeit), etc.';
 
     public function _before(ApiTester $I)
     {
@@ -83,7 +82,6 @@ class VideoCest
 
         // Start cronjobs
         $I->runCronjob(self::CRONJOB_DISCOVER);
-        $I->runCronjob(self::CRONJOB_QUEUE);
 
         $I->seeVideoIsProcessed($this->video['identifier']);
     }
@@ -153,7 +151,7 @@ class VideoCest
 
         // Start cronjobs
         sleep(30);
-        $I->runCronjob(self::CRONJOB_QUEUE);
+        $I->runCronjob(self::CRONJOB_DISCOVER);
 
         // Check if lecturer of course has instructor role
         $response = $I->sendGetAsJson('/opencast/user/' . $this->dozent_name, ['token' => $this->api_token]);
@@ -224,7 +222,7 @@ class VideoCest
 
         // Start cronjobs
         sleep(30);
-        $I->runCronjob(self::CRONJOB_QUEUE);
+        $I->runCronjob(self::CRONJOB_DISCOVER);
 
         // Check ACLs in Opencast
 

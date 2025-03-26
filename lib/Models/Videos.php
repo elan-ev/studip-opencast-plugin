@@ -930,7 +930,7 @@ class Videos extends UPMap
     }
 
     /**
-     * Extract data from the OC event and adds it to the videos db entry
+     * Extract data from the OC event and add it to the videos db entry
      *
      * @Notification OpencastVideoSync
      *
@@ -943,7 +943,6 @@ class Videos extends UPMap
     public static function parseEvent($eventType, $episode, $video)
     {
         if (!empty($episode->publications[0]->attachments)) {
-            $presentation_preview  = false;
             $preview               = false;
             $presenter_download    = [];
             $presentation_download = [];
@@ -953,13 +952,22 @@ class Videos extends UPMap
             $track_link            = '';
             $livestream_link       = '';
 
-            foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                if ($attachment->flavor === "presenter/search+preview" || $attachment->type === "presenter/search+preview") {
-                    $preview = $attachment->url;
+            $possible_previews = [
+                'presentation/search+preview',
+                'presentation/player+preview',
+                'presenter/search+preview',
+                'presenter/player+preview',
+            ];
+
+            foreach ($possible_previews as $preview_type) {
+                foreach ((array) $episode->publications[0]->attachments as $attachment) {
+                    if (!empty($attachment->flavor) && $attachment->flavor === $preview_type) {
+                        $preview = $attachment->url;
+                        break;
+                    }
                 }
-                if ($attachment->flavor === "presentation/player+preview" || $attachment->type === "presentation/player+preview") {
-                    $presentation_preview = $attachment->url;
-                }
+
+                if (!empty($preview)) break;
             }
 
             foreach ($episode->publications[0]->media as $track) {
@@ -1047,11 +1055,7 @@ class Videos extends UPMap
             $video->presenters   = implode(', ', (array)$episode->presenter);
             $video->contributors = implode(', ', (array)$episode->contributor);
 
-            $video->preview = json_encode([
-                'search' => $preview,
-                'player' => $presentation_preview,
-                'has_previews' => $episode->has_previews ?: false
-            ]);
+            $video->preview = $preview;
 
             $video->publication = json_encode([
                 'downloads' => [

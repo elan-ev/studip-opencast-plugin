@@ -21,7 +21,6 @@ use Opencast\Models\PlaylistSeminars;
 use Opencast\Models\Videos;
 use Opencast\Models\Helpers;
 use Opencast\Models\PlaylistVideos;
-use Opencast\Models\VideoSync;
 use Opencast\Models\PlaylistSeminarVideos;
 
 class ScheduleHelper
@@ -1190,19 +1189,6 @@ class ScheduleHelper
                     $psv->setValue('visible_timestamp', date('Y-m-d H:i:s'));
                     $psv->store();
                 }
-            }
-
-            // we put a worker on this video to make sure everything goes as usual.
-            if (empty(VideoSync::findByVideo_id($video->id))) {
-                $task = new VideoSync;
-
-                $task->setData([
-                    'video_id'  => $video->id,
-                    'state'     => 'scheduled',
-                    'scheduled' => date('Y-m-d H:i:s')
-                ]);
-
-                $task->store();
             }
         }
     }

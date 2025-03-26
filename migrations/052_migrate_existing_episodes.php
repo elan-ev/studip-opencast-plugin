@@ -3,7 +3,6 @@
 require_once(__DIR__ . '/../bootstrap_migrations.php');
 
 use Opencast\Models\Videos;
-use Opencast\Models\VideoSync;
 
 class MigrateExistingEpisodes extends Migration
 {
@@ -46,17 +45,6 @@ class MigrateExistingEpisodes extends Migration
                                                                                                         // Otherwise we keep it as 'internal', because seminar visibility is handled in the second migration step
                 ]);
                 $video->store();
-
-                // create task to update permissions and everything else
-                $task = new VideoSync;
-
-                $task->setData([
-                    'video_id'  => $video->id,
-                    'state'     => 'scheduled',
-                    'scheduled' => date('Y-m-d H:i:s')
-                ]);
-
-                $task->store();
             }
         }
 
