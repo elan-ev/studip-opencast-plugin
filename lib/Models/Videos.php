@@ -961,7 +961,7 @@ class Videos extends UPMap
 
             foreach ($possible_previews as $preview_type) {
                 foreach ((array) $episode->publications[0]->attachments as $attachment) {
-                    if (!empty($attachment->flavor) &&$attachment->flavor === $preview_type) {
+                    if (!empty($attachment->flavor) && $attachment->flavor === $preview_type) {
                         $preview = $attachment->url;
                         break;
                     }
