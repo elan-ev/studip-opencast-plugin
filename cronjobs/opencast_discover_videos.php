@@ -60,7 +60,6 @@ class OpencastDiscoverVideos extends CronJob
             echo 'Instantiated ApiEventsClient' . "\n";
 
             $event_ids = [];
-            $events = [];
 
             // get all known events in Stud.IP
             $stmt_ids->execute([':config_id' => $config['id']]);
