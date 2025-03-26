@@ -708,6 +708,14 @@ class Videos extends UPMap
     public function updateMetadata($event)
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
+
+        // Only allow updating of metadata if with has publications
+        $oc_event = $api_event_client->getEpisode($this->episode);
+
+        if (empty($oc_event) || in_array('engage-player', (array)$oc_event->publication_status) === false) {
+            return false;
+        }
+
         $allowed_metadata_fields = ['title', 'presenters', 'contributors',
             'subject', 'language', 'description', 'startDate'];
         $metadata = [];
@@ -819,6 +827,10 @@ class Videos extends UPMap
      */
     public static function checkEventACL($eventType, $episode, $video)
     {
+        if (empty($episode) || in_array('engage-player', (array)$episode->publication_status) === false) {
+            return false;
+        }
+
         $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
 
         $results = $video->updateAcl(null, json_decode(json_encode($episode->acl), true));
