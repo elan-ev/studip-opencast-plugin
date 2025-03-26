@@ -153,7 +153,7 @@ class OpencastDiscoverVideos extends CronJob
 
 
                     // check if this event has a corresponding playlist entry and still needs reinspection
-                    if (isset($playlist_videos[$current_event->identifier])) {
+                    if (!empty($current_event) && isset($playlist_videos[$current_event->identifier])) {
                         echo 'Reinspect playlist video, if it is available now: ' . $video->video_id . ' ('. $video->video->title .', Playlist ID: ' . $video->playlist_id . ")\n";
                         self::parseEvent($current_event, $playlist_videos[$current_event->identifier]->video);
                         $video->available = 1;
