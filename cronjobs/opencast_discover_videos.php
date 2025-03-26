@@ -107,7 +107,7 @@ class OpencastDiscoverVideos extends CronJob
                             $video = Videos::findOneBySql("episode = ?", [$event->identifier]);
 
                             if (!empty($video)) {
-                                echo 'Reispect video, archive versions differ: ' . $video->id . ' (' . $video->title . ') '
+                                echo 'Reinspect video, archive versions differ: ' . $video->id . ' (' . $video->title . ') '
                                         . ' Local version: '. $local_events[$event->identifier] . ', OC version: '. $event->archive_version . "\n";
 
                                 self::parseEvent($event, $video);
