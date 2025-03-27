@@ -709,7 +709,7 @@ class Videos extends UPMap
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
 
-        // Only allow updating of metadata if with has publications
+        // Only allow updating of metadata if event has publications
         $oc_event = $api_event_client->getEpisode($this->episode);
 
         if (empty($oc_event) || in_array('engage-player', (array)$oc_event->publication_status) === false) {
