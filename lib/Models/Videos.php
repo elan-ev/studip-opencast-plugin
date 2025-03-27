@@ -827,8 +827,9 @@ class Videos extends UPMap
      */
     public static function checkEventACL($eventType, $episode, $video)
     {
+        // Only allow updating of metadata if event has publications
         if (empty($episode) || in_array('engage-player', (array)$episode->publication_status) === false) {
-            return false;
+            return;
         }
 
         $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
