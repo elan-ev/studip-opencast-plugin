@@ -151,6 +151,19 @@ class OpencastDiscoverVideos extends CronJob
                         unset($playlist_videos[$current_event->identifier]);
                     }
 
+                    // make sure that recording failures are handled
+                    if (!empty($current_event)
+                        && $current_event->status == 'EVENTS.EVENTS.STATUS.RECORDING_FAILURE'
+                        && isset($local_events[$current_event->identifier])
+                    ) {
+                        $video = Videos::findOneBySql("episode = ?", [$current_event->identifier]);
+
+                        if (!empty($video)) {
+                            $video->state = 'failed';
+                            $video->store();
+                        }
+                    }
+
 
                     // check if this event has a corresponding playlist entry and still needs reinspection
                     if (!empty($current_event) && isset($playlist_videos[$current_event->identifier])) {
@@ -169,6 +182,7 @@ class OpencastDiscoverVideos extends CronJob
                 // Need null check for archived videos
                 if ($video) {
                     $video->setValue('available', false);
+                    $video->trashed = 1;
                     $video->store();
                 }
             }
@@ -186,7 +200,7 @@ class OpencastDiscoverVideos extends CronJob
 
     private static function parseEvent($event, $video)
     {
-        if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
+        if (in_array($event->processing_state, ['FAILED', 'STOPPED']) === true) { // It failed.
             if ($video->state != 'failed') {
                 $video->state = 'failed';
             }
@@ -196,10 +210,10 @@ class OpencastDiscoverVideos extends CronJob
                 $video->state = 'cutting';
                 NotificationCenter::postNotification('OpencastNotifyUsers', $event, $video);
             }
-        } else if ($event->status === "EVENTS.EVENTS.STATUS.SCHEDULED" || $event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is scheduled or live
+        } else if ($event->status === "EVENTS.EVENTS.STATUS.RECORDING") { // Is currently recording
             $video->state = 'running';
-            $video->is_livestream = 1;
             if (!empty($event->publications)) {
+                $video->is_livestream = 1;
                 $video->publication = json_encode($event->publications);
             }
         } else if ($event->status === "EVENTS.EVENTS.STATUS.INGESTING" ||
