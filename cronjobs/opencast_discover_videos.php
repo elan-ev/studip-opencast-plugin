@@ -188,6 +188,7 @@ class OpencastDiscoverVideos extends CronJob
     {
         if (in_array($event->processing_state, ['FAILED', 'STOPPED', '']) === true) { // It failed.
             if ($video->state != 'failed') {
+                $video->version = $event->archive_version;
                 $video->state = 'failed';
             }
         } else if ($event->status === "EVENTS.EVENTS.STATUS.PROCESSED" && $event->has_previews == true
