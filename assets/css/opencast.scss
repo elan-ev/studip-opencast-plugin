@@ -331,6 +331,13 @@ $action-menu-icon-size: 20px;
             }
         }
 
+        .oc--presenters {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .oc--metadata--empty {
 
             h2, div {
