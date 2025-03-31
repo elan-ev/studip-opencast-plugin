@@ -424,6 +424,9 @@ class Videos extends UPMap
         $where .= " AND trashed = " . $filters->getTrashed();
         $where .= " AND oc_video.token IS NOT NULL";
 
+        // Show only videos available in opencast to users
+        $where .= " AND oc_video.available = 1";
+
         $sql .= $where;
 
         $sql .= ' GROUP BY oc_video.id';
