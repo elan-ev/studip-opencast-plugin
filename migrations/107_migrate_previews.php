@@ -17,9 +17,9 @@ class MigratePreviews extends Migration
 
         while ($data = $result->fetch()) {
             $new_preview = null;
-            if (json_validate($data['preview'])) {
-                $previews = json_decode($data['preview'], true);
+            $previews = json_decode($data['preview'], true);
 
+            if (!empty($previews)) {
                 if (!empty($previews['player'])) {
                     $new_preview = $previews['player'];
                 } else if (!empty($previews['search'])) {
