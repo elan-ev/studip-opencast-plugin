@@ -4,12 +4,10 @@ namespace Opencast\Models;
 
 use \DBManager;
 use \PDO;
-use \Configuration as StudipConfiguration;
 
-use Opencast\LTI\OpencastLTI;
 use Opencast\VersionHelper;
 use Opencast\Providers\Perm;
-use Opencas\Models\Video;
+use Opencas\Models\Videos;
 
 class Helpers
 {
@@ -388,7 +386,7 @@ class Helpers
      *
      * @return boolean Returns true if the event can run a workflow, false otherwise
      */
-    public static function canEventRunWorkflow($event, Video $video)
+    public static function canEventRunWorkflow($event, Videos $video)
     {
         if (empty($event)
             || in_array('engage-player', (array)$event->publication_status) === false
