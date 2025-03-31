@@ -100,7 +100,7 @@
                    href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
-                <a v-else-if="event.publication && event.preview && event.available"
+                <a v-else-if="event.publication && event.available"
                    href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
