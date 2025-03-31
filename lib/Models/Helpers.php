@@ -301,10 +301,6 @@ class Helpers
 
         $possible_roles = array_column($studip_acls, 'role');
 
-        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING) {
-            $possible_roles[] = 'ROLE_ANONYMOUS';
-        }
-
         sort($acls);
 
         $result = [];

@@ -446,13 +446,6 @@ export default {
                 },
                 uploadDone: (episode_id, uploadData, workflow_id) => {
                     view.$emit('done');
-                    view.$store.dispatch('createLogEvent', {
-                        event: 'upload',
-                        data: {
-                            episode_id: episode_id,
-                            workflow_id: workflow_id
-                        }
-                    });
 
                     // Add event to database
                     view.$store.dispatch('createVideo', {
