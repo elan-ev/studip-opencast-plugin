@@ -715,7 +715,7 @@ class Videos extends UPMap
         // Only allow updating of metadata if event has publications
         $oc_event = $api_event_client->getEpisode($this->episode);
 
-        if (empty($oc_event) || in_array('engage-player', (array)$oc_event->publication_status) === false) {
+        if (!Helpers::canEventRunWorkflow($oc_event, $this)) {
             return false;
         }
 
@@ -831,7 +831,7 @@ class Videos extends UPMap
     public static function checkEventACL($eventType, $episode, $video)
     {
         // Only allow updating of metadata if event has publications
-        if (empty($episode) || in_array('engage-player', (array)$episode->publication_status) === false) {
+        if (!Helpers::canEventRunWorkflow($episode, $video)) {
             return;
         }
 

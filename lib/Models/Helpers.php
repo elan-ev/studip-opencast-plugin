@@ -9,6 +9,7 @@ use \Configuration as StudipConfiguration;
 use Opencast\LTI\OpencastLTI;
 use Opencast\VersionHelper;
 use Opencast\Providers\Perm;
+use Opencas\Models\Video;
 
 class Helpers
 {
@@ -371,5 +372,31 @@ class Helpers
                 false
             );
         }
+    }
+
+    /**
+     * Determines if an event can run a workflow.
+     *
+     * This function checks if the given event meets the criteria for running a republish workflow.
+     * It ensures that:
+     * 1. The event is not empty
+     * 2. The event has an 'engage-player' publication status
+     * 3. The associated video is not in a 'running' or 'failed' state
+     *
+     * @param object $event The Opencast event object to check
+     * @param object $video The associated video object from the Stud.IP system
+     *
+     * @return boolean Returns true if the event can run a workflow, false otherwise
+     */
+    public static function canEventRunWorkflow($event, Video $video)
+    {
+        if (empty($event)
+            || in_array('engage-player', (array)$event->publication_status) === false
+            || $video->state == 'running' || $video->state == 'failed')
+        {
+            return false;
+        }
+
+        return true;
     }
 }
