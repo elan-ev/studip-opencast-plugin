@@ -7,7 +7,7 @@ use \PDO;
 
 use Opencast\VersionHelper;
 use Opencast\Providers\Perm;
-use Opencas\Models\Videos;
+use Opencast\Models\Videos;
 
 class Helpers
 {
