@@ -811,16 +811,7 @@ class Videos extends UPMap
         }
 
         // check if ACL contains ROLE_ANONYMOUS
-        $has_anonymous_role = false;
-        foreach ($current_acl as $acl_entry) {
-            if ($acl_entry['role'] === 'ROLE_ANONYMOUS'
-                && $acl_entry['action'] === 'read'
-                && $acl_entry['allow'] === true
-            ) {
-                $has_anonymous_role = true;
-                break;
-            }
-        }
+        $has_anonymous_role = Helpers::isWorldReadable($current_acl);
 
         if ($visibility === 'public' && $this->visibility !== 'public') {
             if (!$has_anonymous_role) {
@@ -906,6 +897,12 @@ class Videos extends UPMap
         }
 
         $acl = [];
+        if (Helpers::isWorldReadable($current_acl)) {
+            $this->visibility = 'public';
+        } else {
+            $this->visibility = 'internal';
+        }
+        $this->store();
 
         // Don't set event id roles if episode id role access is activated by user
         if (!$this->config->settings['episode_id_role_access'] ?? true) {

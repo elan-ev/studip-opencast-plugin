@@ -393,4 +393,22 @@ class Helpers
 
         return true;
     }
+
+
+    public static function isWorldReadable($oc_acls)
+    {
+        // check if ACL contains ROLE_ANONYMOUS
+        $has_anonymous_role = false;
+        foreach ($oc_acls as $acl_entry) {
+            if ($acl_entry['role'] === 'ROLE_ANONYMOUS'
+                && $acl_entry['action'] === 'read'
+                && $acl_entry['allow'] === true
+            ) {
+                $has_anonymous_role = true;
+                break;
+            }
+        }
+
+        return $has_anonymous_role;
+    }
 }
