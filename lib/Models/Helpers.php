@@ -339,6 +339,15 @@ class Helpers
 
     }
 
+    /**
+     * Notify users about the video event
+     *
+     * @Notification OpencastNotifyUsers
+     *
+     * @param string $eventType
+     * @param object $event
+     * @param  Opencast\Models\Videos $video
+     */
     public static function notifyUsers($eventType, $event, $video)
     {
         // get the first course the video is assigned to
@@ -346,8 +355,14 @@ class Helpers
             $course_id = $video->playlists[0]->courses[0]->id;
         }
 
-        // notify user
-        foreach($video->perms->findBySQL("perm = 'owner'")[0] as $vuser) {
+        // Notify user:
+        // Here we need to notify the users with owner permission about the video event.
+        $targeted_perm = 'owner';
+        $video_owners = VideosUserPerms::findBySQL('video_id = ? AND perm = ?', [$video->id, $targeted_perm]);
+        if (empty($video_owners)) {
+            return;
+        }
+        foreach($video_owners as $vuser) {
             $url = \URLHelper::getURL('plugins.php/opencastv3/contents/index', [], true);
 
             if (!empty($course_id)) {
