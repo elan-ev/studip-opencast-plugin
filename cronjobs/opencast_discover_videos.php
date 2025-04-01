@@ -176,13 +176,13 @@ class OpencastDiscoverVideos extends CronJob
                 }
             } while (sizeof($oc_events) > 0);
 
-            // Check if local videos are not longer available in OC and remove them from Stud.IP
-            // If the video should reappear in the future, Stud.IP will readd it again.
+            // Check if local videos are no longer available in OC
             foreach (array_diff($local_event_ids, $event_ids) as $event_id) {
                 $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $event_id]);
                 // Need null check for archived videos
                 if ($video) {
-                    $video->delete();
+                    $video->setValue('available', false);
+                    $video->store();
                 }
             }
 
