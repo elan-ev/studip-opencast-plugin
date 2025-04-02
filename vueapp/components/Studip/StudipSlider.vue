@@ -11,6 +11,7 @@
 
 <script>
 import Slider from '@vueform/slider'
+
 export default {
     name: 'studip-slider',
     components: {
@@ -29,7 +30,7 @@ export default {
 
     computed: {
         compiled_attrs() {
-            let attrs = this.$attrs;
+            let attrs = { ... this.$attrs };
             if (this.$attrs?.callbackParams) {
                 delete attrs.callbackParams;
             }
