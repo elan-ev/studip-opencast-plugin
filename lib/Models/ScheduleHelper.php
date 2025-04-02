@@ -981,6 +981,7 @@ class ScheduleHelper
         // We Update the resource first.
         $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id);
         // If is updated.
+        /*
         if ($success) {
             // We update current scheduled events that uses this resource.
             if ($scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id)) {
@@ -994,6 +995,7 @@ class ScheduleHelper
                 }
             }
         }
+        */
         return $success;
     }
 
