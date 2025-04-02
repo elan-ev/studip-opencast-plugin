@@ -83,8 +83,8 @@ class RestClient
     {
         $response = $this->ocRestClient->get($file_url, [
             'auth'            => [$this->username, $this->password],
-            'timeout'         => 60,
-            'connect_timeout' => 60,
+            'timeout'         => 2,
+            'connect_timeout' => 2,
         ]);
 
         $result = [];

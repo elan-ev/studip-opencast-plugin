@@ -212,6 +212,10 @@ const actions = {
         return ApiService.put('videos/' + event.token, {event: event});
     },
 
+    async updateVideoVisibility(context, data) {
+        return ApiService.put('videos/' + data.token +'/worldwide_share', {visibility: data.visibility});
+    },
+
     async reportVideo(context, data) {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
