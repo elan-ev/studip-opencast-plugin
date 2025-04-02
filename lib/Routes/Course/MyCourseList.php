@@ -29,7 +29,7 @@ class MyCourseList extends OpencastController
         // Any changes applied to the result's formation of this class must be also implemented in that component!
         foreach ($courses as $course_id) {
             $course = \Course::find($course_id);
-            $results['S'. $course->end_semester->beginn ?: '0'][$course->getFullname('sem-duration-name')][] = [
+            $results['S'. ($course->end_semester->beginn ?? '0')][$course->getFullname('sem-duration-name')][] = [
                 'id'       => $course->id,
                 'name'     => $course->getFullname()
             ];

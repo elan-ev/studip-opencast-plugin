@@ -233,7 +233,9 @@ class PlaylistSeminars extends \SimpleORMap
                     'id'                    => $course->id,
                     'name'                  => $course->getFullname('number-name'),
                     'semester'              => $course->getFullname('sem-duration-name'),
-                    'end_semester_begin'    => $course->end_semester->beginn ?: 0,
+                    'end_semester_begin'    => isset($course->end_semester->beginn)
+                        ? $course->end_semester->beginn
+                        : 0,
                     'lecturers'             => $lecturers,
                 ];
             }

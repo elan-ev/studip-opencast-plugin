@@ -71,7 +71,10 @@ class RestClient
                 'lucene' => false
             ],
             'guzzle' => [
-                'verify' => $config['settings']['ssl_ignore_cert_errors'] === true ? false : true
+                'verify' => (
+                    isset($config['settings']['ssl_ignore_cert_errors'])
+                    && $config['settings']['ssl_ignore_cert_errors'] === true)
+                    ? false : true
             ]
         ];
 

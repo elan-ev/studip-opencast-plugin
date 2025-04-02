@@ -32,6 +32,9 @@ class Config
     public static function getOCBaseVersion($config_id)
     {
         $config = ConfigModel::getBaseServerConf($config_id);
+
+        // populate config_id if calling the RestClient directly
+        $config['config_id'] = $config['id'];
         $oc = new RestClient($config);
 
         $response = $oc->opencastApi->sysinfo->getVersion('opencast');
