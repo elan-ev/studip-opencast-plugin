@@ -9,6 +9,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
 use Opencast\Models\Playlists;
+use Opencast\Providers\Perm;
 
 class PlaylistScheduleUpdate extends OpencastController
 {
@@ -16,19 +17,18 @@ class PlaylistScheduleUpdate extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
-
-        if (!$perm->have_perm('tutor')) {
-            throw new \AccessDeniedException();
-        }
+        global $user;
 
         $course_id = $args['course_id'];
         $token = $args['token'];
         $type = $args['type'];
 
-
         if (empty($token) || empty($course_id) || empty($type) || !in_array($type, ['livestreams', 'scheduled'])) {
             throw new Error('Es fehlen Parameter!', 422);
+        }
+
+        if (!Perm::schedulingAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
         }
 
         $playlist = Playlists::findOneByToken($token);

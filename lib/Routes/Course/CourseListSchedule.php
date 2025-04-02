@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Providers\Perm;
 
 class CourseListSchedule extends OpencastController
 {
@@ -14,8 +15,18 @@ class CourseListSchedule extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $user;
+
         $course_id = $args['course_id'];
         $semester_filter = $args['semester_filter'];
+
+        if (empty($course_id)) {
+            throw new Error('Es fehlen Parameter!', 422);
+        }
+
+        if (!Perm::schedulingAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
+        }
 
         $semester_list = ScheduleHelper::getSemesterList($course_id);
         $allow_schedule_alternate = \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE;

@@ -8,6 +8,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Providers\Perm;
 
 class ScheduleBulk extends OpencastController
 {
@@ -15,19 +16,20 @@ class ScheduleBulk extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
-
-        if (!$perm->have_perm('tutor')) {
-            throw new \AccessDeniedException();
-        }
+        global $user;
 
         $course_id = $args['course_id'];
+
         $json = $this->getRequestData($request);
         $termin_ids = isset($json['termin_ids']) ? $json['termin_ids'] : [];
         $action = isset($json['action']) ? $json['action'] : null;
         $available_actions = ['schedule', 'unschedule', 'update', 'live'];
         if (empty($course_id) || empty($action) || !in_array($action, $available_actions)) {
             throw new Error('Es fehlen Parameter!', 422);
+        }
+
+        if (!Perm::schedulingAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
         }
 
         $message_type = 'success';
