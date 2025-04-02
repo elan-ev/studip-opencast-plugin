@@ -41,7 +41,7 @@ class VideoWorldwideShareUpdate extends OpencastController
         if ($video->setWorldVisibility($visibility) !== true) {
             $message = [
                 'type' => 'error',
-                'text' => _('Beim übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
+                'text' => _('Beim Übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
             ];
         } else {
             $message = [
