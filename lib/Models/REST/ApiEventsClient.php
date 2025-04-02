@@ -61,7 +61,7 @@ class ApiEventsClient extends RestClient
     }
 
     /**
-     * Sets ACL for an episode in connected Opencast
+     * Sets ACL for an episode in connected Opencast and republishes metadata
      *
      * @param string $episode_id id of episode
      * @param object $acl the acl object
@@ -70,8 +70,17 @@ class ApiEventsClient extends RestClient
      */
     public function setACL($episode_id, $acl)
     {
-        $response = $this->opencastApi->eventsApi->updateAcl($episode_id, $acl);
-        return $response;
+        $workflow_client = ApiWorkflowsClient::getInstance($this->config_id);
+
+        $response = $this->opencastApi->eventsApi->updateAcl($episode_id, array_values($acl));
+
+        // republish metadata, if updating the ACL was succesful
+        if (in_array($response['code'], ['200', '204']) === true) {
+            $workflow_client->republish($episode_id);
+            return true;
+        }
+
+        return false;
     }
 
     /**

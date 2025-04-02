@@ -129,7 +129,7 @@
 
                         {{ $gettext('Sie können das Video weltweit zugreifbar machen und dadurch z.B. '
                             + 'die Videodateien in externe Videoplayer integrieren. Bitte beachten Sie, '
-                            + 'dass es mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist.'
+                            + 'dass es mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist. '
                             + 'Währenddessen ist es nicht möglich, den Status erneut zu ändern!') }}
                         <br><br>
                         <template v-if="event.visibility == 'public'">
@@ -156,11 +156,9 @@
                         >
                             {{ $gettext('Video weltweit zugreifbar machen') }}
                         </StudipButton>
-
-
                     </fieldset>
                 </form>
-                <MessageList :float="true" :dialog="true"/>
+                <MessageList :float="true" />
             </template>
         </StudipDialog>
     </div>
@@ -324,13 +322,15 @@ export default {
             this.processing = true;
 
             let view = this;
-            let event = this.event;
-            let new_event = JSON.parse(JSON.stringify(this.event));
-            new_event.visibility = vis;
-            this.$store.dispatch('updateVideo', new_event)
-            .then(({ data }) => {
+
+            this.$store.dispatch('updateVideoVisibility', {
+                'token': this.event.token,
+                'visibility': vis
+            }).then(({ data }) => {
+                console.log('response from server', data.message, vis);
                 if (data.message.type == 'success') {
-                    event.visibility = vis;
+                    console.log('visibility updated successfully');
+                    view.event.visibility = vis;
                 }
                 view.$store.dispatch('addMessage', data.message);
                 view.processing = false;

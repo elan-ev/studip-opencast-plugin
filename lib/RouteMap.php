@@ -65,6 +65,8 @@ class RouteMap
         $group->put("/videos/{token}/shares", Routes\Video\VideoSharesUpdate::class);
         $group->post("/videos/{course_id}/copy", Routes\Video\VideoCopyToCourse::class);
 
+        $group->put("/videos/{token}/worldwide_share", Routes\Video\VideoWorldwideShareUpdate::class);
+
         // Courseware routes
         $group->get("/courseware/videos", Routes\Courseware\CoursewareVideoList::class);
 
@@ -123,7 +125,6 @@ class RouteMap
         $group->get("/tags/videos/course/{course_id}", Routes\Tags\TagListForCourseVideos::class);
 
         $group->get("/config/simple", Routes\Config\SimpleConfigList::class);
-        $group->post("/log", Routes\Log\LogEntryCreate::class);
 
         $group->get("/discovery", Routes\DiscoveryIndex::class);
     }

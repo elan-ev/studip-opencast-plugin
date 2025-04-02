@@ -715,7 +715,7 @@ class Videos extends UPMap
         // Only allow updating of metadata if event has publications
         $oc_event = $api_event_client->getEpisode($this->episode);
 
-        if (empty($oc_event) || in_array('engage-player', (array)$oc_event->publication_status) === false) {
+        if (!Helpers::canEventRunWorkflow($oc_event, $this)) {
             return false;
         }
 
@@ -750,23 +750,6 @@ class Videos extends UPMap
         $success = false;
         $response = $api_event_client->updateMetadata($this->episode, $metadata);
         $republish = in_array($response['code'], [200, 204]) === true;
-
-        $result = null;
-
-        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING
-            && $this->visibility != $event['visibility']
-        ) {
-            $result = $this->updateAcl($event['visibility']);
-
-            if ($result['republish']) {
-                $republish = true;
-            }
-
-            if ($result['update']) {
-                $this->visibility = $event['visibility'];
-                $this->store();
-            }
-        }
 
         if ($republish) {
             $api_wf_client = ApiWorkflowsClient::getInstance($this->config_id);
@@ -817,6 +800,62 @@ class Videos extends UPMap
         return $this->delete();
     }
 
+    public function setWorldVisibility($visibility)
+    {
+        // get current ACL for event in Opencast
+        $api_client  = ApiEventsClient::getInstance($this->config_id);
+        $current_acl = $api_client->getAcl($this->episode);
+
+        if (empty($current_acl)) {
+            return false;
+        }
+
+        // check if ACL contains ROLE_ANONYMOUS
+        $has_anonymous_role = Helpers::isWorldReadable($current_acl);
+
+        if ($visibility === 'public' && $this->visibility !== 'public') {
+            if (!$has_anonymous_role) {
+                // Add ROLE_ANONYMOUS to the ACL
+                $current_acl[] = [
+                    'allow'  => true,
+                    'role'   => 'ROLE_ANONYMOUS',
+                    'action' => 'read'
+                ];
+
+                // Update the ACL in Opencast
+                if ($api_client->setACL($this->episode, $current_acl)) {
+                    // Update local visibility
+                    $this->visibility = 'public';
+                    $this->store();
+
+                    return true;
+                }
+
+                return false;
+            }
+        } else if ($visibility !== 'public' && $this->visibility === 'public') {
+            if ($has_anonymous_role) {
+                // Remove ROLE_ANONYMOUS from the ACL
+                $current_acl = array_filter($current_acl, function($acl_entry) {
+                    return $acl_entry['role'] !== 'ROLE_ANONYMOUS';
+                });
+
+                // Update the ACL in Opencast
+                if ($api_client->setACL($this->episode, $current_acl)) {
+                    // Update local visibility
+                    $this->visibility = $visibility;
+                    $this->store();
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Check that the episode has its unique ACL and set it if necessary
      *
@@ -831,32 +870,21 @@ class Videos extends UPMap
     public static function checkEventACL($eventType, $episode, $video)
     {
         // Only allow updating of metadata if event has publications
-        if (empty($episode) || in_array('engage-player', (array)$episode->publication_status) === false) {
+        if (!Helpers::canEventRunWorkflow($episode, $video)) {
             return;
         }
 
-        $workflow_client = ApiWorkflowsClient::getInstance($video->config_id);
-
-        $results = $video->updateAcl(null, json_decode(json_encode($episode->acl), true));
-
-        if ($results['republish'] == true) {
-            $workflow_client->republish($video->episode);
-        }
+        return $video->updateAcl(json_decode(json_encode($episode->acl), true));
     }
 
     /**
      * Update the ACL in Opencast if necessary
      *
-     * @param string $new_vis The targeted new visibility. If empty, use the current on to check
+     * @param string $current_acl The current ACL in Opencast
      *
-     * @return array Returns an array of the following form, stating if a republish is necessary and if the
-     *   update in was succesful:
-     *  [
-     *      republish' => boolean
-     *     'update'    => boolean
-     *  ]
+     * @return bool whether ACL was updated or not
      */
-    public function updateAcl($new_vis = null, $current_acl = null)
+    public function updateAcl($current_acl = null)
     {
         $api_client  = ApiEventsClient::getInstance($this->config_id);
         if (empty($current_acl)) {
@@ -869,6 +897,12 @@ class Videos extends UPMap
         }
 
         $acl = [];
+        if (Helpers::isWorldReadable($current_acl)) {
+            $this->visibility = 'public';
+        } else {
+            $this->visibility = 'internal';
+        }
+        $this->store();
 
         // Don't set event id roles if episode id role access is activated by user
         if (!$this->config->settings['episode_id_role_access'] ?? true) {
@@ -905,18 +939,6 @@ class Videos extends UPMap
 
         $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
 
-        // add anonymous role if video is world visible
-        if (\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING && (
-            ($new_vis && $new_vis == 'public')
-            || (!$new_vis && $this->visibility == 'public')
-        )) {
-            $acl[] = [
-                'allow'  => true,
-                'role'   => 'ROLE_ANONYMOUS',
-                'action' => 'read'
-            ];
-        }
-
         sort($acl);
 
         $oc_acls = Helpers::filterACLs($current_acl, $acl);
@@ -924,25 +946,10 @@ class Videos extends UPMap
         if ($acl <> $oc_acls['studip']) {
             $new_acl = array_merge($oc_acls['other'], $acl);
 
-            $result = $api_client->setACL($this->episode, $new_acl);
-
-            if (in_array($result['code'], ['200', '204']) === false) {
-                return [
-                    'republish' => false,
-                    'update'    => false
-                ];
-            }
-
-            return [
-                'republish' => true,
-                'update'    => true
-            ];
+            return $api_client->setACL($this->episode, $new_acl);
         }
 
-        return [
-            'republish' => false,
-            'update'    => true
-        ];
+        return false;
     }
 
     /**
