@@ -93,6 +93,7 @@
                         :showActions="showActions"
                         @doAction="doAction"
                         @redirectAction="redirectAction"
+                        :userHasSelectableVideos="userHasSelectableVideos"
                     ></VideoRow>
                 </template>
             </draggable>
@@ -101,7 +102,7 @@
                 <tr>
                     <td :colspan="numberOfColumns">
                         <span class="oc--bulk-actions">
-                            <StudipButton v-if="canUpload" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
+                            <StudipButton v-if="canUpload && userHasSelectableVideos" icon="remove" @click.prevent="removeVideosFromPlaylist" :disabled="!hasCheckedVideos">
                                 {{ $gettext('Aus Wiedergabeliste entfernen') }}
                             </StudipButton>
                         </span>
@@ -296,11 +297,11 @@ export default {
         ]),
 
         numberOfColumns() {
-          return 7 - (this.showCheckbox ? 0 : 1) - (this.showActions ? 0 : 1);
+            return 7 - (this.showCheckbox ? 0 : 1) - (this.showActions ? 0 : 1);
         },
 
         showCheckbox() {
-            return this.selectable || this.canEdit || this.canUpload;
+            return (this.selectable || this.canEdit || this.canUpload) && this.userHasSelectableVideos;
         },
 
         isCourse() {
@@ -337,6 +338,14 @@ export default {
                     this.sortedVideos = new_video_list;
                 }
             }
+        },
+
+        userHasSelectableVideos() {
+            let has_videos_with_write_perm = false;
+            if (this.loadedVideos.length > 0) {
+                has_videos_with_write_perm = this.loadedVideos.filter(v => v.perm == 'write' || v.perm == 'owner').length > 0;
+            }
+            return has_videos_with_write_perm;
         },
 
         serversCheckSuccessful() {
