@@ -15,7 +15,7 @@
         <td v-if="showCheckbox">
             <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
         </td>
-        <td v-else-if="canUpload">
+        <td v-else-if="userHasSelectableVideos && canUpload">
         </td>
 
         <td class="oc--playercontainer">
@@ -225,6 +225,10 @@ export default {
         showActions: {
             type: Boolean,
             default: true
+        },
+        userHasSelectableVideos: {
+            type: Boolean,
+            default: false
         }
     },
 
