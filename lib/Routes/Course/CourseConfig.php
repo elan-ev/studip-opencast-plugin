@@ -57,11 +57,12 @@ class CourseConfig extends OpencastController
             'series'    => [
                 'series_id'  => $series->series_id,
             ],
-            'workflow'       => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
-            'edit_allowed'   => Perm::editAllowed($course_id),
-            'upload_allowed' => Perm::uploadAllowed($course_id),
-            'upload_enabled' => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0,
-            'has_default_playlist' => Helpers::checkCourseDefaultPlaylist($course_id)
+            'workflow'              => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
+            'edit_allowed'          => Perm::editAllowed($course_id),
+            'upload_allowed'        => Perm::uploadAllowed($course_id),
+            'upload_enabled'        => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0,
+            'has_default_playlist'  => Helpers::checkCourseDefaultPlaylist($course_id),
+            'scheduling_allowed'    => Perm::schedulingAllowed($course_id)
         ];
 
         return $this->createResponse($results, $response);

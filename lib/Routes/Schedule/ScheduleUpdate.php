@@ -8,6 +8,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Providers\Perm;
 
 class ScheduleUpdate extends OpencastController
 {
@@ -15,17 +16,17 @@ class ScheduleUpdate extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
-
-        if (!$perm->have_perm('tutor')) {
-            throw new \AccessDeniedException();
-        }
+        global $user;
 
         $termin_id = $args['termin_id'];
         $course_id = $args['course_id'];
 
         if (empty($termin_id) || empty($course_id)) {
             throw new Error('Es fehlen Parameter!', 422);
+        }
+
+        if (!Perm::schedulingAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
         }
 
         $json = $this->getRequestData($request);

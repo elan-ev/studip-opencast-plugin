@@ -100,7 +100,7 @@
         <MessageBox v-else-if="!schedule_loading" type="info">
             {{ $gettext('Es gibt bisher keine Termine.') }}
         </MessageBox>
-         <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
+        <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
     </div>
 </template>
 

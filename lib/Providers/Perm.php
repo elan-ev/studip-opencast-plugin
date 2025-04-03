@@ -184,4 +184,28 @@ class Perm
 
         return false;
     }
+
+    /**
+     * Checks, whether the current user is able to perform the scheduling in a course
+     *
+     * @param  string $context_id   course or institute id
+     * @param  string $user_id      user id
+     *
+     * @return boolean              true if allowed, false otherwise
+     */
+    public static function schedulingAllowed($context_id = null, $user_id = null)
+    {
+        if (is_null($user_id)) {
+            $user_id = $GLOBALS['user']->id;
+        }
+
+        if (is_null($context_id)) {
+            $context_id = \Context::getId();
+        }
+
+        // Reuse the config to make sure that the tutor gets the lecture permission when configured!
+        $required_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+
+        return $GLOBALS['perm']->have_studip_perm($required_perm, $context_id, $user_id);
+    }
 }
