@@ -8,6 +8,7 @@ use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\ScheduleHelper;
+use Opencast\Providers\Perm;
 
 class ScheduleDelete extends OpencastController
 {
@@ -15,11 +16,7 @@ class ScheduleDelete extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        global $perm;
-
-        if (!$perm->have_perm('tutor')) {
-            throw new \AccessDeniedException();
-        }
+        global $user;
 
         $termin_id = $args['termin_id'];
         $course_id = $args['course_id'];
@@ -28,10 +25,14 @@ class ScheduleDelete extends OpencastController
             throw new Error('Es fehlen Parameter!', 422);
         }
 
+        if (!Perm::schedulingAllowed($course_id, $user->id)) {
+            throw new \AccessDeniedException();
+        }
+
         if (ScheduleHelper::deleteEventForSeminar($course_id, $termin_id)) {
             return $response->withStatus(204);
         }
-        
+
         throw new Error(_('Die geplante Aufzeichnung konnte nicht entfernt werden.'), 409);
     }
 }

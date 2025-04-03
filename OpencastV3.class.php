@@ -201,7 +201,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
             PluginEngine::getURL($this, ['target_view' => 'videos'], 'course#/course/videos')
         ));
 
-        if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id) &&
+        if (Perm::schedulingAllowed($course_id) &&
             Config::get()->OPENCAST_ALLOW_SCHEDULER &&
             Helpers::checkCourseDefaultPlaylist($course_id)) {
             $main->addSubNavigation('schedule', new Navigation(

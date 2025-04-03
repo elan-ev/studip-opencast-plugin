@@ -86,8 +86,9 @@
                                 {{ opt.text }}
                             </option>
                         </select>
-                        <StudipButton icon="accept" @click.prevent="performBulkAction">
-                            <span>{{ $gettext('Übernehmen') }}</span>
+                        <StudipButton icon="accept" @click.prevent="performBulkAction"
+                            :disabled="bulkActionRunning">
+                            <span>{{ bulkActionRunning ? $gettext('Bitte warten...') : $gettext('Übernehmen') }}</span>
                         </StudipButton>
                         <StudipButton icon="cancel" @click.prevent="resetBulk">
                             <span>{{ $gettext('Abbrechen') }}</span>
@@ -99,7 +100,7 @@
         <MessageBox v-else-if="!schedule_loading" type="info">
             {{ $gettext('Es gibt bisher keine Termine.') }}
         </MessageBox>
-         <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
+        <ScheduleLoading v-else :allow_schedule_alternate="allow_schedule_alternate"/>
     </div>
 </template>
 
@@ -128,6 +129,7 @@ export default {
             bulkRefs: [],
             bulkAction: '',
             refreshTimeout: null,
+            bulkActionRunning: false
         }
     },
 
@@ -178,12 +180,15 @@ export default {
                 action: this.bulkAction,
                 termin_ids: termin_ids,
             };
+
+            this.bulkActionRunning = true;
             this.$store.dispatch('bulkScheduling', params).then(({ data }) => {
                 this.$store.dispatch('clearMessages');
                 if (data?.message) {
                     this.addMesssage(data.message.type, data.message.text, true);
                 }
                 this.$store.dispatch('getScheduleList');
+                this.bulkActionRunning = false;
             });
 
         },

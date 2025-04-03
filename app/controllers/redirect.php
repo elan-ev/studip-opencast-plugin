@@ -223,7 +223,7 @@ class RedirectController extends Opencast\Controller
 
         $response = $api_events->fileRequest($image);
 
-        header('Content-Type: '. $response['mimetype']);
+        header('Content-Type: '. $response['mimetype'][0]);
 
         echo $response['body'];
         die;

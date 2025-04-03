@@ -79,10 +79,10 @@ class IngestClient extends RestClient
                 $query['capture.device.names'] = $capabilities;
             }
 
-            $options = $this->ocRestClient->getQueryParams($query);
-            $response = $this->ocRestClient->performGet($uri, $options);
+            $options = $this->ocRestClient->getFormParams($query);
+            $response = $this->ocRestClient->performPost($uri, $options);
 
-            return $response['code'] == 200;
+            return (in_array($response['code'], [200, 201]) !== false);
         } else {
             $response = $this->opencastApi->ingest->schedule($mediaPackage, $workflowDefinitionId);
             return (in_array($response['code'], [200, 201]) !== false);

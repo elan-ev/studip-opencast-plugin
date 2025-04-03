@@ -283,9 +283,10 @@ export default {
 
         canSchedule() {
             try {
-                return this.cid !== undefined &&
-                    this.currentUser.can_edit &&
-                        this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'];
+                return this.cid !== undefined && // Make sure this is happening in a course!
+                    this.currentUser.can_edit && // Make sure the user has sufficient "global" rights.
+                    this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'] && // Make sure it is configured!
+                    this.course_config.scheduling_allowed; // Make sure the user is allowed to schedule recordings in the course!
             } catch (error) {
                 return false;
             }
@@ -411,6 +412,9 @@ export default {
         },
 
         updateScheduledRecordingsPlaylists(type) {
+            if (!this.canSchedule) {
+                return;
+            }
             this.$store.dispatch('clearMessages');
             if (type == 'scheduled') {
                 this.$store.dispatch('setSchedulePlaylist', this.schedulePlaylistToken)

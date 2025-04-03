@@ -124,7 +124,7 @@ class VideosUserPerms extends \SimpleORMap
         // always make sure, that the uploader is in the list of the owners!
         // TODO: This field is not safe and could have been manipulated by the uploader!
 
-        if ($episode->presenter[0]) {
+        if (!empty($episode->presenter[0])) {
             $user_id = \get_userid($episode->presenter[0]);
 
             if ($user_id) {
