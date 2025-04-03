@@ -1,5 +1,8 @@
 <template>
-    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow">
+    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow"
+        :class="{
+            'oc--episode--invisible': !isVisible(event)
+        }">
         <td v-if="canEdit && videoSortMode">
             <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
                 <img class="oc--drag-handle"
@@ -54,7 +57,7 @@
                             <span class="tooltip-content">
                                 {{ $gettext('Aufrufe') }}
                             </span>
-                            <studip-icon shape="visibility-visible" role="info_alt"></studip-icon>
+                            <studip-icon :shape="isVisible(event) ? 'visibility-visible' : 'visibility-invisible'" role="info_alt"></studip-icon>
                             {{ event.views }}
                         </span>
                         <span class="oc--duration">
@@ -95,6 +98,9 @@
         </td>
 
         <td class="oc--metadata-title">
+            <div v-if="!isVisible(event)" class="oc--title--invisible-info">
+                {{ $gettext('(Video ist unsichtbar für Studierende)') }}
+            </div>
             <div class="oc--title-container">
                 <a v-if="isLivestream && livestreamInfo.isLive"
                    href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
@@ -343,6 +349,22 @@ export default {
                     video_row.lastElementChild.setAttribute('colspan', colspan);
                 }
             }
+        },
+
+        isVisible(event) {
+            if (event.seminar_visibility === null || event.seminar_visibility === undefined) {
+                if (this.simple_config_list.settings.OPENCAST_HIDE_EPISODES) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            if (event.seminar_visibility?.visibility == 'visible') {
+                return true;
+            }
+
+            return false;
         }
     },
 
