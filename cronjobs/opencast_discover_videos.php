@@ -91,7 +91,7 @@ class OpencastDiscoverVideos extends CronJob
                 $offset += $limit;
 
                 // load events from opencast and filter the processed ones
-                foreach ($oc_events as $event) {
+                if (!empty($oc_events)) foreach ($oc_events as $event) {
                     $current_event = null;
 
                     // only add videos / reinspect videos if they are readily processed
@@ -174,7 +174,7 @@ class OpencastDiscoverVideos extends CronJob
                         $plvideo->store();
                     }
                 }
-            } while (sizeof($oc_events) > 0);
+            } while (!empty($oc_events));
 
             // Check if local videos are no longer available in OC
             foreach (array_diff($local_event_ids, $event_ids) as $event_id) {
