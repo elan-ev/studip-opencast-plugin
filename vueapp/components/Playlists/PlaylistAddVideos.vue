@@ -68,10 +68,6 @@ export default {
     },
 
     props: {
-        canEdit: {
-            type: Boolean,
-            default: true,
-        },
         canUpload: {
             type: Boolean,
             default: true,
