@@ -14,7 +14,8 @@ class Authority
             return true;
         }
 
-        if ($playlist->haveCoursePerm('tutor') && $video->haveCoursePerm('tutor')) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if ($playlist->haveCoursePerm($required_course_perm) && $video->haveCoursePerm($required_course_perm)) {
             return true;
         }
 

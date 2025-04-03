@@ -36,7 +36,8 @@ class CourseConfig extends OpencastController
 
         if (empty($series)) {
             // only tutor or above should be able to trigger this series creation!
-            if ($perm->have_studip_perm('tutor', $course_id)) {
+            $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+            if ($perm->have_studip_perm($required_course_perm, $course_id)) {
                 // No series for this course yet! Create one!
                 $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
                 $series_client = new SeriesClient($config_id);
