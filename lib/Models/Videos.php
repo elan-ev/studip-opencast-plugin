@@ -109,7 +109,7 @@ class Videos extends UPMap
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where =  self::getVisibilityWhere();
+            $where = ' WHERE '. self::getVisibilitySql();
 
             $params[':cid'] = $cid;
         }
@@ -150,7 +150,7 @@ class Videos extends UPMap
         if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where =  self::getVisibilityWhere();
+            $where = ' WHERE '. self::getVisibilitySql();
         }
 
         $query = [
@@ -162,16 +162,16 @@ class Videos extends UPMap
         return self::getFilteredVideos($query, $filters);
     }
 
-    private static function getVisibilityWhere()
+    private static function getVisibilitySql()
     {
         // if each video has to explicitly set to visible, filter out everything else
         if (\Config::get()->OPENCAST_HIDE_EPISODES) {
-            return ' WHERE (
+            return '(
                 (opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL)
                 OR (opsv.visible_timestamp < NOW())
             )';
         } else {
-            return ' WHERE (
+            return '(
                 (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible")
                 OR (opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL)
                 OR (opsv.visible_timestamp < NOW())
@@ -497,7 +497,7 @@ class Videos extends UPMap
         if (!$perm->have_perm('dozent', $user_id)) {
             $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where =  self::getVisibilityWhere();
+            $where .= ' AND '. self::getVisibilitySql();
         }
 
         $sql .= $where;
