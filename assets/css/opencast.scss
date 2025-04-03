@@ -362,6 +362,14 @@ $action-menu-icon-size: 20px;
     opacity: 0.7;
 }
 
+.oc--episode--invisible {
+    background-color: #FFFFCC;
+}
+
+.oc--title--invisible-info {
+    font-size: 0.8em;
+}
+
 .oc--loadingbar {
     border-radius: 15px;
     background-color: darken($episode-background, 20%);
