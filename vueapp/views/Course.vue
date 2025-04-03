@@ -19,7 +19,6 @@
         />
 
         <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
-            :canEdit="canEdit"
             :canUpload="canUpload"
             @done="closePlaylistAddVideosDialog"
             @cancel="closePlaylistAddVideosDialog"
