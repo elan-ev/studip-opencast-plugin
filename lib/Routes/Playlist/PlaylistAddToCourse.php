@@ -41,8 +41,9 @@ class PlaylistAddToCourse extends OpencastController
 
             // Add record to the PlaylistSeminars based on courses
             if (!empty($courses)) {
+                $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
                 foreach ($courses as $course) {
-                    if ($perm->have_studip_perm('tutor', $course['id'])) {
+                    if ($perm->have_studip_perm($required_course_perm, $course['id'])) {
                         $playlist_seminar = new PlaylistSeminars;
                         $playlist_seminar->playlist_id = $playlist->id;
                         $playlist_seminar->seminar_id = $course['id'];

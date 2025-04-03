@@ -41,7 +41,8 @@ class PlaylistCopy extends OpencastController
 
         // Check permission on course destination
         if (!empty($destination_course)) {
-            if (!$perm->have_studip_perm('tutor', $destination_course)) {
+            $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+            if (!$perm->have_studip_perm($required_course_perm, $destination_course)) {
                 throw new \AccessDeniedException();
             }
         }

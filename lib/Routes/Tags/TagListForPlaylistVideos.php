@@ -20,6 +20,7 @@ class TagListForPlaylistVideos extends OpencastController
         global $perm;
 
         $params = $request->getQueryParams();
+        $course_id = isset($params['cid']) ? $params['cid'] : null;
 
         // first, check if user has access to this playlist
         $playlist = Playlists::findOneByToken($args['token']);
@@ -29,13 +30,14 @@ class TagListForPlaylistVideos extends OpencastController
 
         // check if playlist is connected to the passed course and user is part of that course as well
         $permission = false;
-        if ($params['cid']) {
-            if ($perm->have_studip_perm('user', $params['cid'])) {
+        if ($course_id && !empty($playlist->courses)) {
+            $playlist_connected_courses_ids = array_column($playlist->courses->toArray(), 'id');
+            if ($perm->have_studip_perm('user', $course_id) && in_array($course_id, $playlist_connected_courses_ids)) {
                 $permission = true;
             }
         }
 
-        if (!$params['cid'] || !$permission) {
+        if (!$course_id || !$permission) {
             // check what permissions the current user has on the playlist
             $uperm = $playlist->getUserPerm();
 
@@ -45,7 +47,7 @@ class TagListForPlaylistVideos extends OpencastController
             }
         }
 
-        $ret = Tags::getPlaylistVideosTags($playlist->id, $params['cid']);
+        $ret = Tags::getPlaylistVideosTags($playlist->id, $course_id);
 
         return $this->createResponse($ret, $response->withStatus(200));
     }
