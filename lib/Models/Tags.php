@@ -115,7 +115,8 @@ class Tags extends \SimpleORMap
                 ' INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = opv.playlist_id AND ops.seminar_id = :cid)';
         $params = [':cid' => $course_id];
 
-        if (!$perm->have_studip_perm('dozent', $course_id)) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             $query .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)'.
                 ' WHERE (opsv.visibility IS NULL AND opsv.visible_timestamp IS NULL AND ops.visibility = "visible"'.
                 ' OR opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL'.
