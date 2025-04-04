@@ -199,14 +199,6 @@ export default {
             type: Number,
             required: true
         },
-        canMoveUp: {
-            type: Boolean,
-            default: false
-        },
-        canMoveDown: {
-            type: Boolean,
-            default: false
-        },
         selectable: {
             type: Boolean,
             default: false
