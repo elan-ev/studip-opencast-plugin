@@ -23,6 +23,7 @@ class UserRoles extends OpencastController
     public function __invoke(Request $request, Response $response, $args)
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
+        $plugin_id = $this->container->get('plugin')->getPluginId();
 
         $user_id    = null;
         $share_uuid = null;
@@ -68,15 +69,20 @@ class UserRoles extends OpencastController
             // Admin users have permissions on videos of all administrated courses
             else if ($GLOBALS['perm']->have_perm('admin', $user_id)) {
 
-                $sem_user = new \Seminar_User($user_id);
+                $stmt = \DBManager::get()->prepare("SELECT seminar_id FROM :table as s
+                    JOIN Institute USING(institut_id)
+                    JOIN user_inst ON user_inst.institut_id IN (fakultaets_id, s.institut_id)
+                    JOIN tools_activated ON seminar_id = range_id AND range_type = 'course'
+                    WHERE user_id = :user_id AND plugin_id = :plugin_id GROUP BY seminar_id");
 
-                $nobody = $GLOBALS['user'];
-                $GLOBALS['user'] = $sem_user;
+                if (\Config::get()->ALLOW_ADMIN_RELATED_INST) {
+                    $stmt->bindValue(':table', 'seminar_inst', \StudipPDO::PARAM_COLUMN);
+                } else {
+                    $stmt->bindValue(':table', 'seminare', \StudipPDO::PARAM_COLUMN);
+                }
 
-                $filter = \AdminCourseFilter::get();
-                $courses = array_column($filter->getCourses(), 'seminar_id');
-
-                $GLOBALS['user'] = $nobody;
+                $stmt->execute([':user_id' => $user_id, ':plugin_id' => $plugin_id]);
+                $courses = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
                 foreach ($courses as $course_id) {
                     $roles[$course_id . '_Instructor'] = $course_id . '_Instructor';
@@ -113,7 +119,9 @@ class UserRoles extends OpencastController
                 }
 
                 $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
-                        WHERE user_id = ? AND status IN (:status)");
+                    JOIN tools_activated ON seminar_id = range_id AND range_type = 'course'
+                    AND plugin_id = :plugin_id
+                    WHERE user_id = :user_id AND status IN (:status)");
 
                 // configure which global role has access to courses
                 $course_write_perms = $course_read_perms = [];
@@ -128,7 +136,7 @@ class UserRoles extends OpencastController
 
                 // get courses with write access
                 $stmt_courses->bindValue(':status', $course_write_perms, \StudipPDO::PARAM_ARRAY);
-                $stmt_courses->execute([$user_id]);
+                $stmt_courses->execute([':user_id' => $user_id, ':plugin_id' => $plugin_id]);
                 $courses_write = $stmt_courses->fetchAll(\PDO::FETCH_COLUMN);
 
                 // Handle deputies ("Dozentenvertretung") as well
@@ -144,7 +152,7 @@ class UserRoles extends OpencastController
 
                 // Get courses with read access
                 $stmt_courses->bindValue(':status', $course_read_perms, \StudipPDO::PARAM_ARRAY);
-                $stmt_courses->execute([$user_id]);
+                $stmt_courses->execute([':user_id' => $user_id, ':plugin_id' => $plugin_id]);
                 $courses_read = $stmt_courses->fetchAll(\PDO::FETCH_COLUMN);
 
                 // add learner roles
