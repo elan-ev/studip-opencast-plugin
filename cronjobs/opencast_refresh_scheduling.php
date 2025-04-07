@@ -82,11 +82,13 @@ class OpencastRefreshScheduling extends CronJob
 
                 // Validate SOP resource.
                 // In case validation fails, we try to remove the record on both sides!
-                if (!$cd || !$course || !$course_config_id || !$resource_obj                                                    // Any requirement fails
+                echo '-----------------------------------------------------' . "\n";
+
+                if (empty($cd) || empty($course) || empty($course_config_id) || empty($resource_obj)                                                    // Any requirement fails
                     || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])  // The server config id of the course and the oc_resource does not match
                     || $cd->room_booking->resource_id != $scheduled_events['resource_id']                                       // The resource of the record and course date does not match
-                    || $cd->room_booking->begin != $scheduled_events['start']                                                      // Start or Enddate are different
-                    || $cd->room_booking->end != $scheduled_events['end']
+                    || $cd->room_booking->begin != $scheduled_events['coursedate_start']                                                      // Start or Enddate are different
+                    || $cd->room_booking->end != $scheduled_events['coursedate_end']
                     /* || intval($cd->end_time) < $time */                                                                      // TODO: decide whether to remove those records that are expired!
                     ) {
 
@@ -97,6 +99,26 @@ class OpencastRefreshScheduling extends CronJob
                         "Ungültiges geplantes Event, Löschen der Aufzeichnungsdaten %s für den Kurs %s\n",
                         $print_date, $print_course
                     );
+
+                    echo 'Grund der Abweichung:' . "\n";
+                    if (empty($cd)) {
+                        echo 'Konnte den zugehörigen Termin nicht finden. Termin-ID: '. $scheduled_events['date_id'] ."\n";
+                    } else if (empty($course)) {
+                        echo 'Konnte den zugehörigen Kurs nicht finden. Kurs-ID: '. $scheduled_events['seminar_id'] ."\n";
+                    } else if (empty($course_config_id)) {
+                        echo 'Konnte die zugehörige Kurskonfiguration nicht finden. Kurs-ID: '. $scheduled_events['seminar_id'] ."\n";
+                    } else if (empty($resource_obj)) {
+                        echo 'Konnte Raum nicht finden. Raum-ID: '. $scheduled_events['resource_id'] ."\n";
+                    } else if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
+                        echo 'Die Opencast-Konfiguration für den Raum und den Kurs unterscheiden sich!' . "\n";
+                    } else if ($cd->room_booking->resource_id != $scheduled_events['resource_id']) {
+                        echo 'Der Raum hat sich geändert. Event: '. $scheduled_events['resource_id'] .', Buchung: '. $cd->room_booking->resource_id ."\n";
+                    } else if ($cd->room_booking->begin != $scheduled_events['coursedate_start']) {
+                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_start']) .', Buchung: '. date('c', $cd->room_booking->begin) . "\n";
+                    } else if ($cd->room_booking->end != $scheduled_events['coursedate_end']) {
+                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_end']) .', Buchung: '. date('c', $cd->room_booking->end) . "\n";
+                    }
+                    die;
 
                     $oc_event_id = $scheduled_events['event_id'];
                     $oc_config_id = $course_config_id;
@@ -125,8 +147,7 @@ class OpencastRefreshScheduling extends CronJob
                     // Delete the recording in SOP.
                     ScheduledRecordings::unscheduleRecording($oc_event_id, $scheduled_events['resource_id'], $scheduled_events['date_id']);
                 } else {
-                    // If validation is passed, we try to update to the record on both sides.
-                    // Update the record.
+                    // If validation is passed, we try to update the record on both sides.
                     echo sprintf(
                         "Aktualisiere die Aufzeichnungsdaten am %s für den Kurs %s\n",
                         $cd->getFullname(), $course->name
@@ -170,6 +191,7 @@ class OpencastRefreshScheduling extends CronJob
         } else {
             echo _('Nicht über Stud.IP Termine geplante Events:') . "\n";
         }
+
         // Loop through the opencast scheduled events that are not yet proccessed above!
         // Each set is based on each opencast server config.
         foreach ($oc_scheduled_events as $oc_set) {
