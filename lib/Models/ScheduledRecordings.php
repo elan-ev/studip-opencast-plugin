@@ -51,6 +51,9 @@ class ScheduledRecordings extends \SimpleORMap
                 $scheduled_recording = new self();
             }
 
+            $coursedate_start = $start;
+            $coursedate_end   = $end;
+
             $scheduled_recording->setData(
                 compact(
                     'seminar_id',
@@ -60,6 +63,8 @@ class ScheduledRecordings extends \SimpleORMap
                     'resource_id',
                     'start',
                     'end',
+                    'coursedate_start',
+                    'coursedate_end',
                     'capture_agent',
                     'event_id',
                     'status',
