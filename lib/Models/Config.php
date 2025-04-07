@@ -188,22 +188,31 @@ class Config extends \SimpleOrMap
                 $this->service_version = $version;
                 $this->store();
 
-                Endpoints::setEndpoint($this->id, $service_host .'/services', 'services');
+                $custom_config = [
+                    'config_id'        => $this->id,
+                    'service_url'      => $service_host,
+                    'service_user'     => $this->service_user,
+                    'service_password' => $this->service_password,
+                    'service_version'  => $this->service_version,
+                    'settings'         => [
+                        'ssl_ignore_cert_errors' => $this->settings['ssl_ignore_cert_errors']
+                    ]
+                ];
 
-                $services_client = new ServicesClient($this->id);
+                $services_client = new ServicesClient($this->id, $custom_config);
 
                 $comp = null;
                 try {
                     $comp = $services_client->getRESTComponents();
                 }
-                catch(\Exception $e) {
-                    if (str_starts_with($e->getMessage(), 'cURL error 6')) {
+                catch (\Exception $e) {
+                    if (str_starts_with($e->getMessage(), 'cURL error')) {
                         return [
                             'type' => 'error',
                             'text' => sprintf(
                                 _('Die angegebene URL %s konnte nicht gefunden werden. Überprüfen Sie bitte ihre Eingabe und versuchen Sie es erneut.'),
                                 $service_host
-                            )
+                            ) . " -> " . $e->getMessage()
                         ];
                     }
                     else {
@@ -217,8 +226,6 @@ class Config extends \SimpleOrMap
                     }
                 }
             } catch (AccessDeniedException $e) {
-                Endpoints::removeEndpoint($this->id, 'services');
-
                 return [
                     'type' => 'error',
                     'text' => sprintf(
@@ -232,7 +239,6 @@ class Config extends \SimpleOrMap
                 $services = RESTConfig::retrieveRESTservices($comp, $service_url);
 
                 if (empty($services)) {
-                    Endpoints::removeEndpoint($this->id, 'services');
                     $message = [
                         'type' => 'error',
                         'text' => sprintf(
