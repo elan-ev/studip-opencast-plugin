@@ -352,6 +352,10 @@ export default {
         },
 
         isVisible(event) {
+            if (!this.isCourse) {
+                return true;
+            }
+
             if (event.seminar_visibility === null || event.seminar_visibility === undefined) {
                 if (this.simple_config_list.settings.OPENCAST_HIDE_EPISODES) {
                     return false;
