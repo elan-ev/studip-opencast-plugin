@@ -116,7 +116,7 @@ export default {
     methods: {
         toogleServer(active) {
             this.config.active = active;
-            this.$store.dispatch('configUpdate', {id: this.config.id, active: active})
+            this.$store.dispatch('configSetActivation', {id: this.config.id, active: active})
             .then(({ data }) => {
                 this.$store.dispatch('configListRead', data.config)
                 .then(() => {

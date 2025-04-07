@@ -113,6 +113,10 @@ export const actions = {
     configListClear(context) {
         context.commit('configListSet', {});
     },
+
+    configSetActivation(context, params) {
+        return ApiService.put('config/' + params.id + '/' + (params.active ? 'activate' : 'deactivate'));
+    }
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
