@@ -303,17 +303,18 @@ class ScheduleHelper
         }
 
         $contributor = $inst_data['name'];
-        $description = $issue->description;
+        $description = $issue->description ?? null;
         $device = $ca['capture_agent'];
 
         $language = "de";
         $seriesId = $serie['series_id'];
 
-        if (!$issue->title) {
+        if (empty($issue->title)) {
             $name = $course->getName();
             $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
-        } else $title = $issue_titles;
-
+        } else {
+            $title = $issue_titles;
+        }
 
         // Additional Metadata
         $abstract = $course->description;
@@ -515,7 +516,7 @@ class ScheduleHelper
             }
         }
 
-        if (!$issue->title) {
+        if (empty($issue->title)) {
             $course = Seminar::getInstance($course_id);
             $name   = $course->getName();
             $title  = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());

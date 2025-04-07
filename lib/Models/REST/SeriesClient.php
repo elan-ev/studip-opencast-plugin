@@ -77,7 +77,7 @@ class SeriesClient extends RestClient
         $publisher   = (string)$inst->name;
         $instructors = $course->getMembers('dozent');
         $instructor  = array_shift($instructors);
-        $contributor = $GLOBALS['UNI_NAME_CLEAN'] ?: 'unbekannt';
+        $contributor = \Config::get()->getValue('UNI_NAME_CLEAN') ?: 'unbekannt';
         $creator     = $instructor['fullname'];
         $language    = 'de';
 
