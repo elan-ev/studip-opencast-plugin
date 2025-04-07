@@ -118,7 +118,6 @@ class OpencastRefreshScheduling extends CronJob
                     } else if ($cd->room_booking->end != $scheduled_events['coursedate_end']) {
                         echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_end']) .', Buchung: '. date('c', $cd->room_booking->end) . "\n";
                     }
-                    die;
 
                     $oc_event_id = $scheduled_events['event_id'];
                     $oc_config_id = $course_config_id;
