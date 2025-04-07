@@ -28,7 +28,7 @@ class IngestClient extends RestClient
     {
         $response = $this->opencastApi->ingest->createMediaPackage();
 
-        if ($response['code'] == 200) {
+        if (in_array($response['code'], [200, 201]) !== false) {
             return $response['body'];
         }
         return false;
@@ -47,7 +47,7 @@ class IngestClient extends RestClient
     {
         $response = $this->opencastApi->ingest->addDCCatalog($mediaPackage, $dublinCore, $flavor);
 
-        if ($response['code'] == 200) {
+        if (in_array($response['code'], [200, 201]) !== false) {
             return $response['body'];
         }
         return false;
