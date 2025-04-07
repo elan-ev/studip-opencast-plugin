@@ -198,10 +198,13 @@ class OpencastRefreshScheduling extends CronJob
             if (!empty($oc_set['scheduled_events'])) {
                 echo _('Opencast Server Config:') . " #{$oc_set['config_id']} \n";
                 foreach ($oc_set['scheduled_events'] as $scheduled_event) {
-                    echo $scheduled_event->identifier . ' ' . $scheduled_event->title . "\n";
-                    if (StudipConfig::get()->OPENCAST_MANAGE_ALL_OC_EVENTS) {
-                        $scheduler_client = SchedulerClient::getInstance($oc_set['config_id']);
-                        $scheduler_client->deleteEvent($scheduled_event->identifier);
+                    // only touch events in the future
+                    if (strtotime($scheduled_event->start) > time()) {
+                        echo $scheduled_event->identifier . ' ' . $scheduled_event->title . "\n";
+                        if (StudipConfig::get()->OPENCAST_MANAGE_ALL_OC_EVENTS) {
+                            $scheduler_client = SchedulerClient::getInstance($oc_set['config_id']);
+                            $scheduler_client->deleteEvent($scheduled_event->identifier);
+                        }
                     }
                 }
             }
