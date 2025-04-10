@@ -516,7 +516,8 @@ export default {
                         });
                     }
 
-                    if ((this.event?.preview?.has_previews || this.event?.state == 'cutting') && !this.isLivestream) {
+                    // As we abandoned the preview object structure, we now have to only validate the preview URL!
+                    if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Videoeditor öffnen'),

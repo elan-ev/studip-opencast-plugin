@@ -539,7 +539,8 @@ class Videos extends UPMap
         $data['mkdate'] = ($data['mkdate'] == '0000-00-00 00:00:00')
             ? 0 : \strtotime($data['mkdate']);
 
-        $data['preview']     = json_decode($data['preview'], true);
+        // Based on the change to the preview structure, we are not dealing with preview object (json encoded) here anymore, but an URL in string format.
+        $data['preview']     = $data['preview'] ?: null;
         $data['publication'] = json_decode($data['publication'], true);
 
         $data['perm']                 = $this->getUserPerm();
