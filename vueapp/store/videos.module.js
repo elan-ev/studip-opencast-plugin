@@ -22,6 +22,7 @@ const state = {
     courseVideosToCopy: [],
     showCourseCopyDialog: false,
     videosReload: false,
+    showEpisodesDefaultVisibilityDialog: false,
 }
 
 const getters = {
@@ -76,6 +77,10 @@ const getters = {
     videosReload(state) {
         return state.videosReload
     },
+
+    showEpisodesDefaultVisibilityDialog(state) {
+        return state.showEpisodesDefaultVisibilityDialog
+    }
 }
 
 const actions = {
@@ -260,7 +265,11 @@ const actions = {
 
     setVideosReload({commit}, mode) {
         commit('setVideosReload', mode)
-    }
+    },
+
+    toggleShowEpisodesDefaultVisibilityDialog({commit}, mode) {
+        commit('setShowEpisodesDefaultVisibilityDialog', mode);
+    },
 }
 
 const mutations = {
@@ -327,7 +336,11 @@ const mutations = {
 
     setVideosReload(state, mode) {
         state.videosReload = mode;
-    }
+    },
+
+    setShowEpisodesDefaultVisibilityDialog(state, mode) {
+        state.showEpisodesDefaultVisibilityDialog = mode;
+    },
 }
 
 export default {
