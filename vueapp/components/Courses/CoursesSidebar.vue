@@ -217,12 +217,6 @@
                             {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
                         </a>
                     </li>
-                    <li v-if="canEdit">
-                        <a href="#" @click.prevent="$emit('copyAll')">
-                            <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
-                            {{ $gettext('Kursinhalte übertragen') }}
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -249,7 +243,6 @@ export default {
     emits: [
         'uploadVideo',
         'recordVideo',
-        'copyAll',
         'editPlaylist',
         'sortVideo',
         'saveSortVideo',

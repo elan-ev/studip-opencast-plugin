@@ -154,15 +154,6 @@
             </tfoot>
         </table>
 
-        <!--
-        <div v-if="isCourse && Object.keys(videos).length > 0" class="oc--bulk-actions">
-            <input type="checkbox" :checked="selectAll" @click.stop="toggleAll">
-            <StudipButton icon="add" @click.stop="showCopyDialog">
-                {{ $gettext('Verknüpfung mit anderen Kursen') }}
-            </StudipButton>
-        </div>
-        -->
-
         <template v-if="showActionDialog">
             <component :is="actionComponent"
                 @cancel="clearAction"
@@ -594,19 +585,6 @@ export default {
                     course: cid
                 }).then(() => {
                     this.$store.dispatch('loadPlaylists');
-                });
-            }
-        },
-
-        showCopyDialog() {
-            this.$store.dispatch('clearMessages');
-            if (this.selectedVideos.length > 0) {
-                this.$store.dispatch('toggleCourseCopyDialog', true);
-                this.$store.dispatch('setCourseVideosToCopy', this.selectedVideos);
-            } else {
-                this.$store.dispatch('addMessage', {
-                    type: 'warning',
-                    text: this.$gettext('Es wurden keine Videos ausgewählt!')
                 });
             }
         },

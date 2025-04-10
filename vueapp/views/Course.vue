@@ -7,8 +7,7 @@
                 @saveSortVideo="saveSort"
                 @cancelSortVideo="cancelSort"
                 @editPlaylist="editPlaylistDialog = true"
-                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
-                @copyAll="copyAll">
+                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true">
             </CoursesSidebar>
         </Teleport>
 
@@ -28,11 +27,6 @@
         <PlaylistEditCard v-if="editPlaylistDialog"
             @done="editPlaylistDialog = false"
             @cancel="editPlaylistDialog = false"
-        />
-
-        <VideoCopyToSeminar v-if="showCourseCopyDialog"
-            @done="copyDone"
-            @cancel="closeCopyDialog"
         />
 
         <PlaylistsLinkCard v-if="showChangeDefaultPlaylistDialog"
@@ -56,7 +50,6 @@ import MessageList from "@/components/MessageList";
 import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
 import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
 import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
-import VideoCopyToSeminar from '@/components/Videos/Actions/VideoCopyToSeminar.vue';
 
 import { mapGetters } from "vuex";
 
@@ -67,13 +60,12 @@ export default {
         PlaylistsLinkCard, PlaylistAddCard,
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
-        MessageList, VideoCopyToSeminar
+        MessageList,
     },
 
     computed: {
         ...mapGetters([
             'currentUser',
-            'showCourseCopyDialog',
             'showPlaylistAddVideosDialog',
             'addPlaylist',
             'cid',
@@ -131,10 +123,6 @@ export default {
             this.$store.dispatch('setVideoSortMode', 'cancel')
         },
 
-        copyAll() {
-            this.$store.dispatch('toggleCourseCopyDialog', true);
-        },
-
         closePlaylistAddVideosDialog() {
             this.$store.dispatch('togglePlaylistAddVideosDialog', false);
         },
@@ -143,18 +131,6 @@ export default {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
-        closeCopyDialog() {
-            this.resetCopyParams();
-        },
-
-        copyDone() {
-            this.resetCopyParams();
-        },
-
-        resetCopyParams() {
-            this.$store.dispatch('toggleCourseCopyDialog', false);
-            this.$store.dispatch('setCourseVideosToCopy', []);
-        }
     },
 
     mounted() {
