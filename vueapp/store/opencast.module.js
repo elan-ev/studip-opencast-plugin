@@ -213,7 +213,11 @@ const actions = {
                 user: null
             });
         }
-    }
+    },
+
+    setCourseEpisodesVisibility({ context }, data) {
+        return ApiService.put('courses/' + data.cid + '/episodes_visibility', {visibility_option: data.visibility_option})
+    },
 }
 
 const mutations = {

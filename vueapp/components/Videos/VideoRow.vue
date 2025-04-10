@@ -357,11 +357,11 @@ export default {
             }
 
             if (event.seminar_visibility === null || event.seminar_visibility === undefined) {
-                if (this.simple_config_list.settings.OPENCAST_HIDE_EPISODES) {
-                    return false;
-                } else {
-                    return true;
+                if (this.course_config && this.course_config.hasOwnProperty('course_hide_episodes')) {
+                    return this.course_config.course_hide_episodes ? false : true;
                 }
+                // Fallback to global setting, when the course_hide_episodes is not set!
+                return this.simple_config_list.settings.OPENCAST_HIDE_EPISODES ? false : true;
             }
 
             if (event.seminar_visibility?.visibility == 'visible') {
@@ -379,7 +379,8 @@ export default {
             'downloadSetting',
             'videoSortMode',
             'currentUser',
-            'simple_config_list'
+            'simple_config_list',
+            'course_config'
         ]),
 
         showCheckbox() {

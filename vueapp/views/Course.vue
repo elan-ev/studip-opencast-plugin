@@ -8,7 +8,8 @@
                 @cancelSortVideo="cancelSort"
                 @editPlaylist="editPlaylistDialog = true"
                 @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
-                @copyAll="copyAll">
+                @copyAll="copyAll"
+                @changeDefaultVisibility="changeDefaultVisibility">
             </CoursesSidebar>
         </Teleport>
 
@@ -42,6 +43,11 @@
             @cancel="showChangeDefaultPlaylistDialog = false"
         />
 
+        <EpisodesDefaultVisibilityDialog v-if="showEpisodesDefaultVisibilityDialog"
+            @done="closeChangeDefaultVisibility"
+            @cancel="closeChangeDefaultVisibility"
+        />
+
         <MessageList />
 
         <router-view></router-view>
@@ -50,6 +56,7 @@
 
 <script>
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
+import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
@@ -67,7 +74,8 @@ export default {
         PlaylistsLinkCard, PlaylistAddCard,
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
-        MessageList, VideoCopyToSeminar
+        MessageList, VideoCopyToSeminar,
+        EpisodesDefaultVisibilityDialog
     },
 
     computed: {
@@ -77,7 +85,8 @@ export default {
             'showPlaylistAddVideosDialog',
             'addPlaylist',
             'cid',
-            'course_config'
+            'course_config',
+            'showEpisodesDefaultVisibilityDialog',
         ]),
 
         canEdit() {
@@ -154,6 +163,14 @@ export default {
         resetCopyParams() {
             this.$store.dispatch('toggleCourseCopyDialog', false);
             this.$store.dispatch('setCourseVideosToCopy', []);
+        },
+
+        changeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', true);
+        },
+
+        closeChangeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', false);
         }
     },
 

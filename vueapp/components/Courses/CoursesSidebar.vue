@@ -218,6 +218,12 @@
                         </a>
                     </li>
                     <li v-if="canEdit">
+                        <a href="#" @click.prevent="$emit('changeDefaultVisibility')">
+                            <studip-icon style="margin-left: -20px;" :shape="changeDefaultVisibilityIcon" role="clickable"/>
+                            {{ $gettext('Standardsichtbarkeit Videos') }}
+                        </a>
+                    </li>
+                    <li v-if="canEdit">
                         <a href="#" @click.prevent="$emit('copyAll')">
                             <studip-icon style="margin-left: -20px;" shape="export" role="clickable"/>
                             {{ $gettext('Kursinhalte übertragen') }}
@@ -254,7 +260,8 @@ export default {
         'sortVideo',
         'saveSortVideo',
         'cancelSortVideo',
-        'changeDefaultPlaylist'
+        'changeDefaultPlaylist',
+        'changeDefaultVisibility'
     ],
 
     data() {
@@ -362,6 +369,16 @@ export default {
         hasDefaultPlaylist() {
             return this.course_config?.has_default_playlist;
         },
+
+        changeDefaultVisibilityIcon() {
+            let course_hide_episodes = false;
+            if (this.course_config.hasOwnProperty('course_hide_episodes')) {
+                course_hide_episodes = this.course_config.course_hide_episodes;
+            } else if (this.simple_config_list?.settings && this.simple_config_list.settings.hasOwnProperty('OPENCAST_HIDE_EPISODES')) {
+                course_hide_episodes = this.simple_config_list.settings.OPENCAST_HIDE_EPISODES;
+            }
+            return course_hide_episodes ? 'visibility-invisible' : 'visibility-visible';
+        }
     },
 
     methods: {
