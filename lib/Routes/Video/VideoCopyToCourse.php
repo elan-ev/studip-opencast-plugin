@@ -23,7 +23,8 @@ class VideoCopyToCourse extends OpencastController
         global $perm, $user;
 
         $course_id = $args['course_id'];
-        if (!$perm->have_studip_perm('tutor', $course_id)) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             throw new \AccessDeniedException();
         }
 

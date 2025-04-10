@@ -23,6 +23,7 @@ class CourseListForPlaylistVideos extends OpencastController
         global $perm;
 
         $params = $request->getQueryParams();
+        $course_id = isset($params['cid']) ? $params['cid'] : null;
 
         // first, check if user has access to this playlist
         $playlist = Playlists::findOneByToken($args['token']);
@@ -32,23 +33,23 @@ class CourseListForPlaylistVideos extends OpencastController
 
         // check if playlist is connected to the passed course and user is part of that course as well
         $permission = false;
-        if ($params['cid']) {
-            if ($perm->have_studip_perm('user', $params['cid'])) {
+        if ($course_id && !empty($playlist->courses)) {
+            $playlist_connected_courses_ids = array_column($playlist->courses->toArray(), 'id');
+            if ($perm->have_studip_perm('user', $course_id) && in_array($course_id, $playlist_connected_courses_ids)) {
                 $permission = true;
             }
         }
 
-        if (!$params['cid'] || !$permission) {
+        if (!$course_id || !$permission) {
             // check what permissions the current user has on the playlist
             $uperm = $playlist->getUserPerm();
 
-            if (empty($uperm) || !$uperm)
-            {
+            if (empty($uperm) || !$uperm) {
                 throw new \AccessDeniedException();
             }
         }
 
-        $courses_ids = PlaylistSeminars::getPlaylistVideosCourses($playlist->id, $params['cid']);
+        $courses_ids = PlaylistSeminars::getPlaylistVideosCourses($playlist->id, $course_id);
 
         return $this->createResponse(PlaylistSeminars::getCoursesArray($courses_ids), $response->withStatus(200));
     }

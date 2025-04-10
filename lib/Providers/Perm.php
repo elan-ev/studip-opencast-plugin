@@ -126,7 +126,7 @@ class Perm
      * @param string $check_role
      * @param string $user_id
      *
-     * @return boolean
+     * @return array|boolean list of institutes or false if the checks are not met!
      */
     public static function getRoleInstitutes($check_role, $user_id)
     {
