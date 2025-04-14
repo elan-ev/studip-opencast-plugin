@@ -327,12 +327,14 @@ export default {
                 'token': this.event.token,
                 'visibility': vis
             }).then(({ data }) => {
-                console.log('response from server', data.message, vis);
-                if (data.message.type == 'success') {
-                    console.log('visibility updated successfully');
-                    view.event.visibility = vis;
-                }
-                view.$store.dispatch('addMessage', data.message);
+                console.log('response from server', data, vis);
+                view.event.visibility = vis;
+                console.log('visibility updated successfully');
+
+                view.$store.dispatch('addMessage', data);
+                view.processing = false;
+            }).catch((err) => {
+                view.$store.dispatch('addMessage', err.response.data);
                 view.processing = false;
             })
         },
