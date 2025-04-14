@@ -5,6 +5,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\CoursewareBlockMappings;
 use Opencast\Models\VideoCoursewareBlocks;
+use Opencast\Models\Videos;
 use Courseware\Block;
 
 class OpencastCoursewareBlockCopyMapping extends CronJob
@@ -36,23 +37,24 @@ class OpencastCoursewareBlockCopyMapping extends CronJob
                 $token = $mapping->token;
                 $new_block_query->execute([':token' => $token]);
                 $new_block_record = $new_block_query->fetchOne(PDO::FETCH_ASSOC);
-                if (!empty($new_block_record)) {
+                $video = Videos::find($mapping->video_id);
+                if (!empty($new_block_record) && !empty($video)) {
                     echo 'Peform mapping for block: ' . $new_block_record['id'] . "\n";
 
                     // Add record into the VideoCoursewareBlocks
                     $msg = 'Record is added into oc_video_cw_blocks';
-                    $added = VideoCoursewareBlocks::setRecord($mapping->new_seminar_id, $mapping->token, $new_block_record['id']);
+                    $added = VideoCoursewareBlocks::setRecord($mapping->new_seminar_id, $video->token, $new_block_record['id']);
                     if (!$added) {
                         $msg = 'No record is added into oc_video_cw_blocks!';
                     }
-                    echo $msg;
+                    echo $msg . "\n";
 
                     // Get the actual block object.
                     $new_block = Block::find($new_block_record['id']);
                     if (!empty($new_block)) {
                         // Remove extra param from block's payload.
                         $palyload = json_decode($new_block->payload, true);
-                        unset($palyload['copied_from']);
+                        unset($palyload['copied_token']);
                         $new_block->payload = json_encode($palyload);
                         $new_block->store();
                         echo "Block's Playload cleared \n";
