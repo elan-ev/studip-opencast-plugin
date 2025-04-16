@@ -980,7 +980,7 @@ class Videos extends UPMap
             $presentation_download = [];
             $audio_download        = [];
             $annotation_tool       = false;
-            $duration              = 0;
+            $duration              = $video->duration;
             $track_link            = '';
             $livestream_link       = '';
 
