@@ -37,6 +37,7 @@ class SimpleConfigList extends OpencastController
                 'id'            => $conf->id,
                 'name'          => $conf->service_url,
                 'version'       => $conf->service_version,
+                'play'          => reset(Endpoints::findBySql("config_id = ? AND service_type = 'play'", [$conf->id]))->service_url,
                 'ingest'        => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
                 'apievents'     => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apievents'", [$conf->id]))->service_url,
                 'apiplaylists'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apiplaylists'", [$conf->id]))->service_url,
