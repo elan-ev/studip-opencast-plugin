@@ -11,6 +11,7 @@ use Opencast\Models\VideosUserPerms;
 use Opencast\Models\VideosShares;
 use Opencast\Models\PlaylistsUserPerms;
 use Opencast\Models\Config;
+use Opencast\Helpers\PlaylistMigration;
 
 
 
@@ -181,39 +182,41 @@ class UserRoles extends OpencastController
 
                 // Handle playlist roles
 
-                // get all playlists the user has permissions on
-                foreach (PlaylistsUserPerms::findByUser_id($user_id) as $pperm) {
-                    if ($pperm->perm == 'owner' || $pperm->perm == 'write') {
-                        $roles[$pperm->playlist->service_playlist_id . '_write'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
-                    } else {
-                        $roles[$pperm->playlist->service_playlist_id . '_read'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_read';
+                if (PlaylistMigration::isConverted()) {
+                    // get all playlists the user has permissions on
+                    foreach (PlaylistsUserPerms::findByUser_id($user_id) as $pperm) {
+                        if ($pperm->perm == 'owner' || $pperm->perm == 'write') {
+                            $roles[$pperm->playlist->service_playlist_id . '_write'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_write';
+                        } else {
+                            $roles[$pperm->playlist->service_playlist_id . '_read'] = 'PLAYLIST_' . $pperm->playlist->service_playlist_id . '_read';
+                        }
                     }
-                }
 
-                // find playlists with write access
-                $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
+                    // find playlists with write access
+                    $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
                     INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = op.id)
                     WHERE ops.seminar_id IN (:courses)'
-                );
-                $stmt->bindValue(':courses', $courses_write, \StudipPDO::PARAM_ARRAY);
-                $stmt->execute();
+                    );
+                    $stmt->bindValue(':courses', $courses_write, \StudipPDO::PARAM_ARRAY);
+                    $stmt->execute();
 
-                foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
-                    $roles[$service_playlist_id . '_write'] = 'PLAYLIST_' . $service_playlist_id . '_write';
-                }
+                    foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
+                        $roles[$service_playlist_id . '_write'] = 'PLAYLIST_' . $service_playlist_id . '_write';
+                    }
 
-                // find playlists with read access
-                $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
+                    // find playlists with read access
+                    $stmt = \DBManager::get()->prepare('SELECT service_playlist_id FROM oc_playlist AS op
                     INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = op.id)
                     WHERE ops.seminar_id IN (:courses)
                     AND ops.visibility = "visible"'
-                );
-                $stmt->bindValue(':courses', $courses_read, \StudipPDO::PARAM_ARRAY);
-                $stmt->execute();
+                    );
+                    $stmt->bindValue(':courses', $courses_read, \StudipPDO::PARAM_ARRAY);
+                    $stmt->execute();
 
-                foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
-                    // All seminar members have read permission on visible playlists
-                    $roles[$service_playlist_id . '_read'] = 'PLAYLIST_' . $service_playlist_id . '_read';
+                    foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $service_playlist_id) {
+                        // All seminar members have read permission on visible playlists
+                        $roles[$service_playlist_id . '_read'] = 'PLAYLIST_' . $service_playlist_id . '_read';
+                    }
                 }
             }
         } else {
