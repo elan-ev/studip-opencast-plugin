@@ -10,6 +10,7 @@ use Opencast\OpencastController;
 use Opencast\Models\VideosUserPerms;
 use Opencast\Models\VideosShares;
 use Opencast\Models\PlaylistsUserPerms;
+use Opencast\Models\Config;
 
 
 
@@ -24,6 +25,12 @@ class UserRoles extends OpencastController
     {
         // parse username, they are of the type lti:instid:1234567890acbdef
         $plugin_id = $this->container->get('plugin')->getPluginId();
+
+        // Check whether all opencast configs support episode ID role access.
+        $episode_id_role_access = true;
+        foreach (Config::findBySQL('1') as $config) {
+            $episode_id_role_access &= $config->settings['episode_id_role_access'] ?? false;
+        }
 
         $user_id    = null;
         $share_uuid = null;
@@ -45,8 +52,11 @@ class UserRoles extends OpencastController
         if (!empty($share_uuid)) {
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
-                $roles[] = $video_share->video->episode . '_read';
-                $roles[] = 'ROLE_EPISODE_' . $video_share->video->episode . '_READ';
+                if ($episode_id_role_access) {
+                    $roles[] = 'ROLE_EPISODE_' . $video_share->video->episode . '_READ';
+                } else {
+                    $roles[] = $video_share->video->episode . '_read';
+                }
             } else {
                 throw new Error('Share not found', 404);
             }
@@ -96,12 +106,18 @@ class UserRoles extends OpencastController
                     if (!$vperm->video->episode) continue;
 
                     if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
-                        $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
-                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
-                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_WRITE'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_WRITE';
+                        if ($episode_id_role_access) {
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_WRITE'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_WRITE';
+                        } else {
+                            $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
+                        }
                     } else {
-                        $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
-                        $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                        if ($episode_id_role_access) {
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                        } else {
+                            $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
+                        }
                     }
                 }
 
@@ -114,8 +130,11 @@ class UserRoles extends OpencastController
                 $stmt_courseware->execute([':user_id' => $user_id]);
 
                 while($episode = $stmt_courseware->fetchColumn()) {
-                    $roles[$episode . '_read'] = $episode . '_read';
-                    $roles['ROLE_EPISODE_' . $episode . '_READ'] = 'ROLE_EPISODE_' . $episode . '_READ';
+                    if ($episode_id_role_access) {
+                        $roles['ROLE_EPISODE_' . $episode . '_READ'] = 'ROLE_EPISODE_' . $episode . '_READ';
+                    } else {
+                        $roles[$episode . '_read'] = $episode . '_read';
+                    }
                 }
 
                 $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
