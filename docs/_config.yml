@@ -1,0 +1,8 @@
+title: Stud.IP -  Opencast Plugin
+description: A Stud.IP Plugin for the Opencast Project
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
