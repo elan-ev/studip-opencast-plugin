@@ -39,23 +39,15 @@ class VideoWorldwideShareUpdate extends OpencastController
         $visibility = $json['visibility'];
 
         if ($video->setWorldVisibility($visibility) !== true) {
-            $message = [
-                'type' => 'error',
-                'text' => _('Beim Übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
-            ];
-            return $this->createResponse([
-                'message' => $message,
-            ], $response->withStatus(500));
+            return $this->createResponse(
+                _('Beim Übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
+            , $response->withStatus(500));
         } else {
-            $message = [
-                'type' => 'success',
-                'text' => $visibility === 'public'
+            return $this->createResponse(
+                $visibility === 'public'
                     ? _('Das Video wurde auf weltweit zugreifbar gestellt.')
                     : _('Das Video wurde nur berechtigten Personen zugreifbar gemacht.')
-            ];
-            return $this->createResponse([
-                'message' => $message,
-            ], $response->withStatus(200));
+            , $response->withStatus(200));
         }
     }
 }

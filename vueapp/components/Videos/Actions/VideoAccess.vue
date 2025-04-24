@@ -158,7 +158,7 @@
                         </StudipButton>
                     </fieldset>
                 </form>
-                <MessageList :float="true" />
+                <MessageList :float="true" :dialog="true" />
             </template>
         </StudipDialog>
     </div>
@@ -319,6 +319,7 @@ export default {
 
         setVisibility(vis)
         {
+            this.$store.dispatch('clearMessages', true);
             this.processing = true;
 
             let view = this;
@@ -327,12 +328,22 @@ export default {
                 'token': this.event.token,
                 'visibility': vis
             }).then(({ data }) => {
-                console.log('response from server', data.message, vis);
-                if (data.message.type == 'success') {
-                    console.log('visibility updated successfully');
-                    view.event.visibility = vis;
-                }
-                view.$store.dispatch('addMessage', data.message);
+                console.log('response from server', data, vis);
+                view.event.visibility = vis;
+                console.log('visibility updated successfully');
+
+                view.$store.dispatch('addMessage', {
+                    type: 'success',
+                    text: data,
+                    dialog: true
+                });
+                view.processing = false;
+            }).catch((err) => {
+                view.$store.dispatch('addMessage', {
+                    type: 'error',
+                    text: err.response.data,
+                    dialog: true
+                });
                 view.processing = false;
             })
         },
