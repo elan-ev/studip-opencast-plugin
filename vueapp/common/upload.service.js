@@ -345,6 +345,7 @@ class UploadService {
         let onProgress = options.uploadProgress;
         let uploadDone = options.uploadDone;
         let onError = options.onError;
+        let mediaPackage = null;
 
         return this.getMediaPackage()
             .then(function ({ data }) {
@@ -357,9 +358,10 @@ class UploadService {
             .then(function ({ data }) {
                 return obj.uploadTracks(data, files, onProgress)
             })
-            .then(function (mediaPackage) {
-                let ingest = obj.finishIngest(mediaPackage, workflowId);
-
+            .then(function (data) {
+                mediaPackage = data;
+                return obj.finishIngest(mediaPackage, workflowId);
+            }).then(function () {
                 try {
                     let episode_id;
                     // Nothing waiting for this XHR to finish, making the
@@ -373,7 +375,6 @@ class UploadService {
                     console.log(ex);
                     /* Catch XML parse error. On Error Resume Next ;-) */
                 }
-                return ingest;
             }).catch(function (error) {
                 if (error.code === 'ERR_NETWORK') {
                     onError();

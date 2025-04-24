@@ -4,6 +4,7 @@ use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
 use Opencast\Models\VideoCoursewareBlocks;
 use Opencast\Models\CoursewareBlockMappings;
+use Opencast\Models\Videos;
 /**
  * This class represents the content of a Courseware test block.
  *
@@ -63,7 +64,10 @@ class OpencastBlockV3 extends BlockType
         $token = md5($this->block['id'] . time());
         $payload['copied_token'] = $token;
 
-        CoursewareBlockMappings::setRecord($token, $payload['token'], $rangeId);
+        if (!empty($payload['token']) && Course::exists($rangeId)) {
+            $video = Videos::findByToken($payload['token']);
+            CoursewareBlockMappings::setRecord($token, $video->id, $rangeId);
+        }
 
         return $payload;
     }

@@ -7,7 +7,8 @@
                 @saveSortVideo="saveSort"
                 @cancelSortVideo="cancelSort"
                 @editPlaylist="editPlaylistDialog = true"
-                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true">
+                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
+                @changeDefaultVisibility="changeDefaultVisibility">
             </CoursesSidebar>
         </Teleport>
 
@@ -36,6 +37,11 @@
             @cancel="showChangeDefaultPlaylistDialog = false"
         />
 
+        <EpisodesDefaultVisibilityDialog v-if="showEpisodesDefaultVisibilityDialog"
+            @done="closeChangeDefaultVisibility"
+            @cancel="closeChangeDefaultVisibility"
+        />
+
         <MessageList />
 
         <router-view></router-view>
@@ -44,6 +50,7 @@
 
 <script>
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
+import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
@@ -61,6 +68,7 @@ export default {
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
         MessageList,
+        EpisodesDefaultVisibilityDialog
     },
 
     computed: {
@@ -69,7 +77,8 @@ export default {
             'showPlaylistAddVideosDialog',
             'addPlaylist',
             'cid',
-            'course_config'
+            'course_config',
+            'showEpisodesDefaultVisibilityDialog',
         ]),
 
         canEdit() {
@@ -131,6 +140,13 @@ export default {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
+        changeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', true);
+        },
+
+        closeChangeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', false);
+        }
     },
 
     mounted() {

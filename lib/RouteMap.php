@@ -107,6 +107,8 @@ class RouteMap
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
 
         $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class); // TODO: document in api docs
+        // TODO: document in api docs?
+        $group->put("/courses/{course_id}/episodes_visibility", Routes\Course\CourseSetDefaultVideosVisibility::class);
 
         $group->get("/courses/videos", Routes\Course\CourseListForUserVideos::class);
         $group->get("/courses/videos/playlist/{token}", Routes\Course\CourseListForPlaylistVideos::class);
@@ -140,6 +142,7 @@ class RouteMap
         $group->post("/config", Routes\Config\ConfigAdd::class); // create new config
         $group->get("/config/{id}", Routes\Config\ConfigShow::class); // get config with itd
         $group->put("/config/{id}", Routes\Config\ConfigEdit::class); // update existing config
+        $group->put("/config/{id}/{activation}", Routes\Config\ConfigSetActivation::class);
         $group->delete("/config/{id}", Routes\Config\ConfigDelete::class); // delete existing config
 
         $group->get('/migrate_playlists', Routes\Config\ConfigMigratePlaylists::class);

@@ -5,12 +5,13 @@ require_once __DIR__ . '/../bootstrap_migrations.php';
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\PlaylistSeminarVideos;
 
 class ConvertVirtualPlaylists extends Migration
 {
     public function description()
     {
-        return 'Convert virtual course playlists to real playlists';
+        return 'Convert virtual course playlists to real playlists and populate the visibility of the videos in oc_playlist_seminar_video';
     }
 
     public function up()
@@ -35,11 +36,11 @@ class ConvertVirtualPlaylists extends Migration
         // collect videos for playlists
         $playlists = [];
         while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
-            $playlists[$data['seminar_id']][] = $data['video_id'];
+            $playlists[$data['seminar_id']][] = [$data['video_id'], $data['visibility']];
         }
 
         // create playlists for courses, add videos to them and connect these new playlists to the course
-        foreach ($playlists as $seminar_id => $videos) {
+        foreach ($playlists as $seminar_id => $videos_records) {
             $course = Course::find($seminar_id);
 
             if (!empty($course)) {
@@ -51,7 +52,8 @@ class ConvertVirtualPlaylists extends Migration
                 $playlist->store();
 
                 // add videos to playlist
-                foreach ($videos as $video_id) {
+                foreach ($videos_records as $video_record) {
+                    [$video_id, $video_visibility] = $video_record;
                     $video = new PlaylistVideos();
                     $video->video_id    = $video_id;
                     $video->playlist_id = $playlist->id;
@@ -65,6 +67,16 @@ class ConvertVirtualPlaylists extends Migration
                 $psem->is_default  = 1;
                 $psem->visibility  = 'visible';
                 $psem->store();
+
+                // Populate videos visibilities in oc_playlist_seminar_video table.
+                foreach ($videos_records as $video_record) {
+                    [$video_id, $video_visibility] = $video_record;
+                    $psemv = new PlaylistSeminarVideos();
+                    $psemv->playlist_seminar_id = $psem->id;
+                    $psemv->video_id = $video_id;
+                    $psemv->visibility = $video_visibility;
+                    $psemv->store();
+                }
             }
         }
 

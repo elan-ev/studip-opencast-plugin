@@ -352,12 +352,16 @@ export default {
         },
 
         isVisible(event) {
+            if (!this.isCourse) {
+                return true;
+            }
+
             if (event.seminar_visibility === null || event.seminar_visibility === undefined) {
-                if (this.simple_config_list.settings.OPENCAST_HIDE_EPISODES) {
-                    return false;
-                } else {
-                    return true;
+                if (this.course_config && this.course_config.hasOwnProperty('course_hide_episodes')) {
+                    return this.course_config.course_hide_episodes ? false : true;
                 }
+                // Fallback to global setting, when the course_hide_episodes is not set!
+                return this.simple_config_list.settings.OPENCAST_HIDE_EPISODES ? false : true;
             }
 
             if (event.seminar_visibility?.visibility == 'visible') {
@@ -375,7 +379,8 @@ export default {
             'downloadSetting',
             'videoSortMode',
             'currentUser',
-            'simple_config_list'
+            'simple_config_list',
+            'course_config'
         ]),
 
         showCheckbox() {
@@ -511,7 +516,8 @@ export default {
                         });
                     }
 
-                    if ((this.event?.preview?.has_previews || this.event?.state == 'cutting') && !this.isLivestream) {
+                    // As we abandoned the preview object structure, we now have to only validate the preview URL!
+                    if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Videoeditor öffnen'),

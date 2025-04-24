@@ -794,11 +794,11 @@ class ScheduleHelper
                             $issue = new \Issue(['issue_id' => $is]);
                             $titles[] = my_substr($issue->getTitle(), 0, 80);
                         }
-                        $title = count($titles) ? 'Themen: ' . htmlReady(my_substr(implode(', ', $titles), 0, 80)) : '';
+                        $title = count($titles) ? 'Themen: ' . my_substr(implode(', ', $titles), 0, 80) : '';
                     } else {
                         foreach ($issues as $is) {
                             $issue = new \Issue(['issue_id' => $is]);
-                            $title = htmlReady(my_substr($issue->getTitle(), 0, 80));
+                            $title = my_substr($issue->getTitle(), 0, 80);
                         }
                     }
                 }

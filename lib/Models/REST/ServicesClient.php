@@ -8,11 +8,13 @@ class ServicesClient extends RestClient
 {
     public static $me;
 
-    public function __construct($config_id = 1)
+    public function __construct($config_id = 1, $custom_config = null)
     {
         $this->serviceName = 'ServicesClient';
 
-        if ($config = Config::getConfigForService('services', $config_id)) {
+        if ($custom_config) {
+            parent::__construct($custom_config);
+        } else if ($config = Config::getConfigForService('services', $config_id)) {
             parent::__construct($config);
         } else {
             throw new \Exception ($this->serviceName . ': '
