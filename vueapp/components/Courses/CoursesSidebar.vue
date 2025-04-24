@@ -44,7 +44,7 @@
                                 <span class="oc--playlist-title">
                                     {{ p.title }}
                                 </span>
-                                <div v-if="p.is_default == 1"
+                                <div v-if="p.is_default == true"
                                     class="tooltip oc--playlist-default-icon" :data-tooltip="$gettext('Standard-Kurswiedergabeliste')">
                                     <studip-icon shape="check-circle" :role="playlist?.token == p.token ? 'info_alt' : 'clickable'" :size="16"/>
                                 </div>
