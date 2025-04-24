@@ -70,7 +70,7 @@ REPLACE INTO `oc_workflow_config` (`id`, `config_id`, `used_for`, `workflow_id`)
 (4,	1,	'delete',	1),
 (5,	1,	'subtitles',	9);
 
-REPLACE INTO `auth_user_md5` (`user_id`, `username`, `password`, `perms`, `Vorname`, `Nachname`, `Email`, `validation_key`, `auth_plugin`, `locked`, `lock_comment`, `locked_by`, `visible`, `matriculation_number`) VALUES
-('e7a0a84b161f3e8c09b4a0a2e8a58147', 'simple_autor', UNHEX('2432612430382437614E434250676A4D535039426F666B684B4D4252754A32564F5164324D6E616E726E57782F4469627A5547462F416D3248654436'), 'autor', 'Testaccount',	'Simple Autor', 'autor@studip.de', '', 'standard', 0, NULL, NULL, 'yes', '1234567');
+REPLACE INTO `auth_user_md5` (`user_id`, `username`, `password`, `perms`, `Vorname`, `Nachname`, `Email`, `validation_key`, `auth_plugin`, `locked`, `lock_comment`, `locked_by`, `visible`) VALUES
+('e7a0a84b161f3e8c09b4a0a2e8a58147', 'simple_autor', UNHEX('2432612430382437614E434250676A4D535039426F666B684B4D4252754A32564F5164324D6E616E726E57782F4469627A5547462F416D3248654436'), 'autor', 'Testaccount',	'Simple Autor', 'autor@studip.de', '', 'standard', 0, NULL, NULL, 'yes');
 
 SET FOREIGN_KEY_CHECKS=1;
