@@ -1,8 +1,28 @@
+<style>
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+</style>
+
 Stud.IP-Opencast-Plugin
 =======================
 
 *This plugin serves as a connection between [Opencast](http://opencast.org) and
 the LMS [Stud.IP](http://studip.de/).*
+
+<a href="studip_opencast_routes.html" class="button">Stud.IP Opencast Routes Documentation</a>
 
 Mit dem Opencast-Plugin kann eine Verbindung zwischen einer
 Opencast-Installation und dem Lernmanagementsystem Stud.IP hergestellt werden.
@@ -23,7 +43,7 @@ die verwendete Aufzeichnungstechnik.
 
 *Einfache Aufzeichnungsplanung:* Vorlesungsaufzeichnungen können direkt in dem
 Stud.IP-Kurs von den DozentInnen geplant werden. Dabei werden im Kurs
-verfügbare Metadaten bei der Planung berücksichtig. Möglich ist dies mit einer
+verfügbare Metadaten bei der Planung berücksichtigt. Möglich ist dies mit einer
 eigenen Planungsansicht. Hiermit entfällt die mehrfache Eingabe von Metadaten.
 
 *Kontrolle der Sichtbarkeit:* Die DozentInnen können die Sichtbarkeit jeder
@@ -52,4 +72,4 @@ Literatur
 Support/Kontakt
 ---------------
 
-- Till Glöggler (ELAN e.V.), till.gloeggler@elan-ev.de
+- Till Glöggler (elan e.V.), gloeggler@elan-ev.de
