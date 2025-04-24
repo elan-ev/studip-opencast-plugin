@@ -87,7 +87,7 @@
                         :numberOfColumns="numberOfColumns"
                         :selectedVideos="selectedVideos"
                         @toggle="toggleVideo"
-                        :selectable="selectable"
+                        :selectable="selectable || isContents"
                         :isCourse="isCourse"
                         :canUpload="canUpload"
                         :showActions="showActions"
@@ -98,7 +98,7 @@
                 </template>
             </draggable>
 
-            <tfoot v-if="canEdit || (isCourse && playlist)">
+            <tfoot v-if="canEdit || (isCourse && playlist) || isContents">
                 <tr>
                     <td :colspan="numberOfColumns">
                         <span class="oc--bulk-actions">
@@ -107,7 +107,7 @@
                             </StudipButton>
                         </span>
 
-                        <span v-if="canEdit && !isCourse && !trashBin">
+                        <span v-if="(canEdit || isContents) && !isCourse && !trashBin">
                             <StudipButton icon="trash"
                                 @click.prevent="doBulkAction('BulkVideoDelete')"
                                 :class="{
@@ -301,7 +301,7 @@ export default {
         },
 
         showCheckbox() {
-            return (this.selectable || this.canEdit || this.canUpload) && this.userHasSelectableVideos;
+            return (this.selectable || this.canEdit || this.canUpload || this.isContents) && this.userHasSelectableVideos;
         },
 
         isCourse() {
@@ -350,7 +350,16 @@ export default {
 
         serversCheckSuccessful() {
             return Object.values(this.isLTIAuthenticated).every(server => server);
+        },
+
+        fragment() {
+            return this.$route.name;
+        },
+
+        isContents() {
+            return this.fragment === 'videos';
         }
+
     },
 
     methods: {
