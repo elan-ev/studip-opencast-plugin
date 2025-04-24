@@ -7,7 +7,7 @@
         }
     },
     "require": {
-        "elan-ev/opencast-api": "^1.8",
+        "elan-ev/opencast-api": "^1.9.1",
         "guzzlehttp/psr7": "2.4.5"
     },
     "require-dev": {
