@@ -63,7 +63,9 @@ class OpencastBlockV3 extends BlockType
         $token = md5($this->block['id'] . time());
         $payload['copied_token'] = $token;
 
-        CoursewareBlockMappings::setRecord($token, $payload['token'], $rangeId);
+        if (!empty($payload['token'])) {
+            CoursewareBlockMappings::setRecord($token, $payload['token'], $rangeId);
+        }
 
         return $payload;
     }
