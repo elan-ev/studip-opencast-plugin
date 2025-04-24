@@ -24,7 +24,8 @@ class CourseSetUpload extends OpencastController
         $course_id = $args['course_id'];
         $upload = $args['upload'] ? 1 : 0;
 
-        if (!$perm->have_studip_perm('tutor', $course_id)) {
+        $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+        if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             throw new \AccessDeniedException();
         }
 

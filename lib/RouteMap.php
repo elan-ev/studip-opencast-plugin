@@ -63,7 +63,6 @@ class RouteMap
 
         $group->get("/videos/{token}/shares", Routes\Video\VideoSharesList::class);
         $group->put("/videos/{token}/shares", Routes\Video\VideoSharesUpdate::class);
-        $group->post("/videos/{course_id}/copy", Routes\Video\VideoCopyToCourse::class);
 
         $group->put("/videos/{token}/worldwide_share", Routes\Video\VideoWorldwideShareUpdate::class);
 
@@ -108,6 +107,8 @@ class RouteMap
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
 
         $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class); // TODO: document in api docs
+        // TODO: document in api docs?
+        $group->put("/courses/{course_id}/episodes_visibility", Routes\Course\CourseSetDefaultVideosVisibility::class);
 
         $group->get("/courses/videos", Routes\Course\CourseListForUserVideos::class);
         $group->get("/courses/videos/playlist/{token}", Routes\Course\CourseListForPlaylistVideos::class);

@@ -109,7 +109,7 @@ class Videos extends UPMap
             $sql .= ' INNER JOIN oc_playlist_seminar AS ops ON (ops.seminar_id = :cid AND ops.playlist_id = opv.playlist_id)'.
                     ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where = ' WHERE '. self::getVisibilitySql();
+            $where = ' WHERE '. self::getVisibilitySql($cid);
 
             $params[':cid'] = $cid;
         }
@@ -150,7 +150,7 @@ class Videos extends UPMap
         if (!$perm->have_studip_perm($required_course_perm, $course_id)) {
             $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where = ' WHERE '. self::getVisibilitySql();
+            $where = ' WHERE '. self::getVisibilitySql($course_id);
         }
 
         $query = [
@@ -162,10 +162,15 @@ class Videos extends UPMap
         return self::getFilteredVideos($query, $filters);
     }
 
-    private static function getVisibilitySql()
+    private static function getVisibilitySql($course_id)
     {
         // if each video has to explicitly set to visible, filter out everything else
-        if (\Config::get()->OPENCAST_HIDE_EPISODES) {
+        $course_hide_episodes = \Config::get()->OPENCAST_HIDE_EPISODES;
+        $course_default_episodes_visibility = \CourseConfig::get($course_id)->OPENCAST_COURSE_DEFAULT_EPISODES_VISIBILITY ?? 'default';
+        if ($course_default_episodes_visibility !== 'default') {
+            $course_hide_episodes = $course_default_episodes_visibility === 'hidden' ? true : false;
+        }
+        if ($course_hide_episodes) {
             return '(
                 (opsv.visibility = "visible" AND opsv.visible_timestamp IS NULL)
                 OR (opsv.visible_timestamp < NOW())
@@ -494,7 +499,7 @@ class Videos extends UPMap
         if (!$perm->have_perm('dozent', $user_id)) {
             $sql .= ' LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)';
 
-            $where .= ' AND '. self::getVisibilitySql();
+            $where .= ' AND '. self::getVisibilitySql($course_id);
         }
 
         $sql .= $where;
@@ -980,7 +985,7 @@ class Videos extends UPMap
             $presentation_download = [];
             $audio_download        = [];
             $annotation_tool       = false;
-            $duration              = 0;
+            $duration              = $video->duration;
             $track_link            = '';
             $livestream_link       = '';
 

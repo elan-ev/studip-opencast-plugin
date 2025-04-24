@@ -36,7 +36,8 @@ class CourseConfig extends OpencastController
 
         if (empty($series)) {
             // only tutor or above should be able to trigger this series creation!
-            if ($perm->have_studip_perm('tutor', $course_id)) {
+            $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+            if ($perm->have_studip_perm($required_course_perm, $course_id)) {
                 // No series for this course yet! Create one!
                 $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
                 $series_client = new SeriesClient($config_id);
@@ -53,16 +54,31 @@ class CourseConfig extends OpencastController
             }
         }
 
+        // Default Course Episodes Visibility.
+        // The course specific config option OPENCAST_COURSE_DEFAULT_EPISODES_VISIBILITY has 3 possible values:
+            // - default: use the default value from the config (OPENCAST_HIDE_EPISODES) at the time!
+            // - visible: show the episodes to students by default
+            // - hidden: hide the episodes from students by default
+        // Getting with the default value from the config (OPENCAST_HIDE_EPISODES).
+        $course_hide_episodes = \Config::get()->OPENCAST_HIDE_EPISODES;
+        $course_default_episodes_visibility = \CourseConfig::get($course_id)->OPENCAST_COURSE_DEFAULT_EPISODES_VISIBILITY
+                                                ?? 'default';
+        if ($course_default_episodes_visibility !== 'default') {
+            $course_hide_episodes = $course_default_episodes_visibility === 'hidden' ? true : false;
+        }
+
         $results = [
             'series'    => [
                 'series_id'  => $series->series_id,
             ],
-            'workflow'              => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
-            'edit_allowed'          => Perm::editAllowed($course_id),
-            'upload_allowed'        => Perm::uploadAllowed($course_id),
-            'upload_enabled'        => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0,
-            'has_default_playlist'  => Helpers::checkCourseDefaultPlaylist($course_id),
-            'scheduling_allowed'    => Perm::schedulingAllowed($course_id)
+            'workflow'                           => SeminarWorkflowConfiguration::getWorkflowForCourse($course_id),
+            'edit_allowed'                       => Perm::editAllowed($course_id),
+            'upload_allowed'                     => Perm::uploadAllowed($course_id),
+            'upload_enabled'                     => \CourseConfig::get($course_id)->OPENCAST_ALLOW_STUDENT_UPLOAD ? 1 : 0,
+            'has_default_playlist'               => Helpers::checkCourseDefaultPlaylist($course_id),
+            'scheduling_allowed'                 => Perm::schedulingAllowed($course_id),
+            'course_hide_episodes'               => $course_hide_episodes, // Use this in a course instead of OPENCAST_HIDE_EPISODES!
+            'course_default_episodes_visibility' => $course_default_episodes_visibility,
         ];
 
         return $this->createResponse($results, $response);

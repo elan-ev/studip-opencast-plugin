@@ -8,7 +8,7 @@
                 @cancelSortVideo="cancelSort"
                 @editPlaylist="editPlaylistDialog = true"
                 @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
-                @copyAll="copyAll">
+                @changeDefaultVisibility="changeDefaultVisibility">
             </CoursesSidebar>
         </Teleport>
 
@@ -19,7 +19,6 @@
         />
 
         <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
-            :canEdit="canEdit"
             :canUpload="canUpload"
             @done="closePlaylistAddVideosDialog"
             @cancel="closePlaylistAddVideosDialog"
@@ -30,16 +29,16 @@
             @cancel="editPlaylistDialog = false"
         />
 
-        <VideoCopyToSeminar v-if="showCourseCopyDialog"
-            @done="copyDone"
-            @cancel="closeCopyDialog"
-        />
-
         <PlaylistsLinkCard v-if="showChangeDefaultPlaylistDialog"
             :is-default="true"
             :custom-title="$gettext('Kurswiedergabeliste wechseln')"
             @done="showChangeDefaultPlaylistDialog = false"
             @cancel="showChangeDefaultPlaylistDialog = false"
+        />
+
+        <EpisodesDefaultVisibilityDialog v-if="showEpisodesDefaultVisibilityDialog"
+            @done="closeChangeDefaultVisibility"
+            @cancel="closeChangeDefaultVisibility"
         />
 
         <MessageList />
@@ -50,13 +49,13 @@
 
 <script>
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
+import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
 import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
 import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
 import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
-import VideoCopyToSeminar from '@/components/Videos/Actions/VideoCopyToSeminar.vue';
 
 import { mapGetters } from "vuex";
 
@@ -67,17 +66,18 @@ export default {
         PlaylistsLinkCard, PlaylistAddCard,
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
-        MessageList, VideoCopyToSeminar
+        MessageList,
+        EpisodesDefaultVisibilityDialog
     },
 
     computed: {
         ...mapGetters([
             'currentUser',
-            'showCourseCopyDialog',
             'showPlaylistAddVideosDialog',
             'addPlaylist',
             'cid',
-            'course_config'
+            'course_config',
+            'showEpisodesDefaultVisibilityDialog',
         ]),
 
         canEdit() {
@@ -131,10 +131,6 @@ export default {
             this.$store.dispatch('setVideoSortMode', 'cancel')
         },
 
-        copyAll() {
-            this.$store.dispatch('toggleCourseCopyDialog', true);
-        },
-
         closePlaylistAddVideosDialog() {
             this.$store.dispatch('togglePlaylistAddVideosDialog', false);
         },
@@ -143,17 +139,12 @@ export default {
             this.$store.dispatch('addPlaylistUI', false);
         },
 
-        closeCopyDialog() {
-            this.resetCopyParams();
+        changeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', true);
         },
 
-        copyDone() {
-            this.resetCopyParams();
-        },
-
-        resetCopyParams() {
-            this.$store.dispatch('toggleCourseCopyDialog', false);
-            this.$store.dispatch('setCourseVideosToCopy', []);
+        closeChangeDefaultVisibility() {
+            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', false);
         }
     },
 
