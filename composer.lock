@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac3ed24453a1b5297a7cb8da6b205d72",
+    "content-hash": "3ed02060629289608e52b9787553b797",
     "packages": [
         {
             "name": "elan-ev/opencast-api",
-            "version": "1.9.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elan-ev/opencast-php-library.git",
-                "reference": "041f29d10f9572b038e8665f6cc2f9c86d488da8"
+                "reference": "1a310a4b978324f3b1ec1e77937c0cd2afa8de87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elan-ev/opencast-php-library/zipball/041f29d10f9572b038e8665f6cc2f9c86d488da8",
-                "reference": "041f29d10f9572b038e8665f6cc2f9c86d488da8",
+                "url": "https://api.github.com/repos/elan-ev/opencast-php-library/zipball/1a310a4b978324f3b1ec1e77937c0cd2afa8de87",
+                "reference": "1a310a4b978324f3b1ec1e77937c0cd2afa8de87",
                 "shasum": ""
             },
             "require": {
@@ -62,9 +62,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elan-ev/opencast-php-library/issues",
-                "source": "https://github.com/elan-ev/opencast-php-library/tree/1.9.0"
+                "source": "https://github.com/elan-ev/opencast-php-library/tree/1.9.1"
             },
-            "time": "2025-03-10T07:54:08+00:00"
+            "time": "2025-04-24T09:41:35+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -4331,13 +4331,13 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
+    "platform": [],
+    "platform-dev": [],
     "platform-overrides": {
         "php": "7.2.5"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
