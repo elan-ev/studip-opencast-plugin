@@ -20,7 +20,6 @@ const state = {
     availableVideoCourses: [],
     videoShares: {},
     courseVideosToCopy: [],
-    showCourseCopyDialog: false,
     videosReload: false,
     showEpisodesDefaultVisibilityDialog: false,
 }
@@ -68,10 +67,6 @@ const getters = {
 
     courseVideosToCopy(state) {
         return state.courseVideosToCopy
-    },
-
-    showCourseCopyDialog(state) {
-        return state.showCourseCopyDialog
     },
 
     videosReload(state) {
@@ -225,10 +220,6 @@ const actions = {
         return ApiService.post('videos/' + data.token + '/report', {description: data.description});
     },
 
-    async copyVideosToCourses(context, data) {
-        return ApiService.post('videos/' + data.cid + '/copy', {courses: data.courses});
-    },
-
     async setVideoSort({dispatch, commit}, sort) {
         await commit('setVideoSort', sort)
     },
@@ -257,10 +248,6 @@ const actions = {
 
     setCourseVideosToCopy({dispatch, state, commit}, videos) {
         commit('setCourseVideosToCopy', videos);
-    },
-
-    toggleCourseCopyDialog({dispatch, state, commit}, mode) {
-        commit('setShowCourseCopyDialog', mode);
     },
 
     setVideosReload({commit}, mode) {
@@ -320,10 +307,6 @@ const mutations = {
 
     setCourseVideosToCopy(state, videos) {
         state.courseVideosToCopy = videos;
-    },
-
-    setShowCourseCopyDialog(state, mode) {
-        state.showCourseCopyDialog = mode;
     },
 
     setAvailableVideoTags(state, data) {
