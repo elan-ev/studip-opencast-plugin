@@ -3,6 +3,8 @@ Stud.IP-Opencast-Plugin
 
 [![Run plugin tests](https://github.com/elan-ev/studip-opencast-plugin/actions/workflows/run-tests.yml/badge.svg)](https://github.com/elan-ev/studip-opencast-plugin/actions/workflows/run-tests.yml)
 
+[Documentation](https://elan-ev.github.io/studip-opencast-plugin)
+
 *This plugin serves as a connection between [Opencast](http://opencast.org) and
 the LMS [Stud.IP](http://studip.de/).*
 
