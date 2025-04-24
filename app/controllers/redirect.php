@@ -27,6 +27,9 @@ class RedirectController extends Opencast\Controller
 
     public function perform_action($action, $token)
     {
+        $this->set_layout(null);
+        $this->assets_url = rtrim($this->plugin->getPluginUrl(), '/') . '/assets';
+
         $video = null;
         $video_share = null;
         if ($action == 'share') {
@@ -38,8 +41,10 @@ class RedirectController extends Opencast\Controller
 
         if (empty($video)) {
             $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
+            return;
         } else if ($video->trashed) {
             $this->error = _('Das Video wurde zur Löschung markiert und kann daher nicht abgerufen werden.');
+            return;
         }
 
         /*
@@ -53,6 +58,7 @@ class RedirectController extends Opencast\Controller
         $lti = LtiHelper::getLaunchData($video->config_id, $customtool, $video_share);
         if (empty($lti) || empty($customtool)) {
             $this->error = _('Das Video wurde nicht gefunden, ist defekt oder momentan (noch) nicht verfügbar.');
+            return;
         }
 
         // get correct endpoint for redirect type
@@ -64,12 +70,6 @@ class RedirectController extends Opencast\Controller
 
         $this->launch_data = $ltilink['launch_data'];
         $this->launch_url  = $ltilink['launch_url'];
-
-        if (!empty($this->error)) {
-            $this->assets_url = rtrim($this->plugin->getPluginUrl(), '/') . '/assets';
-        }
-
-        $this->set_layout(null);
     }
 
     public function download_action($token, $type, $index)
