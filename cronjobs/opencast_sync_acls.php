@@ -79,6 +79,9 @@ class OpencastSyncAcls extends CronJob
                     // check if video exists in Stud.IP
                     $video = Videos::findByEpisode($event->identifier);
 
+                    $video->created = date('Y-m-d H:i:s', strtotime($event->created));
+                    $video->store();
+
                     if ($video->config_id != $config->id) {
                         echo 'config id mismatch for Video with id: '. $video->id .", $config->id <> {$video->config_id}\n";
                         continue;
