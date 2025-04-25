@@ -128,8 +128,10 @@ export default {
                 return text;
             }
 
-            if (size > 1000) {
-                size = Math.round(size/1000 * 10) / 10
+            size = size / 1024;
+
+            if (size > 1024) {
+                size = Math.round(size/1024 * 10) / 10
                 text = text + ' (' + size + ' MB)'
             } else {
                 size = Math.round(size * 10) / 10
