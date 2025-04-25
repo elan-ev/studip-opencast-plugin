@@ -1,11 +1,5 @@
 <?php
-/* Stud.IP dependencies*/
-require_once 'lib/models/Institute.class.php';
-require_once 'lib/raumzeit/raumzeit_functions.inc.php';
-require_once 'vendor/trails/trails.php';
-
-/* cronjobs */
-require_once 'lib/classes/CronJob.class.php';
+ini_set('display_errors', 1);
 
 StudipAutoloader::addAutoloadPath(__DIR__, 'ElanEv');
 StudipAutoloader::addAutoloadPath(__DIR__ . '/lib', 'Opencast');

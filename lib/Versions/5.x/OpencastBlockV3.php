@@ -5,6 +5,7 @@ use Opis\JsonSchema\Schema;
 use Opencast\Models\VideoCoursewareBlocks;
 use Opencast\Models\CoursewareBlockMappings;
 use Opencast\Models\Videos;
+
 /**
  * This class represents the content of a Courseware test block.
  *
@@ -35,7 +36,7 @@ class OpencastBlockV3 extends BlockType
         ];
     }
 
-    public static function getJsonSchema(): string
+    public static function getJsonSchema(): Schema
     {
         $schemaFile = __DIR__ . '/OpencastBlockV3.json';
 
