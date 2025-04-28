@@ -2,17 +2,14 @@
 
 namespace Opencast;
 
-use PluginController;
-use PageLayout;
+use StudipController;
 use Trails_Flash;
-use Config;
 use PluginEngine;
-use Request;
 use URLHelper;
 use RuntimeException;
 
 
-class Controller extends PluginController
+class Controller extends  StudipController
 {
     protected $allow_nobody = false; //nobody is not allowed and always gets a login-screen
 

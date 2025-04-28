@@ -2,7 +2,6 @@
 
 namespace Opencast\Routes\Courseware;
 
-use Opencast\Errors\AuthorizationFailedException;
 use Opencast\Models\Filter;
 use Opencast\Models\Videos;
 use Opencast\OpencastController;

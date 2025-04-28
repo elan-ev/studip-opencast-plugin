@@ -31,10 +31,10 @@ class PlaylistSeminars extends \SimpleORMap
 
         // Always prioritise allow download property of seminar playlist
         if (!is_null($this->allow_download)) {
-            $playlist_data['allow_download'] = $this->allow_download;
+            $playlist_data['allow_download'] = (bool) $this->allow_download;
         }
 
-        $playlist_data['is_default'] = $this->is_default;
+        $playlist_data['is_default'] = (bool) $this->is_default;
 
         $playlist_data['contains_scheduled'] = (bool) $this->contains_scheduled;
         $playlist_data['contains_livestreams'] = (bool) $this->contains_livestreams;

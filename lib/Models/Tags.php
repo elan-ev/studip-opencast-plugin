@@ -14,7 +14,7 @@ class Tags extends \SimpleORMap
     }
 
     /**
-     * Get the tags from all videos the user has access too
+     * Get the tags from all videos the user has access to
      *
      * @return array
      *  [

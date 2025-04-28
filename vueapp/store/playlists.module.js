@@ -30,7 +30,7 @@ const getters = {
     defaultPlaylist(state) {
         // Find the courses default playlist
         for (let id in state.playlists) {
-            if (state.playlists[id].is_default == '1') {
+            if (state.playlists[id].is_default == true) {
                 return state.playlists[id];
             }
         }
@@ -200,7 +200,7 @@ const actions = {
             let is_default = false;
 
             // Set first playlist as default
-            if (data?.is_default === true && index === 0) {
+            if (data?.is_default == true && index === 0) {
                 is_default = true;
             }
 

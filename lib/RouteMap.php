@@ -55,8 +55,9 @@ class RouteMap
 
         $group->get("/videos/{token}", Routes\Video\VideoShow::class);
         $group->put("/videos/{token}", Routes\Video\VideoUpdate::class);
-        $group->put("/videos/{token}/restore", Routes\Video\VideoRestore::class);
         $group->delete("/videos/{token}", Routes\Video\VideoDelete::class);
+
+        $group->put("/videos/{token}/restore", Routes\Video\VideoRestore::class);
         $group->post("/videos/{episode_id}", Routes\Video\VideoAdd::class);
 
         $group->post("/videos/{token}/report", Routes\Video\VideoReport::class);
@@ -84,10 +85,11 @@ class RouteMap
         $group->put("/playlists/{token}/user", Routes\Playlist\PlaylistAddUser::class);
         $group->delete("/playlists/{token}/user/{username}", Routes\Playlist\PlaylistRemoveUser::class);
 
-        $group->put("/playlists/{token}/positions", Routes\Playlist\PlaylistUpdatePositions::class);
-
+        // TODO: Is this a duplicate of `/courses/videos/playlist/{token}`?
         $group->get("/playlists/{token}/courses", Routes\Playlist\PlaylistCourses::class);
         $group->put("/playlists/{token}/courses", Routes\Playlist\PlaylistAddToCourse::class);
+
+        $group->put("/playlists/{token}/positions", Routes\Playlist\PlaylistUpdatePositions::class);
 
         // Schedule and Playlists
         $group->post("/playlists/{token}/schedule/{course_id}/{type}", Routes\Playlist\PlaylistScheduleUpdate::class);
@@ -106,11 +108,14 @@ class RouteMap
         $group->put("/courses/{course_id}/playlist/{token}", Routes\Course\CourseUpdatePlaylist::class);
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
 
-        $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class); // TODO: document in api docs
-        // TODO: document in api docs?
+        // TODO: Move this a more general course settings route
+        $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class);
         $group->put("/courses/{course_id}/episodes_visibility", Routes\Course\CourseSetDefaultVideosVisibility::class);
 
+
         $group->get("/courses/videos", Routes\Course\CourseListForUserVideos::class);
+
+        // TODO: Is this a duplicate of `/playlists/{token}/courses`?
         $group->get("/courses/videos/playlist/{token}", Routes\Course\CourseListForPlaylistVideos::class);
 
         // Schedule

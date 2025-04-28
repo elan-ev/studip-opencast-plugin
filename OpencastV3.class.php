@@ -7,7 +7,6 @@
 require_once __DIR__ . '/bootstrap.php';
 
 use Opencast\Models\Helpers;
-use Opencast\Models\SeminarSeries;
 use Opencast\Models\Videos;
 use Opencast\Models\WidgetHelper;
 
@@ -339,6 +338,8 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
             $dispatcher->current_plugin = $this;
             $dispatcher->dispatch($unconsumed_path);
         }
+
+        die;
     }
 
     public function getAssetsUrl()

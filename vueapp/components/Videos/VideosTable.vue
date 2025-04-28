@@ -143,7 +143,7 @@
 
                         <span v-if="isCourse && playlist && canEdit">
                             <StudipButton class="wrap-button"
-                                          v-if="playlist.is_default != '1'"
+                                          v-if="playlist.is_default != true"
                                           @click.prevent="removePlaylist(playlist.token, cid)"
                             >
                                 <studip-icon shape="trash" role="clickable" />

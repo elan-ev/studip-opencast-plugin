@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.4",
   "info": {
     "title": "Opencast V3 Routes",
     "description": "JSON Routes for Opencast V3",
@@ -7,7 +7,7 @@
       "name": "GPL v2",
       "url": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.de.html"
     },
-    "version": "1.0.0"
+    "version": "3.29.0"
   },
   "servers": [
     {
@@ -62,9 +62,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Video"
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "videos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Video"
+                      }
+                    }
                   }
                 }
               }
@@ -74,11 +82,46 @@
       }
     },
     "/videos/{token}": {
+      "get": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Get Details for video with ID",
+        "operationId": "getVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "video": {
+                      "$ref": "#/components/schemas/Video"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "videos"
         ],
-        "summary": "Update Video with ID",
+        "summary": "Update video with ID",
         "operationId": "updateVideo",
         "parameters": [
           {
@@ -120,8 +163,8 @@
         "tags": [
           "videos"
         ],
-        "summary": "Remove the video from Stud.IP and from Opencast!",
-        "description": "**This operation is used to completely remove a video. It will remove the entry from Stud.IP and retract and delete the event completely in Opencast, so use with care!**",
+        "summary": "Delete video",
+        "description": "Move video to trashbin or delete it from Stud.IP and Opencast completely if already trashed! **This operation will completely remove a video if it is in the trashbin. It will remove the entry from Stud.IP and retract and delete the event completely in Opencast, so use with care!**'",
         "operationId": "deleteVideo",
         "parameters": [
           {
@@ -141,6 +184,96 @@
               "application/json": {
                 "schema": {
                   "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos/{token}/restore": {
+      "put": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Restore video from trashbin",
+        "description": "If the video is still in the trashbin, this operation will restore it",
+        "operationId": "restoreVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos/{episode_id}": {
+      "post": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Add video",
+        "description": "Add a video to Stud.IP (used after upload an event to Opencast)",
+        "operationId": "addVideo",
+        "parameters": [
+          {
+            "name": "episode_id",
+            "in": "path",
+            "description": "UUID of the event in Opencast",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Video object to be addedd",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/NewVideo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "event": {
+                      "$ref": "#/components/schemas/Video"
+                    }
+                  }
                 }
               }
             }
@@ -356,18 +489,19 @@
         "x-codegen-request-body-name": "body"
       }
     },
-    "/videos/{course_id}/copy": {
-      "post": {
+    "/videos/{token}/worldwide_share": {
+      "put": {
         "tags": [
           "videos"
         ],
-        "summary": "Connect all playlists for the ourse in the path to the courses posted in the body",
-        "operationId": "connectPlaylistsToCourse",
+        "summary": "Toggle Worldwide sharing of video",
+        "description": "This allows worldwide sharing (or revoking of it) for the video with the passed token. This will result in adding `ROLE_ANONYMOUS` for the event in Opencast",
+        "operationId": "worldwideShareVideo",
         "parameters": [
           {
-            "name": "course_id",
+            "name": "token",
             "in": "path",
-            "description": "ID of the course to copy from",
+            "description": "ID of the video",
             "required": true,
             "schema": {
               "type": "string"
@@ -375,28 +509,23 @@
           }
         ],
         "requestBody": {
-          "description": "List of courses to connect the playlists to",
+          "description": "The visibility to set",
           "content": {
-            "*/*": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "courses": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        }
-                      }
-                    }
+                  "visibility": {
+                    "type": "string",
+                    "enum": [
+                      "internal",
+                      "public"
+                    ]
                   }
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -404,13 +533,84 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
-        },
-        "x-codegen-request-body-name": "body"
+        }
+      }
+    },
+    "/courseware/videos": {
+      "get": {
+        "tags": [
+          "courseware"
+        ],
+        "summary": "Get all videos where the session user has onwer perms on",
+        "description": "This is used to list all videos which can be included in the courseware by the session user. The difference to the `/videos` route is, that only videos the user has owner perms on are listed (and not simply read perms)",
+        "operationId": "getCoursewareVideosForUser",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set",
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The numbers of items to return",
+            "schema": {
+              "minimum": 20,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Pass some filters to narrow down the list of videos",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Filter"
+              }
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "videos": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Video"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/playlists": {
@@ -588,7 +788,105 @@
         }
       }
     },
-    "/playlists/{token}/video/{token}": {
+    "/playlists/{token}/copy": {
+      "post": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Copy passed plaulist to target course",
+        "operationId": "duplicatePlaylist",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "token reference for playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Target course and playlist settings",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "course": {
+                    "type": "string",
+                    "description": "Course-ID"
+                  },
+                  "is_default": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/playlists/{token}/videos": {
+      "get": {
+        "tags": [
+          "playlists"
+        ],
+        "summary": "Get videos for the passed playlist",
+        "operationId": "getVideosForPlaylist",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "query",
+            "description": "Course ID as context for the playlist",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Video"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": [
           "playlists"
@@ -599,7 +897,7 @@
           {
             "name": "token",
             "in": "path",
-            "description": "token reference for playlist or video",
+            "description": "token reference for playlist",
             "required": true,
             "schema": {
               "type": "string"
@@ -699,13 +997,13 @@
         }
       }
     },
-    "/playlists/{token}/videos": {
-      "get": {
+    "/playlists/{token}/user/{username}": {
+      "delete": {
         "tags": [
           "playlists"
         ],
-        "summary": "Get videos for the passed playlist",
-        "operationId": "getVideosForPlaylist",
+        "summary": "Remove perms for user from playlist",
+        "operationId": "removePermsFromPlaylist",
         "parameters": [
           {
             "name": "token",
@@ -717,10 +1015,10 @@
             }
           },
           {
-            "name": "cid",
-            "in": "query",
-            "description": "Course ID as context for the playlist",
-            "required": false,
+            "name": "username",
+            "in": "path",
+            "description": "Username of the user",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -729,16 +1027,7 @@
         "responses": {
           "200": {
             "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Video"
-                  }
-                }
-              }
-            }
+            "content": {}
           }
         }
       }
@@ -746,7 +1035,7 @@
     "/playlists/{token}/courses": {
       "get": {
         "tags": [
-          "playlists"
+          "courses-playlist"
         ],
         "summary": "Get courses associated with the passed playlist",
         "operationId": "getCoursesForPlaylist",
@@ -776,7 +1065,7 @@
       },
       "put": {
         "tags": [
-          "playlists"
+          "courses-playlist"
         ],
         "summary": "Set course link",
         "description": "Set course links for the playlist with the passed token, clearing out all not passed course links",
@@ -836,41 +1125,6 @@
         "x-codegen-request-body-name": "body"
       }
     },
-    "/playlists/{token}/user/{username}": {
-      "delete": {
-        "tags": [
-          "playlists"
-        ],
-        "summary": "Remove perms for user from playlist",
-        "operationId": "removePermsFromPlaylist",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "description": "ID of the playlist",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "username",
-            "in": "path",
-            "description": "Username of the user",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {}
-          }
-        }
-      }
-    },
     "/playlist/{token}/positions": {
       "put": {
         "tags": [
@@ -926,6 +1180,64 @@
           }
         },
         "x-codegen-request-body-name": "body"
+      }
+    },
+    "/playlists/{token}/schedule/{course_id}/{type}": {
+      "post": {
+        "tags": [
+          "courses-playlist"
+        ],
+        "summary": "Set the default playlist for the passed course and type of recording",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of course",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of recording",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "livestreams",
+                "scheduled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/courses": {
@@ -1019,7 +1331,7 @@
     "/courses/{course_id}/playlists": {
       "get": {
         "tags": [
-          "courses"
+          "courses-playlist"
         ],
         "summary": "Returns playlists for this course. Videos without explicit playlist in this course are mapped to a virtual playlist which can be accessed via the standard playlist routes",
         "operationId": "getPlaylistsForCourse",
@@ -1049,12 +1361,12 @@
       }
     },
     "/courses/{course_id}/playlist/{token}": {
-      "put": {
+      "post": {
         "tags": [
-          "courses"
+          "courses-playlist"
         ],
         "summary": "Add playlist to course",
-        "operationId": "addPlaylistToCourse",
+        "operationId": "addCoursePlaylist",
         "parameters": [
           {
             "name": "token",
@@ -1075,6 +1387,75 @@
             }
           }
         ],
+        "requestBody": {
+          "description": "Playlist settings",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "is_default": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "courses-playlist"
+        ],
+        "summary": "Update playlist in course",
+        "operationId": "updateCoursePlaylist",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of course",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Playlist settings",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Playlist"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "is_default": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1090,10 +1471,10 @@
       },
       "delete": {
         "tags": [
-          "courses"
+          "courses-playlist"
         ],
         "summary": "Remove Playlist from course",
-        "operationId": "removePlaylistFromCourse",
+        "operationId": "removeCoursePlaylist",
         "parameters": [
           {
             "name": "token",
@@ -1163,14 +1544,14 @@
         }
       }
     },
-    "/courses/{course_id}/visibility/{visibility}": {
-      "get": {
+    "/courses/{course_id}/upload/{upload}": {
+      "put": {
         "tags": [
           "courses"
         ],
-        "summary": "Set visibility for course tab",
-        "description": "Sets, if the course tab is visible for non-privileged users in the passed course",
-        "operationId": "setCourseVisibility",
+        "summary": "Toggle student-upload",
+        "description": "Toggle if students can upload videos to this course. This route respects the setting `OPENCAST_TUTOR_EPISODE_PERM`, which toggles if tutor have the same rights in a course as lecturers",
+        "operationId": "toggleUploadPermsForStudents",
         "parameters": [
           {
             "name": "course_id",
@@ -1182,23 +1563,123 @@
             }
           },
           {
-            "name": "visibility",
+            "name": "upload",
             "in": "path",
-            "description": "Visibility for the course",
+            "description": "Shall upload for students be allowed in this course?",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": [
-                "free",
-                "public",
-                "internal"
-              ]
+              "type": "boolean"
             }
           }
         ],
         "responses": {
           "204": {
             "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/courses/{course_id}/episodes_visibility": {
+      "put": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "Configure default visibility for new videos",
+        "description": "Configure the default visibility for videos in this course. Videos with modified visiblity are unaffected.",
+        "operationId": "toggleDefaultVideoVisibilityForCourse",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of course",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Visibility setting. `default` means using the global setting",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "visibility_option": {
+                    "type": "string",
+                    "enum": [
+                      "default",
+                      "visible",
+                      "hidden"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/courses/videos": {
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "Get the courses from all videos the user has access to",
+        "operationId": "getCoursesForUserFromPlaylists",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserCourse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/courses/videos/playlist/{token}": {
+      "get": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "Get all courses this playlist is connected to",
+        "operationId": "getCoursesForPlaylist2",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserCourse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1210,6 +1691,91 @@
         ],
         "summary": "Get all available tags for this user",
         "operationId": "getTagsForUser",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags/videos": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "Get the tags for all videos the user has access to, not only his own created ones",
+        "operationId": "getTagsAccessibleVideos",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags/videos/playlist/{token}": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "Get the tags for all videos in passed playlist",
+        "operationId": "getTagsForPlaylists",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the playlist",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags/videos/course/{course_id}": {
+      "get": {
+        "tags": [
+          "tags"
+        ],
+        "summary": "Get the tags for all videos in passed course",
+        "operationId": "getTagsForCourse",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of course",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1238,88 +1804,15 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "example": [
-                    {
-                      "id": "1",
-                      "service_url": "https://opencast.example.com",
-                      "service_user": "user",
-                      "service_password": "password",
-                      "service_version": "11",
-                      "settings": {
-                        "upload_chunk_size": "5000000",
-                        "number_of_configs": "1",
-                        "time_buffer_overlap": "60",
-                        "ssl_verify_peer": true,
-                        "ssl_verify_host": true,
-                        "ssl_cipher_list": "none",
-                        "lti_consumerkey": "CONSUMERKEY",
-                        "lti_consumersecret": "CONSUMERSECRET",
-                        "livestream": false,
-                        "service_url": "https://opencast.example.com",
-                        "service_user": "user",
-                        "service_password": "password"
-                      }
-                    },
-                    {
-                      "settings": [
-                        {
-                          "name": "OPENCAST_TOS",
-                          "description": "Terms of service",
-                          "value": "",
-                          "type": "string"
-                        },
-                        {
-                          "name": "OPENCAST_SHOW_TOS",
-                          "description": "Müssen Lehrende einem Datenschutztext zustimmen, bevor sie das Opencast-Plugin in einer Veranstaltung verwenden können?",
-                          "value": false,
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OPENCAST_ALLOW_ALTERNATE_SCHEDULE",
-                          "description": "Dürfen Lehrende abweichende Aufzeichnungszeiten einstellen?",
-                          "value": false,
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OPENCAST_ALLOW_MEDIADOWNLOAD",
-                          "description": "Wird Nutzern angeboten, Aufzeichnungen herunterzuladen?",
-                          "value": true,
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OPENCAST_ALLOW_STUDIO",
-                          "description": "Wird Nutzern angeboten, Aufzeichnungen mit Opencast Studio zu erstellen?",
-                          "value": true,
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OPENCAST_HIDE_EPISODES",
-                          "description": "Sollen Videos standardmäßig nur für Lehrende sichtbar sein?",
-                          "value": false,
-                          "type": "boolean"
-                        },
-                        {
-                          "name": "OPENCAST_TUTOR_EPISODE_PERM",
-                          "description": "Sollen Tutor/innen im Opencast-Plugin die gleichen Rechte haben wie Dozent/innen?",
-                          "value": true,
-                          "type": "boolean"
-                        }
-                      ]
-                    },
-                    {
-                      "de_DE": {
-                        "id": "de_DE",
-                        "picture": "lang_de.gif",
-                        "name": "Deutsch"
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/OpencastConfig"
                 }
               }
             }
           }
         }
-      },
+      }
+    },
+    "/global_config": {
       "put": {
         "tags": [
           "config"
@@ -1335,8 +1828,25 @@
                 ],
                 "properties": {
                   "settings": {
-                    "type": "string",
-                    "description": "User to add/modify perms for the playlist"
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ConfigSetting"
+                    }
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ConfigResource"
+                    }
+                  },
+                  "workflow_configs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ConfigWorkflow"
+                    }
                   }
                 }
               }
@@ -1347,7 +1857,18 @@
         "responses": {
           "200": {
             "description": "successful operation",
-            "content": {}
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1426,6 +1947,55 @@
         }
       }
     },
+    "/config/{id}/{activation}": {
+      "put": {
+        "tags": [
+          "config"
+        ],
+        "summary": "Toggle activation for configured opencast server",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the server config",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "activation",
+            "in": "path",
+            "description": "Set activation state for opencast server",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "activate",
+                "deactivate"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/config/simple": {
       "get": {
         "tags": [
@@ -1441,39 +2011,13 @@
         }
       }
     },
-    "/lti/launch_data": {
+    "/migrate_playlists": {
       "get": {
         "tags": [
-          "lti"
+          "config"
         ],
-        "summary": "Get the LTI launch data, signed and ready to send",
-        "operationId": "getLTILaunchData",
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/lti/launch_data/{context_id}": {
-      "get": {
-        "tags": [
-          "lti"
-        ],
-        "summary": "Get the LTI launch data, signed and ready to send for the passed context",
-        "operationId": "getLTILaunchDataForContext",
-        "parameters": [
-          {
-            "name": "context_id",
-            "in": "path",
-            "description": "ID of course or institute",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Migrate playlists to Opencast",
+        "operationId": "migratePlaylists",
         "responses": {
           "200": {
             "description": "successful operation",
@@ -1768,38 +2312,33 @@
         }
       }
     },
-    "/log": {
-      "post": {
+    "/user/series": {
+      "get": {
         "tags": [
-          "log"
+          "user"
         ],
-        "summary": "Log an event",
-        "description": "Pass details on log event type to create an entry in Stud.IPs log",
-        "operationId": "logEvent",
-        "requestBody": {
-          "description": "Details of the event",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
+        "summary": "Opencast series-id for user",
+        "description": "Return the Opencast series-id for the currently logged in user",
+        "operationId": "searchSeriesForUser",
         "responses": {
-          "204": {
+          "200": {
             "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "series_id": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
           }
-        },
-        "x-codegen-request-body-name": "body"
+        }
       }
     }
   },
@@ -1902,6 +2441,38 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "NewVideo": {
+        "type": "object",
+        "properties": {
+          "config_id": {
+            "type": "integer",
+            "description": "opencast config this video belongs to"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "video duration in milliseconds"
+          },
+          "state": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "presenters": {
+            "type": "string"
+          },
+          "contributors": {
+            "type": "string"
           }
         }
       },
@@ -2013,6 +2584,9 @@
           "languages": {
             "type": "object",
             "properties": {}
+          },
+          "can_migrate_playlists": {
+            "type": "boolean"
           }
         }
       },
@@ -2145,6 +2719,85 @@
           "workflow": {
             "type": "string",
             "example": "upload"
+          }
+        }
+      },
+      "UserCourse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Course ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Course name"
+          },
+          "semester": {
+            "type": "string",
+            "description": "Semester description for the course"
+          },
+          "end_semester_beginn": {
+            "type": "integer",
+            "description": "The last semester the course is in"
+          },
+          "lecturers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "Username in Stud.IP"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Full human readable name of user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ConfigSetting": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "ConfigResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "config_id": {
+            "type": "string"
+          },
+          "capture_agent": {
+            "type": "string"
+          },
+          "workflow_id": {
+            "type": "string"
+          },
+          "livestream_workflow_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ConfigWorkflow": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "workflow_id": {
+            "type": "string"
           }
         }
       },

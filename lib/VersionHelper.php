@@ -8,7 +8,11 @@ class VersionHelper
     {
         static $vh;
 
-        if (\StudipVersion::newerThan('4.6')) {
+        if (\StudipVersion::newerThan('5.5')) {
+            if (!$vh) {
+                $vh = new VersionHelper6();
+            }
+        } else if (\StudipVersion::newerThan('4.6')) {
             if (!$vh) {
                 $vh = new VersionHelper50();
             }
@@ -97,6 +101,10 @@ class VersionHelper46 implements VersionHelperInterface
         require_once(__DIR__ . '/Versions/4.6/OCConfig.php');
         require_once(__DIR__ . '/Versions/4.6/OpencastLTI.php');
         require_once(__DIR__ . '/Versions/4.6/LtiLink.php');
+
+        if (!interface_exists('Courseware\CoursewarePlugin')) {
+            require_once 'lib/FakeCoursewareInterface.php';
+        }
     }
 }
 
@@ -140,5 +148,52 @@ class VersionHelper50 implements VersionHelperInterface
         }');
 
         \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
+
+        require_once __DIR__ . '/Versions/5.x/OpencastBlockV3.php';
+    }
+}
+
+class VersionHelper6 implements VersionHelperInterface
+{
+    function addMainNavigation(\Navigation $navigation)
+    {
+        global $user;
+
+        if (\Navigation::hasItem('/contents') && $user->perms != 'admin') {
+            \Navigation::addItem('/contents/opencast', $navigation);
+        }
+    }
+
+    function activateContentNavigation()
+    {
+        if (\Navigation::hasItem('/contents')) {
+            \Navigation::activateItem('/contents/opencast');
+        }
+    }
+
+    function getPluginActivatedSQL()
+    {
+        return ' JOIN tools_activated ON (
+            tools_activated.range_id = seminar_id
+            AND tools_activated.plugin_id = :plugin_id
+        ) ';
+    }
+
+    function getVersionSpecificStylesheet()
+    {
+        return null;
+    }
+
+    function registerCoursewareBlock(\StudipPlugin $plugin)
+    {
+        $icon = new \Icon($plugin->assetsUrl . '/images/opencast-courseware.svg');
+
+        \PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
+            background-image:url(' . $icon->asImagePath() . ') !important;
+        }');
+
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
+
+        require_once __DIR__ . '/BlockTypes/OpencastBlockV3.php';
     }
 }
