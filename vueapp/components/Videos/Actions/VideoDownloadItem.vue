@@ -64,20 +64,20 @@ export default {
         getMediaText(media) {
             var text = media?.info || '';
             text = text.replace(' * ', ' x ');
-            var size = parseInt(media?.size, 10) || 0;
+            var size = media?.size || 0;
+
             if (size == 0) {
                 return text;
             }
 
-            let kbtobytes = 1024;
-            let mbtobytes = 1000 * kbtobytes;
+            size = size / 1024;
 
-            if (size >= mbtobytes) {
-                let megabytes = (size / mbtobytes).toFixed(1);
-                text = text + ' (' + megabytes + ' MB)'
+            if (size > 1024) {
+                size = Math.round(size/1024 * 10) / 10
+                text = text + ' (' + size + ' MB)'
             } else {
-                let kilobytes = (size / kbtobytes).toFixed(1);
-                text = text + ' (' + kilobytes + ' KB)'
+                size = Math.round(size * 10) / 10
+                text = text + ' (' + size + ' KB)'
             }
 
             return text
