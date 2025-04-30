@@ -29,6 +29,14 @@ class VideoWorldwideShareUpdate extends OpencastController
             throw new Error(_('Das Video kann nicht gefunden werden'), 404);
         }
 
+        // Take care of running videos by returning a proper response not throwing an exception!
+        if ($video->state === 'running') {
+            return $this->createResponse(
+                _('Das Video befindet sich aktuell in der Bearbeitung. Bitte versuchen Sie es später erneut.'),
+                $response->withStatus(409)
+            );
+        }
+
         if (!$video->havePerm('write')
             || !\Config::get()->OPENCAST_ALLOW_PUBLIC_SHARING
         ) {
@@ -38,16 +46,21 @@ class VideoWorldwideShareUpdate extends OpencastController
         $json = $this->getRequestData($request);
         $visibility = $json['visibility'];
 
-        if ($video->setWorldVisibility($visibility) !== true) {
-            return $this->createResponse(
-                _('Beim Übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.')
-            , $response->withStatus(500));
-        } else {
-            return $this->createResponse(
-                $visibility === 'public'
+        $response_code = 500;
+        $response_message = _('Beim Übertragen der Änderungen zum Videoserver ist ein Fehler aufgetreten.');
+
+        try {
+            $result = $video->setWorldVisibility($visibility);
+            if ($result === true) {
+                $response_code = 200;
+                $response_message = $visibility === 'public'
                     ? _('Das Video wurde auf weltweit zugreifbar gestellt.')
-                    : _('Das Video wurde nur berechtigten Personen zugreifbar gemacht.')
-            , $response->withStatus(200));
+                    : _('Das Video wurde nur berechtigten Personen zugreifbar gemacht.');
+            }
+        } catch (\Throwable $th) {
+            $response_message .= ' (' . $th->getMessage() . ')';
         }
+
+        return $this->createResponse($response_message, $response->withStatus($response_code));
     }
 }

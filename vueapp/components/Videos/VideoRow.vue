@@ -149,7 +149,7 @@
             </div>
 
             <div v-if="getAccessText && canEdit">
-                <a href="#" data-tooltip class="tooltip" @click.prevent="performAction('VideoAccess')">
+                <a href="#" data-tooltip class="tooltip" @click.prevent="performActionWithChecks('VideoAccess', canShare)">
                     <span class="tooltip-content" v-html="getAccessText"></span>
                     <studip-icon
                         shape="group2"
@@ -260,6 +260,12 @@ export default {
         },
         performAction(action) {
             this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+        },
+        performActionWithChecks(action, check) {
+            if (check) {
+                this.performAction(action);
+            }
+            return;
         },
         redirectAction(action) {
             this.event.views++;
@@ -618,6 +624,10 @@ export default {
                 && !this.simple_config_list.settings.OPENCAST_ALLOW_PUBLIC_SHARING
                 && !this.simple_config_list.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT
             ) {
+                return false;
+            }
+
+            if (this.event?.state === 'running') {
                 return false;
             }
 
