@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-
 StudipAutoloader::addAutoloadPath(__DIR__, 'ElanEv');
 StudipAutoloader::addAutoloadPath(__DIR__ . '/lib', 'Opencast');
 
