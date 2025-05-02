@@ -139,6 +139,11 @@
                                 {{  $gettext('Links zu den Mediendateien anzeigen.') }}
                                 <studip-icon shape="link-intern" role="clickable" />
                             </a>
+                            <br>
+                            <a style="cursor: pointer" @click.stop="performAction('VideoEmbeddingCode')">
+                                {{  $gettext('Einbettungscode anzeigen.') }}
+                                <studip-icon shape="link-intern" role="clickable" />
+                            </a>
                             <br><br>
 
                             <StudipButton icon="trash"
