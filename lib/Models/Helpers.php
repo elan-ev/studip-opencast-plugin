@@ -426,4 +426,67 @@ class Helpers
 
         return $has_anonymous_role;
     }
+
+    /**
+     * Give proper permissions to the new course tutors
+     *
+     * @Notification UserDidEnterCourse
+     *
+     * @param string $eventType
+     * @param string $seminar_id
+     * @param string $user_id
+     */
+    public static function adjustVideoPermissionsForNewCourseTutors($eventType, $seminar_id, $user_id) {
+        global $perm;
+        // Make sure the user is a tutor in the course.
+        if (!$perm->have_studip_perm('tutor', $seminar_id, $user_id)) {
+            return;
+        }
+
+        // First get the course playlists.
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$seminar_id]);
+
+        if (empty($playlists)) {
+            // No playlists found, so we can stop here.
+            return;
+        }
+
+        foreach ($playlists as $playlist) {
+            // Check if the user already has permissions on the playlist.
+            $perm = PlaylistsUserPerms::findOneBySQL('playlist_id = ? AND user_id = ?', [$playlist->id, $user_id]);
+
+            if (empty($perm)) {
+                // If not, create a new permission for the user.
+                $perm = new PlaylistsUserPerms();
+                $perm->playlist_id = $playlist->id;
+                $perm->user_id     = $user_id;
+                $perm->perm        = 'write';
+
+                $perm->store();
+            }
+
+            // Now compile the list of playlist seminar videos, in order to add tutor perm to that video as well.
+            $playlist_seminar_videos = PlaylistSeminarVideos::findBySQL('playlist_seminar_id = ?', [$playlist->id]);
+
+            if (empty($playlist_seminar_videos)) {
+                // No videos found, so we can stop here.
+                continue;
+            }
+
+            foreach ($playlist_seminar_videos as $psv) {
+                // Check if the user already has permissions on the video.
+                $perm = VideosUserPerms::findOneBySQL('video_id = ? AND user_id = ?', [$psv->video_id, $user_id]);
+
+                if (empty($perm)) {
+                    // If not, create a new permission for the user.
+                    $perm = new VideosUserPerms();
+                    $perm->video_id = $psv->video_id;
+                    $perm->user_id  = $user_id;
+                    $perm->perm     = 'write';
+
+                    $perm->store();
+                }
+            }
+        }
+    }
 }
