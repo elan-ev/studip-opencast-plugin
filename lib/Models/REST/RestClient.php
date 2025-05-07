@@ -82,6 +82,20 @@ class RestClient
         $this->ocRestClient = new OcRestClient($oc_config);
     }
 
+    /**
+     * Get the Guzzle client options suitable for stream downloading files.
+     *
+     * @return array
+     */
+    public function getStreamDownloadConfig() {
+        return [
+            'auth'            => [$this->username, $this->password],
+            'timeout'         => 0,
+            'connect_timeout' => 0,
+            'stream' => true,
+        ];
+    }
+
     public function fileRequest($file_url)
     {
         $response = $this->ocRestClient->get($file_url, [

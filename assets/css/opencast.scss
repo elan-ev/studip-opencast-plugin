@@ -723,6 +723,13 @@ h2.oc--loadingbar, .oc--loadingbar-title {
         }
     }
 
+    &.oc--minimal-progress {
+        height: 3px !important;
+        .oc--progress-bar {
+            height: 3px !important;
+        }
+    }
+
     margin: 5px 0;
 }
 
@@ -911,6 +918,134 @@ div.oc--dialog-possibilities {
     display: block;
 }
 
+/* * * * * * * * * * * */
+/*   DOWNLOAD VIDEOS   */
+/* * * * * * * * * * * */
+
+.oc--download-list-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .oc--download-list {
+        flex-grow: 1;
+    }
+    .oc--download-messages {
+        flex-shrink: 0;
+    }
+
+    .oc--download-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: stretch;
+        padding: 5px 0px;
+
+        button.button {
+            margin: 0px !important;
+        }
+
+        .oc--download-item-control-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 5px;
+
+            .oc--tooltip--copy {
+                width: 40px;
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .oc--tooltip--copy-success {
+                    top: 0;
+                }
+            }
+        }
+
+        .oc--download-btn-container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+
+            .oc--download-btn {
+                flex-grow: 1;
+                position: relative;
+            }
+
+            .oc--download-cancel {
+                margin-left: 5px;
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &.active {
+                    cursor: pointer;
+                }
+
+                &.inactive {
+                    cursor: default;
+                }
+            }
+        }
+
+        .oc--download-info-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            align-items: center;
+            .oc--download-info-status {
+                flex: 1;
+                margin-left: 5px;
+                font-size: 0.8em;
+            }
+        }
+
+        .oc--download-spinner-container {
+            z-index: 999;
+            position: absolute;
+            top: 50%;
+            translate: 0 -50%;
+            left: 2px;
+            margin-right: 5px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+
+            .oc--spinner {
+                transform: scale(0.5);
+            }
+            .oc--spinner:after {
+                content: " ";
+                display: block;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 6px solid;
+                border-color: #28497c transparent #28497c transparent;
+                animation: oc-spinner 1.2s linear infinite;
+            }
+            @keyframes oc-spinner {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+    }
+}
 
 /* * * * * * * * * * * * * * * * * * */
 /*   U P L O A D   E L E M E N T S   */

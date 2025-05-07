@@ -4,6 +4,7 @@ use Opencast\Models\Videos;
 use Opencast\Models\VideosShares;
 use Opencast\Models\LTI\LtiHelper;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Errors\Error;
 
 class RedirectController extends Opencast\Controller
 {
@@ -87,15 +88,46 @@ class RedirectController extends Opencast\Controller
 
             $publication = $video->publication? json_decode($video->publication, true) : null;
             if (!empty($publication) && isset($publication['downloads'][$type][$index]['url'])) {
-                $url = $publication['downloads'][$type][$index]['url'];
 
-                $api_events = ApiEventsClient::getInstance($video->config_id);
-                $response = $api_events->fileRequest($url);
+                // Make sure the server configs are overwritten, in order to allow large file downloads.
+                ignore_user_abort(true);
+                set_time_limit(0);
+                ini_set('memory_limit', '512M');
 
-                header('Content-Type: '. $response['mimetype']);
+                // Clean all output buffers.
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
+                try {
+                    $url = $publication['downloads'][$type][$index]['url'];
 
-                echo $response['body'];
-                die;
+                    $api_events = ApiEventsClient::getInstance($video->config_id);
+                    // Since we are using stream, we need to perform the get directly here! Doing it in another file and pass the body as a parameter won't work!
+                    $response = $api_events->ocRestClient->get($url, $api_events->getStreamDownloadConfig());
+                    $stream = $response->getBody();
+
+                    // Set headers properly.
+                    header('Content-Type: ' . $response->getHeaderLine('Content-Type') ?: 'application/octet-stream');
+                    header('Content-Length: ' . $response->getHeaderLine('Content-Length'));
+                    header('Content-Disposition: attachment; filename*=UTF-8\'\'' . basename($url));
+                    header('Cache-Control: no-cache');
+                    header('Pragma: no-cache');
+
+                    // Stream in chunks
+                    while (!$stream->eof()) {
+                        // A double check to make sure the connection is still open.
+                        if(connection_status() != CONNECTION_NORMAL){
+                            // If not leave the loop!
+                            break;
+                        }
+                        // 1MB per chunk.
+                        echo $stream->read(1024 * 1024);
+                        flush();
+                    }
+                    die;
+                } catch (\Throwable $th) {
+                    throw new Error(_('Fehler beim Herunterladen der Datei').': ' . $th->getMessage(), 500);
+                }
             }
         }
 

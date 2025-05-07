@@ -45,6 +45,11 @@ window.addEventListener("DOMContentLoaded", function() {
         }, function (error) {
             store.dispatch('axiosStop');
 
+            // This makes it possible to cancel requests, but we at the moment we don't want to handle it here.
+            if (axios.isCancel(error)) {
+                return Promise.reject(error);
+            }
+
             if (error.response.data !== undefined) {
                 store.dispatch('addMessage', error.response);
             }
