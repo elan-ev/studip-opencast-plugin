@@ -468,7 +468,7 @@ class Helpers
     }
 
     /**
-     * Revoke the video permissions of the course tutors
+     * Revoke course playlist permissions for the user that are leaving the course
      *
      * @Notification UserDidLeaveCourse
      *
@@ -476,8 +476,7 @@ class Helpers
      * @param string $seminar_id
      * @param string $user_id
      */
-    public static function revokeTutorsVideoPermissions($eventType, $seminar_id, $user_id) {
-        global $perm;
+    public static function revokeCoursePlaylistUserPerms($eventType, $seminar_id, $user_id) {
 
         // First get the course playlists.
         $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$seminar_id]);
