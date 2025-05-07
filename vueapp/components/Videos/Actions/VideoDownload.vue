@@ -21,7 +21,6 @@
                                 :event="event"
                                 @performDownload="downloadFile(media, 'presenter', media.size)"
                                 @performAbortDownload="abortDownload(media)"
-                                @performCopyToClipboard="copyToClipboard(media.url)"
                             />
                         </div>
                         <br>
@@ -36,7 +35,6 @@
                                 :event="event"
                                 @performDownload="downloadFile(media, 'presentation', media.size)"
                                 @performAbortDownload="abortDownload(media)"
-                                @performCopyToClipboard="copyToClipboard(media.url)"
                             />
                         </div>
                     </div>
@@ -195,15 +193,6 @@ export default {
                 this.presenters.push(presenter);
             }
         },
-
-        copyToClipboard(text)
-        {
-            navigator.clipboard.writeText(text);
-            this.copied = text;
-            setTimeout(() => {
-                this.copied = '';
-            }, 3000);
-        }
     },
 
     mounted() {

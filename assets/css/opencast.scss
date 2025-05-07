@@ -945,6 +945,27 @@ div.oc--dialog-possibilities {
             margin: 0px !important;
         }
 
+        .oc--download-item-control-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 5px;
+
+            .oc--tooltip--copy {
+                width: 40px;
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .oc--tooltip--copy-success {
+                    top: 0;
+                }
+            }
+        }
+
         .oc--download-btn-container {
             position: relative;
             display: flex;
