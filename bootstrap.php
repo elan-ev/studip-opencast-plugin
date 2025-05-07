@@ -9,3 +9,4 @@ NotificationCenter::addObserver('Opencast\Models\Videos', 'checkEventACL', 'Open
 NotificationCenter::addObserver('Opencast\Models\VideosUserPerms', 'setPermissions', 'OpencastVideoSync');
 NotificationCenter::addObserver('Opencast\Models\Helpers', 'notifyUsers', 'OpencastNotifyUsers');
 NotificationCenter::addObserver('Opencast\Models\Helpers', 'adjustVideoPermissionsForNewCourseTutors', 'UserDidEnterCourse');
+NotificationCenter::addObserver('Opencast\Models\Helpers', 'revokeTutorsVideoPermissions', 'UserDidLeaveCourse');

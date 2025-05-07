@@ -464,28 +464,36 @@ class Helpers
 
                 $perm->store();
             }
+        }
+    }
 
-            // Now compile the list of playlist seminar videos, in order to add tutor perm to that video as well.
-            $playlist_seminar_videos = PlaylistSeminarVideos::findBySQL('playlist_seminar_id = ?', [$playlist->id]);
+    /**
+     * Revoke the video permissions of the course tutors
+     *
+     * @Notification UserDidLeaveCourse
+     *
+     * @param string $eventType
+     * @param string $seminar_id
+     * @param string $user_id
+     */
+    public static function revokeTutorsVideoPermissions($eventType, $seminar_id, $user_id) {
+        global $perm;
 
-            if (empty($playlist_seminar_videos)) {
-                // No videos found, so we can stop here.
-                continue;
-            }
+        // First get the course playlists.
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$seminar_id]);
 
-            foreach ($playlist_seminar_videos as $psv) {
-                // Check if the user already has permissions on the video.
-                $perm = VideosUserPerms::findOneBySQL('video_id = ? AND user_id = ?', [$psv->video_id, $user_id]);
+        if (empty($playlists)) {
+            // No playlists found, so we can stop here.
+            return;
+        }
 
-                if (empty($perm)) {
-                    // If not, create a new permission for the user.
-                    $perm = new VideosUserPerms();
-                    $perm->video_id = $psv->video_id;
-                    $perm->user_id  = $user_id;
-                    $perm->perm     = 'write';
+        foreach ($playlists as $playlist) {
+            // Check if the user has permissions on the playlist.
+            $perm = PlaylistsUserPerms::findOneBySQL('playlist_id = ? AND user_id = ?', [$playlist->id, $user_id]);
 
-                    $perm->store();
-                }
+            if (!empty($perm)) {
+                // If yes, delete the permission for the user.
+                $perm->delete();
             }
         }
     }
