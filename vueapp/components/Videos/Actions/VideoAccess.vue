@@ -141,7 +141,7 @@
                             </a>
                             <br>
                             <a style="cursor: pointer" @click.stop="performAction('VideoEmbeddingCode')">
-                                {{  $gettext('Einbettungscode anzeigen.') }}
+                                {{  $gettext('Einbettungscode und -link anzeigen.') }}
                                 <studip-icon shape="link-intern" role="clickable" />
                             </a>
                             <br><br>

@@ -1331,3 +1331,9 @@ label.oc--file-upload {
     width: 100%;
     box-sizing: border-box;
 }
+
+.oc--embedding-link {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
