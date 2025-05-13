@@ -168,7 +168,8 @@ class UserRoles extends OpencastController
                     $roles[$course_id . '_Learner'] = $course_id . '_Learner';
                 }
 
-                // get all videos the user has permissions on excluding videos from courses with write perm
+                // Get all videos permissions of the user except those for videos to which the user has already write
+                // permissions through course memberships and course playlists,  in order to reduce the number of roles.
                 $vperms = VideosUserPerms::findBySQL("
                     user_id = :user_id
                     AND NOT EXISTS (
