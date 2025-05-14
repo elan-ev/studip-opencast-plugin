@@ -883,6 +883,12 @@ class Videos extends UPMap
      */
     public static function checkEventACL($eventType, $episode, $video)
     {
+        // Fetch episode if null
+        if (empty($episode)) {
+            $api_client  = ApiEventsClient::getInstance($video->config_id);
+            $episode = $api_client->getEpisode($video->episode);
+        }
+
         // Only allow updating of metadata if event has publications
         if (!Helpers::canEventRunWorkflow($episode, $video)) {
             return;
