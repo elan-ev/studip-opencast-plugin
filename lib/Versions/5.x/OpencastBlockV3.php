@@ -2,8 +2,6 @@
 
 use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
-use Opencast\Models\VideoCoursewareBlocks;
-use Opencast\Models\CoursewareBlockMappings;
 use Opencast\Models\Videos;
 
 /**
@@ -58,28 +56,8 @@ class OpencastBlockV3 extends BlockType
         return [];
     }
 
-    public function copyPayload(string $rangeId = ''): array
-    {
-        $payload = $this->getPayload();
-
-        $token = md5($this->block['id'] . time());
-        $payload['copied_token'] = $token;
-
-        if (!empty($payload['token']) && Course::exists($rangeId)) {
-            $video = Videos::findByToken($payload['token']);
-            CoursewareBlockMappings::setRecord($token, $video->id, $rangeId);
-        }
-
-        return $payload;
-    }
-
     public function setPayload($payload): void
     {
-        if (!empty($payload['token'])) {
-            $rangeId = $this->block->container->structural_element->range_id;
-            VideoCoursewareBlocks::setRecord($rangeId, $payload['token'], $this->block['id']);
-        }
-
         parent::setPayload($payload);
     }
 }
