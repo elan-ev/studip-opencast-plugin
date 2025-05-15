@@ -103,16 +103,18 @@ class UserRoles extends OpencastController
                 // Handle video roles
 
                 // get all videos of courseware blocks in courses and add them to the permission list as well, ignore if user has permission through a course role
-                $stmt_courseware = \DBManager::get()->prepare("SELECT episode FROM oc_video_cw_blocks
-                    LEFT JOIN oc_video USING (token)
-                    LEFT JOIN seminar_user USING (seminar_id)
-                    WHERE seminar_user.user_id = :user_id
+                $stmt_courseware = \DBManager::get()->prepare("SELECT episode FROM cw_blocks
+                    JOIN cw_containers ON (cw_containers.id = cw_blocks.container_id)
+                    JOIN cw_structural_elements ON (cw_structural_elements.id = cw_containers.structural_element_id AND range_type = 'course')
+                    JOIN seminar_user ON (seminar_id = cw_structural_elements.range_id)
+                    JOIN oc_video ON (oc_video.token = CONVERT(JSON_VALUE(cw_blocks.payload, '$.token') USING latin1))
+                    WHERE cw_blocks.block_type = 'plugin-opencast-video' AND seminar_user.user_id = :user_id
                     AND NOT EXISTS (
                         SELECT 1
                         FROM oc_playlist_video
                         JOIN oc_playlist_seminar USING (playlist_id)
                         WHERE video_id = oc_video.id
-                        AND oc_video_cw_blocks.seminar_id = oc_playlist_seminar.seminar_id
+                        AND seminar_user.seminar_id = oc_playlist_seminar.seminar_id
                     )
                 ");
 
