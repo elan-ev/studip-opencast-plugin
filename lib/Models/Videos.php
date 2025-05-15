@@ -886,7 +886,9 @@ class Videos extends UPMap
         // Fetch episode if null
         if (empty($episode)) {
             $api_client  = ApiEventsClient::getInstance($video->config_id);
-            $episode = $api_client->getEpisode($video->episode);
+            $episode = $api_client->getEpisode($video->episode, [
+                'withacl' => 'true'
+            ]);
         }
 
         // Only allow updating of metadata if event has publications
