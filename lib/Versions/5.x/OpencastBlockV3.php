@@ -38,7 +38,7 @@ class OpencastBlockV3 extends BlockType
 
     public static function getJsonSchema(): Schema
     {
-        $schemaFile = __DIR__ . '/OpencastBlockV3.json';
+        $schemaFile = __DIR__ . '/../../BlockTypes/OpencastBlockV3.json';
 
         return Schema::fromJsonString(file_get_contents($schemaFile));
     }
