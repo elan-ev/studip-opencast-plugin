@@ -29,7 +29,7 @@
                                 :class="{ 'studip-dialog-warning': question, 'studip-dialog-alert': alert }"
                                 class="studip-dialog-body"
                                 role="dialog"
-                                :aria-modal="'true'"
+                                aria-modal="true"
                                 :aria-labelledby="dialogTitleId"
                                 :aria-describedby="dialogDescId"
                                 ref="dialog"
@@ -37,18 +37,21 @@
                                 <header
                                     class="studip-dialog-header"
                                 >
-                                    <span :id="dialogTitleId" class="studip-dialog-title" :title="dialogTitle">
+                                    <span :id="dialogTitleId"
+                                          class="studip-dialog-title"
+                                          :title="dialogTitle"
+                                          role="heading"
+                                          aria-level="2">
                                         {{ dialogTitle }}
                                     </span>
                                     <slot name="dialogHeader"></slot>
-                                    <span
+                                    <button
                                         :aria-label="$gettext('Diesen Dialog schließen')"
-                                        class="studip-dialog-close-button"
-                                        :style="dialogCloseIcon"
                                         :title="$gettext('Schließen')"
+                                        class="studip-dialog-close-button"
                                         @click="closeDialog"
                                     >
-                                    </span>
+                                    </button>
                                 </header>
                                 <section
                                     :id="dialogDescId"
@@ -61,28 +64,37 @@
                                     <div v-if="alert">{{ alert }}</div>
                                 </section>
                                 <footer class="studip-dialog-footer" ref="footer">
-                                    <button :disabled="disabled"
-                                        v-if="buttonA"
-                                        :title="buttonA.text"
-                                        :class="[buttonA.class]"
-                                        class="button"
-                                        type="button"
-                                        @click="confirmDialog"
-                                    >
-                                        {{ buttonA.text }}
-                                    </button>
-                                    <slot name="dialogButtons"></slot>
-                                    <button
-                                        v-if="buttonB"
-                                        :title="buttonB.text"
-                                        :class="[buttonB.class]"
-                                        class="button"
-                                        type="button"
-                                        ref="buttonB"
-                                        @click="closeDialog"
-                                    >
-                                        {{ buttonB.text }}
-                                    </button>
+                                    <div class="studip-dialog-footer-buttonset-left">
+                                        <slot name="dialogButtonsBefore"></slot>
+                                    </div>
+                                    <div class="studip-dialog-footer-buttonset-center">
+                                        <button
+                                            v-if="buttonA"
+                                            :title="buttonA.text"
+                                            :class="[buttonA.class]"
+                                            :disabled="buttonA.disabled"
+                                            class="button"
+                                            type="button"
+                                            @click="confirmDialog"
+                                        >
+                                            {{ buttonA.text }}
+                                        </button>
+                                        <slot name="dialogButtons"></slot>
+                                        <button
+                                            v-if="buttonB"
+                                            :title="buttonB.text"
+                                            :class="[buttonB.class]"
+                                            class="button"
+                                            type="button"
+                                            ref="buttonB"
+                                            @click="closeDialog"
+                                        >
+                                            {{ buttonB.text }}
+                                        </button>
+                                    </div>
+                                    <div class="studip-dialog-footer-buttonset-right">
+                                        <slot name="dialogButtonsAfter"></slot>
+                                    </div>
                                 </footer>
                             </div>
                         </vue-resizeable>
@@ -105,17 +117,34 @@ export default {
         VueResizeable,
     },
     props: {
-        height: {type: String, default: '300'},
-        width: {type: String, default: '450'},
+        height: {
+            type: String,
+            default: '300'
+        },
+        width: {
+            type: String,
+            default: '450'
+        },
         title: String,
         confirmText: String,
         closeText: String,
+        confirmShow: {
+            type: Boolean,
+            default: true
+        },
+        confirmDisabled: {
+            type: Boolean,
+            default: false
+        },
         confirmClass: String,
         closeClass: String,
         question: String,
         alert: String,
         message: String,
-        disabled: false
+        defaultFocus: {
+            type: Boolean,
+            default: true
+        }
     },
     data() {
         const dialogId = uuid++;
@@ -127,7 +156,7 @@ export default {
 
             currentWidth: 450,
             currentHeight: 300,
-            minW: 400,
+            minW: 100,
             minH: 100,
             left: 0,
             top: 0,
@@ -148,10 +177,11 @@ export default {
                 button.text = this.$gettext('Ja');
                 button.class = 'accept';
             }
-            if (this.confirmText) {
+            if (this.confirmText && this.confirmShow) {
                 button = {};
                 button.text = this.confirmText;
                 button.class = this.confirmClass;
+                button.disabled = this.confirmDisabled
             }
 
             return button;
@@ -190,6 +220,7 @@ export default {
             if (this.message) {
                 return this.$gettext('Information');
             }
+            return '';
         },
         dialogWidth() {
             return this.currentWidth ? (this.currentWidth - dialogPadding * 4) + 'px' : 'unset';
@@ -199,11 +230,6 @@ export default {
         },
         contentHeight() {
             return this.currentHeight ? this.currentHeight - this.footerHeight + 'px' : 'unset';
-        },
-
-        dialogCloseIcon() {
-            return `background-image: url('` +
-                STUDIP.ASSETS_URL + `/images/icons/white/decline.svg')`
         }
     },
     methods: {
@@ -216,14 +242,14 @@ export default {
         initSize() {
             this.currentWidth = parseInt(this.width, 10);
             this.currentHeight = parseInt(this.height, 10);
-            if (window.outerWidth > this.currentWidth) {
-                this.left = (window.outerWidth - this.currentWidth) / 2;
+            if (window.innerWidth > this.currentWidth) {
+                this.left = (window.innerWidth - this.currentWidth) / 2;
             } else {
                 this.left = 5;
-                this.currentWidth = window.outerWidth - 16;
+                this.currentWidth = window.innerWidth - 16;
             }
 
-            this.top = (window.outerHeight - this.currentHeight) / 2;
+            this.top = (window.innerHeight - this.currentHeight) / 2;
             this.footerHeight = this.$refs.footer.offsetHeight;
         },
         resizeHandler(data) {
@@ -231,10 +257,24 @@ export default {
             this.currentHeight = data.height;
             this.left = data.left;
             this.top = data.top;
+            this.handleResizeBlur();
         },
-
+        handleResizeBlur() {
+            let el = this.$refs.resizableComponent.$el.querySelector(':focus');
+            if (el) {
+                el.blur();
+            }
+        },
         checkEmpty(value) {
             return typeof value !== "number" ? 0 : value;
+        }
+    },
+    mounted() {
+        if (this.defaultFocus) {
+            this.$nextTick()
+                .then(() => {
+                    this.$refs.buttonB.focus();
+                });
         }
     }
 };
