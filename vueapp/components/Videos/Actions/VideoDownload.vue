@@ -291,5 +291,15 @@ export default {
             this.selectedMedia = this.tuned_presentations[0];
         }
     },
+    watch: {
+        selectedSource(newSource) {
+            if (newSource === 'presenter') {
+                this.selectedMedia = this.tuned_presenters[0];
+            }
+            if (newSource === 'presentation') {
+                this.selectedMedia = this.tuned_presentations[0];
+            }
+        }
+    }
 };
 </script>
