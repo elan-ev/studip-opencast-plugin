@@ -4,7 +4,7 @@
             :title="$gettext('Medien herunterladen')"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
-            height="500"
+            height="400"
             width="475"
             @close="this.$emit('cancel')"
         >
