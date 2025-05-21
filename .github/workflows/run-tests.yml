@@ -56,7 +56,7 @@ jobs:
         run: docker compose exec -T studip_db mysql -u studip_user --password=studip_password studip_db < ./oc.sql
 
       - name: Trigger playlists migration to Opencast
-        run: curl http://localhost/plugins.php/opencastv3/api/migrate_playlists -u root@studip:testing
+        run: curl http://localhost/plugins.php/opencastv3/api/migrate_playlists -u root@studip:testing --fail-with-body
 
       - name: Run tests
         run: npm run tests
