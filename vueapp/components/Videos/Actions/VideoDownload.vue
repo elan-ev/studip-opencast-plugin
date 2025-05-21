@@ -2,88 +2,101 @@
     <div>
         <StudipDialog
             :title="$gettext('Medien herunterladen')"
-            :closeText="$gettext('Abbrechen')"
+            :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
-            height="500"
+            height="400"
+            width="475"
             @close="this.$emit('cancel')"
         >
-            <template v-slot:dialogContent>
-                <div v-if="presenters.length">
-                    <h2>
-                        ReferentIn
-                    </h2>
-                    <a v-for="(media, index) in presenters" :key="index">
-                        <StudipButton @click.prevent="downloadFile(media, 'presenter', media.size)">
-                            {{ getMediaText(media) }}
-                        </StudipButton>
-
-                        <div class="oc--tooltip--copy">
-                            <div class="oc--tooltip--copy-success"
-                                :class="{
-                                    'oc--display--block': copied == media.url
-                                }"
+            <template #dialogContent>
+                <div class="oc--download-list-container">
+                    <div class="oc--download-list">
+                        <form class="default">
+                            <label>
+                                {{ $gettext('Videoquelle') }}
+                            </label>
+                            <label
+                                ><input
+                                    type="radio"
+                                    value="presenter"
+                                    v-model="selectedSource"
+                                    :disabled="!hasPresenterVideo || downloadInProgress"
+                                />
+                                {{ $gettext('Aufzeichnung der vortragenden Person') }}</label
                             >
-                                {{ $gettext('Kopiert!') }}
-                            </div>
-
-                            <studip-icon
-                                v-if="event.visibility == 'public'"
-                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                                @click="copyToClipboard(media.url)"
-                                :shape="copied == media.url ? 'accept' : 'copy'"
-                                :role="copied == media.url ? 'status-green' : 'clickable'"
-                            />
-                        </div>
-                    </a>
-                </div>
-                <br>
-                <div v-if="presentations.length">
-                    <h2>
-                        Bildschirm
-                    </h2>
-                    <a v-for="(media, index) in presentations" :key="index">
-                        <StudipButton @click.prevent="downloadFile(media, 'presentation', media.size)">
-                            {{ getMediaText(media) }}
-                        </StudipButton>
-
-                        <div class="oc--tooltip--copy">
-                            <div class="oc--tooltip--copy-success"
-                                :class="{
-                                    'oc--display--block': copied == media.url
-                                }"
+                            <label
+                                ><input
+                                    type="radio"
+                                    value="presentation"
+                                    v-model="selectedSource"
+                                    :disabled="!hasPresentationVideo || downloadInProgress"
+                                />
+                                {{ $gettext('Aufzeichnung des Bildschirms') }}</label
                             >
-                                {{ $gettext('Kopiert!') }}
-                            </div>
-
-                            <studip-icon
-                                v-if="event.visibility == 'public'"
-                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                                @click="copyToClipboard(media.url)"
-                                :shape="copied == media.url ? 'accept' : 'copy'"
-                                :role="copied == media.url ? 'status-green' : 'clickable'"
-                            />
-                        </div>
-                    </a>
+                            <label>
+                                {{ $gettext('Videoqualität') }}
+                                <select v-model="selectedMedia" :disabled="downloadInProgress">
+                                    <template v-if="selectedSource === 'presenter'">
+                                        <option v-for="(media, index) in tuned_presenters" :key="index" :value="media">
+                                            {{ getMediaText(media) }}
+                                        </option>
+                                    </template>
+                                    <template v-else>
+                                        <option
+                                            v-for="(media, index) in tuned_presentations"
+                                            :key="index"
+                                            :value="media"
+                                        >
+                                            {{ getMediaText(media) }}
+                                        </option>
+                                    </template>
+                                </select>
+                            </label>
+                        </form>
+                        <template v-if="downloadInProgress">
+                            <span>{{ $gettext('Video wird heruntergeladen') }}</span>
+                            <ProgressBar :progress="selectedMedia.progress" />
+                        </template>
+                    </div>
+                    <div class="oc--download-messages">
+                        <MessageList :float="true" :dialog="true" />
+                    </div>
                 </div>
+            </template>
+            <template #dialogButtons>
+                <button
+                    v-if="event.visibility == 'public'"
+                    class="button"
+                    :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                    @click="copyToClipboard()"
+                >
+                    {{ $gettext('Link kopieren') }}
+                </button>
+                <button v-if="!downloadInProgress" class="button" @click="downloadFile()">
+                    {{ $gettext('Herunterladen') }}
+                </button>
+                <button v-else class="button" @click="abortDownload()">
+                    {{ $gettext('Herunterladen abbrechen') }}
+                </button>
             </template>
         </StudipDialog>
     </div>
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
-import StudipButton from '@studip/StudipButton'
-import StudipIcon from '@studip/StudipIcon';
+import StudipDialog from '@studip/StudipDialog';
+import MessageList from '@/components/MessageList';
+import ProgressBar from '@/components/ProgressBar';
 
-import axios from "@/common/axios.service";
+import axios from '@/common/axios.service';
 
 export default {
     name: 'VideoDownload',
 
     components: {
         StudipDialog,
-        StudipButton,
-        StudipIcon
+        MessageList,
+        ProgressBar,
     },
 
     props: ['event'],
@@ -92,53 +105,126 @@ export default {
         return {
             presentations: [],
             presenters: [],
-            copied: null
-        }
+            copied: null,
+            selectedSource: '',
+            selectedMedia: null,
+        };
+    },
+
+    computed: {
+        tuned_presentations() {
+            let tuned = this.presentations.map((media) => {
+                media.loading = false;
+                media.download_controller = new AbortController();
+                media.progress = 0;
+                return media;
+            });
+            return tuned;
+        },
+
+        tuned_presenters() {
+            let tuned = this.presenters.map((media) => {
+                media.loading = false;
+                media.download_controller = new AbortController();
+                media.progress = 0;
+                return media;
+            });
+            return tuned;
+        },
+
+        hasPresenterVideo() {
+            return this.presenters.length > 0;
+        },
+
+        hasPresentationVideo() {
+            return this.presentations.length > 0;
+        },
+
+        downloadInProgress() {
+            return this.selectedMedia?.loading;
+        },
     },
 
     methods: {
-        async downloadFile(media, type, index) {
-            let url = window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + type + '/' + index;
+        abortDownload() {
+            if (this.downloadInProgress) {
+                this.selectedMedia.download_controller.abort();
+                this.selectedMedia.progress = 0;
+                this.selectedMedia.loading = false;
+            }
+        },
+        async downloadFile() {
+            const index = this.selectedMedia?.size;
+            const type = this.selectedSource;
+            if (this.selectedMedia?.loading === true) {
+                return;
+            }
+            this.$store.dispatch('clearMessages', true);
+            let view = this;
 
-            axios.get(url, {
-                responseType: 'blob'
-            }).then(response => {
-                const blob = new Blob([response.data]);
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = this.getFileName(media);
-                link.click();
-                URL.revokeObjectURL(link.href);
-            }).catch(console.error);
+            let url = window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + type + '/' + index;
+            this.selectedMedia.loading = true;
+            this.selectedMedia.progress = 0;
+
+            let dummy_download_link = null;
+
+            axios
+                .get(url, {
+                    responseType: 'blob',
+                    signal: this.selectedMedia.download_controller.signal,
+                    onDownloadProgress: (progressEvent) => {
+                        let percentage = Math.round((progressEvent.loaded * 100) / index);
+                        if (percentage > 100) {
+                            percentage = 100;
+                        }
+                        this.selectedMedia.progress = percentage;
+                    },
+                })
+                .then((response) => {
+                    const blob = new Blob([response.data]);
+                    dummy_download_link = document.createElement('a');
+                    dummy_download_link.href = URL.createObjectURL(blob);
+                    dummy_download_link.download = this.getFileName(this.selectedMedia);
+                    dummy_download_link.click();
+                    view.$store.dispatch('addMessage', {
+                        type: 'success',
+                        text: this.$gettext('Herunterladen des Mediums abgeschlossen.'),
+                        dialog: true,
+                    });
+                })
+                .catch((err) => {
+                    let message = {
+                        type: 'error',
+                        text: this.$gettext('Herunterladen des Mediums fehlgeschlagen!'),
+                        dialog: true,
+                    };
+                    if (axios.isCancel(err)) {
+                        message.type = 'warning';
+                        message.text = this.$gettext('Herunterladen des Mediums abgebrochen!');
+                    }
+                    view.$store.dispatch('addMessage', message);
+                })
+                .finally(() => {
+                    this.resetMediaDownloadProps();
+                    if (dummy_download_link) {
+                        URL.revokeObjectURL(dummy_download_link.href);
+                        dummy_download_link.remove();
+                        dummy_download_link = null;
+                    }
+                });
+        },
+
+        resetMediaDownloadProps() {
+            this.selectedMedia.loading = false;
+            this.selectedMedia.download_controller = new AbortController();
+            this.selectedMedia.progress = 0;
         },
 
         getFileName(media) {
             let res = media.info;
             res = res.replace(' * ', ' x ').replace(/\s+/g, '');
-            let ext = media.url.split(".").pop();
+            let ext = media.url.split('.').pop();
             return this.event.title + ' (' + res + ').' + ext;
-        },
-
-        getMediaText(media) {
-            var text = media?.info || '';
-            text = text.replace(' * ', ' x ');
-            var size = media?.size || 0;
-
-            if (size == 0) {
-                return text;
-            }
-
-            size = size / 1024;
-
-            if (size > 1024) {
-                size = Math.round(size/1024 * 10) / 10
-                text = text + ' (' + size + ' MB)'
-            } else {
-                size = Math.round(size * 10) / 10
-                text = text + ' (' + size + ' KB)'
-            }
-
-            return text
         },
 
         extractDownloads() {
@@ -157,19 +243,63 @@ export default {
             }
         },
 
-        copyToClipboard(text)
-        {
+        getMediaText(media) {
+            let text = media?.info || '';
+            text = text.replace(' * ', ' x ');
+            let size = media?.size || 0;
+
+            if (size == 0) {
+                return text;
+            }
+
+            size = size / 1024;
+
+            if (size > 1024) {
+                size = Math.round((size / 1024) * 10) / 10;
+                text = text + ' (' + size + ' MB)';
+            } else {
+                size = Math.round(size * 10) / 10;
+                text = text + ' (' + size + ' KB)';
+            }
+
+            return text;
+        },
+
+        copyToClipboard() {
+            const text = this.selectedMedia?.url;
             navigator.clipboard.writeText(text);
-            this.copied = text;
+            this.$store.dispatch('clearMessages', true);
+            let message = {
+                type: 'info',
+                text: this.$gettext('Link zur Mediendatei wurde in die Zwischenablage kopiert.'),
+                dialog: true,
+            };
+            this.$store.dispatch('addMessage', message);
             setTimeout(() => {
-                this.copied = '';
+                this.$store.dispatch('clearMessages', true);
             }, 3000);
-        }
+        },
     },
 
     mounted() {
         this.extractDownloads();
+        if (this.hasPresenterVideo) {
+            this.selectedSource = 'presenter';
+            this.selectedMedia = this.tuned_presenters[0];
+        } else {
+            this.selectedSource = 'presentation';
+            this.selectedMedia = this.tuned_presentations[0];
+        }
+    },
+    watch: {
+        selectedSource(newSource) {
+            if (newSource === 'presenter') {
+                this.selectedMedia = this.tuned_presenters[0];
+            }
+            if (newSource === 'presentation') {
+                this.selectedMedia = this.tuned_presentations[0];
+            }
+        }
     }
-
-}
+};
 </script>

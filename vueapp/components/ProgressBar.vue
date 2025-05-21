@@ -1,7 +1,7 @@
 <template>
-    <div class="oc--progress">
+    <div class="oc--progress" :class="{'oc--minimal-progress': minimal === true}">
         <div class="oc--progress-bar" :style="`width: ` + progress + `%`">
-            <span>
+            <span v-if="minimal !== true">
                 {{ progress }}%
             </span>
         </div>
@@ -12,6 +12,6 @@
 export default {
     name: 'ProgressBar',
 
-    props: ['progress']
+    props: ['progress', 'minimal']
 }
 </script>

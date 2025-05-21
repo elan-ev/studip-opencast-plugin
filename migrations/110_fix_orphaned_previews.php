@@ -1,10 +1,10 @@
 <?php
 
-class MigratePreviews extends Migration
+class FixOrphanedPreviews extends Migration
 {
     public function description()
     {
-        return 'Update preview URL in oc_video table';
+        return 'Fix for previews that could not get migrated in 107.';
     }
 
     public function up()
@@ -19,19 +19,20 @@ class MigratePreviews extends Migration
             $new_preview_url = null;
             $previews = json_decode($data['preview'], true);
 
+            // We want to handle the case where the preview is still a json object.
             if (!empty($previews)) {
+                // Last chance to present the preview URL.
                 if (!empty($previews['player'])) {
                     $new_preview_url = $previews['player'];
                 } else if (!empty($previews['search'])) {
                     $new_preview_url = $previews['search'];
                 }
-            }
 
-            // Since we are migrating previews to preview URL, we update the preview regardless of the value of the new preview url, whether it is empty or not!
-            $stmt->execute([
-                ':preview' => $new_preview_url,
-                ':id' => $data['id']
-            ]);
+                $stmt->execute([
+                    ':preview' => $new_preview_url,
+                    ':id' => $data['id']
+                ]);
+            }
         }
     }
 

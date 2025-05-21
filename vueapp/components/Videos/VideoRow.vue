@@ -518,6 +518,16 @@ export default {
                         });
                     }
 
+                    if (this.canShare && this.event.visibility === 'public') {
+                        menuItems.push({
+                            id: 4,
+                            label: this.$gettext('Einbettungscode anzeigen'),
+                            icon: 'code',
+                            emit: 'performAction',
+                            emitArguments: 'VideoEmbeddingCode'
+                        });
+                    }
+
                     // As we abandoned the preview object structure, we now have to only validate the preview URL!
                     if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({

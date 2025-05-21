@@ -372,13 +372,13 @@ class UploadService {
                         uploadDone(episode_id, terms, workflowId);
                     }
                 } catch (ex) {
-                    console.log(ex);
+                    console.error(ex);
+                    onError();
                     /* Catch XML parse error. On Error Resume Next ;-) */
                 }
             }).catch(function (error) {
-                if (error.code === 'ERR_NETWORK') {
-                    onError();
-                }
+                console.error(error);
+                onError();
             });
     }
 
