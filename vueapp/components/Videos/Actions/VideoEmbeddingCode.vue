@@ -19,7 +19,7 @@
                         <input type="text" :value="embeddingLink" readonly ref="embeddingLink" />
                     </legend>
                 </form>
-                <MessageList :dialog="true" />
+                <MessageList :dialog="true" :float="true"/>
             </template>
             <template #dialogButtons>
                 <button class="button" :disabled="!embeddingCode" :title="$gettext('Einbettungslink in die Zwischenablage kopieren')" @click="copyEmbeddingLink()">
