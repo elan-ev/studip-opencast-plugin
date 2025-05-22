@@ -19,6 +19,9 @@ class PlaylistMigration
     {
         $db = DBManager::get();
 
+        // Default opencast server if playlist belongs to no opencast server
+        $default_config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+
         // Migrate existing playlists to Opencast
         $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
 
@@ -26,10 +29,10 @@ class PlaylistMigration
         $tries = 0;
         while (!empty($playlists) && $tries < 3) {
             foreach ($playlists as $playlist) {
-                $config_id = $playlist->config_id;
+                $config_id = $playlist->config_id ?? null;
                 if (empty($config_id)) {
                     // Default opencast server if playlist belongs to no opencast server
-                    $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+                    $config_id = $default_config_id;
                 }
 
                 // Get playlist videos
@@ -65,6 +68,18 @@ class PlaylistMigration
 
             $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
             $tries++;
+        }
+
+        // We need another step to make sure config id is set and it is not null before altering the table with not-null confing_id.
+        $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
+
+        while (!empty($null_config_playlists)) {
+            foreach ($null_config_playlists as $null_config_playlist) {
+                // Store config id with default config id.
+                $null_config_playlist->config_id = $default_config_id;
+                $null_config_playlist->store();
+            }
+            $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
         }
 
         // Forbid playlist without related oc playlist
