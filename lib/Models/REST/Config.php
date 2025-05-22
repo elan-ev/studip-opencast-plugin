@@ -65,9 +65,9 @@ class Config
             if (($service_url['host'] == "localhost" || !preg_match('#https?://localhost.*#', $service->host))
                 && mb_strpos($service->host, $service_url['scheme']) === 0
             ) {
-                // check if service is wanted, active and online
+                // check if service is wanted, active, online and not in maintenance
                 if (isset($oc_services[$service->type])
-                    && $service->online && $service->active
+                    && $service->online && $service->active && !$service->maintenance
                 ) {
                     // TODO: check duplicate entries for same service-type
                     $services[$service->host . $service->path]
