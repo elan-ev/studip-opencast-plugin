@@ -875,8 +875,8 @@ class Videos extends UPMap
      *
      * @Notification OpencastVideoSync
      *
-     * @param string                $eventType
-     * @param object                $episode
+     * @param string|null           $eventType
+     * @param object|null           $episode
      * @param Opencast\Models\Video $video
      *
      * @return void
