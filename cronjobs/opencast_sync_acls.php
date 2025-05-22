@@ -57,6 +57,7 @@ class OpencastSyncAcls extends CronJob
             $api_client = ApiEventsClient::getInstance($config['id']);
 
             // paginated fetch of events from opencast
+            $oc_events = [];
             $offset = 0;
             $limit  = 100;
 
@@ -87,7 +88,7 @@ class OpencastSyncAcls extends CronJob
                         Videos::checkEventACL(null, $event, $video);
                     }
                 }
-            } while (sizeof($oc_events) > 0);
+            } while (!empty($oc_events));
         }
     }
 
