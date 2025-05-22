@@ -1,40 +1,42 @@
 <template>
-    <tr class="oc--episode" v-if="event.refresh === undefined" :key="event.id" ref="videoRow"
+    <tr
+        class="oc--episode"
+        v-if="event.refresh === undefined"
+        :key="event.id"
+        ref="videoRow"
         :class="{
-            'oc--episode--invisible': !isVisible(event)
-        }">
+            'oc--episode--invisible': !isVisible(event),
+        }"
+    >
         <td v-if="canEdit && videoSortMode">
             <a class="dragarea" title="$gettextInterpolate($gettext('Video per Drag & Drop verschieben'))">
-                <img class="oc--drag-handle"
-                     :src="dragHandle"
-                     height="24"
-                />
+                <img class="oc--drag-handle" :src="dragHandle" height="24" />
             </a>
         </td>
 
         <td v-if="showCheckbox">
-            <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo">
+            <input type="checkbox" :checked="isChecked" @click.stop="toggleVideo" />
         </td>
-        <td v-else-if="userHasSelectableVideos && canUpload">
-        </td>
+        <td v-else-if="userHasSelectableVideos && canUpload"></td>
 
         <td class="oc--playercontainer">
             <template v-if="isLivestream">
-                <a href="#" :disabled="!livestreamInfo.isLive" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
-                    <span class="oc--previewimage"
-                        :title="livestreamInfo.text"
-                    >
-                        <img class="oc--previewimage"
+                <a
+                    href="#"
+                    :disabled="!livestreamInfo.isLive"
+                    @click.prevent="redirectAction(`/livestream/` + event.token)"
+                    target="_blank"
+                >
+                    <span class="oc--previewimage" :title="livestreamInfo.text">
+                        <img
+                            class="oc--previewimage"
                             :src="defaultLightPreviewImageSrc"
                             @error="setDefaultImage()"
                             height="200"
                             :ref="event.id"
+                            :alt="livestreamInfo.text"
                         />
-                        <span :class="[
-                            'oc--livestream-overlay',
-                            {'is-live': livestreamInfo.isLive}
-                            ]"
-                        >
+                        <span :class="['oc--livestream-overlay', { 'is-live': livestreamInfo.isLive }]">
                             <span class="oc--livestream-text">{{ livestreamInfo.text }}</span>
                             <span class="oc--livestream-timer" v-html="livestreamInfo.timer" />
                         </span>
@@ -42,22 +44,33 @@
                 </a>
             </template>
             <template v-else>
-                <a v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
-                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank"
+                <a
+                    v-if="event.publication && event.available && event.available != '0' && !isProcessing"
+                    href="#"
+                    @click.prevent="redirectAction(`/video/` + event.token)"
+                    target="_blank"
                 >
                     <span class="oc--previewimage">
-                        <img class="oc--previewimage"
-                             :src="getImageSrc"
-                             @error="setDefaultImage()"
-                             height="200"
-                             :ref="event.id"
+                        <img
+                            class="oc--previewimage"
+                            :src="getImageSrc"
+                            @error="setDefaultImage()"
+                            height="200"
+                            :ref="event.id"
                         />
-                        <studip-icon class="oc--image-button oc--play-button" shape="play" role="info_alt"></studip-icon>
+                        <studip-icon
+                            class="oc--image-button oc--play-button"
+                            shape="play"
+                            role="info_alt"
+                        ></studip-icon>
                         <span data-tooltip class="tooltip oc--views">
                             <span class="tooltip-content">
                                 {{ $gettext('Aufrufe') }}
                             </span>
-                            <studip-icon :shape="isVisible(event) ? 'visibility-visible' : 'visibility-invisible'" role="info_alt"></studip-icon>
+                            <studip-icon
+                                :shape="isVisible(event) ? 'visibility-visible' : 'visibility-invisible'"
+                                role="info_alt"
+                            ></studip-icon>
                             {{ event.views }}
                         </span>
                         <span class="oc--duration">
@@ -65,33 +78,64 @@
                         </span>
                     </span>
                 </a>
-                <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
+                <span
+                    v-else-if="!event.available || event.available == '0'"
+                    class="oc--unavailable"
                     :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
                 >
                     <span class="oc--previewimage">
-                        <img class="oc--image-button" :src="failed">
+                        <img
+                            class="oc--image-button"
+                            :src="failed"
+                            :alt="$gettext('Video nicht (mehr) in Opencast vorhanden')"
+                        />
                     </span>
                 </span>
-                <a v-else-if="event.state == 'cutting'"
-                   @click="redirectAction(`/editor/` + event.token)"
-                   :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!')"
+                <a
+                    v-else-if="event.state == 'cutting'"
+                    @click="redirectAction(`/editor/` + event.token)"
+                    :title="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!')"
                 >
                     <span class="oc--previewimage">
-                        <img class="oc--image-button" :src="cut">
+                        <img
+                            class="oc--image-button"
+                            :src="cut"
+                            :alt="$gettext('Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!')"
+                        />
                     </span>
                 </a>
-                <span v-else-if="isProcessing" class="oc--previewimage"
-                      :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
+                <span
+                    v-else-if="isProcessing"
+                    class="oc--previewimage"
+                    :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
                 >
-                    <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
+                    <studip-icon
+                        class="oc--image-button"
+                        shape="admin"
+                        role="status-yellow"
+                        :alt="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
+                    ></studip-icon>
                 </span>
-                <span v-else-if="event.state == 'failed'" class="oc--previewimage"
-                      :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')"
+                <span
+                    v-else-if="event.state == 'failed'"
+                    class="oc--previewimage"
+                    :title="
+                        $gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')
+                    "
                 >
-                    <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
+                    <studip-icon
+                        class="oc--image-button"
+                        shape="exclaim"
+                        role="status-red"
+                        :alt="
+                            $gettext(
+                                'Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!'
+                            )
+                        "
+                    ></studip-icon>
                 </span>
                 <span v-else class="oc--previewimage">
-                    <img class="oc--previewimage" :src="preview" height="200"/>
+                    <img class="oc--previewimage" :src="preview" alt="" height="200" />
                     <!-- <p>No video uploaded</p> -->
                 </span>
             </template>
@@ -102,19 +146,30 @@
                 {{ $gettext('(Video ist unsichtbar für Studierende)') }}
             </div>
             <div class="oc--title-container">
-                <a v-if="isLivestream && livestreamInfo.isLive"
-                   href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
-                    {{event.title}}
+                <a
+                    v-if="isLivestream && livestreamInfo.isLive"
+                    href="#"
+                    @click.prevent="redirectAction(`/livestream/` + event.token)"
+                    target="_blank"
+                >
+                    {{ event.title }}
                 </a>
-                <a v-else-if="event.publication && event.available"
-                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank">
-                    {{event.title}}
+                <a
+                    v-else-if="event.publication && event.available"
+                    href="#"
+                    @click.prevent="redirectAction(`/video/` + event.token)"
+                    target="_blank"
+                >
+                    {{ event.title }}
                 </a>
-                <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')">
-                    {{event.title}}
+                <span
+                    v-else-if="event.state == 'running'"
+                    :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')"
+                >
+                    {{ event.title }}
                 </span>
                 <span v-else>
-                    {{event.title}}
+                    {{ event.title }}
                 </span>
             </div>
             <div class="oc--tags oc--tags-video">
@@ -141,30 +196,28 @@
                 <span class="tooltip-content">
                     {{ $gettext('Dieses Video ist öffentlich.') }}
                 </span>
-                <studip-icon
-                    shape="globe"
-                    role="status-yellow"
-                    :size="18"
-                />
+                <studip-icon shape="globe" role="status-yellow" :size="18" />
             </div>
 
             <div v-if="getAccessText && canEdit">
-                <a href="#" data-tooltip class="tooltip" @click.prevent="performActionWithChecks('VideoAccess', canShare)">
+                <a
+                    href="#"
+                    data-tooltip
+                    class="tooltip"
+                    @click.prevent="performActionWithChecks('VideoAccess', canShare)"
+                >
                     <span class="tooltip-content" v-html="getAccessText"></span>
-                    <studip-icon
-                        shape="group2"
-                        role="active"
-                        :size="18"
-                    />
+                    <studip-icon shape="group2" role="active" :size="18" />
                 </a>
             </div>
         </td>
 
         <td v-if="!videoSortMode && showActions && menuItems.length > 0" class="actions">
-            <StudipActionMenu :items="menuItems"
-                              :collapseAt="menuItems.length > 1"
-                              @performAction="performAction"
-                              @redirectAction="redirectAction"
+            <StudipActionMenu
+                :items="menuItems"
+                :collapseAt="menuItems.length > 1"
+                @performAction="performAction"
+                @redirectAction="redirectAction"
             />
         </td>
     </tr>
@@ -176,60 +229,62 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
-import ConfirmDialog from '@/components/ConfirmDialog'
-import StudipButton from '@/components/Studip/StudipButton'
-import StudipIcon from '@/components/Studip/StudipIcon'
-import StudipActionMenu from '@/components/Studip/StudipActionMenu'
+import { mapGetters } from 'vuex';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import StudipButton from '@/components/Studip/StudipButton';
+import StudipIcon from '@/components/Studip/StudipIcon';
+import StudipActionMenu from '@/components/Studip/StudipActionMenu';
 
-import Tag from '@/components/Tag.vue'
+import Tag from '@/components/Tag.vue';
 
 export default {
-    name: "VideoRow",
+    name: 'VideoRow',
 
     components: {
-        StudipButton, ConfirmDialog,
-        StudipIcon, StudipActionMenu,
-        Tag
+        StudipButton,
+        ConfirmDialog,
+        StudipIcon,
+        StudipActionMenu,
+        Tag,
     },
 
     props: {
         event: Object,
         numberOfColumns: {
             type: Number,
-            required: true
+            required: true,
         },
         selectable: {
             type: Boolean,
-            default: false
+            default: false,
         },
         isCourse: {
             type: Boolean,
-            default: false
+            default: false,
         },
         selectedVideos: {
             type: Object,
         },
         canUpload: {
             type: Boolean,
-            default: false
+            default: false,
         },
         showActions: {
             type: Boolean,
-            default: true
+            default: true,
         },
         userHasSelectableVideos: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
 
     data() {
         return {
-            preview:    window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
-            play:       window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
-            cut:        window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
-            failed:     window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/failed.svg',
+            preview: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/default-preview.png',
+            play: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/play.svg',
+            cut: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/cut.svg',
+            failed: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/failed.svg',
             dragHandle: window.OpencastPlugin.PLUGIN_ASSET_URL + '/images/grabber_grey.svg',
             DeleteConfirmDialog: false,
             DownloadDialog: false,
@@ -238,28 +293,27 @@ export default {
                 isLive: false,
                 text: 'Livestream',
                 timerInterval: null,
-                timer: ''
-            }
-        }
+                timer: '',
+            },
+        };
     },
 
     methods: {
         removeVideo() {
             let view = this;
-            this.$store.dispatch('deleteVideo', this.event.token)
-                .then(() => {
-                    view.DeleteConfirmDialog = false;
-                });
+            this.$store.dispatch('deleteVideo', this.event.token).then(() => {
+                view.DeleteConfirmDialog = false;
+            });
         },
 
         toggleVideo(e) {
-            this.$emit("toggle", {
+            this.$emit('toggle', {
                 event_id: this.event.token,
-                checked: e.target.checked ? true : false
+                checked: e.target.checked ? true : false,
             });
         },
         performAction(action) {
-            this.$emit('doAction', {event: JSON.parse(JSON.stringify(this.event)), actionComponent: action});
+            this.$emit('doAction', { event: JSON.parse(JSON.stringify(this.event)), actionComponent: action });
         },
         performActionWithChecks(action, check) {
             if (check) {
@@ -281,7 +335,7 @@ export default {
             if (!this.isLivestream) {
                 return;
             }
-            let now = parseInt(((new Date()).getTime() / 1000).toFixed(0));
+            let now = parseInt((new Date().getTime() / 1000).toFixed(0));
             let start = this.livestream?.start ? parseInt(this.livestream.start) : 0;
             let end = this.livestream?.end ? parseInt(this.livestream.end) : 0;
 
@@ -301,20 +355,22 @@ export default {
                         window.clearInterval(this.livestreamInfo.timerInterval);
                         this.initLivestreamChecker();
                     }
-                    diff = this.livestreamCountdown(diff)
+                    diff = this.livestreamCountdown(diff);
                 }, 1000);
-            } else if (now >= start && now <= end) { // If it is live
+            } else if (now >= start && now <= end) {
+                // If it is live
                 this.livestreamInfo.isLive = true;
                 this.livestreamInfo.text = this.$gettext('Live');
                 let counter_seconds = this.livestreamDuration(now - start);
                 this.livestreamInfo.timerInterval = setInterval(() => {
-                    if ((now + counter_seconds) >= end) {
+                    if (now + counter_seconds >= end) {
                         window.clearInterval(this.livestreamInfo.timerInterval);
                         this.initLivestreamChecker();
                     }
-                    counter_seconds = this.livestreamDuration(counter_seconds)
+                    counter_seconds = this.livestreamDuration(counter_seconds);
                 }, 1000);
-            } else if (now > end) { // If it is expired
+            } else if (now > end) {
+                // If it is expired
                 this.livestreamInfo.timer = this.$gettext('Beendet');
             }
         },
@@ -326,20 +382,20 @@ export default {
             let hours_str = ('' + hours).padStart(2, '0');
             let minutes = Math.floor((diff % (60 * 60)) / 60);
             let minutes_str = ('' + minutes).padStart(2, '0');
-            let seconds = Math.floor((diff % 60));
+            let seconds = Math.floor(diff % 60);
             let seconds_str = ('' + seconds).padStart(2, '0');
-            this.livestreamInfo.timer = (days > 0 ? `${days_str}:` : '') + `${hours_str}:${minutes_str}:${seconds_str}`
+            this.livestreamInfo.timer = (days > 0 ? `${days_str}:` : '') + `${hours_str}:${minutes_str}:${seconds_str}`;
             return diff - 1;
         },
 
         livestreamDuration(counter_seconds) {
-            let hours = Math.floor((counter_seconds % (60 * 60 * 24) / (60 * 60)));
+            let hours = Math.floor((counter_seconds % (60 * 60 * 24)) / (60 * 60));
             let hours_str = ('' + hours).padStart(2, '0');
             let minutes = Math.floor((counter_seconds % (60 * 60)) / 60);
             let minutes_str = ('' + minutes).padStart(2, '0');
-            let seconds = Math.floor((counter_seconds % 60));
-            let seconds_str  = ('' + seconds).padStart(2, '0');
-            this.livestreamInfo.timer = `${hours_str}:${minutes_str}:${seconds_str}`
+            let seconds = Math.floor(counter_seconds % 60);
+            let seconds_str = ('' + seconds).padStart(2, '0');
+            this.livestreamInfo.timer = `${hours_str}:${minutes_str}:${seconds_str}`;
             return counter_seconds + 1;
         },
 
@@ -347,7 +403,7 @@ export default {
             let video_row = this.$refs.videoRow;
             if (video_row) {
                 if (video_row?.childElementCount && video_row?.childElementCount < this.numberOfColumns) {
-                    let colspan = (this.numberOfColumns - video_row.childElementCount) + 1;
+                    let colspan = this.numberOfColumns - video_row.childElementCount + 1;
                     video_row.lastElementChild.setAttribute('colspan', colspan);
                 }
             }
@@ -371,7 +427,7 @@ export default {
             }
 
             return false;
-        }
+        },
     },
 
     computed: {
@@ -382,7 +438,7 @@ export default {
             'videoSortMode',
             'currentUser',
             'simple_config_list',
-            'course_config'
+            'course_config',
         ]),
 
         showCheckbox() {
@@ -405,11 +461,9 @@ export default {
             if (this.downloadSetting !== 'never') {
                 if (this.canEdit) {
                     return true;
-                }
-                else if (this.playlist && this.playlist['allow_download'] !== undefined) {
+                } else if (this.playlist && this.playlist['allow_download'] !== undefined) {
                     return this.playlist['allow_download'];
-                }
-                else {
+                } else {
                     return this.downloadSetting === 'allow';
                 }
             }
@@ -417,20 +471,20 @@ export default {
         },
 
         getDuration() {
-            let sec = parseInt(this.event.duration / 1000)
-            let min = parseInt(sec / 60)
-            let h = parseInt(min / 60)
+            let sec = parseInt(this.event.duration / 1000);
+            let min = parseInt(sec / 60);
+            let h = parseInt(min / 60);
 
             let duration = '';
             if (h && min) {
                 // if minutes AND hours are present, add a leading zero to minutes
-                duration = h + ":" + ("0" + min%60).substr(-2);
+                duration = h + ':' + ('0' + (min % 60)).substr(-2);
             } else {
                 // if only minutes are present, to NOT add a leading zero
-                duration = min%60;
+                duration = min % 60;
             }
 
-            return duration + ":" + ("0" + sec%60).substr(-2);
+            return duration + ':' + ('0' + (sec % 60)).substr(-2);
         },
 
         isChecked() {
@@ -440,8 +494,8 @@ export default {
         getAccessText() {
             var txt = '';
             if (this.event.perms !== undefined) {
-                this.event.perms.forEach(perm => {
-                    txt += '<div>' + this.$filters.permname(perm.perm, this.$gettext) + ': ' + perm.fullname + '</div>'
+                this.event.perms.forEach((perm) => {
+                    txt += '<div>' + this.$filters.permname(perm.perm, this.$gettext) + ': ' + perm.fullname + '</div>';
                 });
             }
             return txt;
@@ -457,7 +511,7 @@ export default {
             }
             if (this.event.description) {
                 if (txt.length > 0) {
-                    txt += '<br>'
+                    txt += '<br>';
                 }
                 txt += '<div>' + this.event.description + '</div>';
             }
@@ -475,7 +529,7 @@ export default {
                             label: this.$gettext('Bearbeiten'),
                             icon: 'edit',
                             emit: 'performAction',
-                            emitArguments: 'VideoEdit'
+                            emitArguments: 'VideoEdit',
                         });
                     }
 
@@ -505,7 +559,7 @@ export default {
                         label: this.$gettext('Verknüpfungen'),
                         icon: 'group',
                         emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists'
+                        emitArguments: 'VideoLinkToPlaylists',
                     });
 
                     if (this.canShare) {
@@ -514,7 +568,7 @@ export default {
                             label: this.$gettext('Video freigeben'),
                             icon: 'share',
                             emit: 'performAction',
-                            emitArguments: 'VideoAccess'
+                            emitArguments: 'VideoAccess',
                         });
                     }
 
@@ -524,7 +578,7 @@ export default {
                             label: this.$gettext('Einbettungscode anzeigen'),
                             icon: 'code',
                             emit: 'performAction',
-                            emitArguments: 'VideoEmbeddingCode'
+                            emitArguments: 'VideoEmbeddingCode',
                         });
                     }
 
@@ -535,7 +589,7 @@ export default {
                             label: this.$gettext('Videoeditor öffnen'),
                             icon: 'video2',
                             emit: 'performAction',
-                            emitArguments: 'VideoCut'
+                            emitArguments: 'VideoCut',
                         });
                     }
 
@@ -545,7 +599,7 @@ export default {
                             label: this.$gettext('Anmerkungen hinzufügen'),
                             icon: 'chat',
                             emit: 'redirectAction',
-                            emitArguments: '/annotation/' + this.event.token
+                            emitArguments: '/annotation/' + this.event.token,
                         });
                     }
 
@@ -555,7 +609,7 @@ export default {
                             label: this.$gettext('Untertitel bearbeiten'),
                             icon: 'accessibility',
                             emit: 'performAction',
-                            emitArguments: 'VideoCut'
+                            emitArguments: 'VideoCut',
                         });
                     }
 
@@ -565,7 +619,7 @@ export default {
                             label: this.$gettext('Zum Löschen markieren'),
                             icon: 'trash',
                             emit: 'performAction',
-                            emitArguments: 'VideoDelete'
+                            emitArguments: 'VideoDelete',
                         });
                     }
 
@@ -575,7 +629,7 @@ export default {
                             label: this.$gettext('Aus Wiedergabeliste entfernen'),
                             icon: 'remove-circle',
                             emit: 'performAction',
-                            emitArguments: 'VideoRemoveFromPlaylist'
+                            emitArguments: 'VideoRemoveFromPlaylist',
                         });
                     }
                 }
@@ -585,25 +639,24 @@ export default {
                         label: this.$gettext('Medien herunterladen'),
                         icon: 'download',
                         emit: 'performAction',
-                        emitArguments: 'VideoDownload'
+                        emitArguments: 'VideoDownload',
                     });
                 }
-            }
-            else {
+            } else {
                 if (this.canEdit) {
                     menuItems.push({
                         id: 0,
                         label: this.$gettext('Wiederherstellen'),
                         icon: 'refresh',
                         emit: 'performAction',
-                        emitArguments: 'VideoRestore'
+                        emitArguments: 'VideoRestore',
                     });
                     menuItems.push({
                         id: 11,
                         label: this.$gettext('Unwiderruflich entfernen'),
                         icon: 'trash',
                         emit: 'performAction',
-                        emitArguments: 'VideoDeletePermanent'
+                        emitArguments: 'VideoDeletePermanent',
                     });
                 }
             }
@@ -614,7 +667,7 @@ export default {
                     label: this.$gettext('Technisches Feedback'),
                     icon: 'support',
                     emit: 'performAction',
-                    emitArguments: 'VideoReport'
+                    emitArguments: 'VideoReport',
                 });
             }
 
@@ -630,9 +683,10 @@ export default {
         },
 
         canShare() {
-            if (!this.simple_config_list.settings.OPENCAST_ALLOW_SHARING
-                && !this.simple_config_list.settings.OPENCAST_ALLOW_PUBLIC_SHARING
-                && !this.simple_config_list.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT
+            if (
+                !this.simple_config_list.settings.OPENCAST_ALLOW_SHARING &&
+                !this.simple_config_list.settings.OPENCAST_ALLOW_PUBLIC_SHARING &&
+                !this.simple_config_list.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT
             ) {
                 return false;
             }
@@ -652,17 +706,16 @@ export default {
             return this.livestream !== null;
         },
 
-        isProcessing()
-        {
+        isProcessing() {
             // if the video is currently processing or not availabe yet processed in this course,
             // no one can/should access it
-            return (this.event.state == 'running' || this.event.video_user_available === false);
-        }
+            return this.event.state == 'running' || this.event.video_user_available === false;
+        },
     },
 
-    mounted () {
+    mounted() {
         this.initLivestreamChecker();
         this.handleColumnNumbers();
-    }
-}
+    },
+};
 </script>
