@@ -521,7 +521,7 @@ export default {
                     if (this.canShare && this.event.visibility === 'public') {
                         menuItems.push({
                             id: 4,
-                            label: this.$gettext('Einbettungscode anzeigen'),
+                            label: this.$gettext('Einbettungsoptionen anzeigen'),
                             icon: 'code',
                             emit: 'performAction',
                             emitArguments: 'VideoEmbeddingCode'
