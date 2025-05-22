@@ -22,124 +22,126 @@ class PlaylistMigration
         // Default opencast server if playlist belongs to no opencast server
         $default_config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
 
-        // Migrate existing playlists to Opencast
-        $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
+        try {
+            // Migrate existing playlists to Opencast
+            $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
 
-        // Try three times
-        $tries = 0;
-        while (!empty($playlists) && $tries < 10) {
-            foreach ($playlists as $playlist) {
-                $config_id = $playlist->config_id ?? null;
-                if (empty($config_id)) {
-                    // Default opencast server if playlist belongs to no opencast server
-                    $config_id = $default_config_id;
-                }
+            // Try three times
+            $tries = 0;
+            while (!empty($playlists) && $tries < 10) {
+                foreach ($playlists as $playlist) {
+                    $config_id = $playlist->config_id ?? null;
+                    if (empty($config_id)) {
+                        // Default opencast server if playlist belongs to no opencast server
+                        $config_id = $default_config_id;
+                    }
 
-                // Get playlist videos
-                $playlist_videos = self::getPlaylistVideos($playlist);
+                    // Get playlist videos
+                    $playlist_videos = self::getPlaylistVideos($playlist);
 
-                $api_playlists_client = ApiPlaylistsClient::getInstance($config_id);
-                $oc_playlist = $api_playlists_client->createPlaylist(
-                    self::getOcPlaylistData($playlist, $playlist_videos)
-                );
+                    $api_playlists_client = ApiPlaylistsClient::getInstance($config_id);
+                    $oc_playlist = $api_playlists_client->createPlaylist(
+                        self::getOcPlaylistData($playlist, $playlist_videos)
+                    );
 
-                sleep(2);
+                    if ($oc_playlist) {
+                        // Store oc playlist reference in Stud.IP if successfully created
+                        $playlist->config_id = $config_id;
+                        $playlist->service_playlist_id = $oc_playlist->id;
+                        $playlist->store();
 
-                if ($oc_playlist) {
-                    // Store oc playlist reference in Stud.IP if successfully created
-                    $playlist->config_id = $config_id;
-                    $playlist->service_playlist_id = $oc_playlist->id;
-                    $playlist->store();
+                        Playlists::checkPlaylistACL($oc_playlist, $playlist);
 
-                    Playlists::checkPlaylistACL($oc_playlist, $playlist);
-
-                    // Store entry ids
-                    for ($i = 0; $i < count($playlist_videos); $i++) {
-                        $stmt = $db->prepare("UPDATE oc_playlist_video
-                            SET `service_entry_id` = :service_entry_id
-                            WHERE playlist_id = :playlist_id AND video_id = :video_id
-                        ");
-                        $stmt->execute($data = [
-                            'service_entry_id' => $oc_playlist->entries[$i]->id,
-                            'playlist_id' => $playlist->id,
-                            'video_id' => $playlist_videos[$i]['id']
-                        ]);
+                        // Store entry ids
+                        for ($i = 0; $i < count($playlist_videos); $i++) {
+                            $stmt = $db->prepare("UPDATE oc_playlist_video
+                                SET `service_entry_id` = :service_entry_id
+                                WHERE playlist_id = :playlist_id AND video_id = :video_id
+                            ");
+                            $stmt->execute($data = [
+                                'service_entry_id' => $oc_playlist->entries[$i]->id,
+                                'playlist_id' => $playlist->id,
+                                'video_id' => $playlist_videos[$i]['id']
+                            ]);
+                        }
                     }
                 }
+
+                $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
+                $tries++;
             }
 
-            $playlists = Playlists::findBySQL('service_playlist_id IS NULL');
-            $tries++;
-        }
+            // What is the point of letting the process continue if there are still playlists with null service_playlist_id of duplicated service_playlist_ids?
+            $duplicate_service_playlist_ids = $db->query(
+                "SELECT service_playlist_id, COUNT(*) as count
+                FROM oc_playlist
+                WHERE service_playlist_id IS NOT NULL
+                GROUP BY service_playlist_id
+                HAVING count > 1"
+            )->fetchAll(\PDO::FETCH_ASSOC);
 
-        // What is the point of letting the process continue if there are still playlists with null service_playlist_id of duplicated service_playlist_ids?
-        $duplicate_service_playlist_ids = $db->query(
-            "SELECT service_playlist_id, COUNT(*) as count
-            FROM oc_playlist
-            WHERE service_playlist_id IS NOT NULL
-            GROUP BY service_playlist_id
-            HAVING count > 1"
-        )->fetchAll(\PDO::FETCH_ASSOC);
-
-        if (!empty($playlists) || !empty($duplicate_service_playlist_ids)) {
-            $message = "Migration failed due to invalid data records:\n";
-            if (!empty($playlists)) {
-                $message .= "Playlists with null service_playlist_id:\n";
-                foreach ($playlists as $playlist) {
-                    $message .= "Playlist ID: {$playlist->id}\n";
+            if (!empty($playlists) || !empty($duplicate_service_playlist_ids)) {
+                $message = "Migration failed due to invalid data records:\n";
+                if (!empty($playlists)) {
+                    $message .= "Playlists with null service_playlist_id:\n";
+                    foreach ($playlists as $playlist) {
+                        $message .= "Playlist ID: {$playlist->id}\n";
+                    }
                 }
-            }
-            if (!empty($duplicate_service_playlist_ids)) {
-                $message .= "Duplicate service_playlist_ids:\n";
-                foreach ($duplicate_service_playlist_ids as $record) {
-                    $message .= "Service Playlist ID: {$record['service_playlist_id']}, Count: {$record['count']}\n";
+                if (!empty($duplicate_service_playlist_ids)) {
+                    $message .= "Duplicate service_playlist_ids:\n";
+                    foreach ($duplicate_service_playlist_ids as $record) {
+                        $message .= "Service Playlist ID: {$record['service_playlist_id']}, Count: {$record['count']}\n";
+                    }
                 }
+                throw new \Exception($message);
             }
-            throw new \Exception($message);
-        }
 
-        // We need another step to make sure config id is set and it is not null before altering the table with not-null config_id.
-        $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
-
-        while (!empty($null_config_playlists)) {
-            foreach ($null_config_playlists as $null_config_playlist) {
-                // Store config id with default config id.
-                $null_config_playlist->config_id = $default_config_id;
-                $null_config_playlist->store();
-            }
+            // We need another step to make sure config id is set and it is not null before altering the table with not-null config_id.
             $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
-        }
 
-        // Forbid playlist without related oc playlist
-        // First drop foreign key constraint
-        // Then change column to not null
-        // Then add foreign key constraint again
-        $db->exec('ALTER TABLE `oc_playlist`
-            DROP FOREIGN KEY `oc_playlist_ibfk_1`,
-            CHANGE COLUMN `config_id` `config_id` int NOT NULL,
-            CHANGE COLUMN `service_playlist_id` `service_playlist_id` varchar(64) UNIQUE NOT NULL,
-            ADD FOREIGN KEY `oc_playlist_ibfk_1` (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT'
-        );
+            while (!empty($null_config_playlists)) {
+                foreach ($null_config_playlists as $null_config_playlist) {
+                    // Store config id with default config id.
+                    $null_config_playlist->config_id = $default_config_id;
+                    $null_config_playlist->store();
+                }
+                $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
+            }
 
-        // Forbid playlist video without related oc playlist entry
-        $db->exec('ALTER TABLE `oc_playlist_video`
-            CHANGE COLUMN `service_entry_id` `service_entry_id` int NOT NULL'
-        );
+            // Forbid playlist without related oc playlist
+            // First drop foreign key constraint
+            // Then change column to not null
+            // Then add foreign key constraint again
+            $db->exec('ALTER TABLE `oc_playlist`
+                DROP FOREIGN KEY `oc_playlist_ibfk_1`,
+                CHANGE COLUMN `config_id` `config_id` int NOT NULL,
+                CHANGE COLUMN `service_playlist_id` `service_playlist_id` varchar(64) UNIQUE NOT NULL,
+                ADD FOREIGN KEY `oc_playlist_ibfk_1` (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT'
+            );
 
-        \SimpleOrMap::expireTableScheme();
+            // Forbid playlist video without related oc playlist entry
+            $db->exec('ALTER TABLE `oc_playlist_video`
+                CHANGE COLUMN `service_entry_id` `service_entry_id` int NOT NULL'
+            );
 
-        // Add playlists sync cronjob
-        $scheduler = \CronjobScheduler::getInstance();
+            \SimpleOrMap::expireTableScheme();
 
-        if (!$task_id = \CronjobTask::findByFilename(self::CRONJOBS_DIR . 'opencast_sync_playlists.php')[0]->task_id) {
-            $task_id =  $scheduler->registerTask(self::CRONJOBS_DIR . 'opencast_sync_playlists.php', true);
-        }
+            // Add playlists sync cronjob
+            $scheduler = \CronjobScheduler::getInstance();
 
-        // add the new cronjobs
-        if ($task_id) {
-            $scheduler->cancelByTask($task_id);
-            $scheduler->schedulePeriodic($task_id, -10);  // negative value means "every x minutes"
-            \CronjobSchedule::findByTask_id($task_id)[0]->activate();
+            if (!$task_id = \CronjobTask::findByFilename(self::CRONJOBS_DIR . 'opencast_sync_playlists.php')[0]->task_id) {
+                $task_id =  $scheduler->registerTask(self::CRONJOBS_DIR . 'opencast_sync_playlists.php', true);
+            }
+
+            // add the new cronjobs
+            if ($task_id) {
+                $scheduler->cancelByTask($task_id);
+                $scheduler->schedulePeriodic($task_id, -10);  // negative value means "every x minutes"
+                \CronjobSchedule::findByTask_id($task_id)[0]->activate();
+            }
+        } catch (\Throwable $th) {
+            throw new \Exception('Migration fehlgeschlagen: ' . $th->getMessage());
         }
     }
 
