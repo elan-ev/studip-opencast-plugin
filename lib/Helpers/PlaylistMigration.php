@@ -111,15 +111,17 @@ class PlaylistMigration
 
             // Forbid playlist without related oc playlist
             // First drop foreign key constraint
+            $db->exec('ALTER TABLE `oc_playlist` DROP FOREIGN KEY `oc_playlist_ibfk_1`');
             // Then change column to not null
+            $db->exec('ALTER TABLE `oc_playlist`
+                CHANGE COLUMN `config_id` `config_id` int NOT NULL,
+                CHANGE COLUMN `service_playlist_id` `service_playlist_id` varchar(64) UNIQUE NOT NULL'
+            );
             // Then add foreign key constraint again
             $db->exec('ALTER TABLE `oc_playlist`
-                DROP FOREIGN KEY `oc_playlist_ibfk_1`,
-                CHANGE COLUMN `config_id` `config_id` int NOT NULL,
-                CHANGE COLUMN `service_playlist_id` `service_playlist_id` varchar(64) UNIQUE NOT NULL,
-                ADD FOREIGN KEY `oc_playlist_ibfk_2` (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT'
+                ADD FOREIGN KEY `oc_playlist_ibfk_1` (`config_id`) REFERENCES `oc_config` (`id`)
+                ON DELETE RESTRICT ON UPDATE RESTRICT'
             );
-
             // Forbid playlist video without related oc playlist entry
             $db->exec('ALTER TABLE `oc_playlist_video`
                 CHANGE COLUMN `service_entry_id` `service_entry_id` int NOT NULL'
