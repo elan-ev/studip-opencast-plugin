@@ -27,7 +27,7 @@ class PlaylistMigration
 
         // Try three times
         $tries = 0;
-        while (!empty($playlists) && $tries < 3) {
+        while (!empty($playlists) && $tries < 10) {
             foreach ($playlists as $playlist) {
                 $config_id = $playlist->config_id ?? null;
                 if (empty($config_id)) {
@@ -42,6 +42,8 @@ class PlaylistMigration
                 $oc_playlist = $api_playlists_client->createPlaylist(
                     self::getOcPlaylistData($playlist, $playlist_videos)
                 );
+
+                sleep(2);
 
                 if ($oc_playlist) {
                     // Store oc playlist reference in Stud.IP if successfully created
@@ -70,7 +72,33 @@ class PlaylistMigration
             $tries++;
         }
 
-        // We need another step to make sure config id is set and it is not null before altering the table with not-null confing_id.
+        // What is the point of letting the process continue if there are still playlists with null service_playlist_id of duplicated service_playlist_ids?
+        $duplicate_service_playlist_ids = $db->query(
+            "SELECT service_playlist_id, COUNT(*) as count
+            FROM oc_playlist
+            WHERE service_playlist_id IS NOT NULL
+            GROUP BY service_playlist_id
+            HAVING count > 1"
+        )->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!empty($playlists) || !empty($duplicate_service_playlist_ids)) {
+            $message = "Migration failed due to invalid data records:\n";
+            if (!empty($playlists)) {
+                $message .= "Playlists with null service_playlist_id:\n";
+                foreach ($playlists as $playlist) {
+                    $message .= "Playlist ID: {$playlist->id}\n";
+                }
+            }
+            if (!empty($duplicate_service_playlist_ids)) {
+                $message .= "Duplicate service_playlist_ids:\n";
+                foreach ($duplicate_service_playlist_ids as $record) {
+                    $message .= "Service Playlist ID: {$record['service_playlist_id']}, Count: {$record['count']}\n";
+                }
+            }
+            throw new \Exception($message);
+        }
+
+        // We need another step to make sure config id is set and it is not null before altering the table with not-null config_id.
         $null_config_playlists = Playlists::findBySQL('config_id IS NULL');
 
         while (!empty($null_config_playlists)) {
