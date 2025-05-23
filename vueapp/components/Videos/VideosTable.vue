@@ -172,7 +172,6 @@ import StudipIcon from "@studip/StudipIcon";
 import StudipProgressIndicator from "@studip/StudipProgressIndicator.vue";
 
 import VideoRow from './VideoRow.vue';
-import EmptyVideoRow from './EmptyVideoRow.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
@@ -196,12 +195,11 @@ import Tag from '@/components/Tag.vue'
 
 import draggable from 'vuedraggable'
 
-
 export default {
     name: "VideosTable",
 
     components: {
-        VideoRow,                 EmptyVideoRow,
+        VideoRow,                 StudipProgressIndicator,
         PaginationButtons,        MessageBox,
         SearchBar,                Tag,
         StudipButton,             VideoLinkToPlaylists,
@@ -212,7 +210,7 @@ export default {
         VideoDeletePermanent,     VideoRemoveFromPlaylist,
         VideoEmbeddingCode,       BulkVideoDelete,
         BulkVideoDeletePermanent, BulkVideoRestore,
-        draggable,                StudipProgressIndicator,
+        draggable,
     },
 
     props: {
