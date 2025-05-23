@@ -1,5 +1,11 @@
 <template>
-    <div>
+    <StudipProgressIndicator
+        v-if="Object.keys(videos_list).length === 0 && videos_loading"    
+        class="oc--loading-indicator"
+        :description="$gettext('Lade Videos...')"
+        :size="64"
+    />
+    <div v-else>
         <SearchBar v-if="!videoSortMode"
             :availableTags="videosTags"
             :availablePlaylists="playlists"
@@ -59,15 +65,7 @@
                     <th v-if="showActions && !videoSortMode" class="actions" data-sort="false">{{ $gettext('Aktionen') }}</th>
                 </tr>
             </thead>
-
-            <tbody v-if="Object.keys(videos_list).length === 0 && videos_loading" class="oc--episode-table--empty">
-                <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
-                <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
-                <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
-                <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
-                <EmptyVideoRow :showCheckbox="showCheckbox" :numberOfColumns="numberOfColumns" />
-            </tbody>
-            <tbody v-else-if="Object.keys(videos_list).length === 0">
+            <tbody v-if="Object.keys(videos_list).length === 0">
                 <tr>
                     <td :colspan="numberOfColumns">
                         {{ $gettext('Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden.') }}
@@ -171,9 +169,9 @@
 import { mapGetters } from "vuex";
 import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
+import StudipProgressIndicator from "@studip/StudipProgressIndicator.vue";
 
 import VideoRow from './VideoRow.vue';
-import EmptyVideoRow from './EmptyVideoRow.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
@@ -201,7 +199,7 @@ export default {
     name: "VideosTable",
 
     components: {
-        VideoRow,                 EmptyVideoRow,
+        VideoRow,                 StudipProgressIndicator,
         PaginationButtons,        MessageBox,
         SearchBar,                Tag,
         StudipButton,             VideoLinkToPlaylists,
