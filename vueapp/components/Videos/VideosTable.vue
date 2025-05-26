@@ -153,6 +153,8 @@
             </tfoot>
         </table>
 
+        <button @click="openDrawer">Drawer öffnen</button>
+
         <template v-if="showActionDialog">
             <component :is="actionComponent"
                 @cancel="clearAction"
@@ -166,7 +168,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import StudipProgressIndicator from "@studip/StudipProgressIndicator.vue";
@@ -605,6 +607,12 @@ export default {
                 });
             }
         },
+
+        ...mapActions(['setShowDrawer']),
+
+        openDrawer() {
+            this.setShowDrawer(true);
+        }
     },
 
     created() {

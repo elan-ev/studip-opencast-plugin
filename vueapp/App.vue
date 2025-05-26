@@ -1,28 +1,20 @@
 <template>
     <div class="container" id="opencast">
         <div class="content">
-            <router-view></router-view>
+            <router-view />
         </div>
+
         <div class="clearfix"></div>
-        <p></p>
 
         <LtiAuth />
+        <VideoDrawer />
     </div>
-
 </template>
 
-<script>
-import LtiAuth from "@/components/LtiAuth";
-import { mapGetters } from "vuex";
+<script setup>
+import { useStore } from 'vuex';
+import LtiAuth from '@/components/LtiAuth';
+import VideoDrawer from '@/components/Videos/VideoDrawer.vue';
 
-export default {
-    name: "App",
-    components: {
-        LtiAuth
-    },
-
-    computed: {
-        ...mapGetters(['site'])
-    }
-};
+const store = useStore();
 </script>

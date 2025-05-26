@@ -22,6 +22,8 @@ const state = {
     courseVideosToCopy: [],
     videosReload: false,
     showEpisodesDefaultVisibilityDialog: false,
+
+    showDrawer: false,
 }
 
 const getters = {
@@ -75,6 +77,10 @@ const getters = {
 
     showEpisodesDefaultVisibilityDialog(state) {
         return state.showEpisodesDefaultVisibilityDialog
+    },
+
+    showDrawer(state) {
+        return state.showDrawer;
     }
 }
 
@@ -257,6 +263,10 @@ const actions = {
     toggleShowEpisodesDefaultVisibilityDialog({commit}, mode) {
         commit('setShowEpisodesDefaultVisibilityDialog', mode);
     },
+
+    setShowDrawer({commit}, show) {
+        commit('setShowDrawer', show);
+    }
 }
 
 const mutations = {
@@ -324,6 +334,10 @@ const mutations = {
     setShowEpisodesDefaultVisibilityDialog(state, mode) {
         state.showEpisodesDefaultVisibilityDialog = mode;
     },
+
+    setShowDrawer(state, show) {
+        state.showDrawer = show;
+    }
 }
 
 export default {
