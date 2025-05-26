@@ -426,4 +426,74 @@ class Helpers
 
         return $has_anonymous_role;
     }
+
+    /**
+     * Give proper permissions to the new course tutors
+     *
+     * @Notification UserDidEnterCourse
+     *
+     * @param string $eventType
+     * @param string $seminar_id
+     * @param string $user_id
+     */
+    public static function adjustVideoPermissionsForNewCourseTutors($eventType, $seminar_id, $user_id) {
+        global $perm;
+        // Make sure the user is a tutor in the course.
+        if (!$perm->have_studip_perm('tutor', $seminar_id, $user_id)) {
+            return;
+        }
+
+        // First get the course playlists.
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$seminar_id]);
+
+        if (empty($playlists)) {
+            // No playlists found, so we can stop here.
+            return;
+        }
+
+        foreach ($playlists as $playlist) {
+            // Check if the user already has permissions on the playlist.
+            $perm = PlaylistsUserPerms::findOneBySQL('playlist_id = ? AND user_id = ?', [$playlist->id, $user_id]);
+
+            if (empty($perm)) {
+                // If not, create a new permission for the user.
+                $perm = new PlaylistsUserPerms();
+                $perm->playlist_id = $playlist->id;
+                $perm->user_id     = $user_id;
+                $perm->perm        = 'write';
+
+                $perm->store();
+            }
+        }
+    }
+
+    /**
+     * Revoke course playlist permissions for the user that are leaving the course
+     *
+     * @Notification UserDidLeaveCourse
+     *
+     * @param string $eventType
+     * @param string $seminar_id
+     * @param string $user_id
+     */
+    public static function revokeCoursePlaylistUserPerms($eventType, $seminar_id, $user_id) {
+
+        // First get the course playlists.
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$seminar_id]);
+
+        if (empty($playlists)) {
+            // No playlists found, so we can stop here.
+            return;
+        }
+
+        foreach ($playlists as $playlist) {
+            // Check if the user has permissions on the playlist.
+            $perm = PlaylistsUserPerms::findOneBySQL('playlist_id = ? AND user_id = ?', [$playlist->id, $user_id]);
+
+            if (!empty($perm)) {
+                // If yes, delete the permission for the user.
+                $perm->delete();
+            }
+        }
+    }
 }
