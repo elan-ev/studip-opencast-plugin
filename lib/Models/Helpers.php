@@ -443,17 +443,18 @@ class Helpers
      */
     public static function getAllRecordedSeriesIds(bool $force = false)
     {
-        $cache = StudipCacheFactory::getCache();
+        $cache = \StudipCacheFactory::getCache();
         $all_known_seriesids = $cache->read(self::RECORDED_SERIES_ID_CACHE_ID);
-        if ($force || empty($cache_data)) {
-            $all_known_seriesids = [];
+        if ($force || empty($all_known_seriesids)) {
+            $combined_records = [];
             $user_series_ids =\SimpleCollection::createFromArray(
                 UserSeries::findBySql('1')
-            )->toArray()->pluck('series_id');
+            )->toArray();
             $seminar_series_ids =\SimpleCollection::createFromArray(
                 SeminarSeries::findBySql('1')
-            )->toArray()->pluck('series_id');
-            $all_known_seriesids = array_merge($user_series_ids, $seminar_series_ids);
+            )->toArray();
+            $combined_records = array_merge($user_series_ids, $seminar_series_ids);
+            $all_known_seriesids = array_column($combined_records, 'series_id');
             $all_known_seriesids = array_unique($all_known_seriesids);
             $cache->write(self::RECORDED_SERIES_ID_CACHE_ID, $all_known_seriesids);
         }
@@ -479,7 +480,8 @@ class Helpers
         }
 
         $all_known_seriesids = self::getAllRecordedSeriesIds();
-        if (in_array($event->is_part_of, $all_known_seriesids)) {
+
+        if (in_array($oc_event->is_part_of, $all_known_seriesids)) {
             return true;
         }
 
@@ -497,7 +499,7 @@ class Helpers
      */
     public static function invalidateRecordedSeriesIdsCache()
     {
-        $cache = StudipCacheFactory::getCache();
+        $cache = \StudipCacheFactory::getCache();
         $cache->expire(self::RECORDED_SERIES_ID_CACHE_ID);
     }
 }
