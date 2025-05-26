@@ -1,6 +1,12 @@
 <template>
     <div>
-        <div class="oc-cw-video-list">
+        <StudipProgressIndicator
+            v-if="loadingVideos"    
+            class="oc--loading-indicator"
+            :description="$gettext('Lade Videos...')"
+            :size="64"
+        />
+        <div v-else class="oc-cw-video-list">
             <PaginationButtons :paging="paging" @changePage="startPageChange"/>
             <table id="episodes" class="default oc--episode-table--small" v-if="simple_config_list">
                 <colgroup>
@@ -27,22 +33,7 @@
                         </th>
                     </tr>
                 </thead>
-
-                <tbody v-if="loadingVideos" class="oc--episode-table--empty">
-                    <EmptyVideoRow
-                        :numberOfColumns="numberOfColumns"
-                        :simple_config_list="simple_config_list"
-                    />
-                    <EmptyVideoRow
-                        :numberOfColumns="numberOfColumns"
-                        :simple_config_list="simple_config_list"
-                    />
-                    <EmptyVideoRow
-                        :numberOfColumns="numberOfColumns"
-                        :simple_config_list="simple_config_list"
-                    />
-                </tbody>
-                <tbody v-else-if="Object.keys(videos).length === 0 || !simple_config_list">
+                <tbody v-if="Object.keys(videos).length === 0 || !simple_config_list">
                     <tr>
                         <td :colspan="numberOfColumns">
                             {{ $gettext('Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden.') }}
@@ -50,18 +41,18 @@
                     </tr>
                 </tbody>
                 <tbody v-else>
-                    <template v-for="event in videos" >
-                        <VideoRow
-                            :event="event"
-                            :numberOfColumns="numberOfColumns"
-                            @doAction="setVideo"
-                            @setVideo="setVideo(event)"
-                            @redirectAction="redirectAction"
-                            :isLTIAuthenticated="isLTIAuthenticated"
-                            :simple_config_list="simple_config_list"
-                            :selected="selectedVideoId === event.token"
-                        ></VideoRow>
-                    </template>
+                    <VideoRow
+                        v-for="(event, index) in videos"
+                        :event="event"
+                        :key="index"
+                        :numberOfColumns="numberOfColumns"
+                        @doAction="setVideo"
+                        @setVideo="setVideo(event)"
+                        @redirectAction="redirectAction"
+                        :isLTIAuthenticated="isLTIAuthenticated"
+                        :simple_config_list="simple_config_list"
+                        :selected="selectedVideoId === event.token"
+                    />
                 </tbody>
             </table>
         </div>
@@ -74,8 +65,8 @@
 
 <script>
 import PaginationButtons from './PaginationButtons.vue';
+import StudipProgressIndicator from './StudipProgressIndicator.vue';
 import VideoRow from './VideoRow.vue';
-import EmptyVideoRow from './EmptyVideoRow.vue';
 import LtiAuth from './LtiAuth.vue';
 
 export default {
@@ -85,8 +76,8 @@ export default {
 
     components: {
         PaginationButtons,
+        StudipProgressIndicator,
         VideoRow,
-        EmptyVideoRow,
         LtiAuth
     },
 
