@@ -9,6 +9,7 @@ use Opencast\Models\Videos;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\Helpers;
 
 class OpencastDiscoverVideos extends CronJob
 {
@@ -93,6 +94,14 @@ class OpencastDiscoverVideos extends CronJob
                 // load events from opencast and filter the processed ones
                 if (!empty($oc_events)) foreach ($oc_events as $event) {
                     $current_event = null;
+
+                    // Is the episode related to this studip?
+                    // We need to check this, because it might happen that the Opencast server is connected to multiple Stud.IP instances,
+                    // and we only want to process events that are related to this Stud.IP instance.
+                    if (!Helpers::isEventInThisStudip($event)) {
+                        echo 'Event not related to this Stud.IP instance, skipping: ' . $event->identifier . "\n";
+                        continue;
+                    }
 
                     // only add videos / reinspect videos if they are readily processed
                     if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {

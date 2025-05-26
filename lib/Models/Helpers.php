@@ -11,6 +11,8 @@ use Opencast\Models\Videos;
 
 class Helpers
 {
+    const RECORDED_SERIES_ID_CACHE_ID = 'OpencastV3/series/recorded_series_ids';
+
     static function getConfigurationstate()
     {
         $stmt = DBManager::get()->prepare("SELECT COUNT(*) AS c FROM oc_config WHERE active = 1");
@@ -425,5 +427,77 @@ class Helpers
         }
 
         return $has_anonymous_role;
+    }
+
+    /**
+     * Retrieves all known recorded Opencast series IDs from the cache or database.
+     *
+     * This method returns an array of all series IDs that are known to the system,
+     * combining both user-specific and seminar-specific series. It first attempts
+     * to read the list from the cache. If the cache is empty or if the $force
+     * parameter is set to true, it queries the database for all user and seminar
+     * series IDs, merges and deduplicates them, and then updates the cache.
+     *
+     * @param bool $force If true, forces a refresh from the database instead of using the cache.
+     * @return array List of unique recorded series IDs.
+     */
+    public static function getAllRecordedSeriesIds(bool $force = false)
+    {
+        $cache = StudipCacheFactory::getCache();
+        $all_known_seriesids = $cache->read(self::RECORDED_SERIES_ID_CACHE_ID);
+        if ($force || empty($cache_data)) {
+            $all_known_seriesids = [];
+            $user_series_ids =\SimpleCollection::createFromArray(
+                UserSeries::findBySql('1')
+            )->toArray()->pluck('series_id');
+            $seminar_series_ids =\SimpleCollection::createFromArray(
+                SeminarSeries::findBySql('1')
+            )->toArray()->pluck('series_id');
+            $all_known_seriesids = array_merge($user_series_ids, $seminar_series_ids);
+            $all_known_seriesids = array_unique($all_known_seriesids);
+            $cache->write(self::RECORDED_SERIES_ID_CACHE_ID, $all_known_seriesids);
+        }
+        return $all_known_seriesids;
+    }
+
+    /**
+     * Determines whether a given Opencast event belongs to this Stud.IP instance.
+     *
+     * This method checks if the provided Opencast event's series ID (`is_part_of`)
+     * is known to the current Stud.IP system. If the event does not have a series ID,
+     * it is considered valid for this Stud.IP instance. Otherwise, the method checks
+     * if the series ID exists in the list of all recorded series IDs known to Stud.IP.
+     *
+     * @param object $oc_event The Opencast event object to check.
+     * @return bool True if the event belongs to this Stud.IP instance, false otherwise.
+     */
+    public static function isEventInThisStudip($oc_event)
+    {
+        if (empty($oc_event->is_part_of)) {
+            // No series id, so we consider it as a valid event for this studip to be processed!
+            return true;
+        }
+
+        $all_known_seriesids = self::getAllRecordedSeriesIds();
+        if (in_array($event->is_part_of, $all_known_seriesids)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Invalidates the cache for recorded series IDs.
+     *
+     * This method clears the cache entry that stores all known recorded series IDs.
+     * It should be called whenever a series is created or deleted to ensure
+     * that the cache remains consistent with the database.
+     * @see \Opencast\Models\UserSeries
+     * @see \Opencast\Models\SeminarSeries
+     */
+    public static function invalidateRecordedSeriesIdsCache()
+    {
+        $cache = StudipCacheFactory::getCache();
+        $cache->expire(self::RECORDED_SERIES_ID_CACHE_ID);
     }
 }
