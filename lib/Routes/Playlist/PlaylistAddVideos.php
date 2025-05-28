@@ -25,7 +25,7 @@ class PlaylistAddVideos extends OpencastController
 
         $data = $this->getRequestData($request);
         $video_tokens = $data['videos'];
-        $course_id    = $data['course_id'];
+        $course_id    = $data['course_id'] ?? null;
 
         $videos = array_map(function ($token) {
             return Videos::findOneByToken($token);

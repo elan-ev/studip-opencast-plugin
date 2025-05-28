@@ -1234,7 +1234,11 @@ class Videos extends UPMap
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 
-                if (empty($pvideo)) {
+                // In order to avoid forced re-adding the video to the playlist, we need to look in the audit
+                // and see if the latest log entry for this video in this playlist is a deletion.
+                $video_was_deleted_from_playlist = PlaylistVideosAuditLog::wasVideoDeleted($playlist->id, $video->id);
+
+                if (empty($pvideo) && !$video_was_deleted_from_playlist) {
                     $pvideo = new PlaylistVideos();
                     $pvideo->video_id    = $video->id;
                     $pvideo->playlist_id = $playlist->id;
