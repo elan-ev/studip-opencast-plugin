@@ -48,4 +48,35 @@ class PlaylistVideos extends UPMap
             $playlist_video->store();
         }
     }
+
+    /**
+     * @inheritdoc
+     * Override delete method to log the deletion action!
+     */
+    public function delete()
+    {
+        PlaylistVideosAuditLog::logAction(
+            $this->getValue('playlist_id'),
+            $this->getValue('video_id'),
+            PlaylistVideosAuditLog::ACTION_DELETE
+        );
+        return parent::delete();
+    }
+
+    /**
+     * @inheritdoc
+     * Override store method to log the store action!
+     */
+    public function store()
+    {
+        $playlist_id = $this->getValue('playlist_id');
+        $video_id = $this->getValue('video_id');
+        $action = PlaylistVideosAuditLog::ACTION_ADD;
+        if (PlaylistVideosAuditLog::wasVideoDeleted($playlist_id, $video_id)) {
+            $action = PlaylistVideosAuditLog::ACTION_RESTORE;
+        }
+        PlaylistVideosAuditLog::logAction($playlist_id, $video_id, $action);
+
+        return parent::store();
+    }
 }
