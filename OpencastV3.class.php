@@ -64,6 +64,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
         $this->addStylesheet("assets/css/courseware.scss");
         $this->addStylesheet("assets/css/opencast.scss");
+        $this->addStylesheet("assets/css/layouts.scss");
         VersionHelper::get()->registerCoursewareBlock($this);
     }
 

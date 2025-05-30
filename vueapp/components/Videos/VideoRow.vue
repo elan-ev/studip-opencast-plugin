@@ -42,8 +42,10 @@
                 </a>
             </template>
             <template v-else>
-                <a v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
-                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank"
+                <button v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
+                   @click.prevent="selectVideo(event)"
+                   class="oc--previewimage-button"
+                    :aria-label="`Video ${event.title} auswählen`"
                 >
                     <span class="oc--previewimage">
                         <img class="oc--previewimage"
@@ -64,7 +66,7 @@
                             {{ getDuration }}
                         </span>
                     </span>
-                </a>
+                </button>
                 <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
                     :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
                 >
@@ -106,10 +108,13 @@
                    href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
-                <a v-else-if="event.publication && event.available"
-                   href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank">
+                <button v-else-if="event.publication && event.available"
+                   @click.prevent="selectVideo(event)"
+                   :aria-label="`Video ${event.title} auswählen`"
+                   class="as-link"
+                >
                     {{event.title}}
-                </a>
+                </button>
                 <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')">
                     {{event.title}}
                 </span>
@@ -176,9 +181,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
-import ConfirmDialog from '@/components/ConfirmDialog'
-import StudipButton from '@/components/Studip/StudipButton'
+import { mapActions,mapGetters } from "vuex"
 import StudipIcon from '@/components/Studip/StudipIcon'
 import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 
@@ -188,8 +191,8 @@ export default {
     name: "VideoRow",
 
     components: {
-        StudipButton, ConfirmDialog,
-        StudipIcon, StudipActionMenu,
+        StudipIcon,
+        StudipActionMenu,
         Tag
     },
 
@@ -244,6 +247,10 @@ export default {
     },
 
     methods: {
+        ...mapActions([
+            'setShowDrawer',
+            'setSelectedVideo'
+        ]),
         removeVideo() {
             let view = this;
             this.$store.dispatch('deleteVideo', this.event.token)
@@ -371,6 +378,11 @@ export default {
             }
 
             return false;
+        },
+
+        selectVideo(event) {
+            this.setShowDrawer(true);
+            this.setSelectedVideo(event);
         }
     },
 

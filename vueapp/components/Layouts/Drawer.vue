@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import StudipIcon from './StudipIcon.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 import { computed } from 'vue';
 const emit = defineEmits(['close']);
 // Props mit Defaults

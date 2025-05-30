@@ -6,7 +6,7 @@ import opencast from "./opencast.module";
 import videos from "./videos.module";
 import playlists from "./playlists.module";
 import schedule from "./schedule.module";
-
+import videodrawer from "./videodrawer.module";
 
 export default createStore({
   modules: {
@@ -15,6 +15,7 @@ export default createStore({
     opencast,
     videos,
     playlists,
-    schedule
+    schedule,
+    videodrawer
   }
 });
