@@ -597,7 +597,7 @@ export default {
                         label: this.$gettext('Medien herunterladen'),
                         icon: 'download',
                         emit: 'performAction',
-                        emitArguments: 'VideoDownload'
+                        emitArguments: 'VideoDownloadDialog'
                     });
                 }
             }

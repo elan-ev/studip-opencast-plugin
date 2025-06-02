@@ -141,7 +141,7 @@
                             <template v-if="event.visibility == 'public'">
                                 {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}
                                 <br>
-                                <a style="cursor: pointer" @click.stop="performAction('VideoDownload')">
+                                <a style="cursor: pointer" @click.stop="performAction('VideoDownloadDialog')">
                                     {{  $gettext('Links zu den Mediendateien anzeigen.') }}
                                     <studip-icon shape="link-intern" role="clickable" />
                                 </a>

@@ -1,6 +1,7 @@
 <template>
     <div v-if="isActive" role="tabpanel" class="oc--tab">
-        <slot></slot>
+        <div class="oc--tab-content-wrapper"><slot></slot></div>
+        <div v-show="$slots.footer" class="oc--tab-footer"><slot name="footer"></slot></div>
     </div>
 </template>
 

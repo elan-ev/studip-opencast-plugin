@@ -962,9 +962,6 @@ div.oc--dialog-possibilities {
         align-items: stretch;
         padding: 5px 0px;
 
-        button.button {
-            margin: 0px !important;
-        }
 
         .oc--download-item-control-row {
             display: flex;
@@ -1851,39 +1848,66 @@ label.oc--file-upload {
 $video-drawer-spacing: 15px;
 
 .video-drawer-content {
-    padding: $video-drawer-spacing;
 
     >section {
         margin-bottom: $video-drawer-spacing;
     }
 
-
-
     .video-metadata {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: row;
-        gap: $video-drawer-spacing * 3;
+        margin: 0 5px;
 
-        .video-metadata-infos {
-            header {
-                font-weight: 700;
-                margin-bottom: $video-drawer-spacing;
+        header {
+            margin: $video-drawer-spacing 8px $video-drawer-spacing*2 16px;
+            display: flex;
+            justify-content: space-between;
+
+            h2 {
+                line-height: 1.2em;
+            }
+
+            h3 {
+                margin: 0 0 10px 0;
+            }
+            .oc--tags {
+
+            }
+
+            .video-metadata-status {
+                min-width: 50%;
+                padding: 0;
+                margin-left: auto;
+                list-style: none;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+
+                li {
+                    padding: 0 4px;
+                    margin-left: $video-drawer-spacing;
+                }
+
+                span {
+                    margin-left: 8px;
+                }
+            }
+            .video-drawer-menu {
+                margin-left: $video-drawer-spacing;
             }
         }
+    }
 
-        .video-metadata-status {
-            min-width: 270px;
-            padding: 0;
-            list-style: none;
-
-            li {
-                padding: 4px;
-            }
-
-            span {
-                margin-left: 1em;
-            }
+    .video-settings {
+        .oc--tabs .oc--tabs-content .oc--tab {
+            background-color: #fbfbfc;
+            padding: 12px;
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .video-drawer-content .video-metadata-wrapper {
+        flex-direction: column;
+        gap: $video-drawer-spacing;
+        margin: 0;
     }
 }

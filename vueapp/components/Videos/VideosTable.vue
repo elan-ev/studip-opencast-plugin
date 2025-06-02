@@ -178,7 +178,7 @@ import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylis
 import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
-import VideoDownload from '@/components/Videos/Actions/VideoDownload.vue';
+import VideoDownloadDialog from '@/components/Videos/Actions/VideoDownloadDialog.vue';
 import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
@@ -203,7 +203,7 @@ export default {
         SearchBar,                Tag,
         StudipButton,             VideoLinkToPlaylists,
         VideoAccess,              StudipIcon,
-        VideoDownload,            VideoReport,
+        VideoDownloadDialog,      VideoReport,
         VideoEdit,                VideoCut,
         VideoRestore,             VideoDelete,
         VideoDeletePermanent,     VideoRemoveFromPlaylist,

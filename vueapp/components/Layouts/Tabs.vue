@@ -19,7 +19,7 @@
                 {{ tab.name }}
             </button>
         </div>
-        <div class="oc--tabs-content" :style="{'min-height': minHeight + 'px'}">
+        <div class="oc--tabs-content" :style="{ 'min-height': minHeight + 'px' }">
             <slot></slot>
         </div>
     </div>
@@ -31,7 +31,7 @@ export default {
     emits: ['update:modelValue'],
     props: {
         modelValue: { type: Number },
-        minHeight: { type: Number, default: 0 }
+        minHeight: { type: Number, default: 0 },
     },
     data() {
         return {
@@ -48,7 +48,9 @@ export default {
             this.$refs['tabnav' + index][0].focus();
         },
         addTab(tab) {
-            this.tabs.push(tab);
+            if (!this.tabs.find((t) => t.name === tab.name && t.icon === tab.icon)) {
+                this.tabs.push(tab);
+            }
         },
         handleKeyEvent(e) {
             const index = parseInt(e.target.dataset.index);

@@ -1,72 +1,90 @@
 <template>
     <div>
-        <div class="oc--download-list">
-            <form class="default">
-                <label>
-                    {{ $gettext('Videoquelle') }}
-                </label>
-                <label
-                    ><input
-                        type="radio"
-                        value="presenter"
-                        v-model="selectedSource"
-                        :disabled="!hasPresenterVideo || downloadInProgress"
-                    />
-                    {{ $gettext('Aufzeichnung der vortragenden Person') }}</label
-                >
-                <label
-                    ><input
-                        type="radio"
-                        value="presentation"
-                        v-model="selectedSource"
-                        :disabled="!hasPresentationVideo || downloadInProgress"
-                    />
-                    {{ $gettext('Aufzeichnung des Bildschirms') }}</label
-                >
-                <label>
-                    {{ $gettext('Videoqualität') }}
-                    <select v-model="selectedMedia" :disabled="downloadInProgress">
-                        <template v-if="selectedSource === 'presenter'">
-                            <option v-for="(media, index) in tuned_presenters" :key="index" :value="media">
-                                {{ getMediaText(media) }}
-                            </option>
+        <StudipDialog
+            :title="$gettext('Medien herunterladen')"
+            :closeText="$gettext('Schließen')"
+            :closeClass="'cancel'"
+            height="400"
+            width="475"
+            @close="this.$emit('cancel')"
+        >
+            <template #dialogContent>
+                <div class="oc--download-list-container">
+                    <div class="oc--download-list">
+                        <form class="default">
+                            <label>
+                                {{ $gettext('Videoquelle') }}
+                            </label>
+                            <label
+                                ><input
+                                    type="radio"
+                                    value="presenter"
+                                    v-model="selectedSource"
+                                    :disabled="!hasPresenterVideo || downloadInProgress"
+                                />
+                                {{ $gettext('Aufzeichnung der vortragenden Person') }}</label
+                            >
+                            <label
+                                ><input
+                                    type="radio"
+                                    value="presentation"
+                                    v-model="selectedSource"
+                                    :disabled="!hasPresentationVideo || downloadInProgress"
+                                />
+                                {{ $gettext('Aufzeichnung des Bildschirms') }}</label
+                            >
+                            <label>
+                                {{ $gettext('Videoqualität') }}
+                                <select v-model="selectedMedia" :disabled="downloadInProgress">
+                                    <template v-if="selectedSource === 'presenter'">
+                                        <option v-for="(media, index) in tuned_presenters" :key="index" :value="media">
+                                            {{ getMediaText(media) }}
+                                        </option>
+                                    </template>
+                                    <template v-else>
+                                        <option
+                                            v-for="(media, index) in tuned_presentations"
+                                            :key="index"
+                                            :value="media"
+                                        >
+                                            {{ getMediaText(media) }}
+                                        </option>
+                                    </template>
+                                </select>
+                            </label>
+                        </form>
+                        <template v-if="downloadInProgress">
+                            <span>{{ $gettext('Video wird heruntergeladen') }}</span>
+                            <ProgressBar :progress="selectedMedia.progress" />
                         </template>
-                        <template v-else>
-                            <option v-for="(media, index) in tuned_presentations" :key="index" :value="media">
-                                {{ getMediaText(media) }}
-                            </option>
-                        </template>
-                    </select>
-                </label>
-            </form>
-            <template v-if="downloadInProgress">
-                <span>{{ $gettext('Video wird heruntergeladen') }}</span>
-                <ProgressBar :progress="selectedMedia.progress" />
+                    </div>
+                    <div class="oc--download-messages">
+                        <MessageList :float="true" :dialog="true" />
+                    </div>
+                </div>
             </template>
-        </div>
-        <div class="oc--download-messages">
-            <MessageList :float="true" :dialog="true" />
-        </div>
-        <div class="oc--tab-footer">
-            <button
-                v-if="event.visibility == 'public'"
-                class="button"
-                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                @click="copyToClipboard()"
-            >
-                {{ $gettext('Link kopieren') }}
-            </button>
-            <button v-if="!downloadInProgress" class="button" @click="downloadFile()">
-                {{ $gettext('Herunterladen') }}
-            </button>
-            <button v-else class="button" @click="abortDownload()">
-                {{ $gettext('Herunterladen abbrechen') }}
-            </button>
-        </div>
+            <template #dialogButtons>
+                <button
+                    v-if="event.visibility == 'public'"
+                    class="button"
+                    :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                    @click="copyToClipboard()"
+                >
+                    {{ $gettext('Link kopieren') }}
+                </button>
+                <button v-if="!downloadInProgress" class="button" @click="downloadFile()">
+                    {{ $gettext('Herunterladen') }}
+                </button>
+                <button v-else class="button" @click="abortDownload()">
+                    {{ $gettext('Herunterladen abbrechen') }}
+                </button>
+            </template>
+        </StudipDialog>
     </div>
 </template>
 
 <script>
+import StudipDialog from '@studip/StudipDialog';
 import MessageList from '@/components/MessageList';
 import ProgressBar from '@/components/ProgressBar';
 
@@ -76,6 +94,7 @@ export default {
     name: 'VideoDownload',
 
     components: {
+        StudipDialog,
         MessageList,
         ProgressBar,
     },
@@ -280,7 +299,7 @@ export default {
             if (newSource === 'presentation') {
                 this.selectedMedia = this.tuned_presentations[0];
             }
-        },
-    },
+        }
+    }
 };
 </script>
