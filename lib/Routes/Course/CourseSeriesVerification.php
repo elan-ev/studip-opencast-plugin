@@ -37,7 +37,6 @@ class CourseSeriesVerification extends OpencastController
         // [User must be enrolled in the seminar]
         // [User must have the right to upload in the seminar!]
         if (!$perm->have_studip_perm('user', $course_id) || !Perm::uploadAllowed($course_id)) {
-            // throw new \AccessDeniedException();
             // If the user does not have the right to upload, we don't throw an error, but we return a message that this process cannot be performed!
             return $this->createResponse([
                 'message' => [
