@@ -148,17 +148,32 @@ export default {
         }
     },
 
-    mounted() {
-        this.$store.dispatch('loadCurrentUser');
-        this.$store.dispatch('loadCourseConfig', this.cid)
-        .then((course_config) => {
-            if (!course_config?.series?.series_id) {
+    async mounted() {
+        await this.$store.dispatch('loadCurrentUser');
+        const course_config = await this.$store.dispatch('loadCourseConfig', this.cid);
+
+        if (!course_config?.series?.series_id) {
+            this.$store.dispatch('addMessage', {
+                type: 'warning',
+                text: this.$gettext('Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
+            });
+        } else {
+            // So here we do a verification of the course series.
+            let params = {
+                cid: this.cid,
+                series_id: course_config.series.series_id,
+                config_id: course_config.config_id
+            };
+            const series_verification_response = await this.$store.dispatch('verifyCourseSeriesExists', params);
+
+            // By the new series creation, which happens only when the response status is 201 (Created), we inform the user about it!
+            if (series_verification_response?.status === 201) {
                 this.$store.dispatch('addMessage', {
-                    type: 'warning',
-                    text: this.$gettext('Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
+                    type: 'info',
+                    text: this.$gettext('Eine neue Serie wurde für diesen Kurs erstellt.'),
                 });
             }
-        });
+        }
     }
 };
 </script>

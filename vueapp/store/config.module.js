@@ -75,6 +75,15 @@ export const actions = {
             });
     },
 
+    async verifyCourseSeriesExists(context, params) {
+        return ApiService.post('courses/' + params.cid + '/verifyCourseSeriesExists',
+            {
+                config_id: params.config_id,
+                series_id: params.series_id
+            }
+        );
+    },
+
     async configListUpdate(context, params) {
         return  ApiService.put('global_config', params);
     },
