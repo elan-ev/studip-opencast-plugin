@@ -83,17 +83,29 @@
                             </button>
                         </template>
                     </Tab>
-                    <Tab v-if="downloadAllowed" :name="$gettext('Download')">
+                    <Tab
+                        v-if="downloadAllowed && !isLivestream && selectedVideo.state !== 'running'"
+                        :name="$gettext('Download')"
+                    >
                         <VideoDownload :event="selectedVideo" />
                     </Tab>
-                    <Tab v-if="canShare && isPublic" :name="$gettext('Einbettungscode')"></Tab>
+                    <Tab v-if="canShare && isPublic" :name="$gettext('Einbettungscode')">
+                        <VideoEmbeddingCode :event="selectedVideo" />
+                    </Tab>
                     <template v-if="canEdit && selectedVideo.state !== 'running'">
                         <Tab :name="$gettext('Sichtbarkeit')"></Tab>
                         <Tab :name="$gettext('Verknüpfungen')"></Tab>
                     </template>
 
-                    <Tab v-if="canShare" :name="$gettext('Freigaben')"></Tab>
-                    <Tab :name="$gettext('Technisches Feedback')"></Tab>
+                    <Tab v-if="canShare" :name="$gettext('Freigaben')">
+                        <VideoAccess :event="selectedVideo" />
+                    </Tab>
+                    <Tab
+                        v-if="!isLivestream && simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK"
+                        :name="$gettext('Technisches Rückmeldung')"
+                    >
+                        <VideoReport :event="selectedVideo" />
+                    </Tab>
                 </Tabs>
             </section>
         </article>
@@ -112,9 +124,12 @@ import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 import StudipActionMenu from '@studip/StudipActionMenu.vue';
+import VideoEmbeddingCode from '@components/Videos/Actions/VideoEmbeddingCode.vue';
 import VideoDownload from '@components/Videos/Actions/VideoDownload.vue';
+import VideoReport from '@components/Videos/Actions/VideoReport.vue';
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
+import VideoAccess from './Actions/VideoAccess.vue';
 
 const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
@@ -123,29 +138,38 @@ const store = useStore();
 
 const attachTarget = ref(null);
 const tabSelectionVideo = ref(0);
-const menuItems = ref([
-    {
-        id: 1,
-        label: $gettext('Videoeditor öffnen'),
-        icon: 'video2',
-        emit: 'performAction',
-        emitArguments: 'VideoCut',
-    },
-    {
-        id: 2,
-        label: $gettext('Untertitel bearbeiten'),
-        icon: 'accessibility',
-        emit: 'performAction',
-        emitArguments: 'VideoCut',
-    },
-    {
-        id: 3,
-        label: $gettext('Aus Wiedergabeliste entfernen'),
-        icon: 'trash',
-        emit: 'performAction',
-        emitArguments: 'VideoRemoveFromPlaylist',
-    },
-]);
+const menuItems = computed(() => {
+    let menuItems = [];
+
+    if (!isLivestream.value) {
+        menuItems.push({
+            id: 1,
+            label: $gettext('Videoeditor öffnen'),
+            icon: 'video2',
+            emit: 'performAction',
+            emitArguments: 'VideoCut',
+        });
+        menuItems.push({
+            id: 2,
+            label: $gettext('Untertitel bearbeiten'),
+            icon: 'accessibility',
+            emit: 'performAction',
+            emitArguments: 'VideoCut',
+        });
+    }
+
+    if (canEdit.value) {
+        menuItems.push({
+            id: 3,
+            label: $gettext('Aus Wiedergabeliste entfernen'),
+            icon: 'trash',
+            emit: 'performAction',
+            emitArguments: 'VideoRemoveFromPlaylist',
+        });
+    }
+
+    return menuItems;
+});
 
 const showDrawer = computed(() => {
     return store.getters.showDrawer;
@@ -216,6 +240,14 @@ const canShare = computed(() => {
 const isPublic = computed(() => {
     return selectedVideo.value.visibility === 'public';
 });
+
+const livestream = computed(() => {
+    return selectedVideo.value?.livestream ?? null;
+});
+
+const isLivestream = computed(() => {
+    return livestream.value !== null;
+})
 
 onMounted(() => {
     attachTarget.value = document.querySelector('#content-wrapper');

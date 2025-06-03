@@ -175,16 +175,14 @@ import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylists.vue';
-import VideoAccess from '@/components/Videos/Actions/VideoAccess.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
 import VideoDownloadDialog from '@/components/Videos/Actions/VideoDownloadDialog.vue';
-import VideoReport from '@/components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
 import VideoRestore from '@/components/Videos/Actions/VideoRestore.vue';
 import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
-import VideoEmbeddingCode from '@/components/Videos/Actions/VideoEmbeddingCode.vue';
+import VideoEmbeddingCodeDialog from '@/components/Videos/Actions/VideoEmbeddingCodeDialog.vue';
 
 import BulkVideoDelete from '@/components/Videos/BulkActions/VideoDelete.vue';
 import BulkVideoDeletePermanent from '@/components/Videos/BulkActions/VideoDeletePermanent.vue';
@@ -202,12 +200,12 @@ export default {
         PaginationButtons,        MessageBox,
         SearchBar,                Tag,
         StudipButton,             VideoLinkToPlaylists,
-        VideoAccess,              StudipIcon,
-        VideoDownloadDialog,      VideoReport,
+        StudipIcon,
+        VideoDownloadDialog,      
         VideoEdit,                VideoCut,
         VideoRestore,             VideoDelete,
         VideoDeletePermanent,     VideoRemoveFromPlaylist,
-        VideoEmbeddingCode,       BulkVideoDelete,
+        VideoEmbeddingCodeDialog,       BulkVideoDelete,
         BulkVideoDeletePermanent, BulkVideoRestore,
         draggable,
     },

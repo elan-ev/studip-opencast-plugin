@@ -5,25 +5,25 @@
                 <label>
                     {{ $gettext('Videoquelle') }}
                 </label>
-                <label
-                    ><input
+                <label>
+                    <input
                         type="radio"
                         value="presenter"
                         v-model="selectedSource"
                         :disabled="!hasPresenterVideo || downloadInProgress"
                     />
-                    {{ $gettext('Aufzeichnung der vortragenden Person') }}</label
-                >
-                <label
-                    ><input
+                    {{ $gettext('Aufzeichnung der vortragenden Person') }}
+                </label>
+                <label>
+                    <input
                         type="radio"
                         value="presentation"
                         v-model="selectedSource"
                         :disabled="!hasPresentationVideo || downloadInProgress"
                     />
-                    {{ $gettext('Aufzeichnung des Bildschirms') }}</label
-                >
-                <label>
+                    {{ $gettext('Aufzeichnung des Bildschirms') }}
+                </label>
+                <label class="col-3">
                     {{ $gettext('Videoqualität') }}
                     <select v-model="selectedMedia" :disabled="downloadInProgress">
                         <template v-if="selectedSource === 'presenter'">

@@ -153,7 +153,7 @@
                 />
             </div>
 
-            <div v-if="getAccessText && canEdit">
+            <!-- <div v-if="getAccessText && canEdit">
                 <a href="#" data-tooltip class="tooltip" @click.prevent="performActionWithChecks('VideoAccess', canShare)">
                     <span class="tooltip-content" v-html="getAccessText"></span>
                     <studip-icon
@@ -162,7 +162,7 @@
                         :size="18"
                     />
                 </a>
-            </div>
+            </div> -->
         </td>
 
         <td v-if="!videoSortMode && showActions && menuItems.length > 0" class="actions">
@@ -520,23 +520,13 @@ export default {
                         emitArguments: 'VideoLinkToPlaylists'
                     });
 
-                    if (this.canShare) {
-                        menuItems.push({
-                            id: 4,
-                            label: this.$gettext('Video freigeben'),
-                            icon: 'share',
-                            emit: 'performAction',
-                            emitArguments: 'VideoAccess'
-                        });
-                    }
-
                     if (this.canShare && this.event.visibility === 'public') {
                         menuItems.push({
                             id: 4,
                             label: this.$gettext('Einbettungsoptionen anzeigen'),
                             icon: 'code',
                             emit: 'performAction',
-                            emitArguments: 'VideoEmbeddingCode'
+                            emitArguments: 'VideoEmbeddingCodeDialog'
                         });
                     }
 
@@ -618,16 +608,6 @@ export default {
                         emitArguments: 'VideoDeletePermanent'
                     });
                 }
-            }
-
-            if (!this.isLivestream && this.simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK) {
-                menuItems.push({
-                    id: 8,
-                    label: this.$gettext('Technisches Feedback'),
-                    icon: 'support',
-                    emit: 'performAction',
-                    emitArguments: 'VideoReport'
-                });
             }
 
             menuItems.sort((a, b) => {

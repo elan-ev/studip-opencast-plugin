@@ -1,45 +1,48 @@
 <template>
-    <div class="oc--embed-options">
-        <form class="default">
-            <label>
-                {{ $gettext('Einbettungscode') }}
-                <textarea :value="embeddingCode" readonly></textarea>
-            </label>
-            <label>
-                {{ $gettext('Einbettungslink') }}
-                <input type="text" :value="embeddingLink" readonly ref="embeddingLink" />
-            </label>
-        </form>
-        <MessageList :dialog="true" :float="true" />
-        <div class="oc--tab-footer">
-            <button
-                class="button"
-                :disabled="!embeddingCode"
-                :title="$gettext('Einbettungslink in die Zwischenablage kopieren')"
-                @click="copyEmbeddingLink()"
-            >
-                {{ $gettext('Link kopieren') }}
-            </button>
-            <button
-                class="button"
-                :disabled="!embeddingCode"
-                :title="$gettext('Einbettungscode in die Zwischenablage kopieren')"
-                @click="copyEmbeddingCode()"
-            >
-                {{ $gettext('Code kopieren') }}
-            </button>
-        </div>
+    <div>
+        <StudipDialog
+            :title="$gettext('Einbettungsoptionen')"
+            :closeText="$gettext('Schließen')"
+            :closeClass="'cancel'"
+            height="450"
+            width="550"
+            @close="this.$emit('cancel')"
+        >
+            <template v-slot:dialogContent>
+                <form class="default oc--video-actions-embedding">
+                    <label>
+                        {{ $gettext('Einbettungscode') }}
+                        <textarea :value="embeddingCode" rows="5" readonly></textarea>
+                    </label>
+                    <legend>
+                        {{ $gettext('Einbettungslink') }}
+                        <input type="text" :value="embeddingLink" readonly ref="embeddingLink" />
+                    </legend>
+                </form>
+                <MessageList :dialog="true" :float="true"/>
+            </template>
+            <template #dialogButtons>
+                <button class="button" :disabled="!embeddingCode" :title="$gettext('Einbettungslink in die Zwischenablage kopieren')" @click="copyEmbeddingLink()">
+                    {{ $gettext('Link kopieren') }}
+                </button>
+                <button class="button" :disabled="!embeddingCode" :title="$gettext('Einbettungscode in die Zwischenablage kopieren')" @click="copyEmbeddingCode()">
+                    {{ $gettext('Code kopieren') }}
+                </button>
+            </template>
+        </StudipDialog>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import StudipDialog from '@studip/StudipDialog';
 import MessageList from '@/components/MessageList.vue';
 
 export default {
-    name: 'VideoEmbeddingCode',
+    name: 'VideoEmbeddingCodeDialog',
 
     components: {
+        StudipDialog,
         MessageList,
     },
 

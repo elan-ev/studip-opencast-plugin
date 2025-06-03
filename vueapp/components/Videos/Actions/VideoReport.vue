@@ -1,45 +1,37 @@
 <template>
-    <div>
-        <StudipDialog
-            :title="$gettext('Technisches Feedback')"
-            :confirmText="$gettext('Einsenden')"
-            :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
-            :closeClass="'cancel'"
-            height="400"
-            width="600"
-            @close="decline"
-            @confirm="report"
-        >
-            <template v-slot:dialogContent>
-                <MessageBox v-if="message?.text" :type="message.type">
-                    {{ message.text }}
-                </MessageBox>
-                <form class="default" @submit.prevent="report">
-                    <fieldset>
-                        <label>
-                            {{ $gettext('Bitte beschreiben Sie das aufgetretene Problem') }}
-                            <br>
-                                {{ $gettext('z.B. Ton- oder Abspielprobleme etc.') }}
-                            <textarea v-model="description" cols="20" rows="5"></textarea>
-                        </label>
-                    </fieldset>
-                </form>
-            </template>
-        </StudipDialog>
-    </div>
+    <form class="default" @submit.prevent="report">
+        <MessageBox v-if="message?.text" :type="message.type">
+            {{ message.text }}
+        </MessageBox>
+        <p>
+            {{ $gettext('Wenn bei der Nutzung technische Probleme auftreten, können Sie uns diese hier melden.')}} <br>
+            {{ $gettext('Bitte beschreiben Sie möglichst genau, was passiert ist – z.B. bei Ton, Video oder der Bedienung.')}}
+        </p>
+        <label>
+            {{ $gettext('Problembeschreibung') }}
+            <textarea v-model="description" cols="20" rows="5"></textarea>
+        </label>
+        <small>
+            {{
+                $gettext(
+                    'Je genauer Ihre Beschreibung ist, desto besser können wir das Problem nachvollziehen und beheben.'
+                )
+            }}
+        </small>
+        <div class="oc--tab-footer">
+            <button class="button" type="submit">{{ $gettext('Problem melden') }}</button>
+        </div>
+    </form>
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
-import MessageBox from "@/components/MessageBox";
+import MessageBox from '@/components/MessageBox';
 
 export default {
     name: 'VideoReport',
 
     components: {
-        StudipDialog,
-        MessageBox
+        MessageBox,
     },
 
     props: ['event'],
@@ -49,8 +41,8 @@ export default {
     data() {
         return {
             description: '',
-            message: {}
-        }
+            message: {},
+        };
     },
 
     methods: {
@@ -59,15 +51,17 @@ export default {
             if (this.description != '') {
                 let data = {
                     token: this.event.token,
-                    description: this.description
+                    description: this.description,
                 };
-                await this.$store.dispatch('reportVideo', data)
-                .then(({ data }) => {
-                    this.$store.dispatch('addMessage', data.message);
-                    this.$emit('done');
-                }).catch(() => {
-                    this.$emit('cancel');
-                });
+                await this.$store
+                    .dispatch('reportVideo', data)
+                    .then(({ data }) => {
+                        this.$store.dispatch('addMessage', data.message);
+                        this.$emit('done');
+                    })
+                    .catch(() => {
+                        this.$emit('cancel');
+                    });
             } else {
                 this.message.type = 'error';
                 this.message.text = this.$gettext('Beschreibung darf nicht leer sein');
@@ -78,5 +72,5 @@ export default {
             this.$emit('cancel');
         },
     },
-}
+};
 </script>
