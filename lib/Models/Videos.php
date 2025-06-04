@@ -875,14 +875,22 @@ class Videos extends UPMap
      *
      * @Notification OpencastVideoSync
      *
-     * @param string                $eventType
-     * @param object                $episode
-     * @param Opencast\Models\Video $video
+     * @param string|null $eventType
+     * @param object|null $episode
+     * @param Videos      $video
      *
      * @return void
      */
-    public static function checkEventACL($eventType, $episode, $video)
+    public static function checkEventACL(?string $eventType, ?object $episode, Videos $video)
     {
+        // Fetch episode if null
+        if (empty($episode)) {
+            $api_client  = ApiEventsClient::getInstance($video->config_id);
+            $episode = $api_client->getEpisode($video->episode, [
+                'withacl' => 'true'
+            ]);
+        }
+
         // Only allow updating of metadata if event has publications
         if (!Helpers::canEventRunWorkflow($episode, $video)) {
             return;

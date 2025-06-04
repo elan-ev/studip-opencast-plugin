@@ -41,7 +41,7 @@
                 <div>
                     {{ config.service_url }}
                 </div>
-                <div v-if="config.service_version">
+                <div v-if="validOpencastVersion">
                     {{ $gettext('Opencast-Version:') }} {{ config.service_version }}
                 </div>
             </div>
@@ -110,6 +110,14 @@ export default {
             }
 
             return this.isLTIAuthenticated[this.config.id] === false;
+        },
+
+        validOpencastVersion() {
+            const version = this.config?.service_version;
+            if (typeof version !== 'string') return false;
+
+            const regex = /^\d+\.\d+(?:\.\d+)?(?:[-.][a-zA-Z0-9]+)*$/;
+            return regex.test(version);
         }
     },
 

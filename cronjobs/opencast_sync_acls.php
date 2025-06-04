@@ -62,34 +62,33 @@ class OpencastSyncAcls extends CronJob
             $limit  = 100;
 
             do {
-                $paged_events = $api_client->getAll([
+                $oc_events = $api_client->getAll([
                     'limit'   => $limit,
                     'offset'  => $offset,
                     'sort'    => 'date:DESC',
                     'withacl' => 'true'
                 ]);
-                $oc_events = array_merge($oc_events, $paged_events);
 
                 $offset += $limit;
-            } while (sizeof($paged_events) > 0);
 
-            foreach ($oc_events as $event) {
-                // only add videos / reinspect videos if they are readily processed
-                if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
-                    // check if video exists in Stud.IP
-                    $video = Videos::findByEpisode($event->identifier);
+                if (!empty($oc_events)) foreach ($oc_events as $event) {
+                    // only add videos / reinspect videos if they are readily processed
+                    if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
+                        // check if video exists in Stud.IP
+                        $video = Videos::findByEpisode($event->identifier);
 
-                    $video->created = date('Y-m-d H:i:s', strtotime($event->created));
-                    $video->store();
+                        $video->created = date('Y-m-d H:i:s', strtotime($event->created));
+                        $video->store();
 
-                    if ($video->config_id != $config->id) {
-                        echo 'config id mismatch for Video with id: '. $video->id .", $config->id <> {$video->config_id}\n";
-                        continue;
+                        if ($video->config_id != $config->id) {
+                            echo 'config id mismatch for Video with id: '. $video->id .", $config->id <> {$video->config_id}\n";
+                            continue;
+                        }
+
+                        Videos::checkEventACL(null, $event, $video);
                     }
-
-                    Videos::checkEventACL(null, $event, $video);
                 }
-            }
+            } while (!empty($oc_events));
         }
     }
 
