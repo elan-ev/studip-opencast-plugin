@@ -116,4 +116,22 @@ class PlaylistVideosAuditLog extends UPMap
         $log->setValue('action', $action);
         $log->store();
     }
+
+    /**
+     * Checks if a video was deleted from any course playlists.
+     *
+     * @param int $video_id The ID of the video
+     * @param string $course_id The ID of the course
+     * @return bool True if the video was deleted from any course playlist, false otherwise
+     */
+    public static function isRemovedFromCoursePlaylists($video_id, $course_id)
+    {
+        $playlists = PlaylistSeminars::findBySQL('seminar_id = ?', [$course_id]);
+        foreach ($playlists as $playlist) {
+            if (self::wasVideoDeleted($playlist->id, $video_id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
