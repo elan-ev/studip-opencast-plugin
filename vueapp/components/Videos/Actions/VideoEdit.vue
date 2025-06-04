@@ -139,7 +139,6 @@ export default {
             visibility: null,
             visible_timestamp: null,
             use_timestamp: false,
-            originalEvent: null
         }
     },
 
@@ -181,24 +180,6 @@ export default {
                     'visible_timestamp': this.visible_timestamp
                 };
             }
-
-            // Decide whether the actual metadata has been changed or not, in order to check if the update metadata against opencast server is needed.
-            let has_metadata_changes = false;
-            let non_metadata_fields = ['tags', 'seminar_visibility', 'cid', 'playlist_token']; // These fields are not part of the metadata.
-            for (const field in this.event) {
-                if (non_metadata_fields.includes(field)) {
-                    continue;
-                }
-
-                let event_value = JSON.stringify(this.event[field]);
-                let original_event_value = JSON.stringify(this.originalEvent[field]);
-                if (event_value !== original_event_value) {
-                    has_metadata_changes = true;
-                    break;
-                }
-            }
-
-            this.event.has_metadata_changes = has_metadata_changes;
 
             await this.$store.dispatch('updateVideo', this.event)
             .then(({ data }) => {
@@ -257,8 +238,6 @@ export default {
         this.visibility = this.event.seminar_visibility?.visibility;
         this.visible_timestamp = this.event.seminar_visibility?.visible_timestamp;
         this.checkVisibility();
-        // Make sure originalEvent is a non-reactive copy of the event.
-        this.originalEvent = JSON.parse(JSON.stringify(this.event));
     }
 }
 </script>

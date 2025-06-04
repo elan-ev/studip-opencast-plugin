@@ -91,13 +91,6 @@ class VideoUpdate extends OpencastController
             'text' => _('Das Video wurde erfolgreich aktualisiert.')
         ];
 
-        // If changes are only related to local event properties, we don't need to update the metadata on the Opencast server.
-        if (isset($event['has_metadata_changes']) && $event['has_metadata_changes'] === false) {
-            return $this->createResponse([
-                'message' => $message,
-            ], $response->withStatus(200));
-        }
-
         $update = $video->updateMetadata($event);
 
         if ($update !== true) {
