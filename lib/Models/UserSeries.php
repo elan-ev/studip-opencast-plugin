@@ -53,4 +53,22 @@ class UserSeries extends UPMap
             // Throw error
         }
     }
+
+    /**
+     * Invalidate the cache of recorded series IDs before storing a series.
+     * Then proceeds with the parent store method.
+     */
+    public function store() {
+        Helpers::invalidateRecordedSeriesIdsCache();
+        return parent::store();
+    }
+
+    /**
+     * Invalidate the cache of recorded series IDs before deleting a series.
+     * Then proceeds with the parent delete method.
+     */
+    public function delete() {
+        Helpers::invalidateRecordedSeriesIdsCache();
+        return parent::delete();
+    }
 }
