@@ -1,120 +1,133 @@
 <template>
-    <Drawer
-        v-if="attachTarget"
-        :visible="showDrawer"
-        :attachTo="attachTarget"
-        side="right"
-        width="75%"
-        :maxWidth="900"
-        @close="close"
-    >
-        <article v-if="selectedVideo" class="video-drawer-content">
-            <section class="video-player">
-                <Tabs :key="selectedVideo.id" v-model="tabSelectionVideo">
-                    <Tab :name="$gettext('Video')" selected>
-                        <iframe
-                            v-if="playerUrl"
-                            :src="playerUrl"
-                            width="100%"
-                            height="460"
-                            frameborder="0"
-                            allowfullscreen
-                            title="Opencast Video Player"
-                        ></iframe>
-                    </Tab>
-                    <Tab v-if="presenterSources" :name="$gettext('Presenter')">
-                        <video width="100%" controls>
-                            <source
-                                v-for="(source, index) in presenterSources"
-                                :key="index"
-                                :src="source.url"
-                                :type="source.type"
-                            />
-                            {{ $gettext('Dein Browser unterstützt dieses Videoformat nicht.') }}
-                        </video>
-                    </Tab>
-                    <Tab v-if="presentationSources" :name="$gettext('Presentation')">
-                        <video width="100%" controls>
-                            <source
-                                v-for="(source, index) in presentationSources"
-                                :key="index"
-                                :src="source.url"
-                                :type="source.type"
-                            />
-                            {{ $gettext('Dein Browser unterstützt dieses Videoformat nicht.') }}
-                        </video>
-                    </Tab>
-                </Tabs>
-            </section>
-            <section class="video-metadata">
-                <header>
-                    <div class="video-metadata-header-wrapper">
-                        <h2>{{ videoTitle }}</h2>
-                        <h3>{{ selectedVideo.presenters }}</h3>
-                        <div class="oc--tags oc--tags-video">
-                            <Tag v-for="tag in selectedVideo.tags" v-bind:key="tag.id" :tag="tag.tag" />
+    <div>
+        <Drawer
+            v-if="attachTarget"
+            :visible="showDrawer"
+            :attachTo="attachTarget"
+            side="right"
+            width="75%"
+            :maxWidth="900"
+            @close="close"
+        >
+            <article v-if="selectedVideo" class="video-drawer-content">
+                <section class="video-player">
+                    <Tabs :key="selectedVideo.id" v-model="tabSelectionVideo">
+                        <Tab :name="$gettext('Video')" selected>
+                            <iframe
+                                v-if="playerUrl"
+                                :src="playerUrl"
+                                width="100%"
+                                height="460"
+                                frameborder="0"
+                                allowfullscreen
+                                title="Opencast Video Player"
+                            ></iframe>
+                        </Tab>
+                        <Tab v-if="presenterSources" :name="$gettext('Presenter')">
+                            <video width="100%" controls>
+                                <source
+                                    v-for="(source, index) in presenterSources"
+                                    :key="index"
+                                    :src="source.url"
+                                    :type="source.type"
+                                />
+                                {{ $gettext('Dein Browser unterstützt dieses Videoformat nicht.') }}
+                            </video>
+                        </Tab>
+                        <Tab v-if="presentationSources" :name="$gettext('Presentation')">
+                            <video width="100%" controls>
+                                <source
+                                    v-for="(source, index) in presentationSources"
+                                    :key="index"
+                                    :src="source.url"
+                                    :type="source.type"
+                                />
+                                {{ $gettext('Dein Browser unterstützt dieses Videoformat nicht.') }}
+                            </video>
+                        </Tab>
+                    </Tabs>
+                </section>
+                <section class="video-metadata">
+                    <header>
+                        <div class="video-metadata-header-wrapper">
+                            <h2>{{ videoTitle }}</h2>
+                            <h3>{{ selectedVideo.presenters }}</h3>
+                            <div class="oc--tags oc--tags-video">
+                                <Tag v-for="tag in selectedVideo.tags" v-bind:key="tag.id" :tag="tag.tag" />
+                            </div>
                         </div>
-                    </div>
-                    <ul class="video-metadata-status">
-                        <li>
-                            <StudipIcon shape="visibility-visible" role="info" />
-                            <span
-                                >{{ selectedVideo.views }}
-                                {{ $ngettext('Aufruf', 'Aufrufe', selectedVideo.views) }}</span
-                            >
-                        </li>
-                        <li v-if="isPublic">
-                            <StudipIcon shape="globe" role="info" />
-                            <span>{{ $gettext('Dieses Video ist öffentlich') }}</span>
-                        </li>
-                    </ul>
-                    <StudipActionMenu v-if="canEdit" class="video-drawer-menu" :items="menuItems" />
+                        <ul class="video-metadata-status">
+                            <li>
+                                <StudipIcon shape="visibility-visible" role="info" />
+                                <span
+                                    >{{ selectedVideo.views }}
+                                    {{ $ngettext('Aufruf', 'Aufrufe', selectedVideo.views) }}</span
+                                >
+                            </li>
+                            <li v-if="isPublic">
+                                <StudipIcon shape="globe" role="info" />
+                                <span>{{ $gettext('Dieses Video ist öffentlich') }}</span>
+                            </li>
+                        </ul>
+                        <StudipActionMenu
+                            v-if="canEdit"
+                            class="video-drawer-menu"
+                            :items="menuItems"
+                            @performAction="performAction"
+                        />
+                    </header>
+                </section>
+                <section class="video-settings">
+                    <Tabs :key="selectedVideo.id + '-settings'">
+                        <Tab selected :name="$gettext('Informationen')">
+                            <p>{{ selectedVideo.description }}</p>
+                            <strong v-if="selectedVideo.contributors !== ''">{{ $gettext('Mitwirkende') }}</strong>
+                            <p>{{ selectedVideo.contributors }}</p>
+                            <template #footer>
+                                <button v-if="canEdit && selectedVideo.state !== 'running'" class="button edit">
+                                    {{ $gettext('Bearbeiten') }}
+                                </button>
+                            </template>
+                        </Tab>
+                        <Tab
+                            v-if="downloadAllowed && !isLivestream && selectedVideo.state !== 'running'"
+                            :name="$gettext('Download')"
+                        >
+                            <VideoDownload :event="selectedVideo" />
+                        </Tab>
+                        <Tab v-if="canShare && isPublic" :name="$gettext('Einbettungscode')">
+                            <VideoEmbeddingCode :event="selectedVideo" />
+                        </Tab>
+                        <template v-if="canEdit && selectedVideo.state !== 'running'">
+                            <Tab :name="$gettext('Sichtbarkeit')"></Tab>
+                            <Tab :name="$gettext('Verknüpfungen')">
+                                <VideoLinkToPlaylists :event="selectedVideo" />
+                            </Tab>
+                        </template>
+
+                        <Tab v-if="canShare" :name="$gettext('Freigaben')">
+                            <VideoAccess :event="selectedVideo" />
+                        </Tab>
+                        <Tab
+                            v-if="!isLivestream && simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK"
+                            :name="$gettext('Technisches Rückmeldung')"
+                        >
+                            <VideoReport :event="selectedVideo" />
+                        </Tab>
+                    </Tabs>
+                </section>
+            </article>
+            <section v-else>
+                <header>
+                    <h1>{{ $gettext('Es wurde kein Video ausgewählt') }}</h1>
                 </header>
             </section>
-            <section class="video-settings">
-                <Tabs :key="selectedVideo.id + '-settings'">
-                    <Tab selected :name="$gettext('Informationen')">
-                        <p>{{ selectedVideo.description }}</p>
-                        <strong v-if="selectedVideo.contributors !== ''">{{ $gettext('Mitwirkende') }}</strong>
-                        <p>{{ selectedVideo.contributors }}</p>
-                        <template #footer>
-                            <button v-if="canEdit && selectedVideo.state !== 'running'" class="button edit">
-                                {{ $gettext('Bearbeiten') }}
-                            </button>
-                        </template>
-                    </Tab>
-                    <Tab
-                        v-if="downloadAllowed && !isLivestream && selectedVideo.state !== 'running'"
-                        :name="$gettext('Download')"
-                    >
-                        <VideoDownload :event="selectedVideo" />
-                    </Tab>
-                    <Tab v-if="canShare && isPublic" :name="$gettext('Einbettungscode')">
-                        <VideoEmbeddingCode :event="selectedVideo" />
-                    </Tab>
-                    <template v-if="canEdit && selectedVideo.state !== 'running'">
-                        <Tab :name="$gettext('Sichtbarkeit')"></Tab>
-                        <Tab :name="$gettext('Verknüpfungen')"></Tab>
-                    </template>
-
-                    <Tab v-if="canShare" :name="$gettext('Freigaben')">
-                        <VideoAccess :event="selectedVideo" />
-                    </Tab>
-                    <Tab
-                        v-if="!isLivestream && simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK"
-                        :name="$gettext('Technisches Rückmeldung')"
-                    >
-                        <VideoReport :event="selectedVideo" />
-                    </Tab>
-                </Tabs>
-            </section>
-        </article>
-        <section v-else>
-            <header>
-                <h1>{{ $gettext('Es wurde kein Video ausgewählt') }}</h1>
-            </header>
-        </section>
-    </Drawer>
+        </Drawer>
+        <template v-if="showActionDialog">
+            <component :is="actionComponent" @cancel="clearAction" @done="doAfterAction" :event="selectedVideo">
+            </component>
+        </template>
+    </div>
 </template>
 
 <script setup>
@@ -127,9 +140,13 @@ import StudipActionMenu from '@studip/StudipActionMenu.vue';
 import VideoEmbeddingCode from '@components/Videos/Actions/VideoEmbeddingCode.vue';
 import VideoDownload from '@components/Videos/Actions/VideoDownload.vue';
 import VideoReport from '@components/Videos/Actions/VideoReport.vue';
+import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
+import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
+import VideoRemoveFromPlaylist from '@/components/Videos/Actions/VideoRemoveFromPlaylist.vue';
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import VideoAccess from './Actions/VideoAccess.vue';
+import VideoLinkToPlaylists from './Actions/VideoLinkToPlaylists.vue';
 
 const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
@@ -138,6 +155,13 @@ const store = useStore();
 
 const attachTarget = ref(null);
 const tabSelectionVideo = ref(0);
+const showActionDialog = ref(false);
+const actionComponent = ref(null);
+const componentMap = {
+    VideoEdit,
+    VideoCut,
+    VideoRemoveFromPlaylist,
+};
 const menuItems = computed(() => {
     let menuItems = [];
 
@@ -162,7 +186,7 @@ const menuItems = computed(() => {
         menuItems.push({
             id: 3,
             label: $gettext('Aus Wiedergabeliste entfernen'),
-            icon: 'trash',
+            icon: 'remove-circle',
             emit: 'performAction',
             emitArguments: 'VideoRemoveFromPlaylist',
         });
@@ -247,7 +271,7 @@ const livestream = computed(() => {
 
 const isLivestream = computed(() => {
     return livestream.value !== null;
-})
+});
 
 onMounted(() => {
     attachTarget.value = document.querySelector('#content-wrapper');
@@ -284,6 +308,23 @@ const getMimeType = (url) => {
             return 'video/ogg';
         default:
             return '';
+    }
+};
+
+const performAction = (action) => {
+    console.log(action);
+    actionComponent.value = componentMap[action] || null;
+    showActionDialog.value = !!actionComponent.value;
+};
+const clearAction = () => {
+    showActionDialog.value = false;
+    actionComponent.value = null;
+};
+const doAfterAction = async (args) => {
+    clearAction();
+    if (args == 'refresh') {
+        close();
+        // this.loadVideos(); -> TODO !!!
     }
 };
 </script>

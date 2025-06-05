@@ -6,8 +6,8 @@
             </messageBox>
         </template>
         <template v-else>
-            <form class="default" v-if="config.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT">
-                <fieldset>
+            <form class="default collapsable">
+                <fieldset v-if="config.settings.OPENCAST_ALLOW_PERMISSION_ASSIGNMENT" class="collapsed">
                     <legend>
                         {{ $gettext('Rechte') }}
                     </legend>
@@ -53,12 +53,7 @@
 
                     <ShareWithUsers @add="addPerm" :selectedUsers="shareUsers" />
                 </fieldset>
-            </form>
-            <form
-                class="default"
-                v-if="config.settings.OPENCAST_ALLOW_SHARING || config.settings.OPENCAST_ALLOW_PUBLIC_SHARING"
-            >
-                <fieldset v-if="config.settings.OPENCAST_ALLOW_SHARING">
+                <fieldset v-if="config.settings.OPENCAST_ALLOW_SHARING" class="collapsed">
                     <legend>
                         {{ $gettext('Share Links') }}
                     </legend>
@@ -139,35 +134,23 @@
                         {{ $gettext('Weltweiter Zugriff') }}
                     </legend>
 
-                    {{
+                    <p>{{
                         $gettext(
                             'Sie können das Video weltweit zugreifbar machen und dadurch z.B. ' +
                                 'die Videodateien in externe Videoplayer integrieren. Bitte beachten Sie, ' +
                                 'dass es mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist. ' +
                                 'Währenddessen ist es nicht möglich, den Status erneut zu ändern!'
                         )
-                    }}
-                    <br /><br />
+                    }}</p>
                     <template v-if="event.visibility == 'public'">
-                        {{ $gettext('Das Video ist momentan weltweit zugreifbar.') }}
-                        <br />
-                        <a style="cursor: pointer" @click.stop="performAction('VideoDownloadDialog')">
-                            {{ $gettext('Links zu den Mediendateien anzeigen.') }}
-                            <studip-icon shape="link-intern" role="clickable" />
-                        </a>
-                        <br />
-                        <a style="cursor: pointer" @click.stop="performAction('VideoEmbeddingCodeDialog')">
-                            {{ $gettext('Einbettungsoptionen anzeigen.') }}
-                            <studip-icon shape="link-intern" role="clickable" />
-                        </a>
-                        <br /><br />
+                        <p><StudipIcon shape="globe" role="info" /> {{ $gettext('Das Video ist momentan weltweit zugreifbar') }}</p>
 
-                        <StudipButton icon="trash" :disabled="processing" @click.prevent="setVisibility('internal')">
+                        <StudipButton icon="cancel" :disabled="processing" @click.prevent="setVisibility('internal')">
                             {{ $gettext('Video nur berechtigten Personen zugreifbar machen') }}
                         </StudipButton>
                     </template>
 
-                    <StudipButton icon="add" @click.prevent="setVisibility('public')" :disabled="processing" v-else>
+                    <StudipButton icon="globe" @click.prevent="setVisibility('public')" :disabled="processing" v-else>
                         {{ $gettext('Video weltweit zugreifbar machen') }}
                     </StudipButton>
                 </fieldset>

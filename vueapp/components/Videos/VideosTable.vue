@@ -174,7 +174,6 @@ import VideoRow from './VideoRow.vue';
 import PaginationButtons from '@/components/PaginationButtons.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import VideoLinkToPlaylists from '@/components/Videos/Actions/VideoLinkToPlaylists.vue';
 import VideoDelete from '@/components/Videos/Actions/VideoDelete.vue';
 import VideoDeletePermanent from '@/components/Videos/Actions/VideoDeletePermanent.vue';
 import VideoDownloadDialog from '@/components/Videos/Actions/VideoDownloadDialog.vue';
@@ -199,7 +198,7 @@ export default {
         VideoRow,                 StudipProgressIndicator,
         PaginationButtons,        MessageBox,
         SearchBar,                Tag,
-        StudipButton,             VideoLinkToPlaylists,
+        StudipButton,
         StudipIcon,
         VideoDownloadDialog,      
         VideoEdit,                VideoCut,

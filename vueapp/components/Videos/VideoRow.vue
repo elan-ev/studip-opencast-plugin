@@ -512,13 +512,13 @@ export default {
                     });
                     */
 
-                    menuItems.push({
-                        id: 3,
-                        label: this.$gettext('Verknüpfungen'),
-                        icon: 'group',
-                        emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists'
-                    });
+                    // menuItems.push({
+                    //     id: 3,
+                    //     label: this.$gettext('Verknüpfungen'),
+                    //     icon: 'group',
+                    //     emit: 'performAction',
+                    //     emitArguments: 'VideoLinkToPlaylists'
+                    // });
 
                     if (this.canShare && this.event.visibility === 'public') {
                         menuItems.push({
@@ -530,16 +530,16 @@ export default {
                         });
                     }
 
-                    // As we abandoned the preview object structure, we now have to only validate the preview URL!
-                    if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
-                        menuItems.push({
-                            id: 5,
-                            label: this.$gettext('Videoeditor öffnen'),
-                            icon: 'video2',
-                            emit: 'performAction',
-                            emitArguments: 'VideoCut'
-                        });
-                    }
+                    // // As we abandoned the preview object structure, we now have to only validate the preview URL!
+                    // if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
+                    //     menuItems.push({
+                    //         id: 5,
+                    //         label: this.$gettext('Videoeditor öffnen'),
+                    //         icon: 'video2',
+                    //         emit: 'performAction',
+                    //         emitArguments: 'VideoCut'
+                    //     });
+                    // }
 
                     if (this.event?.publication?.annotation_tool && this.event?.state !== 'running') {
                         menuItems.push({
@@ -551,15 +551,15 @@ export default {
                         });
                     }
 
-                    if (this.event?.state !== 'running' && !this.isLivestream) {
-                        menuItems.push({
-                            id: 7,
-                            label: this.$gettext('Untertitel bearbeiten'),
-                            icon: 'accessibility',
-                            emit: 'performAction',
-                            emitArguments: 'VideoCut'
-                        });
-                    }
+                    // if (this.event?.state !== 'running' && !this.isLivestream) {
+                    //     menuItems.push({
+                    //         id: 7,
+                    //         label: this.$gettext('Untertitel bearbeiten'),
+                    //         icon: 'accessibility',
+                    //         emit: 'performAction',
+                    //         emitArguments: 'VideoCut'
+                    //     });
+                    // }
 
                     if (!this.isCourse && !this.isLivestream) {
                         menuItems.push({
