@@ -111,7 +111,7 @@ class OpencastDiscoverVideos extends CronJob
                     // Is the episode related to this studip?
                     // We need to check this, because it might happen that the Opencast server is connected to multiple Stud.IP instances,
                     // and we only want to process events that are related to this Stud.IP instance.
-                    if (!Helpers::isEventInThisStudip($event)) {
+                    if (!Helpers::isEventInAnyKnownSeries($event)) {
                         echo '[Skipped] Event not related to this Stud.IP instance, skipping: ' . $event->identifier . "\n";
                         continue;
                     }

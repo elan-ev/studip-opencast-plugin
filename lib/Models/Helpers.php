@@ -8,6 +8,8 @@ use \PDO;
 use Opencast\VersionHelper;
 use Opencast\Providers\Perm;
 use Opencast\Models\Videos;
+use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\REST\ApiWorkflowsClient;
 
 class Helpers
 {
@@ -462,7 +464,7 @@ class Helpers
     }
 
     /**
-     * Determines whether a given Opencast event belongs to this Stud.IP instance.
+     * Determines whether a given Opencast event belongs to any know series in this Stud.IP instance.
      *
      * This method checks if the provided Opencast event's series ID (`is_part_of`)
      * is known to the current Stud.IP system. If the event does not have a series ID,
@@ -472,7 +474,7 @@ class Helpers
      * @param object $oc_event The Opencast event object to check.
      * @return bool True if the event belongs to this Stud.IP instance, false otherwise.
      */
-    public static function isEventInThisStudip($oc_event)
+    public static function isEventInAnyKnownSeries($oc_event)
     {
         if (empty($oc_event->is_part_of)) {
             // No series id, so we consider it as a valid event for this studip to be processed!
@@ -501,5 +503,58 @@ class Helpers
     {
         $cache = \StudipCacheFactory::getCache();
         $cache->expire(self::RECORDED_SERIES_ID_CACHE_ID);
+    }
+
+    /**
+     * Gives the events without series id a chance of getting one by mapping user perms and user series.
+     *
+     * @Notification OpencastVideoSync
+     *
+     * @param string $eventType
+     * @param object $event
+     * @param  Opencast\Models\Videos $video
+     */
+    public static function mapEventUserSeriesUserPerms($eventType, $event, $video)
+    {
+        if (!empty($event->is_part_of)) {
+            // Already has a series id, then we are done here!
+            return;
+        }
+
+        // Get the (a) video owner.
+        $video_owner = VideosUserPerms::findOneBySQL('video_id = ? AND perm = ?', [$video->id, 'owner']);
+        if (empty($video_owner)) {
+            // No owner, then we have nothing to do here!
+            return;
+        }
+
+        // Make sure the owner has a user series!
+        $user_series = null;
+
+        $all_user_series = UserSeries::getSeries($video_owner->user_id);
+        // Enforce user series creation!
+        if (empty($all_user_series)) {
+            $user_series = UserSeries::createSeries($video_owner->user_id);
+        } else {
+            $user_series = $all_user_series[0];
+        }
+
+        // Update the event with the new series id.
+        $api_event_client = ApiEventsClient::getInstance($video->config_id);
+
+        $metadata[] = [
+            'id' => 'isPartOf',
+            'value' => $user_series['series_id']
+        ];
+        $response = $api_event_client->updateMetadata($video->episode, $metadata);
+        $republish = in_array($response['code'], [200, 204]) === true;
+
+        if ($republish) {
+            $api_wf_client = ApiWorkflowsClient::getInstance($video->config_id);
+
+            if ($api_wf_client->republish($video->episode)) {
+                echo 'Event metadata has been updated by the owner specific series id: ' . $video->episode . "\n";
+            }
+        }
     }
 }

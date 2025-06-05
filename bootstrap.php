@@ -7,5 +7,6 @@ NotificationCenter::addObserver('Opencast\Models\Videos', 'addToCoursePlaylist',
 NotificationCenter::addObserver('Opencast\Models\Videos', 'parseEvent', 'OpencastVideoSync');
 NotificationCenter::addObserver('Opencast\Models\Videos', 'checkEventACL', 'OpencastVideoSync');
 NotificationCenter::addObserver('Opencast\Models\VideosUserPerms', 'setPermissions', 'OpencastVideoSync');
+NotificationCenter::addObserver('Opencast\Models\Helpers', 'mapEventUserSeriesUserPerms', 'OpencastVideoSync');
 NotificationCenter::addObserver('Opencast\Models\Helpers', 'notifyUsers', 'OpencastNotifyUsers');
 
