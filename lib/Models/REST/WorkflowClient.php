@@ -69,8 +69,8 @@ class WorkflowClient extends RestClient
                         $tagged_wfs[] = array(
                             'id'          => $wf_def->id,
                             'title'       => $wf_def->title,
-                            'description' => $wf_def->description,
-                            'tag'        => $wf_def->tags->tag
+                            'description' => $wf_def->description ?? null,
+                            'tag'         => $wf_def->tags->tag ?? null
                         );
                     }
                 }

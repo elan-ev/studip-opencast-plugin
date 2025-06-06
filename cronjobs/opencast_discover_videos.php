@@ -140,7 +140,7 @@ class OpencastDiscoverVideos extends CronJob
                         echo 'found new video in Opencast #'. $config['id'] .': ' . $current_event->identifier . ' (' . $current_event->title . ")\n";
 
                         $video = Videos::findOneBySql("episode = ?", [$current_event->identifier]);
-                        $is_livestream = (bool) $video->is_livestream ?? false;
+                        $is_livestream = (bool) ($video->is_livestream ?? false);
 
                         if (!$video) {
                             $video = new Videos;

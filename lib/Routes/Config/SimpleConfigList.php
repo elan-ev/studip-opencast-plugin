@@ -37,11 +37,11 @@ class SimpleConfigList extends OpencastController
                 'id'            => $conf->id,
                 'name'          => $conf->service_url,
                 'version'       => $conf->service_version,
-                'play'          => reset(Endpoints::findBySql("config_id = ? AND service_type = 'play'", [$conf->id]))->service_url,
-                'ingest'        => reset(Endpoints::findBySql("config_id = ? AND service_type = 'ingest'", [$conf->id]))->service_url,
-                'apievents'     => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apievents'", [$conf->id]))->service_url,
-                'apiplaylists'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apiplaylists'", [$conf->id]))->service_url,
-                'apiworkflows'  => reset(Endpoints::findBySql("config_id = ? AND service_type = 'apiworkflows'", [$conf->id]))->service_url,
+                'play'          => $this->getServiceUrl('play', $conf->id),
+                'ingest'        => $this->getServiceUrl('ingest', $conf->id),
+                'apievents'     => $this->getServiceUrl('apievents', $conf->id),
+                'apiplaylists'  => $this->getServiceUrl('apiplaylists', $conf->id),
+                'apiworkflows'  => $this->getServiceUrl('apiworkflows', $conf->id),
                 'studio'        => $conf->service_url . '/studio/index.html',
                 'lti_num'       => sizeof(LtiHelper::getLtiLinks($conf->id))              // used to iterate over all Opencast nodes
             ];
@@ -77,5 +77,22 @@ class SimpleConfigList extends OpencastController
         }
 
         return $config;
+    }
+
+    /**
+     * Retrieves the service URL for a given service type and configuration ID.
+     *
+     * @param string $service_type The type of service endpoint (e.g., 'play', 'ingest').
+     * @param int $config_id The ID of the Opencast configuration.
+     * @return string|null The service URL if found, or null if not available.
+     */
+    private function getServiceUrl($service_type, $config_id)
+    {
+        $service_url = null;
+        $endpoint_records = Endpoints::findBySql("config_id = ? AND service_type = ?", [$config_id, $service_type]);
+        if (!empty($endpoint_records)) {
+            $service_url = reset($endpoint_records)->service_url;
+        }
+        return $service_url;
     }
 }
