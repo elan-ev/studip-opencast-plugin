@@ -142,7 +142,10 @@ class OpencastDiscoverVideos extends CronJob
                         $video = Videos::findOneBySql("episode = ?", [$current_event->identifier]);
                         $is_livestream = (bool) $video->is_livestream ?? false;
 
+                        // Set a flag to determine a new state of the video!
+                        $is_new = false;
                         if (!$video) {
+                            $is_new = true;
                             $video = new Videos;
                         }
 
@@ -159,6 +162,11 @@ class OpencastDiscoverVideos extends CronJob
                         $video->store();
 
                         self::parseEvent($current_event, $video);
+
+                        // Make sure the new videos are only get processed by the add to course playlist.
+                        if ($is_new) {
+                            Videos::addToCoursePlaylist($current_event, $video);
+                        }
 
                         // remove video from checklist for playlist videos (if even present)
                         unset($playlist_videos[$current_event->identifier]);

@@ -1190,18 +1190,15 @@ class Videos extends UPMap
     }
 
 
-     /**
+    /**
      * Assigns a video to the seminar if the video belongs to the seminar' series
      *
-     * @Notification OpencastVideoSync
-     *
-     * @param string                $eventType
-     * @param object                $episode
-     * @param Opencast\Models\Video $video
+     * @param object $episode the opencast episode object
+     * @param Opencast\Models\Video $video the Stud.IP video record
      *
      * @return void
      */
-    public static function addToCoursePlaylist($eventType, $episode, $video)
+    public static function addToCoursePlaylist($episode, $video)
     {
         // check if a series is assigned to this event
         if (!isset($episode->is_part_of) || empty($episode)) {
