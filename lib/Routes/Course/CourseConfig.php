@@ -34,12 +34,14 @@ class CourseConfig extends OpencastController
 
         $series = SeminarSeries::findOneBySeminar_id($course_id);
 
+        $config_id = $series->config_id ?? \Config::get()->OPENCAST_DEFAULT_SERVER;
+
         if (empty($series)) {
             // only tutor or above should be able to trigger this series creation!
             $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
             if ($perm->have_studip_perm($required_course_perm, $course_id)) {
                 // No series for this course yet! Create one!
-                $config_id = \Config::get()->OPENCAST_DEFAULT_SERVER;
+
                 $series_client = new SeriesClient($config_id);
                 $series_id = $series_client->createSeriesForSeminar($course_id);
 
@@ -79,6 +81,8 @@ class CourseConfig extends OpencastController
             'scheduling_allowed'                 => Perm::schedulingAllowed($course_id),
             'course_hide_episodes'               => $course_hide_episodes, // Use this in a course instead of OPENCAST_HIDE_EPISODES!
             'course_default_episodes_visibility' => $course_default_episodes_visibility,
+            // To make is easier to recognize the server in the frontend
+            'config_id'                          => $config_id,
         ];
 
         return $this->createResponse($results, $response);
