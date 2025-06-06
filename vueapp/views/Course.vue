@@ -164,15 +164,7 @@ export default {
                 series_id: course_config.series.series_id,
                 config_id: course_config.config_id
             };
-            const series_verification_response = await this.$store.dispatch('verifyCourseSeriesExists', params);
-
-            // By the new series creation, which happens only when the response status is 201 (Created), we inform the user about it!
-            if (series_verification_response?.status === 201) {
-                this.$store.dispatch('addMessage', {
-                    type: 'info',
-                    text: this.$gettext('Eine neue Serie wurde für diesen Kurs erstellt.'),
-                });
-            }
+            await this.$store.dispatch('verifyCourseSeriesExists', params);
         }
     }
 };
