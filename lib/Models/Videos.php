@@ -1190,18 +1190,15 @@ class Videos extends UPMap
     }
 
 
-     /**
+    /**
      * Assigns a video to the seminar if the video belongs to the seminar' series
      *
-     * @Notification OpencastVideoSync
-     *
-     * @param string                $eventType
-     * @param object                $episode
-     * @param Opencast\Models\Video $video
+     * @param object $episode the opencast episode object
+     * @param Opencast\Models\Video $video the Stud.IP video record
      *
      * @return void
      */
-    public static function addToCoursePlaylist($eventType, $episode, $video)
+    public static function addToCoursePlaylist($episode, $video)
     {
         // check if a series is assigned to this event
         if (!isset($episode->is_part_of) || empty($episode)) {
@@ -1234,11 +1231,7 @@ class Videos extends UPMap
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);
 
-                // In order to avoid forced re-adding the video to the playlist, we need to look in the audit
-                // and see if the latest log entry for this video in every playlist in the course is a deletion.
-                $video_has_been_removed = PlaylistVideosAuditLog::isRemovedFromCoursePlaylists($video->id, $s['seminar_id']);
-
-                if (empty($pvideo) && !$video_has_been_removed) {
+                if (empty($pvideo)) {
                     $pvideo = new PlaylistVideos();
                     $pvideo->video_id    = $video->id;
                     $pvideo->playlist_id = $playlist->id;
