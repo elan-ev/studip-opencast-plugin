@@ -5,10 +5,12 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Opencast\Models\Config;
 use Opencast\Models\Videos;
 use Opencast\Models\REST\ApiEventsClient;
-use Opencast\Models\REST\Config as OCConfig;
+use Opencast\Helpers\CronjobUtils\OpencastConnectionCheckerTrait;
 
 class OpencastSyncAcls extends CronJob
 {
+
+    use OpencastConnectionCheckerTrait;
 
     public static function getName()
     {
@@ -37,17 +39,10 @@ class OpencastSyncAcls extends CronJob
         $configs = Config::findBySql('active = 1');
 
         foreach ($configs as $config) {
-            // check, if this opencast instance is accessible
-            $version = false;
+            echo 'Working on config with id #' . $config->id . "\n";
 
-            echo 'working on config '. $config->id ."\n";
-            $version = OCConfig::getOCBaseVersion($config->id);
-
-            if (!$version) {
-                echo 'cannot connect to opencast, skipping!' ."\n";
+            if (!$this->isOpencastReachable($config->id)) {
                 continue;
-            } else {
-                echo "found opencast with version $version, continuing\n";
             }
 
             // update endpoints, just to make sure
@@ -89,6 +84,8 @@ class OpencastSyncAcls extends CronJob
                     }
                 }
             } while (!empty($oc_events));
+
+            echo 'Done working on config with id #' . $config->id . "\n";
         }
     }
 
