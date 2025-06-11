@@ -261,13 +261,18 @@ export default {
 
     computed: {
         ...mapGetters({
-            'config'        : 'simple_config_list',
-            'course_config' : 'course_config',
-            'cid'           : 'cid',
-            'playlist'      : 'playlist',
-            'playlists'     : 'playlists',
-            'currentLTIUser': 'currentLTIUser'
+            'config'            : 'simple_config_list',
+            'course_config'     : 'course_config',
+            'cid'               : 'cid',
+            'playlist'          : 'playlist',
+            'playlists'         : 'playlists',
+            'currentLTIUser'    : 'currentLTIUser',
+            'currentUserSeries' : 'currentUserSeries'
         }),
+
+        fragment() {
+            return this.$route.name;
+        },
 
         upload_playlists() {
             let upload_playlists = [...this.playlists];
@@ -405,6 +410,9 @@ export default {
 
             if (this.cid) {
                 uploadData['seriesId'] = this.course_config['series']['series_id'];
+            } else if (this.fragment === 'videos' && this.currentUserSeries) {
+                // Force to add user series if when in work space!
+                uploadData['seriesId'] = this.currentUserSeries;
             }
 
             uploadData['created']  = new Date(this.upload.recordDate).toISOString();
@@ -436,6 +444,17 @@ export default {
             let ltiUploader = this.currentLTIUser[this.selectedServer['id']];
 
             let view = this;
+
+            // We need to force the seriesId from now on in order to make sure everything is in place.
+            if (!uploadData?.seriesId) {
+                this.$store.dispatch('addMessage', {
+                    'type': 'error',
+                    'text': this.$gettext('Leider kann das Video momentan nicht hochgeladen werden,' +
+                        ' da notwendige Daten fehlen. Bitte kontaktieren Sie Ihre Systemadministration.'),
+                    dialog: true
+                });
+                return;
+            }
 
             this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, ltiUploader, {
                 uploadProgress: (track, loaded, total) => {
