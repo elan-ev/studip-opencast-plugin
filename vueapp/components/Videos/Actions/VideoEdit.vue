@@ -138,7 +138,7 @@ export default {
             showEditDialog: false,
             visibility: null,
             visible_timestamp: null,
-            use_timestamp: false
+            use_timestamp: false,
         }
     },
 
