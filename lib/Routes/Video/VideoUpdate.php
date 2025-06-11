@@ -45,7 +45,7 @@ class VideoUpdate extends OpencastController
             foreach ($event['tags'] as $new_tag) {
                 // check if tag already exists in oc_tags
 
-                if ($new_tag['id']) {
+                if (!empty($new_tag['id'])) {
                     $tag = Tags::find($new_tag['id']);
                 } else {
                     $tag = Tags::findOneBySQL('tag = ? AND user_id = ?', [$new_tag['tag'], $user->id]);
@@ -77,8 +77,12 @@ class VideoUpdate extends OpencastController
                         $pvs = new PlaylistSeminarVideos();
                         $pvs->setValue('playlist_seminar_id', $playlistSeminar->id);
                         $pvs->setValue('video_id', $video->id);
-                        $pvs->setValue('visibility', $event['seminar_visibility']['visibility']);
-                        $pvs->setValue('visible_timestamp', $event['seminar_visibility']['visible_timestamp']);
+                        if (!empty($event['seminar_visibility']['visibility'])) {
+                            $pvs->setValue('visibility', $event['seminar_visibility']['visibility']);
+                        }
+                        if (!empty($event['seminar_visibility']['visible_timestamp'])) {
+                            $pvs->setValue('visible_timestamp', $event['seminar_visibility']['visible_timestamp']);
+                        }
                         $pvs->store();
                     }
                 }

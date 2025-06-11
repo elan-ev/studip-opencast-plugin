@@ -40,12 +40,12 @@ class VideoAdd extends OpencastController
                 'episode'      => $episode_id,
                 'config_id'    => $event['config_id'],
                 'title'        => $event['title'],
-                'description'  => $event['description'],
-                'duration'     => $event['duration'],
-                'state'        => $event['state'],
+                'description'  => $event['description'] ?? null,
+                'duration'     => $event['duration'] ?? null,
+                'state'        => $event['state'] ?? null,
 		        'created'      => date('Y-m-d H:i:s'),
-		        'presenters'   => $event['presenters'],
-                'contributors' => $event['contributors'],
+		        'presenters'   => $event['presenters'] ?? null,
+                'contributors' => $event['contributors'] ?? null,
                 'available'    => true
             ]);
             if (!$video->token) {
