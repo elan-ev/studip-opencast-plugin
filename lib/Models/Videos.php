@@ -442,6 +442,10 @@ class Videos extends UPMap
         $where .= " AND trashed = " . $filters->getTrashed();
         $where .= " AND oc_video.token IS NOT NULL";
 
+        if (empty(\Config::get()->OPENCAST_LIST_UNAVAILABLE_VIDEOS)) {
+            $where .= " AND oc_video.available = 1";
+        }
+
         $sql .= $where;
 
         $sql .= ' GROUP BY oc_video.id';
