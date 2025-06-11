@@ -45,11 +45,16 @@ class WorkflowClient extends RestClient
     /**
      * Returns a revised collection of all tagged Workflow definitions
      *
-     * @return array tagged Workflow Instances
+     * @return array|bool tagged Workflow Instances, or false if something goes wrong!
      */
     public function getTaggedWorkflowDefinitions()
     {
         $wf_defs = self::getDefinitions();
+
+        // We break the process if the return result is false, indicating the connection error!
+        if ($wf_defs === false) {
+            return false;
+        }
 
         $tagged_wfs = array();
         if (!empty($wf_defs)) {

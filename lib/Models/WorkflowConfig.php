@@ -36,7 +36,7 @@ class WorkflowConfig extends \SimpleORMap
      * Update mapping of used workflows for passed config
      *
      * @param int $config_id
-     * @param Array $workflows
+     * @param Array? $workflows
      *
      * @return void
      */
