@@ -91,6 +91,10 @@ return [
                 'name' => "OPENCAST_UPLOAD_INFO_TEXT_BODY",
                 'tag' => 'ui'
             ],
+            [
+                'name' => "OPENCAST_LIST_UNAVAILABLE_VIDEOS",
+                'tag' => 'functions'
+            ],
         ],
     ],
 ];

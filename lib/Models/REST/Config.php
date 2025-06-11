@@ -83,4 +83,28 @@ class Config
 
         return $services;
     }
+
+    /**
+     * Checks if the Opencast API is reachable for the given configuration.
+     *
+     * This method performs a basic GET request to the Opencast API base endpoint
+     * using the provided configuration ID. It returns true if the API responds
+     * with a 200 HTTP status code, indicating that the Opencast instance is reachable.
+     *
+     * @param int $config_id The ID of the Opencast configuration to check.
+     * @return bool True if the Opencast API is reachable, false otherwise.
+     */
+    public static function checkOpencastAPIConnectivity(int $config_id): bool
+    {
+        $success = false;
+        $config = ConfigModel::getBaseServerConf($config_id);
+
+        // populate config_id if calling the RestClient directly
+        $config['config_id'] = $config['id'];
+        $oc = new RestClient($config);
+
+        $response = $oc->opencastApi->baseApi->get();
+
+        return ($response['code'] == 200);
+    }
 }

@@ -6,10 +6,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Opencast\Models\Config;
 use Opencast\Models\Playlists;
 use Opencast\Models\REST\ApiPlaylistsClient;
-use Opencast\Models\REST\Config as OCConfig;
+use Opencast\Helpers\CronjobUtils\OpencastConnectionCheckerTrait;
 
 class OpencastSyncPlaylists extends CronJob
 {
+    use OpencastConnectionCheckerTrait;
+
     public static function getName()
     {
         return _('Opencast - Wiedergabelisten synchronisieren');
@@ -31,17 +33,10 @@ class OpencastSyncPlaylists extends CronJob
         $configs = Config::findBySql('active = 1');
 
         foreach ($configs as $config) {
-            // check, if this opencast instance is accessible
-            $version = false;
+            echo 'Working on config with id #' . $config->id . "\n";
 
-            echo 'working on config ' . $config->id . "\n";
-            $version = OCConfig::getOCBaseVersion($config->id);
-
-            if (!$version) {
-                echo 'cannot connect to opencast, skipping!' . "\n";
+            if (!$this->isOpencastReachable($config->id)) {
                 continue;
-            } else {
-                echo "found opencast with version $version, continuing\n";
             }
 
             // call opencast to get all playlists
