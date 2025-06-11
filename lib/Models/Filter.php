@@ -61,11 +61,11 @@ class Filter
             $filters = \json_decode($params['filters'], true);
             foreach($filters as $filter) {
                 if (in_array($filter['type'], self::$ALLOWED_FILTERS)) {
-                    $compare = $filter['compare'] ?? null;
+                    $compare = $filter['compare'] ?? '!=';
                     $this->filters[] = [
                         'type'    => $filter['type'],
                         'value'   => preg_replace('/[^0-9a-zA-Z\w\ ]/', '', $filter['value']),
-                        'compare'  => ($compare && $compare == '=') ? '=' : '!='
+                        'compare'  => $compare
                     ];
                 }
             }
