@@ -12,6 +12,7 @@ use Opencast\Models\Filter;
 use Opencast\Models\Playlists;
 use Opencast\Models\Videos;
 use Opencast\Models\PlaylistSeminarVideos;
+use Opencast\Caching\VideosCaching;
 
 class PlaylistVideoList extends OpencastController
 {
@@ -49,22 +50,38 @@ class PlaylistVideoList extends OpencastController
             }
         }
 
-        // show videos for this playlist and filter them with optional additional filters
-        $videos = Videos::getPlaylistVideos($playlist->id, new Filter($params));
+        $response_result = [
+            'videos' => [],
+            'count'  => 0,
+        ];
 
-        $ret = [];
-        foreach ($videos['videos'] as $video) {
-            $video_array = $video->toSanitizedArray($course_id, $playlist->id);
-            if (!empty($video_array['perm']) && ($video_array['perm'] == 'owner' || $video_array['perm'] == 'write'))
-            {
-                $video_array['perms'] = $video->perms->toSanitizedArray();
+        $filter = new Filter($params);
+        $video_caching = new VideosCaching();
+        $playlist_videos_cache = $video_caching->playlistVideos($playlist->id);
+        $unique_query_id = $filter->decodeVars();
+        $response_result = $playlist_videos_cache->read($unique_query_id);
+        if (empty($response_result)) {
+            // show videos for this playlist and filter them with optional additional filters
+            $videos = Videos::getPlaylistVideos($playlist->id, $filter);
+
+            $ret = [];
+            foreach ($videos['videos'] as $video) {
+                $video_array = $video->toSanitizedArray($course_id, $playlist->id);
+                if (!empty($video_array['perm']) && ($video_array['perm'] == 'owner' || $video_array['perm'] == 'write'))
+                {
+                    $video_array['perms'] = $video->perms->toSanitizedArray();
+                }
+                $ret[] = $video_array;
             }
-            $ret[] = $video_array;
+
+            $response_result = [
+                'videos' => $ret,
+                'count'  => $videos['count'],
+            ];
+
+            $playlist_videos_cache->write($unique_query_id, $response_result);
         }
 
-        return $this->createResponse([
-            'videos' => $ret,
-            'count'  => $videos['count']
-        ], $response);
+        return $this->createResponse($response_result, $response);
     }
 }

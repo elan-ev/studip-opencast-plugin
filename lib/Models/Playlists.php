@@ -5,6 +5,7 @@ namespace Opencast\Models;
 use Opencast\Models\REST\ApiPlaylistsClient;
 use Opencast\Helpers\PlaylistMigration;
 use Opencast\Errors\Error;
+use Opencast\Caching\VideosCaching;
 
 class Playlists extends UPMap
 {
@@ -574,6 +575,8 @@ class Playlists extends UPMap
             $playlist_client = ApiPlaylistsClient::getInstance($this->config_id);
             $playlist_client->deletePlaylist($this->service_playlist_id);
         }
+
+        (new VideosCaching())->playlistVideos($this->id)->expire();
 
         return parent::delete();
     }
