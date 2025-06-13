@@ -105,4 +105,9 @@ class Filter
     {
         return $this->trashed;
     }
+
+    public function decodeVars()
+    {
+        return base64_encode(json_encode(get_object_vars($this)));
+    }
 }
