@@ -2,9 +2,11 @@
     <Teleport :to="targetSelector">
         <Transition name="drawer-slide">
             <div v-if="visible" class="drawer" :class="`drawer--${side}`" :style="drawerStyle">
+                <header class="drawer__header">
                 <button class="drawer__close" @click="emit('close')" :title="$gettext('Schließen')" :aria-label="$gettext('Schließen')">
                     <StudipIcon shape="decline" :size="24" />
                 </button>
+                </header>
                 <div class="drawer__content">
                     <slot />
                 </div>

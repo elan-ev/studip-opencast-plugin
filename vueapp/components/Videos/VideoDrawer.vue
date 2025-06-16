@@ -84,7 +84,7 @@
                             <strong v-if="selectedVideo.contributors !== ''">{{ $gettext('Mitwirkende') }}</strong>
                             <p>{{ selectedVideo.contributors }}</p>
                             <template #footer>
-                                <button v-if="canEdit && selectedVideo.state !== 'running'" class="button edit">
+                                <button v-if="canEdit && selectedVideo.state !== 'running'" class="button edit" @click="performAction('VideoEdit')">
                                     {{ $gettext('Bearbeiten') }}
                                 </button>
                             </template>
@@ -99,7 +99,9 @@
                             <VideoEmbeddingCode :event="selectedVideo" />
                         </Tab>
                         <template v-if="canEdit && selectedVideo.state !== 'running'">
-                            <Tab :name="$gettext('Sichtbarkeit')"></Tab>
+                            <Tab v-if="inCourse" :name="$gettext('Sichtbarkeit')">
+                                <VideoVisibility :event="selectedVideo" />
+                            </Tab>
                             <Tab :name="$gettext('Verknüpfungen')">
                                 <VideoLinkToPlaylists :event="selectedVideo" />
                             </Tab>
@@ -139,6 +141,7 @@ import StudipIcon from '@studip/StudipIcon.vue';
 import StudipActionMenu from '@studip/StudipActionMenu.vue';
 import VideoEmbeddingCode from '@components/Videos/Actions/VideoEmbeddingCode.vue';
 import VideoDownload from '@components/Videos/Actions/VideoDownload.vue';
+import VideoVisibility from '@components/Videos/Actions/VideoVisibility.vue';
 import VideoReport from '@components/Videos/Actions/VideoReport.vue';
 import VideoEdit from '@/components/Videos/Actions/VideoEdit.vue';
 import VideoCut from '@/components/Videos/Actions/VideoCut.vue';
@@ -221,6 +224,12 @@ const canEdit = computed(() => {
     const perm = selectedVideo.value.perm;
 
     return perm === 'owner' || perm === 'write';
+});
+const cid = computed(() => {
+    return store.getters.cid;
+});
+const inCourse = computed(() => {
+    return cid.value ? true : false;
 });
 
 const downloadSetting = computed(() => {
