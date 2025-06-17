@@ -19,18 +19,19 @@ trait OpencastConnectionCheckerTrait
      * Use this method in cronjob classes before performing any operations that require a working Opencast connection.
      *
      * @param int $config_id The ID of the Opencast configuration to check.
+     * @param bool $check_engage_node A flag to determine whether the check should be performed against engage node (e.g play or search endpoint)
      * @return bool True if Opencast is reachable, false otherwise.
      */
-    protected function isOpencastReachable(int $config_id): bool {
+    protected function isOpencastReachable(int $config_id, bool $check_engage_node = false): bool {
         $is_opencast_reachable = false;
         $message = $this->not_reachable_message;
         try {
-            $is_opencast_reachable = OCConfig::checkOpencastAPIConnectivity($config_id);
+            $is_opencast_reachable = OCConfig::checkOpencastAPIConnectivity($config_id, $check_engage_node);
         } catch (\Throwable $th) {
             $message .= ': ' . $th->getMessage();
         }
         if (!$is_opencast_reachable) {
-            echo $message;
+            echo $message . "\n";
         }
         return $is_opencast_reachable;
     }
