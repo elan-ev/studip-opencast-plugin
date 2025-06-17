@@ -65,7 +65,7 @@ class Filter
                     $this->filters[] = [
                         'type'    => $filter['type'],
                         'value'   => preg_replace('/[^0-9a-zA-Z\w\ ]/', '', $filter['value']),
-                        'compare'  => $compare
+                        'compare'  => $compare == '=' ? '=' : '!='
                     ];
                 }
             }
