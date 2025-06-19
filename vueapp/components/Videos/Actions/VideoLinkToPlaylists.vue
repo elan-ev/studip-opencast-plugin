@@ -68,10 +68,14 @@ export default {
         addPlaylist(playlist) {
             this.event.playlists.push(playlist);
 
-            this.$store.dispatch('addVideosToPlaylist', {
+            let params = {
                 playlist: playlist.token,
                 videos: [this.event.token],
-            })
+            };
+            if (this.cid) {
+                params.course_id = this.cid;
+            }
+            this.$store.dispatch('addVideosToPlaylist', params)
             .catch(() => {
                 // find the index of the playlist that was just added and remove it
                 let index = this.event.playlists.findIndex(p => p.token == playlist.token);
