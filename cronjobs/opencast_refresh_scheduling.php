@@ -11,9 +11,12 @@ use Opencast\Models\ScheduledRecordings;
 use Opencast\Models\Resources;
 use Opencast\Models\ScheduleHelper;
 use Opencast\Models\REST\SchedulerClient;
+use Opencast\Helpers\CronjobUtils\OpencastConnectionCheckerTrait;
 
 class OpencastRefreshScheduling extends CronJob
 {
+
+    use OpencastConnectionCheckerTrait;
 
     /**
      * Return the name of the cronjob.
@@ -42,10 +45,21 @@ class OpencastRefreshScheduling extends CronJob
         $config = Config::findBySql(1);
         $oc_se_count = 0;
 
+        // A flag to check if we should continue!
+        $should_proceed = false;
+
         // 1. Get Opencast Scheduled Recordings based on each configured server config.
-        foreach ($config as $conf) {
-            $config_id = $conf['id'];
+        foreach ($config as $config) {
+            $config_id = $config->id;
             $scheduled_events = [];
+
+            echo 'Working on config with id #' . $config_id . "\n";
+
+            if (!$this->isOpencastReachable($config_id)) {
+                continue;
+            }
+
+            $should_proceed = true;
 
             try {
                 $events_client = ApiEventsClient::getInstance($config_id);
@@ -65,6 +79,12 @@ class OpencastRefreshScheduling extends CronJob
             ];
             $oc_se_count += count($scheduled_events);
         }
+
+        if (!$should_proceed) {
+            echo "No reachable Opencast instance found. Terminating process\n";
+            return;
+        }
+
         echo 'In Opencast geplante Events: ' . $oc_se_count . "\n";
 
         // 2. Get all scheduled recordings stored in StudIP.

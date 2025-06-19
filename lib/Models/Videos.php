@@ -448,6 +448,10 @@ class Videos extends UPMap
         $where .= " AND trashed = " . $filters->getTrashed();
         $where .= " AND oc_video.token IS NOT NULL";
 
+        if (empty(\Config::get()->OPENCAST_LIST_UNAVAILABLE_VIDEOS)) {
+            $where .= " AND oc_video.available = 1";
+        }
+
         $sql .= $where;
 
         $sql .= ' GROUP BY oc_video.id';
@@ -822,13 +826,18 @@ class Videos extends UPMap
     }
 
     /**
-     * Removes a video from both opencsat and local sides.
+     * Removes a video from both opencast and local sides.
      *
+     * @param ApiEventsClient|null $api_event_client Optional API client instance. If not provided, a new one will be created.
+
      * @return boolean the result of deletion process
      */
-    public function removeVideo()
+    public function removeVideo(ApiEventsClient $api_event_client = null)
     {
-        $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        // Make sure $api_event_client gets its instance if not passed.
+        if ($api_event_client === null) {
+            $api_event_client = ApiEventsClient::getInstance($this->config_id);
+        }
 
         // if the video exists in opencast, make sure it is deleted
         if ($this->episode && $api_event_client->getEpisode($this->episode)) {

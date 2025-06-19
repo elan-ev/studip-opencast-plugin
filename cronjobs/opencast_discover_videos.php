@@ -4,15 +4,17 @@ require_once __DIR__.'/../bootstrap.php';
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Opencast\Models\Config;
-use Opencast\Models\REST\Config as OCConfig;
 use Opencast\Models\Videos;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Helpers\CronjobUtils\OpencastConnectionCheckerTrait;
 use Opencast\Models\Helpers;
 
 class OpencastDiscoverVideos extends CronJob
 {
+
+    use OpencastConnectionCheckerTrait;
 
     /**
      * @var array The required properties of the event object which will be checked before any operation.
@@ -47,17 +49,10 @@ class OpencastDiscoverVideos extends CronJob
         $configs = Config::findBySql('active = 1');
 
         foreach ($configs as $config) {
-            // check, if this opencast instance is accessible
-            $version = false;
+            echo 'Working on config with id #' . $config->id . "\n";
 
-            echo 'Working on config with id #'. $config->id ."\n";
-            $version = OCConfig::getOCBaseVersion($config->id);
-
-            if (!$version) {
-                echo 'Cannot connect to opencast, skipping!' ."\n";
+            if (!$this->isOpencastReachable($config->id)) {
                 continue;
-            } else {
-                echo "Found opencast with version $version, continuing\n";
             }
 
             // update endpoints, just to make sure
@@ -206,13 +201,13 @@ class OpencastDiscoverVideos extends CronJob
                 }
             } while (!empty($oc_events));
 
-            // Check if local videos are not longer available in OC and remove them from Stud.IP
-            // If the video should reappear in the future, Stud.IP will readd it again.
+            // Check if local videos are not longer available in OC and make the video unavailable if it is already there!
             foreach (array_diff($local_event_ids, $event_ids) as $event_id) {
                 $video = Videos::findOneBySql("config_id = ? AND episode = ?", [$config['id'], $event_id]);
                 // Need null check for archived videos
                 if ($video) {
-                    $video->delete();
+                    $video->setValue('available', false);
+                    $video->store();
                 }
             }
 
