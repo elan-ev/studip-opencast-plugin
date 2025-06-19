@@ -719,10 +719,11 @@ class Videos extends UPMap
      * Updates the metadata related to this video in both opencast and local and runs republish-metadata workflow
      *
      * @param object $event the updated version of the event
+     * @param boolean $check_dirty_state whether to check for dirty state, meaning if any of the fields that need the opencast update has changed!
      *
      * @return boolean the result of updating process
      */
-    public function updateMetadata($event)
+    public function updateMetadata($event, $check_dirty_state = true)
     {
         $api_event_client = ApiEventsClient::getInstance($this->config_id);
 
@@ -737,21 +738,34 @@ class Videos extends UPMap
             'subject', 'language', 'description', 'startDate'];
         $metadata = [];
 
+        // A dirty state flag to check if any of the fields that need the opencast update has changed!
+        $is_dirty = false;
+
         foreach ($allowed_metadata_fields as $field_name) {
             if (isset($event[$field_name])) {
+                $current_value = $this->getValue($field_name) ?? null;
                 $value = $event[$field_name];
                 $id = $field_name;
                 if ($field_name == 'subject') {
                     $id = 'subjects';
                     $value = [$value];
+                    $current_value = [$current_value];
                 }
                 if ($field_name == 'presenters') {
                     $id = 'creator';
-                    $value = array_map('trim', explode(',', $value));
+                    $value = array_filter(array_map('trim', explode(',', $value)));
+                    $current_value = array_filter(array_map('trim', explode(',', $current_value)));
                 }
                 if ($field_name == 'contributors') {
                     $id = 'contributor';
-                    $value = array_map('trim', explode(',', $value));
+                    $value = array_filter(array_map('trim', explode(',', $value)));
+                    $current_value = array_filter(array_map('trim', explode(',', $current_value)));
+                }
+
+                // If it is not yet marked dirty, check for dirty state!
+                if (!$is_dirty) {
+                    // Assuming that the current value is not the same as the requested value!
+                    $is_dirty = !(json_encode($current_value) === json_encode($value));
                 }
 
                 $metadata[] = [
@@ -759,6 +773,11 @@ class Videos extends UPMap
                     'value' => $value
                 ];
             }
+        }
+
+        if ($check_dirty_state && !$is_dirty) {
+            // nothing changed, no need to update!
+            return true;
         }
 
         $success = false;
@@ -1190,18 +1209,15 @@ class Videos extends UPMap
     }
 
 
-     /**
+    /**
      * Assigns a video to the seminar if the video belongs to the seminar' series
      *
-     * @Notification OpencastVideoSync
-     *
-     * @param string                $eventType
-     * @param object                $episode
-     * @param Opencast\Models\Video $video
+     * @param object $episode the opencast episode object
+     * @param Opencast\Models\Video $video the Stud.IP video record
      *
      * @return void
      */
-    public static function addToCoursePlaylist($eventType, $episode, $video)
+    public static function addToCoursePlaylist($episode, $video)
     {
         // check if a series is assigned to this event
         if (!isset($episode->is_part_of) || empty($episode)) {

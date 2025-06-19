@@ -23,10 +23,27 @@ class Workflow extends \SimpleORMap
         parent::configure($config);
     }
 
-    public static function updateWorkflowsByConfigId($config_id) {
+    /**
+     * Synchronizes workflow definitions from Opencast with the local database for a given configuration.
+     *
+     * This method fetches all workflow definitions from the Opencast instance associated with the provided
+     * configuration ID. It updates existing workflow entries, adds new ones if they do not exist, and removes
+     * any workflows from the local database that are no longer present in Opencast.
+     *
+     * @param string|int $config_id The ID of the Opencast configuration to synchronize workflows for.
+     * @return void
+     */
+    public static function updateWorkflowsByConfigId($config_id)
+    {
+        $db_workflows = [];
         try {
             $wf_client = WorkflowClient::getInstance($config_id);
             $wf_defs = $wf_client->getTaggedWorkflowDefinitions();
+
+            // Avoid further process in case the oc is not responsive!
+            if ($wf_defs === false) {
+                return;
+            }
 
             $db_workflows = self::findBySql('config_id = ?', [$config_id]);
 
@@ -63,8 +80,10 @@ class Workflow extends \SimpleORMap
         }
 
         // the remaining entries or workflow - tag combinations that are not there anymore and need to be deleted from Stud.IP
-        foreach ($db_workflows as $db_workflow) {
-            $db_workflow->delete();
+        if (!empty($db_workflows)) {
+            foreach ($db_workflows as $db_workflow) {
+                $db_workflow->delete();
+            }
         }
     }
 
