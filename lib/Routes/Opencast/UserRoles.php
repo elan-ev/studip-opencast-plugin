@@ -102,31 +102,21 @@ class UserRoles extends OpencastController
             } else {
                 // Handle video roles
 
-                // get all videos the user has permissions on
-                foreach (VideosUserPerms::findByUser_id($user_id) as $vperm) {
-                    if (!$vperm->video->episode) continue;
-
-                    if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
-                        if ($episode_id_role_access) {
-                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
-                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_WRITE'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_WRITE';
-                        } else {
-                            $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
-                        }
-                    } else {
-                        if ($episode_id_role_access) {
-                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
-                        } else {
-                            $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
-                        }
-                    }
-                }
-
-                // get all videos in courseware blocks in courses and add them to the permission list as well
-                $stmt_courseware = \DBManager::get()->prepare("SELECT episode FROM oc_video_cw_blocks
-                    LEFT JOIN oc_video USING (token)
-                    LEFT JOIN seminar_user USING (seminar_id)
-                    WHERE seminar_user.user_id = :user_id");#
+                // get all videos of courseware blocks in courses and add them to the permission list as well, ignore if user has permission through a course role
+                $stmt_courseware = \DBManager::get()->prepare("SELECT episode FROM cw_blocks
+                    JOIN cw_containers ON (cw_containers.id = cw_blocks.container_id)
+                    JOIN cw_structural_elements ON (cw_structural_elements.id = cw_containers.structural_element_id AND range_type = 'course')
+                    JOIN seminar_user ON (seminar_id = cw_structural_elements.range_id)
+                    JOIN oc_video ON (oc_video.token = CONVERT(JSON_VALUE(cw_blocks.payload, '$.token') USING latin1))
+                    WHERE cw_blocks.block_type = 'plugin-opencast-video' AND seminar_user.user_id = :user_id
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM oc_playlist_video
+                        JOIN oc_playlist_seminar USING (playlist_id)
+                        WHERE video_id = oc_video.id
+                        AND seminar_user.seminar_id = oc_playlist_seminar.seminar_id
+                    )
+                ");
 
                 $stmt_courseware->execute([':user_id' => $user_id]);
 
@@ -178,6 +168,37 @@ class UserRoles extends OpencastController
                 // add learner roles
                 foreach ($courses_read as $course_id) {
                     $roles[$course_id . '_Learner'] = $course_id . '_Learner';
+                }
+
+                // Get all videos permissions of the user except those for videos to which the user has already write
+                // permissions through course memberships and course playlists,  in order to reduce the number of roles.
+                $vperms = VideosUserPerms::findBySQL("
+                    user_id = :user_id
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM oc_playlist_video
+                        JOIN oc_playlist_seminar USING (playlist_id)
+                        WHERE video_id = oc_video_user_perms.video_id AND seminar_id IN ( :course_ids )
+                    )
+                ", [':user_id' => $user_id, ':course_ids' => $courses_write]);
+
+                foreach ($vperms as $vperm) {
+                    if (!$vperm->video->episode) continue;
+
+                    if ($vperm->perm == 'owner' || $vperm->perm == 'write') {
+                        if ($episode_id_role_access) {
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_WRITE'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_WRITE';
+                        } else {
+                            $roles[$vperm->video->episode . '_write'] = $vperm->video->episode . '_write';
+                        }
+                    } else {
+                        if ($episode_id_role_access) {
+                            $roles['ROLE_EPISODE_' . $vperm->video->episode . '_READ'] = 'ROLE_EPISODE_' . $vperm->video->episode . '_READ';
+                        } else {
+                            $roles[$vperm->video->episode . '_read'] = $vperm->video->episode . '_read';
+                        }
+                    }
                 }
 
                 // Handle playlist roles

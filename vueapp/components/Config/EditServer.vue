@@ -18,7 +18,7 @@
                         </legend>
                         <label v-if="config?.service_version">
                             <b> {{ $gettext('Opencast Version') }} </b><br />
-                            {{ config.service_version }}
+                            {{ isLikelyValidVersion(config.service_version) ? config.service_version : '-'}}
                         </label>
 
                         <ConfigOption v-for="setting in settings"
@@ -312,6 +312,13 @@ export default {
         updateValue(setting, newValue) {
             this.currentConfig[setting.name] = newValue;
         },
+
+        isLikelyValidVersion(version) {
+            if (typeof version !== 'string') return false;
+
+            const regex = /^\d+\.\d+(?:\.\d+)?(?:[-.][a-zA-Z0-9]+)*$/;
+            return regex.test(version);
+        }
     },
 
     mounted() {

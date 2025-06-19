@@ -9,9 +9,17 @@ use Opencast\Models\Videos;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\Helpers;
 
 class OpencastDiscoverVideos extends CronJob
 {
+
+    /**
+     * @var array The required properties of the event object which will be checked before any operation.
+     */
+    private static $required_event_properties = [
+        'archive_version'
+    ];
 
     public static function getName()
     {
@@ -26,8 +34,8 @@ class OpencastDiscoverVideos extends CronJob
     public function execute($last_result, $parameters = array())
     {
         /*
-         - Neue Videos in OC identifizieren (die Stud.IP noch nicht kennt)
-         - Eintragen der Videos und setzen der Rechte (Queue)
+            - Neue Videos in OC identifizieren (die Stud.IP noch nicht kennt)
+            - Eintragen der Videos und setzen der Rechte (Queue)
         */
         $db = DBManager::get();
         $stmt_ids = $db->prepare("
@@ -94,6 +102,20 @@ class OpencastDiscoverVideos extends CronJob
                 if (!empty($oc_events)) foreach ($oc_events as $event) {
                     $current_event = null;
 
+                    // Check the required properties of the event.
+                    if (!self::checkEventIntegrity($event)) {
+                        echo '[Skipped] The event does not have all required properties, skipping: ' . $event->identifier . "\n";
+                        continue;
+                    }
+
+                    // Is the episode related to this studip?
+                    // We need to check this, because it might happen that the Opencast server is connected to multiple Stud.IP instances,
+                    // and we only want to process events that are related to this Stud.IP instance.
+                    if (!Helpers::isEventInAnyKnownSeries($event)) {
+                        echo '[Skipped] Event not related to this Stud.IP instance, skipping: ' . $event->identifier . "\n";
+                        continue;
+                    }
+
                     // only add videos / reinspect videos if they are readily processed
                     if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
                         $event_ids[] = $event->identifier;
@@ -127,9 +149,12 @@ class OpencastDiscoverVideos extends CronJob
                         echo 'found new video in Opencast #'. $config['id'] .': ' . $current_event->identifier . ' (' . $current_event->title . ")\n";
 
                         $video = Videos::findOneBySql("episode = ?", [$current_event->identifier]);
-                        $is_livestream = (bool) $video->is_livestream ?? false;
+                        $is_livestream = (bool) ($video->is_livestream ?? false);
 
+                        // Set a flag to determine a new state of the video!
+                        $is_new = false;
                         if (!$video) {
+                            $is_new = true;
                             $video = new Videos;
                         }
 
@@ -146,6 +171,11 @@ class OpencastDiscoverVideos extends CronJob
                         $video->store();
 
                         self::parseEvent($current_event, $video);
+
+                        // Make sure the new videos are only get processed by the add to course playlist.
+                        if ($is_new) {
+                            Videos::addToCoursePlaylist($current_event, $video);
+                        }
 
                         // remove video from checklist for playlist videos (if even present)
                         unset($playlist_videos[$current_event->identifier]);
@@ -195,6 +225,23 @@ class OpencastDiscoverVideos extends CronJob
             WHERE visibility IS NULL or visibility = ''");
 
         echo 'Finished updating videos and workflows' . "\n";
+    }
+
+    /**
+     * Check if the event has all required properties.
+     *
+     * @param object $event The event object to check.
+     * @return bool True if the event has all required properties, false otherwise.
+     */
+    private static function checkEventIntegrity($event) {
+        // Check if the event has all required properties
+        foreach (self::$required_event_properties as $property) {
+            if (!property_exists($event, $property)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static function parseEvent($event, $video)
