@@ -9,6 +9,7 @@ use Opencast\Models\Videos;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\WorkflowConfig;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\Helpers;
 
 class OpencastDiscoverVideos extends CronJob
 {
@@ -107,6 +108,14 @@ class OpencastDiscoverVideos extends CronJob
                         continue;
                     }
 
+                    // Is the episode related to this studip?
+                    // We need to check this, because it might happen that the Opencast server is connected to multiple Stud.IP instances,
+                    // and we only want to process events that are related to this Stud.IP instance.
+                    if (!Helpers::isEventInAnyKnownSeries($event)) {
+                        echo '[Skipped] Event not related to this Stud.IP instance, skipping: ' . $event->identifier . "\n";
+                        continue;
+                    }
+
                     // only add videos / reinspect videos if they are readily processed
                     if ($event->status == 'EVENTS.EVENTS.STATUS.PROCESSED') {
                         $event_ids[] = $event->identifier;
@@ -140,7 +149,7 @@ class OpencastDiscoverVideos extends CronJob
                         echo 'found new video in Opencast #'. $config['id'] .': ' . $current_event->identifier . ' (' . $current_event->title . ")\n";
 
                         $video = Videos::findOneBySql("episode = ?", [$current_event->identifier]);
-                        $is_livestream = (bool) $video->is_livestream ?? false;
+                        $is_livestream = (bool) ($video->is_livestream ?? false);
 
                         // Set a flag to determine a new state of the video!
                         $is_new = false;
