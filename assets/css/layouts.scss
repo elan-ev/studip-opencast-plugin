@@ -207,38 +207,26 @@ $icons: (
     display: flex;
     flex-direction: column;
     background-color: var(--dark-gray-color-5);
-    padding: 1em 1em 0 1em;
+    padding: 0.5em 1em;
     margin-bottom: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-    header {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        .oc--content-bar-header-buttons-left {}
-
-        .oc--content-bar-header-title {
-            flex-grow: 1;
-
-        }
-
-        .oc--content-bar-header-buttons-right {}
-    }
-
-    nav {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        .oc--content-bar-nav {
-            .oc--tabs-content {
-                display: none;
-            }
-        }
-
-        .oc--content-bar-search {
+    .oc--content-bar-header-title {
+        h2 {
+            margin: 0;
         }
     }
+
+    .oc--content-bar-nav {
+        .oc--tabs-content {
+            display: none;
+        }
+    }
+
+    .oc--content-bar-search {}
 }
 
 .oc--search {
