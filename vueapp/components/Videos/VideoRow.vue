@@ -107,13 +107,13 @@
                 <span
                     v-else-if="isProcessing"
                     class="oc--previewimage"
-                    :title="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
+                    :title="$gettext('Dieses Video wird gerade von Opencast verarbeitet.')"
                 >
                     <studip-icon
                         class="oc--image-button"
                         shape="admin"
                         role="status-yellow"
-                        :alt="$gettext('Dieses Video wird gerade von Opencast vearbeitet.')"
+                        :alt="$gettext('Dieses Video wird gerade von Opencast verarbeitet.')"
                     ></studip-icon>
                 </span>
                 <span
