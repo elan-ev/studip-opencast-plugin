@@ -53,11 +53,8 @@ class UserRoles extends OpencastController
         if (!empty($share_uuid)) {
             $video_share = VideosShares::findByUuid($share_uuid);
             if (!empty($video_share)) {
-                if ($episode_id_role_access) {
-                    $roles[] = 'ROLE_EPISODE_' . $video_share->video->episode . '_READ';
-                } else {
-                    $roles[] = $video_share->video->episode . '_read';
-                }
+                $roles[] = 'ROLE_EPISODE_' . $video_share->video->episode . '_READ';
+                $roles[] = $video_share->video->episode . '_read';
             } else {
                 throw new Error('Share not found', 404);
             }
