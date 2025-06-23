@@ -57,6 +57,7 @@
                             @error="setDefaultImage()"
                             height="200"
                             :ref="event.id"
+                            :alt="event.title"
                         />
                         <studip-icon
                             class="oc--image-button oc--play-button"

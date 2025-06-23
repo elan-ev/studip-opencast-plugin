@@ -16,6 +16,7 @@
                          @error="setDefaultImage()"
                          height="200"
                          :ref="event.id"
+                         :alt="event.title"
                     />
                     <span data-tooltip class="tooltip oc--views">
                         <span class="tooltip-content">
