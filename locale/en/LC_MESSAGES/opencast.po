@@ -519,7 +519,7 @@ msgid "Dieses Video wird gerade von Opencast bearbeitet."
 msgstr "This video is currently being processed by Opencast."
 
 #: vueapp/components/Videos/VideoRow.vue:203
-msgid "Dieses Video wird gerade von Opencast vearbeitet."
+msgid "Dieses Video wird gerade von Opencast verarbeitet."
 msgstr "This video is currently being processed by Opencast."
 
 #: vueapp/components/SearchBar.vue:151 vueapp/components/SearchBar.vue:136
