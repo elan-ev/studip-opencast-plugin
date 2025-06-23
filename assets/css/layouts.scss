@@ -82,7 +82,7 @@ $icons: (
         border-bottom: none;
 
         button {
-            background-color: var(--white);
+            background-color: transparent;
             border: none;
             padding: 1em 0 4px 0;
             margin: 0 7px 0 21px;
@@ -199,4 +199,71 @@ $icons: (
         @include button-with-icon(globe, inactive, inactive);
     }
 
+}
+
+
+// OC CONTENT BAR
+.oc--content-bar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-gray-color-5);
+    padding: 1em 1em 0 1em;
+    margin-bottom: 1em;
+
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .oc--content-bar-header-buttons-left {}
+
+        .oc--content-bar-header-title {
+            flex-grow: 1;
+
+        }
+
+        .oc--content-bar-header-buttons-right {}
+    }
+
+    nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .oc--content-bar-nav {
+            .oc--tabs-content {
+                display: none;
+            }
+        }
+
+        .oc--content-bar-search {
+        }
+    }
+}
+
+.oc--search {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+
+    input {
+        box-sizing: border-box;
+        border: 1px solid var(--dark-gray-color-30);
+        border-right: none;
+        -webkit-box-flex: 1;
+        flex: 1;
+        padding: 0.25em 0.5em;
+        width: 100%;
+    }
+
+    .submit-search {
+        background-color: var(--content-color-20);
+        border: 1px solid var(--dark-gray-color-30);
+        border-left-color: var(--light-gray-color-40);
+        border-radius: 0;
+        color: transparent;
+        cursor: pointer;
+        font: 0/0 a;
+        text-shadow: none;
+    }
 }

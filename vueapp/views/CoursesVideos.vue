@@ -1,30 +1,58 @@
 <template>
     <div>
         <MessageBox type="info" v-if="!hasDefaultPlaylist">
-            {{ $gettext('Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte erstellen Sie diese über das Aktionsmenü.') }}
+            {{
+                $gettext(
+                    'Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte erstellen Sie diese über das Aktionsmenü.'
+                )
+            }}
         </MessageBox>
         <template v-else>
-            <VideosTable
-                v-if="playlist"
-                :playlist="playlist"
-                :cid="cid"
-                :canEdit="canEdit"
-                :canUpload="canUpload"
-            />
+            <ContentBar>
+                <template #title>
+                    <h2>{{ $gettext('Opencast Videos') }}</h2>
+                </template>
+                <template #nav>
+                    <Tabs v-model="tabSelection">
+                        <Tab :name="$gettext('Übersicht')"></Tab>
+                        <Tab :name="$gettext('Videos')"></Tab>
+                        <Tab :name="$gettext('Wiedergabelisten')"></Tab>
+                        <Tab :name="$gettext('Aufzeichnungen planen')"></Tab>
+                        <Tab :name="$gettext('Informationen')"></Tab>
+                    </Tabs>
+                </template>
+                <template #search>
+                    <ContentBarSearch />
+                </template>
+            </ContentBar>
+            <VideosTable v-if="playlist && tabSelection === 0 " :playlist="playlist" :cid="cid" :canEdit="canEdit" :canUpload="canUpload" />
         </template>
     </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import VideosTable from "@/components/Videos/VideosTable";
+import { mapGetters } from 'vuex';
+import VideosTable from '@/components/Videos/VideosTable';
 import MessageBox from '@/components/MessageBox.vue';
+import ContentBar from '@components/Layouts/ContentBar.vue';
+import Tab from '@components/Layouts/Tab.vue';
+import Tabs from '@components/Layouts/Tabs.vue';
+import ContentBarSearch from '@/components/ContentBarSearch.vue';
 
 export default {
-    name: "CourseVideos",
+    name: 'CourseVideos',
     components: {
         VideosTable,
-        MessageBox
+        MessageBox,
+        ContentBar,
+        Tab,
+        Tabs,
+        ContentBarSearch,
+    },
+    data() {
+        return {
+            tabSelection: 0,
+        };
     },
 
     computed: {
