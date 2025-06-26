@@ -437,7 +437,9 @@ class Videos extends UPMap
         }
 
         // Only show videos with active server
-        $sql .= ' INNER JOIN oc_config ON (oc_config.id = oc_video.config_id AND oc_config.active = 1)';
+        $sql .= ' INNER JOIN oc_config ON
+            (oc_config.id = oc_video.config_id AND oc_config.active = 1
+                AND oc_config.maintenance_mode <> "' . \Opencast\Models\Config::MAINTENANCE_MODE_ON . '")';
 
         $where .= " AND trashed = " . $filters->getTrashed();
         $where .= " AND oc_video.token IS NOT NULL";

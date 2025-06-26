@@ -40,6 +40,10 @@ class PlaylistAddVideos extends OpencastController
         }
 
         if (!PlaylistMigration::isConverted()) {
+            // In favor of checking maintenance mode in API client level,
+            // we should check the ACL of each video before adding it to the playlist.
+            Videos::checkEventACL(null, null, $video);
+
             foreach ($videos as $video) {
                 $plvideo = new PlaylistVideos;
                 $plvideo->setData([
@@ -54,8 +58,6 @@ class PlaylistAddVideos extends OpencastController
             }
 
             $playlist->videos->store();
-
-            Videos::checkEventACL(null, null, $video);
 
             return $response->withStatus(204);
         }

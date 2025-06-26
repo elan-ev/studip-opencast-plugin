@@ -18,17 +18,20 @@ class UserSeriesShow extends OpencastController
     {
         global $user;
 
-        $series = UserSeries::getSeries($user->id);
+        try {
+            $series = UserSeries::getSeries($user->id);
 
-        if (empty($series)) {
-            $series = UserSeries::createSeries($user->id);
-        }
-        else {
-            $series = $series[0];
+            if (empty($series)) {
+                $series = UserSeries::createSeries($user->id);
+            } else {
+                $series = $series[0];
+            }
+        } catch (\Throwable $th) {
+            // We do nothing here as to return a null series to display warning.
         }
 
         return $this->createResponse([
-            'series_id' => $series['series_id']
+            'series_id' => $series['series_id'] ?? null
         ], $response);
     }
 }

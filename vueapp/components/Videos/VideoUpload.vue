@@ -270,6 +270,15 @@ export default {
             'currentUserSeries' : 'currentUserSeries'
         }),
 
+        isUnderMaintenance() {
+            if (!this.config?.settings) {
+                return false;
+            }
+            let config_id = this.config.settings['OPENCAST_DEFAULT_SERVER'];
+            let server = this.config.server[config_id];
+            return server?.maintenance_mode?.active;
+        },
+
         fragment() {
             return this.$route.name;
         },
@@ -355,7 +364,7 @@ export default {
         },
 
         async accept() {
-            if (this.uploadProgress) {
+            if (this.uploadProgress || this.isUnderMaintenance) {
                 return;
             }
 
@@ -520,12 +529,8 @@ export default {
         }
     },
 
-    mounted() {
-        this.$store.dispatch('authenticateLti');
-        this.$store.dispatch('simpleConfigListRead').then(() => {
-            this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
-            this.selectedWorkflow = this.defaultWorkflow;
-        })
+    async mounted() {
+        await this.$store.dispatch('authenticateLti');
 
         if (this.cid) {
             this.$store.dispatch('loadCourseConfig', this.cid);
@@ -534,6 +539,18 @@ export default {
         if (this.playlist) {
             this.upload.playlist_token = this.playlist.token;
         }
-    }
+    },
+
+    watch: {
+        config(newValue) {
+            if (newValue?.server && newValue?.settings) {
+                this.selectedServer = newValue['server'][newValue.settings['OPENCAST_DEFAULT_SERVER']];
+                this.selectedWorkflow = this.defaultWorkflow;
+            } else {
+                this.selectedServer = false;
+                this.selectedWorkflow = false;
+            }
+        }
+    },
 }
 </script>

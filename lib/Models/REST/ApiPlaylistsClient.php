@@ -1,21 +1,16 @@
 <?php
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
-
 class ApiPlaylistsClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'ApiPlaylists';
 
     public function __construct($config_id = 1)
     {
-        if ($config = Config::getConfigForService('apiplaylists', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceName = 'ApiPlaylists';
+        $this->serviceType = 'apiplaylists';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
     /**

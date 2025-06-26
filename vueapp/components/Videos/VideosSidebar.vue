@@ -136,6 +136,15 @@ export default {
             'currentUser'
         ]),
 
+        isUnderMaintenance() {
+            if (!this.simple_config_list?.settings) {
+                return false;
+            }
+            let config_id = this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
+            let server = this.simple_config_list.server[config_id];
+            return server?.maintenance_mode?.active;
+        },
+
         isDownloadAllowedForPlaylist() {
             if (this.playlist) {
                 if (this.playlist['allow_download'] === null) {
@@ -150,7 +159,7 @@ export default {
 
         canShowStudio() {
             try {
-                return this.currentUserSeries && this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO']
+                return this.currentUserSeries && this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO'] && !this.isUnderMaintenance;
             } catch (error) {
                 return false;
             }
@@ -159,7 +168,7 @@ export default {
         canShowUpload()
         {
             try {
-                return this.currentUserSeries
+                return this.currentUserSeries && !this.isUnderMaintenance
                     && (
                         this.simple_config_list['settings']['OPENCAST_ALLOW_STUDENT_WORKSPACE_UPLOAD']
                         || ['root', 'admin', 'dozent'].includes(this.currentUser.status)
@@ -170,7 +179,7 @@ export default {
         },
 
         recordingLink() {
-            if (!this.simple_config_list.settings || !this.canShowStudio) {
+            if (!this.simple_config_list.settings || !this.canShowStudio || this.isUnderMaintenance) {
                 return;
             }
 
@@ -204,9 +213,5 @@ export default {
             return this.simple_config_list?.workflows.find(wf => wf['id'] == wf_id)['name'];
         }
     },
-
-    mounted() {
-        this.$store.dispatch('simpleConfigListRead');
-    }
 }
 </script>

@@ -5,7 +5,7 @@
             <span v-if="!isAddCard" class="oc--admin--server-id">
                 <studip-icon
                     v-if="config.active"
-                    @click="toogleServer(false)"
+                    @click="toggleServer(false)"
                     shape="checkbox-checked"
                     role="clickable"
                     :size="32"
@@ -13,19 +13,27 @@
                 />
                 <studip-icon
                     v-else
-                    @click="toogleServer(true)"
+                    @click="toggleServer(true)"
                     shape="checkbox-unchecked"
                     role="clickable"
                     :size="32"
                     style="cursor: pointer"/>
             </span>
             <span class="oc--admin--server-icons">
-                <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
-                    <span class="tooltip-content" style="display: none">
-                        {{ $gettext('Verbindungstest fehlgeschlagen.') }}
-                    </span>
-                    <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
-                </div>
+                <template v-if="!isAddCard">
+                    <div data-tooltip class="tooltip" v-if="checkFailed">
+                        <span class="tooltip-content" style="display: none">
+                            {{ $gettext('Verbindungstest fehlgeschlagen.') }}
+                        </span>
+                        <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
+                    </div>
+                    <div data-tooltip class="tooltip" v-if="underMaintenance">
+                        <span class="tooltip-content" style="display: none">
+                            {{ $gettext('Wartungsmodus aktiv.') }}
+                        </span>
+                        <studip-icon shape="exclaim-circle" role="status-yellow" :size="32"/>
+                    </div>
+                </template>
             </span>
             <span v-if="isAddCard" class="oc--admin--server-id">
                 +
@@ -118,11 +126,19 @@ export default {
 
             const regex = /^\d+\.\d+(?:\.\d+)?(?:[-.][a-zA-Z0-9]+)*$/;
             return regex.test(version);
+        },
+
+        underMaintenance() {
+            if (this.isAddCard || !this.config?.maintenance_mode) {
+                return false;
+            }
+
+            return !this.isShow && this.config?.maintenance_mode !== 'off';
         }
     },
 
     methods: {
-        toogleServer(active) {
+        toggleServer(active) {
             this.config.active = active;
             this.$store.dispatch('configSetActivation', {id: this.config.id, active: active})
             .then(({ data }) => {

@@ -385,6 +385,15 @@ export default {
             'course_config'
         ]),
 
+        isUnderMaintenance() {
+            if (this.simple_config_list?.server) {
+                return false;
+            }
+            let config_id = this.event?.config_id ?? this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
+            let server = this.simple_config_list.server[config_id];
+            return server?.maintenance_mode?.active;
+        },
+
         showCheckbox() {
             return this.selectable || (this.canUpload && (this.event.perm == 'owner' || this.event.perm == 'write'));
         },
@@ -469,44 +478,47 @@ export default {
 
             if (!this.event?.trashed) {
                 if (this.event.perm == 'owner' || this.event.perm == 'write') {
-                    if (this.event?.state !== 'running') {
-                        menuItems.push({
-                            id: 1,
-                            label: this.$gettext('Bearbeiten'),
-                            icon: 'edit',
-                            emit: 'performAction',
-                            emitArguments: 'VideoEdit'
-                        });
-                    }
+                    if (!this.isUnderMaintenance) {
 
-                    /*
-                    if (this.playlistForVideos) {
+                        if (this.event?.state !== 'running') {
+                            menuItems.push({
+                                id: 1,
+                                label: this.$gettext('Bearbeiten'),
+                                icon: 'edit',
+                                emit: 'performAction',
+                                emitArguments: 'VideoEdit'
+                            });
+                        }
+
+                        /*
+                        if (this.playlistForVideos) {
+                            menuItems.push({
+                                id: 3,
+                                label: this.$gettext('Zur Wiedergabeliste hinzufügen'),
+                                icon: 'add',
+                                emit: 'performAction',
+                                emitArguments: 'VideoAddToPlaylist'
+                            });
+                        }
+                        */
+
+                        /*
                         menuItems.push({
-                            id: 3,
-                            label: this.$gettext('Zur Wiedergabeliste hinzufügen'),
+                            label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
                             icon: 'add',
                             emit: 'performAction',
-                            emitArguments: 'VideoAddToPlaylist'
+                            emitArguments: 'VideoLinkToPlaylists'
+                        });
+                        */
+
+                        menuItems.push({
+                            id: 3,
+                            label: this.$gettext('Verknüpfungen'),
+                            icon: 'group',
+                            emit: 'performAction',
+                            emitArguments: 'VideoLinkToPlaylists'
                         });
                     }
-                    */
-
-                    /*
-                    menuItems.push({
-                        label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                        icon: 'add',
-                        emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists'
-                    });
-                    */
-
-                    menuItems.push({
-                        id: 3,
-                        label: this.$gettext('Verknüpfungen'),
-                        icon: 'group',
-                        emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists'
-                    });
 
                     if (this.canShare) {
                         menuItems.push({
@@ -529,7 +541,7 @@ export default {
                     }
 
                     // As we abandoned the preview object structure, we now have to only validate the preview URL!
-                    if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
+                    if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream && !this.isUnderMaintenance) {
                         menuItems.push({
                             id: 5,
                             label: this.$gettext('Videoeditor öffnen'),
@@ -539,7 +551,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.publication?.annotation_tool && this.event?.state !== 'running') {
+                    if (this.event?.publication?.annotation_tool && this.event?.state !== 'running' && !this.isUnderMaintenance) {
                         menuItems.push({
                             id: 6,
                             label: this.$gettext('Anmerkungen hinzufügen'),
@@ -549,7 +561,7 @@ export default {
                         });
                     }
 
-                    if (this.event?.state !== 'running' && !this.isLivestream) {
+                    if (this.event?.state !== 'running' && !this.isLivestream && !this.isUnderMaintenance) {
                         menuItems.push({
                             id: 7,
                             label: this.$gettext('Untertitel bearbeiten'),
@@ -559,7 +571,7 @@ export default {
                         });
                     }
 
-                    if (!this.isCourse && !this.isLivestream) {
+                    if (!this.isCourse && !this.isLivestream && !this.isUnderMaintenance) {
                         menuItems.push({
                             id: 9,
                             label: this.$gettext('Zum Löschen markieren'),
@@ -569,7 +581,7 @@ export default {
                         });
                     }
 
-                    if (this.canUpload && this.playlist) {
+                    if (this.canUpload && this.playlist && !this.isUnderMaintenance) {
                         menuItems.push({
                             id: 10,
                             label: this.$gettext('Aus Wiedergabeliste entfernen'),
@@ -626,6 +638,10 @@ export default {
         },
 
         canEdit() {
+            if (this.isUnderMaintenance) {
+                return false;
+            }
+
             return this.event?.perm === 'owner' || this.event?.perm === 'write';
         },
 

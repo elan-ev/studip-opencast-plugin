@@ -8,7 +8,12 @@
         </div>
 
         <div>
-            <slot>Message</slot>
+            <template v-if="html">
+                <span v-if="html" class="messagebox-html-container" v-html="html"></span>
+            </template>
+            <template v-else>
+                <slot>Message</slot>
+            </template>
         </div>
     </div>
 </template>
@@ -16,7 +21,7 @@
 <script>
 export default {
     name: "MessageBox",
-    props: ['type'],
+    props: ['type', 'html'],
     methods: {
         hide() {
             this.$emit('hide');

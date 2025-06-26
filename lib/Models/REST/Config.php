@@ -22,6 +22,11 @@ class Config
         'org.opencastproject.workflow'                     => 'workflow',
     ];
 
+    const ENGAGE_NODE_SERVICE_TYPES = [
+        'play',
+        'search',
+    ];
+
     /**
      * Get the connected opencast instance version
      *

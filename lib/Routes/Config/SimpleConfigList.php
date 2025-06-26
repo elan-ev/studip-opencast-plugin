@@ -43,7 +43,9 @@ class SimpleConfigList extends OpencastController
                 'apiplaylists'  => $this->getServiceUrl('apiplaylists', $conf->id),
                 'apiworkflows'  => $this->getServiceUrl('apiworkflows', $conf->id),
                 'studio'        => $conf->service_url . '/studio/index.html',
-                'lti_num'       => sizeof(LtiHelper::getLtiLinks($conf->id))              // used to iterate over all Opencast nodes
+                'lti_num'       => sizeof(LtiHelper::getLtiLinks($conf->id)), // used to iterate over all Opencast nodes,
+                'maintenance_mode' => $conf->isUnderMaintenance(true),
+                'maintenance_text' => $conf->maintenance_text ?? '',
             ];
         }
 

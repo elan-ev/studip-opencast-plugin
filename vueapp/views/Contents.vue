@@ -23,6 +23,8 @@
             @cancel="closePlaylistAddVideosDialog"
         />
 
+        <MaintenanceMessage />
+
         <MessageList />
 
         <router-view></router-view>
@@ -35,6 +37,10 @@ import VideoUpload from "@/components/Videos/VideoUpload";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
 
 import MessageList from "@/components/MessageList";
+import MaintenanceMessage from "@/components/MaintenanceMessage";
+
+import { useSimpleConfigChecker } from '@/composables/useSimpleConfigChecker';
+
 import { mapGetters } from "vuex";
 
 export default {
@@ -42,7 +48,8 @@ export default {
 
     components: {
         VideosSidebar,      VideoUpload,
-        PlaylistAddVideos,  MessageList
+        PlaylistAddVideos,  MessageList,
+        MaintenanceMessage
     },
 
     computed: {
@@ -116,6 +123,11 @@ export default {
             }
         });
         this.$store.dispatch('loadPlaylists');
+    },
+
+    setup() {
+        useSimpleConfigChecker();
+        return {};
     }
 };
 </script>

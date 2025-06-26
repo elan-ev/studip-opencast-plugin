@@ -2,7 +2,6 @@
 
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
 use Opencast\Models\Helpers;
 
 class SeriesClient extends RestClient
@@ -12,13 +11,9 @@ class SeriesClient extends RestClient
     public function __construct($config_id = 1)
     {
         $this->serviceName = 'Series';
-
-        if ($config = Config::getConfigForService('series', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceType = 'series';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
     /**

@@ -277,6 +277,15 @@ export default {
             'schedule_list', 'schedule_loading'
         ]),
 
+        isUnderMaintenance() {
+            if (!this.simple_config_list?.settings) {
+                return false;
+            }
+            let config_id = this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER'];
+            let server = this.simple_config_list.server[config_id];
+            return server?.maintenance_mode?.active;
+        },
+
         fragment() {
             return this.$route.name;
         },
@@ -286,7 +295,8 @@ export default {
                 return this.cid !== undefined && // Make sure this is happening in a course!
                     this.currentUser.can_edit && // Make sure the user has sufficient "global" rights.
                     this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'] && // Make sure it is configured!
-                    this.course_config.scheduling_allowed; // Make sure the user is allowed to schedule recordings in the course!
+                    this.course_config.scheduling_allowed && // Make sure the user is allowed to schedule recordings in the course!
+                    !this.isUnderMaintenance;
             } catch (error) {
                 return false;
             }
@@ -297,14 +307,15 @@ export default {
                 return this.cid !== undefined &&
                     this.currentUser.can_edit &&
                         this.simple_config_list['settings']['OPENCAST_ALLOW_STUDIO'] &&
-                        this.hasDefaultPlaylist;
+                        this.hasDefaultPlaylist &&
+                        !this.isUnderMaintenance;
             } catch (error) {
                 return false;
             }
         },
 
         recordingLink() {
-            if (!this.simple_config_list.settings || !this.course_config || !this.canShowStudio) {
+            if (!this.simple_config_list.settings || !this.course_config || !this.canShowStudio || this.isUnderMaintenance) {
                 return;
             }
 
@@ -324,7 +335,7 @@ export default {
         },
 
         canEdit() {
-            if (!this.course_config) {
+            if (!this.course_config || this.isUnderMaintenance) {
                 return false;
             }
 
@@ -332,7 +343,7 @@ export default {
         },
 
         canUpload() {
-            if (!this.course_config) {
+            if (!this.course_config || this.isUnderMaintenance) {
                 return false;
             }
 
@@ -503,7 +514,6 @@ export default {
     },
 
     async mounted() {
-        this.$store.dispatch('simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
 
         const route = useRoute();

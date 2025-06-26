@@ -1,8 +1,6 @@
 <?php
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
-
 class IngestClient extends RestClient
 {
     public static $me;
@@ -10,13 +8,9 @@ class IngestClient extends RestClient
     public function __construct($config_id = 1)
     {
         $this->serviceName = 'IngestClient';
-
-        if ($config = Config::getConfigForService('ingest', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceType = 'ingest';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
     /**

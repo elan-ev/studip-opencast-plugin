@@ -68,10 +68,12 @@ export default {
         }
     },
 
-    mounted() {
-        this.$store.dispatch('simpleConfigListRead').then(() => {
-            this.checkLTIPeriodically();
-        });
-    }
+    watch: {
+        simple_config_list(newValue) {
+            if (newValue?.server && this.interval === null) {
+                this.checkLTIPeriodically();
+            }
+        }
+    },
 }
 </script>

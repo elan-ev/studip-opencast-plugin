@@ -55,7 +55,8 @@ class OpencastRefreshScheduling extends CronJob
 
             echo 'Working on config with id #' . $config_id . "\n";
 
-            if (!$this->isOpencastReachable($config_id)) {
+            // Checking the connection and maintenance status.
+            if (!$this->isOpencastReachable($config_id) || $this->isOpencastUnderMaintenance($config_id)) {
                 continue;
             }
 

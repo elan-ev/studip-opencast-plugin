@@ -41,6 +41,8 @@
             @cancel="closeChangeDefaultVisibility"
         />
 
+        <MaintenanceMessage />
+
         <MessageList />
 
         <router-view></router-view>
@@ -56,6 +58,9 @@ import MessageList from "@/components/MessageList";
 import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
 import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
 import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
+import MaintenanceMessage from "@/components/MaintenanceMessage";
+
+import { useSimpleConfigChecker } from '@/composables/useSimpleConfigChecker';
 
 import { mapGetters } from "vuex";
 
@@ -67,7 +72,8 @@ export default {
         PlaylistEditCard, CoursesSidebar,
         VideoUpload, PlaylistAddVideos,
         MessageList,
-        EpisodesDefaultVisibilityDialog
+        EpisodesDefaultVisibilityDialog,
+        MaintenanceMessage
     },
 
     computed: {
@@ -159,6 +165,11 @@ export default {
                 });
             }
         });
+    },
+
+    setup() {
+        useSimpleConfigChecker();
+        return {};
     }
 };
 </script>

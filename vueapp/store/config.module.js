@@ -7,6 +7,8 @@ const initialState = {
         'service_url' :      null,
         'service_user':      null,
         'service_password':  null,
+        'maintenance_mode':  'off',
+        'maintenance_text':  null,
         'settings': {
             'lti_consumerkey':        null,
             'lti_consumersecret':     null,
@@ -57,13 +59,14 @@ export const actions = {
             });
     },
 
-    async simpleConfigListRead(context) {
-        return new Promise(resolve => {
-            ApiService.get('config/simple')
-                .then(({ data }) => {
-                    context.commit('simpleConfigListSet', data);
-                    resolve(data);
-                });
+    async simpleConfigListRead(context, force_reload = true) {
+        if (force_reload === false && JSON.stringify(context.getters.simple_config_list) !== '{}') {
+            return context.state.simple_config_list;
+        }
+        return ApiService.get('config/simple')
+            .then(({ data }) => {
+                context.commit('simpleConfigListSet', data);
+                return data;
             });
     },
 

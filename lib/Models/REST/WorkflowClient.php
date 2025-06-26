@@ -1,7 +1,6 @@
 <?php
 
 namespace Opencast\Models\REST;
-use Opencast\Models\Config;
 
 class WorkflowClient extends RestClient
 {
@@ -10,13 +9,9 @@ class WorkflowClient extends RestClient
     public function __construct($config_id = 1)
     {
         $this->serviceName = 'WorkflowClient';
-
-        if ($config = Config::getConfigForService('workflow', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceType = 'workflow';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
 
@@ -38,9 +33,9 @@ class WorkflowClient extends RestClient
         return false;
     }
 
-     ####################
-     # HELPER FUNCTIONS #
-     ####################
+    ####################
+    # HELPER FUNCTIONS #
+    ####################
 
     /**
      * Returns a revised collection of all tagged Workflow definitions

@@ -5,6 +5,7 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
+use Opencast\Errors\MaintenanceError;
 use Opencast\Errors\RESTError;
 use OpencastApi\Opencast;
 use OpencastApi\Rest\OcRestClient;
@@ -27,6 +28,7 @@ class RestClient
     public $ocRestClient;
 
     public $serviceName = 'ParentRestClientClass';
+    public $serviceType;
 
     /**
      * Get singleton instance of client
@@ -113,8 +115,44 @@ class RestClient
         }
 
         $result['body']     = $body;
-        $result['mimetype'] = $response->getHeader('Content-Type');
+        $result['mimetype'] = $response->getHeaderLine('Content-Type');
 
         return $result;
+    }
+
+    /**
+     * Retrieves the configuration for the client based on service type and config ID.
+     *
+     * Throws a MaintenanceError if the config is null, or a generic Exception if the config is invalid.
+     *
+     * @param int $config_id The configuration ID.
+     * @return array The configuration array.
+     * @throws MaintenanceError|\Exception
+     */
+    protected function getConfigForClient($config_id)
+    {
+        $config = Config::getConfigForService($this->serviceType, $config_id);
+        if (is_null($config)) {
+            throw new MaintenanceError();
+        } else if ($config === false) {
+            throw new \Exception ($this->serviceName . ': '
+                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
+        }
+        return $config;
+    }
+
+    /**
+     * Creates a read-only RestClient instance for the given config ID.
+     *
+     * Uses the 'search' service type to fetch configuration and returns a new instance,
+     * or null if configuration is missing.
+     *
+     * @param int $config_id The configuration ID.
+     * @return static|null The read-only RestClient instance or null if not available.
+     */
+    public static function createReadOnlyInstance($config_id)
+    {
+        $read_only_config = Config::getConfigForService('search', $config_id);
+        return !empty($read_only_config) ? new static($read_only_config) : null;
     }
 }

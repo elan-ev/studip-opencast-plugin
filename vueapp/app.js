@@ -50,7 +50,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 return Promise.reject(error);
             }
 
-            if (error.response.data !== undefined) {
+            if (error?.response?.data !== undefined) {
                 store.dispatch('addMessage', error.response);
             }
 
