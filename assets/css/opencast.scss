@@ -1478,3 +1478,17 @@ label.oc--file-upload {
         left: 50%;
     }
 }
+
+/* * * * * * * * * * * */
+/*     MESSAGE BOX     */
+/* * * * * * * * * * * */
+
+.messagebox {
+    .messagebox-html-container {
+        font-weight: 400 !important;
+        margin: 0px !important;
+        > p {
+            margin: 0px !important;
+        }
+    }
+}

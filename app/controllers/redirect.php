@@ -4,7 +4,9 @@ use Opencast\Models\Videos;
 use Opencast\Models\VideosShares;
 use Opencast\Models\LTI\LtiHelper;
 use Opencast\Models\REST\ApiEventsClient;
+use Opencast\Models\REST\RestClient;
 use Opencast\Errors\Error;
+use Opencast\Errors\MaintenanceError;
 
 class RedirectController extends Opencast\Controller
 {
@@ -231,10 +233,13 @@ class RedirectController extends Opencast\Controller
     }
 
     /**
-     * Load preview image from opencast and show it
+     * Serves a video preview image for the given video token.
      *
-     * @param String $episode_id
+     * Checks user permissions, fetches the preview image from Opencast if available,
+     * or falls back to a default image. Sets the appropriate content type header and outputs the image.
      *
+     * @param string $token The video token.
+     * @throws \Exception If access is denied.
      * @return void
      */
     public function preview_action($token)
@@ -247,17 +252,36 @@ class RedirectController extends Opencast\Controller
             throw new \Exception('Access denied!');
         }
 
-        // get preview image
-        $api_events = ApiEventsClient::getInstance($video->config_id);
+        $plugin_path = $GLOBALS['ABSOLUTE_PATH_STUDIP'] . $this->plugin->getPluginPath();
+        $default_image_relative_path = '/assets/images/default-preview.png';
+        $image_default_url = URLHelper::getURL($this->plugin->getPluginUrl() . $default_image_relative_path);
+        $image_mimetype = mime_content_type($plugin_path . $default_image_relative_path);
+        $image_content = null;
+        if ($video->preview) {
+            $rest_client = null;
+            try {
+                $rest_client = ApiEventsClient::getInstance($video->config_id);
+            } catch (\Throwable $th) {
+                if ($th instanceof MaintenanceError) {
+                    $rest_client = RestClient::createReadOnlyInstance($video->config_id);
+                }
+            }
 
-        $image = $video->preview ?
-            : URLHelper::getURL($this->plugin->getPluginUrl() . '/assets/images/default-preview.png');
+            if (!empty($rest_client)) {
+                $response = $rest_client->fileRequest($video->preview);
+                $image_content = $response['body'] ?? null;
+                $image_mimetype = $response['mimetype'] ?? $image_mimetype;
+            }
+        }
 
-        $response = $api_events->fileRequest($image);
+        if (empty($image_content)) {
+            $image_content = file_get_contents($image_default_url);
+        }
 
-        header('Content-Type: '. $response['mimetype'][0]);
+        header('Content-Type: '. $image_mimetype);
 
-        echo $response['body'];
+        echo $image_content;
+
         die;
     }
 }

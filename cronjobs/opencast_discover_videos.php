@@ -51,7 +51,8 @@ class OpencastDiscoverVideos extends CronJob
         foreach ($configs as $config) {
             echo 'Working on config with id #' . $config->id . "\n";
 
-            if (!$this->isOpencastReachable($config->id)) {
+            // Checking the connection and maintenance status.
+            if (!$this->isOpencastReachable($config->id) || $this->isOpencastUnderMaintenance($config->id)) {
                 continue;
             }
 

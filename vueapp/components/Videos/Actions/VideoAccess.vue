@@ -128,7 +128,7 @@
                             </table>
                         </fieldset>
 
-                        <fieldset v-if="config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
+                        <fieldset v-if="!isUnderMaintenance && config.settings.OPENCAST_ALLOW_PUBLIC_SHARING">
                             <legend>
                                 {{ $gettext('Weltweiter Zugriff') }}
                             </legend>
@@ -246,6 +246,15 @@ export default {
             }
 
             return this.event?.perm === 'owner' || this.event?.perm === 'write';
+        },
+
+        isUnderMaintenance() {
+            if (this.config?.settings) {
+                return false;
+            }
+            let config_id = this.event?.config_id ?? this.config.settings['OPENCAST_DEFAULT_SERVER'];
+            let server = this.config.server[config_id];
+            return server?.maintenance_mode?.active;
         }
     },
 

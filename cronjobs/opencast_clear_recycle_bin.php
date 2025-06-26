@@ -46,8 +46,8 @@ class OpencastClearRecycleBin extends CronJob
         foreach ($videos_by_config as $config_id => $videos) {
             echo 'Working on config with id #' . $config_id . "\n";
 
-            // Checking the connection.
-            if (!$this->isOpencastReachable($config_id)) {
+            // Checking the connection and maintenance status.
+            if (!$this->isOpencastReachable($config_id) || $this->isOpencastUnderMaintenance($config_id)) {
                 continue;
             }
 

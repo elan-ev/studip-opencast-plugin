@@ -3,6 +3,7 @@
 namespace Opencast\Helpers\CronjobUtils;
 
 use Opencast\Models\REST\Config as OCConfig;
+use Opencast\Models\Config as ConfigModel;
 
 trait OpencastConnectionCheckerTrait
 {
@@ -10,6 +11,11 @@ trait OpencastConnectionCheckerTrait
      * @var string $not_reachable_message Message to display when Opencast is not reachable.
      */
     private $not_reachable_message = 'Opencast is currently unreachable. Process postponed.';
+
+    /**
+     * @var string $not_reachable_message Message to display when Opencast is not reachable.
+     */
+    private $maintenance_message = 'Opencast is currently under maintenance. Process postponed.';
 
     /**
      * Checks if the Opencast instance is reachable for the given configuration ID.
@@ -34,5 +40,27 @@ trait OpencastConnectionCheckerTrait
             echo $message . "\n";
         }
         return $is_opencast_reachable;
+    }
+
+    /**
+     * Checks if the Opencast instance is under maintenance for the given configuration ID.
+     *
+     * This method checks if the Opencast instance is currently under maintenance.
+     * If it is, it prints a message and returns true. Otherwise, it returns false.
+     *
+     * @param int $config_id The ID of the Opencast configuration to check.
+     * @return bool True if Opencast is under maintenance, false otherwise.
+     */
+    protected function isOpencastUnderMaintenance(int $config_id)
+    {
+        $oc_config = ConfigModel::findOneBySql("id = ?", [$config_id]);
+        if ($oc_config) {
+            list($maintenance_active, $read_only) = $oc_config->isUnderMaintenance();
+            if ($maintenance_active) {
+                echo $this->maintenance_message . "\n";
+                return true;
+            }
+        }
+        return false;
     }
 }

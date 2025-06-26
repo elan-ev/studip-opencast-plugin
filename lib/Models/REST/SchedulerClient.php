@@ -2,29 +2,25 @@
 
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
-
 class SchedulerClient extends RestClient
 {
+
+
     public static $me;
 
     public function __construct($config_id = 1)
     {
         $this->serviceName = 'SchedulerClient';
-
-        if ($config = Config::getConfigForService('recordings', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceType = 'recordings';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
     /**
      * Deletes an event
-     * 
+     *
      * @param string $event_id the event id
-     * 
+     *
      * @return boolean success or not
      */
     public function deleteEvent($event_id)
@@ -39,7 +35,7 @@ class SchedulerClient extends RestClient
 
     /**
      * Updates an event
-     * 
+     *
      * @param string $event_id the event id
      * @param int $start start of the event
      * @param int $end end of the event
@@ -48,7 +44,7 @@ class SchedulerClient extends RestClient
      * @param string $mediaPackage mediapackage
      * @param string|array $wfproperties workflow properties
      * @param string|array $agentparameters agent params
-     * 
+     *
      * @return boolean success or not
      */
     public function updateEvent($event_id, $start = 0, $end = 0, $agent = '', $users = '', $mediaPackage = '', $wfproperties = '', $agentparameters = '')

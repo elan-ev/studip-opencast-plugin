@@ -5,6 +5,7 @@ namespace Opencast\Models\LTI;
 use Opencast\Models\Config;
 use Opencast\Models\Endpoints;
 use Opencast\Providers\Perm;
+use Opencast\Models\REST\Config as RESTConfig;
 
 /**
  * LTI Helper class to create launch data
@@ -22,12 +23,24 @@ class LtiHelper
     public static function getLtiLinks($config_id)
     {
         $links = [];
-        $endpoints = Endpoints::findByConfig_id($config_id);
         $config    = Config::find($config_id);
+
+        list($maintenance_active, $read_only) = $config->isUnderMaintenance();
+
+        if ($maintenance_active && !$read_only) {
+            return [];
+        }
+
+        $endpoints = Endpoints::findByConfig_id($config_id);
 
         foreach ($endpoints as $endpoint) {
             // skip 'services' endpoints
             if ($endpoint->service_type == 'services') {
+                continue;
+            }
+
+            // In read-only maintenance mode, we only allow engage node services!
+            if ($read_only && !in_array($endpoint->service_type, RESTConfig::ENGAGE_NODE_SERVICE_TYPES)) {
                 continue;
             }
 

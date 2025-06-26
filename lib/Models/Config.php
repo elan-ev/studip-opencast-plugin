@@ -16,6 +16,10 @@ class Config extends \SimpleOrMap
         'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access'
     ];
 
+    const MAINTENANCE_MODE_OFF = 'off';
+    const MAINTENANCE_MODE_ON = 'on';
+    const MAINTENANCE_MODE_READONLY = 'read-only';
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'oc_config';
@@ -28,27 +32,62 @@ class Config extends \SimpleOrMap
     }
 
     /**
-     * function getConfigForService  - retries configutation for a given REST-Service-Client
+     * Returns the merged configuration and endpoint data for a given service type and config ID.
      *
-     * @param string $service_type - client label
+     * Retrieves the Opencast configuration and endpoint for the specified service type and configuration ID,
+     * taking maintenance mode into account. Returns false if configuration or endpoint is missing,
+     * or null if access is not allowed due to maintenance restrictions.
      *
-     * @return array configuration for corresponding client
-     *
+     * @param string $service_type The type of Opencast service (e.g., 'ingest', 'search').
+     * @param int $config_id The configuration ID (default: 1).
+     * @return array|false|null Merged configuration and endpoint data, false if not found, or null if not accessible.
+     * @throws \Exception In case something goes wrong!
      */
     public static function getConfigForService($service_type, $config_id = 1)
     {
         if (isset($service_type)) {
-            $config = Endpoints::findOneBySQL(
+            $result = [];
+
+            $oc_config = self::find($config_id);
+            $endpoint_config = Endpoints::findOneBySQL(
                 'service_type = ? AND config_id = ?' ,
                 [$service_type, $config_id]
             );
 
-            if ($config) {
-                return $config->toArray() + self::find($config_id)->toArray();
-            } else {
+            if (empty($oc_config) || empty($endpoint_config)) {
                 return false;
             }
 
+            list($maintenance_on, $maintenance_readonly) = $oc_config->isUnderMaintenance();
+
+            $can_access = !$maintenance_on ||
+                ($maintenance_readonly && in_array($service_type, RESTConfig::ENGAGE_NODE_SERVICE_TYPES));
+
+            if (!$can_access) {
+                return null;
+            }
+
+            $oc_config_array = $oc_config->toArray();
+            $endpoint_config_array = $endpoint_config->toArray();
+
+            // Here we need to replace the service_url with the maintenance_engage_url_fallback (1. priority) if provided in config
+            // or the endpoint service_url (2. priority)
+            if ($maintenance_readonly) {
+                $replacing_server_url = $oc_config_array['maintenance_engage_url_fallback'];
+                if (empty($replacing_server_url)) {
+                    $replacing_server_url = $endpoint_config_array['service_url'];
+                }
+                $replacing_server_url_parsed = parse_url($replacing_server_url);
+
+                $replacing_server_url_clean = $replacing_server_url_parsed['scheme'] . '://'. $replacing_server_url_parsed['host']
+                    . (isset($replacing_server_url_parsed['port']) ? ':' . $replacing_server_url_parsed['port'] : '');
+
+                $oc_config_array['service_url'] = $replacing_server_url_clean;
+            }
+
+            $result = $endpoint_config_array + $oc_config_array;
+
+            return $result;
         } else {
             throw new \Exception(_("Es wurde kein Servicetyp angegeben."));
         }
@@ -163,6 +202,18 @@ class Config extends \SimpleOrMap
      */
     public function updateEndpoints()
     {
+
+        list($maintenance_on, $maintenance_readonly) = $this->isUnderMaintenance();
+
+        // Prevent updating endpoints if the server is under maintenance.
+        if ($maintenance_on) {
+            $message = [
+                'type' => 'warning',
+                'text' => _('Diese Opencast-Instanz ist derzeit im Wartungsmodus, daher können Endpunkte nicht aktualisiert werden.')
+            ];
+            return $message;
+        }
+
         $service_url =  parse_url($this->service_url);
 
         // check the selected url for validity
@@ -257,7 +308,7 @@ class Config extends \SimpleOrMap
                     }
 
                     // create new entries for workflow_config table
-                    WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
+                    WorkflowConfig::createAndUpdateByConfigId($this->id);
 
                     $success_message[] = sprintf(
                         _('Die Opencast-Installation "%s" wurde erfolgreich konfiguriert.'),
@@ -281,5 +332,23 @@ class Config extends \SimpleOrMap
         }
 
         return $message;
+    }
+
+    /**
+     * Checks if the Opencast instance is in maintenance mode.
+     *
+     * @param bool $with_keys Whether to return an associative array with keys ('active', 'read_only').
+     * @return array [maintenance_on, maintenance_readonly] or ['active' => bool, 'read_only' => bool] if $with_keys is true.
+     */
+    public function isUnderMaintenance($with_keys = false)
+    {
+        $maintenance_on = ($this->maintenance_mode === self::MAINTENANCE_MODE_ON
+            || $this->maintenance_mode === self::MAINTENANCE_MODE_READONLY);
+
+        $res = [
+            'active' => $maintenance_on,
+            'read_only' => $this->maintenance_mode === self::MAINTENANCE_MODE_READONLY
+        ];
+        return $with_keys ? $res : array_values($res);
     }
 }

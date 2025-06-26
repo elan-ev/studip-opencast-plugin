@@ -26,6 +26,8 @@
                             @updateValue="updateValue" />
                     </fieldset>
 
+                    <MaintenanceOptions :currentConfig="currentConfig" :disabled="currentId === 'new'" />
+
                     <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form"/>
 
                     <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
@@ -58,6 +60,7 @@ import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
 import UploadOptions from "@/components/Config/UploadOptions";
+import MaintenanceOptions from "@/components/Config/MaintenanceOptions";
 
 import axios from "@/common/axios.service";
 
@@ -72,6 +75,7 @@ export default {
         MessageList,
         WorkflowOptions,
         UploadOptions,
+        MaintenanceOptions
     },
 
     props: {
@@ -256,7 +260,7 @@ export default {
             }
         },
 
-        checkConfigResponse(data) {
+        async checkConfigResponse(data) {
             if (data.message !== undefined) {
                 if (data.message.type === 'error') {
                     this.$store.dispatch('addMessage', {
@@ -282,7 +286,7 @@ export default {
                         });
 
                         this.currentConfig = data.config;
-                        this.$store.dispatch('simpleConfigListRead');
+                        await this.$store.dispatch('simpleConfigListRead');
 
                         let view = this;
                         // We need to wait for a short time so the component is actually visible
@@ -298,6 +302,13 @@ export default {
                         this.$emit('close');
                     }
 
+                    return;
+                } else if (data.message.type === 'warning') {
+                    this.$store.dispatch('addMessage', {
+                        type: data.message.type,
+                        text: data.message.text,
+                        dialog: true
+                    });
                     return;
                 }
             }
@@ -318,10 +329,20 @@ export default {
 
             const regex = /^\d+\.\d+(?:\.\d+)?(?:[-.][a-zA-Z0-9]+)*$/;
             return regex.test(version);
+        },
+
+        printMaintenanceInfo() {
+            if (this.currentConfig?.maintenance_mode && this.currentConfig.maintenance_mode !== 'off') {
+                this.$store.dispatch('addMessage', {
+                    type: 'warning',
+                    text: this.$gettext('Der Server ist im Wartungsmodus.'),
+                    dialog: true
+                });
+            }
         }
     },
 
-    mounted() {
+    beforeMount() {
         if (this.currentId !== 'new') {
             if (!this.config) {
                 this.$store.dispatch('configRead', this.currentId)
@@ -332,7 +353,16 @@ export default {
                 this.currentConfig = this.config;
             }
         }
+    },
 
+    mounted() {
+        this.printMaintenanceInfo();
+    },
+
+    watch: {
+        currentConfig() {
+            this.printMaintenanceInfo();
+        }
     }
 };
 </script>

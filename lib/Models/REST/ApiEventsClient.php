@@ -1,23 +1,19 @@
 <?php
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
 use Opencast\Models\Helpers;
 use Opencast\Models\Pager;
 
 class ApiEventsClient extends RestClient
 {
     public static $me;
-    public        $serviceName = 'ApiEvents';
 
     public function __construct($config_id = 1)
     {
-        if ($config = Config::getConfigForService('apievents', $config_id)) {
-            parent::__construct($config);
-        } else {
-            throw new \Exception ($this->serviceName . ': '
-                . _('Die Opencast-Konfiguration wurde nicht korrekt angegeben'));
-        }
+        $this->serviceName = 'ApiEvents';
+        $this->serviceType = 'apievents';
+        $config = $this->getConfigForClient($config_id);
+        parent::__construct($config);
     }
 
     /**

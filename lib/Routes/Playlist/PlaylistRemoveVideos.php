@@ -39,6 +39,9 @@ class PlaylistRemoveVideos extends OpencastController
 
         if (!PlaylistMigration::isConverted()) {
             foreach ($videos as $video) {
+                // In favor of checking maintenance mode in API client level,
+                // we should check the ACL of each video before removing it from the playlist.
+                Videos::checkEventACL(null, null, $video);
 
                 $plvideo = PlaylistVideos::findOneBySQL(
                     'playlist_id = :playlist_id AND video_id = :video_id',
@@ -49,8 +52,6 @@ class PlaylistRemoveVideos extends OpencastController
                 );
                 $plvideo->delete();
             }
-
-            Videos::checkEventACL(null, null, $video);
 
             return $response->withStatus(204);
         }

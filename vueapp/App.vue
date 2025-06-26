@@ -23,6 +23,12 @@ export default {
 
     computed: {
         ...mapGetters(['site'])
+    },
+
+    // We moved the loading of simple config into the top level,
+    // in order to reduce unwanted calls in various places!
+    async beforeMount() {
+        await this.$store.dispatch('simpleConfigListRead');
     }
 };
 </script>

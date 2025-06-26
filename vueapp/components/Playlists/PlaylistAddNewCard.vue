@@ -114,11 +114,15 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('simpleConfigListRead').then(() => {
-            this.selectedServer = this.simple_config_list['server'][this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER']];
-        })
-
         this.$refs.autofocus.focus();
+    },
+
+    watch: {
+        simple_config_list(newValue) {
+            if (newValue?.server && newValue?.settings) {
+                this.selectedServer = newValue['server'][newValue.settings['OPENCAST_DEFAULT_SERVER']];
+            }
+        }
     },
 }
 </script>
