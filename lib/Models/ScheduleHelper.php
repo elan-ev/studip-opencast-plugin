@@ -525,9 +525,9 @@ class ScheduleHelper
         }
 
 		if (\StudipVersion::newerThan('4.4')) {
-        	$room = new \Resource($resource_id);
+            $room = new \Resource($resource_id);
         } else {
-        	$room = \ResourceObject::Factory($resource_id);
+            $room = \ResourceObject::Factory($resource_id);
         }
         $ca  = Resources::findByResource_id($resource_id);
 
@@ -619,18 +619,21 @@ class ScheduleHelper
     /**
      * Updates an scheduled event
      * NOTE: it performs updating of scheduled record on both sides (SOP & OC)
-     * this function will be used upon time range cahnges with Slider
+     * this function will be used upon time range change with Slider
      *
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
      * @param int $start - the start timestamp
      * @param int $end - the end timestamp
      * @param bool $update_resource - whether to update the resources info of scheduled recording object
+     * @param bool $force_oc_update - a flag to force update recordings on opencast.
      *
      * @return bool success or not
      */
-    public static function updateEventForSeminar($course_id, $termin_id, $start = null, $end = null, $update_resource = false)
+    public static function updateEventForSeminar($course_id, $termin_id, $start = null, $end = null, $update_resource = false,
+        $force_oc_update = false)
     {
+        $has_changes = false;
         $date = new \SingleDate($termin_id);
         $resource_id = $date->getResourceID();
         if (!$resource_id) {
@@ -674,6 +677,7 @@ class ScheduleHelper
         if (!empty($new_start)) {
             $scheduled_recording_obj->start = $new_start;
             $scheduled_recording_obj->store();
+            $has_changes = true;
         }
 
         $new_end = 0;
@@ -692,6 +696,7 @@ class ScheduleHelper
         if (!empty($new_end)) {
             $scheduled_recording_obj->end = $new_end;
             $scheduled_recording_obj->store();
+            $has_changes = true;
         }
 
         $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
@@ -703,6 +708,11 @@ class ScheduleHelper
             $workflow_id = $is_livestream ? $resource_obj['livestream_workflow_id'] : $resource_obj['workflow_id'];
             $scheduled_recording_obj->workflow_id = $workflow_id;
             $scheduled_recording_obj->store();
+            $has_changes = true;
+        }
+
+        if (!$force_oc_update && !$has_changes) {
+            return true;
         }
 
         $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream);
