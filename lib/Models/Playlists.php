@@ -729,8 +729,6 @@ class Playlists extends UPMap
                     'service_entry_id'  => $entry->id ?? null,
                     'available'         => false                      // this video is not available in courses yet
                 ]);
-
-                Videos::checkEventACL(null, null, $db_video);
             }
 
             if (!is_null($playlist_video)) {
@@ -738,6 +736,8 @@ class Playlists extends UPMap
                 $playlist_video->service_entry_id = $entry->id ?? null;
                 $playlist_video->order = $key;
                 $playlist_video->store();
+
+                Videos::checkEventACL(null, null, $db_video); // always update video acl!
             }
         }
     }
