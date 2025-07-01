@@ -48,9 +48,10 @@ class PlaylistRemoveVideos extends OpencastController
                     ]
                 );
                 $plvideo->delete();
-            }
 
-            Videos::checkEventACL(null, null, $video);
+                // Update the event acl!
+                Videos::checkEventACL(null, null, $video);
+            }
 
             return $response->withStatus(204);
         }
