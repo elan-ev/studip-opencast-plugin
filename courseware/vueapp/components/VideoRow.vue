@@ -16,6 +16,7 @@
                          @error="setDefaultImage()"
                          height="200"
                          :ref="event.id"
+                         :alt="event.title"
                     />
                     <span data-tooltip class="tooltip oc--views">
                         <span class="tooltip-content">
@@ -33,25 +34,25 @@
                 :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
             >
                 <span class="oc--previewimage">
-                    <img class="oc--image-button" :src="failed">
+                    <img class="oc--image-button" :src="failed" :alt="$gettext('Video nicht (mehr) in Opencast vorhanden')">
                 </span>
             </span>
             <span v-else-if="event.state == 'cutting'"
                :title="$gettext('Dieses Video wartet auf den Schnitt.')"
             >
                 <span class="oc--previewimage">
-                    <img class="oc--image-button" :src="cut">
+                    <img class="oc--image-button" :src="cut" :alt="$gettext('Dieses Video wartet auf den Schnitt.')">
                 </span>
             </span>
             <span v-else-if="isProcessing" class="oc--previewimage"
-                  :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')"
+                  :title="$gettext('Dieses Video wird gerade von Opencast verarbeitet.')"
             >
-                <studip-icon class="oc--image-button" shape="admin" role="status-yellow"></studip-icon>
+                <studip-icon class="oc--image-button" shape="admin" role="status-yellow" :alt="$gettext('Dieses Video wird gerade von Opencast verarbeitet.')"></studip-icon>
             </span>
             <span v-else-if="event.state == 'failed'" class="oc--previewimage"
                   :title="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')"
             >
-                <studip-icon class="oc--image-button" shape="exclaim" role="status-red"></studip-icon>
+                <studip-icon class="oc--image-button" shape="exclaim" role="status-red" :alt="$gettext('Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!')"></studip-icon>
             </span>
             <span v-else class="oc--previewimage">
                 <img class="oc--previewimage" :src="preview" height="200"/>
