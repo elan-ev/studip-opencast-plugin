@@ -109,7 +109,7 @@ class RedirectController extends Opencast\Controller
                     // Set headers properly.
                     header('Content-Type: ' . $response->getHeaderLine('Content-Type') ?: 'application/octet-stream');
                     header('Content-Length: ' . $response->getHeaderLine('Content-Length'));
-                    header('Content-Disposition: attachment; filename*=UTF-8\'\'' . basename($url));
+                    header('Content-Disposition: attachment');
                     header('Cache-Control: no-cache');
                     header('Pragma: no-cache');
 
