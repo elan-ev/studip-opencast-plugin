@@ -1,5 +1,5 @@
 import ApiService from "@/common/api.service";
-import axios from "@/common/axios.service";
+import axios, { applyAxiosTimeouts } from "@/common/axios.service";
 
 const state = {
     series: [],
@@ -141,9 +141,10 @@ const actions = {
     async checkLTIAuthentication({ commit, state, dispatch }, server)
     {
         let succeeded = false;
+        let axios_with_timeouts = applyAxiosTimeouts(axios, server);
 
         try {
-            const response = await axios({
+            const response = await axios_with_timeouts({
                 method: 'GET',
                 url: server.name + "/lti/info.json",
                 crossDomain: true,
@@ -186,7 +187,9 @@ const actions = {
 
     async loadLTIUser({ commit }, server) {
         try {
-            const response = await axios({
+            let axios_with_timeouts = applyAxiosTimeouts(axios, server);
+
+            const response = await axios_with_timeouts({
                 method: 'GET',
                 url: server.name + "/info/me.json",
                 crossDomain: true,

@@ -290,7 +290,7 @@ export default {
 
         checkLTIAuthentication(server)
         {
-            axios({
+            let axios_config_options = {
                 method: 'GET',
                 url: server.name + "/lti/info.json",
                 crossDomain: true,
@@ -298,7 +298,11 @@ export default {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                 }
-            }).then((response) => {
+            };
+            if (server?.timeout > 0) {
+                axios_config_options.timeout = server.timeout;
+            }
+            axios(axios_config_options).then((response) => {
                 if (response.status == 200 && response.data.user_id !== undefined) {
                     this.$set(this.isLTIAuthenticated, server.id, true);
                 } else {
