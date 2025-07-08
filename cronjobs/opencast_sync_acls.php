@@ -72,15 +72,23 @@ class OpencastSyncAcls extends CronJob
                         // check if video exists in Stud.IP
                         $video = Videos::findByEpisode($event->identifier);
 
+                        // In case, the video is not yet discovered by the discovery worker!
+                        if (empty($video)) {
+                            echo " [Skipped] No local video record found, skipping: {$event->identifier}\n";
+                            continue;
+                        }
+
                         $video->created = date('Y-m-d H:i:s', strtotime($event->created));
                         $video->store();
 
                         if ($video->config_id != $config->id) {
-                            echo 'config id mismatch for Video with id: '. $video->id .", $config->id <> {$video->config_id}\n";
+                            echo ' [Skipped] config id mismatch for Video with id: '. $video->id .", $config->id <> {$video->config_id}\n";
                             continue;
                         }
 
                         Videos::checkEventACL(null, $event, $video);
+
+                        echo " ACL sync successful for Video ID {$video->id} (Event ID: {$event->identifier}).\n";
                     }
                 }
             } while (!empty($oc_events));
