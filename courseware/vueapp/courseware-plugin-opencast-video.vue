@@ -290,7 +290,7 @@ export default {
 
         checkLTIAuthentication(server)
         {
-            let axios_config_options = {
+            let axiosConfigOptions = {
                 method: 'GET',
                 url: server.name + "/lti/info.json",
                 crossDomain: true,
