@@ -4,15 +4,14 @@
  */
 namespace Opencast\Models\REST;
 
+use Config as StudipConfig;
+use Context;
 use GuzzleHttp\HandlerStack;
-use Opencast\Models\Config;
-use Opencast\Errors\RESTError;
 use OpencastApi\Opencast;
 use OpencastApi\Rest\OcRestClient;
+use Opencast\Errors\RESTError;
 use Opencast\Middlewares\REST\ConnectionMiddlewares;
-
-use \Context;
-use \Config as StudipConfig;
+use Opencast\Models\Config;
 
 class RestClient
 {
