@@ -25,7 +25,5 @@ class AddConfigTimeouts extends Migration
             DROP COLUMN `timeout_ms`,
             DROP COLUMN `connect_timeout_ms`,
         ');
-
-        SimpleOrMap::expireTableScheme();
     }
 }
