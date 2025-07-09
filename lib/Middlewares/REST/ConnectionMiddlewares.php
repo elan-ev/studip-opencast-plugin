@@ -1,6 +1,7 @@
 <?php
 
 namespace Opencast\Middlewares\REST;
+
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
