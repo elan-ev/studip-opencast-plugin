@@ -300,9 +300,9 @@ export default {
                 }
             };
             if (server?.timeout > 0) {
-                axios_config_options.timeout = server.timeout;
+                axiosConfigOptions.timeout = server.timeout;
             }
-            axios(axios_config_options).then((response) => {
+            axios(axiosConfigOptions).then((response) => {
                 if (response.status == 200 && response.data.user_id !== undefined) {
                     this.$set(this.isLTIAuthenticated, server.id, true);
                 } else {
