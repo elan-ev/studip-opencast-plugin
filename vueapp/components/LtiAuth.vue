@@ -24,7 +24,8 @@ export default {
     data() {
         return {
             interval: null,
-            interval_counter: 0
+            interval_counter: 0,
+            interval_limit: 10
         }
     },
 
@@ -61,7 +62,7 @@ export default {
                 await Promise.all(promises);
 
                 view.interval_counter++;
-                if (view.interval_counter > 10) {
+                if (view.interval_counter > view.interval_limit) {
                     clearInterval(view.interval);
                 }
             }, 2000);

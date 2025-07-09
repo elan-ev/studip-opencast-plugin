@@ -4,13 +4,14 @@
  */
 namespace Opencast\Models\REST;
 
-use Opencast\Models\Config;
-use Opencast\Errors\RESTError;
+use Config as StudipConfig;
+use Context;
+use GuzzleHttp\HandlerStack;
 use OpencastApi\Opencast;
 use OpencastApi\Rest\OcRestClient;
-
-use \Context;
-use \Config as StudipConfig;
+use Opencast\Errors\RESTError;
+use Opencast\Middlewares\REST\ConnectionMiddlewares;
+use Opencast\Models\Config;
 
 class RestClient
 {
@@ -22,6 +23,8 @@ class RestClient
         $oc_version,
         $config_id,
         $advance_search = false;
+
+    protected $timeout_seconds, $connect_timeout_seconds = 0;
 
     public $opencastApi;
     public $ocRestClient;
@@ -61,12 +64,19 @@ class RestClient
         $this->username   = $config['service_user'];
         $this->password   = $config['service_password'];
         $this->oc_version = $config['service_version'];
+        if (!empty($config['timeout_ms'])) {
+            $this->timeout_seconds = (float) ((int) $config['timeout_ms'] / 1000);
+        }
+        if (!empty($config['connect_timeout_ms'])) {
+            $this->connect_timeout_seconds = (float) ((int) $config['connect_timeout_ms'] / 1000);
+        }
+
         $oc_config = [
             'url' => $config['service_url'],
             'username' => $config['service_user'],
             'password' => $config['service_password'],
-            'timeout' => 60,
-            'connect_timeout' => 60,
+            'timeout' => $this->timeout_seconds,
+            'connect_timeout' => $this->connect_timeout_seconds,
             'features' => [
                 'lucene' => false
             ],
@@ -77,6 +87,23 @@ class RestClient
                     ? false : true
             ]
         ];
+
+        $handlers = [];
+
+        // Add retry middleware only if a timeout is set (greater than 0).
+        // This prevents unnecessary retries when no timeout is configured and helps handle transient connection issues.
+        if ($this->timeout_seconds > 0) {
+            $handlers[] = ConnectionMiddlewares::failedRequestsRetry(3);
+        }
+
+        // Only add handlers when there is something!
+        if (!empty($handlers)) {
+            $stack = HandlerStack::create();
+            foreach ($handlers as $handler) {
+                $stack->push($handler);
+            }
+            $oc_config['handler'] = $stack;
+        }
 
         $this->opencastApi = new Opencast($oc_config);
         $this->ocRestClient = new OcRestClient($oc_config);
@@ -90,8 +117,8 @@ class RestClient
     public function getStreamDownloadConfig() {
         return [
             'auth'            => [$this->username, $this->password],
-            'timeout'         => 0,
-            'connect_timeout' => 0,
+            'timeout'         => 0, // Unlimited, to ensure download goes well!
+            'connect_timeout' => $this->connect_timeout_seconds,
             'stream' => true,
         ];
     }
@@ -100,8 +127,8 @@ class RestClient
     {
         $response = $this->ocRestClient->get($file_url, [
             'auth'            => [$this->username, $this->password],
-            'timeout'         => 2,
-            'connect_timeout' => 2,
+            'timeout'         => $this->timeout_seconds,
+            'connect_timeout' => $this->connect_timeout_seconds,
         ]);
 
         $result = [];

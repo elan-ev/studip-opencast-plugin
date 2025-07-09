@@ -4,11 +4,12 @@
  * @type {Object}
  */
 
-import axios from "@/common/axios.service";
+import axios, { applyAxiosTimeouts } from "@/common/axios.service";
 class UploadService {
 
-    constructor(service_urls) {
+    constructor(service_urls, server_options = {}) {
         this.service_urls = service_urls;
+        this.axios_service = applyAxiosTimeouts(axios, server_options);
     }
 
     /**
@@ -93,10 +94,10 @@ class UploadService {
                     </Actions>
                 </Target>
                 <Condition>
-                  <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">${uploader.userRole}</AttributeValue>
                     <SubjectAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-                  </Apply>
+                    </Apply>
                 </Condition>
             </Rule>
             <Rule RuleId="user_write_Permit" Effect="Permit">
@@ -156,7 +157,7 @@ class UploadService {
     }
 
     async getMediaPackage() {
-        return axios({
+        return this.axios_service({
             method: 'GET',
             url: this.service_urls['ingest'] + "/createMediaPackage",
             crossDomain: true,
@@ -193,7 +194,7 @@ class UploadService {
         // Prepare meta data
         let episodeDC = this.createDCCCatalog(terms);
 
-        return axios({
+        return this.axios_service({
             url: this.service_urls['ingest'] + "/addDCCatalog",
             method: "POST",
             data: new URLSearchParams({
@@ -215,7 +216,7 @@ class UploadService {
         acldata.append('flavor', 'security/xacml+episode');
         acldata.append('BODY', new Blob([acl]), 'acl.xml');
 
-        return axios({
+        return this.axios_service({
             url: this.service_urls['ingest'] + "/addAttachment",
             method: "POST",
             data: acldata,
@@ -223,6 +224,9 @@ class UploadService {
             contentType: false,
             crossDomain: true,
             withCredentials: true,
+            // By uploading the actual files, we need no timeouts!
+            timeout: 0,
+            connect_timeout: 0,
         })
     }
 
@@ -243,7 +247,7 @@ class UploadService {
     }
 
     runWorkflow(episode_id, workflowId) {
-        return axios({
+        return this.axios_service({
             url: this.service_urls['apiworkflows'],
             method: "POST",
             data: new URLSearchParams({
@@ -268,13 +272,16 @@ class UploadService {
             function (resolve, reject) {
                 obj.request = axios.CancelToken.source();
 
-                return axios({
+                return obj.axios_service({
                     url: oc_url,
                     method: "POST",
                     data: data,
                     processData: false,
                     contentType: false,
                     withCredentials: true,
+                    // By uploading the actual files, we need no timeouts!
+                    timeout: 0,
+                    connect_timeout: 0,
                     onUploadProgress: function( progressEvent ) {
                         fnOnProgress(progressEvent);
                     },
@@ -289,7 +296,7 @@ class UploadService {
     }
 
     finishIngest(mediaPackage, workflowId = "upload") {
-        return axios({
+        return this.axios_service({
             url: this.service_urls['ingest'] + "/ingest",
             method: "POST",
             data: new URLSearchParams({
@@ -316,12 +323,12 @@ class UploadService {
                 // assigning the new file name.
                 const newName = file.name.substring(0, maxLength - extension.length - 1) + '.' + extension;
                 files[id].file =  new File(
-                  [files[id].file],
-                  newName,
-                  {
-                    type: file.type,
-                    lastModified: file.lastModified
-                  }
+                    [files[id].file],
+                    newName,
+                    {
+                        type: file.type,
+                        lastModified: file.lastModified
+                    }
                 );
             }
         }
