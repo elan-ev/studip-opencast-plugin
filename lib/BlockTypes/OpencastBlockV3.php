@@ -33,6 +33,30 @@ class OpencastBlockV3 extends BlockType
         ];
     }
 
+    public function copyPayload(string $rangeId = ''): array
+    {
+        $payload = $this->getPayload();
+        $defaultPlaylistSeminar = PlaylistSeminars::getDefaultPlaylistSeminar($rangeId);
+        if ($payload['token'] && $defaultPlaylistSeminar) {
+            $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+            $plvideo = new PlaylistVideos;
+            $video = Videos::findByToken($payload['token']);
+
+            $plvideo->setData([
+                'playlist_id' => $defaultPlaylist->id,
+                'video_id'    => $video->id
+            ]);
+
+            try {
+                $defaultPlaylist->videos[] = $plvideo;
+            } catch (\InvalidArgumentException $e) {
+            }
+            $defaultPlaylist->videos->store();
+        }
+
+        return $payload;
+    }
+
     public static function getJsonSchema(): string
     {
         $schemaFile = __DIR__ . '/OpencastBlockV3.json';
