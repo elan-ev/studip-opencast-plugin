@@ -48,7 +48,7 @@ class ConfigUpdate extends OpencastController
                         ];
                     }
                 } else {
-                    // ScheduleHelper::deleteResource($resource['id']);
+                    ScheduleHelper::deleteResource($resource['id']);
                 }
             }
         }

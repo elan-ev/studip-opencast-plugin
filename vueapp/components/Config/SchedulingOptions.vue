@@ -7,6 +7,9 @@
             <MessageBox type="info">
                 {{ $gettext('Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!') }}
             </MessageBox>
+            <MessageBox v-if="schedulingHasUnsavedChanges" type="warning">
+                {{ $gettext('Änderungen an den Ressourcen wurden vorgenommen, aber nicht gespeichert. Bitte speichern Sie, um sie anzuwenden.') }}
+            </MessageBox>
             <table class="default">
                 <caption>
                     {{ $gettext('Zuweisung der Capture Agents') }}
@@ -29,7 +32,7 @@
                                 {{ resource.capture_agent + ` #${resource.config_id}` }}
                             </template>
                             <template v-else-if="free_capture_agents.length">
-                                <select @change="assignCA($event, index)">
+                                <select @change="assignCA($event, resource)">
                                     <option value="" disabled selected>
                                         {{ $gettext('Bitte wählen Sie einen CA.') }}
                                     </option>
@@ -59,7 +62,7 @@
                                         :key="workflow.id"
                                         :value="workflow.id"
                                     >
-                                       {{ workflow.title }}
+                                        {{ workflow.title }}
                                     </option>
                                 </select>
                             </template>
@@ -80,7 +83,7 @@
                                         :key="workflow.id"
                                         :value="workflow.id"
                                     >
-                                       {{ workflow.title }}
+                                        {{ workflow.title }}
                                     </option>
                                 </select>
                             </template>
@@ -94,8 +97,19 @@
                             </template>
                         </td>
                         <td>
-                            <a href="#" @click.stop="confirmClearCaputeAgent($event, index)">
-                                <StudipIcon shape="trash" :role="resource.capture_agent == '' ? 'inactive' : 'clickable'" :title="$gettext('Verknüpfung entfernen')"/>
+                            <a href="#" @click.prevent="openEditModal(resource)" style="margin-right: 0.25rem;">
+                                <StudipIcon
+                                    shape="edit"
+                                    :role="resource.capture_agent == '' ? 'inactive' : 'clickable'"
+                                    :title="$gettext('Verknüpfung anpassen')"
+                                />
+                            </a>
+                            <a href="#" @click.prevent="confirmClearCaputeAgent(resource)">
+                                <StudipIcon
+                                    shape="trash"
+                                    :role="resource.capture_agent == '' ? 'inactive' : 'clickable'"
+                                    :title="$gettext('Verknüpfung entfernen')"
+                                />
                             </a>
                         </td>
                     </tr>
@@ -122,7 +136,7 @@ export default {
     props: ['config_list'],
 
     computed: {
-        ...mapGetters(['config']),
+        ...mapGetters(['schedulingHasUnsavedChanges']),
 
         resources() {
             let resources = [];
@@ -167,7 +181,7 @@ export default {
     },
 
     methods: {
-        assignCA(event, resource_index) {
+        assignCA(event, resource) {
             event.preventDefault();
             let value = event.target.value;
             let selected_ca_arr = value.split('_');
@@ -176,32 +190,41 @@ export default {
                 let selected_ca = selected_ca_arr[1];
                 let capture_agent_obj = this.capture_agents.filter(ca => ca.name == selected_ca && ca.config_id == selected_config_id);
                 if (capture_agent_obj.length) {
-                    this.resources[resource_index]['capture_agent'] = selected_ca;
-                    this.resources[resource_index]['config_id'] = selected_config_id;
+                    resource.capture_agent = selected_ca;
+                    resource.config_id = selected_config_id;
                     this.toggleCAOccupation(selected_ca, selected_config_id, true);
+                    this.$store.dispatch('toggleSchedulingUnsavedChanges', true);
                 }
             }
         },
 
-        confirmClearCaputeAgent(event, resource_index) {
-            if (event) {
-                event.preventDefault();
+        confirmClearCaputeAgent(resource) {
+            this.$store.dispatch('closeConfirmationModal');
+            if (!resource?.capture_agent) {
+                return;
             }
 
-            // TODO: use ConfirmDialog component when possible!
-            if (confirm('Sind Sie sicher, dass Sie diese Verknüpfung entfernen möchten?')) {
-                this.clearCaptureAgent(resource_index);
-            }
+            let confirmData = {
+                title: this.$gettext('Verknüpfung entfernen'),
+                text: this.$gettext('Alle zukünftig zugewiesenen geplanten Aufnahmen für diesen Raum und diesen Aufnahmeagenten werden entfernt! Sind Sie sicher, dass Sie diese Verknüpfung entfernen möchten?'),
+                confirm: () => {
+                    this.clearCaptureAgent(resource)
+                },
+            };
+
+            this.$store.dispatch('openConfirmationModal', confirmData);
         },
 
-        clearCaptureAgent(resource_index) {
-            if (this.resources[resource_index] && this.resources[resource_index]['capture_agent']) {
-                this.toggleCAOccupation(this.resources[resource_index]['capture_agent'], this.resources[resource_index]['config_id'], false);
-                this.resources[resource_index]['capture_agent'] = '';
-                this.resources[resource_index]['config_id'] = '';
-                this.resources[resource_index]['workflow_id'] = '';
-                this.resources[resource_index]['livestream_workflow_id'] = '';
+        clearCaptureAgent(resource) {
+            if (resource?.capture_agent && resource?.config_id) {
+                this.toggleCAOccupation(resource.capture_agent, resource.config_id, false);
+                resource.capture_agent = '';
+                resource.config_id = '';
+                resource.workflow_id = '';
+                resource.livestream_workflow_id = '';
+                this.$store.dispatch('toggleSchedulingUnsavedChanges', true);
             }
+            this.$store.dispatch('closeConfirmationModal');
             return;
         },
 
@@ -278,6 +301,17 @@ export default {
             }
             return title;
         },
-    }
+
+        openEditModal(selected_resource) {
+            if (!selected_resource?.capture_agent) {
+                return;
+            }
+            // It is important to make a non-reactive version of selected resource.
+            let tempResource = JSON.parse(JSON.stringify(selected_resource));
+            // We need to ensure that config_id is int for further comparisons!
+            tempResource.config_id = parseInt(tempResource.config_id, 10);
+            this.$store.dispatch('openSchedulingEditModal', tempResource);
+        },
+    },
 }
 </script>
