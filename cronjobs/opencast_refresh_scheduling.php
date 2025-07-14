@@ -91,7 +91,6 @@ class OpencastRefreshScheduling extends CronJob
         $sop_scheduled_events = ScheduledRecordings::findBySql('start >= :start', [':start' => time()]);
         echo 'In SOP geplante Events: ' . sizeof($sop_scheduled_events) . "\n";
 
-        $time = time();
         // 3. Loop through every SOP records, to validate the record.
         foreach ($sop_scheduled_events as $scheduled_events) {
             try {
@@ -104,12 +103,14 @@ class OpencastRefreshScheduling extends CronJob
                 // In case validation fails, we try to remove the record on both sides!
                 echo '-----------------------------------------------------' . "\n";
 
-                if (empty($cd) || empty($course) || empty($course_config_id) || empty($resource_obj)                                                    // Any requirement fails
-                    || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])  // The server config id of the course and the oc_resource does not match
-                    || $cd->room_booking->resource_id != $scheduled_events['resource_id']                                       // The resource of the record and course date does not match
-                    || $cd->room_booking->begin != $scheduled_events['coursedate_start']                                                      // Start or Enddate are different
+                if (empty($cd) || empty($course) || empty($course_config_id) || empty($resource_obj) // Any requirement fails
+                    // The server config id of the course and the oc_resource does not match
+                    || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])
+                    // The resource of the record and course date does not match
+                    || $cd->room_booking->resource_id != $scheduled_events['resource_id']
+                    // Start or Enddate are different
+                    || $cd->room_booking->begin != $scheduled_events['coursedate_start']
                     || $cd->room_booking->end != $scheduled_events['coursedate_end']
-                    /* || intval($cd->end_time) < $time */                                                                      // TODO: decide whether to remove those records that are expired!
                     ) {
 
                     // Try to delete the record because it couldn't pass the validation!
@@ -156,10 +157,18 @@ class OpencastRefreshScheduling extends CronJob
                     }
 
                     if (!empty($oc_event_to_delete)) {
-                        $scheduler_client = SchedulerClient::getInstance($oc_config_id);
-                        $result = $scheduler_client->deleteEvent($oc_event_id);
-                        if ($result) {
-                            unset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id]);
+                        // We double check the event existence before removing it in OC, in order to avoid search index conflict!
+                        $api_event_client = ApiEventsClient::getInstance($oc_config_id);
+                        $oc_event_to_delete_obj = $api_event_client->getEpisode($oc_event_id);
+                        $oc_event_to_delete_exists = !empty($oc_event_to_delete_obj)
+                            && $oc_event_to_delete_obj->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
+
+                        if ($oc_event_to_delete_exists) {
+                            $scheduler_client = SchedulerClient::getInstance($oc_config_id);
+                            $result = $scheduler_client->deleteEvent($oc_event_id);
+                            if ($result) {
+                                unset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id]);
+                            }
                         }
                     }
 
@@ -205,6 +214,7 @@ class OpencastRefreshScheduling extends CronJob
 
         // 4. Those scheduled events that are not stored in SOP, will appear in this block.
         // We try to delete them if the global config "OPENCAST_MANAGE_ALL_OC_EVENTS" is enabled!
+        echo '-----------------------------------------------------' . "\n";
         if (StudipConfig::get()->OPENCAST_MANAGE_ALL_OC_EVENTS) {
             echo _('Lösche nicht über Stud.IP Termine geplante Events:') . "\n";
         } else {
@@ -221,8 +231,16 @@ class OpencastRefreshScheduling extends CronJob
                     if (strtotime($scheduled_event->start) > time()) {
                         echo $scheduled_event->identifier . ' ' . $scheduled_event->title . "\n";
                         if (StudipConfig::get()->OPENCAST_MANAGE_ALL_OC_EVENTS) {
-                            $scheduler_client = SchedulerClient::getInstance($oc_set['config_id']);
-                            $scheduler_client->deleteEvent($scheduled_event->identifier);
+                            // We double check the event existence before removing it in OC, in order to avoid search index conflict!
+                            $api_event_client = ApiEventsClient::getInstance($oc_set['config_id']);
+                            $oc_event_to_delete_obj = $api_event_client->getEpisode($scheduled_event->identifier);
+                            $oc_event_to_delete_exists = !empty($oc_event_to_delete_obj)
+                                && $oc_event_to_delete_obj->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
+
+                            if ($oc_event_to_delete_exists) {
+                                $scheduler_client = SchedulerClient::getInstance($oc_set['config_id']);
+                                $scheduler_client->deleteEvent($scheduled_event->identifier);
+                            }
                         }
                     }
                 }
