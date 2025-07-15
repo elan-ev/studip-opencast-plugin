@@ -36,12 +36,13 @@ class OpencastBlockV3 extends BlockType
     public function copyPayload(string $rangeId = ''): array
     {
         $payload = $this->getPayload();
+        $video = Videos::findByToken($payload['token']);
         $defaultPlaylistSeminar = PlaylistSeminars::getDefaultPlaylistSeminar($rangeId);
-        if ($payload['token'] && $defaultPlaylistSeminar) {
-            $video = Videos::findByToken($payload['token']);
 
-            if (!empty($video)) {
-                $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+        if ($video && $defaultPlaylistSeminar) {
+            $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+
+            if ($defaultPlaylist) {
                 $plvideo = new PlaylistVideos;
                 $plvideo->setData([
                     'playlist_id' => $defaultPlaylist->id,
@@ -50,16 +51,20 @@ class OpencastBlockV3 extends BlockType
 
                 try {
                     $defaultPlaylist->videos[] = $plvideo;
+                    $defaultPlaylist->videos->store();
                 } catch (\InvalidArgumentException $e) {
+                    error_log('Fehler beim Hinzufügen des Videos zur Playlist: '.$e->getMessage());
                 }
-                $defaultPlaylist->videos->store();
             } else {
                 $payload['token'] = '';
             }
+        } else {
+            $payload['token'] = '';
         }
 
         return $payload;
     }
+
 
     public static function getJsonSchema(): string
     {
