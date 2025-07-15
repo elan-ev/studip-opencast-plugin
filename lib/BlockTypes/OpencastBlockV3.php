@@ -6,6 +6,7 @@ use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistSeminars;
 use Opencast\Models\PlaylistVideos;
 use Opencast\Models\Videos;
+use Opencast\Routes\Playlist\Authority as PlaylistAuthority;
 
 /**
  * This class represents the content of a Courseware test block.
@@ -39,14 +40,17 @@ class OpencastBlockV3 extends BlockType
 
     public function copyPayload(string $rangeId = ''): array
     {
+        global $user;
+
         $payload = $this->getPayload();
         $video = Videos::findByToken($payload['token']);
         $defaultPlaylistSeminar = PlaylistSeminars::getDefaultPlaylistSeminar($rangeId);
 
         if ($video && $defaultPlaylistSeminar) {
             $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+            $auth = PlaylistAuthority::canAddAndRemoveVideoInPlaylist($user, $defaultPlaylist, $video, $rangeId);
 
-            if ($defaultPlaylist) {
+            if ($defaultPlaylist && $auth) {
                 $plvideo = new PlaylistVideos;
                 $plvideo->setData([
                     'playlist_id' => $defaultPlaylist->id,
