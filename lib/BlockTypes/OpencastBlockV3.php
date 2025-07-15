@@ -2,7 +2,11 @@
 
 use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\PlaylistVideos;
 use Opencast\Models\Videos;
+
 /**
  * This class represents the content of a Courseware test block.
  *
