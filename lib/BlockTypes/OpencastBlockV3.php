@@ -38,20 +38,24 @@ class OpencastBlockV3 extends BlockType
         $payload = $this->getPayload();
         $defaultPlaylistSeminar = PlaylistSeminars::getDefaultPlaylistSeminar($rangeId);
         if ($payload['token'] && $defaultPlaylistSeminar) {
-            $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
-            $plvideo = new PlaylistVideos;
             $video = Videos::findByToken($payload['token']);
 
-            $plvideo->setData([
-                'playlist_id' => $defaultPlaylist->id,
-                'video_id'    => $video->id
-            ]);
+            if (!empty($video)) {
+                $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+                $plvideo = new PlaylistVideos;
+                $plvideo->setData([
+                    'playlist_id' => $defaultPlaylist->id,
+                    'video_id'    => $video->id
+                ]);
 
-            try {
-                $defaultPlaylist->videos[] = $plvideo;
-            } catch (\InvalidArgumentException $e) {
+                try {
+                    $defaultPlaylist->videos[] = $plvideo;
+                } catch (\InvalidArgumentException $e) {
+                }
+                $defaultPlaylist->videos->store();
+            } else {
+                $payload['token'] = '';
             }
-            $defaultPlaylist->videos->store();
         }
 
         return $payload;
