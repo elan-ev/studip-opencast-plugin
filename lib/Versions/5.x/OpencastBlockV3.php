@@ -2,7 +2,11 @@
 
 use Courseware\BlockTypes\BlockType;
 use Opis\JsonSchema\Schema;
+use Opencast\Models\Playlists;
+use Opencast\Models\PlaylistSeminars;
+use Opencast\Models\PlaylistVideos;
 use Opencast\Models\Videos;
+use Opencast\Routes\Playlist\Authority as PlaylistAuthority;
 
 /**
  * This class represents the content of a Courseware test block.
@@ -32,6 +36,41 @@ class OpencastBlockV3 extends BlockType
         return [
             'token'  => ''
         ];
+    }
+
+    public function copyPayload(string $rangeId = ''): array
+    {
+        global $user;
+
+        $payload = $this->getPayload();
+        $video = Videos::findByToken($payload['token']);
+        $defaultPlaylistSeminar = PlaylistSeminars::getDefaultPlaylistSeminar($rangeId);
+
+        if ($video && $defaultPlaylistSeminar) {
+            $defaultPlaylist = Playlists::findOneById($defaultPlaylistSeminar->playlist_id);
+            $auth = PlaylistAuthority::canAddAndRemoveVideoInPlaylist($user, $defaultPlaylist, $video, $rangeId);
+
+            if ($defaultPlaylist && $auth) {
+                $plvideo = new PlaylistVideos;
+                $plvideo->setData([
+                    'playlist_id' => $defaultPlaylist->id,
+                    'video_id'    => $video->id
+                ]);
+
+                try {
+                    $defaultPlaylist->videos[] = $plvideo;
+                    $defaultPlaylist->videos->store();
+                } catch (\InvalidArgumentException $e) {
+                    error_log('Fehler beim Hinzufügen des Videos zur Playlist: '.$e->getMessage());
+                }
+            } else {
+                $payload['token'] = '';
+            }
+        } else {
+            $payload['token'] = '';
+        }
+
+        return $payload;
     }
 
     public static function getJsonSchema(): Schema
