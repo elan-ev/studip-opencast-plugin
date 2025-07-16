@@ -36,7 +36,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['messages']),
+        ...mapGetters('messages', ['messages']),
 
         currentMessages() {
             if (this.dialog) {
@@ -50,13 +50,13 @@ export default {
 
     methods: {
         removeMessage(id) {
-            this.$store.commit('removeMessage', id);
+            this.$store.commit('messages/removeMessage', id);
         }
     },
 
     unmounted() {
         if (this.dialog) {
-            this.$store.dispatch("clearMessages", this.dialog);
+            this.$store.dispatch('messages/clearMessages', this.dialog);
         }
     }
 }

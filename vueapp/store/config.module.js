@@ -41,7 +41,7 @@ const getters = {
         } else {
             return false;
         }
-    }
+    },
 };
 
 export const state = { ...initialState };
@@ -116,7 +116,7 @@ export const actions = {
 
     configSetActivation(context, params) {
         return ApiService.put('config/' + params.id + '/' + (params.active ? 'activate' : 'deactivate'));
-    }
+    },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
@@ -143,6 +143,7 @@ export const mutations = {
 };
 
 export default {
+  namespaced: true,
   state,
   actions,
   mutations,

@@ -49,7 +49,7 @@ export default {
     props: ['event'],
 
     computed: {
-        ...mapGetters(['simple_config_list']),
+        ...mapGetters('config', ['simple_config_list']),
         url() {
             if (this.event.config_id === undefined) {
                 return null;
@@ -75,18 +75,18 @@ export default {
 
     methods: {
         copyToClipboard(text, successText, errorText) {
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
             navigator.clipboard
                 .writeText(text)
                 .then(() => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: successText,
                         dialog: true,
                     });
                 })
                 .catch(() => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: errorText,
                         dialog: true,

@@ -29,7 +29,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['simple_config_list']),
+        ...mapGetters('config', ['simple_config_list']),
 
         workflow_definitions() {
             let wf_defs = [];

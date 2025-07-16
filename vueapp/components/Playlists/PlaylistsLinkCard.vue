@@ -60,7 +60,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['cid']),
+        ...mapGetters('opencast', ['cid']),
 
         title() {
             if (this.customTitle) {
@@ -82,35 +82,35 @@ export default {
         addPlaylistsToCourse() {
             if (this.cid && this.isDefault && this.selectedPlaylists?.[0]) {
                 let token = this.selectedPlaylists[0];
-                this.$store.dispatch('addPlaylistToCourse', {
+                this.$store.dispatch('playlists/addPlaylistToCourse', {
                         course: this.cid,
                         token: token,
                         is_default: true
                 })
                 .then(() => {
                     this.selectedPlaylists = [];
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: this.$gettext('Die Kurswiedergabeliste hinzugefügt.')
                     });
-                    this.$store.dispatch('setPlaylistsReload', true);
-                    this.$store.dispatch('loadPlaylists');
-                    this.$store.dispatch('loadCourseConfig', this.cid);
-                    this.$store.dispatch('loadPlaylist', token);
+                    this.$store.dispatch('playlists/setPlaylistsReload', true);
+                    this.$store.dispatch('playlists/loadPlaylists');
+                    this.$store.dispatch('config/loadCourseConfig', this.cid);
+                    this.$store.dispatch('playlists/loadPlaylist', token);
                     this.$emit('done');
                 });
             } else {
-                this.$store.dispatch('addPlaylistsToCourse', {
+                this.$store.dispatch('playlists/addPlaylistsToCourse', {
                     course: this.cid,
                     playlists: this.selectedPlaylists
                 }).then(() => {
                     this.selectedPlaylists = [];
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: this.$gettext('Die Playlisten wurden der Veranstaltung hinzugefügt.')
                     });
-                    this.$store.dispatch('loadPlaylists');
-                    this.$store.dispatch('setPlaylistsReload', true);
+                    this.$store.dispatch('playlists/loadPlaylists');
+                    this.$store.dispatch('playlists/setPlaylistsReload', true);
                     this.$emit('done');
                 });
             }

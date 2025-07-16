@@ -54,9 +54,9 @@ export default {
                     description: this.description,
                 };
                 await this.$store
-                    .dispatch('reportVideo', data)
+                    .dispatch('videos/reportVideo', data)
                     .then(({ data }) => {
-                        this.$store.dispatch('addMessage', data.message);
+                        this.$store.dispatch('messages/addMessage', data.message);
                         this.$emit('done');
                     })
                     .catch(() => {

@@ -100,9 +100,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'isLTIAuthenticated'
-        ]),
+        ...mapGetters('opencast', ['isLTIAuthenticated']),
 
         checkFailed() {
             if (this.isAddCard) {
@@ -124,18 +122,18 @@ export default {
     methods: {
         toogleServer(active) {
             this.config.active = active;
-            this.$store.dispatch('configSetActivation', {id: this.config.id, active: active})
+            this.$store.dispatch('config/configSetActivation', {id: this.config.id, active: active})
             .then(({ data }) => {
-                this.$store.dispatch('configListRead', data.config)
+                this.$store.dispatch('config/configListRead', data.config)
                 .then(() => {
                     if (this.config.active) {
-                        this.$store.dispatch("addMessage", {
+                        this.$store.dispatch('messages/addMessage', {
                             type: "success",
                             text: this.$gettext("Server wurde erfolgreich aktiviert")
                         });
                     }
                     else {
-                        this.$store.dispatch("addMessage", {
+                        this.$store.dispatch('messages/addMessage', {
                             type: "success",
                             text: this.$gettext("Server wurde erfolgreich deaktiviert")
                         });
@@ -148,7 +146,7 @@ export default {
             this.isShow = true;
 
             if (this.checkFailed) {
-                this.$store.dispatch('addMessage', this.error_msg);
+                this.$store.dispatch('messages/addMessage', this.error_msg);
             }
         },
     },
@@ -156,9 +154,9 @@ export default {
     watch: {
         checkFailed: function (newVal) {
             if (newVal && this.isShow) {
-                this.$store.dispatch('addMessage', this.error_msg);
+                this.$store.dispatch('messages/addMessage', this.error_msg);
             } else {
-                this.$store.dispatch('removeMessage', this.error_msg);
+                this.$store.dispatch('messages/removeMessage', this.error_msg);
             }
         }
     }

@@ -213,9 +213,9 @@ export default {
 
     computed: {
         ...mapGetters({
-            videoShares: 'videoShares',
-            currentUser: 'currentUser',
-            config: 'simple_config_list',
+            videoShares: 'videos/videoShares',
+            currentUser: 'opencast/currentUser',
+            config: 'config/simple_config_list',
         }),
 
         isShareable() {
@@ -240,7 +240,7 @@ export default {
             this.shareUsers.push(user);
 
             this.$store
-                .dispatch('updateVideoShares', {
+                .dispatch('videos/updateVideoShares', {
                     token: this.event.token,
                     shares: this.videoShares,
                 })
@@ -248,7 +248,7 @@ export default {
                     // find the index of the user that was just added and remove it
                     let index = this.shareUsers.findIndex((u) => u.user_id == user.user_id);
                     this.shareUsers.splice(index, 1);
-                    this.$store.dispatch('addMessage', add_perm_error);
+                    this.$store.dispatch('messages/addMessage', add_perm_error);
                 });
         },
 
@@ -260,13 +260,13 @@ export default {
             let perm = this.videoShares.perms.splice(index, 1)[0];
 
             this.$store
-                .dispatch('updateVideoShares', {
+                .dispatch('videos/updateVideoShares', {
                     token: this.event.token,
                     shares: this.videoShares,
                 })
                 .catch((er) => {
                     this.videoShares.perms.splice(index, 0, perm);
-                    this.$store.dispatch('addMessage', remove_perm_error);
+                    this.$store.dispatch('messages/addMessage', remove_perm_error);
                 });
         },
 
@@ -277,7 +277,7 @@ export default {
             this.videoShares.shares.push(dummyLink);
 
             this.$store
-                .dispatch('updateVideoShares', {
+                .dispatch('videos/updateVideoShares', {
                     token: this.event.token,
                     shares: this.videoShares,
                 })
@@ -285,7 +285,7 @@ export default {
                     this.initVideoShares();
                 })
                 .catch((er) => {
-                    this.$store.dispatch('addMessage', add_link_error);
+                    this.$store.dispatch('messages/addMessage', add_link_error);
                 });
         },
 
@@ -297,7 +297,7 @@ export default {
             let link = this.videoShares.shares.splice(index, 1)[0];
 
             this.$store
-                .dispatch('updateVideoShares', {
+                .dispatch('videos/updateVideoShares', {
                     token: this.event.token,
                     shares: this.videoShares,
                 })
@@ -306,7 +306,7 @@ export default {
                 })
                 .catch((er) => {
                     this.videoShares.shares.splice(index, 0, link);
-                    this.$store.dispatch('addMessage', remove_link_error);
+                    this.$store.dispatch('messages/addMessage', remove_link_error);
                 });
         },
 
@@ -317,14 +317,14 @@ export default {
                     input.select();
                     document.execCommand('copy');
                     document.getSelection().removeAllRanges();
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: this.$gettext('Der Link wurde in die Zwischenablage kopiert.'),
                         dialog: true,
                     });
                 } catch (e) {
                     console.error(e);
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: this.$gettext('Der Link konnte nicht kopiert werden.'),
                         dialog: true,
@@ -334,32 +334,32 @@ export default {
         },
 
         initVideoShares() {
-            this.$store.dispatch('loadVideoShares', this.event.token).then(() => {
+            this.$store.dispatch('videos/loadVideoShares', this.event.token).then(() => {
                 this.shareUsers = this.videoShares.perms;
             });
         },
 
         setVisibility(vis) {
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
             this.processing = true;
 
             let view = this;
 
             this.$store
-                .dispatch('updateVideoVisibility', {
+                .dispatch('videos/updateVideoVisibility', {
                     token: this.event.token,
                     visibility: vis,
                 })
                 .then(({ data }) => {
                     view.event.visibility = vis;
-                    view.$store.dispatch('addMessage', {
+                    view.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: data,
                         dialog: true,
                     });
                 })
                 .catch((err) => {
-                    view.$store.dispatch('addMessage', {
+                    view.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: err.response.data,
                         dialog: true,

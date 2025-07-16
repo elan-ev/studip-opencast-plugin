@@ -29,7 +29,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['simple_config_list', 'isLTIAuthenticated', 'cid']),
+        ...mapGetters('config', ['simple_config_list']),
+        ...mapGetters('opencast', ['cid', 'isLTIAuthenticated']),
     },
 
     methods: {
@@ -51,7 +52,7 @@ export default {
             view.interval = setInterval(async () => {
                 // Create an array of promises for checking each server in parallel
                 const promises = server_ids.map(async (id) => {
-                    await view.$store.dispatch('checkLTIAuthentication', view.simple_config_list['server'][id]);
+                    await view.$store.dispatch('opencast/checkLTIAuthentication', view.simple_config_list['server'][id]);
                     // Remove server from list, if authenticated
                     if (view.isLTIAuthenticated[id]) {
                         server_ids.splice(server_ids.indexOf(id), 1);
@@ -69,7 +70,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('simpleConfigListRead').then(() => {
+        this.$store.dispatch('config/simpleConfigListRead').then(() => {
             this.checkLTIPeriodically();
         });
     }

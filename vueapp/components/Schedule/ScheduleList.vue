@@ -182,12 +182,12 @@ export default {
             };
 
             this.bulkActionRunning = true;
-            this.$store.dispatch('bulkScheduling', params).then(({ data }) => {
-                this.$store.dispatch('clearMessages');
+            this.$store.dispatch('schedule/bulkScheduling', params).then(({ data }) => {
+                this.$store.dispatch('messages/clearMessages');
                 if (data?.message) {
                     this.addMesssage(data.message.type, data.message.text, true);
                 }
-                this.$store.dispatch('getScheduleList');
+                this.$store.dispatch('schedule/getScheduleList');
                 this.bulkActionRunning = false;
             });
 
@@ -236,29 +236,23 @@ export default {
                 return;
             }
 
-            if (!Object.keys(this.$store._actions).includes(dispatchAction)) {
-                this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
-                console.log('No action available!');
-                return;
-            }
-
             if (dispatchAction == 'unschedule' && !confirm(
                     this.$gettext('Sind Sie sicher, dass Sie die geplante Aufzeichnung entfernen möchten?')
             )) {
                 return;
             }
 
-            this.$store.dispatch(dispatchAction, termin_id).then(({ data }) => {
+            this.$store.dispatch(`schedule/${dispatchAction}`, termin_id).then(({ data }) => {
                 if (data?.message && dispatchAction != 'unschedule') {
                     this.addMesssage(data.message.type, data.message.text, true);
                     if (data.message.type == 'success') {
-                        this.$store.dispatch('getScheduleList');
+                        this.$store.dispatch('schedule/getScheduleList');
                     }
                 } else {
                     if (dispatchAction == 'unschedule') {
                         this.addMesssage('success', this.$gettext('Die geplante Aufzeichnung wurde entfernt.'), true);
                     }
-                    this.$store.dispatch('getScheduleList');
+                    this.$store.dispatch('schedule/getScheduleList');
                 }
             });
         },
@@ -272,7 +266,7 @@ export default {
                 start: this.schedule_list[args.index]['recording_period']['start'],
                 end: this.schedule_list[args.index]['recording_period']['end'],
             }
-            this.$store.dispatch('updateRecordingPeriod', params).then(({ data }) => {
+            this.$store.dispatch('schedule/updateRecordingPeriod', params).then(({ data }) => {
                 this.addMesssage(data.message.type, data.message.text, true);
             });
         },
@@ -291,9 +285,9 @@ export default {
 
         addMesssage(type, text, is_new = true) {
             if (is_new) {
-                this.$store.dispatch('clearMessages');
+                this.$store.dispatch('messages/clearMessages');
             }
-            this.$store.dispatch('addMessage', {
+            this.$store.dispatch('messages/addMessage', {
                 'type': type,
                 'text': text
             });
@@ -319,7 +313,7 @@ export default {
             let now = (new Date()).getTime();
             let timeout = (nearest_refresh_time * 1000) - now;
             this.refreshTimeout = setTimeout(() => {
-                this.$store.dispatch('getScheduleList');
+                this.$store.dispatch('schedule/getScheduleList');
             }, timeout);
         }
     },

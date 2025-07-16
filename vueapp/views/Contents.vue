@@ -46,11 +46,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'currentUser',
-            'currentUserSeries',
-            'showPlaylistAddVideosDialog'
-        ]),
+        ...mapGetters('opencast', ['currentUser', 'currentUserSeries']),
+        ...mapGetters('playlists', ['showPlaylistAddVideosDialog']),
 
         toLayoutName() {
             if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
@@ -71,31 +68,31 @@ export default {
 
     methods: {
         enableSortMode() {
-            this.$store.dispatch('setVideoSortMode', true)
+            this.$store.dispatch('videos/setVideoSortMode', true)
         },
 
         allowDownload() {
-            this.$store.dispatch('setAllowDownloadForPlaylist', true)
+            this.$store.dispatch('playlists/setAllowDownloadForPlaylist', true)
         },
 
         disallowDownload() {
-            this.$store.dispatch('setAllowDownloadForPlaylist', false)
+            this.$store.dispatch('playlists/setAllowDownloadForPlaylist', false)
         },
 
         saveSort() {
-            this.$store.dispatch('setVideoSortMode', 'commit')
+            this.$store.dispatch('videos/setVideoSortMode', 'commit')
         },
 
         cancelSort() {
-            this.$store.dispatch('setVideoSortMode', 'cancel')
+            this.$store.dispatch('videos/setVideoSortMode', 'cancel')
         },
 
         closePlaylistAddVideosDialog() {
-            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
+            this.$store.dispatch('playlists/togglePlaylistAddVideosDialog', false);
         },
 
         uploadDone() {
-            this.$store.dispatch('addMessage', {
+            this.$store.dispatch('messages/addMessage', {
                 type: 'info',
                 text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
             });
@@ -105,17 +102,17 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadCurrentUser');
-        this.$store.dispatch('loadCurrentUserSeries')
+        this.$store.dispatch('opencast/loadCurrentUser');
+        this.$store.dispatch('opencast/loadCurrentUserSeries')
         .then((series_id) => {
             if (!series_id) {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'warning',
                     text: this.$gettext('Die Nutzerkonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
                 });
             }
         });
-        this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('playlists/loadPlaylists');
     }
 };
 </script>

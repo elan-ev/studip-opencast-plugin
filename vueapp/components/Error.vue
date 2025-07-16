@@ -43,6 +43,7 @@
 </template>
 
 <script>
+// DEPRECATED ?
 import { mapGetters } from "vuex";
 
 export default {

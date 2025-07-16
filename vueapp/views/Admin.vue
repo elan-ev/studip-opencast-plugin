@@ -16,8 +16,6 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@studip/StudipButton";
-import StudipIcon from "@studip/StudipIcon";
 import MessageList from "@/components/MessageList";
 
 import ServerCard from "@/components/Config/ServerCard";
@@ -26,23 +24,17 @@ import AdminConfigs from "@/components/Config/AdminConfigs";
 export default {
     name: "Admin",
     components: {
-        StudipButton,
-        StudipIcon,
         MessageList,
         ServerCard,
         AdminConfigs
     },
 
     computed: {
-        ...mapGetters(['config_list'])
-    },
-
-    methods: {
-
+        ...mapGetters('config', ['config_list'])
     },
 
     mounted() {
-        this.$store.dispatch('configListRead');
+        this.$store.dispatch('config/configListRead');
     }
 };
 </script>

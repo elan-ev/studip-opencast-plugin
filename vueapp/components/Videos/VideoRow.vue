@@ -247,13 +247,10 @@ export default {
     },
 
     methods: {
-        ...mapActions([
-            'setShowDrawer',
-            'setSelectedVideo'
-        ]),
+        ...mapActions('videodrawer', ['setShowDrawer', 'setSelectedVideo']),
         removeVideo() {
             let view = this;
-            this.$store.dispatch('deleteVideo', this.event.token)
+            this.$store.dispatch('videos/deleteVideo', this.event.token)
                 .then(() => {
                     view.DeleteConfirmDialog = false;
                 });
@@ -387,15 +384,10 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'playlist',
-            'playlists',
-            'downloadSetting',
-            'videoSortMode',
-            'currentUser',
-            'simple_config_list',
-            'course_config'
-        ]),
+        ...mapGetters('config', ['course_config', 'downloadSetting', 'simple_config_list']),
+        ...mapGetters('videos', ['videoSortMode']),
+        ...mapGetters('opencast', ['currentUser']),
+        ...mapGetters('playlists', ['playlist', 'playlists']),
 
         showCheckbox() {
             return this.selectable || (this.canUpload && (this.event.perm == 'owner' || this.event.perm == 'write'));

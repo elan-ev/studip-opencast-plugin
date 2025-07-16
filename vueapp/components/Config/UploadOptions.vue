@@ -39,7 +39,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['simple_config_list']),
+        ...mapGetters('config', ['simple_config_list']),
 
         upload_workflows() {
             let upload_workflows = [];

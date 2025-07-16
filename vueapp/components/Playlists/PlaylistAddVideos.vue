@@ -84,14 +84,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'currentUser',
-        ]),
+        ...mapGetters('opencast', ['currentUser']),
     },
 
     methods: {
         uploadDone() {
-            this.$store.dispatch('addMessage', {
+            this.$store.dispatch('messages/addMessage', {
                 type: 'info',
                 text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
             });

@@ -90,7 +90,8 @@ export default {
         };
     },
     computed: {
-        ...mapGetters(['cid', 'playlists', 'playlist']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('playlists', ['playlist', 'playlists']),
 
         defaultVisibility() {
             return this.playlist['visibility'];
@@ -113,9 +114,9 @@ export default {
             }
 
             await this.$store
-                .dispatch('updateVideo', event)
+                .dispatch('videos/updateVideo', event)
                 .then(({ data }) => {
-                    this.$store.dispatch('addMessage', data.message);
+                    this.$store.dispatch('messages/addMessage', data.message);
                     console.log('visibility updated'); //TODO !!!
                 })
                 .catch(() => {

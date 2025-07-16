@@ -261,12 +261,12 @@ export default {
 
     computed: {
         ...mapGetters({
-            'config'        : 'simple_config_list',
-            'course_config' : 'course_config',
-            'cid'           : 'cid',
-            'playlist'      : 'playlist',
-            'playlists'     : 'playlists',
-            'currentLTIUser': 'currentLTIUser'
+            'config'        : 'config/simple_config_list',
+            'course_config' : 'config/course_config',
+            'cid'           : 'opencast/cid',
+            'playlist'      : 'playlists/playlist',
+            'playlists'     : 'playlists/playlists',
+            'currentLTIUser': 'opencast/currentLTIUser'
         }),
 
         upload_playlists() {
@@ -355,7 +355,7 @@ export default {
             }
 
             // make sure lti is authenticated
-            await this.$store.dispatch('authenticateLti');
+            await this.$store.dispatch('opencast/authenticateLti');
 
             if (!this.$refs['upload-form'].reportValidity()) {
                 return false;
@@ -448,7 +448,7 @@ export default {
                     view.$emit('done');
 
                     // Add event to database
-                    view.$store.dispatch('createVideo', {
+                    view.$store.dispatch('videos/createVideo', {
                         'episode': episode_id,
                         'config_id': view.selectedServer.id,
                         'title': uploadData.title,
@@ -458,19 +458,19 @@ export default {
                         'contributors': uploadData.contributor
                     })
                     .then(async ({ data }) => {
-                        this.$store.dispatch('addMessage', data.message);
+                        this.$store.dispatch('messages/addMessage', data.message);
 
                         // If a playlist is selected, connect event with playlist
                         if (data.event?.token && uploadData.playlist_token) {
                             let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
                             if (playlist) {
                                 // Here we need to wait for this action to complete, in order to get the latest videos list in the playlist.
-                                await this.$store.dispatch('addVideosToPlaylist', {
+                                await this.$store.dispatch('playlists/addVideosToPlaylist', {
                                     playlist: playlist.token,
                                     videos: [data.event.token],
                                     course_id: this.cid
                                 }).catch(() => {
-                                    this.$store.dispatch('addMessage', {
+                                    this.$store.dispatch('messages/addMessage', {
                                         type: 'warning',
                                         text: this.$gettext('Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden.')
                                     });
@@ -478,11 +478,11 @@ export default {
                             }
                         }
 
-                        this.$store.dispatch('setVideosReload', true);
+                        this.$store.dispatch('videos/setVideosReload', true);
                     });
                 },
                 onError: () => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: this.$gettext('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.'),
                         dialog: true
@@ -502,14 +502,14 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('authenticateLti');
-        this.$store.dispatch('simpleConfigListRead').then(() => {
+        this.$store.dispatch('opencast/authenticateLti');
+        this.$store.dispatch('config/simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
             this.selectedWorkflow = this.defaultWorkflow;
         })
 
         if (this.cid) {
-            this.$store.dispatch('loadCourseConfig', this.cid);
+            this.$store.dispatch('config/loadCourseConfig', this.cid);
         }
 
         if (this.playlist) {

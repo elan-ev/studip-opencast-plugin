@@ -159,7 +159,7 @@ export default {
             if (this.selectedMedia?.loading === true) {
                 return;
             }
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
             let view = this;
 
             let url = window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + type + '/' + index;
@@ -186,7 +186,7 @@ export default {
                     dummy_download_link.href = URL.createObjectURL(blob);
                     dummy_download_link.download = this.getFileName(this.selectedMedia);
                     dummy_download_link.click();
-                    view.$store.dispatch('addMessage', {
+                    view.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: this.$gettext('Herunterladen des Mediums abgeschlossen.'),
                         dialog: true,
@@ -202,7 +202,7 @@ export default {
                         message.type = 'warning';
                         message.text = this.$gettext('Herunterladen des Mediums abgebrochen!');
                     }
-                    view.$store.dispatch('addMessage', message);
+                    view.$store.dispatch('messages/addMessage', message);
                 })
                 .finally(() => {
                     this.resetMediaDownloadProps();
@@ -268,15 +268,15 @@ export default {
         copyToClipboard() {
             const text = this.selectedMedia?.url;
             navigator.clipboard.writeText(text);
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
             let message = {
                 type: 'info',
                 text: this.$gettext('Link zur Mediendatei wurde in die Zwischenablage kopiert.'),
                 dialog: true,
             };
-            this.$store.dispatch('addMessage', message);
+            this.$store.dispatch('messages/addMessage', message);
             setTimeout(() => {
-                this.$store.dispatch('clearMessages', true);
+                this.$store.dispatch('messages/clearMessages', true);
             }, 3000);
         },
     },

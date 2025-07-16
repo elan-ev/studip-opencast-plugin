@@ -70,7 +70,7 @@ const actions = {
     },
 
     updatePage({commit}, page) {
-        commit('setPage', page);
+        commit('videos/setPage', page);
     },
 
     async loadSeries({commit }, id) {
@@ -126,12 +126,12 @@ const actions = {
 
     updateView({ commit, dispatch }, view) {
         commit('setView', view);
-        commit('clearPaging');
+        commit('videos/clearPaging');
     },
 
     async authenticateLti({ dispatch }) {
         // by reloading the simple config, LtiAuth.vue reloads the iframe for lti authentication
-        return dispatch('simpleConfigListRead');
+        return dispatch('config/simpleConfigListRead', null, { root: true });
     },
 
     setUpload({ commit }, data) {
@@ -276,6 +276,7 @@ const mutations = {
 
 
 export default {
+    namespaced: true,
     state,
     getters,
     mutations,

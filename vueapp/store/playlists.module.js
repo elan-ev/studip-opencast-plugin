@@ -148,7 +148,7 @@ const actions = {
         } else {
             [field, order] = playlist.sort_order.split('_');
         }
-        context.commit('setVideoSort', {field: field, order: order});
+        context.commit('videos/setVideoSort', {field: field, order: order});
     },
 
     /**
@@ -286,7 +286,7 @@ const actions = {
                         dispatch('loadPlaylists');
                         // When is_default is true, it means it is the course playlist creation and we need to set a few things.
                         if (is_default) {
-                            dispatch('loadCourseConfig', $cid);
+                            dispatch('config/loadCourseConfig', $cid);
                             dispatch('loadPlaylist', data.token);
                         }
                     })
@@ -443,6 +443,7 @@ const mutations = {
 
 
 export default {
+    namespaced: true,
     state,
     getters,
     mutations,

@@ -71,14 +71,10 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'currentUser',
-            'showPlaylistAddVideosDialog',
-            'addPlaylist',
-            'cid',
-            'course_config',
-            'showEpisodesDefaultVisibilityDialog',
-        ]),
+        ...mapGetters('opencast', ['cid', 'currentUser']),
+        ...mapGetters('playlists', ['addPlaylist', 'showPlaylistAddVideosDialog']),
+        ...mapGetters('config', ['course_config']),
+        ...mapGetters('videos', ['showEpisodesDefaultVisibilityDialog']),
 
         canEdit() {
             if (!this.course_config) {
@@ -120,40 +116,40 @@ export default {
 
     methods: {
         enableSortMode() {
-            this.$store.dispatch('setVideoSortMode', true)
+            this.$store.dispatch('videos/setVideoSortMode', true)
         },
 
         saveSort() {
-            this.$store.dispatch('setVideoSortMode', 'commit')
+            this.$store.dispatch('videos/setVideoSortMode', 'commit')
         },
 
         cancelSort() {
-            this.$store.dispatch('setVideoSortMode', 'cancel')
+            this.$store.dispatch('videos/setVideoSortMode', 'cancel')
         },
 
         closePlaylistAddVideosDialog() {
-            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
+            this.$store.dispatch('playlists/togglePlaylistAddVideosDialog', false);
         },
 
         closePlaylistAddDialog() {
-            this.$store.dispatch('addPlaylistUI', false);
+            this.$store.dispatch('playlists/addPlaylistUI', false);
         },
 
         changeDefaultVisibility() {
-            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', true);
+            this.$store.dispatch('videos/toggleShowEpisodesDefaultVisibilityDialog', true);
         },
 
         closeChangeDefaultVisibility() {
-            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', false);
+            this.$store.dispatch('videos/toggleShowEpisodesDefaultVisibilityDialog', false);
         }
     },
 
     mounted() {
-        this.$store.dispatch('loadCurrentUser');
-        this.$store.dispatch('loadCourseConfig', this.cid)
+        this.$store.dispatch('opencast/loadCurrentUser');
+        this.$store.dispatch('config/loadCourseConfig', this.cid)
         .then((course_config) => {
             if (!course_config?.series?.series_id) {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'warning',
                     text: this.$gettext('Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
                 });

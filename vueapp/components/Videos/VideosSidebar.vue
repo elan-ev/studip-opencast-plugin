@@ -125,16 +125,14 @@ export default {
     },
 
     computed: {
+        ...mapGetters('config', ['downloadSetting', 'simple_config_list']),
+        ...mapGetters('videos', ['videoSortMode']),
+        ...mapGetters('playlists', ['playlist']),
+        ...mapGetters('opencast', ['axios_running', 'currentUser', 'currentUserSeries']),
+
         fragment() {
             return this.$route.name;
         },
-
-        ...mapGetters([
-            'videoSortMode', 'playlist',
-            'axios_running', 'downloadSetting',
-            'simple_config_list', 'currentUserSeries',
-            'currentUser'
-        ]),
 
         isDownloadAllowedForPlaylist() {
             if (this.playlist) {
@@ -192,11 +190,11 @@ export default {
 
     methods: {
         openPlaylistAddVideosDialog() {
-            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
+            this.$store.dispatch('playlists/togglePlaylistAddVideosDialog', true);
         },
 
         createPlaylist() {
-            this.$store.dispatch('addPlaylistUI', true);
+            this.$store.dispatch('playlists/addPlaylistUI', true);
         },
 
         getWorkflow(config_id) {
@@ -206,7 +204,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('simpleConfigListRead');
+        this.$store.dispatch('config/simpleConfigListRead');
     }
 }
 </script>

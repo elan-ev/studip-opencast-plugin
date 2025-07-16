@@ -1852,7 +1852,6 @@ label.oc--file-upload {
     }
 }
 
-
 // VIDEO DRAWER
 $video-drawer-spacing: 15px;
 
@@ -1893,6 +1892,10 @@ $video-drawer-spacing: 15px;
                 li {
                     padding: 0 4px;
                     margin-left: $video-drawer-spacing;
+
+                    img {
+                        vertical-align: middle;
+                    }
                 }
 
                 span {

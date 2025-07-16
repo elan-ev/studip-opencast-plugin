@@ -93,8 +93,8 @@ export default {
 
     computed: {
         ...mapGetters({
-            configStore: 'config',
-            simple_config_list: 'simple_config_list'
+            configStore: 'config/config',
+            simple_config_list: 'config/simple_config_list'
         }),
 
         currentId() {
@@ -190,15 +190,15 @@ export default {
             }
 
             this.disabled = true;
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
 
             this.currentConfig.checked = false;
 
             if (this.currentId == 'new') {
-                this.$store.dispatch('configCreate', this.currentConfig)
+                this.$store.dispatch('config/configCreate', this.currentConfig)
                 .then(({ data }) => {
                     this.disabled = false;
-                    this.$store.dispatch('configListRead', data.config);
+                    this.$store.dispatch('config/configListRead', data.config);
                     this.checkConfigResponse(data);
                 });
             } else {
@@ -227,9 +227,9 @@ export default {
                     this.currentConfig.workflow_settings = workflow_settings;
                 }
 
-                this.$store.dispatch('configUpdate', this.currentConfig)
+                this.$store.dispatch('config/configUpdate', this.currentConfig)
                 .then(({ data }) => {
-                    this.$store.dispatch('configListRead', data.config);
+                    this.$store.dispatch('config/configListRead', data.config);
                     this.disabled = false;
                     this.checkConfigResponse(data);
                 });
@@ -241,10 +241,10 @@ export default {
                 if (this.currentId == 'new') {
                     this.currentConfig = {}
                 } else {
-                    this.$store.dispatch('configDelete', this.currentId)
+                    this.$store.dispatch('config/configDelete', this.currentId)
                         .then(() => {
-                            this.$store.dispatch('configListRead');
-                            this.$store.dispatch('addMessage', {
+                            this.$store.dispatch('config/configListRead');
+                            this.$store.dispatch('messages/addMessage', {
                                 'type': 'success',
                                 'text': this.$gettext('Serverkonfiguration wurde entfernt')
                             });
@@ -259,7 +259,7 @@ export default {
         checkConfigResponse(data) {
             if (data.message !== undefined) {
                 if (data.message.type === 'error') {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: data.message.type,
                         text: data.message.text
                     });
@@ -268,21 +268,21 @@ export default {
                 else if (data.message.type === 'success') {
                     if (this.currentId !== 'new') {
                         // Just show success message if server was edited
-                        this.$store.dispatch('addMessage', {
+                        this.$store.dispatch('messages/addMessage', {
                             type: data.message.type,
                             text: data.message.text
                         });
                     }
                     else {
                         // On create, scroll to the default workflow configuration
-                        this.$store.dispatch('addMessage', {
+                        this.$store.dispatch('messages/addMessage', {
                             type: data.message.type,
                             text: data.message.text + ' ' + this.$gettext('Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'),
                             dialog: true
                         });
 
                         this.currentConfig = data.config;
-                        this.$store.dispatch('simpleConfigListRead');
+                        this.$store.dispatch('config/simpleConfigListRead');
 
                         let view = this;
                         // We need to wait for a short time so the component is actually visible
@@ -302,7 +302,7 @@ export default {
                 }
             }
 
-            this.$store.dispatch('addMessage', {
+            this.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.'),
                     dialog: true
@@ -324,7 +324,7 @@ export default {
     mounted() {
         if (this.currentId !== 'new') {
             if (!this.config) {
-                this.$store.dispatch('configRead', this.currentId)
+                this.$store.dispatch('config/configRead', this.currentId)
                 .then(() => {
                     this.currentConfig = this.configStore;
                 });

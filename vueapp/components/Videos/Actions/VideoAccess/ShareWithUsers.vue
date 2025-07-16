@@ -72,7 +72,6 @@
 import { mapGetters } from "vuex";
 
 import StudipButton from "@studip/StudipButton";
-import StudipIcon from '@studip/StudipIcon';
 import StudipSelect from '@studip/StudipSelect';
 
 export default {
@@ -80,15 +79,15 @@ export default {
 
     components:
     {
-        StudipButton,    StudipIcon,
+        StudipButton,
         StudipSelect
     },
 
     props:
     {
         selectedUsers: {
-            type: Object,
-            default: []
+            type: Array,
+            default: () => []
         }
     },
 
@@ -101,7 +100,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userList', 'currentUser']),
+        ...mapGetters('opencast', ['userList', 'currentUser']),
 
         shareUsers()
         {
@@ -126,7 +125,7 @@ export default {
     {
         updateUserList(search, loading)
         {
-            this.$store.dispatch('loadUserList', search ? search : '%');
+            this.$store.dispatch('opencast/loadUserList', search ? search : '%');
         },
 
         addShareUser()
@@ -146,7 +145,7 @@ export default {
 
     mounted()
     {
-        this.$store.dispatch('loadUserList', '%');
+        this.$store.dispatch('opencast/loadUserList', '%');
     }
 }
 </script>

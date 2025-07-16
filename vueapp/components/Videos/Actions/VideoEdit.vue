@@ -95,7 +95,8 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['cid', 'playlists', 'playlist']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('playlists', ['playlists', 'playlist']),
 
         isCourse() {
             return this?.cid ? true : false;
@@ -117,9 +118,9 @@ export default {
 
 
             await this.$store
-                .dispatch('updateVideo', this.currentEvent)
+                .dispatch('videos/updateVideo', this.currentEvent)
                 .then(({ data }) => {
-                    this.$store.dispatch('addMessage', data.message);
+                    this.$store.dispatch('messages/addMessage', data.message);
                     let emit_action = data.message.type == 'success' ? 'refresh' : '';
                     this.$emit('done', emit_action);
                 })

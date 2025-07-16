@@ -53,7 +53,7 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['playlist']),
+        ...mapGetters('playlists', ['playlist']),
 
         dialogTitle() {
             if (this.title) {

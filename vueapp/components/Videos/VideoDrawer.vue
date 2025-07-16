@@ -199,10 +199,10 @@ const menuItems = computed(() => {
 });
 
 const showDrawer = computed(() => {
-    return store.getters.showDrawer;
+    return store.getters['videodrawer/showDrawer'];
 });
 const selectedVideo = computed(() => {
-    return store.getters.selectedVideo;
+    return store.getters['videodrawer/selectedVideo'];
 });
 const videoTitle = computed(() => {
     return selectedVideo?.value?.title || '';
@@ -226,20 +226,20 @@ const canEdit = computed(() => {
     return perm === 'owner' || perm === 'write';
 });
 const cid = computed(() => {
-    return store.getters.cid;
+    return store.getters['opencast/cid'];
 });
 const inCourse = computed(() => {
     return cid.value ? true : false;
 });
 
 const downloadSetting = computed(() => {
-    return store.getters.downloadSetting;
+    return store.getters['config/downloadSetting'];
 });
 const playlist = computed(() => {
-    return store.getters.playlist;
+    return store.getters['playlists/playlist'];
 });
 const simple_config_list = computed(() => {
-    return store.getters.simple_config_list;
+    return store.getters['config/simple_config_list'];
 });
 const downloadAllowed = computed(() => {
     if (downloadSetting.value !== 'never') {
@@ -286,8 +286,8 @@ onMounted(() => {
     attachTarget.value = document.querySelector('#content-wrapper');
 });
 const close = () => {
-    store.dispatch('setShowDrawer', false);
-    store.dispatch('setSelectedVideo', null);
+    store.dispatch('videodrawer/setShowDrawer', false);
+    store.dispatch('videodrawer/setSelectedVideo', null);
 };
 
 const extractSources = (sourceData) => {

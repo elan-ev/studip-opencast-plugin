@@ -31,24 +31,21 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            "playlists",
-            'addPlaylist'
-        ])
+        ...mapGetters('playlists', ['playlists', 'addPlaylist']),
     },
 
     methods: {
         closePlaylistAdd() {
-            this.$store.dispatch('addPlaylistUI', false);
+            this.$store.dispatch('playlists/addPlaylistUI', false);
         },
     },
 
     created() {
-        this.$store.commit('setPlaylists', {});
+        this.$store.commit('playlists/setPlaylists', {});
     },
 
     mounted() {
-        this.$store.dispatch('loadPlaylists');
+        this.$store.dispatch('playlists/loadPlaylists');
     }
 };
 </script>

@@ -269,13 +269,11 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["playlists", "currentView", 'opencastOffline',
-            "cid", "semester_list", "semester_filter", 'currentUser',
-            'simple_config_list', 'course_config', 'playlist',
-            'defaultPlaylist', 'videoSortMode', 'downloadSetting',
-            'schedule_playlist', 'livestream_playlist', 'livestream_available',
-            'schedule_list', 'schedule_loading'
-        ]),
+        ...mapGetters('config', ['simple_config_list', 'course_config', 'downloadSetting']),
+        ...mapGetters('opencast', ['cid', 'currentView', 'opencastOffline', 'currentUser']),
+        ...mapGetters('videos', ['videoSortMode']),
+        ...mapGetters('playlists', ['defaultPlaylist', 'playlists', 'playlist', 'schedule_playlist', 'livestream_playlist']),
+        ...mapGetters('schedule', ['schedule_list', 'schedule_loading', 'semester_list', 'semester_filter', 'livestream_available']),
 
         fragment() {
             return this.$route.name;
@@ -376,36 +374,36 @@ export default {
 
     methods: {
         setPlaylist(playlist) {
-            this.$store.dispatch('setPlaylist', playlist);
+            this.$store.dispatch('playlists/setPlaylist', playlist);
             this.toggleSidebarOnResponsive();
         },
 
         async setView(page) {
-            this.$store.dispatch('updateView', page);
+            this.$store.dispatch('opencast/updateView', page);
             if (page == 'schedule') {
-                this.$store.dispatch('clearMessages');
-                this.$store.dispatch('getScheduleList');
+                this.$store.dispatch('messages/clearMessages');
+                this.$store.dispatch('schedule/getScheduleList');
                 // Make sure playlists are loaded.
-                await this.$store.dispatch('loadScheduledRecordingPlaylists');
+                await this.$store.dispatch('playlists/loadScheduledRecordingPlaylists');
                 this.schedulePlaylistToken = this.schedule_playlist?.token;
                 this.livestreamPlaylistToken = this.livestream_playlist?.token;
             }
         },
 
         setDownload(download) {
-            this.$store.dispatch('setAllowDownloadForPlaylist', download)
+            this.$store.dispatch('playlists/setAllowDownloadForPlaylist', download)
         },
 
         setUpload(upload) {
-            this.$store.dispatch('setUpload', {'cid': this.cid, 'upload': upload})
+            this.$store.dispatch('opencast/setUpload', {'cid': this.cid, 'upload': upload})
             .then(() => {
-                this.$store.dispatch('loadCourseConfig', this.cid);
+                this.$store.dispatch('config/loadCourseConfig', this.cid);
             });
 
         },
 
         showCreatePlaylist() {
-            this.$store.dispatch('addPlaylistUI', true);
+            this.$store.dispatch('playlists/addPlaylistUI', true);
         },
 
         openPlaylistAddVideosDialog() {
@@ -413,7 +411,7 @@ export default {
                 return;
             }
 
-            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
+            this.$store.dispatch('playlists/togglePlaylistAddVideosDialog', true);
         },
 
         getWorkflow(config_id) {
@@ -425,21 +423,21 @@ export default {
             if (!this.canSchedule) {
                 return;
             }
-            this.$store.dispatch('clearMessages');
+            this.$store.dispatch('messages/clearMessages');
             if (type == 'scheduled') {
-                this.$store.dispatch('setSchedulePlaylist', this.schedulePlaylistToken)
+                this.$store.dispatch('playlists/setSchedulePlaylist', this.schedulePlaylistToken)
                 .then(({data}) => {
-                    this.$store.dispatch('addMessage', data.message);
+                    this.$store.dispatch('messages/addMessage', data.message);
                 }).finally(async () => {
-                    await this.$store.dispatch('loadPlaylists');
+                    await this.$store.dispatch('playlists/loadPlaylists');
                     this.schedulePlaylistToken = this.schedule_playlist?.token;
                 });
             } else if (type == 'livestreams') {
-                this.$store.dispatch('setLivestreamPlaylist', this.livestreamPlaylistToken)
+                this.$store.dispatch('playlists/setLivestreamPlaylist', this.livestreamPlaylistToken)
                 .then(({data}) => {
-                    this.$store.dispatch('addMessage', data.message);
+                    this.$store.dispatch('messages/addMessage', data.message);
                 }).finally(async () => {
-                    await this.$store.dispatch('loadPlaylists');
+                    await this.$store.dispatch('playlists/loadPlaylists');
                     this.livestreamPlaylistToken = this.livestream_playlist?.token;
                 });
             }
@@ -456,7 +454,7 @@ export default {
                 if (playlist_filtered?.length) {
                     await this.$nextTick();
                     this.setPlaylist(playlist_filtered[0]);
-                    await this.$store.dispatch('loadPlaylists');
+                    await this.$store.dispatch('playlists/loadPlaylists');
                     this.targetPlaylistToken = null;
                 }
             }
@@ -494,7 +492,7 @@ export default {
 
         async handleView() {
             if (this.routeObj?.path.includes('/schedule') && this.currentView != 'schedule' && this.canSchedule) {
-                await this.$store.dispatch('loadPlaylists');
+                await this.$store.dispatch('playlists/loadPlaylists');
                 await this.setView('schedule');
             } else if (this.routeObj?.path.includes('/videos') && this.currentView != 'videos') {
                 await this.setView('videos');
@@ -503,7 +501,7 @@ export default {
     },
 
     async mounted() {
-        this.$store.dispatch('simpleConfigListRead');
+        this.$store.dispatch('config/simpleConfigListRead');
         this.semesterFilter = this.semester_filter;
 
         const route = useRoute();
@@ -523,9 +521,9 @@ export default {
     watch: {
         semesterFilter(newValue, oldValue) {
             if (newValue && oldValue && newValue != oldValue) {
-                this.$store.dispatch('setSemesterFilter', newValue);
-                this.$store.dispatch('clearMessages');
-                this.$store.dispatch('getScheduleList');
+                this.$store.dispatch('schedule/setSemesterFilter', newValue);
+                this.$store.dispatch('messages/clearMessages');
+                this.$store.dispatch('schedule/getScheduleList');
             }
             this.toggleSidebarOnResponsive();
         },

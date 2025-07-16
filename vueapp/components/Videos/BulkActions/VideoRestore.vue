@@ -37,7 +37,7 @@ export default {
             let promises = [];
 
             for (let id in this.event) {
-                promises.push(this.$store.dispatch('restoreVideo', this.event[id]));
+                promises.push(this.$store.dispatch('videos/restoreVideo', this.event[id]));
             }
 
             Promise.all(promises).then((values) => {
@@ -56,7 +56,7 @@ export default {
                     type = 'warning';
                 }
 
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: type,
                     text: this.$gettext('%{ num_success } Videos wurden wiederhergestellt, bei %{ num_errors } Videos gab es Probleme.', {
                         num_success: success,

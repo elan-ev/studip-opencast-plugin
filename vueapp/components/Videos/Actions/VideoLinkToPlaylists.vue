@@ -45,7 +45,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userPlaylists', 'cid']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('playlists', ['userPlaylists']),
     },
 
     methods: {
@@ -53,7 +54,7 @@ export default {
             this.event.playlists.push(playlist);
 
             this.$store
-                .dispatch('addVideosToPlaylist', {
+                .dispatch('playlists/addVideosToPlaylist', {
                     playlist: playlist.token,
                     videos: [this.event.token],
                 })
@@ -61,7 +62,7 @@ export default {
                     // find the index of the playlist that was just added and remove it
                     let index = this.event.playlists.findIndex((p) => p.token == playlist.token);
                     this.event.playlists.splice(index, 1);
-                    this.$store.dispatch('addMessage', this.add_playlist_error);
+                    this.$store.dispatch('messages/addMessage', this.add_playlist_error);
                 });
         },
 
@@ -77,7 +78,7 @@ export default {
             let playlist = this.event.playlists.splice(index, 1)[0];
 
             this.$store
-                .dispatch('removeVideosFromPlaylist', {
+                .dispatch('playlists/removeVideosFromPlaylist', {
                     playlist: playlist.token,
                     videos: [this.event.token],
                     course_id: this.cid,
@@ -85,13 +86,13 @@ export default {
                 .catch(() => {
                     // add the playlist back to the list
                     this.event.playlists.splice(index, 0, playlist);
-                    this.$store.dispatch('addMessage', this.remove_playlist_error);
+                    this.$store.dispatch('messages/addMessage', this.remove_playlist_error);
                 });
         },
     },
 
     mounted() {
-        this.$store.dispatch('loadUserPlaylists', {
+        this.$store.dispatch('playlists/loadUserPlaylists', {
             limit: -1,
         });
     },

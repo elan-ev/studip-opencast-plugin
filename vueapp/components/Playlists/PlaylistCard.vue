@@ -146,7 +146,7 @@ export default {
 
         removeVideo() {
             let view = this;
-            this.$store.dispatch('deleteVideo', this.playlist.id)
+            this.$store.dispatch('videos/deleteVideo', this.playlist.id)
             .then(() => {
                 view.DeleteConfirmDialog = false;
             });
@@ -161,8 +161,8 @@ export default {
         },
 
         addToPlaylist(playlist) {
-            this.$store.dispatch('setPlaylist', playlist);
-            this.$store.dispatch('togglePlaylistAddVideosDialog', true);
+            this.$store.dispatch('playlists/setPlaylist', playlist);
+            this.$store.dispatch('playlists/togglePlaylistAddVideosDialog', true);
         }
     }
 }

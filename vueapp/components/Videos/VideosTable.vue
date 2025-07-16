@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import StudipButton from "@studip/StudipButton";
 import StudipIcon from "@studip/StudipIcon";
 import StudipProgressIndicator from "@studip/StudipProgressIndicator.vue";
@@ -276,20 +276,10 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'videos',
-            'videosCount',
-            'videosReload',
-            'videoSortMode',
-            'availableVideoTags',
-            'availableVideoCourses',
-            'axios_running',
-            'courseVideosToCopy',
-            'playlists',
-            'course_config',
-            'isLTIAuthenticated',
-            'simple_config_list',
-        ]),
+        ...mapGetters('videos', ['videos', 'videosCount', 'videosReload', 'videoSortMode', 'availableVideoTags', 'availableVideoCourses', 'courseVideosToCopy' ]),
+        ...mapGetters('opencast', ['axios_running', 'isLTIAuthenticated']),
+        ...mapGetters('playlists', ['playlists']),
+        ...mapGetters('config', ['course_config', 'simple_config_list']),
 
         numberOfColumns() {
             return 7 - (this.showCheckbox ? 0 : 1) - (this.showActions ? 0 : 1);
@@ -360,13 +350,13 @@ export default {
     methods: {
         loadVideos() {
             this.videos_loading = true;
-            this.$store.commit('setVideos', {});
+            this.$store.commit('videos/setVideos', {});
             this.loadedVideos = [];
             this.videosTags = [];
             this.videosCourses = [];
 
             if (this.isCourse && this.playlist) {
-                this.$store.dispatch('loadPlaylistVideos', {
+                this.$store.dispatch('videos/loadPlaylistVideos', {
                     ...this.filters,
                     offset: this.offset,
                     order: this.order,
@@ -375,7 +365,7 @@ export default {
                     limit: this.nolimit ? -1 : this.limit
                 }).then(this.loadVideosFinished);
             } else if(this.isCourse && !this.playlist) {
-                this.$store.dispatch('loadCourseVideos', {
+                this.$store.dispatch('videos/loadCourseVideos', {
                     ...this.filters,
                     offset: this.offset,
                     order: this.order,
@@ -383,14 +373,14 @@ export default {
                     limit: this.limit,
                 }).then(this.loadVideosFinished);
             } else if (this.canEdit && this.playlist) {
-                this.$store.dispatch('loadPlaylistVideos', {
+                this.$store.dispatch('videos/loadPlaylistVideos', {
                     ...this.filters,
                     order: this.order,
                     token: this.playlist.token,
                     limit: -1,  // Show all videos in playlist edit view
                 }).then(this.loadVideosFinished);
             } else {
-                this.$store.dispatch('loadMyVideos', {
+                this.$store.dispatch('videos/loadMyVideos', {
                     ...this.filters,
                     offset: this.offset,
                     order: this.order,
@@ -499,7 +489,7 @@ export default {
             }
 
             if (this.playlist && this.canEdit) {
-                this.$store.dispatch('setPlaylistSort', {
+                this.$store.dispatch('playlists/setPlaylistSort', {
                     token: this.playlist.token,
                     sort: videoSort
                 });
@@ -522,28 +512,28 @@ export default {
             let view = this;
 
             if (this.selectedVideos.find(video => video?.livestream)) {
-                view.$store.dispatch('addMessage', {
+                view.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: view.$gettext('Livestream-Videos können nicht entfernt werden.')
                 });
                 return;
             }
 
-            this.$store.dispatch('removeVideosFromPlaylist', {
+            this.$store.dispatch('playlists/removeVideosFromPlaylist', {
                 playlist:  this.playlist.token,
                 videos:    this.selectedVideos,
                 course_id: this.cid
             }).then(() => {
                 this.updateSelectedVideos([]);
 
-                view.$store.dispatch('addMessage', {
+                view.$store.dispatch('messages/addMessage', {
                     type: 'success',
                     text: view.$gettext('Die Videos wurden von der Wiedergabeliste entfernt.')
                 });
 
                 this.loadVideos();
             }).catch(() => {
-                view.$store.dispatch('addMessage', {
+                view.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: view.$gettext('Die Videos konnten von der Wiedergabeliste nicht entfernt werden.')
                 });
@@ -592,12 +582,12 @@ export default {
 
         removePlaylist(token, cid) {
             if (confirm(this.$gettext('Sind Sie sicher, dass Sie diese Wiedergabeliste entfernen möchten?'))) {
-                this.$store.dispatch('setPlaylist', null);
-                this.$store.dispatch('removePlaylistFromCourse', {
+                this.$store.dispatch('playlists/setPlaylist', null);
+                this.$store.dispatch('playlists/removePlaylistFromCourse', {
                     token: token,
                     course: cid
                 }).then(() => {
-                    this.$store.dispatch('loadPlaylists');
+                    this.$store.dispatch('playlists/loadPlaylists');
                 });
             }
         },
@@ -605,17 +595,17 @@ export default {
 
     created() {
         // Disable sort mode if active
-        this.$store.dispatch('setVideoSortMode', false);
-        this.$store.dispatch('setVideosReload', false);
+        this.$store.dispatch('videos/setVideoSortMode', false);
+        this.$store.dispatch('videos/setVideosReload', false);
     },
 
     async mounted() {
         this.clearPaging()
-        this.$store.commit('setVideos', {});
+        this.$store.commit('videos/setVideos', {});
 
-        this.$store.dispatch('loadUserCourses');
+        this.$store.dispatch('opencast/loadUserCourses');
 
-        await this.$store.dispatch('authenticateLti').then(() => {
+        await this.$store.dispatch('opencast/authenticateLti').then(() => {
             if (this.isCourse || this.canEdit) {
                 this.setDefaultSortOrder();
                 this.loadVideos();
@@ -638,7 +628,7 @@ export default {
 
         // Catch every playlist change to handle video loading
         playlist(playlist) {
-            this.$store.dispatch('setVideoSortMode', false);
+            this.$store.dispatch('videos/setVideoSortMode', false);
             if (playlist !== null) {
                 this.clearPaging();
                 this.setDefaultSortOrder();
@@ -650,7 +640,7 @@ export default {
         videosReload(reload) {
             if (reload) {
                 this.loadVideos();
-                this.$store.dispatch('setVideosReload', false);
+                this.$store.dispatch('videos/setVideosReload', false);
             }
         },
 
@@ -663,7 +653,7 @@ export default {
                 this.sortedVideos = this.loadedVideos;
             } else {
                 if (newmode === 'commit') {
-                    this.$store.dispatch('setPlaylistSort', {
+                    this.$store.dispatch('playlists/setPlaylistSort', {
                         token: this.playlist.token,
                         sort:  {
                             field: 'order',
@@ -674,7 +664,7 @@ export default {
                     this.loadedVideos = this.sortedVideos;
                     this.$store.commit('setVideos', this.sortedVideos);
 
-                    this.$store.dispatch('uploadSortPositions', {
+                    this.$store.dispatch('videos/uploadSortPositions', {
                         playlist_token: this.playlist.token,
                         sortedVideos  : this.sortedVideos.map((elem) => elem.token)
                     });
@@ -684,7 +674,7 @@ export default {
                     this.loadVideos();
                 }
                 if (newmode !== false) {
-                    this.$store.dispatch('setVideoSortMode', false);
+                    this.$store.dispatch('videos/setVideoSortMode', false);
                 }
             }
         },
@@ -696,11 +686,11 @@ export default {
             };
 
             if (success) {
-                this.$store.commit('setOpencastOffline', false);
-                this.$store.dispatch('removeMessage', error_msg);
+                this.$store.commit('opencast/setOpencastOffline', false);
+                this.$store.dispatch('messages/removeMessage', error_msg);
             } else {
-                this.$store.commit('setOpencastOffline', true);
-                this.$store.dispatch('addMessage', error_msg);
+                this.$store.commit('opencast/setOpencastOffline', true);
+                this.$store.dispatch('messages/addMessage', error_msg);
             }
         }
     },

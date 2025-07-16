@@ -59,7 +59,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['cid', 'defaultPlaylist']),
+        ...mapGetters('playlists', ['defaultPlaylist']),
+        ...mapGetters('opencast', ['cid']),
     },
 
     methods: {
@@ -75,31 +76,31 @@ export default {
             const is_default = this.isDefault;
             this.isCopying = true;
 
-            this.$store.dispatch('copyPlaylistsToCourse', {
+            this.$store.dispatch('playlists/copyPlaylistsToCourse', {
                 course: this.cid,
                 playlists: this.selectedPlaylists,
                 is_default: is_default,
             }).then(() => {
                 this.selectedPlaylists = [];
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'success',
                     text: this.$gettext('Die Wiedergabelisten wurden in die Veranstaltung kopiert.')
                 });
 
                 if (is_default) {
                     // When is_default is true, it means it is the course playlist creation and we need to set a few things.
-                    this.$store.dispatch('loadCourseConfig', this.cid);
+                    this.$store.dispatch('config/loadCourseConfig', this.cid);
                 }
 
-                this.$store.dispatch('loadPlaylists')
+                this.$store.dispatch('playlists/loadPlaylists')
                     .then(() => {
                         if (is_default) {
                             // Set default playlist active
-                            this.$store.dispatch('setPlaylist', this.defaultPlaylist);
+                            this.$store.dispatch('playlists/setPlaylist', this.defaultPlaylist);
                         }
                     });
 
-                this.$store.dispatch('setPlaylistsReload', true);
+                this.$store.dispatch('playlists/setPlaylistsReload', true);
                 this.isCopying = false;
                 this.$emit('done');
             });

@@ -39,11 +39,11 @@ window.addEventListener("DOMContentLoaded", function() {
     axios.defaults.baseURL = window.OpencastPlugin.API_URL;
     // Catch errors
     axios.interceptors.response.use((response) => { // intercept the global error
-            store.dispatch('axiosStop');
+            store.dispatch('opencast/axiosStop');
 
             return response;
         }, function (error) {
-            store.dispatch('axiosStop');
+            store.dispatch('opencast/axiosStop');
 
             // This makes it possible to cancel requests, but we at the moment we don't want to handle it here.
             if (axios.isCancel(error)) {
@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", function() {
             }
 
             if (error.response.data !== undefined) {
-                store.dispatch('addMessage', error.response);
+                store.dispatch('messages/addMessage', error.response);
             }
 
             // Do something with response error
@@ -62,7 +62,7 @@ window.addEventListener("DOMContentLoaded", function() {
      // set loading animation
      axios.interceptors.request.use(
         request => {
-            store.dispatch('axiosStart');
+            store.dispatch('opencast/axiosStart');
 
             return request;
         }
@@ -85,10 +85,10 @@ window.addEventListener("DOMContentLoaded", function() {
     Vue.component("v-select", vSelect);
 
     if (window.OpencastPlugin.CID !== undefined) {
-        store.dispatch('updateCid', window.OpencastPlugin.CID);
+        store.dispatch('opencast/updateCid', window.OpencastPlugin.CID);
     }
 
-    store.dispatch('updateSite', window.OpencastPlugin.ROUTE);
+    store.dispatch('opencast/updateSite', window.OpencastPlugin.ROUTE);
 
     Vue.mount('#opencast');
 });

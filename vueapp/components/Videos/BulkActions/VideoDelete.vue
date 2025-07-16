@@ -44,9 +44,7 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters([
-            'simple_config_list'
-        ]),
+        ...mapGetters('config', ['simple_config_list']),
     },
 
     methods: {
@@ -55,7 +53,7 @@ export default {
             let promises = [];
 
             for (let id in this.event) {
-                promises.push(this.$store.dispatch('deleteVideo', this.event[id]));
+                promises.push(this.$store.dispatch('videos/deleteVideo', this.event[id]));
             }
 
             Promise.all(promises).then((values) => {
@@ -76,7 +74,7 @@ export default {
                     type = 'warning';
                 }
 
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: type,
                     text: this.$gettext('%{ num_success } Videos wurden gelöscht, bei %{ num_errors } Videos gab es Probleme.', {
                         num_success: success,

@@ -10,7 +10,8 @@
         <template v-else>
             <ContentBar>
                 <template #title>
-                    <h2>{{ $gettext('Opencast Videos') }}</h2>
+                    <StudipIcon shape="opencast" :size="24" role="info"/>
+                    <span>{{ $gettext('Opencast Videos') }}</span>
                 </template>
                 <template #nav>
                     <Tabs v-model="tabSelection">
@@ -25,7 +26,9 @@
                     <ContentBarSearch />
                 </template>
             </ContentBar>
-            <VideosTable v-if="playlist && tabSelection === 0 " :playlist="playlist" :cid="cid" :canEdit="canEdit" :canUpload="canUpload" />
+            <VideosOverview v-if="tabSelection === 0" />
+            <VideosTable v-if="playlist && tabSelection === 1 " :playlist="playlist" :cid="cid" :canEdit="canEdit" :canUpload="canUpload" />
+            
         </template>
     </div>
 </template>
@@ -33,21 +36,25 @@
 <script>
 import { mapGetters } from 'vuex';
 import VideosTable from '@/components/Videos/VideosTable';
+import VideosOverview from '@/components/Videos/VideosOverview';
 import MessageBox from '@/components/MessageBox.vue';
 import ContentBar from '@components/Layouts/ContentBar.vue';
 import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
 import ContentBarSearch from '@/components/ContentBarSearch.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: 'CourseVideos',
     components: {
         VideosTable,
+        VideosOverview,
         MessageBox,
         ContentBar,
         Tab,
         Tabs,
         ContentBarSearch,
+        StudipIcon
     },
     data() {
         return {
@@ -56,7 +63,9 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlist', 'cid', 'defaultPlaylist', 'course_config']),
+        ...mapGetters('opencast', ['cid',]),
+        ...mapGetters('playlists', ['defaultPlaylist', 'playlist',]),
+        ...mapGetters('config', ['course_config']),
 
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
@@ -77,8 +86,8 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadPlaylists').then(() => {
-            this.$store.dispatch('setPlaylist', this.defaultPlaylist);
+        this.$store.dispatch('playlists/loadPlaylists').then(() => {
+            this.$store.dispatch('playlists/setPlaylist', this.defaultPlaylist);
         });
     },
 };

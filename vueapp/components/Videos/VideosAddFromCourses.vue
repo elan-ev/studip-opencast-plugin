@@ -60,7 +60,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlist', 'userCourses', 'cid']),
+        ...mapGetters('opencast', ['cid', 'userCourses']),
+        ...mapGetters('playlists', ['playlist']),
     },
 
     methods: {
@@ -77,20 +78,20 @@ export default {
         },
 
         addVideosToPlaylist() {
-            this.$store.dispatch('addVideosToPlaylist', {
+            this.$store.dispatch('playlists/addVideosToPlaylist', {
                 playlist:  this.playlist.token,
                 videos:    this.selectedVideos,
                 course_id: this.cid
             }).then(() => {
                 this.selectedVideos = [];
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'success',
                     text: this.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt.')
                 });
-                this.$store.commit('setVideosReload', true);
+                this.$store.commit('videos/setVideosReload', true);
                 this.$emit('done');
             }).catch(() => {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.')
                 });
@@ -100,7 +101,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('loadUserCourses');
+        this.$store.dispatch('opencast/loadUserCourses');
     }
 };
 </script>

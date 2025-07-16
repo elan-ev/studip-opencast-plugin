@@ -122,7 +122,7 @@ export default {
     props: ['config_list'],
 
     computed: {
-        ...mapGetters(['config']),
+        ...mapGetters('config', ['config']),
 
         resources() {
             let resources = [];

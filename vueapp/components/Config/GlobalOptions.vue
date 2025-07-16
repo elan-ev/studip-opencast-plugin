@@ -103,7 +103,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['config']),
+        ...mapGetters('config', ['config']),
 
         /**
          * The list of global settings, cleaned by settings which should not be displayed directly

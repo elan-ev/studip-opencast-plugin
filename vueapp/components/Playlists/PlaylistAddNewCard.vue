@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import StudipButton from "@studip/StudipButton";
 import StudipDialog from '@studip/StudipDialog'
 import { mapGetters } from "vuex";
 
@@ -54,7 +53,6 @@ export default {
     name: "PlaylistAddNewCard",
 
     components: {
-        StudipButton,
         StudipDialog
     },
 
@@ -68,7 +66,8 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['simple_config_list', 'currentUser', 'currentLTIUser']),
+        ...mapGetters('config', ['simple_config_list']),
+        ...mapGetters('opencast', ['currentUser', 'currentLTIUser']),
 
         title() {
             return this.isDefault ? this.$gettext('Kurswiedergabeliste anlegen') : this.$gettext('Wiedergabeliste anlegen');
@@ -99,12 +98,12 @@ export default {
             this.playlist.is_default = this.isDefault;
             this.playlist.creator = this.currentUser.fullname;
 
-            this.$store.dispatch('addPlaylist', this.playlist)
+            this.$store.dispatch('playlists/addPlaylist', this.playlist)
                 .then(() => {
                     this.$emit('done');
                 })
                 .catch(() => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: this.$gettext('Die Wiedergabeliste konnte nicht erstellt werden.')
                     });
@@ -114,7 +113,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('simpleConfigListRead').then(() => {
+        this.$store.dispatch('config/simpleConfigListRead').then(() => {
             this.selectedServer = this.simple_config_list['server'][this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER']];
         })
 
