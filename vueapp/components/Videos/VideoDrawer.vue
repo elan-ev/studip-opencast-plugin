@@ -2,6 +2,7 @@
     <div>
         <Drawer
             v-if="attachTarget"
+            :wrapperClass="wrapperClass"
             :visible="showDrawer"
             :attachTo="attachTarget"
             side="right"
@@ -84,7 +85,11 @@
                             <strong v-if="selectedVideo.contributors !== ''">{{ $gettext('Mitwirkende') }}</strong>
                             <p>{{ selectedVideo.contributors }}</p>
                             <template #footer>
-                                <button v-if="canEdit && selectedVideo.state !== 'running'" class="button edit" @click="performAction('VideoEdit')">
+                                <button
+                                    v-if="canEdit && selectedVideo.state !== 'running'"
+                                    class="button edit"
+                                    @click="performAction('VideoEdit')"
+                                >
                                     {{ $gettext('Bearbeiten') }}
                                 </button>
                             </template>
@@ -133,7 +138,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, getCurrentInstance } from 'vue';
+import { computed, onMounted, onUnmounted, ref, getCurrentInstance } from 'vue';
 import Drawer from '@components/Layouts/Drawer.vue';
 import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
@@ -282,8 +287,46 @@ const isLivestream = computed(() => {
     return livestream.value !== null;
 });
 
+const wrapperClass = computed(() => [
+  'oc--video-drawer',
+  'video-drawer-wrapper',
+  isFixed.value ? 'video-drawer-wrapper--fixed' : 'video-drawer-wrapper--absolute',
+]);
+
+const isFixed = ref(false);
+
+const updateLayout = () => {
+    const header = document.querySelector('#main-header');
+    const topBar = document.querySelector('#site-title');
+    isFixed.value = document.body.classList.contains('fixed');
+
+    if (isFixed.value && topBar) {
+        document.documentElement.style.setProperty('--main-header-height', `${topBar.offsetHeight}px`);
+    } else if (header) {
+        document.documentElement.style.setProperty('--main-header-height', `${header.offsetHeight}px`);
+    }
+};
+
+const updateIsFixed = () => {
+    isFixed.value = document.body.classList.contains('fixed');
+};
+
 onMounted(() => {
     attachTarget.value = document.querySelector('#content-wrapper');
+    updateLayout();
+
+    // Body class ändern beobachten (für fixed toggeln)
+    const mutationObserver = new MutationObserver(updateLayout);
+    mutationObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    // Header Größe beobachten (falls sich Höhe ändert)
+    const header = document.querySelector('#main-header');
+    const resizeObserver = new ResizeObserver(updateLayout);
+    if (header) resizeObserver.observe(header);
+});
+onUnmounted(() => {
+    mutationObserver.disconnect();
+    resizeObserver.disconnect();
 });
 const close = () => {
     store.dispatch('videodrawer/setShowDrawer', false);
@@ -321,7 +364,6 @@ const getMimeType = (url) => {
 };
 
 const performAction = (action) => {
-    console.log(action);
     actionComponent.value = componentMap[action] || null;
     showActionDialog.value = !!actionComponent.value;
 };

@@ -22,6 +22,9 @@ const state = {
     courseVideosToCopy: [],
     videosReload: false,
     showEpisodesDefaultVisibilityDialog: false,
+    globalVideos: {}, // neu: globaler Cache aller geladenen Videos, keyed nach token
+    playlistVideos: {}, // token => Array von Videos
+    playlistVideosLoadingStates: {}, // token -> boolean
 };
 
 const getters = {
@@ -75,6 +78,12 @@ const getters = {
 
     showEpisodesDefaultVisibilityDialog(state) {
         return state.showEpisodesDefaultVisibilityDialog;
+    },
+
+    globalVideos: (state) => Object.values(state.globalVideos),
+    playlistVideos: (state) => (token) => state.playlistVideos[token] || [],
+    isPlaylistLoading: (state) => (token) => {
+        return !!state.playlistLoadingStates?.[token];
     },
 };
 
@@ -246,6 +255,15 @@ const actions = {
     toggleShowEpisodesDefaultVisibilityDialog({ commit }, mode) {
         commit('setShowEpisodesDefaultVisibilityDialog', mode);
     },
+
+    async loadVideosByPlaylist({ commit }, data) {
+        commit('setPlaylistLoadingState', { token: data.token, loading: true });
+        const { data: response } = await ApiService.get(`playlists/${data.token}/videos`, {
+            params: new URLSearchParams(data),
+        });
+        commit('setPlaylistVideos', { playlistToken: data.token, videos: response.videos });
+        commit('setPlaylistLoadingState', { token: data.token, loading: false });
+    },
 };
 
 const mutations = {
@@ -312,6 +330,29 @@ const mutations = {
 
     setShowEpisodesDefaultVisibilityDialog(state, mode) {
         state.showEpisodesDefaultVisibilityDialog = mode;
+    },
+
+    setGlobalVideos(state, videos) {
+        videos.forEach((video) => {
+            state.globalVideos[video.token] = video;
+        });
+    },
+
+    setPlaylistVideos(state, { playlistToken, videos }) {
+        state.playlistVideos[playlistToken] = videos;
+        // Gleichzeitig global speichern:
+        videos.forEach((video) => {
+            state.globalVideos[video.token] = video;
+        });
+    },
+
+    setPlaylistLoadingState(state, { token, loading }) {
+        if (loading) {
+            state.playlistLoadingStates = { ...state.playlistLoadingStates, [token]: true };
+        } else {
+            const { [token]: removed, ...rest } = state.playlistLoadingStates;
+            state.playlistLoadingStates = rest;
+        }
     },
 };
 
