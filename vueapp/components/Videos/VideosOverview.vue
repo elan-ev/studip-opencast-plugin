@@ -3,8 +3,7 @@
         <VideoHero v-if="heroVideo" :video="heroVideo" />
         <section class="oc--videos-teasers" v-if="defaultPlaylist">
             <template v-if="isPlaylistLoading(defaultPlaylist.token)">
-                <VideoTeaserSkeleton v-for="n in 4" :key="n" />
-                <!-- <VideoTeaserSkeleton v-for="n in Math.min(4, defaultPlaylist.videos_count)" :key="n" /> -->
+                <VideoTeaserSkeleton v-for="n in Math.min(4, defaultPlaylist.videos_count)" :key="n" />
             </template>
             <template v-else>
                 <VideoTeaser
