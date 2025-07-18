@@ -26,9 +26,11 @@
                     <ContentBarSearch />
                 </template>
             </ContentBar>
+            <div class="oc--course-videos-content">
             <VideosOverview v-if="tabSelection === 0" />
-            <VideosTable v-if="playlist && tabSelection === 1 " :playlist="playlist" :cid="cid" :canEdit="canEdit" :canUpload="canUpload" />
-            
+            <VideosAllInCourse v-if="tabSelection === 1" />
+            <VideosTable v-if="playlist && tabSelection === 4 " :playlist="playlist" :cid="cid" :canEdit="canEdit" :canUpload="canUpload" />
+            </div>
         </template>
     </div>
 </template>
@@ -37,6 +39,7 @@
 import { mapGetters } from 'vuex';
 import VideosTable from '@/components/Videos/VideosTable';
 import VideosOverview from '@/components/Videos/VideosOverview';
+import VideosAllInCourse from '@/components/Videos/VideosAllInCourse.vue'
 import MessageBox from '@/components/MessageBox.vue';
 import ContentBar from '@components/Layouts/ContentBar.vue';
 import Tab from '@components/Layouts/Tab.vue';
@@ -49,6 +52,7 @@ export default {
     components: {
         VideosTable,
         VideosOverview,
+        VideosAllInCourse,
         MessageBox,
         ContentBar,
         Tab,
