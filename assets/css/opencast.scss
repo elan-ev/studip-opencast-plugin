@@ -2331,3 +2331,47 @@ $video-drawer-spacing: 15px;
         }
     }
 }
+
+
+.playlist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.playlist-entry {
+    position: relative;
+    padding-right: 2.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #ddd;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.playlist-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    padding: 0.25rem;
+}
+
+.playlist-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.playlist-meta {
+    color: #666;
+
+    span+span::before {
+        content: " | ";
+        margin: 0 0.25rem;
+        color: #aaa;
+    }
+}

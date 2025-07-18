@@ -6,7 +6,7 @@
             :confirmClass="'accept'"
             :closeText="dialogCloseText"
             :closeClass="'cancel'"
-            height="400"
+            height="500"
             width="500"
             @close="decline"
             @confirm="accept"
@@ -19,6 +19,7 @@
                 <VideoPlaylists
                     :event="event"
                     :removable="false"
+                    :as-table="false"
                 />
             </template>
         </StudipDialog>
@@ -70,7 +71,7 @@ export default {
 
             return this.$gettext('Wenn Sie dieses Video verändern, wirken sich diese Änderungen auf die folgenden ' +
                 'Wiedergabelisten aus, zu denen das Video hinzugefügt wurde. Sollten Sie dies nicht beabsichtigen, ' +
-                'laden Sie das Video erneut hoch und bearbeiten Sie diese Kopie.');
+                'laden Sie bitte das Video erneut hoch und bearbeiten Sie diese Kopie.');
         },
 
         dialogConfirmText() {
