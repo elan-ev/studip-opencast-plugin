@@ -117,7 +117,7 @@
                         </Tab>
                         <Tab
                             v-if="!isLivestream && simple_config_list.settings.OPENCAST_ALLOW_TECHNICAL_FEEDBACK"
-                            :name="$gettext('Technisches Rückmeldung')"
+                            :name="$gettext('Technische Rückmeldung')"
                         >
                             <VideoReport :event="selectedVideo" />
                         </Tab>
@@ -288,9 +288,9 @@ const isLivestream = computed(() => {
 });
 
 const wrapperClass = computed(() => [
-  'oc--video-drawer',
-  'video-drawer-wrapper',
-  isFixed.value ? 'video-drawer-wrapper--fixed' : 'video-drawer-wrapper--absolute',
+    'oc--video-drawer',
+    'video-drawer-wrapper',
+    isFixed.value ? 'video-drawer-wrapper--fixed' : 'video-drawer-wrapper--absolute',
 ]);
 
 const isFixed = ref(false);
