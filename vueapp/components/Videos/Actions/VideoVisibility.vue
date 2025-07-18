@@ -1,9 +1,9 @@
 <template>
     <div class="oc--visibility-options">
-        <VideoChangeWarning
+        <!-- <VideoChangeWarning
             :event="event"
             :title="$gettext('Auswirkung der Bearbeitung')"
-        />
+        /> -->
         <form class="default" @submit="editVideo">
             <fieldset>
                 <legend>
