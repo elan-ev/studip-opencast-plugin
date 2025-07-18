@@ -2,17 +2,11 @@
     <div>
         <StudipDialog
             :title="$gettext('Video aus Wiedergabeliste entfernen')"
-            :confirmText="$gettext('Akzeptieren')"
-            :confirmClass="'accept'"
-            :closeText="$gettext('Abbrechen')"
-            :closeClass="'cancel'"
+            :question="$gettext('Möchten Sie das Video wirklich aus der Wiedergabeliste entfernen?')"
             height="200"
             @close="decline"
             @confirm="removeVideo"
         >
-            <template v-slot:dialogContent>
-                {{ $gettext('Möchten Sie das Video wirklich aus der Wiedergabeliste entfernen?') }}
-            </template>
         </StudipDialog>
     </div>
 </template>
