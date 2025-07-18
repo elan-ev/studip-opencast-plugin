@@ -2406,10 +2406,6 @@ $video-drawer-spacing: 15px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s ease;
 
-    &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
     .oc--playlist-card__thumbnail {
         flex-shrink: 0;
         width: 270px;
