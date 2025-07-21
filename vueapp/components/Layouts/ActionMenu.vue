@@ -11,47 +11,64 @@
             </div>
             <ul class="action-menu-list">
                 <li v-for="item in navigationItems" :key="item.id" class="action-menu-item">
-                    <a
-                        v-if="item.type === 'link'"
-                        v-bind="linkAttributes(item)"
-                        v-on="linkEvents(item)"
-                        href="#prevent-default"
-                    >
+                    <!-- Toggle -->
+                    <button v-if="item.type === 'toggle'" @click.stop="toggle(item)">
                         <studip-icon
                             v-if="item.icon !== false"
                             :shape="item.icon.shape"
                             :role="item.icon.role"
                             class="action-menu-item-icon"
-                        ></studip-icon>
-                        <span v-else class="action-menu-no-icon"></span>
-
+                        />
                         {{ item.label }}
-                    </a>
-                    <label
-                        v-else-if="item.icon"
-                        class="undecorated"
-                        v-bind="linkAttributes(item)"
-                        v-on="linkEvents(item)"
-                    >
-                        <studip-icon
-                            :shape="item.icon.shape"
-                            :role="item.icon.role"
-                            :name="item.name"
-                            :title="item.label"
-                            v-bind="item.attributes ?? {}"
-                            class="action-menu-item-icon"
-                        ></studip-icon>
-                        {{ item.label }}
-                    </label>
+                        <LayoutSwitch
+                            :model-value="item.value"
+                            @update:modelValue="(val) => $emit(item.emit, val)"
+                            @click.stop
+                        />
+                    </button>
                     <template v-else>
-                        <span class="action-menu-no-icon"></span>
-                        <button
-                            :name="item.name"
-                            v-bind="Object.assign(item.attributes ?? {}, linkAttributes(item))"
+                        <a
+                            v-if="item.type === 'link'"
+                            v-bind="linkAttributes(item)"
+                            v-on="linkEvents(item)"
+                            href="#prevent-default"
+                        >
+                            <studip-icon
+                                v-if="item.icon !== false"
+                                :shape="item.icon.shape"
+                                :role="item.icon.role"
+                                class="action-menu-item-icon"
+                            ></studip-icon>
+                            <span v-else class="action-menu-no-icon"></span>
+
+                            {{ item.label }}
+                        </a>
+                        <label
+                            v-else-if="item.icon"
+                            class="undecorated"
+                            v-bind="linkAttributes(item)"
                             v-on="linkEvents(item)"
                         >
+                            <studip-icon
+                                :shape="item.icon.shape"
+                                :role="item.icon.role"
+                                :name="item.name"
+                                :title="item.label"
+                                v-bind="item.attributes ?? {}"
+                                class="action-menu-item-icon"
+                            ></studip-icon>
                             {{ item.label }}
-                        </button>
+                        </label>
+                        <template v-else>
+                            <span class="action-menu-no-icon"></span>
+                            <button
+                                :name="item.name"
+                                v-bind="Object.assign(item.attributes ?? {}, linkAttributes(item))"
+                                v-on="linkEvents(item)"
+                            >
+                                {{ item.label }}
+                            </button>
+                        </template>
                     </template>
                 </li>
             </ul>
@@ -72,12 +89,14 @@
 
 <script>
 import StudipIcon from '@studip/StudipIcon.vue';
+import LayoutSwitch from './LayoutSwitch.vue';
 
 export default {
     name: 'studip-action-menu',
 
     components: {
         StudipIcon,
+        LayoutSwitch,
     },
 
     props: {
@@ -96,6 +115,10 @@ export default {
         };
     },
     methods: {
+        toggle(item) {
+            const newValue = !item.value;
+            this.$emit(item.emit, newValue);
+        },
         linkAttributes(item) {
             let attributes = item.attributes;
             attributes.class = item.classes;
@@ -112,7 +135,7 @@ export default {
         },
         linkEvents(item) {
             let events = {};
-            if (item.emit) {
+            if (item.emit && item.type !== 'toggle') {
                 events.click = (e) => {
                     e.preventDefault();
                     this.$emit.apply(this, [item.emit].concat(item.emitArguments));
@@ -148,6 +171,8 @@ export default {
                     classes: classes.trim(),
                     attributes: item.attributes || {},
                     disabled: item.disabled,
+                    value: item.value,
+                    onToggle: item.onToggle,
                 };
             });
         },

@@ -38,14 +38,9 @@ const props = defineProps({
         required: true,
     },
 });
-const owner = computed(() => {
-    const perms = props.video.perms;
-    const owners = perms.filter((p) => p.perm === 'owner');
 
-    return owners[0] || null;
-});
-const ownerId = computed(() => owner.value?.user_id);
-const ownerName = computed(() => owner.value?.fullname);
+const ownerId = computed(() => props.video.owner.id);
+const ownerName = computed(() => props.video.owner.fullname);
 const { avatarUrl } = useAvatar(ownerId);
 
 

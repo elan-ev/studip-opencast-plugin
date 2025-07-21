@@ -23,6 +23,7 @@
                                 allowfullscreen
                                 title="Opencast Video Player"
                             ></iframe>
+                            <img v-if="!playerUrl && selectedVideo.state !== null" :src="preview" class="video-drawer-preview"/>
                         </Tab>
                         <Tab v-if="presenterSources" :name="$gettext('Presenter')">
                             <video width="100%" controls>
@@ -52,7 +53,8 @@
                     <header>
                         <div class="video-metadata-header-wrapper">
                             <h2>{{ videoTitle }}</h2>
-                            <h3>{{ selectedVideo.presenters }}</h3>
+                            <h2>{{ videoInfo }}</h2>
+                            <h3>{{ selectedVideo.owner.fullname }}</h3>
                             <div class="oc--tags oc--tags-video">
                                 <Tag v-for="tag in selectedVideo.tags" v-bind:key="tag.id" :tag="tag.tag" />
                             </div>
@@ -82,6 +84,8 @@
                     <Tabs :key="selectedVideo.id + '-settings'">
                         <Tab selected :name="$gettext('Informationen')">
                             <p>{{ selectedVideo.description }}</p>
+                            <strong v-if="selectedVideo.presenters !== ''">{{ $gettext('Vortragende') }}</strong>
+                            <p>{{ selectedVideo.presenters }}</p>
                             <strong v-if="selectedVideo.contributors !== ''">{{ $gettext('Mitwirkende') }}</strong>
                             <p>{{ selectedVideo.contributors }}</p>
                             <template #footer>
@@ -158,7 +162,6 @@ import VideoLinkToPlaylists from './Actions/VideoLinkToPlaylists.vue';
 
 const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
-
 const store = useStore();
 
 const attachTarget = ref(null);
@@ -202,27 +205,39 @@ const menuItems = computed(() => {
 
     return menuItems;
 });
-
 const showDrawer = computed(() => {
     return store.getters['videodrawer/showDrawer'];
 });
 const selectedVideo = computed(() => {
     return store.getters['videodrawer/selectedVideo'];
 });
+const preview = computed(() => {
+    return selectedVideo.value ? STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + selectedVideo.value.token : '';
+});
 const videoTitle = computed(() => {
     return selectedVideo?.value?.title || '';
 });
+const videoInfo = computed(() => {
+    const state = selectedVideo?.value?.state;
+    const stateInfo = {
+        running: $gettext('Dieses Video wird gerade von Opencast vearbeitet'),
+        failed: $gettext('Dieses Video hatte einen Verarbeitungsfehler'),
+        cutting: $gettext('Dieses Video wartet auf den Schnitt')
+    };
+
+    return stateInfo[state] ? `(${stateInfo[state]})` : '';
+});
 const playerUrl = computed(() => {
     if (!selectedVideo.value) return '';
-    return selectedVideo.value.publication.track_link;
+    return selectedVideo.value.publication?.track_link;
 });
 const presenterSources = computed(() => {
     if (!selectedVideo.value) return [];
-    return extractSources(selectedVideo.value.publication.downloads.presenter);
+    return extractSources(selectedVideo.value.publication?.downloads?.presenter);
 });
 const presentationSources = computed(() => {
     if (!selectedVideo.value) return [];
-    return extractSources(selectedVideo.value.publication.downloads.presentation);
+    return extractSources(selectedVideo.value.publication?.downloads?.presentation);
 });
 
 const canEdit = computed(() => {

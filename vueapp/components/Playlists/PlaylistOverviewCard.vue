@@ -1,29 +1,40 @@
 <template>
-    <div class="oc--playlist-card">
-        <div class="oc--playlist-card__thumbnail">
-            <PlaylistThumbnailStack :videos="playlistVideos(playlist.token)" />
+    <div class="oc--playlist-card-wrapper">
+        <button class="oc--playlist-card" @click="selectPlaylist">
+            <div class="oc--playlist-card__thumbnail">
+                <PlaylistThumbnailStack :videos="playlistVideos(playlist.token)" />
+            </div>
+            <div class="oc--playlist-card__info">
+                <h3 class="oc--playlist-card__title">{{ playlist.title }}</h3>
+                <div class="oc--tags oc--tags-playlist">
+                    <Tag v-for="tag in playlist.tags" :key="tag.id" :tag="tag.tag" />
+                </div>
+                <p class="oc--playlist-card__description">{{ playlist.description }}</p>
+                <div class="oc--playlist-card__meta">
+                    {{ playlist.videos_count }} {{ $ngettext('Video', 'Videos', playlist.videos_count) }}
+                </div>
+            </div>
+        </button>
+        <PlaylistMetadataDialog
+            v-if="showEditDialog"
+            :playlist="playlist"
+            @done="closeEditDialog"
+            @cancel="closeEditDialog"
+        />
+        <div class="oc--playlist-card__actions">
+            <ActionMenu
+                :items="menuItems"
+                @editPlaylist="showEditDialog = true"
+                @toggleAllowDownload="(val) => allowDownload = val"
+            />
         </div>
-        <div class="oc--playlist-card__info">
-            <div class="oc--playlist-card__actions">
-                <StudipActionMenu :items="menuItems" @editPlaylist="showEditDialog = true"/>
-            </div>
-            <h3 class="oc--playlist-card__title">{{ playlist.title }}</h3>
-            <div class="oc--tags oc--tags-playlist">
-                <Tag v-for="tag in playlist.tags" :key="tag.id" :tag="tag.tag" />
-            </div>
-            <p class="oc--playlist-card__description">{{ playlist.description }}</p>
-            <div class="oc--playlist-card__meta">
-                {{ playlist.videos_count }} {{ $ngettext('Video', 'Videos', playlist.videos_count) }}
-            </div>
-        </div>
-        <PlaylistMetadataDialog v-if="showEditDialog" :playlist="playlist" @done="closeEditDialog" @cancel="closeEditDialog"/>
     </div>
 </template>
 
 <script setup>
 import { computed, getCurrentInstance, ref } from 'vue';
 import PlaylistThumbnailStack from './PlaylistThumbnailStack.vue';
-import StudipActionMenu from '@studip/StudipActionMenu.vue';
+import ActionMenu from '../Layouts/ActionMenu.vue';
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import PlaylistMetadataDialog from './PlaylistMetadataDialog.vue';
@@ -41,28 +52,44 @@ const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
 };
 
-const menuItems = computed(() => {
-    let menuItems = [];
-
-    menuItems.push({
-        id: 1,
-        label: $gettext('Metadaten bearbeiten'),
-        icon: 'edit',
-        emit: 'editPlaylist',
-    });
-
-    menuItems.push({
-        id: 2,
-        label: $gettext('Löschen'),
-        icon: 'trash',
-        emit: 'deletePlaylist',
-    });
-
-    return menuItems;
+const allowDownload = computed({
+    get: () => props.playlist.allow_download,
+    set: (val) => {
+        const playlist = { ...props.playlist, allow_download: val };
+        store.dispatch('playlists/setAllowDownloadForPlaylists', playlist);
+    },
 });
 
+const menuItems = computed(() => {
+    return [
+        {
+            id: 1,
+            label: $gettext('Metadaten bearbeiten'),
+            icon: 'edit',
+            emit: 'editPlaylist',
+        },
+        {
+            id: 2,
+            label: $gettext('Downloads erlauben'),
+            icon: 'accept',
+            type: 'toggle',
+            value: allowDownload.value,
+            emit: 'toggleAllowDownload',
+        },
+        {
+            id: 3,
+            label: $gettext('Löschen'),
+            icon: 'trash',
+            emit: 'deletePlaylist',
+        },
+    ];
+});
+
+const selectPlaylist = () => {
+    store.dispatch('playlists/setSelectedPlaylist', props.playlist);
+};
 
 const closeEditDialog = () => {
     showEditDialog.value = false;
-}
+};
 </script>

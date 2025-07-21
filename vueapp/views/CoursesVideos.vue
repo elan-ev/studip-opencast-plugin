@@ -97,5 +97,12 @@ export default {
             this.$store.dispatch('playlists/setPlaylist', this.defaultPlaylist);
         });
     },
+    watch: {
+        tabSelection(newVal) {
+            if (newVal === 2) {
+                this.$store.dispatch('playlists/setSelectedPlaylist', null);
+            }
+        }
+    }
 };
 </script>

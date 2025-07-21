@@ -265,3 +265,66 @@ $icons: (
         text-shadow: none;
     }
 }
+
+/*  Switch */
+
+$switch-height: 20px;
+$switch-width: 35px;
+$slider-radius: $switch-height / 2;
+$knob-size: $switch-height - 4px; // 2px padding oben und unten
+$knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (2px + 2px)
+
+.oc--switch {
+  position: relative;
+  display: inline-block;
+  width: $switch-width;
+  height: $switch-height;
+  user-select: none;
+
+  input {
+    position: absolute;
+    inset: 0; // top, right, bottom, left: 0
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background-color: #ccc;
+    border-radius: $slider-radius;
+    transition: background-color 0.3s;
+    pointer-events: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      height: $knob-size;
+      width: $knob-size;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+  }
+
+  input:checked + .slider {
+    background-color: var(--green);
+
+    &::before {
+      transform: translateX($knob-move-distance);
+    }
+  }
+
+  input:disabled + .slider {
+    background-color: #aaa;
+    cursor: not-allowed;
+
+    &::before {
+      background-color: #eee;
+    }
+  }
+}

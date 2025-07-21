@@ -6,7 +6,7 @@
 
 <script setup>
 import VideoCard from './VideoCard.vue';
-import { computed, onMounted, watch } from 'vue';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();

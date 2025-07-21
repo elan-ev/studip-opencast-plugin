@@ -1,4 +1,4 @@
-import ApiService from "@/common/api.service";
+import ApiService from '@/common/api.service';
 
 const state = {
     playlists: [],
@@ -12,11 +12,13 @@ const state = {
     playlistsReload: false,
     schedule_playlist: null,
     livestream_playlist: null,
-}
+
+    selectedPlaylist: null,
+};
 
 const getters = {
     playlists(state) {
-        return state.playlists
+        return state.playlists;
     },
 
     userPlaylists(state) {
@@ -24,11 +26,11 @@ const getters = {
     },
 
     playlist(state) {
-        return state.playlist
+        return state.playlist;
     },
 
     defaultPlaylist(state) {
-        // Find the courses default playlist
+        // Find the cour1s default playlist
         for (let id in state.playlists) {
             if (state.playlists[id].is_default == true) {
                 return state.playlists[id];
@@ -52,7 +54,7 @@ const getters = {
     },
 
     playlistCourses(state) {
-        return state.playlistCourses
+        return state.playlistCourses;
     },
 
     showPlaylistAddVideosDialog(state) {
@@ -64,20 +66,26 @@ const getters = {
     },
 
     schedule_playlist(state) {
-        return state.schedule_playlist
+        return state.schedule_playlist;
     },
 
     livestream_playlist(state) {
-        return state.livestream_playlist
+        return state.livestream_playlist;
     },
 
-}
+    selectedPlaylist(state) {
+        return state.selectedPlaylist;
+    },
 
+    hasSelectedPlaylist(rootGetters) {
+        return rootGetters['selectedPlaylist'] !== null;
+    },
+};
 
 const actions = {
-    async loadPlaylists(context, filters= {}) {
+    async loadPlaylists(context, filters = {}) {
         let $cid = context.rootState.opencast.cid;
-        let $route = ($cid == null) ? 'playlists' : 'courses/' + $cid + '/playlists';
+        let $route = $cid == null ? 'playlists' : 'courses/' + $cid + '/playlists';
 
         // Load all playlists if no limit is set
         filters.limit = filters.limit || -1;
@@ -93,13 +101,12 @@ const actions = {
             }
         }
 
-        return ApiService.get($route, { params })
-            .then(({ data }) => {
-                context.commit('setPlaylists', data.playlists);
-                if ($cid) {
-                    context.dispatch('loadScheduledRecordingPlaylists');
-                }
-            });
+        return ApiService.get($route, { params }).then(({ data }) => {
+            context.commit('setPlaylists', data.playlists);
+            if ($cid) {
+                context.dispatch('loadScheduledRecordingPlaylists');
+            }
+        });
     },
 
     async loadUserPlaylists(context, filters) {
@@ -115,10 +122,9 @@ const actions = {
         }
 
         // Get playlists user has access to
-        return ApiService.get('playlists', { params })
-            .then(({ data }) => {
-                context.commit('setUserPlaylists', data.playlists);
-            });
+        return ApiService.get('playlists', { params }).then(({ data }) => {
+            context.commit('setUserPlaylists', data.playlists);
+        });
     },
 
     /**
@@ -128,12 +134,11 @@ const actions = {
      * @param token playlist token
      */
     async loadPlaylist(context, token) {
-        return ApiService.get('playlists/' + token)
-            .then(({ data }) => {
-                context.dispatch('setDefaultSortOrder', data).then(() => {
-                    context.commit('setPlaylist', data);
-                });
+        return ApiService.get('playlists/' + token).then(({ data }) => {
+            context.dispatch('setDefaultSortOrder', data).then(() => {
+                context.commit('setPlaylist', data);
             });
+        });
     },
 
     async setPlaylist(context, playlist) {
@@ -148,7 +153,7 @@ const actions = {
         } else {
             [field, order] = playlist.sort_order.split('_');
         }
-        context.commit('videos/setVideoSort', {field: field, order: order});
+        context.commit('videos/setVideoSort', { field: field, order: order });
     },
 
     /**
@@ -158,22 +163,19 @@ const actions = {
      * @param playlist playlist data
      */
     async updatePlaylist(context, playlist) {
-        return ApiService.put('playlists/' + playlist.token, playlist)
-            .then(({ data }) => {
-                context.commit('updatePlaylist', data);
-            });
+        return ApiService.put('playlists/' + playlist.token, playlist).then(({ data }) => {
+            context.commit('updatePlaylist', data);
+        });
     },
 
     async updateAvailableTags(context) {
-        return ApiService.get('tags')
-            .then(({ data }) => {
-                context.commit('setAvailableTags', data);
-            });
+        return ApiService.get('tags').then(({ data }) => {
+            context.commit('setAvailableTags', data);
+        });
     },
 
     async loadPlaylistCourses(context, token) {
-        return ApiService.get('playlists/' + token + '/courses')
-        .then(({ data }) => {
+        return ApiService.get('playlists/' + token + '/courses').then(({ data }) => {
             context.commit('setPlaylistCourses', data);
         });
     },
@@ -183,7 +185,7 @@ const actions = {
         if (data?.is_default == true) {
             params.is_default = true;
         }
-        return ApiService.post('courses/' + data.course + '/playlist/' + data.token, params)
+        return ApiService.post('courses/' + data.course + '/playlist/' + data.token, params);
     },
 
     async addPlaylistsToCourse(context, data) {
@@ -213,18 +215,19 @@ const actions = {
     },
 
     async updatePlaylistCourses(context, params) {
-        return ApiService.put('playlists/' + params.token + '/courses', {courses: params.courses})
+        return ApiService.put('playlists/' + params.token + '/courses', { courses: params.courses });
     },
 
     async updatePlaylistOfCourse(context, params) {
-        return ApiService.put('courses/' + params.course + '/playlist/' + params.token, params.playlist)
-            .then(({ data }) => {
+        return ApiService.put('courses/' + params.course + '/playlist/' + params.token, params.playlist).then(
+            ({ data }) => {
                 context.commit('updatePlaylist', data);
-            });
+            }
+        );
     },
 
     async removePlaylistFromCourse(context, params) {
-        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token)
+        return ApiService.delete('courses/' + params.course + '/playlist/' + params.token);
     },
 
     /**
@@ -236,10 +239,9 @@ const actions = {
      * @param data.videos list of video tokens to add
      */
     async addVideosToPlaylist(context, data) {
-        return ApiService.put('/playlists/' + data.playlist + '/videos', data)
-            .then(() => {
-                context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': data.videos.length});
-            });
+        return ApiService.put('/playlists/' + data.playlist + '/videos', data).then(() => {
+            context.commit('addToVideosCount', { token: data.playlist, addToCount: data.videos.length });
+        });
     },
 
     /**
@@ -251,10 +253,9 @@ const actions = {
      * @param data.videos list of video tokens to remove
      */
     async removeVideosFromPlaylist(context, data) {
-        return ApiService.patch('/playlists/' + data.playlist + '/videos', data)
-            .then(() => {
-                context.commit('addToVideosCount', {'token': data.playlist, 'addToCount': -data.videos.removedCount});
-            });
+        return ApiService.patch('/playlists/' + data.playlist + '/videos', data).then(() => {
+            context.commit('addToVideosCount', { token: data.playlist, addToCount: -data.videos.removedCount });
+        });
     },
 
     addPlaylistUI({ commit }, show) {
@@ -272,29 +273,27 @@ const actions = {
             delete playlist.is_default;
         }
 
-        return ApiService.post('playlists', playlist)
-            .then(({ data }) => {
-                if ($cid !== null) {
-                    // connect playlist to new course
-                    dispatch('addPlaylistToCourse', {
-                        course: $cid,
-                        token: data.token,
-                        is_default: is_default
-                    })
-                    .then(() => {
-                        dispatch('setPlaylistsReload', true);
-                        dispatch('loadPlaylists');
-                        // When is_default is true, it means it is the course playlist creation and we need to set a few things.
-                        if (is_default) {
-                            dispatch('config/loadCourseConfig', $cid);
-                            dispatch('loadPlaylist', data.token);
-                        }
-                    })
-                } else {
+        return ApiService.post('playlists', playlist).then(({ data }) => {
+            if ($cid !== null) {
+                // connect playlist to new course
+                dispatch('addPlaylistToCourse', {
+                    course: $cid,
+                    token: data.token,
+                    is_default: is_default,
+                }).then(() => {
                     dispatch('setPlaylistsReload', true);
                     dispatch('loadPlaylists');
-                }
-            });
+                    // When is_default is true, it means it is the course playlist creation and we need to set a few things.
+                    if (is_default) {
+                        dispatch('config/loadCourseConfig', $cid);
+                        dispatch('loadPlaylist', data.token);
+                    }
+                });
+            } else {
+                dispatch('setPlaylistsReload', true);
+                dispatch('loadPlaylists');
+            }
+        });
     },
 
     async copyPlaylist(context, params) {
@@ -312,18 +311,18 @@ const actions = {
         return ApiService.delete('playlists/' + token);
     },
 
-    async setPlaylistSearch({dispatch, commit}, search) {
-        await commit('setPlaylistSearch', search)
-        dispatch('loadPlaylists')
+    async setPlaylistSearch({ dispatch, commit }, search) {
+        await commit('setPlaylistSearch', search);
+        dispatch('loadPlaylists');
     },
 
-    async setPlaylistSort({dispatch}, data) {
+    async setPlaylistSort({ dispatch }, data) {
         return ApiService.put('/playlists/' + data.token, {
-            sort_order: data.sort.field + '_' + data.sort.order
+            sort_order: data.sort.field + '_' + data.sort.order,
         });
     },
 
-    async setAllowDownloadForPlaylist({dispatch, commit, state, rootState}, allowed) {
+    async setAllowDownloadForPlaylist({ dispatch, commit, state, rootState }, allowed) {
         let $cid = rootState.opencast.cid;
 
         if (state.playlist) {
@@ -333,7 +332,7 @@ const actions = {
                 dispatch('updatePlaylistOfCourse', {
                     course: $cid,
                     token: state.playlist.token,
-                    playlist: state.playlist
+                    playlist: state.playlist,
                 });
             } else {
                 dispatch('updatePlaylist', state.playlist);
@@ -341,21 +340,38 @@ const actions = {
         }
     },
 
-    togglePlaylistAddVideosDialog({commit}, mode) {
+    setAllowDownloadForPlaylists({ dispatch, state, rootState }, playlist) {
+        let cid = rootState.opencast.cid;
+        if (cid !== null) {
+            dispatch('updatePlaylistOfCourse', {
+                course: cid,
+                token: playlist.token,
+                playlist: playlist,
+            });
+        } else {
+            dispatch('updatePlaylist', playlist);
+        }
+
+        if (state.selectedPlaylist !== null) {
+            dispatch('setSelectedPlaylist', playlist);
+        }
+    },
+
+    togglePlaylistAddVideosDialog({ commit }, mode) {
         commit('setShowPlaylistAddVideosDialog', mode);
     },
 
-    setPlaylistsReload({commit}, mode) {
-        commit('setPlaylistsReload', mode)
+    setPlaylistsReload({ commit }, mode) {
+        commit('setPlaylistsReload', mode);
     },
 
-    async loadScheduledRecordingPlaylists({dispatch, commit, state}) {
+    async loadScheduledRecordingPlaylists({ dispatch, commit, state }) {
         if (state.playlists?.length) {
-            let schedule_playlists = state.playlists.filter(pl => pl.contains_scheduled == true);
+            let schedule_playlists = state.playlists.filter((pl) => pl.contains_scheduled == true);
             if (schedule_playlists?.length) {
                 await commit('setSchedulePlaylist', schedule_playlists[0]);
             }
-            let livestream_playlists = state.playlists.filter(pl => pl.contains_livestreams == true);
+            let livestream_playlists = state.playlists.filter((pl) => pl.contains_livestreams == true);
             if (livestream_playlists?.length) {
                 await commit('setLivestreamPlaylist', livestream_playlists[0]);
             }
@@ -364,18 +380,22 @@ const actions = {
 
     async setSchedulePlaylist({ commit, dispatch, rootState }, token) {
         let $cid = rootState.opencast.cid;
-        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/scheduled')
+        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/scheduled');
     },
 
     async setLivestreamPlaylist({ commit, dispatch, rootState }, token) {
         let $cid = rootState.opencast.cid;
-        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/livestreams')
-    }
-}
+        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/livestreams');
+    },
+
+    setSelectedPlaylist({ commit }, playlist) {
+        commit('SET_SELECTED_PLAYLIST', playlist);
+    },
+};
 
 const mutations = {
     updatePlaylist(state, playlist) {
-        let idx = state.playlists.findIndex(p => p.token === playlist.token);
+        let idx = state.playlists.findIndex((p) => p.token === playlist.token);
         if (idx > -1) {
             state.playlists[idx] = playlist;
         }
@@ -394,7 +414,7 @@ const mutations = {
     },
 
     setPlaylistSort(state, sortOder) {
-        state.playlist.sort_order = sortOder.sort.field + '_' + sortOder.sort.order
+        state.playlist.sort_order = sortOder.sort.field + '_' + sortOder.sort.order;
     },
 
     setPlaylistAdd(state, show) {
@@ -410,7 +430,7 @@ const mutations = {
     },
 
     setPlaylistCourses(state, courses) {
-        state.playlistCourses = courses
+        state.playlistCourses = courses;
     },
 
     setShowPlaylistAddVideosDialog(state, mode) {
@@ -422,7 +442,7 @@ const mutations = {
     },
 
     addToVideosCount(state, data) {
-        let idx = state.playlists.findIndex(playlist => playlist.token === data.token);
+        let idx = state.playlists.findIndex((playlist) => playlist.token === data.token);
         if (idx !== -1) {
             state.playlists[idx].videos_count += data.addToCount;
         }
@@ -433,19 +453,22 @@ const mutations = {
     },
 
     setSchedulePlaylist(state, schedule_playlist) {
-        state.schedule_playlist = schedule_playlist
+        state.schedule_playlist = schedule_playlist;
     },
 
     setLivestreamPlaylist(state, livestream_playlist) {
-        state.livestream_playlist = livestream_playlist
+        state.livestream_playlist = livestream_playlist;
     },
-}
 
+    SET_SELECTED_PLAYLIST(state, playlist) {
+        state.selectedPlaylist = playlist;
+    },
+};
 
 export default {
     namespaced: true,
     state,
     getters,
     mutations,
-    actions
-}
+    actions,
+};

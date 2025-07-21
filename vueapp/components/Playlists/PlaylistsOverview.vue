@@ -1,16 +1,23 @@
 <template>
-    <section class="oc--videos-playlists-overview">
+    <section v-if="!hasSelectedPlaylist" class="oc--videos-playlists-overview">
         <PlaylistOverviewCard v-for="playlist in playlists" :key="playlist.token" :playlist="playlist" />
+    </section>
+    <section v-else class="oc--videos-playlists-playlist">
+        <VideosInPlaylist />
     </section>
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { computed } from 'vue';
 import PlaylistOverviewCard from './PlaylistOverviewCard.vue';
+import VideosInPlaylist from '../Videos/VideosInPlaylist.vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
 const playlists = computed(() => {
     return store.getters['playlists/playlists'];
+});
+const hasSelectedPlaylist = computed(() => {
+    return store.getters['playlists/hasSelectedPlaylist'];
 });
 </script>

@@ -8,6 +8,9 @@ export function useVideoDrawer() {
     const setSelectedVideo = (video) => store.dispatch('videodrawer/setSelectedVideo', video);
 
     const selectVideo = (video) => {
+        // if (video.state !== null) {
+        //     return;
+        // }
         setShowDrawer(true);
         setSelectedVideo(video);
     };
