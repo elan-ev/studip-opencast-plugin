@@ -5,7 +5,15 @@
                 <PlaylistThumbnailStack :videos="playlistVideos(playlist.token)" />
             </div>
             <div class="oc--playlist-card__info">
-                <h3 class="oc--playlist-card__title">{{ playlist.title }}</h3>
+                <span class="oc--playlist-card__title">
+                    {{ playlist.title }}
+                    <StudipIcon
+                        v-if="isDefault"
+                        shape="star"
+                        role="info"
+                        :title="$gettext('Standard-Wiedergabeliste')"
+                    />
+                </span>
                 <div class="oc--tags oc--tags-playlist">
                     <Tag v-for="tag in playlist.tags" :key="tag.id" :tag="tag.tag" />
                 </div>
@@ -25,7 +33,8 @@
             <ActionMenu
                 :items="menuItems"
                 @editPlaylist="showEditDialog = true"
-                @toggleAllowDownload="(val) => allowDownload = val"
+                @toggleAllowDownload="(val) => (allowDownload = val)"
+                @setDefaultPlaylist="setDefaultPlaylist"
             />
         </div>
     </div>
@@ -35,6 +44,7 @@
 import { computed, getCurrentInstance, ref } from 'vue';
 import PlaylistThumbnailStack from './PlaylistThumbnailStack.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
+import StudipIcon from '@studip/StudipIcon.vue';
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import PlaylistMetadataDialog from './PlaylistMetadataDialog.vue';
@@ -52,6 +62,8 @@ const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
 };
 
+const isDefault = computed(() => props.playlist.is_default);
+
 const allowDownload = computed({
     get: () => props.playlist.allow_download,
     set: (val) => {
@@ -61,28 +73,34 @@ const allowDownload = computed({
 });
 
 const menuItems = computed(() => {
-    return [
-        {
-            id: 1,
-            label: $gettext('Metadaten bearbeiten'),
-            icon: 'edit',
-            emit: 'editPlaylist',
-        },
-        {
-            id: 2,
-            label: $gettext('Downloads erlauben'),
-            icon: 'accept',
-            type: 'toggle',
-            value: allowDownload.value,
-            emit: 'toggleAllowDownload',
-        },
-        {
-            id: 3,
-            label: $gettext('Löschen'),
-            icon: 'trash',
-            emit: 'deletePlaylist',
-        },
-    ];
+    let menuItems = [];
+    menuItems.push({
+        id: 1,
+        label: $gettext('Metadaten bearbeiten'),
+        icon: 'edit',
+        emit: 'editPlaylist',
+    });
+    menuItems.push({
+        id: 2,
+        label: $gettext('Als Standard festlegen'),
+        icon: 'star',
+        emit: 'setDefaultPlaylist',
+    });
+    menuItems.push({
+        id: 3,
+        label: $gettext('Downloads erlauben'),
+        icon: 'accept',
+        type: 'toggle',
+        value: allowDownload.value,
+        emit: 'toggleAllowDownload',
+    });
+    menuItems.push({
+        id: 4,
+        label: $gettext('Löschen'),
+        icon: 'trash',
+        emit: 'deletePlaylist',
+    });
+    return menuItems;
 });
 
 const selectPlaylist = () => {
@@ -91,5 +109,15 @@ const selectPlaylist = () => {
 
 const closeEditDialog = () => {
     showEditDialog.value = false;
+};
+
+const setDefaultPlaylist = async () => {
+    const params = {
+        course: store.getters['opencast/cid'],
+        token: props.playlist.token,
+        playlist: { ...props.playlist, is_default: true },
+    };
+    await store.dispatch('playlists/updatePlaylistOfCourse', params);
+    store.dispatch('playlists/loadPlaylists');
 };
 </script>

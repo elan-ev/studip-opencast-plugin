@@ -1,6 +1,6 @@
 <template>
     <section v-if="!hasSelectedPlaylist" class="oc--videos-playlists-overview">
-        <PlaylistOverviewCard v-for="playlist in playlists" :key="playlist.token" :playlist="playlist" />
+        <PlaylistsOverviewCard v-for="playlist in playlists" :key="playlist.token" :playlist="playlist" />
     </section>
     <section v-else class="oc--videos-playlists-playlist">
         <VideosInPlaylist />
@@ -9,7 +9,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import PlaylistOverviewCard from './PlaylistOverviewCard.vue';
+import PlaylistsOverviewCard from './PlaylistsOverviewCard.vue';
 import VideosInPlaylist from '../Videos/VideosInPlaylist.vue';
 import { useStore } from 'vuex';
 

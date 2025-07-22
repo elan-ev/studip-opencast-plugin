@@ -10,7 +10,7 @@
             :maxWidth="900"
             @close="close"
         >
-            <article v-if="selectedVideo" class="video-drawer-content">
+            <article v-if="selectedVideo" class="oc--video-drawer-content">
                 <section class="video-player">
                     <Tabs :key="selectedVideo.id" v-model="tabSelectionVideo">
                         <Tab :name="$gettext('Video')" selected>
@@ -23,7 +23,11 @@
                                 allowfullscreen
                                 title="Opencast Video Player"
                             ></iframe>
-                            <img v-if="!playerUrl && selectedVideo.state !== null" :src="preview" class="video-drawer-preview"/>
+                            <img
+                                v-if="!playerUrl && selectedVideo.state !== null"
+                                :src="preview"
+                                class="video-drawer-preview"
+                            />
                         </Tab>
                         <Tab v-if="presenterSources" :name="$gettext('Presenter')">
                             <video width="100%" controls>
@@ -49,17 +53,20 @@
                         </Tab>
                     </Tabs>
                 </section>
-                <section class="video-metadata">
-                    <header>
-                        <div class="video-metadata-header-wrapper">
-                            <h2>{{ videoTitle }}</h2>
-                            <h2>{{ videoInfo }}</h2>
-                            <h3>{{ selectedVideo.owner.fullname }}</h3>
+                <section class="oc--video-metadata">
+                    <header class="oc--video-metadata__header">
+                        <div class="oc--video-metadata__header-wrapper">
+                            <span class="oc--video-metadata__header__title">{{ videoTitle }}</span>
+                            <span class="oc--video-metadata__header__title">{{ videoInfo }}</span>
                             <div class="oc--tags oc--tags-video">
                                 <Tag v-for="tag in selectedVideo.tags" v-bind:key="tag.id" :tag="tag.tag" />
                             </div>
+                            <div class="oc--video-metadata__owner-row">
+                                <img :src="avatarUrl" class="oc--video-card__owner-avatar" />
+                                <span class="oc--video-card__owner-name">{{ ownerName }}</span>
+                            </div>
                         </div>
-                        <ul class="video-metadata-status">
+                        <ul class="oc--video-metadata__status">
                             <li>
                                 <StudipIcon shape="date" role="info" />
                                 <span :title="readableDate">{{ timeAgo(selectedVideo.created) }}</span>
@@ -164,6 +171,7 @@ import { useStore } from 'vuex';
 import VideoAccess from './Actions/VideoAccess.vue';
 import VideoLinkToPlaylists from './Actions/VideoLinkToPlaylists.vue';
 import { useFormat } from '@/composables/useFormat';
+import { useAvatar } from '@/composables/useAvatar';
 
 const { formatISODateTime, timeAgo } = useFormat();
 const { proxy } = getCurrentInstance();
@@ -203,7 +211,7 @@ const menuItems = computed(() => {
         menuItems.push({
             id: 3,
             label: $gettext('Aus Wiedergabeliste entfernen'),
-            icon: 'remove-circle',
+            icon: 'trash',
             emit: 'performAction',
             emitArguments: 'VideoRemoveFromPlaylist',
         });
@@ -220,8 +228,17 @@ const selectedVideo = computed(() => {
 const readableDate = computed(() => {
     return selectedVideo.value ? formatISODateTime(selectedVideo.value.created) : '';
 });
+const ownerId = computed(() => {
+    return selectedVideo.value ? selectedVideo.value.owner.id : null
+});
+const ownerName = computed(() => {
+    return selectedVideo.value ? selectedVideo.value.owner.fullname : '';
+});
+const { avatarUrl } = useAvatar(ownerId);
 const preview = computed(() => {
-    return selectedVideo.value ? STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + selectedVideo.value.token : '';
+    return selectedVideo.value
+        ? STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + selectedVideo.value.token
+        : '';
 });
 const videoTitle = computed(() => {
     return selectedVideo?.value?.title || '';
@@ -231,7 +248,7 @@ const videoInfo = computed(() => {
     const stateInfo = {
         running: $gettext('Dieses Video wird gerade von Opencast vearbeitet'),
         failed: $gettext('Dieses Video hatte einen Verarbeitungsfehler'),
-        cutting: $gettext('Dieses Video wartet auf den Schnitt')
+        cutting: $gettext('Dieses Video wartet auf den Schnitt'),
     };
 
     return stateInfo[state] ? `(${stateInfo[state]})` : '';
@@ -335,6 +352,12 @@ const updateIsFixed = () => {
     isFixed.value = document.body.classList.contains('fixed');
 };
 
+const handleKeydown = (event) => {
+    if (event.key === 'Escape') {
+        close();
+    }
+};
+
 onMounted(() => {
     attachTarget.value = document.querySelector('#content-wrapper');
     updateLayout();
@@ -347,10 +370,14 @@ onMounted(() => {
     const header = document.querySelector('#main-header');
     const resizeObserver = new ResizeObserver(updateLayout);
     if (header) resizeObserver.observe(header);
+
+    window.addEventListener('keydown', handleKeydown);
 });
 onUnmounted(() => {
     mutationObserver.disconnect();
     resizeObserver.disconnect();
+
+    window.removeEventListener('keydown', handleKeydown);
 });
 const close = () => {
     store.dispatch('videodrawer/setShowDrawer', false);

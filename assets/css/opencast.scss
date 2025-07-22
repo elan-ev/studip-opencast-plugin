@@ -1864,7 +1864,7 @@ label.oc--file-upload {
 }
 
 // VIDEO DRAWER
-$video-drawer-spacing: 15px;
+$video-drawer-spacing: 1rem;
 
 .drawer.oc--video-drawer {
     &.video-drawer-wrapper--absolute {
@@ -1892,55 +1892,59 @@ $video-drawer-spacing: 15px;
 }
 
 
-.video-drawer-content {
+.oc--video-drawer-content {
 
     >section {
         margin-bottom: $video-drawer-spacing;
     }
 
-    .video-metadata {
+    .oc--video-metadata {
         margin: 0 5px;
 
-        header {
-            margin: $video-drawer-spacing 8px $video-drawer-spacing*2 16px;
+        &__header {
+            margin: $video-drawer-spacing $video-drawer-spacing/2 $video-drawer-spacing $video-drawer-spacing;
             display: flex;
             justify-content: space-between;
 
-            h2 {
-                line-height: 1.1em;
-            }
-
-            h3 {
-                margin: 0 0 10px 0;
-            }
-
-            .oc--tags {}
-
-            .video-metadata-status {
-                min-width: 300px;
-                padding: 0;
-                margin-left: auto;
-                list-style: none;
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
-
-                li {
-                    padding: 0 4px;
-                    margin-left: $video-drawer-spacing;
-
-                    img {
-                        vertical-align: middle;
-                    }
-                }
-
-                span {
-                    margin-left: 8px;
-                }
+            &__title {
+                display: block;
+                font-size: 1.5rem;
+                line-height: 1.5rem;
+                margin-bottom: 0.5rem;
             }
 
             .video-drawer-menu {
                 margin-left: $video-drawer-spacing;
+            }
+        }
+
+        &__owner-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        &__status {
+            min-width: 300px;
+            padding: 0;
+            margin-left: auto;
+            list-style: none;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+
+            li {
+                padding: 0 4px;
+                margin-left: $video-drawer-spacing;
+
+                img {
+                    vertical-align: middle;
+                }
+            }
+
+            span {
+                margin-left: 8px;
             }
         }
     }
@@ -2450,14 +2454,14 @@ $video-drawer-spacing: 15px;
         outline-offset: 4px;
     }
 
-    .oc--playlist-card__thumbnail {
+    &__thumbnail {
         flex-shrink: 0;
         width: 270px;
         height: 180px;
         position: relative;
     }
 
-    .oc--playlist-card__info {
+    &__info {
         flex: 1;
         padding: 1rem 1rem;
         display: flex;
@@ -2467,29 +2471,32 @@ $video-drawer-spacing: 15px;
         height: calc(100% - 2rem);
     }
 
-
-
-    .oc--playlist-card__meta {
+    &__meta {
         margin-top: auto;
         align-self: flex-end;
         font-size: 0.875rem;
         color: #555;
     }
 
-    .oc--playlist-card__title {
+    &__title {
         font-size: 1.2rem;
         font-weight: bold;
         margin: 0;
         color: #222;
     }
 
-    .oc--playlist-card__tags {
+    &__is-default {
+        margin-top: -0.5rem;
+        font-style: italic;
+    }
+
+    &_tags {
         display: flex;
         flex-wrap: wrap;
         gap: 0.3rem;
     }
 
-    .oc--playlist-card__description {
+    &__description {
         font-size: 0.9rem;
         color: #666;
         margin: 0;

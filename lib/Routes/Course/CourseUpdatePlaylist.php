@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
+use Opencast\Models\Helpers;
 use Opencast\Models\Playlists;
 use Opencast\Models\PlaylistSeminars;
 
@@ -55,6 +56,11 @@ class CourseUpdatePlaylist extends OpencastController
         // Store remaining data in playlist
         $playlist->setData($json);
         $playlist->store();
+
+        // Make sure there is only one default playlist for a course at a time.
+        if ($playlist_seminar->is_default == '1') {
+            Helpers::ensureCourseHasOneDefaultPlaylist($course_id, $playlist->id);
+        }
 
         $ret_playlist = $playlist_seminar->toSanitizedArray();
 

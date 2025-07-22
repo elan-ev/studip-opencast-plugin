@@ -210,7 +210,7 @@ $icons: (
 .oc--content-bar {
     display: flex;
     flex-direction: column;
-    background-color: var(--dark-gray-color-5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5em 1em;
     margin-bottom: 1em;
     display: flex;
