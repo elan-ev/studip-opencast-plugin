@@ -7,14 +7,14 @@
             </template>
             <template v-else>
                 <VideoTeaser
-                    v-for="video in playlistVideos(defaultPlaylist.token).slice(0, 5)"
+                    v-for="video in teaserVideos"
                     :key="video.token"
                     :video="video"
                 />
             </template>
         </section>
-        <section v-if="playlists && playlists.length">
-            <PlaylistSection v-for="p in playlists" :key="p.token" :playlist="p" />
+        <section v-if="playlists && nonDefaultPlaylists.length">
+            <PlaylistSection v-for="p in nonDefaultPlaylists" :key="p.token" :playlist="p" />
         </section>
     </section>
 </template>
@@ -45,14 +45,27 @@ const playlistVideos = (token) => {
 };
 
 const defaultPlaylist = computed(() => {
-    return playlists.value.filter((playlist) => playlist.is_default)[0];
+    return playlists.value.find(playlist => playlist.is_default);
+});
+
+const defaultPlaylistVideos = computed(() => {
+    if (!defaultPlaylist.value) return [];
+    return playlistVideos(defaultPlaylist.value.token);
 });
 
 const heroVideo = computed(() => {
-    if (!defaultPlaylist.value) return null;
+    return defaultPlaylistVideos.value.find(video => video.state === null) || null;
+});
 
-    const defaultPlaylistVideos = playlistVideos(defaultPlaylist.value.token);
-    return defaultPlaylistVideos[0];
+const teaserVideos = computed(() => {
+    if (!heroVideo.value) return [];
+    return defaultPlaylistVideos.value
+        .filter(video => video.state === null && video.token !== heroVideo.value?.token)
+        .slice(0, 5);
+});
+
+const nonDefaultPlaylists = computed(() => {
+    return playlists.value.filter(playlist => !playlist.is_default);
 });
 
 const loadAllPlaylistVideos = async () => {

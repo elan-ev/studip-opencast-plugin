@@ -7,9 +7,9 @@
         <div class="oc--video-card__info">
             <div class="oc--video-card__owner-row">
                 <img :src="avatarUrl" class="oc--video-card__owner-avatar" />
-                <h4 class="oc--video-card__owner-name">{{ ownerName }}</h4>
+                <span class="oc--video-card__owner-name">{{ ownerName }}</span>
             </div>
-            <h3 class="oc--video-card__title">{{ video.title }}</h3>
+            <div class="oc--video-card__title">{{ video.title }}</div>
             <p class="oc--video-card__description">{{ video.description }}</p>
             <div class="oc--video-card__meta">
                 <div class="oc--video-card__date" :title="readableDate">{{ timeAgo(video.created) }}</div>
@@ -32,6 +32,7 @@ import StudipIcon from '@studip/StudipIcon';
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
 const { selectVideo } = useVideoDrawer();
 const { previewSrc } = useUrlHelper();
+
 const props = defineProps({
     video: {
         type: Object,
@@ -42,9 +43,6 @@ const props = defineProps({
 const ownerId = computed(() => props.video.owner.id);
 const ownerName = computed(() => props.video.owner.fullname);
 const { avatarUrl } = useAvatar(ownerId);
-
-
-
 
 const preview = previewSrc(props.video);
 const readableDuration = computed(() => formatDuration(props.video.duration));

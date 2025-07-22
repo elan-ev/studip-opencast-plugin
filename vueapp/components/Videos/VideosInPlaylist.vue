@@ -18,7 +18,7 @@
         </header>
 
         <nav class="oc--videos-in-playlist__breadcrumb">
-            <a href="#" @click.prevent="backToPlaylistOverview" class="back-link"
+            <a href="#" @click.prevent="backToPlaylistOverview" class="oc--link"
                 >← {{ $gettext('Zurück zur Übersicht') }}</a
             >
         </nav>

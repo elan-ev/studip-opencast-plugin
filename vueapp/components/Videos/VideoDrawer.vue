@@ -61,6 +61,10 @@
                         </div>
                         <ul class="video-metadata-status">
                             <li>
+                                <StudipIcon shape="date" role="info" />
+                                <span :title="readableDate">{{ timeAgo(selectedVideo.created) }}</span>
+                            </li>
+                            <li>
                                 <StudipIcon shape="visibility-visible" role="info" />
                                 <span
                                     >{{ selectedVideo.views }}
@@ -159,7 +163,9 @@ import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import VideoAccess from './Actions/VideoAccess.vue';
 import VideoLinkToPlaylists from './Actions/VideoLinkToPlaylists.vue';
+import { useFormat } from '@/composables/useFormat';
 
+const { formatISODateTime, timeAgo } = useFormat();
 const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
 const store = useStore();
@@ -210,6 +216,9 @@ const showDrawer = computed(() => {
 });
 const selectedVideo = computed(() => {
     return store.getters['videodrawer/selectedVideo'];
+});
+const readableDate = computed(() => {
+    return selectedVideo.value ? formatISODateTime(selectedVideo.value.created) : '';
 });
 const preview = computed(() => {
     return selectedVideo.value ? STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/opencastv3/redirect/preview/' + selectedVideo.value.token : '';
