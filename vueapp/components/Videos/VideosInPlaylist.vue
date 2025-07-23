@@ -1,27 +1,43 @@
 <template>
     <section class="oc--videos-in-playlist">
         <header class="oc--videos-in-playlist__header">
-            <p class="oc--videos-in-playlist__title">{{ playlist.title }}</p>
-            <div class="oc--videos-in-playlist__header-actions">
-                <ActionMenu
-                    :items="menuItems"
-                    @editPlaylist="showEditDialog = true"
-                    @toggleAllowDownload="(val) => allowDownload = val"
-                />
+            <div class="oc--videos-in-playlist__info">
+                <p class="oc--videos-in-playlist__title">{{ playlist.title }}</p>
+                <p v-if="playlist.description" class="oc--videos-in-playlist__description">
+                    {{ playlist.description }}
+                </p>
             </div>
-            <PlaylistMetadataDialog
-                v-if="showEditDialog"
-                :playlist="playlist"
-                @done="closeEditDialog"
-                @cancel="closeEditDialog"
-            />
+            <div class="oc--videos-in-playlist__sub-header">
+                <div class="oc--videos-in-playlist__meta">
+                    <a href="#" @click.prevent="backToPlaylistOverview" class="oc--link">
+                        <StudipIcon shape="arr_1left" :size="16" />
+                        {{ $gettext('Zurück zur Übersicht') }}
+                    </a>
+                    <span v-if="playlist.is_default" class="oc--videos-in-playlist__meta-item">
+                        <StudipIcon shape="star" :size="16" role="info" />
+                        {{ $gettext('Standard-Wiedergabeliste') }}
+                    </span>
+                    <span class="oc--videos-in-playlist__meta-item">
+                        <StudipIcon shape="video2" :size="16" role="info" />
+                        {{ playlistVideoCounter }}
+                    </span>
+                </div>
+                <div class="oc--videos-in-playlist__header-actions">
+                    <ActionMenu
+                        :items="menuItems"
+                        @editPlaylist="showEditDialog = true"
+                        @toggleAllowDownload="(val) => (allowDownload = val)"
+                    />
+                </div>
+            </div>
         </header>
+        <PlaylistMetadataDialog
+            v-if="showEditDialog"
+            :playlist="playlist"
+            @done="closeEditDialog"
+            @cancel="closeEditDialog"
+        />
 
-        <nav class="oc--videos-in-playlist__breadcrumb">
-            <a href="#" @click.prevent="backToPlaylistOverview" class="oc--link"
-                >← {{ $gettext('Zurück zur Übersicht') }}</a
-            >
-        </nav>
         <section class="oc--videos-all">
             <VideoCard v-for="video in playlistVideos(playlist.token)" :key="video.token" :video="video" />
         </section>
@@ -32,12 +48,16 @@
 import VideoCard from './VideoCard.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
 import PlaylistMetadataDialog from '../Playlists/PlaylistMetadataDialog.vue';
+import { useFormat } from '@/composables/useFormat';
 import { computed, getCurrentInstance, ref } from 'vue';
 import { useStore } from 'vuex';
 const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
+const $ngettext = proxy.$ngettext;
+import StudipIcon from '@studip/StudipIcon';
 
 const store = useStore();
+const { formatDuration, formatISODateTime, timeAgo } = useFormat();
 
 const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
@@ -89,6 +109,12 @@ const menuItems = computed(() => {
     });
 
     return menuItems;
+});
+
+const playlistVideoCounter = computed(() => {
+    const count = playlist.value.videos_count;
+
+    return `${count} ${$ngettext('Video', 'Videos', count)}`;
 });
 
 const backToPlaylistOverview = () => {

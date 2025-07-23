@@ -662,7 +662,7 @@ export default {
                     });
                     // store the new sorting order
                     this.loadedVideos = this.sortedVideos;
-                    this.$store.commit('setVideos', this.sortedVideos);
+                    this.$store.commit('videos/setVideos', this.sortedVideos);
 
                     this.$store.dispatch('videos/uploadSortPositions', {
                         playlist_token: this.playlist.token,
