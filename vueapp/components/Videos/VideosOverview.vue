@@ -19,13 +19,15 @@
     </section>
 </template>
 <script setup>
+import { computed, onMounted, watch, getCurrentInstance } from 'vue';
 import VideoHero from './VideoHero.vue';
 import VideoTeaser from './VideoTeaser.vue';
 import VideoTeaserSkeleton from './VideoTeaserSkeleton.vue';
 import PlaylistSection from './../Playlists/PlaylistSection.vue';
-import { computed, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 
+const { proxy } = getCurrentInstance();
+const $gettext = proxy.$gettext;
 const store = useStore();
 
 const cid = computed(() => {
