@@ -126,7 +126,7 @@ const actions = {
 
     updateView({ commit, dispatch }, view) {
         commit('setView', view);
-        commit('videos/clearPaging');
+        commit('videos/clearPaging', null, { root: true })
     },
 
     async authenticateLti({ dispatch }) {
