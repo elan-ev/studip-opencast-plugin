@@ -24,8 +24,10 @@
                 </div>
                 <div class="oc--videos-in-playlist__header-actions">
                     <ActionMenu
+                        v-if="canEdit"
                         :items="menuItems"
                         @editPlaylist="showDialog = 'edit'"
+                        @setDefaultPlaylist="setDefaultPlaylist"
                         @toggleAllowDownload="(val) => (allowDownload = val)"
                         @removePlaylist="showDialog = 'remove'"
                     />
@@ -79,6 +81,14 @@ const playlist = computed(() => {
     return store.getters['playlists/selectedPlaylist'];
 });
 
+const courseConfig = computed(() => {
+    return store.getters['config/course_config'];
+});
+
+const canEdit = computed(() => {
+    return courseConfig.value?.edit_allowed ?? false;
+});
+
 const allowDownload = computed({
     get: () => playlist.value?.allow_download ?? false,
     set: (val) => {
@@ -92,12 +102,20 @@ const menuItems = computed(() => {
 
     menuItems.push({
         id: 1,
-        label: $gettext('Metadaten bearbeiten'),
+        label: $gettext('Bearbeiten'),
         icon: 'edit',
         emit: 'editPlaylist',
     });
+    if (!playlist.value.is_default) {
+        menuItems.push({
+            id: 2,
+            label: $gettext('Als Standard festlegen'),
+            icon: 'star',
+            emit: 'setDefaultPlaylist',
+        });
+    }
     menuItems.push({
-        id: 2,
+        id: 3,
         label: $gettext('Downloads erlauben'),
         icon: 'accept',
         type: 'toggle',
@@ -105,19 +123,20 @@ const menuItems = computed(() => {
         emit: 'toggleAllowDownload',
     });
     menuItems.push({
-        id: 3,
+        id: 4,
         label: $gettext('Videos sortieren'),
         icon: 'arr_1sort',
         emit: 'sortPlaylist',
     });
 
-    menuItems.push({
-        id: 4,
-        label: $gettext('Löschen'),
-        icon: 'trash',
-        emit: 'removePlaylist',
-    });
-
+    if (!playlist.value.is_default) {
+        menuItems.push({
+            id: 5,
+            label: $gettext('Löschen'),
+            icon: 'trash',
+            emit: 'removePlaylist',
+        });
+    }
     return menuItems;
 });
 
@@ -129,6 +148,16 @@ const playlistVideoCounter = computed(() => {
 
 const backToPlaylistOverview = () => {
     store.dispatch('playlists/setSelectedPlaylist', null);
+};
+
+const setDefaultPlaylist = async () => {
+    const params = {
+        course: store.getters['opencast/cid'],
+        token: playlist.value.token,
+        playlist: { ...playlist.value, is_default: true },
+    };
+    await store.dispatch('playlists/updatePlaylistOfCourse', params);
+    store.dispatch('playlists/loadPlaylists');
 };
 
 const closeDialog = () => {

@@ -23,30 +23,33 @@
                 </div>
             </div>
         </button>
-        <PlaylistMetadataDialog
-            v-if="showDialog === 'edit'"
-            :playlist="playlist"
-            @done="closeDialog"
-            @cancel="closeDialog"
-        />
-        <StudipDialog
-            v-if="showDialog === 'remove'"
-            :title="$gettext('Wiedergabeliste entfernen')"
-            :question="$gettext('Möchten Sie Wiedergabeliste unwiderruflich entfernen?')"
-            height="200"
-            @close="closeDialog"
-            @confirm="removePlaylist"
-        >
-        </StudipDialog>
-        <div class="oc--playlist-card__actions">
-            <ActionMenu
-                :items="menuItems"
-                @editPlaylist="showDialog = 'edit'"
-                @toggleAllowDownload="(val) => (allowDownload = val)"
-                @setDefaultPlaylist="setDefaultPlaylist"
-                @removePlaylist="showDialog = 'remove'"
+        <template v-if="canEdit">
+            <div class="oc--playlist-card__actions">
+                <ActionMenu
+                    :items="menuItems"
+                    @editPlaylist="showDialog = 'edit'"
+                    @toggleAllowDownload="(val) => (allowDownload = val)"
+                    @setDefaultPlaylist="setDefaultPlaylist"
+                    @removePlaylist="showDialog = 'remove'"
+                />
+            </div>
+
+            <PlaylistMetadataDialog
+                v-if="showDialog === 'edit'"
+                :playlist="playlist"
+                @done="closeDialog"
+                @cancel="closeDialog"
             />
-        </div>
+            <StudipDialog
+                v-if="showDialog === 'remove'"
+                :title="$gettext('Wiedergabeliste entfernen')"
+                :question="$gettext('Möchten Sie Wiedergabeliste unwiderruflich entfernen?')"
+                height="200"
+                @close="closeDialog"
+                @confirm="removePlaylist"
+            >
+            </StudipDialog>
+        </template>
     </div>
 </template>
 
@@ -73,6 +76,14 @@ const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
 };
 
+const courseConfig = computed(() => {
+    return store.getters['config/course_config'];
+});
+
+const canEdit = computed(() => {
+    return courseConfig.value?.edit_allowed ?? false;
+});
+
 const isDefault = computed(() => props.playlist.is_default);
 
 const allowDownload = computed({
@@ -91,12 +102,14 @@ const menuItems = computed(() => {
         icon: 'edit',
         emit: 'editPlaylist',
     });
-    menuItems.push({
-        id: 2,
-        label: $gettext('Als Standard festlegen'),
-        icon: 'star',
-        emit: 'setDefaultPlaylist',
-    });
+    if (!props.playlist.is_default) {
+        menuItems.push({
+            id: 2,
+            label: $gettext('Als Standard festlegen'),
+            icon: 'star',
+            emit: 'setDefaultPlaylist',
+        });
+    }
     menuItems.push({
         id: 3,
         label: $gettext('Downloads erlauben'),
@@ -105,12 +118,15 @@ const menuItems = computed(() => {
         value: allowDownload.value,
         emit: 'toggleAllowDownload',
     });
-    menuItems.push({
-        id: 4,
-        label: $gettext('Löschen'),
-        icon: 'trash',
-        emit: 'removePlaylist',
-    });
+    if (!props.playlist.is_default) {
+        menuItems.push({
+            id: 4,
+            label: $gettext('Löschen'),
+            icon: 'trash',
+            emit: 'removePlaylist',
+        });
+    }
+
     return menuItems;
 });
 

@@ -222,6 +222,10 @@ const actions = {
         return ApiService.put('courses/' + params.course + '/playlist/' + params.token, params.playlist).then(
             ({ data }) => {
                 context.commit('updatePlaylist', data);
+
+                if (context.state.selectedPlaylist?.token === data.token) {
+                    context.commit('SET_SELECTED_PLAYLIST', data);
+                }
             }
         );
     },
