@@ -237,7 +237,10 @@ $icons: (
         }
     }
 
-    .oc--content-bar-search {}
+    .oc--content-bar-actions {
+        display: flex;
+        gap: 10px;
+    }
 }
 
 .oc--search {
@@ -279,6 +282,7 @@ $knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (
     position: relative;
     display: inline-block;
     width: $switch-width;
+    min-width: $switch-width;
     height: $switch-height;
     user-select: none;
 
@@ -334,6 +338,7 @@ $knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (
 .oc--context-menu {
     position: relative;
     display: inline-block;
+    z-index: 11;
 
     &__button.button {
         min-width: unset;
@@ -385,10 +390,8 @@ $knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (
         color: inherit;
         box-sizing: border-box;
 
-        &:hover,
-        &:focus {
+        &:hover {
             background-color: #f0f0f0;
-            outline: none;
         }
 
         &:disabled {

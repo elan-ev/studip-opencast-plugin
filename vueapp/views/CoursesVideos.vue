@@ -22,11 +22,31 @@
                         <Tab :name="$gettext('Informationen')"></Tab>
                     </Tabs>
                 </template>
-                <template #search>
-                    <!-- <ContentBarSearch /> -->
-                    <ContextMenu :title="$gettext('Hinzufügen')" :items="actions" @select="handleSelect">
+                <template #actions>
+                    <ContextMenu
+                        v-if="canUpload || canEdit"
+                        :title="$gettext('Hinzufügen')"
+                        :items="actions"
+                        @select="handleSelect"
+                    >
                         <template #button>
                             <StudipIcon shape="add" :size="20" />
+                        </template>
+                    </ContextMenu>
+                    <ContextMenu
+                        v-if="canEdit"
+                        :title="$gettext('Einstellungen')"
+                        :items="settingsActions"
+                        @select="handleSelect"
+                        @toggle="handleToggle"
+                    >
+                        <template #button>
+                            <StudipIcon shape="admin" :size="20" />
+                        </template>
+                    </ContextMenu>
+                    <ContextMenu :title="$gettext('Suche')" :items="[]" @select="handleSelect">
+                        <template #button>
+                            <StudipIcon shape="search" :size="20" />
                         </template>
                     </ContextMenu>
                 </template>
@@ -44,20 +64,22 @@
                 />
             </div>
 
-            <VideoUpload
-                v-if="activeDialog === 'videoUpload'"
-                @done="done"
-                @cancel="cancel"
-                :currentUser="currentUser"
-            />
+            <template v-if="canUpload || canEdit">
+                <VideoUpload
+                    v-if="activeDialog === 'videoUpload'"
+                    :currentUser="currentUser"
+                    @done="done"
+                    @cancel="cancel"
+                />
+                <VideosAddFromContents v-if="activeDialog === 'videoContents'" @done="done" @cancel="cancel" />
+                <VideosAddFromCourses v-if="activeDialog === 'videoCourses'" @done="done" @cancel="cancel" />
+                <PlaylistAddNewCard v-if="activeDialog === 'playlistNew'" @done="done" @cancel="cancel" />
+                <PlaylistsCopyCard v-if="activeDialog === 'playlistCopy'" @done="done" @cancel="cancel" />
+            </template>
 
-            <VideosAddFromContents v-if="activeDialog === 'videoContents'" @done="done" @cancel="cancel" />
-
-            <VideosAddFromCourses v-if="activeDialog === 'videoCourses'" @done="done" @cancel="cancel" />
-
-            <PlaylistAddNewCard v-if="activeDialog === 'playlistNew'" @done="done" @cancel="cancel" />
-
-            <PlaylistsCopyCard v-if="activeDialog === 'playlistCopy'" @done="done" @cancel="cancel" />
+            <template v-if="canEdit">
+                <EpisodesDefaultVisibilityDialog v-if="activeDialog === 'changeDefaultVisibility'" @done="done" @cancel="cancel" />
+            </template>
         </template>
     </div>
 </template>
@@ -72,7 +94,6 @@ import MessageBox from '@/components/MessageBox.vue';
 import ContentBar from '@components/Layouts/ContentBar.vue';
 import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
-import ContentBarSearch from '@/components/ContentBarSearch.vue';
 import ContextMenu from '@components/Layouts/ContextMenu.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 
@@ -81,6 +102,7 @@ import VideosAddFromContents from '@/components/Videos/VideosAddFromContents';
 import VideosAddFromCourses from '@/components/Videos/VideosAddFromCourses';
 import PlaylistAddNewCard from '@/components/Playlists/PlaylistAddNewCard';
 import PlaylistsCopyCard from '@/components/Playlists/PlaylistsCopyCard';
+import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
 
 export default {
     name: 'CourseVideos',
@@ -93,7 +115,6 @@ export default {
         ContentBar,
         Tab,
         Tabs,
-        ContentBarSearch,
         StudipIcon,
         ContextMenu,
 
@@ -102,6 +123,7 @@ export default {
         VideosAddFromCourses,
         PlaylistAddNewCard,
         PlaylistsCopyCard,
+        EpisodesDefaultVisibilityDialog
     },
     data() {
         return {
@@ -145,6 +167,14 @@ export default {
             }
         },
 
+        uploadEnabled() {
+            if (!this.course_config) {
+                return false;
+            }
+
+            return this.course_config.upload_enabled == 1;
+        },
+
         recordingLink() {
             if (!this.simple_config_list.settings || !this.course_config || !this.canShowStudio) {
                 return '';
@@ -177,13 +207,13 @@ export default {
                     {
                         id: 'addVideoFromContents',
                         label: this.$gettext('Arbeitsplatz'),
-                        description: this.$gettext('Fügt ein Video aus Ihrer Sammlung hinzu'),
+                        description: this.$gettext('Fügt Videos aus Ihrer Sammlung hinzu'),
                         icon: 'content',
                     },
                     {
                         id: 'addVideoFromCourse',
                         label: this.$gettext('Meine Veranstaltungen'),
-                        description: this.$gettext('Fügt ein Video aus einer anderen Veranstaltung hinzu'),
+                        description: this.$gettext('Fügt Videos aus einer anderen Veranstaltung hinzu'),
                         icon: 'seminar',
                     },
                 ];
@@ -226,12 +256,35 @@ export default {
             }
             return menuItems;
         },
+        settingsActions() {
+            const menuItems = [];
+            menuItems.push({
+                items: [
+                    {
+                        id: 'uploadEnabled',
+                        label: this.$gettext('Hochladen durch Studierende'),
+                        description: this.$gettext('Legt fest, ob Studierende Videos hochladen dürfen'),
+                        icon: 'upload',
+                        type: 'toggle',
+                        value: this.uploadEnabled,
+                        emit: 'upload-enabled',
+                    },
+                    {
+                        id: 'changeDefaultVisibility',
+                        label: this.$gettext('Standard für Sichtbarkeit'),
+                        description: this.$gettext(
+                            'Standardwert für die Sichtbarkeit von Videos in dieser Veranstaltung'
+                        ),
+                        icon: 'visibility-visible',
+                    },
+                ],
+            });
+            return menuItems;
+        },
     },
 
     methods: {
         handleSelect(item) {
-            console.log('Ausgewählte Aktion:', item.id);
-
             switch (item.id) {
                 case 'addVideoFromSystem':
                     this.activeDialog = 'videoUpload';
@@ -248,6 +301,19 @@ export default {
                 case 'copyPlaylist':
                     this.activeDialog = 'playlistCopy';
                     break;
+                case 'changeDefaultVisibility':
+                        this.activeDialog = 'changeDefaultVisibility';
+                        break;
+            }
+        },
+        handleToggle(event) {
+            const item = event.item;
+            const value = event.value;
+
+            switch (item.id) {
+                case 'uploadEnabled':
+                    this.setUpload(value);
+                    break;
             }
         },
         done() {
@@ -258,6 +324,11 @@ export default {
         cancel() {
             this.activeDialog = null;
             this.$emit('cancel');
+        },
+        async setUpload(upload) {
+            const uploadInt = +upload;
+            await this.$store.dispatch('opencast/setUpload', { cid: this.cid, upload: uploadInt });
+            this.$store.dispatch('config/loadCourseConfig', this.cid);
         },
         getWorkflow(config_id) {
             let wf_id = this.simple_config_list?.workflow_configs.find(

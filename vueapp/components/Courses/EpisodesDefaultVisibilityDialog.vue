@@ -2,9 +2,10 @@
     <div>
         <StudipDialog
             :title="$gettext('Standardsichtbarkeit Videos in dieser Veranstaltung')"
-            :confirmText="$gettext('Akzeptieren')"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
+            :confirmText="$gettext('Speichern')"
+            :closeText="$gettext('Abbrechen')"
+            confirmClass="accept"
+            closeClass="cancel"
             height="260"
             width="530"
             @close="$emit('cancel')"

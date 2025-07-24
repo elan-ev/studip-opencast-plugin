@@ -7,6 +7,7 @@
       :disabled="disabled"
       :aria-checked="(modelValue ?? false).toString()"
       role="switch"
+      :tabindex="!tabable ? '-1' : undefined"
     />
     <span class="slider"></span>
   </span>
@@ -24,6 +25,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    tabable: {
+      type: Boolean,
+      default: true,
+    }
   },
   emits: ["update:modelValue"],
 };

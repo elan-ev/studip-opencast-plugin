@@ -40,12 +40,13 @@
                         :rel="item.newTab ? 'noopener noreferrer' : undefined"
                         @click="
                             (e) => {
-                                if (item.type !== 'link' && !item.disabled) onAction(item);
+                                if (item.type !== 'link' && item.type !== 'toggle' && !item.disabled) onAction(item);
                                 if (item.disabled) e.preventDefault();
                                 if (item.type === 'link') close();
+                                if (item.type === 'toggle') toggleItem(item);
                             }
                         "
-                        @keydown.enter.prevent="() => item.type !== 'link' && onAction(item)"
+                        @keydown.enter.prevent="() => item.type !== 'link' && item.type !== 'toggle' && onAction(item)"
                     >
                         <div class="oc--context-menu__entry-content">
                             <studip-icon v-if="item.icon" :shape="item.icon" class="oc--context-menu__entry-icon" />
@@ -55,6 +56,13 @@
                                     {{ item.description }}
                                 </div>
                             </div>
+                            <LayoutSwitch
+                                v-if="item.type === 'toggle'"
+                                :tabable="false"
+                                :model-value="item.value"
+                                @update:modelValue="(val) => $emit(item.emit, val)"
+                                @click.stop
+                            />
                         </div>
                     </component>
                 </div>
@@ -65,6 +73,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import StudipIcon from '@studip/StudipIcon.vue';
+import LayoutSwitch from './LayoutSwitch.vue';
 
 defineProps({
     title: {
@@ -77,7 +86,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['select']);
+const emit = defineEmits(['select', 'toggle']);
 
 const isOpen = ref(false);
 const isRightAligned = ref(false);
@@ -97,6 +106,11 @@ function onAction(item) {
         emit('select', item);
         close();
     }
+}
+
+function toggleItem(item) {
+    const newValue = !item.value;
+    emit('toggle', { item: item, value: newValue });
 }
 
 function openAndFocusFirst() {

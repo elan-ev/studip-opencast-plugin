@@ -76,7 +76,7 @@ const menuItems = computed(() => {
     let menuItems = [];
     menuItems.push({
         id: 1,
-        label: $gettext('Metadaten bearbeiten'),
+        label: $gettext('Bearbeiten'),
         icon: 'edit',
         emit: 'editPlaylist',
     });
