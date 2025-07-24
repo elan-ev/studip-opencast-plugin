@@ -24,17 +24,27 @@
             </div>
         </button>
         <PlaylistMetadataDialog
-            v-if="showEditDialog"
+            v-if="showDialog === 'edit'"
             :playlist="playlist"
-            @done="closeEditDialog"
-            @cancel="closeEditDialog"
+            @done="closeDialog"
+            @cancel="closeDialog"
         />
+        <StudipDialog
+            v-if="showDialog === 'remove'"
+            :title="$gettext('Wiedergabeliste entfernen')"
+            :question="$gettext('Möchten Sie Wiedergabeliste unwiderruflich entfernen?')"
+            height="200"
+            @close="closeDialog"
+            @confirm="removePlaylist"
+        >
+        </StudipDialog>
         <div class="oc--playlist-card__actions">
             <ActionMenu
                 :items="menuItems"
-                @editPlaylist="showEditDialog = true"
+                @editPlaylist="showDialog = 'edit'"
                 @toggleAllowDownload="(val) => (allowDownload = val)"
                 @setDefaultPlaylist="setDefaultPlaylist"
+                @removePlaylist="showDialog = 'remove'"
             />
         </div>
     </div>
@@ -45,6 +55,7 @@ import { computed, getCurrentInstance, ref } from 'vue';
 import PlaylistThumbnailStack from './PlaylistThumbnailStack.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
+import StudipDialog from '@studip/StudipDialog.vue';
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import PlaylistMetadataDialog from './PlaylistMetadataDialog.vue';
@@ -56,7 +67,7 @@ const props = defineProps({
     playlist: { type: Object, required: true },
 });
 
-const showEditDialog = ref(false);
+const showDialog = ref(null);
 
 const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
@@ -98,7 +109,7 @@ const menuItems = computed(() => {
         id: 4,
         label: $gettext('Löschen'),
         icon: 'trash',
-        emit: 'deletePlaylist',
+        emit: 'removePlaylist',
     });
     return menuItems;
 });
@@ -107,8 +118,8 @@ const selectPlaylist = () => {
     store.dispatch('playlists/setSelectedPlaylist', props.playlist);
 };
 
-const closeEditDialog = () => {
-    showEditDialog.value = false;
+const closeDialog = () => {
+    showDialog.value = null;
 };
 
 const setDefaultPlaylist = async () => {
@@ -118,6 +129,17 @@ const setDefaultPlaylist = async () => {
         playlist: { ...props.playlist, is_default: true },
     };
     await store.dispatch('playlists/updatePlaylistOfCourse', params);
+    store.dispatch('playlists/loadPlaylists');
+};
+
+const removePlaylist = async () => {
+    closeDialog();
+    const params = {
+        course: store.getters['opencast/cid'],
+        token: props.playlist.token,
+    };
+
+    await store.dispatch('playlists/removePlaylistFromCourse', params);
     store.dispatch('playlists/loadPlaylists');
 };
 </script>

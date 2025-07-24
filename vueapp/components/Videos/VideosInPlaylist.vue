@@ -25,19 +25,28 @@
                 <div class="oc--videos-in-playlist__header-actions">
                     <ActionMenu
                         :items="menuItems"
-                        @editPlaylist="showEditDialog = true"
+                        @editPlaylist="showDialog = 'edit'"
                         @toggleAllowDownload="(val) => (allowDownload = val)"
+                        @removePlaylist="showDialog = 'remove'"
                     />
                 </div>
             </div>
         </header>
         <PlaylistMetadataDialog
-            v-if="showEditDialog"
+            v-if="showDialog === 'edit'"
             :playlist="playlist"
-            @done="closeEditDialog"
-            @cancel="closeEditDialog"
+            @done="closeDialog"
+            @cancel="closeDialog"
         />
-
+        <StudipDialog
+            v-if="showDialog === 'remove'"
+            :title="$gettext('Wiedergabeliste entfernen')"
+            :question="$gettext('Möchten Sie Wiedergabeliste unwiderruflich entfernen?')"
+            height="200"
+            @close="closeDialog"
+            @confirm="removePlaylist"
+        >
+        </StudipDialog>
         <section class="oc--videos-all">
             <VideoCard v-for="video in playlistVideos(playlist.token)" :key="video.token" :video="video" />
         </section>
@@ -55,6 +64,7 @@ const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
 const $ngettext = proxy.$ngettext;
 import StudipIcon from '@studip/StudipIcon';
+import StudipDialog from '@studip/StudipDialog.vue';
 
 const store = useStore();
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
@@ -63,7 +73,7 @@ const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
 };
 
-const showEditDialog = ref(false);
+const showDialog = ref(null);
 
 const playlist = computed(() => {
     return store.getters['playlists/selectedPlaylist'];
@@ -105,7 +115,7 @@ const menuItems = computed(() => {
         id: 4,
         label: $gettext('Löschen'),
         icon: 'trash',
-        emit: 'deletePlaylist',
+        emit: 'removePlaylist',
     });
 
     return menuItems;
@@ -121,7 +131,18 @@ const backToPlaylistOverview = () => {
     store.dispatch('playlists/setSelectedPlaylist', null);
 };
 
-const closeEditDialog = () => {
-    showEditDialog.value = false;
+const closeDialog = () => {
+    showDialog.value = null;
+};
+const removePlaylist = async () => {
+    closeDialog();
+    const params = {
+        course: store.getters['opencast/cid'],
+        token: playlist.value.token,
+    };
+
+    await store.dispatch('playlists/removePlaylistFromCourse', params);
+    store.dispatch('playlists/loadPlaylists');
+    backToPlaylistOverview();
 };
 </script>
