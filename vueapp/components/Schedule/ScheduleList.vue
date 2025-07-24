@@ -134,7 +134,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(["schedule_list", "livestream_available", "allow_schedule_alternate", "cid", 'schedule_loading']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('schedule', ['allow_schedule_alternate', 'schedule_list', 'schedule_loading', 'livestream_available']),
 
         get_bulk_actions() {
             let bulk_actions = [];
