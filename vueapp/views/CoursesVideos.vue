@@ -18,22 +18,41 @@
                         <Tab :name="$gettext('Übersicht')"></Tab>
                         <Tab :name="$gettext('Videos')"></Tab>
                         <Tab :name="$gettext('Wiedergabelisten')"></Tab>
-                        <Tab :name="$gettext('Aufzeichnungen planen')"></Tab>
-                        <Tab :name="$gettext('Informationen')"></Tab>
+                        <Tab v-if="canSchedule" :name="$gettext('Aufzeichnungen planen')"></Tab>
                     </Tabs>
                 </template>
                 <template #actions>
-                    <ContextMenu
-                        v-if="canUpload || canEdit"
+                    <DropdownActions
+                        v-if="(canUpload || canEdit) && addButtonAvailable && !showScheduleOverview"
                         :title="$gettext('Hinzufügen')"
-                        :items="actions"
+                        :items="addActions"
                         @select="handleSelect"
                     >
                         <template #button>
                             <StudipIcon shape="add" :size="20" />
                         </template>
-                    </ContextMenu>
-                    <ContextMenu
+                    </DropdownActions>
+                    <template v-if="showScheduleOverview">
+                        <DropdownSelect
+                            :title="$gettext('Aufzeichnungsoptionen')"
+                            :items="scheduleOptionsItems"
+                            @select="handleScheduleOptions"
+                        >
+                            <template #button>
+                                <StudipIcon shape="video2" :size="20" />
+                            </template>
+                        </DropdownSelect>
+                        <DropdownSelect
+                            :title="$gettext('Filter')"
+                            :items="scheduleFilterItems"
+                            @select="handleScheduleFilter"
+                        >
+                            <template #button>
+                                <StudipIcon shape="filter" :size="20" />
+                            </template>
+                        </DropdownSelect>
+                    </template>
+                    <DropdownActions
                         v-if="canEdit"
                         :title="$gettext('Einstellungen')"
                         :items="settingsActions"
@@ -43,25 +62,25 @@
                         <template #button>
                             <StudipIcon shape="admin" :size="20" />
                         </template>
-                    </ContextMenu>
-                    <ContextMenu :title="$gettext('Suche')" :items="[]" @select="handleSelect">
+                    </DropdownActions>
+                    <DropdownSearch
+                        v-if="searchAvailable"
+                        :title="$gettext('Suchen und Filtern')"
+                        :tags="availableTags"
+                        @search="handleSearch"
+                        @filter="handleFilter"
+                    >
                         <template #button>
                             <StudipIcon shape="search" :size="20" />
                         </template>
-                    </ContextMenu>
+                    </DropdownSearch>
                 </template>
             </ContentBar>
             <div class="oc--course-videos-content">
                 <VideosOverview v-if="tabSelection === 0" />
                 <VideosAllInCourse v-if="tabSelection === 1" />
                 <PlaylistsOverview v-if="tabSelection === 2" />
-                <VideosTable
-                    v-if="playlist && tabSelection === 4"
-                    :playlist="playlist"
-                    :cid="cid"
-                    :canEdit="canEdit"
-                    :canUpload="canUpload"
-                />
+                <ScheduleOverview v-if="showScheduleOverview" />
             </div>
 
             <template v-if="canUpload || canEdit">
@@ -78,7 +97,11 @@
             </template>
 
             <template v-if="canEdit">
-                <EpisodesDefaultVisibilityDialog v-if="activeDialog === 'changeDefaultVisibility'" @done="done" @cancel="cancel" />
+                <EpisodesDefaultVisibilityDialog
+                    v-if="activeDialog === 'changeDefaultVisibility'"
+                    @done="done"
+                    @cancel="cancel"
+                />
             </template>
         </template>
     </div>
@@ -86,7 +109,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import VideosTable from '@/components/Videos/VideosTable';
 import VideosOverview from '@/components/Videos/VideosOverview';
 import VideosAllInCourse from '@/components/Videos/VideosAllInCourse.vue';
 import PlaylistsOverview from '@/components/Playlists/PlaylistsOverview.vue';
@@ -94,7 +116,9 @@ import MessageBox from '@/components/MessageBox.vue';
 import ContentBar from '@components/Layouts/ContentBar.vue';
 import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
-import ContextMenu from '@components/Layouts/ContextMenu.vue';
+import DropdownActions from '@components/Layouts/DropdownActions.vue';
+import DropdownSearch from '@components/Layouts/DropdownSearch.vue';
+import DropdownSelect from '@components/Layouts/DropdownSelect.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 
 import VideoUpload from '@/components/Videos/VideoUpload';
@@ -102,12 +126,12 @@ import VideosAddFromContents from '@/components/Videos/VideosAddFromContents';
 import VideosAddFromCourses from '@/components/Videos/VideosAddFromCourses';
 import PlaylistAddNewCard from '@/components/Playlists/PlaylistAddNewCard';
 import PlaylistsCopyCard from '@/components/Playlists/PlaylistsCopyCard';
-import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
+import EpisodesDefaultVisibilityDialog from '@/components/Courses/EpisodesDefaultVisibilityDialog';
 
+import ScheduleOverview from '@components/Schedule/ScheduleOverview.vue';
 export default {
     name: 'CourseVideos',
     components: {
-        VideosTable,
         VideosOverview,
         VideosAllInCourse,
         PlaylistsOverview,
@@ -116,26 +140,41 @@ export default {
         Tab,
         Tabs,
         StudipIcon,
-        ContextMenu,
+        DropdownSearch,
+        DropdownActions,
+        DropdownSelect,
 
         VideoUpload,
         VideosAddFromContents,
         VideosAddFromCourses,
         PlaylistAddNewCard,
         PlaylistsCopyCard,
-        EpisodesDefaultVisibilityDialog
+        EpisodesDefaultVisibilityDialog,
+
+        ScheduleOverview,
     },
     data() {
         return {
             tabSelection: 0,
+            addButtonAvailable: true,
             activeDialog: null,
+            selectedTags: [],
         };
     },
 
     computed: {
         ...mapGetters('opencast', ['cid', 'currentUser']),
-        ...mapGetters('playlists', ['defaultPlaylist', 'playlist']),
-        ...mapGetters('config', ['course_config', 'simple_config_list']),
+        ...mapGetters('playlists', [
+            'availableTags',
+            'defaultPlaylist',
+            'playlist',
+            'playlists',
+            'schedule_playlist',
+            'livestream_playlist',
+        ]),
+        ...mapGetters('config', ['course_config', 'simple_config_list', 'canSchedule']),
+        ...mapGetters('videos', ['searchAvailable']),
+        ...mapGetters('schedule', ['semester_list','semester_filter']),
 
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
@@ -143,6 +182,10 @@ export default {
 
         canUpload() {
             return this.course_config?.upload_allowed ?? false;
+        },
+
+        showScheduleOverview() {
+            return this.tabSelection === 3;
         },
 
         hasDefaultPlaylist() {
@@ -192,8 +235,26 @@ export default {
                 'return.label': 'Stud.IP',
             });
         },
-
-        actions() {
+        scheduleOptionsItems() {
+            const options = this.playlists?.map((playlist) => {
+                return { value: playlist.token, label: playlist.title };
+            });
+            return [
+                {
+                    label: this.$gettext('Zielwiedergabeliste für Aufzeichnungen'),
+                    options: options,
+                    selected: this.schedule_playlist?.token,
+                    emit: 'scheduled',
+                },
+                {
+                    label: this.$gettext('Zielwiedergabeliste für Livestreams'),
+                    options: options,
+                    selected: this.livestream_playlist?.token,
+                    emit: 'livestreams',
+                },
+            ];
+        },
+        addActions() {
             const menuItems = [];
 
             if (this.canUpload) {
@@ -281,6 +342,18 @@ export default {
             });
             return menuItems;
         },
+
+        scheduleFilterItems() {
+            const options = this.semester_list.map(semester => {return { value: semester.id, label: semester.name}})
+            return [
+                {
+                    label: this.$gettext('Semesterfilter'),
+                    options: options,
+                    selected: this.semester_filter,
+                    emit: 'semester',
+                },
+            ];
+        },
     },
 
     methods: {
@@ -302,8 +375,8 @@ export default {
                     this.activeDialog = 'playlistCopy';
                     break;
                 case 'changeDefaultVisibility':
-                        this.activeDialog = 'changeDefaultVisibility';
-                        break;
+                    this.activeDialog = 'changeDefaultVisibility';
+                    break;
             }
         },
         handleToggle(event) {
@@ -336,17 +409,56 @@ export default {
             )['workflow_id'];
             return this.simple_config_list?.workflows.find((wf) => wf['id'] == wf_id)['name'];
         },
+
+        handleSearch(e) {
+            console.log(e);
+        },
+        handleFilter(e) {
+            console.log(e);
+        },
+        handleScheduleOptions(e) {
+            if (!this.canSchedule) {
+                return;
+            }
+            if (e.emit == 'scheduled') {
+                this.$store.dispatch('playlists/setSchedulePlaylist', e.value);
+            }
+            if (e.emit == 'livestreams') {
+                this.$store.dispatch('playlists/setLivestreamPlaylist', e.value);
+            }
+        },
+        async handleScheduleFilter(e) {
+            if (e.emit === 'semester') {
+                console.log(e.value);
+                await this.$store.dispatch('schedule/setSemesterFilter', e.value);
+                this.$store.dispatch('schedule/getScheduleList');
+            }
+        },
     },
 
     mounted() {
         this.$store.dispatch('playlists/loadPlaylists').then(() => {
             this.$store.dispatch('playlists/setPlaylist', this.defaultPlaylist);
         });
+        this.$store.dispatch('playlists/updateAvailableTags');
     },
     watch: {
         tabSelection(newVal) {
+            if (newVal === 1) {
+                this.$store.dispatch('videos/setSearchAvailable', true);
+            } else {
+                this.$store.dispatch('videos/setSearchAvailable', false);
+            }
+
             if (newVal === 2) {
                 this.$store.dispatch('playlists/setSelectedPlaylist', null);
+            }
+
+            if (newVal === 3) {
+                this.$store.dispatch('schedule/getScheduleList');
+                this.addButtonAvailable = false;
+            } else {
+                this.addButtonAvailable = true;
             }
         },
     },

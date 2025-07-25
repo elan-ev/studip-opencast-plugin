@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import PlaylistsOverviewCard from './PlaylistsOverviewCard.vue';
 import VideosInPlaylist from '../Videos/VideosInPlaylist.vue';
 import { useStore } from 'vuex';
@@ -19,5 +19,12 @@ const playlists = computed(() => {
 });
 const hasSelectedPlaylist = computed(() => {
     return store.getters['playlists/hasSelectedPlaylist'];
+});
+watch(hasSelectedPlaylist, (newVal) => {
+    if (newVal) {
+        store.dispatch('videos/setSearchAvailable', true);
+    } else {
+        store.dispatch('videos/setSearchAvailable', false);
+    }
 });
 </script>

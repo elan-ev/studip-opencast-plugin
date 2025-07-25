@@ -454,4 +454,42 @@ $knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (
         padding: 1rem 1rem 0.25rem;
         color: #777;
     }
+
+    &__search-input {
+        padding: 0.25rem 0.5rem;
+        margin: 0 1rem;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    &__entry--checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 2px 1rem;
+        cursor: pointer;
+    }
+
+    &__search-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__select {
+        width: calc(100% - 2rem);
+        margin-bottom: 1rem;
+        padding: 0.3rem 0.5rem;
+        margin: 0.5rem 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+}
+
+button.button.oc--context-menu__button-active {
+    background-color: var(--activity-color);
+}
+
+button.button.oc--context-menu__button-active:hover {
+    background-color: var(--base-color);
 }

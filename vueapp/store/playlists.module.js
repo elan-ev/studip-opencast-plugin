@@ -383,13 +383,19 @@ const actions = {
     },
 
     async setSchedulePlaylist({ commit, dispatch, rootState }, token) {
-        let $cid = rootState.opencast.cid;
-        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/scheduled');
+        const cid = rootState.opencast.cid;
+        const resp = await ApiService.post('playlists/' + token + '/schedule/' + cid + '/scheduled');
+        dispatch('loadPlaylists');
+
+        return resp;
     },
 
     async setLivestreamPlaylist({ commit, dispatch, rootState }, token) {
-        let $cid = rootState.opencast.cid;
-        return ApiService.post('playlists/' + token + '/schedule/' + $cid + '/livestreams');
+        const cid = rootState.opencast.cid;
+        const resp = await ApiService.post('playlists/' + token + '/schedule/' + cid + '/livestreams');
+        dispatch('loadPlaylists');
+
+        return resp;
     },
 
     setSelectedPlaylist({ commit }, playlist) {

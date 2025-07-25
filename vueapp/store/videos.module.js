@@ -25,6 +25,7 @@ const state = {
     globalVideos: {}, // neu: globaler Cache aller geladenen Videos, keyed nach token
     playlistVideos: {}, // token => Array von Videos
     playlistVideosLoadingStates: {}, // token -> boolean
+    searchAvailable: false,
 };
 
 const getters = {
@@ -84,6 +85,9 @@ const getters = {
     playlistVideos: (state) => (token) => state.playlistVideos[token] || [],
     isPlaylistLoading: (state) => (token) => {
         return !!state.playlistLoadingStates?.[token];
+    },
+    searchAvailable(state) {
+        return state.searchAvailable;
     },
 };
 
@@ -264,6 +268,9 @@ const actions = {
         commit('setPlaylistVideos', { playlistToken: data.token, videos: response.videos });
         commit('setPlaylistLoadingState', { token: data.token, loading: false });
     },
+    setSearchAvailable({ commit }, searchAvailable) {
+        commit('SET_SEARCH_AVAILABLE', searchAvailable);
+    },
 };
 
 const mutations = {
@@ -353,6 +360,10 @@ const mutations = {
             const { [token]: removed, ...rest } = state.playlistLoadingStates;
             state.playlistLoadingStates = rest;
         }
+    },
+
+    SET_SEARCH_AVAILABLE(state, searchAvailable) {
+        state.searchAvailable = searchAvailable;
     },
 };
 

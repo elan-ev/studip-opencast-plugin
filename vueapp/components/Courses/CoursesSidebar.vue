@@ -269,7 +269,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters('config', ['simple_config_list', 'course_config', 'downloadSetting']),
+        ...mapGetters('config', ['simple_config_list', 'course_config', 'downloadSetting', 'canSchedule']),
         ...mapGetters('opencast', ['cid', 'currentView', 'opencastOffline', 'currentUser']),
         ...mapGetters('videos', ['videoSortMode']),
         ...mapGetters('playlists', ['defaultPlaylist', 'playlists', 'playlist', 'schedule_playlist', 'livestream_playlist']),
@@ -277,17 +277,6 @@ export default {
 
         fragment() {
             return this.$route.name;
-        },
-
-        canSchedule() {
-            try {
-                return this.cid !== undefined && // Make sure this is happening in a course!
-                    this.currentUser.can_edit && // Make sure the user has sufficient "global" rights.
-                    this.simple_config_list['settings']['OPENCAST_ALLOW_SCHEDULER'] && // Make sure it is configured!
-                    this.course_config.scheduling_allowed; // Make sure the user is allowed to schedule recordings in the course!
-            } catch (error) {
-                return false;
-            }
         },
 
         canShowStudio() {
