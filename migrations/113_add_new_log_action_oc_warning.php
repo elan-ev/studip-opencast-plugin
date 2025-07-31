@@ -11,7 +11,7 @@ class AddNewLogActionOcWarning extends Migration
 
     public function up()
     {
-        $description = 'Opencast: Warnungen melden';
+        $description = 'Opencast: Warnungen / Meldungen';
         $info_template = '[Opencast Warnung]: %info - (Wo: %affected, Wer: %user)';
         StudipLog::registerActionPlugin(
             self::OC_WARNING_LOG_ACTON_NAME,
