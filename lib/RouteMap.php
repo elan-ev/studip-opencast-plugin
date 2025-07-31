@@ -101,6 +101,7 @@ class RouteMap
 
         $group->get("/courses/{course_id}/config", Routes\Course\CourseConfig::class);
         $group->get("/courses/{course_id}/playlists", Routes\Course\CourseListPlaylist::class);
+        $group->post("/courses/{course_id}/verifyCourseSeriesExists", Routes\Course\CourseSeriesVerification::class);
 
         $group->get("/courses/{course_id}/{semester_filter}/schedule", Routes\Course\CourseListSchedule::class);
 

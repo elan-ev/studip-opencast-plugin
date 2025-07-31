@@ -25,16 +25,23 @@ class SeriesClient extends RestClient
      * Retrieve series metadata for a given series identifier from Opencast
      *
      * @param string series_id Identifier for a Series
+     * @param bool check_existence a flag to check the existence of the series
      *
-     * @return array|boolean response of a series, or false if unable to get
+     * @return mix [array|boolean|int] response of a series, or false if unable to get or 404 if not found and $check_existence is true
      */
-    public function getSeries($series_id)
+    public function getSeries($series_id, $check_existence = false)
     {
         $response = $this->opencastApi->series->get($series_id);
 
         if ($response['code'] == 200) {
             return $response['body'];
         }
+
+        if ($check_existence && $response['code'] == 404) {
+            // Series not found, so we return 404!
+            return 404;
+        }
+
         return false;
     }
 
