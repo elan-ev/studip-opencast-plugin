@@ -101,15 +101,23 @@ class ScheduledRecordings extends \SimpleORMap
 
     /**
      * Gets the list of schedule recording based on the parameters passed
+     * It will by default get the records in the future, unless $include_old_records is set!
      *
      * @param string $resource_id id of resource
      * @param string $seminar_id id of course
      * @param string $status the status of the record
      * @param bool|null $is_livestream the livestream flag of the record
+     * @param bool $include_old_records If true, includes all records regardless of their date;
+     *                                  if false, only future (upcoming) records are returned.
      *
      * @return object|bool
      */
-    public static function getScheduleRecordingList($resource_id = null, $seminar_id = null, $status = '', $is_livestream = null)
+    public static function getScheduleRecordingList(
+        $resource_id = null,
+        $seminar_id = null,
+        $status = '',
+        $is_livestream = null,
+        $include_old_records = false)
     {
         $where_array = [];
         $params = [];
@@ -129,6 +137,11 @@ class ScheduledRecordings extends \SimpleORMap
             $is_livestream = (bool) $is_livestream ? 1 : 0;
             $where_array[] = "is_livestream = ?";
             $params[] = $is_livestream;
+        }
+        // Always get the records in future, unless intentionally requested otherwise via $include_old_records
+        if (!$include_old_records) {
+            $where_array[] = "start >= ?";
+            $params[] = time();
         }
         if (!empty($where_array)) {
             return self::findBySQL(implode(' AND ', $where_array), $params);
