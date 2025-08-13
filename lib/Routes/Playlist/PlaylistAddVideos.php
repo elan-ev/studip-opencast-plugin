@@ -47,6 +47,9 @@ class PlaylistAddVideos extends OpencastController
                     'video_id'    => $video->id
                 ]);
 
+                // Update the event acl first!
+                Videos::checkEventACL(null, null, $video);
+
                 try {
                     $playlist->videos[] = $plvideo;
                 } catch (\InvalidArgumentException $e) {
@@ -54,8 +57,6 @@ class PlaylistAddVideos extends OpencastController
             }
 
             $playlist->videos->store();
-
-            Videos::checkEventACL(null, null, $video);
 
             return $response->withStatus(204);
         }
