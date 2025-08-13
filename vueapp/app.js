@@ -50,7 +50,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 return Promise.reject(error);
             }
 
-            if (error.response.data !== undefined) {
+            if (error?.response?.data !== undefined) {
                 store.dispatch('addMessage', error.response);
             }
 
@@ -59,8 +59,8 @@ window.addEventListener("DOMContentLoaded", function() {
         }
     );
 
-     // set loading animation
-     axios.interceptors.request.use(
+    // set loading animation
+    axios.interceptors.request.use(
         request => {
             store.dispatch('axiosStart');
 
