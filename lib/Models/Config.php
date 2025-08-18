@@ -257,7 +257,7 @@ class Config extends \SimpleOrMap
                     }
 
                     // create new entries for workflow_config table
-                    WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
+                    WorkflowConfig::createAndUpdateByConfigId($this->id);
 
                     $success_message[] = sprintf(
                         _('Die Opencast-Installation "%s" wurde erfolgreich konfiguriert.'),
