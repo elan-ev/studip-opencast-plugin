@@ -13,7 +13,7 @@ class Config extends \SimpleOrMap
     use RelationshipTrait;
 
     protected const ALLOWED_SETTINGS_FIELDS = [
-        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access'
+        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access', 'allow_upload_wf_cp'
     ];
 
     protected static function configure($config = [])
