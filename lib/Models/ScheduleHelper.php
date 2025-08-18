@@ -189,22 +189,20 @@ class ScheduleHelper
         foreach ($config_list as $config) {
             try {
                 $workflow_client = WorkflowClient::getInstance($config['id']);
+                $scheduling_targeted_tags = ['schedule', 'schedule-ng'];
                 if ($oc_definitions = $workflow_client->getDefinitions()) {
                     foreach ($oc_definitions as $definition) {
-                        if (is_object($definition->tags)) {
-                            if (is_array($definition->tags->tag) &&
-                                (in_array('schedule', $definition->tags->tag) ||
-                                in_array('schedule-ng', $definition->tags->tag)))
-                            {
+                        if (!empty($definition->tags) && is_array($definition->tags)) {
+                            $is_scheduling_related = array_filter($definition->tags,
+                                function ($tag) use ($scheduling_targeted_tags) {
+                                    return in_array($tag, $scheduling_targeted_tags);
+                                }
+                            );
+
+                            if (!empty($is_scheduling_related)) {
                                 $resources_workflow_def = new \stdClass();
                                 $resources_workflow_def->config_id = $config['id'];
-                                $resources_workflow_def->id = $definition->id;
-                                $resources_workflow_def->title = $definition->title;
-                                $definitions[] = $resources_workflow_def;
-                            } else if ($definition->tags->tag == 'schedule' || $definition->tags->tag == 'schedule-ng') {
-                                $resources_workflow_def = new \stdClass();
-                                $resources_workflow_def->config_id = $config['id'];
-                                $resources_workflow_def->id = $definition->id;
+                                $resources_workflow_def->id = $definition->identifier;
                                 $resources_workflow_def->title = $definition->title;
                                 $definitions[] = $resources_workflow_def;
                             }
