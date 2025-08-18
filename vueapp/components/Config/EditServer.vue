@@ -186,6 +186,13 @@ export default {
                     type: 'integer',
                     placeholder: '2000',
                     required: true
+                },
+                {
+                    description: this.$gettext('Konfigurationsoptionen des Upload-Workflows Nutzenden beim Hochladen anbieten.'),
+                    name: 'allow_upload_wf_cp',
+                    value: this.currentConfig.allow_upload_wf_cp,
+                    type: 'boolean',
+                    required: false
                 }
             ];
         },

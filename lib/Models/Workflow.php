@@ -49,10 +49,21 @@ class Workflow extends \SimpleORMap
 
             foreach ($wf_defs as $wf_def) {
                 $found = false;
+                // We need to make sure, that we have [] as for the empty config panels instead of empty string!
+                $wf_config_panel_filtered =
+                    !empty($wf_def['configuration_panel_json']) ? $wf_def['configuration_panel_json'] : '[]';
+
+                // Usually the config panels come with indented json string,
+                // with decoding and encoding it again, we trim that indentation.
+                $wf_config_panel_filtered = json_encode(json_decode($wf_config_panel_filtered));
+
                 foreach ($db_workflows as $key => $db_workflow) {
-                    if ($db_workflow['name'] === $wf_def['id'] && $db_workflow['tag'] === $wf_def['tag']) {
-                        $entry = self::findOneBySql('config_id = ? AND name = ? AND tag = ?', [$config_id, $wf_def['id'], $wf_def['tag']]);
+                    if ($db_workflow['name'] === $wf_def['identifier'] && $db_workflow['tag'] === $wf_def['tag']) {
+                        $entry = self::findOneBySql('config_id = ? AND name = ? AND tag = ?',
+                            [$config_id, $wf_def['identifier'], $wf_def['tag']]);
                         $entry->setValue('displayname', $wf_def['title']);
+                        // In case WF is already there, we also update the config panel json.
+                        $entry->setValue('configuration_panel_json', $wf_config_panel_filtered);
                         $entry->store();
 
                         $found = true;
@@ -63,9 +74,10 @@ class Workflow extends \SimpleORMap
                 if (!$found) {
                     $new_entry = new self();
                     $new_entry->setValue('config_id', $config_id);
-                    $new_entry->setValue('name', $wf_def['id']);
+                    $new_entry->setValue('name', $wf_def['identifier']);
                     $new_entry->setValue('tag', $wf_def['tag']);
                     $new_entry->setValue('displayname', $wf_def['title']);
+                    $new_entry->setValue('configuration_panel_json', $wf_config_panel_filtered);
 
                     $settings = [];
                     if ($new_entry->tag == 'upload') {
@@ -118,5 +130,22 @@ class Workflow extends \SimpleORMap
                 $workflow->store();
             }
         }
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * As we call this in SimpleConfig to feed the workflows to the frontend,
+     * we need to overwrite it to convert the config panel properly.
+     */
+    public function toArray($only_these_fields = null)
+    {
+        $ret = parent::toArray($only_these_fields);
+
+        // We then convert the config panel json string to array.
+        $config_panel_json_string = !empty($ret['configuration_panel_json']) ? $ret['configuration_panel_json'] : '[]';
+        $ret['configuration_panel_json'] = json_decode($config_panel_json_string, true) ?? [];
+
+        return $ret;
     }
 }
