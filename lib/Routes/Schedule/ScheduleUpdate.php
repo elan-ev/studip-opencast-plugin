@@ -38,7 +38,7 @@ class ScheduleUpdate extends OpencastController
             'text' => _('Die geplante Aufzeichnung konnte nicht aktualisiert werden.')
         ];
 
-        if (ScheduleHelper::updateEventForSeminar($course_id, $termin_id, $start, $end)) {
+        if (ScheduleHelper::updateEventForSeminar($course_id, $termin_id, $start, $end, true, true)) {
             $message = [
                 'type' => 'success',
                 'text' => _('Die geplante Aufzeichnung wurde aktualisiert.')
