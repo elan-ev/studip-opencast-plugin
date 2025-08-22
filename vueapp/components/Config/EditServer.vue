@@ -128,22 +128,6 @@ export default {
                     required: true
                 },
                 {
-                    description: this.$gettext('Timeout (in Millisekunden)'),
-                    name: 'timeout_ms',
-                    value: this.currentConfig.timeout_ms,
-                    type: 'integer',
-                    placeholder: '0',
-                    required: true
-                },
-                {
-                    description: this.$gettext('Verbindungs-Timeout (in Millisekunden)'),
-                    name: 'connect_timeout_ms',
-                    value: this.currentConfig.connect_timeout_ms,
-                    type: 'integer',
-                    placeholder: '2000',
-                    required: true
-                },
-                {
                     description: this.$gettext('LTI Consumerkey'),
                     name: 'lti_consumerkey',
                     value: this.currentConfig.lti_consumerkey,
@@ -186,6 +170,22 @@ export default {
                     value: this.currentConfig.ssl_ignore_cert_errors,
                     type: 'boolean',
                     required: false
+                },
+                {
+                    description: this.$gettext('Timeout (in Millisekunden)'),
+                    name: 'timeout_ms',
+                    value: this.currentConfig.timeout_ms,
+                    type: 'integer',
+                    placeholder: '0',
+                    required: true
+                },
+                {
+                    description: this.$gettext('Verbindungs-Timeout (in Millisekunden)'),
+                    name: 'connect_timeout_ms',
+                    value: this.currentConfig.connect_timeout_ms,
+                    type: 'integer',
+                    placeholder: '2000',
+                    required: true
                 }
             ];
         },
