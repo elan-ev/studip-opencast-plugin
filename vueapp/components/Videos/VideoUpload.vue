@@ -402,9 +402,15 @@ export default {
             }
 
             // get correct upload endpoint url
-            this.uploadService = new UploadService({
-                'ingest': this.selectedServer['ingest']
-            });
+            this.uploadService = new UploadService(
+                {
+                    'ingest': this.selectedServer['ingest']
+                },
+                {
+                    'timeout': this.selectedServer?.timeout ?? 0,
+                    'connect_timeout': this.selectedServer?.connect_timeout ?? 0,
+                }
+            );
 
             let uploadData         = this.upload;
 
