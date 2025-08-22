@@ -158,6 +158,8 @@ class ScheduleHelper
     {
         $capture_agents = [];
         foreach ($config_list as $config) {
+            if ($config['active'] != 1) continue;
+
             try {
                 $caa_client = CaptureAgentAdminClient::getInstance($config['id']);
                 foreach ($caa_client->getCaptureAgents() as $capture_agent) {
@@ -187,6 +189,8 @@ class ScheduleHelper
     {
         $definitions = [];
         foreach ($config_list as $config) {
+            if ($config['active'] != 1) continue;
+
             try {
                 $workflow_client = WorkflowClient::getInstance($config['id']);
                 if ($oc_definitions = $workflow_client->getDefinitions()) {
