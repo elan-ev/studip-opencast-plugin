@@ -21,26 +21,77 @@ class WorkflowClient extends RestClient
 
 
     /**
-     * Returns all available workflow definitions
+     * Returns all available workflow definitions.
      *
-     * @return array|boolean Workflow Instances
+     * Note: by default we also get the configuration panel json
+     *
+     * @param array $params Optional parameters:
+     *                      - 'withoperations' (bool): Include workflow operations in the response.
+     *                      - 'withconfigurationpanel' (bool): Include configuration panel.
+     *                      - 'withconfigurationpaneljson' (bool): Include configuration panel in JSON format.
+     *                      - 'sort' (array): Associative array for sorting, e.g. ['title' => 'DESC'].
+     *                      - 'limit' (int): Maximum number of results to return.
+     *                      - 'offset' (int): Index of the first result to return.
+     *                      - 'filter' (array): Associative array for filtering,
+     *                              e.g. ['tag' => '{Workflow definitions where the tag is included}'].
+     * @return array|bool Array of workflow definitions, or false if an error occurs.
      */
-    public function getDefinitions()
+    public function getDefinitions($params = [])
     {
-        $response = $this->opencastApi->workflow->getDefinitions();
+        $default_params = [
+            'withoperations' => false,
+            'withconfigurationpaneljson' => true,
+            'withconfigurationpanel' => false,
+        ];
 
+        $params = array_merge($default_params, $params);
+
+        $response = $this->opencastApi->workflowsApi->getAllDefinitions($params);
         if ($response['code'] == 200) {
-            if (isset($response['body']->definitions->definition) && !empty($response['body']->definitions->definition)) {
-                return $response['body']->definitions->definition;
-            }
+            return $response['body'] ?: [];
         }
 
+        // If the response is not 200, we return false to indicate an error.
         return false;
     }
 
-     ####################
-     # HELPER FUNCTIONS #
-     ####################
+
+    /**
+     * Retrieves a specific workflow definition by its ID.
+     *
+     * @param string $workflow_definition_id The ID of the workflow definition to retrieve.
+     * @param array $params Optional parameters:
+     *                      - 'withoperations' (bool): Include workflow operations in the response.
+     *                      - 'withconfigurationpaneljson' (bool): Include configuration panel in JSON format.
+     *                      - 'withconfigurationpanel' (bool): Include configuration panel.
+     * @return array The workflow definition.
+     */
+    public function getDefinition($workflow_definition_id, $params = [])
+    {
+        $with_operations = isset($params['withoperations']) ?
+            (bool) $params['withoperations'] : false;
+        $with_configuration_panel_json = isset($params['withconfigurationpaneljson']) ?
+            (bool) $params['withconfigurationpaneljson'] : false;
+        $with_configuration_panel = isset($params['withconfigurationpanel']) ?
+            (bool) $params['withconfigurationpanel'] : false;
+
+        $response = $this->opencastApi->workflowsApi->getDefinition(
+            $workflow_definition_id,
+            $with_operations,
+            $with_configuration_panel_json,
+            $with_configuration_panel
+        );
+        if ($response['code'] == 200) {
+            return $response['body'] ?: [];
+        }
+
+        // If the response is not 200, we return false to indicate an error.
+        return [];
+    }
+
+    ####################
+    # HELPER FUNCTIONS #
+    ####################
 
     /**
      * Returns a revised collection of all tagged Workflow definitions
@@ -56,27 +107,18 @@ class WorkflowClient extends RestClient
             return false;
         }
 
-        $tagged_wfs = array();
+        $tagged_wfs = [];
         if (!empty($wf_defs)) {
             foreach ($wf_defs as $wf_def) {
                 if (!empty($wf_def->tags)) {
-                    if (is_array($wf_def->tags->tag)) {
-                        foreach ($wf_def->tags->tag as $tag) {
-                            $tagged_wfs[] = array(
-                                'id'          => $wf_def->id,
-                                'title'       => $wf_def->title,
-                                'description' => $wf_def->description,
-                                'tag'        => $tag
-                            );
-                        }
-                    }
-                    else {
-                        $tagged_wfs[] = array(
-                            'id'          => $wf_def->id,
-                            'title'       => $wf_def->title,
-                            'description' => $wf_def->description ?? null,
-                            'tag'         => $wf_def->tags->tag ?? null
-                        );
+                    foreach ($wf_def->tags as $tag) {
+                        $tagged_wfs[] = [
+                            'identifier' => $wf_def->identifier,
+                            'title' => $wf_def->title,
+                            'description' => $wf_def->description,
+                            'tag' => $tag,
+                            'configuration_panel_json' => trim($wf_def->configuration_panel_json ?? '')
+                        ];
                     }
                 }
             }

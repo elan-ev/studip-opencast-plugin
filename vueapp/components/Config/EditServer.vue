@@ -170,6 +170,13 @@ export default {
                     value: this.currentConfig.ssl_ignore_cert_errors,
                     type: 'boolean',
                     required: false
+                },
+                {
+                    description: this.$gettext('Konfigurationsoptionen des Upload-Workflows Nutzenden beim Hochladen anbieten.'),
+                    name: 'allow_upload_wf_cp',
+                    value: this.currentConfig.allow_upload_wf_cp,
+                    type: 'boolean',
+                    required: false
                 }
             ];
         },
