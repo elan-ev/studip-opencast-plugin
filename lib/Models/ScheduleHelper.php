@@ -603,11 +603,21 @@ class ScheduleHelper
             return false;
         }
 
-        $scheduler_client = SchedulerClient::getInstance($config_id);
+        // In order to delete the scheduled recording from Opencast, we ensure that the event already exists!
+        // this is important to avoid breaking search index.
+        $api_event_client = ApiEventsClient::getInstance($config_id);
+        $oc_event = $api_event_client->getEpisode($event_id);
+        $event_exists = !empty($oc_event) && $oc_event->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
 
-        $result = $scheduler_client->deleteEvent($event_id);
+        $oc_deleted_result = false;
+        if ($event_exists) {
+            $scheduler_client = SchedulerClient::getInstance($config_id);
+            $oc_deleted_result = $scheduler_client->deleteEvent($event_id);
+        }
 
-        if ($result) {
+        // In case of successfully deleted the event in opencast or the event could not be found,
+        // we need to remove the records in SOCP as well!
+        if ($oc_deleted_result || (!$oc_deleted_result && !$event_exists)) {
             ScheduledRecordings::unscheduleRecording($event_id, $resource_id, $termin_id);
             // Remove the livestream video here!
             if ($is_livestream) {
@@ -717,6 +727,16 @@ class ScheduleHelper
 
         if (!$force_oc_update && !$has_changes) {
             return true;
+        }
+
+        // In order to update the scheduled recording in Opencast, we ensure that the event already exists!
+        // this is important to avoid breaking search index.
+        $api_event_client = ApiEventsClient::getInstance($resource_obj['config_id']);
+        $oc_event = $api_event_client->getEpisode($event_id);
+        $event_exists = !empty($oc_event) && $oc_event->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
+
+        if (!$event_exists) {
+            return false;
         }
 
         $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream);
@@ -993,24 +1013,40 @@ class ScheduleHelper
         // We take the current resource obj to use its data for deleteEventForSeminar,
         // to make sure that server config id is correct!
         $ex_resource_obj = Resources::findByResource_id($resource_id);
+
+        // We record the config (server) change.
+        $server_ca_has_been_changed = (int) $ex_resource_obj['config_id'] !== (int) $config_id;
+
         // We Update the resource first.
         $success = Resources::setResource($resource_id, $config_id, $capture_agent, $workflow_id, $livestream_workflow_id);
         // If is updated.
-        /*
         if ($success) {
-            // We update current scheduled events that uses this resource.
+            // We loop through current recorded with this recourse to update or delete them!
             if ($scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id)) {
                 foreach ($scheduled_recordings as $recording) {
-                    // We try to update the those record as well.
-                    $updated = self::updateEventForSeminar($recording['seminar_id'], $recording['date_id'], null, null, true);
-                    // If update fails, we remove them!
-                    if (!$updated && $ex_resource_obj) {
-                        self::deleteEventForSeminar($recording['seminar_id'], $recording['date_id'], $ex_resource_obj['config_id']);
+                    // In case the config (sever) has been changed, we remove the recording.
+                    if ($server_ca_has_been_changed) {
+                        self::deleteEventForSeminar(
+                            $recording['seminar_id'],
+                            $recording['date_id'],
+                            $ex_resource_obj['config_id']
+                        );
+                    } else {
+                        // Otherwise, we try to update the recording.
+                        $updated = self::updateEventForSeminar($recording['seminar_id'], $recording['date_id'], null, null, true);
+                        // If update fails, we remove them!
+                        if (!$updated && $ex_resource_obj) {
+                            self::deleteEventForSeminar(
+                                $recording['seminar_id'],
+                                $recording['date_id'],
+                                $ex_resource_obj['config_id']
+                            );
+                        }
                     }
+
                 }
             }
         }
-        */
         return $success;
     }
 
@@ -1028,7 +1064,7 @@ class ScheduleHelper
         $ex_resource_obj = Resources::findByResource_id($resource_id);
         // Then we delete the resource.
         $success = Resources::removeResource($resource_id);
-        // If the deletion succeed, then we perform the deleting of the scheduled recordings.
+        // If the deletion succeed, then we perform the deleting of the scheduled recordings in the future!
         if ($success) {
             $scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id);
             if (!empty($scheduled_recordings) && !empty($ex_resource_obj)) {
@@ -1133,8 +1169,8 @@ class ScheduleHelper
                 'description'   => $event->description,
                 'duration'      => $event->duration,
                 'state'         => 'running',
-		        'created'       => date('Y-m-d H:i:s', strtotime($event->created)),
-		        'presenters'    => $event->creator,
+                'created'       => date('Y-m-d H:i:s', strtotime($event->created)),
+                'presenters'    => $event->creator,
                 'available'     => true,
                 'publication'   => $publication,
                 'is_livestream' => true,
