@@ -1,0 +1,1529 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: easygettext\n"
+"Project-Id-Version: \n"
+
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:36
+msgid "_ctx"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:80
+msgid "(sie selbst)"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:249
+msgid "(Video ist unsichtbar für Studierende)"
+msgstr ""
+
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:51
+msgid "%{ num_success } Videos wurden gelöscht, bei %{ num_errors } Videos gab es Probleme."
+msgstr ""
+
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:41
+msgid "%{ num_success } Videos wurden wiederhergestellt, bei %{ num_errors } Videos gab es Probleme."
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:77
+#: vueapp/components/Config/SchedulingEditModal.vue:21
+#: vueapp/components/ConfirmDialog.vue:11
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:16
+#: vueapp/components/Playlists/PlaylistEditCard.vue:19
+#: vueapp/components/Schedule/ScheduleList.vue:207
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:11
+#: vueapp/components/Videos/Actions/VideoDelete.vue:14
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:13
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:27
+#: vueapp/components/Videos/Actions/VideoEdit.vue:32
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:11
+#: vueapp/components/Videos/Actions/VideoReport.vue:12
+#: vueapp/components/Videos/Actions/VideoRestore.vue:14
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:14
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:11
+#: vueapp/components/Videos/VideoChangeWarning.vue:61
+#: vueapp/components/Videos/VideoUpload.vue:42
+msgid "Abbrechen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:67
+#: vueapp/components/Courses/CoursesSidebar.vue:218
+#: vueapp/components/Playlists/PlaylistAddCard.vue:23
+#: vueapp/components/Schedule/ScheduleList.vue:69
+#: vueapp/components/Schedule/ScheduleLoading.vue:36
+#: vueapp/components/Studip/StudipActionMenu.vue:33
+#: vueapp/components/Videos/VideosSidebar.vue:68
+#: vueapp/components/Videos/VideosTable.vue:160
+msgid "Aktionen"
+msgstr ""
+
+#: vueapp/components/Studip/StudipActionMenu.vue:91
+msgid "Aktionsmenü"
+msgstr ""
+
+#: vueapp/components/Studip/StudipActionMenu.vue:91
+msgid "Aktionsmenü für %{context}"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:75
+#: vueapp/components/Config/SchedulingEditModal.vue:19
+#: vueapp/components/ConfirmDialog.vue:9
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:13
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:9
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:11
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:9
+#: vueapp/components/Videos/Actions/VideoRestore.vue:12
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:9
+msgid "Akzeptieren"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:126
+msgid "Alle Videos auswählen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:66
+msgid "Alle Wiedergabelisten auswählen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:87
+msgid "Alle zukünftig zugewiesenen geplanten Aufnahmen für diesen Raum und diesen Aufnahmeagenten werden entfernt! Sind Sie sicher, dass Sie diese Verknüpfung entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:53
+msgid "Allgemeine Angaben"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:53
+msgid "Änderungen an den Ressourcen wurden vorgenommen, aber nicht gespeichert. Bitte speichern Sie, um sie anzuwenden."
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:368
+msgid "Anmerkungen hinzufügen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:52
+msgid "Arbeitsplatz"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:42
+msgid "Auf diese Liste kann jede Person zugreifen und die Liste wird u.U. auch auf externen Plattformen einsehbar."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:30
+msgid "Auf diese Liste kann jede Person zugreifen, die den dazugehörigen Freigabelink kennt"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:104
+msgid "Aufnahmezeitpunkt"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:166
+msgid "Aufrufe"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:248
+msgid "Aufzeichnung der Folien hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:41
+msgid "Aufzeichnung der vortragenden Person"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:52
+msgid "Aufzeichnung des Bildschirms"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:211
+msgid "Aufzeichnung des/der Vortragende*n hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:10
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:26
+msgid "Aufzeichnung entfernen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRestore.vue:11
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:8
+msgid "Aufzeichnung wiederherstellen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDelete.vue:11
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:11
+msgid "Aufzeichnung zum Löschen markieren"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:41
+msgid "Aufzeichnungen aktualisieren"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:109
+#: vueapp/components/Schedule/ScheduleList.vue:34
+msgid "Aufzeichnungen planen"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:42
+msgid "Aufzeichnungen stornieren"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:26
+msgid "Aufzeichnungsplanung konfigurieren"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:65
+#: vueapp/components/Schedule/ScheduleLoading.vue:32
+msgid "Aufzeichnungszeitraum"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:398
+#: vueapp/components/Videos/VideosTable.vue:210
+msgid "Aus Wiedergabeliste entfernen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:23
+msgid "Auswirkung der Bearbeitung"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoCut.vue:9
+msgid "Auswirkung des Schnitts im Editor"
+msgstr ""
+
+#: vueapp/components/Videos/VideoChangeWarning.vue:35
+msgid "Auswirkungen der Videoänderungen"
+msgstr ""
+
+#: vueapp/components/Config/GlobalOptions.vue:86
+msgid "Automatisierte Aufzeichnungen"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:56
+msgid "Basis URL zur Opencast-Installation"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:87
+msgid "Beachten Sie bitte, dass Sie hier keine Videos einbinden können, an denen Sie nur Leserechte besitzen."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistCard.vue:37
+#: vueapp/components/Videos/VideoRow.vue:298
+msgid "Bearbeiten"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:143
+msgid "Beendet"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:272
+msgid "Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:34
+msgid "Beim Entfernen der Freigabe ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:30
+msgid "Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:28
+msgid "Beim Entfernen des Kurses ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:29
+msgid "Beim Hinzufügen der Freigabe ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:24
+msgid "Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:23
+msgid "Beim Hinzufügen des Kurses ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:39
+msgid "Beim Hinzufügen des Links ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:302
+msgid "Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:44
+msgid "Beim Löschen des Links ist ein Fehler aufgetreten."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDelete.vue:29
+msgid "Beim Löschen wird die Aufzeichnung aus den folgenden Wiedergabelisten entfernt."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:50
+msgid "Berechtigung"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:177
+msgid "Beschäftigt"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:95
+#: vueapp/components/Videos/VideoUpload.vue:165
+msgid "Beschreibung"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:40
+msgid "Beschreibung darf nicht leer sein"
+msgstr ""
+
+#: vueapp/common/permname.filter.js:4
+msgid "Besitzer/in"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddCard.vue:45
+msgid "Bestehende kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:84
+#: vueapp/components/Videos/VideoUpload.vue:141
+msgid "Betreff"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:161
+msgid "Bitte beachten Sie, dass diese Wiedergabeliste ist eine"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:37
+msgid "Bitte beschreiben Sie das aufgetretene Problem"
+msgstr ""
+
+#: vueapp/components/Studip/StudipDialog.vue:111
+msgid "Bitte bestätigen Sie die Aktion"
+msgstr ""
+
+#: vueapp/components/UserCourseSelectable.vue:40
+msgid "Bitte einen Kurs auswählen"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:182
+msgid "Bitte wählen Sie eine Aktion."
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:53
+#: vueapp/components/Config/SchedulingOptions.vue:84
+msgid "Bitte wählen Sie einen CA."
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:81
+#: vueapp/components/Config/SchedulingEditModal.vue:101
+#: vueapp/components/Config/SchedulingOptions.vue:112
+#: vueapp/components/Config/SchedulingOptions.vue:134
+msgid "Bitte wählen Sie einen Workflow aus."
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:198
+msgid "Bitte warten..."
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:44
+#: vueapp/components/Config/SchedulingOptions.vue:63
+msgid "Capture Agent"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:59
+msgid "Code kopieren"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:163
+msgid "confirm_text"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:290
+msgid "Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:209
+msgid "Das Video ist momentan weltweit zugreifbar."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:53
+msgid "Das Video kann nicht freigegeben werden, bitte versuchen Sie es später erneut!"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:34
+msgid "Das Video konnte aus der Wiedergabeliste nicht entfernt werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:33
+msgid "Das Video konnte zu der Wiedergabeliste nicht hinzugefügt werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:34
+msgid "Das Video wird zurzeit verarbeitet und kann deshalb nicht unwiderruflich entfernt werden. Versuchen Sie es zu einem späteren Zeitpunkt erneut."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:28
+msgid "Das Video wurde aus der Wiedergabeliste entfernt."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:27
+msgid "Das Video wurde zu der Wiedergabeliste hinzugefügt."
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:199
+msgid "Datei(en)"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:293
+msgid "Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:147
+msgid "Datum"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:110
+msgid "Debugmodus einschalten?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:65
+msgid "Der Einbettungscode konnte nicht in die Zwischenablage kopiert werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:64
+msgid "Der Einbettungscode wurde in die Zwischenablage kopiert."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:73
+msgid "Der Einbettungslink konnte nicht in die Zwischenablage kopiert werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:72
+msgid "Der Einbettungslink wurde in die Zwischenablage kopiert."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:160
+msgid "Der Link konnte nicht kopiert werden."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:153
+msgid "Der Link wurde in die Zwischenablage kopiert."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDelete.vue:23
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:25
+msgid "Die Aufzeichnung wird damit in den \"Gelöschte Videos\" Bereich Ihres Arbeitsplatzes verschoben und wird nach %{days} Tagen automatisch gelöscht. Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.NaN"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:23
+msgid "Die ausgewählten Wiedergabelisten werden derzeit kopiert."
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:152
+msgid "Die geplante Aufzeichnung wurde entfernt."
+msgstr ""
+
+#: vueapp/views/Course.vue:108
+msgid "Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:67
+msgid "Die Kurswiedergabeliste hinzugefügt."
+msgstr ""
+
+#: vueapp/views/Contents.vue:82
+msgid "Die Nutzerkonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:83
+msgid "Die Playlisten wurden der Veranstaltung hinzugefügt."
+msgstr ""
+
+#: vueapp/components/Videos/VideosAddFromContents.vue:51
+#: vueapp/components/Videos/VideosAddFromCourses.vue:58
+msgid "Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden."
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:384
+msgid "Die Videos konnten von der Wiedergabeliste nicht entfernt werden."
+msgstr ""
+
+#: vueapp/components/Videos/VideosAddFromContents.vue:44
+#: vueapp/components/Videos/VideosAddFromCourses.vue:51
+msgid "Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt."
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:377
+msgid "Die Videos wurden von der Wiedergabeliste entfernt."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:61
+msgid "Die Wiedergabeliste konnte nicht erstellt werden."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:171
+msgid "Die Wiedergabeliste konnte nicht gelöscht werden."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:58
+msgid "Die Wiedergabelisten wurden in die Veranstaltung kopiert."
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:93
+msgid "Die Wiedergabelisten wurden übertragen!"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:18
+msgid "Diese Liste sehen nur Veranstaltungsnutzer/Innen, sofern dort freigegeben"
+msgstr ""
+
+#: vueapp/components/Studip/StudipDialog.vue:80
+msgid "Diesen Dialog schließen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:222
+#: vueapp/components/Videos/VideoRow.vue:230
+msgid "Dieses Video hatte einen Verarbeitungsfehler. Bitte wenden Sie sich an den Support!"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:302
+msgid "Dieses Video ist öffentlich."
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:194
+#: vueapp/components/Videos/VideoRow.vue:200
+msgid "Dieses Video wartet auf den Schnitt. Hier gelangen Sie direkt zum Editor!"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:269
+msgid "Dieses Video wird gerade von Opencast bearbeitet."
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:208
+#: vueapp/components/Videos/VideoRow.vue:214
+msgid "Dieses Video wird gerade von Opencast verarbeitet."
+msgstr ""
+
+#: vueapp/components/SearchBar.vue:151
+#: vueapp/components/SearchBar.vue:136
+msgid "Dozent/-in"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:25
+msgid "Einbettungscode"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:57
+msgid "Einbettungscode in die Zwischenablage kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:33
+msgid "Einbettungslink"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:51
+msgid "Einbettungslink in die Zwischenablage kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:15
+msgid "Einbettungsoptionen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:347
+msgid "Einbettungsoptionen anzeigen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:226
+msgid "Einbettungsoptionen anzeigen."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:10
+msgid "Einsenden"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:82
+msgid "Einstellungen konnten nicht gespeichert werden!"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:61
+msgid "Einstellungen speichern"
+msgstr ""
+
+#: vueapp/components/PaginationButtons.vue:85
+#: vueapp/components/PaginationButtons.vue:154
+msgid "Elemente pro Seite"
+msgstr ""
+
+#: vueapp/components/Videos/VideoFilePreview.vue:54
+msgid "Entfernen"
+msgstr ""
+
+#: vueapp/components/Config/UploadOptions.vue:15
+msgid "Erlaubte Dateiendungen beim Hochladen von Mediendateien"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:14
+msgid "Erstellen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:75
+msgid "Erstellt am"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistCard.vue:57
+msgid "Erstellt am:"
+msgstr ""
+
+#: vueapp/components/TagBar.vue:28
+msgid "Es existieren bisher keine Schlagworte. Wenn Sie Ihr erstes eigenes Schlagwort in das Suchfeld eingeben, wird dieses automatisch erstellt."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:177
+msgid "Es existiert bisher kein Share-Link"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:221
+msgid "Es gibt bisher keine Termine."
+msgstr ""
+
+#: vueapp/views/Playlists.vue:16
+msgid "Es gibt bisher keine Wiedergabelisten."
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:53
+#: vueapp/components/Schedule/ScheduleList.vue:58
+#: vueapp/components/Schedule/ScheduleList.vue:67
+#: vueapp/components/Schedule/ScheduleList.vue:127
+#: vueapp/components/Schedule/ScheduleList.vue:133
+msgid "Es ist ein Fehler aufgetreten"
+msgstr ""
+
+#: vueapp/components/Error.vue:55
+msgid "Es ist ein unbekannter Fehler aufgetreten"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:531
+msgid "Es ist ein Verbindungsfehler zum Opencast Server aufgetreten und es wurden deshalb einige Funktionen deaktiviert. Bitte wenden Sie sich bei auftretenden Problemen an den Support oder versuchen Sie es zu einem späteren Zeitpunkt erneut."
+msgstr ""
+
+#: vueapp/components/UserCourseSelectable.vue:25
+msgid "Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:22
+msgid "Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten."
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:167
+msgid "Es wurden keine Videos für die gewählten Ansichtsoptionen gefunden."
+msgstr ""
+
+#: vueapp/components/Videos/VideoFilePreview.vue:35
+msgid "Folien"
+msgstr ""
+
+#: vueapp/components/Config/GlobalOptions.vue:35
+msgid "Funktionen"
+msgstr ""
+
+#: vueapp/views/CoursesVideos.vue:14
+msgid "Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte erstellen Sie diese über das Aktionsmenü."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:21
+msgid "Für Nutzende freigeben"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:69
+msgid "Für Nutzer/in freigeben"
+msgstr ""
+
+#: vueapp/components/Videos/VideosSidebar.vue:57
+msgid "Gelöschte Videos"
+msgstr ""
+
+#: vueapp/components/Config/GlobalOptions.vue:18
+msgid "Globale Einstellungen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoFilePreview.vue:43
+msgid "Größe:"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:33
+msgid "Grundeinstellungen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:99
+#: vueapp/components/Videos/VideoFilePreview.vue:62
+msgid "Herunterladen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:10
+#: vueapp/components/Videos/VideosAddFromContents.vue:10
+#: vueapp/components/Videos/VideosAddFromCourses.vue:13
+msgid "Hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:40
+msgid "Hochladen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:171
+msgid "Idle"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:46
+#: vueapp/views/Contents.vue:68
+msgid "Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist."
+msgstr ""
+
+#: vueapp/components/Studip/StudipDialog.vue:114
+msgid "Information"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:22
+msgid "Intern"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:103
+msgid "Ist rollenbasierter Zugriff per Event-ID aktiviert?"
+msgstr ""
+
+#: vueapp/components/Config/ConfigOption.vue:44
+#: vueapp/components/Studip/StudipDialog.vue:70
+msgid "Ja"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:43
+msgid "Jeder Capture-Agent kann nur maximal einem Raum zugewiesen werden!"
+msgstr ""
+
+#: vueapp/components/ViewSwitch.vue:15
+msgid "Kachelansicht"
+msgstr ""
+
+#: vueapp/common/permname.filter.js:7
+msgid "Kann weiterteilen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:100
+msgid "Kein (weiterer) CA verfügbar"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:343
+msgid "Kein Video vorhanden"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:122
+#: vueapp/components/Config/SchedulingOptions.vue:144
+msgid "Kein Workflow verfügbar"
+msgstr ""
+
+#: vueapp/components/UserCourseSelectable.vue:48
+msgid "Keine Kurse gefunden!"
+msgstr ""
+
+#: vueapp/components/UserPlaylistSelectable.vue:81
+msgid "Keine Kursverknüpfung"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:38
+msgid "Keine Nutzenden gefunden!"
+msgstr ""
+
+#: vueapp/components/UserPlaylistSelectable.vue:33
+msgid "Keine Wiedergabelisten gefunden!"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:77
+msgid "Keiner Wiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:11
+msgid "Kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/VideosAddFromCourses.vue:27
+msgid "Kurs auswählen"
+msgstr ""
+
+#: vueapp/components/UserCourseSelectable.vue:44
+msgid "Kurse"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:26
+msgid "Kurswiedergabeliste anlegen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:184
+msgid "Kurswiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:42
+msgid "Kurswiedergabeliste verknüpfen"
+msgstr ""
+
+#: vueapp/views/Course.vue:57
+msgid "Kurswiedergabeliste wechseln"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:59
+msgid "Lade Videos..."
+msgstr ""
+
+#: vueapp/components/Studip/StudipProgressIndicator.vue:21
+msgid "Lade..."
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:248
+msgid "Leider kann das Video momentan nicht hochgeladen werden, da notwendige Daten fehlen. Bitte kontaktieren Sie Ihre Systemadministration."
+msgstr ""
+
+#: vueapp/common/permname.filter.js:6
+msgid "Leserechte"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:129
+msgid "Link"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:93
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:53
+msgid "Link kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:91
+msgid "Link zur Mediendatei in die Zwischenablage kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:102
+msgid "Link zur Mediendatei wurde in die Zwischenablage kopiert."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:215
+msgid "Links zu den Mediendateien anzeigen."
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:132
+msgid "Live"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:37
+msgid "LIVE-Aufzeichnungen planen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:112
+msgid "Livestream"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:93
+#: vueapp/components/Config/SchedulingOptions.vue:65
+msgid "Livestream Workflow"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:363
+msgid "Livestream-Videos können nicht entfernt werden."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistCard.vue:55
+#: vueapp/components/Videos/Actions/VideoDelete.vue:12
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:12
+msgid "Löschen"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:80
+msgid "LTI Consumerkey"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:88
+msgid "LTI Consumersecret"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:20
+#: vueapp/components/Videos/VideoRow.vue:408
+msgid "Medien herunterladen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:39
+#: vueapp/components/Videos/VideosSidebar.vue:82
+msgid "Medien hochladen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:338
+#: vueapp/components/Videos/VideosSidebar.vue:127
+msgid "Mediendownloads erlauben"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:350
+#: vueapp/components/Videos/VideosSidebar.vue:142
+msgid "Mediendownloads verbieten"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:42
+msgid "Medienupload, Stud.IP"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:38
+msgid "Mein Computer"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:66
+msgid "Meine Veranstaltungen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:385
+msgid "Metadaten bearbeiten"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:97
+msgid "Mindestens eine Aufzeichnung wird benötigt. Unterstützte Formate: %{ file_types }."
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:73
+#: vueapp/components/Videos/VideoUpload.vue:129
+msgid "Mitwirkende"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:18
+msgid "Möchten Sie das Video wirklich aus der Wiedergabeliste entfernen?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:18
+msgid "Möchten Sie das Video wirklich zu der Wiedergabeliste hinzufügen?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDeletePermanent.vue:20
+msgid "Möchten Sie die Aufzeichnung wirklich unwiderruflich entfernen?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRestore.vue:22
+msgid "Möchten Sie die Aufzeichnung wirklich wiederherstellen?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDelete.vue:22
+#: vueapp/components/Videos/BulkActions/VideoDelete.vue:24
+msgid "Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?"
+msgstr ""
+
+#: vueapp/components/Videos/BulkActions/VideoRestore.vue:18
+msgid "Möchten Sie die Aufzeichnungen wiederherstellen?"
+msgstr ""
+
+#: vueapp/components/Videos/BulkActions/VideoDeletePermanent.vue:11
+msgid "Möchten Sie die Aufzeichnungen wirklich unwiderruflich entfernen?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRestore.vue:25
+msgid "Nach der Wiederherstellung erscheint die Aufzeichnung in den folgenden Wiedergabelisten."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:71
+msgid "Name"
+msgstr ""
+
+#: vueapp/components/Videos/VideoFilePreview.vue:38
+msgid "Name:"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:83
+#: vueapp/components/Videos/VideosSidebar.vue:35
+msgid "Navigation"
+msgstr ""
+
+#: vueapp/components/Config/ConfigOption.vue:56
+#: vueapp/components/Studip/StudipDialog.vue:91
+msgid "Nein"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddCard.vue:34
+msgid "Neu erstellen"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:85
+msgid "Neuen Server hinzufügen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:34
+msgid "Nicht gelistet"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:144
+msgid "Noch nicht erstellt!"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:66
+msgid "Nutzer/in"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess/ShareWithUsers.vue:34
+msgid "Nutzer/innen"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:64
+msgid "Nutzerkennung"
+msgstr ""
+
+#: vueapp/components/Config/GlobalOptions.vue:69
+msgid "Oberfläche / Texte"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistVisibility.vue:46
+msgid "Öffentlich"
+msgstr ""
+
+#: vueapp/components/Studip/StudipDialog.vue:86
+msgid "Ok"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:20
+msgid "Opencast Server Einstellungen"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:36
+msgid "Opencast Version"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:90
+msgid "Opencast-Version:"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:72
+msgid "Passwort"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:42
+msgid "Playlisten verknüpfen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:24
+msgid "Quelle auswählen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:36
+#: vueapp/components/Config/SchedulingOptions.vue:62
+msgid "Raum"
+msgstr ""
+
+#: vueapp/components/Config/GlobalOptions.vue:52
+#: vueapp/components/Videos/Actions/VideoAccess.vue:61
+#: vueapp/components/Videos/Actions/VideoAccess.vue:67
+msgid "Rechte"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:18
+msgid "Ressource bearbeiten"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:40
+msgid "Ressourcen"
+msgstr ""
+
+#: vueapp/components/SearchBar.vue:136
+#: vueapp/components/SearchBar.vue:109
+msgid "Schlagwort"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistEditCard.vue:41
+#: vueapp/components/TagBar.vue:24
+#: vueapp/components/Videos/Actions/VideoEdit.vue:106
+msgid "Schlagworte"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:22
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:14
+#: vueapp/components/Playlists/PlaylistAddCard.vue:17
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:17
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:17
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:13
+#: vueapp/components/Playlists/PlaylistsLinkCard.vue:12
+#: vueapp/components/Studip/StudipDialog.vue:81
+#: vueapp/components/Videos/Actions/VideoAccess.vue:40
+#: vueapp/components/Videos/Actions/VideoDownload.vue:21
+#: vueapp/components/Videos/Actions/VideoEmbeddingCode.vue:16
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:11
+#: vueapp/components/Videos/VideosAddFromContents.vue:12
+#: vueapp/components/Videos/VideosAddFromCourses.vue:15
+msgid "Schließen"
+msgstr ""
+
+#: vueapp/common/permname.filter.js:5
+msgid "Schreibrechte"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:73
+#: vueapp/components/Videos/VideoPlaylists.vue:31
+msgid "Semester"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:197
+msgid "Semesterfilter"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:31
+#: vueapp/components/Videos/VideoUpload.vue:56
+msgid "Server auswählen:"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:77
+msgid "Server wurde erfolgreich aktiviert"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:83
+msgid "Server wurde erfolgreich deaktiviert"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:214
+msgid "Serverkonfiguration wurde entfernt"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:121
+msgid "Share Links"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:188
+msgid "Share-Link hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:161
+msgid "Share-Link kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:168
+msgid "Share-Link löschen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:154
+msgid "Share-Link noch nicht verfügbar"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:134
+msgid "Sichtbar"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:115
+msgid "Sichtbarkeit des Videos in dieser Veranstaltung"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:201
+msgid "Sie können das Video weltweit zugreifbar machen und dadurch z.B. die Videodateien in externe Videoplayer integrieren. Bitte beachten Sie, dass es mehrere Minuten dauern kann, bevor die Änderung abgeschlossen ist. Währenddessen ist es nicht möglich, den Status erneut zu ändern!"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:245
+msgid "Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen."
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:282
+msgid "Sie müssen mindestens eine Datei auswählen!"
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:37
+msgid "Sie verwenden Opencast 16 oder höher und können die Wiedergabelisten mit zu Opencast übertragen und die automatische Synchronisation einschalten."
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:135
+msgid "Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:139
+msgid "Sind Sie sicher, dass Sie die geplante Aufzeichnung entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:159
+msgid "Sind Sie sicher, dass Sie die komplette Wiedergabeliste löschen möchten?"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:205
+msgid "Sind Sie sicher, dass Sie die Serverkonfiguration löschen möchten? Die damit verbundenen Videos werden danach nicht mehr in Stud.IP zur Verfügung stehen!"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:92
+#: vueapp/components/Videos/Actions/VideoAccess.vue:127
+msgid "Sind Sie sicher, dass Sie diese Freigabe entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:59
+msgid "Sind Sie sicher, dass Sie diese Playlist aus dem Kurs entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:430
+msgid "Sind Sie sicher, dass Sie diese Wiedergabeliste entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:61
+msgid "Sind Sie sicher, dass Sie dieses Video aus der Wiedergabeliste entfernen möchten?"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:299
+#: vueapp/components/Videos/VideosSidebar.vue:187
+msgid "Sortierung abbrechen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:284
+#: vueapp/components/Videos/VideosSidebar.vue:172
+msgid "Sortierung speichern"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:21
+#: vueapp/components/Playlists/PlaylistEditCard.vue:17
+#: vueapp/components/Videos/Actions/VideoEdit.vue:33
+msgid "Speichern"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:153
+msgid "Sprache"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:117
+msgid "SSL-Zertifkatsfehler ignorieren?"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:125
+msgid "Standard"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:141
+msgid "Standard-Kurswiedergabeliste"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:457
+msgid "Standard-Kurswiedergabeliste ändern"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:472
+msgid "Standardsichtbarkeit Videos"
+msgstr ""
+
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:12
+msgid "Standardsichtbarkeit Videos in dieser Veranstaltung"
+msgstr ""
+
+#: vueapp/components/Config/WorkflowOptions.vue:15
+msgid "Standardworkflows"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:66
+#: vueapp/components/Schedule/ScheduleList.vue:68
+#: vueapp/components/Schedule/ScheduleLoading.vue:35
+msgid "Status"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:174
+msgid "Status unbekannt"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:430
+msgid "Studierendenupload erlauben"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:442
+msgid "Studierendenupload verbieten"
+msgstr ""
+
+#: vueapp/components/SearchBar.vue:84
+msgid "Suche starten"
+msgstr ""
+
+#: vueapp/components/SearchBar.vue:73
+msgid "Suche..."
+msgstr ""
+
+#: vueapp/components/Config/AdminConfigs.vue:42
+msgid "Synchronisierung aktivieren und Wiedergabelisten übertragen"
+msgstr ""
+
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:36
+msgid "Systemstandard"
+msgstr ""
+
+#: vueapp/components/ViewSwitch.vue:12
+msgid "Tabellarische Ansicht"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:9
+#: vueapp/components/Videos/VideoRow.vue:436
+msgid "Technisches Feedback"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:63
+#: vueapp/components/Schedule/ScheduleLoading.vue:30
+msgid "Termin"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:124
+msgid "Timeout (in Millisekunden)"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistEditCard.vue:29
+#: vueapp/components/Schedule/ScheduleList.vue:67
+#: vueapp/components/Schedule/ScheduleLoading.vue:34
+#: vueapp/components/Videos/Actions/VideoEdit.vue:50
+#: vueapp/components/Videos/VideoUpload.vue:73
+#: vueapp/components/Videos/VideosTable.vue:138
+msgid "Titel"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:53
+msgid "Titel der Wiedergabeliste"
+msgstr ""
+
+#: vueapp/components/Videos/VideoChangeWarning.vue:53
+msgid "Trotzdem bearbeiten"
+msgstr ""
+
+#: vueapp/components/Schedule/ScheduleList.vue:198
+msgid "Übernehmen"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:28
+msgid "Überprüfung der Verbindung fehlgeschlagen! Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! Denken Sie auch daran, in Opencast die korrekten access-control-allow-* Header zu setzen."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistCard.vue:60
+msgid "unbekannt"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:143
+msgid "Unsichtbar"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:378
+msgid "Untertitel bearbeiten"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:425
+#: vueapp/components/Videos/VideosTable.vue:244
+msgid "Unwiderruflich entfernen"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsTable.vue:72
+#: vueapp/components/SearchBar.vue:146
+#: vueapp/components/SearchBar.vue:127
+#: vueapp/components/Videos/VideoPlaylists.vue:30
+msgid "Veranstaltung"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:396
+msgid "Veranstaltungsweite Aktionen"
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:132
+msgid "Verbindungs-Timeout (in Millisekunden)"
+msgstr ""
+
+#: vueapp/components/Config/ServerCard.vue:66
+msgid "Verbindungstest fehlgeschlagen."
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistCard.vue:49
+msgid "Verknüpfte Kurse"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:28
+msgid "Verknüpfte Veranstaltungen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:165
+msgid "Verknüpfung anpassen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:86
+#: vueapp/components/Config/SchedulingOptions.vue:175
+msgid "Verknüpfung entfernen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoLinkToPlaylists.vue:10
+#: vueapp/components/Videos/VideoRow.vue:328
+msgid "Verknüpfungen"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:130
+msgid "Video"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:413
+#: vueapp/components/Videos/VideosSidebar.vue:97
+msgid "Video aufnehmen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoRemoveFromPlaylist.vue:8
+msgid "Video aus Wiedergabeliste entfernen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:31
+msgid "Video bearbeiten"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:39
+#: vueapp/components/Videos/VideoRow.vue:337
+msgid "Video freigeben"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:180
+#: vueapp/components/Videos/VideoRow.vue:186
+msgid "Video nicht (mehr) in Opencast vorhanden"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:240
+msgid "Video nur berechtigten Personen zugreifbar machen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:252
+msgid "Video weltweit zugreifbar machen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAddToPlaylist.vue:8
+msgid "Video zur Wiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:179
+msgid "Video(s)"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:358
+msgid "Videoeditor öffnen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:55
+msgid "Videoqualität"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoDownload.vue:31
+msgid "Videoquelle"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:94
+#: vueapp/components/Playlists/PlaylistsTable.vue:74
+#: vueapp/components/Videos/VideosSidebar.vue:45
+msgid "Videos"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:321
+#: vueapp/components/Playlists/PlaylistAddVideos.vue:16
+#: vueapp/components/Playlists/PlaylistCard.vue:43
+#: vueapp/components/Videos/VideosAddFromContents.vue:9
+#: vueapp/components/Videos/VideosAddFromCourses.vue:12
+#: vueapp/components/Videos/VideosSidebar.vue:112
+msgid "Videos hinzufügen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:370
+#: vueapp/components/Videos/VideosSidebar.vue:157
+msgid "Videos sortieren"
+msgstr ""
+
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:22
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:48
+msgid "Videos standardmäßig sichtbar für Studierende"
+msgstr ""
+
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:22
+#: vueapp/components/Courses/EpisodesDefaultVisibilityDialog.vue:60
+msgid "Videos standardmäßig unsichtbar für Studierende"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:62
+#: vueapp/components/Videos/VideoFilePreview.vue:32
+#: vueapp/components/Videos/VideoUpload.vue:117
+#: vueapp/components/Videos/VideosTable.vue:156
+msgid "Vortragende(r)"
+msgstr ""
+
+#: vueapp/components/UserPlaylistSelectable.vue:14
+msgid "Weiteren Wiedergabelisten hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoAccess.vue:200
+msgid "Weltweiter Zugriff"
+msgstr ""
+
+#: vueapp/components/Videos/VideoChangeWarning.vue:43
+msgid "Wenn Sie dieses Video verändern, wirken sich diese Änderungen auf die folgenden Wiedergabelisten aus, zu denen das Video hinzugefügt wurde. Sollten Sie dies nicht beabsichtigen, laden Sie das Video erneut hoch und bearbeiten Sie diese Kopie."
+msgstr ""
+
+#: vueapp/components/SearchBar.vue:141
+#: vueapp/components/SearchBar.vue:118
+#: vueapp/components/Videos/VideoPlaylists.vue:29
+msgid "Wiedergabeliste"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddNewCard.vue:26
+#: vueapp/components/Videos/VideosSidebar.vue:202
+msgid "Wiedergabeliste anlegen"
+msgstr ""
+
+#: vueapp/components/UserPlaylistSelectable.vue:25
+msgid "Wiedergabeliste auswählen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:265
+#: vueapp/components/Playlists/PlaylistEditCard.vue:16
+msgid "Wiedergabeliste bearbeiten"
+msgstr ""
+
+#: vueapp/components/Videos/VideosTable.vue:276
+msgid "Wiedergabeliste entfernen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:167
+#: vueapp/components/Playlists/PlaylistAddCard.vue:16
+msgid "Wiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:120
+#: vueapp/components/UserPlaylistSelectable.vue:29
+msgid "Wiedergabelisten"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistsCopyCard.vue:10
+msgid "Wiedergabelisten kopieren"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:418
+#: vueapp/components/Videos/VideosTable.vue:257
+msgid "Wiederherstellen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingEditModal.vue:73
+#: vueapp/components/Config/SchedulingOptions.vue:64
+#: vueapp/components/Videos/VideoUpload.vue:182
+msgid "Workflow"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoReport.vue:39
+msgid "z.B. Ton- oder Abspielprobleme etc."
+msgstr ""
+
+#: vueapp/components/Config/EditServer.vue:96
+msgid "Zeitpuffer (in Sekunden) um Überlappungen zu verhindern"
+msgstr ""
+
+#: vueapp/components/Videos/Actions/VideoEdit.vue:150
+msgid "Zeitstempel für die Sichtbarkeit"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:221
+msgid "Zielwiedergabeliste für Aufzeichnungen"
+msgstr ""
+
+#: vueapp/components/Courses/CoursesSidebar.vue:240
+msgid "Zielwiedergabeliste für Livestreams"
+msgstr ""
+
+#: vueapp/components/Playlists/PlaylistAddToCourseDialog.vue:58
+msgid "Zu Kurs hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoUpload.vue:87
+msgid "Zu Wiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Videos/VideoRow.vue:388
+#: vueapp/components/Videos/VideosTable.vue:227
+msgid "Zum Löschen markieren"
+msgstr ""
+
+#: vueapp/components/UserPlaylistSelectable.vue:52
+msgid "Zur Wiedergabeliste hinzufügen"
+msgstr ""
+
+#: vueapp/components/Config/SchedulingOptions.vue:59
+msgid "Zuweisung der Capture Agents"
+msgstr ""

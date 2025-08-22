@@ -15,12 +15,16 @@
                     {{ dialogContent }}
                 </span>
                 <span v-else>
-                    {{ $gettext('Möchten Sie die Aufzeichnungen wirklich zum Löschen markieren?') }}
-                    <br/><br/>
-                    {{ $gettext('Die Aufzeichnungen werden damit in den "Gelöschte Videos" Bereich Ihres Arbeitsplatzes verschoben und werden nach') }}
-                    {{simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL}}
-                    {{ $gettext('Tagen automatisch gelöscht.') }}
-                    {{ $gettext('Bis zu diesem Zeitpunkt können Sie die Aufzeichnungen wiederherstellen.') }}
+                     <p>
+                        {{ $gettext('Möchten Sie die Aufzeichnung wirklich zum Löschen markieren?') }}
+                    </p>
+                    <p>
+                        {{ $gettext('Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich '
+                            + 'Ihres Arbeitsplatzes verschoben und wird nach %{days} Tagen automatisch gelöscht. '
+                            + 'Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.',
+                            { days: simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL })
+                        }}
+                    </p>
                 </span>
             </template>
         </StudipDialog>

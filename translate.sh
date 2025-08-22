@@ -19,5 +19,7 @@ rm -f $POTPHP
 find * \( -iname "*.php" -o -iname "*.ihtml" \) | xargs xgettext --from-code=UTF-8 --add-location=full --package-name=Opencast --language=PHP -o $POTPHP
 
 msgcat $POTJS $POTPHP -o $POT
-msgmerge $PO $POT -o $PO
+msgmerge $PO $POT -o $PO.tmp
+msgattrib --no-obsolete $PO.tmp -o $PO
+rm $PO.tmp
 msgfmt $PO --output-file=$MO
