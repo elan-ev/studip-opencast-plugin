@@ -1,12 +1,12 @@
 <template>
     <div class="oc--admin--section">
-        <fieldset class="collapsable" v-if="!disabled">
+        <fieldset class="collapsable collapsed" v-if="!disabled">
             <legend>
                 {{ $gettext('Standardworkflows') }}
             </legend>
 
             <ConfigOption v-for="setting in workflow_definitions"
-                :key="setting.name" :setting="setting"
+                :key="setting.name" :setting="setting" useDescriptionAsLabel="false"
                 @updateValue="updateValue"/>
         </fieldset>
     </div>

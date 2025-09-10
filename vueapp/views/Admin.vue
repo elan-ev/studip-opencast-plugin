@@ -3,10 +3,8 @@
         <MessageList />
 
         <div class="oc--admin--server-card-grid">
-            <ServerCard v-for="config in config_list.server"
-                :config="config" :key="config.id"/>
-
-            <ServerCard isAddCard />
+            <ServerCard v-for="config in config_list.server" :config="config" :key="config.id" />
+            <ServerCardAdd />
         </div>
 
         <AdminConfigs />
@@ -14,27 +12,29 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 
-import MessageList from "@/components/MessageList";
+import MessageList from '@/components/MessageList';
 
-import ServerCard from "@/components/Config/ServerCard";
-import AdminConfigs from "@/components/Config/AdminConfigs";
+import ServerCard from '@/components/Config/ServerCard';
+import ServerCardAdd from '@/components/Config/ServerCardAdd';
+import AdminConfigs from '@/components/Config/AdminConfigs';
 
 export default {
-    name: "Admin",
+    name: 'Admin',
     components: {
         MessageList,
         ServerCard,
-        AdminConfigs
+        ServerCardAdd,
+        AdminConfigs,
     },
 
     computed: {
-        ...mapGetters('config', ['config_list'])
+        ...mapGetters('config', ['config_list']),
     },
 
     mounted() {
         this.$store.dispatch('config/configListRead');
-    }
+    },
 };
 </script>

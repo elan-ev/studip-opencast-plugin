@@ -334,6 +334,14 @@ $knob-move-distance: $switch-width - $knob-size - 4px; // Abstand links/rechts (
     }
 }
 
+form.default label:has(.oc--switch) {
+    display: flex;
+    max-width: 48em;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 
 .oc--context-menu {
     position: relative;

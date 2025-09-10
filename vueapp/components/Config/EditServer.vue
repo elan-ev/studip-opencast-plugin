@@ -1,41 +1,48 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Opencast Server Einstellungen')"
-            :confirmText="$gettext('Speichern')"
-            :closeText="$gettext('Schließen')"
+            :title="isNew ? $gettext('Opencast Server hinzufügen') : $gettext('Opencast Server Einstellungen')"
+            :confirmText="isNew ? $gettext('Hinzufügen') : $gettext('Speichern')"
+            :confirmClass="isNew ? 'add' : 'accept'"
+            :closeText="isNew ? $gettext('Abbrechen') : $gettext('Schließen')"
             :disabled="disabled"
-            height="600"
+            :height="isNew ? 600 : 800"
             width="600"
             @confirm="storeConfig"
             @close="close"
         >
             <template v-slot:dialogContent ref="editServer-dialog">
                 <form class="default" v-if="currentConfig" ref="editServer-form">
-                    <fieldset>
-                        <legend>
-                            {{ $gettext('Grundeinstellungen') }}
-                        </legend>
-                        <label v-if="config?.service_version">
-                            <b> {{ $gettext('Opencast Version') }} </b><br />
-                            {{ isLikelyValidVersion(config.service_version) ? config.service_version : '-'}}
-                        </label>
+                    <component :is="withoutFieldset ? 'div' : 'fieldset'">
+                        <template v-if="!withoutFieldset">
+                            <legend>
+                                {{ $gettext('Grundeinstellungen') }}
+                            </legend>
+                            <label v-if="config?.service_version">
+                                <b> {{ $gettext('Opencast Version') }} </b><br />
+                                {{ isLikelyValidVersion(config.service_version) ? config.service_version : '-' }}
+                            </label>
+                        </template>
+                        <ConfigOption
+                            v-for="setting in settings"
+                            :setting="setting"
+                            :key="setting.name"
+                            :useDescriptionAsLabel="true"
+                            @updateValue="updateValue"
+                        />
+                    </component>
 
-                        <ConfigOption v-for="setting in settings"
-                            :setting="setting" :key="setting.name"
-                            @updateValue="updateValue" />
-                    </fieldset>
+                    <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form" />
 
-                    <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form"/>
-
-                    <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
+                    <UploadOptions :configId="currentId" :disabled="currentId === 'new'" />
                 </form>
 
-                <MessageList :float="true" :dialog="true"/>
+                <MessageList :float="true" :dialog="true" />
             </template>
 
             <template v-slot:dialogButtons>
-                <button v-if="currentId !== 'new'"
+                <button
+                    v-if="!isNew"
                     class="button trash"
                     type="button"
                     @click="deleteConfig"
@@ -49,24 +56,18 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog'
-import StudipButton from "@studip/StudipButton";
-import StudipIcon from "@studip/StudipIcon";
-import MessageList from "@/components/MessageList";
-import ConfigOption from "@/components/Config/ConfigOption";
-import WorkflowOptions from "@/components/Config/WorkflowOptions";
-import UploadOptions from "@/components/Config/UploadOptions";
-
-import axios from "@/common/axios.service";
+import StudipDialog from '@studip/StudipDialog';
+import MessageList from '@/components/MessageList';
+import ConfigOption from '@/components/Config/ConfigOption';
+import WorkflowOptions from '@/components/Config/WorkflowOptions';
+import UploadOptions from '@/components/Config/UploadOptions';
 
 export default {
-    name: "EditServer",
+    name: 'EditServer',
 
     components: {
-        StudipButton,
-        StudipIcon,
         StudipDialog,
         ConfigOption,
         MessageList,
@@ -75,30 +76,38 @@ export default {
     },
 
     props: {
-        id : {
-            default: 'new'
+        id: {
+            default: 'new',
         },
-        config : {
+        config: {
             type: Object,
-            default: null
-        }
+            default: null,
+        },
+        withoutFieldset: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data() {
         return {
             currentConfig: {},
-            disabled: false
-        }
+            disabled: false,
+        };
     },
 
     computed: {
         ...mapGetters({
             configStore: 'config/config',
-            simple_config_list: 'config/simple_config_list'
+            simple_config_list: 'config/simple_config_list',
         }),
 
         currentId() {
             return this.currentConfig.id ? this.currentConfig.id : this.id;
+        },
+
+        isNew() {
+            return this.id === 'new';
         },
 
         settings() {
@@ -109,7 +118,7 @@ export default {
                     value: this.currentConfig.service_url,
                     type: 'string',
                     placeholder: 'https://opencast.url',
-                    required: true
+                    required: true,
                 },
                 {
                     description: this.$gettext('Nutzerkennung'),
@@ -117,7 +126,7 @@ export default {
                     value: this.currentConfig.service_user,
                     type: 'string',
                     placeholder: 'ENDPOINT_USER',
-                    required: true
+                    required: true,
                 },
                 {
                     description: this.$gettext('Passwort'),
@@ -125,7 +134,7 @@ export default {
                     value: this.currentConfig.service_password,
                     type: 'password',
                     placeholder: 'ENDPOINT_USER_PASSWORD',
-                    required: true
+                    required: true,
                 },
                 {
                     description: this.$gettext('LTI Consumerkey'),
@@ -133,7 +142,7 @@ export default {
                     value: this.currentConfig.lti_consumerkey,
                     type: 'string',
                     placeholder: 'CONSUMERKEY',
-                    required: true
+                    required: true,
                 },
                 {
                     description: this.$gettext('LTI Consumersecret'),
@@ -141,42 +150,44 @@ export default {
                     value: this.currentConfig.lti_consumersecret,
                     type: 'password',
                     placeholder: 'CONSUMERSECRET',
-                    required: true
+                    required: true,
                 },
                 {
                     description: this.$gettext('Zeitpuffer (in Sekunden) um Überlappungen zu verhindern'),
                     name: 'time_buffer_overlap',
-                    value: this.currentConfig.time_buffer_overlap ? this.currentConfig.time_buffer_overlap : this.default_time_buffer_overlap,
+                    value: this.currentConfig.time_buffer_overlap
+                        ? this.currentConfig.time_buffer_overlap
+                        : this.default_time_buffer_overlap,
                     type: 'number',
-                    required: false
+                    required: false,
                 },
                 {
                     description: this.$gettext('Ist rollenbasierter Zugriff per Event-ID aktiviert?'),
                     name: 'episode_id_role_access',
                     value: this.currentConfig.episode_id_role_access ?? false,
                     type: 'boolean',
-                    required: false
+                    required: false,
                 },
                 {
                     description: this.$gettext('Debugmodus einschalten?'),
                     name: 'debug',
                     value: this.currentConfig.debug,
                     type: 'boolean',
-                    required: false
+                    required: false,
                 },
                 {
                     description: this.$gettext('SSL-Zertifkatsfehler ignorieren?'),
                     name: 'ssl_ignore_cert_errors',
                     value: this.currentConfig.ssl_ignore_cert_errors,
                     type: 'boolean',
-                    required: false
-                }
+                    required: false,
+                },
             ];
         },
 
         default_time_buffer_overlap() {
             return this.configStore.settings.time_buffer_overlap;
-        }
+        },
     },
 
     methods: {
@@ -195,8 +206,7 @@ export default {
             this.currentConfig.checked = false;
 
             if (this.currentId == 'new') {
-                this.$store.dispatch('config/configCreate', this.currentConfig)
-                .then(({ data }) => {
+                this.$store.dispatch('config/configCreate', this.currentConfig).then(({ data }) => {
                     this.disabled = false;
                     this.$store.dispatch('config/configListRead', data.config);
                     this.checkConfigResponse(data);
@@ -220,15 +230,14 @@ export default {
                         }
 
                         workflow_settings.push({
-                            'id': workflow.id,
+                            id: workflow.id,
                             ...workflow.settings,
                         });
                     }
                     this.currentConfig.workflow_settings = workflow_settings;
                 }
 
-                this.$store.dispatch('config/configUpdate', this.currentConfig)
-                .then(({ data }) => {
+                this.$store.dispatch('config/configUpdate', this.currentConfig).then(({ data }) => {
                     this.$store.dispatch('config/configListRead', data.config);
                     this.disabled = false;
                     this.checkConfigResponse(data);
@@ -237,19 +246,24 @@ export default {
         },
 
         deleteConfig() {
-            if (confirm(this.$gettext('Sind Sie sicher, dass Sie die Serverkonfiguration löschen möchten? Die damit verbundenen Videos werden danach nicht mehr in Stud.IP zur Verfügung stehen!'))) {
+            if (
+                confirm(
+                    this.$gettext(
+                        'Sind Sie sicher, dass Sie die Serverkonfiguration löschen möchten? Die damit verbundenen Videos werden danach nicht mehr in Stud.IP zur Verfügung stehen!'
+                    )
+                )
+            ) {
                 if (this.currentId == 'new') {
-                    this.currentConfig = {}
+                    this.currentConfig = {};
                 } else {
-                    this.$store.dispatch('config/configDelete', this.currentId)
-                        .then(() => {
-                            this.$store.dispatch('config/configListRead');
-                            this.$store.dispatch('messages/addMessage', {
-                                'type': 'success',
-                                'text': this.$gettext('Serverkonfiguration wurde entfernt')
-                            });
-                            this.$forceUpdate;
+                    this.$store.dispatch('config/configDelete', this.currentId).then(() => {
+                        this.$store.dispatch('config/configListRead');
+                        this.$store.dispatch('messages/addMessage', {
+                            type: 'success',
+                            text: this.$gettext('Serverkonfiguration wurde entfernt'),
                         });
+                        this.$forceUpdate;
+                    });
                 }
 
                 this.close();
@@ -261,24 +275,27 @@ export default {
                 if (data.message.type === 'error') {
                     this.$store.dispatch('messages/addMessage', {
                         type: data.message.type,
-                        text: data.message.text
+                        text: data.message.text,
                     });
                     return;
-                }
-                else if (data.message.type === 'success') {
+                } else if (data.message.type === 'success') {
                     if (this.currentId !== 'new') {
                         // Just show success message if server was edited
                         this.$store.dispatch('messages/addMessage', {
                             type: data.message.type,
-                            text: data.message.text
+                            text: data.message.text,
                         });
-                    }
-                    else {
+                    } else {
                         // On create, scroll to the default workflow configuration
                         this.$store.dispatch('messages/addMessage', {
                             type: data.message.type,
-                            text: data.message.text + ' ' + this.$gettext('Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'),
-                            dialog: true
+                            text:
+                                data.message.text +
+                                ' ' +
+                                this.$gettext(
+                                    'Sie können nun die Standardworkflows einstellen oder die Konfiguration abschließen.'
+                                ),
+                            dialog: true,
                         });
 
                         this.currentConfig = data.config;
@@ -288,7 +305,7 @@ export default {
                         // We need to wait for a short time so the component is actually visible
                         setTimeout(() => {
                             view.$refs['workflow-form'].$el.scrollIntoView({
-                                behavior: 'smooth'
+                                behavior: 'smooth',
                             });
                         }, 10);
                     }
@@ -303,9 +320,9 @@ export default {
             }
 
             this.$store.dispatch('messages/addMessage', {
-                    type: 'error',
-                    text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.'),
-                    dialog: true
+                type: 'error',
+                text: this.$gettext('Bei der Konfiguration ist ein Fehler aufgetreten. Versuchen Sie es bitte erneut.'),
+                dialog: true,
             });
         },
 
@@ -318,21 +335,19 @@ export default {
 
             const regex = /^\d+\.\d+(?:\.\d+)?(?:[-.][a-zA-Z0-9]+)*$/;
             return regex.test(version);
-        }
+        },
     },
 
     mounted() {
         if (this.currentId !== 'new') {
             if (!this.config) {
-                this.$store.dispatch('config/configRead', this.currentId)
-                .then(() => {
+                this.$store.dispatch('config/configRead', this.currentId).then(() => {
                     this.currentConfig = this.configStore;
                 });
             } else {
                 this.currentConfig = this.config;
             }
         }
-
-    }
+    },
 };
 </script>

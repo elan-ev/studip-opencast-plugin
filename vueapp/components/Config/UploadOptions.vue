@@ -1,12 +1,12 @@
 <template>
     <div class="oc--admin--section">
-        <fieldset class="collapsable" v-if="!disabled">
+        <fieldset class="collapsable collapsed" v-if="!disabled">
             <legend>
                 {{ $gettext('Erlaubte Dateiendungen beim Hochladen von Mediendateien') }}
             </legend>
 
             <ConfigOption v-for="setting in upload_settings"
-                          :key="setting.name" :setting="setting"
+                          :key="setting.name" :setting="setting" useDescriptionAsLabel="true"
                           @updateValue="updateValue"/>
         </fieldset>
     </div>

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <form class="default">
+  <div id="oc--admin-config-form-wrapper">
+    <form class="default collapsable">
         <MessageBox type="warning" v-if="is_scheduling_configured && !is_scheduling_enabled">
             {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
             <a :href="$filters.helpurl('OpencastV3Administration#toc2')"
