@@ -9,7 +9,9 @@
             <img
                 v-if="!video.isDummy"
                 :src="video.preview"
-                alt="$gettext('Vorschaubild')"
+                alt=""
+                role="img"
+                :aria-label="$gettext('Vorschaubild')"
             />
             <div v-else class="oc--playlist-card__stack-placeholder">
                 <StudipIcon shape="decline" :size="32" role="inactive" />
