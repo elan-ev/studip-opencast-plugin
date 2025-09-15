@@ -1,23 +1,32 @@
 <template>
     <div class="oc--tabs">
-        <div class="oc--tabs-nav">
-            <button
-                v-for="(tab, index) in tabs"
-                :key="index"
-                :data-index="index"
-                :class="[
-                    activeTab === index ? 'is-active' : '',
-                    tab.icon !== '' && tab.name !== '' ? 'oc--tabs-nav-icon-text-' + tab.icon : '',
-                    tab.icon !== '' && tab.name === '' ? 'oc--tabs-nav-icon-solo-' + tab.icon : '',
-                ]"
-                :tabindex="activeTab === index ? 0 : -1"
-                :aria-selected="activeTab === index"
-                @click="selectTab(index)"
-                @keydown="handleKeyEvent($event)"
-                :ref="'tabnav' + index"
-            >
-                {{ tab.name }}
-            </button>
+        <div class="oc--tabs-nav" :class="{ 'oc--tabs-nav--dropdown': useDropdown }">
+            <template v-if="useDropdown">
+                <select v-model.number="activeTab" @change="selectTab(activeTab)">
+                    <option v-for="(tab, index) in tabs" :key="index" :value="index">
+                        {{ tab.name }}
+                    </option>
+                </select>
+            </template>
+            <template v-else>
+                <button
+                    v-for="(tab, index) in tabs"
+                    :key="index"
+                    :data-index="index"
+                    :class="[
+                        activeTab === index ? 'is-active' : '',
+                        tab.icon !== '' && tab.name !== '' ? 'oc--tabs-nav-icon-text-' + tab.icon : '',
+                        tab.icon !== '' && tab.name === '' ? 'oc--tabs-nav-icon-solo-' + tab.icon : '',
+                    ]"
+                    :tabindex="activeTab === index ? 0 : -1"
+                    :aria-selected="activeTab === index"
+                    @click="selectTab(index)"
+                    @keydown="handleKeyEvent($event)"
+                    :ref="'tabnav' + index"
+                >
+                    {{ tab.name }}
+                </button>
+            </template>
         </div>
         <div class="oc--tabs-content" :style="{ 'min-height': minHeight + 'px' }">
             <slot></slot>
@@ -32,11 +41,13 @@ export default {
     props: {
         modelValue: { type: Number },
         minHeight: { type: Number, default: 0 },
+        responsive: { type: Boolean, default: false },
     },
     data() {
         return {
             activeTab: 0,
             tabs: [],
+            useDropdown: false,
         };
     },
     methods: {
@@ -45,7 +56,9 @@ export default {
                 return;
             }
             this.activeTab = index;
-            this.$refs['tabnav' + index][0].focus();
+            if (!this.useDropdown) {
+                this.$refs['tabnav' + index][0].focus();
+            }
         },
         addTab(tab) {
             if (!this.tabs.find((t) => t.name === tab.name && t.icon === tab.icon)) {
@@ -53,6 +66,7 @@ export default {
             }
         },
         handleKeyEvent(e) {
+            if (this.useDropdown) return;
             const index = parseInt(e.target.dataset.index);
             switch (e.keyCode) {
                 case 37: // left
@@ -82,6 +96,9 @@ export default {
         getActiveTabElement() {
             return this.$refs['tabnav' + this.activeTab][0];
         },
+        checkResponsiveClass() {
+            this.useDropdown = document.documentElement.classList.contains('responsive-display');
+        },
     },
     provide() {
         return {
@@ -90,11 +107,30 @@ export default {
         };
     },
     mounted() {
+        if (this.responsive) {
+            this.checkResponsiveClass();
+
+            const observer = new MutationObserver(() => {
+                this.checkResponsiveClass();
+            });
+
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['class'],
+            });
+
+            this._observer = observer;
+        }
         this.$nextTick(() => {
             if (this.modelValue) {
                 this.selectTab(this.modelValue);
             }
         });
+    },
+    beforeUnmount() {
+        if (this._observer) {
+            this._observer.disconnect();
+        }
     },
     watch: {
         modelValue(newValue) {

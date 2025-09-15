@@ -8,13 +8,18 @@
             }}
         </MessageBox>
         <template v-else>
+            <!--- Hack for creepy responsive contentbar solution --->
+            <div v-show="false" class="sidebar-image">
+                <div class="sidebar-title">{{ $gettext('Opencast Videos') }}</div>
+            </div>
+            <!--- end hack --->
             <ContentBar>
                 <template #title>
                     <StudipIcon shape="opencast" :size="24" role="info" />
                     <span>{{ $gettext('Opencast Videos') }}</span>
                 </template>
                 <template #nav>
-                    <Tabs v-model="tabSelection">
+                    <Tabs v-model="tabSelection" :responsive="true">
                         <Tab :name="$gettext('Übersicht')"></Tab>
                         <Tab :name="$gettext('Videos')"></Tab>
                         <Tab :name="$gettext('Wiedergabelisten')"></Tab>
@@ -174,7 +179,7 @@ export default {
         ]),
         ...mapGetters('config', ['course_config', 'simple_config_list', 'canSchedule']),
         ...mapGetters('videos', ['searchAvailable']),
-        ...mapGetters('schedule', ['semester_list','semester_filter']),
+        ...mapGetters('schedule', ['semester_list', 'semester_filter']),
 
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
@@ -344,7 +349,9 @@ export default {
         },
 
         scheduleFilterItems() {
-            const options = this.semester_list.map(semester => {return { value: semester.id, label: semester.name}})
+            const options = this.semester_list.map((semester) => {
+                return { value: semester.id, label: semester.name };
+            });
             return [
                 {
                     label: this.$gettext('Semesterfilter'),

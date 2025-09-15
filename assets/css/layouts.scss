@@ -240,6 +240,8 @@ $icons: (
     .oc--content-bar-actions {
         display: flex;
         gap: 10px;
+        margin-left: 10px;
+        justify-content: flex-end;
     }
 }
 
@@ -267,6 +269,29 @@ $icons: (
         cursor: pointer;
         font: 0/0 a;
         text-shadow: none;
+    }
+}
+
+.responsive-display:not(.size-small) {
+    .oc--content-bar {
+        padding: 0 0 1.5rem 0;
+        box-shadow: none;
+        border-bottom: solid thin var(--dark-gray-color-30);
+
+        .oc--content-bar-header-title {
+            display: none;
+        }
+
+        .oc--content-bar-nav {
+            flex-grow: 1;
+
+            .oc--tabs-nav--dropdown select {
+                width: 100%;
+                border-radius: 4px;
+                font-size: 1.1rem;
+                background-size: 1rem;
+            }
+        }
     }
 }
 
@@ -346,7 +371,6 @@ form.default label:has(.oc--switch) {
 .oc--context-menu {
     position: relative;
     display: inline-block;
-    z-index: 11;
 
     &__button.button {
         min-width: unset;
@@ -451,7 +475,7 @@ form.default label:has(.oc--switch) {
     &__menu-title {
         font-weight: bold;
         font-size: 1rem;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 1rem 1rem 1rem;
         border-bottom: 1px solid #ddd;
         color: #222;
     }
@@ -492,6 +516,69 @@ form.default label:has(.oc--switch) {
         border: 1px solid #ccc;
         border-radius: 4px;
     }
+
+    &__drawer {
+        position: fixed;
+        inset: 0;
+        z-index: 11;
+
+        .oc--context-menu__menu-title {
+            display: flex;
+            justify-content: space-between;
+
+            button {
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255, 0.8);
+    }
+
+    &__drawer-panel {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background-color: #fff;
+        border-top: solid thin var(--dark-gray-color-30);
+        .oc--context-menu__menu-title {
+            padding: 1rem;
+        }
+    }
+}
+
+.drawer-enter-from,
+.drawer-leave-to {
+  .oc--context-menu__overlay {
+    opacity: 0;
+  }
+  .oc--context-menu__drawer-panel {
+    transform: translateY(100%);
+  }
+}
+
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  .oc--context-menu__overlay,
+  .oc--context-menu__drawer-panel {
+    transition: inherit;
+  }
+}
+
+.drawer-enter-to,
+.drawer-leave-from {
+  .oc--context-menu__overlay {
+    opacity: 1;
+  }
+  .oc--context-menu__drawer-panel {
+    transform: translateY(0);
+  }
 }
 
 button.button.oc--context-menu__button-active {

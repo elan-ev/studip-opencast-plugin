@@ -5,7 +5,8 @@
             <h2 class="oc--playlist-section__title">{{ playlist.title }}{{ playlist.is_default ? '*' : '' }}</h2>
             <p>{{ playlist.description }}</p>
             </div>
-            <a v-if="playlist.videos_count > 5" href="#" class="oc--link">{{ $gettext('Mehr entdecken →') }}</a>
+            <a v-if="playlist.videos_count > 5" href="#" class="oc--link">
+                <span>{{ $gettext('Mehr entdecken →') }}</span></a>
         </header>
         <div class="oc--playlist-section__videos">
             <template v-if="isPlaylistLoading(playlist.token)">

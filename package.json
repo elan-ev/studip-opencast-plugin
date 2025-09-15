@@ -1,8 +1,14 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "3.29",
+  "version": "3.31-ui",
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
+  "contributors":[
+    {
+      "name": "Ron Lucke",
+      "email": "lucke@elan-ev.de"
+    }
+  ],
   "scripts": {
     "build": "composer install --no-dev && npm install && webpack --mode production -d source-map && cd courseware; sh prebuild.sh",
     "build-dev": "composer install && npm install && webpack --mode development -d source-map && cd courseware; sh devbuild.sh",

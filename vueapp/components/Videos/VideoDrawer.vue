@@ -6,8 +6,6 @@
             :visible="showDrawer"
             :attachTo="attachTarget"
             side="right"
-            width="75%"
-            :maxWidth="900"
             @close="close"
         >
             <article v-if="selectedVideo" class="oc--video-drawer-content">
@@ -83,16 +81,16 @@
                                 <span>{{ $gettext('Dieses Video ist öffentlich') }}</span>
                             </li>
                         </ul>
-                        <StudipActionMenu
-                            v-if="canEdit"
-                            class="video-drawer-menu"
-                            :items="menuItems"
-                            @performAction="performAction"
-                        />
                     </header>
+                    <StudipActionMenu
+                        v-if="canEdit"
+                        class="video-drawer-menu"
+                        :items="menuItems"
+                        @performAction="performAction"
+                    />
                 </section>
                 <section class="video-settings">
-                    <Tabs :key="selectedVideo.id + '-settings'">
+                    <Tabs :key="selectedVideo.id + '-settings'" :responsive="true">
                         <Tab selected :name="$gettext('Informationen')">
                             <p>{{ selectedVideo.description }}</p>
                             <strong v-if="selectedVideo.presenters !== ''">{{ $gettext('Vortragende') }}</strong>
@@ -229,7 +227,7 @@ const readableDate = computed(() => {
     return selectedVideo.value ? formatISODateTime(selectedVideo.value.created) : '';
 });
 const ownerId = computed(() => {
-    return selectedVideo.value ? selectedVideo.value.owner.id : null
+    return selectedVideo.value ? selectedVideo.value.owner.id : null;
 });
 const ownerName = computed(() => {
     return selectedVideo.value ? selectedVideo.value.owner.fullname : '';
@@ -339,12 +337,20 @@ const isFixed = ref(false);
 const updateLayout = () => {
     const header = document.querySelector('#main-header');
     const topBar = document.querySelector('#site-title');
+    const responsiveContentBar = document.querySelector('#responsive-contentbar');
     isFixed.value = document.body.classList.contains('fixed');
 
     if (isFixed.value && topBar) {
         document.documentElement.style.setProperty('--main-header-height', `${topBar.offsetHeight}px`);
     } else if (header) {
         document.documentElement.style.setProperty('--main-header-height', `${header.offsetHeight}px`);
+    }
+
+    if (responsiveContentBar) {
+        document.documentElement.style.setProperty(
+            '--main-header-height',
+            `${header.offsetHeight + responsiveContentBar.offsetHeight}px`
+        );
     }
 };
 

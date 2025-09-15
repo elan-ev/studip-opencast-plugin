@@ -888,7 +888,7 @@ h2.oc--loadingbar,
 
 .oc--admin--server-card-add-wrapper {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     height: 100%;
 }
@@ -1914,11 +1914,11 @@ $video-drawer-spacing: 1rem;
 .drawer.oc--video-drawer {
     &.video-drawer-wrapper--absolute {
         position: absolute !important;
-        /* wichtig, damit drawer nicht mit eigener Position kollidiert */
         top: 0;
         right: 0;
-        width: 100%;
+        width: 75%;
         height: 100%;
+        max-width: 900px;
     }
 
     &.video-drawer-wrapper--fixed {
@@ -1926,10 +1926,10 @@ $video-drawer-spacing: 1rem;
         top: var(--main-header-height, 60px);
         right: 0;
         height: calc(100vh - var(--main-header-height, 60px));
-        width: 75%;
-        /* passt zu deinem Drawer-Width */
-        max-width: 900px;
+
     }
+
+
 }
 
 .video-drawer-preview {
@@ -1944,12 +1944,14 @@ $video-drawer-spacing: 1rem;
     }
 
     .oc--video-metadata {
-        margin: 0 5px;
+        display: flex;
+        margin: $video-drawer-spacing;
 
         &__header {
-            margin: $video-drawer-spacing $video-drawer-spacing/2 $video-drawer-spacing $video-drawer-spacing;
+            margin: 0;
             display: flex;
             justify-content: space-between;
+            flex-grow: 1;
 
             &__title {
                 display: block;
@@ -1958,9 +1960,10 @@ $video-drawer-spacing: 1rem;
                 margin-bottom: 0.5rem;
             }
 
-            .video-drawer-menu {
-                margin-left: $video-drawer-spacing;
-            }
+        }
+
+        .video-drawer-menu {
+            margin-left: $video-drawer-spacing;
         }
 
         &__owner-row {
@@ -2002,7 +2005,69 @@ $video-drawer-spacing: 1rem;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .drawer.oc--video-drawer.video-drawer-wrapper--absolute {
+        width: 100%;
+        max-width: unset;
+    }
+}
+
+.responsive-display:not(.size-small) {
+    .drawer.oc--video-drawer .oc--video-drawer-content {
+        .video-player {
+            .oc--tabs {
+                .oc--tabs-nav button {
+                    margin-left: 10px;
+                }
+
+                .oc--tabs-content {
+                    padding: 8px 0;
+                }
+            }
+
+            iframe {
+                height: 200px;
+            }
+        }
+
+
+        .oc--video-metadata {
+            margin: $video-drawer-spacing 0;
+
+            &__header {
+                flex-direction: column;
+
+                .oc--video-metadata__status {
+                    justify-content: flex-start;
+                    margin: 0;
+                    padding-top: 1rem;
+
+                    li {
+                        margin-left: 0;
+                    }
+                }
+            }
+        }
+
+        .video-settings {
+            .oc--tabs-nav--dropdown select {
+                width: 100%;
+            }
+
+            .oc--tabs .oc--tabs-content {
+                padding: 8px 0;
+
+                .oc--tab {
+                    background-color: transparent;
+                    padding: 1rem 0.5ex;
+
+                }
+            }
+        }
+    }
+}
+
+.responsive-display:not(.size-medium) {
     .video-drawer-content .video-metadata-wrapper {
         flex-direction: column;
         gap: $video-drawer-spacing;
@@ -2412,10 +2477,31 @@ $video-drawer-spacing: 1rem;
     >section {
         margin-bottom: 3rem;
     }
+}
 
-    @media (max-width: 1366px) {
-        >section.oc--videos-teasers {
-            display: none;
+.responsive-display {
+    .oc--hero-video {
+        padding: 0;
+
+        &__title {
+            font-size: 2rem;
+        }
+
+        &__thumbnail {
+            margin: 0;
+        }
+    }
+
+    .oc--hero-video__description {
+        -webkit-line-clamp: 7;
+    }
+
+    .oc--hero-video__meta-wrapper {
+        flex-direction: column;
+        line-height: 3rem;
+
+        .oc--hero-video__meta {
+            justify-content: flex-start;
         }
     }
 }
@@ -2428,6 +2514,17 @@ $video-drawer-spacing: 1rem;
     gap: 1rem;
 }
 
+.responsive-display:not(.size-small) {
+    .oc--videos-all {
+        grid-template-columns: unset;
+
+        .oc--video-card {
+            width: 100%;
+            height: unset;
+        }
+
+    }
+}
 
 .playlist-list {
     display: flex;
@@ -2499,6 +2596,10 @@ $video-drawer-spacing: 1rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s ease;
     cursor: pointer;
+
+    &[aria-disabled="true"] {
+        cursor: default;
+    }
 
     &:focus-visible {
         outline: 2px solid #005fcc;
@@ -2608,7 +2709,6 @@ $video-drawer-spacing: 1rem;
     z-index: 10;
 }
 
-
 /* Abstand und gestaffelte Positionierung */
 .oc--playlist-card__stack-image:nth-child(1) {
     bottom: 0;
@@ -2694,6 +2794,77 @@ $video-drawer-spacing: 1rem;
     }
 }
 
+.responsive-display:not(.size-small) {
+    .oc--videos-playlists-overview {
+        display: block;
+        max-width: 100%;
+
+        .oc--playlist-card-wrapper {
+            width: 100%;
+
+            .oc--playlist-card {
+                flex-direction: column;
+                margin-bottom: 15px;
+
+                &__thumbnail {
+                    width: calc(100% - 2rem);
+                }
+
+                &__stack {
+                    width: 100%;
+                }
+
+                &__stack-image {
+                    width: calc(100% - 2rem);
+                }
+
+                &__meta {
+                    align-self: flex-start;
+                }
+
+                &__actions {
+                    top: calc(1rem + 180px + 2rem);
+                }
+            }
+        }
+    }
+}
+
+.responsive-display:not(.size-medium) {
+    .oc--videos-playlists-playlist {
+        .oc--videos-in-playlist {
+            &__header {
+                flex-direction: column-reverse;
+            }
+
+            &__sub-header {
+                height: unset;
+                margin-bottom: 1rem;
+            }
+
+            &__info {
+                margin-top: 1rem;
+            }
+
+            &__title {
+                font-size: 1.5rem;
+            }
+
+            &__description {
+                font-size: 1rem;
+            }
+
+            &__meta {
+                flex-grow: 1;
+                max-width: calc(100% - 36px);
+                gap: 10px;
+                .oc--link {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
 
 
 .oc--link {

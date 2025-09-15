@@ -11,7 +11,7 @@
                 <div class="oc--videos-in-playlist__meta">
                     <a href="#" @click.prevent="backToPlaylistOverview" class="oc--link">
                         <StudipIcon shape="arr_1left" :size="16" />
-                        {{ $gettext('Zurück zur Übersicht') }}
+                        <span>{{ $gettext('Zurück zur Übersicht') }}</span>
                     </a>
                     <span v-if="playlist.is_default" class="oc--videos-in-playlist__meta-item">
                         <StudipIcon shape="star" :size="16" role="info" />

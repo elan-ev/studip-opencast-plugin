@@ -1,6 +1,6 @@
 <template>
     <div class="oc--playlist-card-wrapper">
-        <button class="oc--playlist-card" @click="selectPlaylist">
+        <button class="oc--playlist-card" @click="selectPlaylist" :aria-disabled="playlist.videos_count === 0">
             <div class="oc--playlist-card__thumbnail">
                 <PlaylistThumbnailStack :videos="playlistVideos(playlist.token)" />
             </div>
@@ -131,6 +131,9 @@ const menuItems = computed(() => {
 });
 
 const selectPlaylist = () => {
+    if (props.playlist.videos_count === 0) {
+        return;
+    }
     store.dispatch('playlists/setSelectedPlaylist', props.playlist);
 };
 

@@ -13,7 +13,7 @@
         </button>
 
         <div
-            v-if="isOpen"
+            v-if="isOpen && !useDrawer"
             class="oc--context-menu__panel"
             :class="{ 'align-right': isRightAligned }"
             role="menu"
@@ -25,13 +25,29 @@
 
             <slot name="content" />
         </div>
+
+        <transition name="drawer">
+            <div v-if="isOpen && useDrawer" class="oc--context-menu__drawer">
+                <div class="oc--context-menu__overlay" @click="close"></div>
+                <div class="oc--context-menu__drawer-panel" role="menu">
+                    <div v-if="title" class="oc--context-menu__menu-title">
+                        <span>{{ title }}</span>
+                        <button @click="close">
+                            <StudipIcon shape="decline" :size="20" />
+                        </button>
+                    </div>
+                    <slot name="content" />
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
+import StudipIcon from '@studip/StudipIcon';
 
-defineProps({
+const props = defineProps({
     title: {
         type: String,
         default: '',
@@ -40,6 +56,7 @@ defineProps({
         type: [String, Object, Array],
         default: '',
     },
+    responsive: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(['select', 'toggle']);
@@ -48,6 +65,7 @@ const isOpen = ref(false);
 const isRightAligned = ref(false);
 const hasAdjusted = ref(false);
 const menuWrapper = ref(null);
+const useDrawer = ref(false);
 
 function toggle() {
     isOpen.value = !isOpen.value;
@@ -66,6 +84,12 @@ function adjustPosition() {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
     isRightAligned.value = rect.right > viewportWidth;
+}
+
+function checkResponsiveClass() {
+    if (props.responsive) {
+        useDrawer.value = document.documentElement.classList.contains('responsive-display');
+    }
 }
 
 watch(isOpen, (open) => {
@@ -122,6 +146,14 @@ function handleKeyDown(event) {
 
 onMounted(() => {
     document.addEventListener('click', handleClickOutside);
+    checkResponsiveClass();
+    if (props.responsive) {
+        const observer = new MutationObserver(() => checkResponsiveClass());
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'],
+        });
+    }
 });
 
 onBeforeUnmount(() => {
