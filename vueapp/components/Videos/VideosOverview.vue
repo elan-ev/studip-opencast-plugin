@@ -1,7 +1,8 @@
 <template>
     <section class="oc--videos-overview">
-        <template v-if="isEmpty">
+        <template v-if="isEmpty || allRunning">
             <EmptyState
+                v-if="isEmpty"
                 :title="$gettext('Hier ist Platz für spannende Inhalte')"
                 :description="
                     $gettext(
@@ -20,6 +21,16 @@
                         {{ $gettext('Aus Veranstaltung wählen') }}
                     </button>
                 </template>
+            </EmptyState>
+            <EmptyState
+                v-if="allRunning"
+                :title="$gettext('Videos werden verarbeitet')"
+                :description="
+                    $gettext(
+                        'Die hochgeladenen Videos werden aktuell verarbeitet. Sobald der Vorgang abgeschlossen ist, erscheinen sie hier in der Übersicht.'
+                    )
+                "
+            >
             </EmptyState>
         </template>
         <template v-else>
@@ -61,8 +72,17 @@ const playlists = computed(() => {
     return store.getters['playlists/playlists'];
 });
 
+const allRunning = computed(() => {
+    const videos = globalVideos.value;
+    return videos?.length > 0 && videos.every(video => video.state === 'running');
+});
+
+const globalVideos = computed(() => {
+    return store.getters['videos/globalVideos'];
+});
+
 const isEmpty = computed(() => {
-    return playlists.value.every((playlist) => playlist.videos_count === 0);
+    return globalVideos.value.length === 0;
 });
 
 const isPlaylistLoading = (token) => {
