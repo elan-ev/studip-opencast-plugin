@@ -668,7 +668,11 @@ class Videos extends UPMap
 
     private function getOwner()
     {
-        $uid = VideosUserPerms::findOneBySQL('video_id = ? AND perm = ?', [$this->id, 'owner'])->toSanitizedArray()['user_id'];
+        $video_user_perms = VideosUserPerms::findOneBySQL('video_id = ? AND perm = ?', [$this->id, 'owner']);
+        if (!$video_user_perms) {
+            return null;
+        }
+        $uid = $video_user_perms->toSanitizedArray()['user_id'];
         $user = \User::find($uid);
 
         return ['id' => $user->id, 'fullname' => $user->getFullname(), 'username' => $user->username];
