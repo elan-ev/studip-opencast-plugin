@@ -43,7 +43,7 @@ const ownerId = computed(() => props.video.owner.id);
 const ownerName = computed(() => props.video.owner.fullname);
 const { avatarUrl } = useAvatar(ownerId);
 
-const preview = previewSrc(props.video);
+const preview = computed(() => previewSrc(props.video));
 const readableDuration = computed(() => formatDuration(props.video.duration));
 const readableDate = computed(() => formatISODateTime(props.video.created));
 </script>

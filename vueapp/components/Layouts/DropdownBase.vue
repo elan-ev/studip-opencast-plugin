@@ -7,7 +7,7 @@
             :aria-expanded="isOpen.toString()"
             aria-haspopup="true"
             @click="toggle"
-            tabindex="-1"
+            tabindex="0"
         >
             <slot name="button">Menü öffnen</slot>
         </button>

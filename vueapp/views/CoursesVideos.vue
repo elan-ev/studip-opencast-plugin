@@ -1,12 +1,23 @@
 <template>
-    <div>
-        <MessageBox type="info" v-if="!hasDefaultPlaylist">
-            {{
-                $gettext(
-                    'Für diesen Kurs existiert noch keine Standard-Kurswiedergabeliste. Bitte erstellen Sie diese über das Aktionsmenü.'
-                )
-            }}
-        </MessageBox>
+    <div v-if="course_config !== null">
+        <template v-if="!hasDefaultPlaylist">
+            <EmptyState
+                :title="$gettext('Keine Standard-Kurswiedergabeliste gefunden')"
+                :description="
+                    $gettext(
+                        'Erst mit einer Wiedergabeliste können Videos hochgeladen oder Aufzeichnungen erstellt werden. So lassen sich Kursinhalte klar strukturieren und für Lernende übersichtlich bereitstellen.'
+                    )
+                "
+            >
+                <template #buttons>
+                    <button class="button add" @click="activeDialog = 'playlistNew';">
+                        {{ $gettext('Wiedergabeliste anlegen') }}
+                    </button>
+                </template>
+            </EmptyState>
+            <PlaylistAddNewCard v-if="activeDialog === 'playlistNew'" @done="playlistCreated" @cancel="cancel" />
+        </template>
+
         <template v-else>
             <!--- Hack for creepy responsive contentbar solution --->
             <div v-show="false" class="sidebar-image">
@@ -82,8 +93,8 @@
                 </template>
             </ContentBar>
             <div class="oc--course-videos-content">
-                <VideosOverview v-if="tabSelection === 0" />
-                <VideosAllInCourse v-if="tabSelection === 1" />
+                <VideosOverview v-if="tabSelection === 0" @call-to-action="handleSelect" />
+                <VideosAllInCourse v-if="tabSelection === 1" @call-to-action="handleSelect" />
                 <PlaylistsOverview v-if="tabSelection === 2" />
                 <ScheduleOverview v-if="showScheduleOverview" />
             </div>
@@ -117,13 +128,13 @@ import { mapGetters } from 'vuex';
 import VideosOverview from '@/components/Videos/VideosOverview';
 import VideosAllInCourse from '@/components/Videos/VideosAllInCourse.vue';
 import PlaylistsOverview from '@/components/Playlists/PlaylistsOverview.vue';
-import MessageBox from '@/components/MessageBox.vue';
 import ContentBar from '@components/Layouts/ContentBar.vue';
 import Tab from '@components/Layouts/Tab.vue';
 import Tabs from '@components/Layouts/Tabs.vue';
 import DropdownActions from '@components/Layouts/DropdownActions.vue';
 import DropdownSearch from '@components/Layouts/DropdownSearch.vue';
 import DropdownSelect from '@components/Layouts/DropdownSelect.vue';
+import EmptyState from '@components/Layouts/EmptyState.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 
 import VideoUpload from '@/components/Videos/VideoUpload';
@@ -140,7 +151,6 @@ export default {
         VideosOverview,
         VideosAllInCourse,
         PlaylistsOverview,
-        MessageBox,
         ContentBar,
         Tab,
         Tabs,
@@ -148,6 +158,7 @@ export default {
         DropdownSearch,
         DropdownActions,
         DropdownSelect,
+        EmptyState,
 
         VideoUpload,
         VideosAddFromContents,
@@ -194,12 +205,7 @@ export default {
         },
 
         hasDefaultPlaylist() {
-            // if the course config is not available, assume it has a default playlist
-            if (!this.course_config) {
-                return true;
-            }
-
-            return this.course_config?.has_default_playlist;
+            return this.course_config?.has_default_playlist ?? false;
         },
 
         canShowStudio() {
@@ -405,6 +411,10 @@ export default {
             this.activeDialog = null;
             this.$emit('cancel');
         },
+        playlistCreated() {
+            this.done();
+            this.$store.dispatch('config/loadCourseConfig', this.cid);
+        },
         async setUpload(upload) {
             const uploadInt = +upload;
             await this.$store.dispatch('opencast/setUpload', { cid: this.cid, upload: uploadInt });
@@ -418,9 +428,11 @@ export default {
         },
 
         handleSearch(e) {
+            // TODO !!!
             console.log(e);
         },
         handleFilter(e) {
+            // TODO !!!
             console.log(e);
         },
         handleScheduleOptions(e) {

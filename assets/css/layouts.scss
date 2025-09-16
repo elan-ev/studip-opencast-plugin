@@ -117,6 +117,10 @@ $icons: (
                 }
             }
 
+            &:first-child {
+                margin-left: 7px;
+            }
+
             @each $icon in $icons {
                 &.oc--tabs-nav-icon-text-#{$icon} {
                     &::before {
@@ -211,23 +215,28 @@ $icons: (
     display: flex;
     flex-direction: column;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 0.5em 1em;
-    margin-bottom: 1em;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 1rem;
 
     .oc--content-bar-header-title {
+        flex: 1;
+        display: flex;
+        align-items: center;
+
         img {
             vertical-align: middle;
-            margin-right: 1em;
+            margin-right: 1rem;
         }
 
         span {
             vertical-align: middle;
-            font-size: 1.25em;
-            line-height: 1.5em;
+            font-size: 1.1rem;
+            line-height: 1.5rem;
         }
     }
 
@@ -242,6 +251,7 @@ $icons: (
         gap: 10px;
         margin-left: 10px;
         justify-content: flex-end;
+        flex: 1;
     }
 }
 
@@ -537,7 +547,7 @@ form.default label:has(.oc--switch) {
     &__overlay {
         position: absolute;
         inset: 0;
-        background: rgba(255,255,255, 0.8);
+        background: rgba(255, 255, 255, 0.8);
     }
 
     &__drawer-panel {
@@ -546,6 +556,7 @@ form.default label:has(.oc--switch) {
         width: 100%;
         background-color: #fff;
         border-top: solid thin var(--dark-gray-color-30);
+
         .oc--context-menu__menu-title {
             padding: 1rem;
         }
@@ -554,31 +565,34 @@ form.default label:has(.oc--switch) {
 
 .drawer-enter-from,
 .drawer-leave-to {
-  .oc--context-menu__overlay {
-    opacity: 0;
-  }
-  .oc--context-menu__drawer-panel {
-    transform: translateY(100%);
-  }
+    .oc--context-menu__overlay {
+        opacity: 0;
+    }
+
+    .oc--context-menu__drawer-panel {
+        transform: translateY(100%);
+    }
 }
 
 .drawer-enter-active,
 .drawer-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  .oc--context-menu__overlay,
-  .oc--context-menu__drawer-panel {
-    transition: inherit;
-  }
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    .oc--context-menu__overlay,
+    .oc--context-menu__drawer-panel {
+        transition: inherit;
+    }
 }
 
 .drawer-enter-to,
 .drawer-leave-from {
-  .oc--context-menu__overlay {
-    opacity: 1;
-  }
-  .oc--context-menu__drawer-panel {
-    transform: translateY(0);
-  }
+    .oc--context-menu__overlay {
+        opacity: 1;
+    }
+
+    .oc--context-menu__drawer-panel {
+        transform: translateY(0);
+    }
 }
 
 button.button.oc--context-menu__button-active {
@@ -587,4 +601,47 @@ button.button.oc--context-menu__button-active {
 
 button.button.oc--context-menu__button-active:hover {
     background-color: var(--base-color);
+}
+
+/* empty state */
+
+.oc--empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    margin: 0 auto;
+    min-height: 50vh;
+
+    &__icon {
+        display: block;
+        width: 256px;
+        height: auto;
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.75rem;
+    }
+
+    &__description {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        max-width: 480px;
+    }
+
+    &__content-wrapper {
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+
+    &__buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }

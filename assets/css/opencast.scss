@@ -1926,7 +1926,8 @@ $video-drawer-spacing: 1rem;
         top: var(--main-header-height, 60px);
         right: 0;
         height: calc(100vh - var(--main-header-height, 60px));
-
+        max-width: 900px;
+        width: 75%;
     }
 
 
@@ -2398,6 +2399,7 @@ $video-drawer-spacing: 1rem;
     }
 
     &__info {
+        width: 100%;
         flex: 1;
         display: flex;
         flex-direction: column;
