@@ -2163,16 +2163,16 @@ $video-drawer-spacing: 1rem;
     &__title {
         font-size: 1rem;
         font-weight: 600;
-        margin: 0;
+        margin: 0.25rem 0 0 0;
         color: #222;
-        line-height: 1.4;
+        line-height: 1.5rem;
     }
 
     &__description {
         font-size: 0.875rem;
         color: #666;
         margin: 0;
-        line-height: 1.4;
+        line-height: 1.1rem;
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 4;
@@ -2250,10 +2250,30 @@ $video-drawer-spacing: 1rem;
         }
     }
 
-    .oc--playlist-section__videos {
+    &__videos {
         display: grid;
         grid-template-columns: repeat(auto-fill, 270px);
         gap: 1rem;
+    }
+}
+
+.size-small:not(.size-large) {
+    .oc--playlist-section__videos {
+        grid-template-columns: repeat(2, 1fr);
+
+        .oc--video-card {
+            width: 100%;
+        }
+    }
+}
+
+.responsive-display:not(.size-small) {
+    .oc--playlist-section__videos {
+        grid-template-columns: repeat(1, 1fr);
+
+        .oc--video-card {
+            width: 100%;
+        }
     }
 }
 
@@ -2374,6 +2394,11 @@ $video-drawer-spacing: 1rem;
     }
 }
 
+.size-small:not(.size-large) {
+    .oc--video-teaser {
+        width: unset;
+    }
+}
 
 
 .oc--hero-video {
@@ -2516,9 +2541,19 @@ $video-drawer-spacing: 1rem;
     gap: 1rem;
 }
 
+.size-small:not(.size-large) {
+    .oc--videos-all {
+        grid-template-columns: repeat(2, 1fr);
+
+        .oc--video-card {
+            width: 100%;
+        }
+    }
+}
+
 .responsive-display:not(.size-small) {
     .oc--videos-all {
-        grid-template-columns: unset;
+        grid-template-columns: repeat(1, 1fr);
 
         .oc--video-card {
             width: 100%;
@@ -2585,6 +2620,22 @@ $video-drawer-spacing: 1rem;
     position: relative;
     width: 700px;
 }
+
+.size-small:not(.size-large) {
+    .oc--videos-playlists-overview {
+        grid-template-columns:  1fr;
+        max-width: 100%;
+
+        .oc--playlist-card-wrapper{
+            width: 100%;
+
+            .oc--playlist-card {
+                max-width: 100%;
+            }
+        }
+    }
+}
+
 
 .oc--playlist-card {
     all: unset;

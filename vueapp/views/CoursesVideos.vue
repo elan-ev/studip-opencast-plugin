@@ -10,7 +10,7 @@
                 "
             >
                 <template #buttons>
-                    <button class="button add" @click="activeDialog = 'playlistNew';">
+                    <button class="button add" @click="activeDialog = 'playlistNew'">
                         {{ $gettext('Wiedergabeliste anlegen') }}
                     </button>
                 </template>
@@ -175,6 +175,7 @@ export default {
             addButtonAvailable: true,
             activeDialog: null,
             selectedTags: [],
+            ready: false,
         };
     },
 
@@ -460,6 +461,9 @@ export default {
             this.$store.dispatch('playlists/setPlaylist', this.defaultPlaylist);
         });
         this.$store.dispatch('playlists/updateAvailableTags');
+        this.$nextTick(() => {
+            this.ready = true;
+        });
     },
     watch: {
         tabSelection(newVal) {
