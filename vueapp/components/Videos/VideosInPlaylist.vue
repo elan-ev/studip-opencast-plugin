@@ -30,6 +30,7 @@
                         @setDefaultPlaylist="setDefaultPlaylist"
                         @toggleAllowDownload="(val) => (allowDownload = val)"
                         @removePlaylist="showDialog = 'remove'"
+                        @sortPlaylist="showDialog = 'sort'"
                     />
                 </div>
             </div>
@@ -49,6 +50,11 @@
             @confirm="removePlaylist"
         >
         </StudipDialog>
+        <PlaylistSortDialog
+            v-if="showDialog === 'sort'"
+            @close="closeDialog"
+            @done="closeDialog"
+        />
         <section class="oc--videos-all">
             <VideoCard v-for="video in playlistVideos(playlist.token)" :key="video.token" :video="video" />
         </section>
@@ -59,6 +65,7 @@
 import VideoCard from './VideoCard.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
 import PlaylistMetadataDialog from '../Playlists/PlaylistMetadataDialog.vue';
+import PlaylistSortDialog from '../Playlists/PlaylistSortDialog.vue';
 import { useFormat } from '@/composables/useFormat';
 import { computed, getCurrentInstance, ref } from 'vue';
 import { useStore } from 'vuex';

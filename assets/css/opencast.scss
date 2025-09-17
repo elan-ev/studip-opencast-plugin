@@ -268,6 +268,10 @@ $action-menu-icon-size: 20px;
     }
 }
 
+.dragarea .oc--drag-handle {
+    cursor: move;
+}
+
 .oc--episode-table--small {
     clear: both;
     padding-left: 0;
@@ -278,10 +282,6 @@ $action-menu-icon-size: 20px;
     .oc--episode {
         overflow: hidden;
         max-height: 70px;
-
-        .dragarea .oc--drag-handle {
-            cursor: move;
-        }
 
         .oc--playercontainer {
             background-color: transparent;
@@ -2623,10 +2623,10 @@ $video-drawer-spacing: 1rem;
 
 .size-small:not(.size-large) {
     .oc--videos-playlists-overview {
-        grid-template-columns:  1fr;
+        grid-template-columns: 1fr;
         max-width: 100%;
 
-        .oc--playlist-card-wrapper{
+        .oc--playlist-card-wrapper {
             width: 100%;
 
             .oc--playlist-card {
@@ -2911,6 +2911,7 @@ $video-drawer-spacing: 1rem;
                 flex-grow: 1;
                 max-width: calc(100% - 36px);
                 gap: 10px;
+
                 .oc--link {
                     width: 100%;
                 }
@@ -2928,4 +2929,87 @@ $video-drawer-spacing: 1rem;
     &:focus {
         text-decoration: underline;
     }
+}
+
+/* playlist sort */
+.oc--playlist-video-sort {
+    list-style-type: none;
+    padding: 0;
+
+    &__item {
+        padding: 1rem 2rem 1rem 0.25rem;
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        cursor: grab;
+
+        .oc--drag-handle {
+            opacity: 0;
+        }
+
+        &:hover {
+            background: #f9f9f9;
+
+            .oc--drag-handle {
+                opacity: 1;
+            }
+        }
+    }
+
+    &__item-disabled {
+        cursor: default;
+
+        &:hover {
+            background: transparent;
+
+            .oc--drag-handle {
+                opacity: 0;
+            }
+        }
+    }
+
+    &__wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    &__meta {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    &__creator {
+        margin-right: auto;
+    }
+
+    &__duration,
+    &__created {
+        margin-left: 1rem;
+
+        img {
+            vertical-align: text-bottom;
+            margin-right: 0.25rem;
+            opacity: 0.6;
+        }
+    }
+
+    .oc--ghost {
+        background: var(--white);
+        border: dashed 1px var(--content-color-40);
+
+    }
+
 }
