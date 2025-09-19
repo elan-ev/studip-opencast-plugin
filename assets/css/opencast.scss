@@ -3077,8 +3077,6 @@ $video-drawer-spacing: 1rem;
     &__info {
         padding: 1rem 0;
         max-width: 270px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
     }
 
     &__info-icon {
@@ -3104,6 +3102,19 @@ $video-drawer-spacing: 1rem;
     &__form {
         flex-grow: 1;
         max-width: 540px;
+    }
+}
+
+.responsive-display:not(.size-small) {
+
+    .oc--dialog-upload__wrapper {
+        flex-direction: column-reverse;
+    }
+    .oc--dialog-upload__info {
+        max-width: unset;
+    }
+    .oc--dialog-upload__info-icon {
+        display: none;
     }
 }
 
