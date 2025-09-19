@@ -1,207 +1,283 @@
 <template>
     <div>
         <StudipDialog
-            :title="$gettext('Medien hochladen')"
-            :confirmText="$gettext('Hochladen')"
+            :title="$gettext('Video hinzufügen')"
+            :confirmText="$gettext('Hinzufügen')"
             :confirmClass="uploadButtonClasses"
             :closeText="$gettext('Abbrechen')"
             :closeClass="'cancel'"
-            height="600"
-            width="600"
+            height="840"
+            width="870"
+            class="oc--dialog-upload"
             @close="confirmCancel"
             @confirm="accept"
         >
-            <template v-slot:dialogContent ref="upload-dialog">
-                <form class="default" style="max-width: 50em;" ref="upload-form">
-                    <fieldset v-if="!uploadProgress">
-                        <legend>
-                            {{ $gettext('Allgemeine Angaben') }}
-                        </legend>
-                        <label v-if="config && config['server'] && config['server'].length > 1">
-                            <span class="required">
-                                {{ $gettext('Server auswählen:') }}'
-                            </span>
+            <template v-slot:dialogContent>
+                <template v-if="!uploadProgress">
+                    <div class="oc--dialog-upload__wrapper">
+                        <div class="oc--dialog-upload__info">
+                            <div class="oc--dialog-upload__info-icon">
+                                <StudipIcon shape="upload" :size="96" role="info" />
+                            </div>
+                            <div class="oc--dialog-upload__info-header">{{ $gettext('Information') }}</div>
+                            <div class="oc--dialog-upload__info-content" v-html="infoText"></div>
+                        </div>
+                        <form class="default collapsable oc--dialog-upload__form" ref="upload-form">
+                            <fieldset>
+                                <legend>
+                                    {{ $gettext('Videodetails') }}
+                                </legend>
 
-                            <select v-model="selectedServer" required>
-                                <option v-for="server in config['server']"
-                                    :key="server.id"
-                                    :value="server"
+                                <label>
+                                    <span class="required">
+                                        {{ $gettext('Titel') }}
+                                    </span>
+
+                                    <input
+                                        type="text"
+                                        maxlength="255"
+                                        name="title"
+                                        id="titleField"
+                                        v-model="upload.title"
+                                        required
+                                    />
+                                </label>
+                                <label>
+                                    <span>
+                                        {{ $gettext('vortragende Person') }}
+                                    </span>
+                                    <input
+                                        type="text"
+                                        maxlength="255"
+                                        id="presenter"
+                                        name="presenter"
+                                        v-model="upload.creator"
+                                    />
+                                </label>
+
+                                <label>
+                                    <span>
+                                        {{ $gettext('Beschreibung') }}
+                                    </span>
+                                    <textarea
+                                        cols="50"
+                                        rows="5"
+                                        id="description"
+                                        name="description"
+                                        v-model="upload.description"
+                                    ></textarea>
+                                </label>
+                            </fieldset>
+
+                            <fieldset class="collapsed">
+                                <legend>
+                                    {{ $gettext('Weitere Angaben') }}
+                                </legend>
+                                <label>
+                                    <span class="required">
+                                        {{ $gettext('Aufnahmezeitpunkt') }}
+                                    </span>
+
+                                    <input
+                                        class="oc--datetime-input"
+                                        type="datetime-local"
+                                        name="recordDate"
+                                        id="recordDate"
+                                        v-model="upload.recordDate"
+                                        required
+                                    />
+                                </label>
+                                <label>
+                                    <span>
+                                        {{ $gettext('Mitwirkende') }}
+                                    </span>
+                                    <input
+                                        type="text"
+                                        maxlength="255"
+                                        id="contributor"
+                                        name="contributor"
+                                        v-model="upload.contributor"
+                                    />
+                                </label>
+                                <label>
+                                    <span>
+                                        {{ $gettext('Betreff') }}
+                                    </span>
+                                    <input
+                                        type="text"
+                                        maxlength="255"
+                                        id="subject"
+                                        name="subject"
+                                        v-model="upload.subject"
+                                    />
+                                </label>
+
+                                <label style="display: none">
+                                    <span>
+                                        {{ $gettext('Sprache') }}
+                                    </span>
+                                    <input
+                                        type="text"
+                                        maxlength="255"
+                                        id="language"
+                                        name="language"
+                                        v-model="upload.language"
+                                    />
+                                </label>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>
+                                    {{ $gettext('Video') }}
+                                </legend>
+
+                                <input
+                                    v-show="false"
+                                    type="file"
+                                    class="video_upload"
+                                    data-flavor="presenter/source"
+                                    @change="previewFiles"
+                                    ref="oc-file-presenter"
+                                    :accept="uploadFileTypes"
+                                />
+                                <div
+                                    v-if="!files['presenter/source'].length"
+                                    class="oc--file-dropzone"
+                                    @click="chooseFiles('oc-file-presenter')"
+                                    @dragover.prevent="setDragOver($event, true)"
+                                    @dragenter.prevent="setDragOver($event, true)"
+                                    @dragleave.prevent="setDragOver($event, false)"
+                                    @drop.prevent="handleDrop($event, 'oc-file-presenter')"
                                 >
-                                    #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
-                                </option>
+                                    <div class="oc--file-dropzone__description">
+                                        <StudipIcon shape="upload" :size="48" />
+                                        <div class="oc--file-dropzone__description-text">
+                                            <span>{{ $gettext('Vortragende') }}</span>
+                                            <small>{{
+                                                $gettext('Datei hierher ziehen oder klicken, um auszuwählen')
+                                            }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <VideoFilePreview
+                                    v-else
+                                    :files="files['presenter/source']"
+                                    type="presenter"
+                                    @remove="files['presenter/source'] = []"
+                                    @choose="chooseFiles('oc-file-presenter')"
+                                    :uploading="uploadProgress"
+                                />
 
-                            </select>
-                        </label>
+                                <input
+                                    v-show="false"
+                                    type="file"
+                                    class="video_upload"
+                                    data-flavor="presentation/source"
+                                    @change="previewFiles"
+                                    ref="oc-file-presentation"
+                                    :accept="uploadFileTypes"
+                                />
+                                <div
+                                    v-if="!files['presentation/source'].length"
+                                    class="oc--file-dropzone"
+                                    @click="chooseFiles('oc-file-presentation')"
+                                    @dragover.prevent="setDragOver($event, true)"
+                                    @dragenter.prevent="setDragOver($event, true)"
+                                    @dragleave.prevent="setDragOver($event, false)"
+                                    @drop.prevent="handleDrop($event, 'oc-file-presentation')"
+                                >
+                                    <div class="oc--file-dropzone__description">
+                                        <StudipIcon shape="upload" :size="48" />
+                                        <div class="oc--file-dropzone__description-text">
+                                            <span>{{ $gettext('Folien') }}</span>
+                                            <small>{{
+                                                $gettext('Datei hierher ziehen oder klicken, um auszuwählen')
+                                            }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <VideoFilePreview
+                                    v-else
+                                    :files="files['presentation/source']"
+                                    type="presentation"
+                                    @remove="files['presentation/source'] = []"
+                                    @choose="chooseFiles('oc-file-presentation')"
+                                    :uploading="uploadProgress"
+                                />
 
-                        <label>
-                            <span class="required">
-                                {{ $gettext('Titel') }}
-                            </span>
+                                <MessageBox v-if="fileUploadError" type="error">
+                                    {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
+                                </MessageBox>
 
-                            <input type="text" maxlength="255"
-                                name="title" id="titleField" v-model="upload.title" required>
-                        </label>
+                                <MessageBox v-if="fileFormatError" type="error">
+                                    {{
+                                        $gettext('Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!')
+                                    }}
+                                </MessageBox>
+                            </fieldset>
 
-                        <label v-if="upload_playlists && upload_playlists.length">
-                            <span>
-                                {{ $gettext('Zu Wiedergabeliste hinzufügen') }}
-                            </span>
+                            <fieldset class="collapsed">
+                                <legend>
+                                    {{ $gettext('Hochladeoptionen') }}
+                                </legend>
+                                <label v-if="config && config['server'] && config['server'].length > 1">
+                                    <span class="required"> {{ $gettext('Server') }}' </span>
 
-                            <select v-model="upload.playlist_token" required>
-                                <option v-for="playlist in upload_playlists"
-                                    v-bind:key="playlist.token"
-                                    :value="playlist.token">
-                                    {{ playlist.title }}
-                                </option>
-                            </select>
-                        </label>
+                                    <select v-model="selectedServer" required>
+                                        <option v-for="server in config['server']" :key="server.id" :value="server">
+                                            #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
+                                        </option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span>
+                                        {{ $gettext('Workflow') }}
+                                    </span>
 
-                        <label>
-                            <span class="required">
-                                {{ $gettext('Aufnahmezeitpunkt') }}
-                            </span>
+                                    <select v-model="selectedWorkflow" required>
+                                        <option
+                                            v-for="workflow in upload_workflows"
+                                            v-bind:key="workflow.id"
+                                            :value="workflow"
+                                        >
+                                            {{ workflow.displayname }}
+                                        </option>
+                                    </select>
+                                </label>
 
-                            <input class="oc--datetime-input" type="datetime-local" name="recordDate"
-                                id="recordDate" v-model="upload.recordDate" required>
-                        </label>
+                                <label v-if="upload_playlists && upload_playlists.length">
+                                    <span>
+                                        {{ $gettext('Wiedergabeliste') }}
+                                    </span>
 
-                        <label>
-                            <span>
-                                {{ $gettext('Vortragende(r)') }}
-                            </span>
-                            <input type="text" maxlength="255" id="presenter" name="presenter"
-                                   v-model="upload.creator">
-                        </label>
+                                    <select v-model="upload.playlist_token" required>
+                                        <option
+                                            v-for="playlist in upload_playlists"
+                                            v-bind:key="playlist.token"
+                                            :value="playlist.token"
+                                        >
+                                            {{ playlist.title }}
+                                        </option>
+                                    </select>
+                                </label>
+                            </fieldset>
+                        </form>
+                    </div>
+                </template>
+                <template v-else>
+                    {{ $gettext('Vortragende') }}
+                    <ProgressBar
+                        v-if="uploadProgress.flavor == 'presenter/source'"
+                        :progress="uploadProgress.progress"
+                    />
+                    {{ $gettext('Folien') }}
+                    <ProgressBar
+                        v-if="uploadProgress.flavor == 'presentation/source'"
+                        :progress="uploadProgress.progress"
+                    />
+                </template>
 
-                        <label>
-                            <span>
-                                {{ $gettext('Mitwirkende') }}
-                            </span>
-                            <input type="text" maxlength="255" id="contributor" name="contributor"
-                                   v-model="upload.contributor">
-                        </label>
-
-                        <label>
-                            <span>
-                                {{ $gettext('Betreff') }}
-                            </span>
-                            <input type="text" maxlength="255" id="subject"
-                                   name="subject" v-model="upload.subject">
-                        </label>
-
-                        <label style="display:none">
-                            <span>
-                                {{ $gettext('Sprache') }}
-                            </span>
-                            <input type="text" maxlength="255" id="language" name="language"
-                                v-model="upload.language">
-                        </label>
-
-                        <label>
-                            <span>
-                                {{ $gettext('Beschreibung') }}
-                            </span>
-                            <textarea cols="50" rows="5"
-                                id="description" name="description" v-model="upload.description"></textarea>
-                        </label>
-
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>
-                            {{ $gettext('Video(s)') }}
-                        </legend>
-
-                        <label v-if="!uploadProgress">
-                            <span>
-                                {{ $gettext('Workflow') }}
-                            </span>
-
-                            <select v-model="selectedWorkflow" required>
-                                <option v-for="workflow in upload_workflows"
-                                    v-bind:key="workflow.id"
-                                    :value="workflow">
-                                    {{ workflow.displayname }}
-                                </option>
-                            </select>
-                        </label>
-
-                        <label for="video_upload">
-                            <span class="required">
-                                {{ $gettext('Datei(en)') }}
-                            </span>
-                            <p class="help">
-                                {{ uploadFilesText }}
-                            </p>
-                        </label>
-
-                        <div v-if="!files['presenter/source'].length && !uploadProgress">
-                            <label class="oc--file-upload">
-                                <StudipButton class="wrap-button" icon="accept" @click.prevent="chooseFiles('oc-file-presenter')">
-                                    {{ $gettext('Aufzeichnung des/der Vortragende*n hinzufügen') }}
-                                </StudipButton>
-                                <input type="file" class="video_upload" data-flavor="presenter/source"
-                                    @change="previewFiles" ref="oc-file-presenter"
-                                    :accept=uploadFileTypes>
-                            </label>
-
-                                   <!--
-                            <div style="display:none" class="invalid_media_type_warning">
-                              <?= MessageBox::error(
-                                  $_('Die gewählte Datei kann von Opencast nicht verarbeitet werden.'),
-                                  [
-                                      $_('Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2.')
-                                  ]
-                              ) ?>
-                          </div>-->
-                        </div>
-                        <VideoFilePreview v-else :files="files['presenter/source']"
-                            type="presenter" @remove="files['presenter/source']=[]"
-                            :uploading="uploadProgress"
-                        />
-
-                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presenter/source'" :progress="uploadProgress.progress" />
-
-                        <div v-if="!files['presentation/source'].length && !uploadProgress">
-                            <label class="oc--file-upload">
-                                <StudipButton class="wrap-button" icon="accept"  @click.prevent="chooseFiles('oc-file-presentation')">
-                                    {{ $gettext('Aufzeichnung der Folien hinzufügen') }}
-                                </StudipButton>
-                                <input type="file" class="video_upload" data-flavor="presentation/source"
-                                    @change="previewFiles" ref="oc-file-presentation"
-                                    :accept=uploadFileTypes>
-                            </label>
-                                      <!--
-                            <div style="display:none" class="invalid_media_type_warning">
-                              <?= MessageBox::error(
-                                  $_('Die gewählte Datei kann von Opencast nicht verarbeitet werden.'),
-                                  [
-                                      $_('Unterstützte Formate sind .mkv, .avi, .mp4, .mpeg, .webm, .mov, .ogv, .ogg, .flv, .f4v, .wmv, .asf, .mpg, .mpeg, .ts, .3gp und .3g2.')
-                                  ]
-                               ) ?>
-                           </div>-->
-                        </div>
-                        <VideoFilePreview v-else :files="files['presentation/source']"
-                            type="presentation"  @remove="files['presentation/source']=[]"
-                            :uploading="uploadProgress"
-                        />
-
-                        <ProgressBar v-if="uploadProgress && uploadProgress.flavor == 'presentation/source'" :progress="uploadProgress.progress" />
-
-                        <MessageBox v-if="fileUploadError" type="error">
-                            {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
-                        </MessageBox>
-
-                        <MessageBox v-if="fileFormatError" type="error">
-                            {{ $gettext('Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!') }}
-                        </MessageBox>
-                    </fieldset>
-
-                    <MessageBox type="info" v-if="infoText" v-html="infoText">
-                    </MessageBox>
-                </form>
-
-                <MessageList :float="true" :dialog="true"/>
+                <MessageList :float="true" :dialog="true" />
             </template>
         </StudipDialog>
     </div>
@@ -210,34 +286,34 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog'
-import StudipButton from '@studip/StudipButton'
-import MessageBox from '@/components/MessageBox'
+import StudipDialog from '@studip/StudipDialog';
+import StudipIcon from '@studip/StudipIcon.vue';
+import MessageBox from '@/components/MessageBox';
 import MessageList from '@/components/MessageList';
-import VideoFilePreview from '@/components/Videos/VideoFilePreview'
-import ProgressBar from '@/components/ProgressBar'
+import VideoFilePreview from '@/components/Videos/VideoFilePreview';
+import ProgressBar from '@/components/ProgressBar';
 
-import UploadService from '@/common/upload.service'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import UploadService from '@/common/upload.service';
+import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 export default {
     name: 'VideoUpload',
 
     components: {
+        StudipIcon,
         StudipDialog,
         MessageBox,
-        StudipButton,
         VideoFilePreview,
         ProgressBar,
-        MessageList
+        MessageList,
     },
 
     emits: ['done', 'cancel'],
 
     props: ['currentUser'],
 
-    data () {
+    data() {
         return {
             showAddEpisodeDialog: false,
             selectedServer: false,
@@ -248,25 +324,25 @@ export default {
                 creator: this.currentUser.fullname,
                 contributor: '',
                 playlist_token: null,
-                recordDate: format(new Date(), "yyyy-MM-dd'T'HH:mm", { locale: de}),
-                subject: this.$gettext('Medienupload, Stud.IP')
+                recordDate: format(new Date(), "yyyy-MM-dd'T'HH:mm", { locale: de }),
+                subject: this.$gettext('Medienupload, Stud.IP'),
             },
             files: {
                 'presenter/source': [],
-                'presentation/source': []
+                'presentation/source': [],
             },
             uploadProgress: null,
-        }
+        };
     },
 
     computed: {
         ...mapGetters({
-            'config'        : 'config/simple_config_list',
-            'course_config' : 'config/course_config',
-            'cid'           : 'opencast/cid',
-            'playlist'      : 'playlists/playlist',
-            'playlists'     : 'playlists/playlists',
-            'currentLTIUser': 'opencast/currentLTIUser'
+            config: 'config/simple_config_list',
+            course_config: 'config/course_config',
+            cid: 'opencast/cid',
+            playlist: 'playlists/playlist',
+            playlists: 'playlists/playlists',
+            currentLTIUser: 'opencast/currentLTIUser',
         }),
 
         upload_playlists() {
@@ -279,15 +355,17 @@ export default {
             if (!this.playlist) {
                 upload_playlists.unshift({
                     token: null,
-                    title: this.$gettext('Keiner Wiedergabeliste hinzufügen')
-                })
+                    title: this.$gettext('Keiner Wiedergabeliste hinzufügen'),
+                });
             }
 
             return upload_playlists;
         },
 
         upload_workflows() {
-            return this.config['workflows'].filter(wf => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload');
+            return this.config['workflows'].filter(
+                (wf) => wf['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] && wf['tag'] === 'upload'
+            );
         },
 
         uploadFileTypes() {
@@ -295,13 +373,14 @@ export default {
         },
 
         uploadFilesText() {
-            let fileTypes = this.uploadFileTypes.split(',')
-                .map(type => type.trim())
-                .filter(type => type.search(/^\./) !== -1);    // Only show types starting with a dot, e.g. ".mp4"
+            let fileTypes = this.uploadFileTypes
+                .split(',')
+                .map((type) => type.trim())
+                .filter((type) => type.search(/^\./) !== -1); // Only show types starting with a dot, e.g. ".mp4"
 
             return this.$gettext('Mindestens eine Aufzeichnung wird benötigt. Unterstützte Formate: %{ file_types }.', {
                 file_types: fileTypes.join(', '),
-            })
+            });
         },
 
         uploadButtonClasses() {
@@ -313,36 +392,33 @@ export default {
         },
 
         defaultWorkflow() {
-            let wf_id = this.config['workflow_configs'].find(wf_config =>
-                wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER']
-                    && wf_config['used_for'] === 'upload'
+            let wf_id = this.config['workflow_configs'].find(
+                (wf_config) =>
+                    wf_config['config_id'] == this.config.settings['OPENCAST_DEFAULT_SERVER'] &&
+                    wf_config['used_for'] === 'upload'
             )['workflow_id'];
 
-            return this.config['workflows'].find(wf => wf['id'] == wf_id);
+            return this.config['workflows'].find((wf) => wf['id'] == wf_id);
         },
 
-        infoText()
-        {
+        infoText() {
             try {
                 let info = JSON.parse(this.config.settings.OPENCAST_UPLOAD_INFO_TEXT_BODY);
                 return info[this.config.user_language];
-            } catch (e) {
-
-            }
+            } catch (e) {}
 
             return null;
-        }
+        },
     },
 
     methods: {
-        confirmCancel()
-        {
+        confirmCancel() {
             if (confirm(this.$gettext('Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?'))) {
                 if (this.uploadProgress) {
                     this.uploadService.cancel();
                 }
 
-                this.uploadService  = null;
+                this.uploadService = null;
                 this.uploadProgress = null;
 
                 this.$emit('cancel');
@@ -363,24 +439,17 @@ export default {
 
             // validate file upload
             this.fileUploadError = false;
-            if (
-                !this.files['presenter/source'].length &&
-                !this.files['presentation/source'].length
-            ) {
+            if (!this.files['presenter/source'].length && !this.files['presentation/source'].length) {
                 this.fileUploadError = true;
             }
 
             this.fileFormatError = false;
 
-            if (this.files['presenter/source'].length &&
-                this.files['presentation/source'].length
-            ) {
+            if (this.files['presenter/source'].length && this.files['presentation/source'].length) {
                 let ext1 = this.files['presenter/source'][0].name.split('.').pop();
                 let ext2 = this.files['presentation/source'][0].name.split('.').pop();
 
-                if (ext1 == 'webm' && ext2 =='mp4'
-                    || ext2 == 'webm' && ext1 == 'mp4'
-                ) {
+                if ((ext1 == 'webm' && ext2 == 'mp4') || (ext2 == 'webm' && ext1 == 'mp4')) {
                     this.fileFormatError = true;
                 }
             }
@@ -390,7 +459,7 @@ export default {
                 this.$refs['upload-form'].parentNode.scrollTo({
                     top: 1000,
                     left: 0,
-                    behavior: 'smooth'
+                    behavior: 'smooth',
                 });
 
                 return false;
@@ -398,16 +467,16 @@ export default {
 
             // get correct upload endpoint url
             this.uploadService = new UploadService({
-                'ingest': this.selectedServer['ingest']
+                ingest: this.selectedServer['ingest'],
             });
 
-            let uploadData         = this.upload;
+            let uploadData = this.upload;
 
             if (this.cid) {
                 uploadData['seriesId'] = this.course_config['series']['series_id'];
             }
 
-            uploadData['created']  = new Date(this.upload.recordDate).toISOString();
+            uploadData['created'] = new Date(this.upload.recordDate).toISOString();
 
             let files = [];
             if (this.files['presenter/source'].length) {
@@ -416,9 +485,9 @@ export default {
                     flavor: 'presenter/source',
                     progress: {
                         loaded: 0,
-                        total: this.files['presenter/source'][0].size
-                    }
-                })
+                        total: this.files['presenter/source'][0].size,
+                    },
+                });
             }
 
             if (this.files['presentation/source'].length) {
@@ -427,9 +496,9 @@ export default {
                     flavor: 'presentation/source',
                     progress: {
                         loaded: 0,
-                        total: this.files['presentation/source'][0].size
-                    }
-                })
+                        total: this.files['presentation/source'][0].size,
+                    },
+                });
             }
 
             // Opencast LTI info of current user
@@ -441,53 +510,60 @@ export default {
                 uploadProgress: (track, loaded, total) => {
                     view.uploadProgress = {
                         flavor: track.flavor,
-                        progress: parseInt(Math.round((loaded / total) * 100 ))
-                    }
+                        progress: parseInt(Math.round((loaded / total) * 100)),
+                    };
                 },
                 uploadDone: (episode_id, uploadData, workflow_id) => {
                     view.$emit('done');
 
                     // Add event to database
-                    view.$store.dispatch('videos/createVideo', {
-                        'episode': episode_id,
-                        'config_id': view.selectedServer.id,
-                        'title': uploadData.title,
-                        'description': uploadData.description,
-                        'state': 'running',
-                        'presenters': uploadData.creator,
-                        'contributors': uploadData.contributor
-                    })
-                    .then(async ({ data }) => {
-                        this.$store.dispatch('messages/addMessage', data.message);
+                    view.$store
+                        .dispatch('videos/createVideo', {
+                            episode: episode_id,
+                            config_id: view.selectedServer.id,
+                            title: uploadData.title,
+                            description: uploadData.description,
+                            state: 'running',
+                            presenters: uploadData.creator,
+                            contributors: uploadData.contributor,
+                        })
+                        .then(async ({ data }) => {
+                            this.$store.dispatch('messages/addMessage', data.message);
 
-                        // If a playlist is selected, connect event with playlist
-                        if (data.event?.token && uploadData.playlist_token) {
-                            let playlist = view.playlists.find(p => p.token === uploadData.playlist_token);
-                            if (playlist) {
-                                // Here we need to wait for this action to complete, in order to get the latest videos list in the playlist.
-                                await this.$store.dispatch('playlists/addVideosToPlaylist', {
-                                    playlist: playlist.token,
-                                    videos: [data.event.token],
-                                    course_id: this.cid
-                                }).catch(() => {
-                                    this.$store.dispatch('messages/addMessage', {
-                                        type: 'warning',
-                                        text: this.$gettext('Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden.')
-                                    });
-                                });
+                            // If a playlist is selected, connect event with playlist
+                            if (data.event?.token && uploadData.playlist_token) {
+                                let playlist = view.playlists.find((p) => p.token === uploadData.playlist_token);
+                                if (playlist) {
+                                    // Here we need to wait for this action to complete, in order to get the latest videos list in the playlist.
+                                    await this.$store
+                                        .dispatch('playlists/addVideosToPlaylist', {
+                                            playlist: playlist.token,
+                                            videos: [data.event.token],
+                                            course_id: this.cid,
+                                        })
+                                        .catch(() => {
+                                            this.$store.dispatch('messages/addMessage', {
+                                                type: 'warning',
+                                                text: this.$gettext(
+                                                    'Das erstellte Video konnte der Wiedergabeliste nicht hinzugefügt werden.'
+                                                ),
+                                            });
+                                        });
+                                }
                             }
-                        }
 
-                        this.$store.dispatch('videos/setVideosReload', true);
-                    });
+                            this.$store.dispatch('videos/setVideosReload', true);
+                        });
                 },
                 onError: () => {
                     this.$store.dispatch('messages/addMessage', {
                         type: 'error',
-                        text: this.$gettext('Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.'),
-                        dialog: true
+                        text: this.$gettext(
+                            'Beim Hochladen der Datei ist ein Fehler aufgetreten. Stellen Sie sicher, dass eine Verbindung zum Opencast Server besteht und probieren Sie es erneut.'
+                        ),
+                        dialog: true,
                     });
-                }
+                },
             });
         },
 
@@ -498,7 +574,22 @@ export default {
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
             this.files[flavor] = event.target.files;
-        }
+        },
+        setDragOver(event, active) {
+            event.currentTarget.classList.toggle('is-dragover', active);
+        },
+        handleDrop(event, refName) {
+            const files = event.dataTransfer.files;
+            if (!files.length) return;
+
+            const input = this.$refs[refName];
+            if (input) {
+                input.files = files;
+
+                const changeEvent = new Event('change', { bubbles: true });
+                input.dispatchEvent(changeEvent);
+            }
+        },
     },
 
     mounted() {
@@ -506,7 +597,7 @@ export default {
         this.$store.dispatch('config/simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
             this.selectedWorkflow = this.defaultWorkflow;
-        })
+        });
 
         if (this.cid) {
             this.$store.dispatch('config/loadCourseConfig', this.cid);
@@ -515,6 +606,6 @@ export default {
         if (this.playlist) {
             this.upload.playlist_token = this.playlist.token;
         }
-    }
-}
+    },
+};
 </script>

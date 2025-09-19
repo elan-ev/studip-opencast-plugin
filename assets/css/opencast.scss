@@ -679,15 +679,66 @@ h2.oc--loadingbar,
 /*   E P I S O D E   U P L O A D   */
 /* * * * * * * * * * * * * * * * * */
 
-.oc--file-preview {
+.oc--file-preview-wrapper {
+    min-height: 85px;
+    margin-bottom: 1rem;
 
-    .oc--file-name,
-    .oc--file-size {
-        display: block;
+    .oc--file-preview__label {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+}
+
+.oc--file-preview {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+
+
+    &__icon {
+        flex: 0 0 auto;
+        margin-right: 0.75rem;
     }
 
-    border-bottom: 1px solid $base_color;
+    &__info {
+        flex: 1 1 auto;
+        min-width: 0; // verhindert Überlauf bei langen Dateinamen
+    }
+
+    &__name {
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__meta {
+        color: var(--dark-gray-color);
+        font-size: 0.875rem;
+    }
+
+    &__actions {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 0.25rem;
+
+        button.button {
+            min-width: unset;
+            padding: 5px;
+            margin: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+
+            &:hover img {
+                filter: brightness(100);
+            }
+        }
+    }
+
+
 }
+
 
 .oc--timestamp-input {
     display: flex;
@@ -3010,6 +3061,92 @@ $video-drawer-spacing: 1rem;
         background: var(--white);
         border: dashed 1px var(--content-color-40);
 
+    }
+
+}
+
+/* upload dialog */
+.oc--dialog-upload {
+    &__wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+
+    }
+
+    &__info {
+        padding: 1rem 0;
+        max-width: 270px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    }
+
+    &__info-icon {
+        text-align: center;
+        padding: 1rem 0 2rem 0;
+    }
+
+    &__info-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        padding: 0 1rem;
+    }
+
+    &__info-content {
+        padding: 0 1rem;
+
+        ul {
+            padding: 0 1rem;
+        }
+    }
+
+    &__form {
+        flex-grow: 1;
+        max-width: 540px;
+    }
+}
+
+.oc--file-dropzone {
+    border: 2px dashed var(--dark-gray-color-30);
+    border-radius: 5px;
+    padding: 1rem;
+    text-align: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &:first-of-type {
+        margin: 0 0 1rem 0;
+    }
+
+    &.is-dragover,
+    &:hover {
+        border-color: var(--base-color-80);
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    &__description {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 1rem;
+        color: var(--dark-gray-color);
+
+        .studip-icon {
+            flex-shrink: 0;
+        }
+
+    }
+
+    &__description-text {
+        display: flex;
+        flex-direction: column;
+
+        span {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
     }
 
 }
