@@ -1420,12 +1420,8 @@ label.oc--file-upload {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         flex-wrap: wrap;
-
-        button.button {
-            margin: 0;
-        }
     }
 }
 

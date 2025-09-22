@@ -7,7 +7,7 @@
             :confirmDisabled="selectedVideos.length === 0"
             :closeText="$gettext('Abbrechen')"
             closeClass="cancel"
-            height="600"
+            height="800"
             width="800"
             @close="cancel"
             @confirm="addVideosToPlaylist"
@@ -23,16 +23,25 @@
                 <div v-else>
                     <div class="oc--dialog-add-videos__header">
                         <h2>{{ selectedCourse.name }}</h2>
-                        <button
-                            class="button refresh"
-                            @click.prevent="
-                                selectedCourse = null;
-                                selectedVideos = [];
-                            "
-                        >
-                            {{ $gettext('Andere Veranstaltung wählen') }}
-                        </button>
                     </div>
+                    <form class="default">
+                        <label>
+                            {{ $gettext('Wiedergabeliste') }}
+                            <select v-model="targetPlaylistToken" required>
+                                <option
+                                    v-for="playlist in targetPlaylists"
+                                    v-bind:key="playlist.token"
+                                    :value="playlist.token"
+                                >
+                                    {{ playlist.title }}
+                                    <template v-if="playlist.is_default">
+                                        ({{ $gettext('Standard-Widergabeliste') }})
+                                    </template>
+                                </option>
+                            </select>
+                        </label>
+                    </form>
+                    <span>{{ $gettext('Videos') }}</span>
                     <VideosTable
                         :selectable="true"
                         :showActions="false"
@@ -41,6 +50,19 @@
                         @selectedVideosChange="updateSelectedVideos"
                     />
                 </div>
+            </template>
+
+            <template #dialogButtons>
+                <button
+                    v-if="selectedCourse"
+                    class="button refresh"
+                    @click.prevent="
+                        selectedCourse = null;
+                        selectedVideos = [];
+                    "
+                >
+                    {{ $gettext('Andere Veranstaltung wählen') }}
+                </button>
             </template>
         </StudipDialog>
     </div>
@@ -68,12 +90,19 @@ export default {
         return {
             selectedCourse: null,
             selectedVideos: [],
+            targetPlaylistToken: null,
         };
     },
 
     computed: {
         ...mapGetters('opencast', ['cid', 'userCourses']),
-        ...mapGetters('playlists', ['playlist']),
+        ...mapGetters('playlists', ['playlist', 'playlists']),
+
+        targetPlaylists() {
+            let targetPlaylists = [...this.playlists];
+
+            return targetPlaylists;
+        },
     },
 
     methods: {
@@ -92,7 +121,7 @@ export default {
         addVideosToPlaylist() {
             this.$store
                 .dispatch('playlists/addVideosToPlaylist', {
-                    playlist: this.playlist.token,
+                    playlist: this.targetPlaylistToken,
                     videos: this.selectedVideos,
                     course_id: this.cid,
                 })
@@ -119,6 +148,7 @@ export default {
 
     mounted() {
         this.$store.dispatch('opencast/loadUserCourses');
+        this.targetPlaylistToken = this.targetPlaylists.filter((playlist) => playlist.is_default)[0].token;
     },
 };
 </script>

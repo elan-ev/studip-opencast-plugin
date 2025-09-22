@@ -253,8 +253,12 @@
                                             v-for="playlist in upload_playlists"
                                             v-bind:key="playlist.token"
                                             :value="playlist.token"
+                                            :selected="playlist.is_default"
                                         >
                                             {{ playlist.title }}
+                                            <template v-if="playlist.is_default">
+                                                ({{ $gettext('Standard-Widergabeliste') }})
+                                            </template>
                                         </option>
                                     </select>
                                 </label>

@@ -7,7 +7,7 @@
             :confirmDisabled="selectedVideos.length === 0"
             :closeText="$gettext('Schließen')"
             closeClass="cancel"
-            height="600"
+            height="800"
             width="800"
             @close="cancel"
             @confirm="addVideosToPlaylist"
