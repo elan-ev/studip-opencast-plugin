@@ -42,10 +42,10 @@
                 </a>
             </template>
             <template v-else>
-                <button v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
-                   @click.prevent="selectVideo(event)"
-                   class="oc--previewimage-button"
-                    :aria-label="`Video ${event.title} auswählen`"
+                <a v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
+                    @click.prevent="redirectAction(`/video/` + event.token)"
+                    href="#"
+                    target="_blank"
                 >
                     <span class="oc--previewimage">
                         <img class="oc--previewimage"
@@ -66,7 +66,7 @@
                             {{ getDuration }}
                         </span>
                     </span>
-                </button>
+                </a>
                 <span v-else-if="!event.available || event.available == '0'" class="oc--unavailable"
                     :title="$gettext('Video nicht (mehr) in Opencast vorhanden')"
                 >
@@ -108,13 +108,13 @@
                    href="#" @click.prevent="redirectAction(`/livestream/` + event.token)" target="_blank">
                     {{event.title}}
                 </a>
-                <button v-else-if="event.publication && event.available"
-                   @click.prevent="selectVideo(event)"
-                   :aria-label="`Video ${event.title} auswählen`"
-                   class="as-link"
+                <a v-else-if="event.publication && event.available"
+                    href="#"
+                    @click.prevent="redirectAction(`/video/` + event.token)"
+                    target="_blank"
                 >
                     {{event.title}}
-                </button>
+                </a>
                 <span v-else-if="event.state == 'running'" :title="$gettext('Dieses Video wird gerade von Opencast bearbeitet.')">
                     {{event.title}}
                 </span>
