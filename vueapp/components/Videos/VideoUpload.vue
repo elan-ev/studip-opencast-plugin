@@ -126,10 +126,18 @@
                                 </label>
                             </fieldset>
 
-                            <fieldset>
+                            <fieldset class="oc--dialog-upload__filechooser">
                                 <legend>
                                     {{ $gettext('Video') }}
                                 </legend>
+
+                                <MessageBox v-if="fileUploadError" type="warning" :hideClose="true">
+                                    {{ $gettext('Bitte wählen Sie mindestens eine Datei aus') }}
+                                </MessageBox>
+
+                                <MessageBox v-if="fileFormatError" type="error" :hideClose="true">
+                                    {{ $gettext('Dateien mit den Formaten WebM und MP4 können nicht gemischt werden') }}
+                                </MessageBox>
 
                                 <input
                                     v-show="false"
@@ -204,16 +212,6 @@
                                     @choose="chooseFiles('oc-file-presentation')"
                                     :uploading="uploadProgress"
                                 />
-
-                                <MessageBox v-if="fileUploadError" type="error">
-                                    {{ $gettext('Sie müssen mindestens eine Datei auswählen!') }}
-                                </MessageBox>
-
-                                <MessageBox v-if="fileFormatError" type="error">
-                                    {{
-                                        $gettext('Dateien mit den Formaten WebM und MP4 können nicht gemischt werden!')
-                                    }}
-                                </MessageBox>
                             </fieldset>
 
                             <fieldset class="collapsed">
@@ -304,7 +302,6 @@ import ProgressBar from '@/components/ProgressBar';
 import UploadService from '@/common/upload.service';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { template } from 'lodash';
 
 export default {
     name: 'VideoUpload',
@@ -422,14 +419,14 @@ export default {
 
     methods: {
         confirmCancel() {
-            if (confirm(this.$gettext('Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?'))) {
-                if (this.uploadProgress) {
+            if (this.uploadProgress) {
+                if (confirm(this.$gettext('Sind Sie sicher, dass Sie das Hochladen abbrechen möchten?'))) {
                     this.uploadService.cancel();
+
+                    this.uploadService = null;
+                    this.uploadProgress = null;
                 }
-
-                this.uploadService = null;
-                this.uploadProgress = null;
-
+            } else {
                 this.$emit('cancel');
             }
         },
@@ -583,6 +580,8 @@ export default {
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
             this.files[flavor] = event.target.files;
+            this.fileUploadError = false;
+            this.fileFormatError = false;
         },
         setDragOver(event, active) {
             event.currentTarget.classList.toggle('is-dragover', active);

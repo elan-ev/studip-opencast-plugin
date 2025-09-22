@@ -3104,6 +3104,12 @@ $video-drawer-spacing: 1rem;
         max-width: 540px;
     }
 
+    &__filechooser {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
     &__progress-wrapper {
         display: flex;
         flex-direction: column;
@@ -3152,13 +3158,8 @@ $video-drawer-spacing: 1rem;
     border-radius: 5px;
     padding: 1rem;
     text-align: center;
-    gap: 1rem;
     cursor: pointer;
     transition: border-color 0.2s, background-color 0.2s;
-
-    &:first-of-type {
-        margin: 0 0 1rem 0;
-    }
 
     &.is-dragover,
     &:hover {
