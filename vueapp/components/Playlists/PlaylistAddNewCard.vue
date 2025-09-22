@@ -13,31 +13,33 @@
         >
             <template v-slot:dialogContent>
                 <form class="default" ref="playlistAddNewCard-form" @submit.prevent="createPlaylist">
-                    <label v-if="simple_config_list && simple_config_list['server'] && simple_config_list['server'].length > 1">
-                            <span class="required">
-                                {{ $gettext('Server auswählen:') }}'
-                            </span>
+                    <label
+                        v-if="
+                            simple_config_list &&
+                            simple_config_list['server'] &&
+                            simple_config_list['server'].length > 1
+                        "
+                    >
+                        <span class="required"> {{ $gettext('Server') }}' </span>
 
                         <select v-model="selectedServer" required>
-                            <option v-for="server in simple_config_list['server']"
-                                    :key="server.id"
-                                    :value="server"
-                            >
+                            <option v-for="server in simple_config_list['server']" :key="server.id" :value="server">
                                 #{{ server.id }} - {{ server.name }} (Opencast V {{ server.version }}.X)
                             </option>
-
                         </select>
                     </label>
 
                     <label>
-                        <span class="required">Titel</span>
-                        <input type="text"
-                                ref="autofocus"
-                                maxlength="255"
-                                :placeholder="$gettext('Titel der Wiedergabeliste')"
-                                v-model="playlist.title"
-                                required
-                        >
+                        <span class="required">{{ $gettext('Titel') }}</span>
+                        <input type="text" ref="autofocus" maxlength="255" v-model="playlist.title" required  name="playlist-title"/>
+                    </label>
+                    <label>
+                        {{ $gettext('Beschreibung') }}
+                        <textarea v-model="playlist.description" name="playlist-description"></textarea>
+                    </label>
+                    <label>
+                        {{ $gettext('Schlagworte') }}
+                        <TagBar :taggable="playlist.tags" @update="updateTags" />
                     </label>
                 </form>
             </template>
@@ -46,20 +48,22 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
-import { mapGetters } from "vuex";
+import StudipDialog from '@studip/StudipDialog';
+import TagBar from '@/components/TagBar.vue';
+import { mapGetters } from 'vuex';
 
 export default {
-    name: "PlaylistAddNewCard",
+    name: 'PlaylistAddNewCard',
 
     components: {
-        StudipDialog
+        StudipDialog,
+        TagBar,
     },
 
     props: {
         isDefault: {
             type: Boolean,
-            default: false
+            default: false,
         },
     },
 
@@ -70,8 +74,8 @@ export default {
         ...mapGetters('opencast', ['currentUser', 'currentLTIUser']),
 
         title() {
-            return this.isDefault ? this.$gettext('Kurswiedergabeliste anlegen') : this.$gettext('Wiedergabeliste anlegen');
-        }
+            return this.$gettext('Wiedergabeliste erstellen');
+        },
     },
 
     data() {
@@ -79,13 +83,14 @@ export default {
             selectedServer: false,
             playlist: {
                 title: '',
-                description: '',  // TODO: Use description
+                description: '',
                 creator: '',
                 config_id: null,
                 visibility: 'internal',
-                is_default: false
-            }
-        }
+                is_default: false,
+                tags: []
+            },
+        };
     },
 
     methods: {
@@ -98,26 +103,28 @@ export default {
             this.playlist.is_default = this.isDefault;
             this.playlist.creator = this.currentUser.fullname;
 
-            this.$store.dispatch('playlists/addPlaylist', this.playlist)
+            this.$store
+                .dispatch('playlists/addPlaylist', this.playlist)
                 .then(() => {
                     this.$emit('done');
                 })
                 .catch(() => {
                     this.$store.dispatch('messages/addMessage', {
                         type: 'error',
-                        text: this.$gettext('Die Wiedergabeliste konnte nicht erstellt werden.')
+                        text: this.$gettext('Die Wiedergabeliste konnte nicht erstellt werden.'),
                     });
                     this.$emit('cancel');
                 });
-        }
+        },
     },
 
     mounted() {
         this.$store.dispatch('config/simpleConfigListRead').then(() => {
-            this.selectedServer = this.simple_config_list['server'][this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER']];
-        })
+            this.selectedServer =
+                this.simple_config_list['server'][this.simple_config_list.settings['OPENCAST_DEFAULT_SERVER']];
+        });
 
         this.$refs.autofocus.focus();
     },
-}
+};
 </script>
