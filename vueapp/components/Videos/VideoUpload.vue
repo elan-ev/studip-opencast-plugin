@@ -264,18 +264,26 @@
                         </form>
                     </div>
                 </template>
-                <template v-else>
-                    {{ $gettext('Vortragende') }}
-                    <ProgressBar
-                        v-if="uploadProgress.flavor == 'presenter/source'"
-                        :progress="uploadProgress.progress"
-                    />
-                    {{ $gettext('Folien') }}
-                    <ProgressBar
-                        v-if="uploadProgress.flavor == 'presentation/source'"
-                        :progress="uploadProgress.progress"
-                    />
-                </template>
+                <div v-else class="oc--dialog-upload__progress-wrapper">
+                    <div class="oc--dialog-upload__progress-header">
+                        <StudipIcon shape="file-video" :size="128" />
+                        <template v-if="uploadProgress.flavor == 'presenter/source'">
+                            <span>
+                                {{ $gettext('Vortragende') }}:
+                                {{ files['presenter/source'].name }}
+                            </span>
+                        </template>
+                        <template v-if="uploadProgress.flavor == 'presentation/source'">
+                            <span>
+                                {{ $gettext('Folien') }}:
+                                {{ files['presentation/source'].name }}
+                            </span>
+                        </template>
+                    </div>
+                    <div class="oc--dialog-upload__progress">
+                        <ProgressBar :progress="uploadProgress.progress" />
+                    </div>
+                </div>
 
                 <MessageList :float="true" :dialog="true" />
             </template>
@@ -296,6 +304,7 @@ import ProgressBar from '@/components/ProgressBar';
 import UploadService from '@/common/upload.service';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { template } from 'lodash';
 
 export default {
     name: 'VideoUpload',
