@@ -6,13 +6,13 @@
         :size="64"
     />
     <div v-else>
-        <!-- <SearchBar v-if="!videoSortMode"
+        <SearchBar v-if="!videoSortMode"
             :availableTags="videosTags"
             :availablePlaylists="playlists"
             :availableCourses="isCourse ? null : videosCourses"
             :activePlaylist="playlist"
             @search="doSearch"
-       /> -->
+       />
 
         <PaginationButtons v-if="!nolimit"
             :paging="paging"
@@ -398,7 +398,7 @@ export default {
         },
 
         filterVideos(videos) {
-            return videos.filter(v => !this.noReadPerms || v.perm != 'read');
+            return videos?.filter(v => !this.noReadPerms || v.perm != 'read') ?? [];
         },
 
         changeLimit(limit) {
