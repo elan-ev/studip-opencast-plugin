@@ -23,25 +23,25 @@
                 <div v-else>
                     <div class="oc--dialog-add-videos__header">
                         <h2>{{ selectedCourse.name }}</h2>
+                        <form class="default">
+                            <label>
+                                {{ $gettext('Wiedergabeliste') }}
+                                <select v-model="targetPlaylistToken" required>
+                                    <option
+                                        v-for="playlist in targetPlaylists"
+                                        v-bind:key="playlist.token"
+                                        :value="playlist.token"
+                                    >
+                                        {{ playlist.title }}
+                                        <template v-if="playlist.is_default">
+                                            ({{ $gettext('Standard-Widergabeliste') }})
+                                        </template>
+                                    </option>
+                                </select>
+                            </label>
+                        </form>
                     </div>
-                    <form class="default">
-                        <label>
-                            {{ $gettext('Wiedergabeliste') }}
-                            <select v-model="targetPlaylistToken" required>
-                                <option
-                                    v-for="playlist in targetPlaylists"
-                                    v-bind:key="playlist.token"
-                                    :value="playlist.token"
-                                >
-                                    {{ playlist.title }}
-                                    <template v-if="playlist.is_default">
-                                        ({{ $gettext('Standard-Widergabeliste') }})
-                                    </template>
-                                </option>
-                            </select>
-                        </label>
-                    </form>
-                    <span>{{ $gettext('Videos') }}</span>
+
                     <VideosTable
                         :selectable="true"
                         :showActions="false"
