@@ -1,6 +1,6 @@
 <template>
     <StudipProgressIndicator
-        v-if="Object.keys(videos_list).length === 0 && videos_loading"    
+        v-if="Object.keys(videos_list).length === 0 && videos_loading"
         class="oc--loading-indicator"
         :description="$gettext('Lade Videos...')"
         :size="64"
@@ -364,10 +364,6 @@ export default {
     methods: {
         loadVideos() {
             this.videos_loading = true;
-            this.$store.commit('setVideos', {});
-            this.loadedVideos = [];
-            this.videosTags = [];
-            this.videosCourses = [];
 
             if (this.isCourse && this.playlist) {
                 this.$store.dispatch('loadPlaylistVideos', {
@@ -472,7 +468,6 @@ export default {
                 this.filters.trashed = true;
             }
             this.changePage(0);
-            this.loadVideos();
         },
 
         setDefaultSortOrder() {
@@ -511,7 +506,6 @@ export default {
 
             this.videoSort = videoSort;
             this.changePage(0);
-            this.loadVideos();
         },
 
         sortClasses(column) {

@@ -185,7 +185,6 @@ export default {
         doSearch(filters) {
             this.filters = filters.filters;
             this.changePage(0);
-            this.loadPlaylists();
         },
 
         changeLimit(limit) {
