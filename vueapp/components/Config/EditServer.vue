@@ -5,7 +5,7 @@
             :confirmText="isNew ? $gettext('Hinzufügen') : $gettext('Speichern')"
             :confirmClass="isNew ? 'add' : 'accept'"
             :closeText="isNew ? $gettext('Abbrechen') : $gettext('Schließen')"
-            :disabled="disabled"
+            :confirmDisabled="disabled"
             :height="isNew ? 600 : 800"
             width="600"
             @confirm="storeConfig"

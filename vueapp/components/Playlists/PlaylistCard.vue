@@ -29,7 +29,6 @@
         </td>
 
         <td>
-            {{ $gettext('Erstellt am:') }}
             <span v-if="playlist.mkdate">
             {{ $filters.datetime(playlist.mkdate * 1000) }} Uhr
             </span>

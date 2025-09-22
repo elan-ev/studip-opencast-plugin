@@ -3,9 +3,10 @@
         <StudipDialog
             :title="$gettext('Videos hinzufügen')"
             :confirmText="$gettext('Hinzufügen')"
-            :disabled="selectedVideos.length === 0"
+            confirmClass="add"
+            :confirmDisabled="selectedVideos.length === 0"
             :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
+            closeClass="cancel"
             height="600"
             width="800"
             @close="cancel"

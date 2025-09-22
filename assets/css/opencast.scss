@@ -1413,6 +1413,22 @@ label.oc--file-upload {
     }
 }
 
+/* add video dialog */
+
+.oc--dialog-add-videos {
+    &__header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+
+        button.button {
+            margin: 0;
+        }
+    }
+}
+
 
 
 /* * * * * * * * * * * * */

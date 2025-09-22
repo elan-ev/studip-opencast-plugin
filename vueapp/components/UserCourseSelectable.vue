@@ -3,7 +3,7 @@
         <fieldset>
             <legend>
                 {{ title }}
-                <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Kurse aufgeführt, in denen das Opencast-Plugin aktiviert ist!')"
+                <span class="tooltip tooltip-important" :data-tooltip="$gettext('Es werden nur Veranstaltungen aufgeführt, in denen das Opencast-Plugin aktiviert ist')"
                     title="" tabindex="0"
                 ></span>
             </legend>
@@ -15,15 +15,15 @@
                     :selectable="option => !option.header"
                     :filterable="false"
                     @search="updateSearch"
-                    :placeholder="$gettext('Bitte einen Kurs auswählen')"
+                    :placeholder="$gettext('Bitte eine Veranstaltung auswählen')"
                 >
                     <template #list-header>
                         <li style="text-align: center">
-                            <b>{{ $gettext('Kurse') }}</b>
+                            <b>{{ $gettext('Veranstaltungen') }}</b>
                         </li>
                     </template>
                     <template #no-options="{ search, searching, loading }">
-                        {{ $gettext('Keine Kurse gefunden!')}}
+                        {{ $gettext('Keine Veranstaltung gefunden')}}
                     </template>
                     <template #selected-option="option">
                         <span class="vs__option">

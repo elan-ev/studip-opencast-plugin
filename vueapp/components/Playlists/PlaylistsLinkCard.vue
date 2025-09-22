@@ -3,7 +3,7 @@
         <StudipDialog
             :title="title"
             :confirmText="$gettext('Hinzufügen')"
-            :disabled="selectedPlaylists.length === 0"
+            :confirmDisabled="selectedPlaylists.length === 0"
             :closeText="$gettext('Schließen')"
             :closeClass="'cancel'"
             height="600"
