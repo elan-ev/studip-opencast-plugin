@@ -391,10 +391,10 @@ export default {
 
         uploadButtonClasses() {
             if (this.uploadProgress) {
-                return 'accept disabled';
+                return 'add disabled';
             }
 
-            return 'accept';
+            return 'add';
         },
 
         defaultWorkflow() {
