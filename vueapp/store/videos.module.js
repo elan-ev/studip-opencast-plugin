@@ -22,7 +22,7 @@ const state = {
     courseVideosToCopy: [],
     videosReload: false,
     showEpisodesDefaultVisibilityDialog: false,
-    globalVideos: {}, // neu: globaler Cache aller geladenen Videos, keyed nach token
+    globalVideos: null, // neu: globaler Cache aller geladenen Videos, keyed nach token
     playlistVideos: {}, // token => Array von Videos
     playlistVideosLoadingStates: {}, // token -> boolean
     searchAvailable: false,
@@ -81,7 +81,12 @@ const getters = {
         return state.showEpisodesDefaultVisibilityDialog;
     },
 
-    globalVideos: (state) => Object.values(state.globalVideos),
+    globalVideos: (state) => {
+        if (state.globalVideos === null) {
+            return null; // noch nicht geladen
+        }
+        return Object.values(state.globalVideos);
+    },
     playlistVideos: (state) => (token) => state.playlistVideos[token] || [],
     isPlaylistLoading: (state) => (token) => {
         return !!state.playlistLoadingStates?.[token];
@@ -348,6 +353,9 @@ const mutations = {
     setPlaylistVideos(state, { playlistToken, videos }) {
         state.playlistVideos[playlistToken] = videos;
         // Gleichzeitig global speichern:
+        if (state.globalVideos === null) {
+            state.globalVideos = {};
+        }
         videos.forEach((video) => {
             state.globalVideos[video.token] = video;
         });

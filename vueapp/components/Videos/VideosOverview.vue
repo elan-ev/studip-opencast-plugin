@@ -1,5 +1,5 @@
 <template>
-    <section class="oc--videos-overview">
+    <section v-if="!loading" class="oc--videos-overview">
         <template v-if="isEmpty || allRunning">
             <EmptyState
                 v-if="isEmpty"
@@ -48,14 +48,23 @@
             </section>
         </template>
     </section>
+    <div v-else>
+        <StudipProgressIndicator
+            v-if="showLoadingIndicator"
+            class="oc--videos-overview-loading"
+            :description="$gettext('Lade Videos...')"
+            :size="64"
+        />
+    </div>
 </template>
 <script setup>
-import { computed, onMounted, watch, getCurrentInstance } from 'vue';
+import { computed, onMounted, watch, getCurrentInstance, ref } from 'vue';
 import VideoHero from './VideoHero.vue';
 import VideoTeaser from './VideoTeaser.vue';
 import VideoTeaserSkeleton from './VideoTeaserSkeleton.vue';
 import PlaylistSection from './../Playlists/PlaylistSection.vue';
 import EmptyState from '../Layouts/EmptyState.vue';
+import StudipProgressIndicator from '@studip/StudipProgressIndicator.vue';
 import { useStore } from 'vuex';
 
 const { proxy } = getCurrentInstance();
@@ -63,6 +72,10 @@ const $gettext = proxy.$gettext;
 const store = useStore();
 
 const emit = defineEmits(['call-to-action']);
+
+const loading = ref(false);
+const showLoadingIndicator = ref(false);
+let timeoutId = null;
 
 const cid = computed(() => {
     return store.getters['opencast/cid'];
@@ -74,7 +87,7 @@ const playlists = computed(() => {
 
 const allRunning = computed(() => {
     const videos = globalVideos.value;
-    return videos?.length > 0 && videos.every(video => video.state === 'running');
+    return videos?.length > 0 && videos.every((video) => video.state === 'running');
 });
 
 const globalVideos = computed(() => {
@@ -82,6 +95,10 @@ const globalVideos = computed(() => {
 });
 
 const isEmpty = computed(() => {
+    if (globalVideos.value === null) {
+        return false;
+    }
+
     return globalVideos.value.length === 0;
 });
 
@@ -130,6 +147,7 @@ const canUpload = computed(() => {
 });
 
 const loadAllPlaylistVideos = async () => {
+    loading.value = true;
     const loadPromises = playlists.value.map((playlist) => {
         if (playlist.videos_count > 0) {
             return store.dispatch('videos/loadVideosByPlaylist', {
@@ -141,6 +159,7 @@ const loadAllPlaylistVideos = async () => {
     });
 
     await Promise.all(loadPromises);
+    loading.value = false;
 };
 
 const addVideo = (id) => {
@@ -148,11 +167,31 @@ const addVideo = (id) => {
 };
 
 onMounted(async () => {
-    // await store.dispatch('opencast/authenticateLti');
-    // loadAllPlaylistVideos();
+    loading.value = true;
+    await store.dispatch('opencast/authenticateLti');
+    loadAllPlaylistVideos();
 });
 
 watch(playlists, (newValue, oldValue) => {
     loadAllPlaylistVideos();
+});
+watch(loading, (newValue, oldValue) => {
+    if (newValue && !oldValue) {
+        timeoutId = setTimeout(() => {
+            showLoadingIndicator.value = true;
+        }, 800);
+    }
+    if (!newValue) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        showLoadingIndicator.value = false;
+    }
+});
+watch(showLoadingIndicator, (newValue, oldValue) => {
+    if (newValue) {
+        console.log('showLoadingIndicator active');
+    }
 });
 </script>

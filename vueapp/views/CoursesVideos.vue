@@ -1,5 +1,5 @@
 <template>
-    <div v-if="course_config !== null">
+    <div v-if="hasConfig">
         <template v-if="!hasDefaultPlaylist">
             <EmptyState
                 :title="$gettext('Keine Standard-Kurswiedergabeliste gefunden')"
@@ -193,6 +193,9 @@ export default {
         ...mapGetters('videos', ['searchAvailable']),
         ...mapGetters('schedule', ['semester_list', 'semester_filter']),
 
+        hasConfig() {
+            return this.course_config !== null;
+        },
         canEdit() {
             return this.course_config?.edit_allowed ?? false;
         },
