@@ -20,9 +20,26 @@
             </button>
         </template>
     </EmptyState>
-    <section v-else class="oc--videos-all">
+    <div v-else >
+        <EmptyState
+            v-if="videos.length === 0 && searchActive"
+            :title="$gettext('Keine Treffer gefunden')"
+            :description="
+                $gettext(
+                    'Die gewählten Filter und Suchbegriffe haben leider keine Treffer ergeben.'
+                )
+            "
+        >
+            <template #buttons>
+                <button class="button" @click="emit('reset-search')">
+                    {{ $gettext('Suche zurücksetzen') }}
+                </button>
+            </template>
+        </EmptyState>
+        <section class="oc--videos-all">
         <VideoCard v-for="video in videos" :key="video.token" :video="video" />
-    </section>
+        </section>
+    </div>
 </template>
 
 <script setup>
@@ -33,7 +50,7 @@ import { useStore } from 'vuex';
 
 const store = useStore();
 
-const emit = defineEmits(['call-to-action']);
+const emit = defineEmits(['call-to-action', 'reset-search']);
 
 const props = defineProps({
     filter: {
@@ -44,31 +61,37 @@ const props = defineProps({
     },
     needle: {
         type: String,
-        default: ''
-    }
+        default: '',
+    },
+});
+
+const searchActive = computed(() => {
+    return props.filter.length > 0 || props.needle !== '';
+});
+
+const allVideos = computed(() => {
+    return store.getters['videos/globalVideos'] || [];
 });
 
 const videos = computed(() => {
-    const allVideos = store.getters['videos/globalVideos'] || [];
-
     if ((!props.filter || props.filter.length === 0) && !props.needle) {
-        return allVideos;
+        return allVideos.value;
     }
 
-    return allVideos.filter(video => {
+    return allVideos.value.filter((video) => {
         let tagMatch = false;
         if (props.filter.length > 0 && Array.isArray(video.tags)) {
-            tagMatch = video.tags.some(vTag =>
-                props.filter.some(fTag => fTag.id === vTag.id)
-            );
+            tagMatch = video.tags.some((vTag) => props.filter.some((fTag) => fTag.id === vTag.id));
         }
 
         let needleMatch = false;
         if (props.needle) {
             const needle = props.needle.toLowerCase();
             needleMatch =
-                (video.title?.toLowerCase().includes(needle) || false) ||
-                (video.description?.toLowerCase().includes(needle) || false);
+                video.title?.toLowerCase().includes(needle) ||
+                false ||
+                video.description?.toLowerCase().includes(needle) ||
+                false;
         }
 
         return tagMatch || needleMatch;
@@ -76,7 +99,7 @@ const videos = computed(() => {
 });
 
 const isEmpty = computed(() => {
-    return videos.value.length === 0;
+    return allVideos.value.length === 0;
 });
 
 const courseConfig = computed(() => {

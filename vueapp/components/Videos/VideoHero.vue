@@ -3,6 +3,9 @@
         <img :src="preview" class="oc--video-hero__thumbnail" />
         <div class="oc--hero-video__info">
             <div class="oc--hero-video__title">{{ video.title }}</div>
+            <div v-if="video.tags.length > 0" class="oc--tags oc--tags-video">
+                <Tag v-for="tag in video.tags" v-bind:key="tag.id" :tag="tag.tag" />
+            </div>
             <p class="oc--hero-video__description">{{ video.description }}</p>
             <div class="oc--hero-video__meta-wrapper">
                 <div class="oc--hero-video__owner-row">
@@ -27,6 +30,7 @@ import { useFormat } from '@/composables/useFormat';
 import { useUrlHelper } from '@/composables/useUrlHelper';
 import { useVideoDrawer } from '@/composables/useVideoDrawer';
 import { useAvatar } from '@/composables/useAvatar';
+import Tag from '@/components/Tag.vue';
 
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
 const { previewSrc } = useUrlHelper();

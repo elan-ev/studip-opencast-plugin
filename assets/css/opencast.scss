@@ -8,6 +8,7 @@ $item-height-small: auto;
 $item-width-small : 16em;
 $episode-background: $light-gray-color-20;
 $action-menu-icon-size: 20px;
+$font-secondary: #676767;
 
 /* * * * * * * * * * * * * * * * * */
 /*   G L O B A L E   K L A S S E N */
@@ -1339,13 +1340,13 @@ label.oc--file-upload {
         margin-bottom: 8px;
 
         &>span {
-            background-color: $light-gray-color-40;
+            background-color: var(--petrol-40);
         }
     }
 
     &-playlist {
         &>span {
-            background-color: $light-gray-color-20;
+            background-color: var(--dark-green-40);
         }
     }
 
@@ -2193,6 +2194,24 @@ $video-drawer-spacing: 1rem;
 
     &__thumbnail-wrapper {
         position: relative;
+
+        .oc--tags-video {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 0.15rem;
+            border-radius: 0.25rem;
+
+            > span {
+                background-color: rgba(0, 0, 0, 0.7);
+
+                img {
+                    filter: contrast(0) brightness(100);
+                }
+            }
+        }
     }
 
     &__duration {
@@ -2232,7 +2251,7 @@ $video-drawer-spacing: 1rem;
 
     &__description {
         font-size: 0.875rem;
-        color: #666;
+        color: $font-secondary;
         margin: 0;
         line-height: 1.1rem;
         overflow: hidden;
@@ -2523,7 +2542,7 @@ $video-drawer-spacing: 1rem;
         justify-content: flex-end;
         gap: 2rem;
         font-size: 1rem;
-        color: #666;
+        color: $font-secondary;
 
         >div {
             white-space: nowrap;
@@ -2534,7 +2553,7 @@ $video-drawer-spacing: 1rem;
 
     &__owner-name {
         font-size: 1rem;
-        color: #666;
+        color: $font-secondary;
     }
 
     &__owner-avatar {}
@@ -2666,7 +2685,7 @@ $video-drawer-spacing: 1rem;
 }
 
 .playlist-meta {
-    color: #666;
+    color: $font-secondary;
 
     span+span::before {
         content: " | ";
@@ -2772,7 +2791,7 @@ $video-drawer-spacing: 1rem;
 
     &__description {
         font-size: 0.9rem;
-        color: #666;
+        color: $font-secondary;
         margin: 0;
         line-height: 1.4;
         overflow: hidden;
@@ -3057,7 +3076,7 @@ $video-drawer-spacing: 1rem;
         justify-content: flex-end;
         gap: 1rem;
         font-size: 0.85rem;
-        color: #666;
+        color: $font-secondary;
     }
 
     &__creator {

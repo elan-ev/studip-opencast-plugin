@@ -3,7 +3,7 @@
         <PlaylistsOverviewCard v-for="playlist in playlists" :key="playlist.token" :playlist="playlist" />
     </section>
     <section v-else class="oc--videos-playlists-playlist">
-        <VideosInPlaylist />
+        <VideosInPlaylist :filter="filter" :needle="needle" @reset-search="emit('reset-search')"/>
     </section>
 </template>
 
@@ -14,6 +14,21 @@ import VideosInPlaylist from '../Videos/VideosInPlaylist.vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
+
+const emit = defineEmits(['reset-search']);
+
+const props = defineProps({
+    filter: {
+        type: Array,
+        default: () => {
+            return [];
+        },
+    },
+    needle: {
+        type: String,
+        default: '',
+    },
+});
 const playlists = computed(() => {
     return store.getters['playlists/playlists'];
 });

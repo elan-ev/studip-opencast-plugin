@@ -1,6 +1,9 @@
 <template>
     <button class="oc--video-card" @click="selectVideo(video)">
         <div class="oc--video-card__thumbnail-wrapper">
+            <div v-if="video.tags.length > 0" class="oc--tags oc--tags-video">
+                <Tag v-for="tag in video.tags" v-bind:key="tag.id" :tag="tag.tag" />
+            </div>
             <img :src="preview" class="oc--video-card__thumbnail" />
             <div class="oc--video-card__duration">{{ readableDuration }}</div>
         </div>
@@ -28,6 +31,7 @@ import { useUrlHelper } from '@/composables/useUrlHelper';
 import { useVideoDrawer } from '@/composables/useVideoDrawer';
 import { useAvatar } from '@/composables/useAvatar';
 import StudipIcon from '@studip/StudipIcon';
+import Tag from '@/components/Tag.vue';
 
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
 const { selectVideo } = useVideoDrawer();

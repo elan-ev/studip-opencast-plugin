@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, defineExpose, ref, watch } from 'vue';
 import DropdownBase from './DropdownBase.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 
@@ -97,4 +97,8 @@ function reset() {
     searchTerm.value = '';
     selectedTags.value = [];
 }
+
+defineExpose({
+    reset
+});
 </script>

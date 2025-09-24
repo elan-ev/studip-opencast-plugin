@@ -81,6 +81,7 @@
                     </DropdownActions>
                     <DropdownSearch
                         v-if="searchAvailable"
+                        ref="searchDropdownRef"
                         :title="$gettext('Suchen und Filtern')"
                         :tags="availableTags"
                         @search="handleSearch"
@@ -94,8 +95,8 @@
             </ContentBar>
             <div class="oc--course-videos-content">
                 <VideosOverview v-if="tabSelection === 0" @call-to-action="handleSelect" />
-                <VideosAllInCourse v-if="tabSelection === 1" @call-to-action="handleSelect" :needle="allVideosNeedle" :filter="allVideosFilter"/>
-                <PlaylistsOverview v-if="tabSelection === 2" />
+                <VideosAllInCourse v-if="tabSelection === 1" @call-to-action="handleSelect" @reset-search="resetDropdownSearch" :needle="allVideosNeedle" :filter="allVideosFilter"/>
+                <PlaylistsOverview v-if="tabSelection === 2" @reset-search="resetDropdownSearch" :needle="allVideosNeedle" :filter="allVideosFilter" />
                 <ScheduleOverview v-if="showScheduleOverview" />
             </div>
 
@@ -457,6 +458,9 @@ export default {
                 this.$store.dispatch('schedule/getScheduleList');
             }
         },
+        resetDropdownSearch() {
+            this.$refs.searchDropdownRef?.reset();
+        }
     },
 
     mounted() {

@@ -50,20 +50,28 @@
             @confirm="removePlaylist"
         >
         </StudipDialog>
-        <PlaylistSortDialog
-            v-if="showDialog === 'sort'"
-            @close="closeDialog"
-            @done="closeDialog"
-        />
-        <section class="oc--videos-all">
-            <VideoCard v-for="video in playlistVideos(playlist.token)" :key="video.token" :video="video" />
+        <PlaylistSortDialog v-if="showDialog === 'sort'" @close="closeDialog" @done="closeDialog" />
+        <section v-if="videos.length > 0" class="oc--videos-all">
+            <VideoCard v-for="video in videos" :key="video.token" :video="video" />
         </section>
+        <EmptyState
+            v-if="videos.length === 0 && searchActive"
+            :title="$gettext('Keine Treffer gefunden')"
+            :description="$gettext('Die gewählten Filter und Suchbegriffe haben leider keine Treffer ergeben.')"
+        >
+            <template #buttons>
+                <button class="button" @click="emit('reset-search')">
+                    {{ $gettext('Suche zurücksetzen') }}
+                </button>
+            </template>
+        </EmptyState>
     </section>
 </template>
 
 <script setup>
 import VideoCard from './VideoCard.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
+import EmptyState from '../Layouts/EmptyState.vue';
 import PlaylistMetadataDialog from '../Playlists/PlaylistMetadataDialog.vue';
 import PlaylistSortDialog from '../Playlists/PlaylistSortDialog.vue';
 import { useFormat } from '@/composables/useFormat';
@@ -78,11 +86,59 @@ import StudipDialog from '@studip/StudipDialog.vue';
 const store = useStore();
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
 
+const emit = defineEmits(['reset-search']);
+
+const props = defineProps({
+    filter: {
+        type: Array,
+        default: () => {
+            return [];
+        },
+    },
+    needle: {
+        type: String,
+        default: '',
+    },
+});
+
 const playlistVideos = (token) => {
     return store.getters['videos/playlistVideos'](token);
 };
 
+const searchActive = computed(() => {
+    return props.filter.length > 0 || props.needle !== '';
+});
+
+const videos = computed(() => {
+    if ((!props.filter || props.filter.length === 0) && !props.needle) {
+        return allVideos.value;
+    }
+
+    return allVideos.value.filter((video) => {
+        let tagMatch = false;
+        if (props.filter.length > 0 && Array.isArray(video.tags)) {
+            tagMatch = video.tags.some((vTag) => props.filter.some((fTag) => fTag.id === vTag.id));
+        }
+
+        let needleMatch = false;
+        if (props.needle) {
+            const needle = props.needle.toLowerCase();
+            needleMatch =
+                video.title?.toLowerCase().includes(needle) ||
+                false ||
+                video.description?.toLowerCase().includes(needle) ||
+                false;
+        }
+
+        return tagMatch || needleMatch;
+    });
+});
+
 const showDialog = ref(null);
+
+const allVideos = computed(() => {
+    return playlistVideos(playlist.value.token) || [];
+});
 
 const playlist = computed(() => {
     return store.getters['playlists/selectedPlaylist'];
