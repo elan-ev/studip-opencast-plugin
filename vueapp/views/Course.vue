@@ -1,48 +1,6 @@
 <template>
     <div class="container" id="app-episodes">
-        <Teleport :to="toLayoutName">
-            <CoursesSidebar
-                @uploadVideo="uploadDialog = true"
-                @sortVideo="enableSortMode"
-                @saveSortVideo="saveSort"
-                @cancelSortVideo="cancelSort"
-                @editPlaylist="editPlaylistDialog = true"
-                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
-                @changeDefaultVisibility="changeDefaultVisibility">
-            </CoursesSidebar>
-        </Teleport>
-
-        <PlaylistAddCard v-if="addPlaylist"
-            :is-default="!hasDefaultPlaylist"
-            @done="closePlaylistAddDialog"
-            @cancel="closePlaylistAddDialog"
-        />
-
-        <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
-            :canUpload="canUpload"
-            @done="closePlaylistAddVideosDialog"
-            @cancel="closePlaylistAddVideosDialog"
-        />
-
-        <PlaylistEditCard v-if="editPlaylistDialog"
-            @done="editPlaylistDialog = false"
-            @cancel="editPlaylistDialog = false"
-        />
-
-        <PlaylistsLinkCard v-if="showChangeDefaultPlaylistDialog"
-            :is-default="true"
-            :custom-title="$gettext('Kurswiedergabeliste wechseln')"
-            @done="showChangeDefaultPlaylistDialog = false"
-            @cancel="showChangeDefaultPlaylistDialog = false"
-        />
-
-        <EpisodesDefaultVisibilityDialog v-if="showEpisodesDefaultVisibilityDialog"
-            @done="closeChangeDefaultVisibility"
-            @cancel="closeChangeDefaultVisibility"
-        />
-
         <MessageList />
-
         <router-view></router-view>
     </div>
 </template>
@@ -51,7 +9,6 @@
 import CoursesSidebar from "@/components/Courses/CoursesSidebar";
 import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
 import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
-import VideoUpload from "@/components/Videos/VideoUpload";
 import MessageList from "@/components/MessageList";
 import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
 import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
@@ -65,7 +22,7 @@ export default {
     components: {
         PlaylistsLinkCard, PlaylistAddCard,
         PlaylistEditCard, CoursesSidebar,
-        VideoUpload, PlaylistAddVideos,
+        PlaylistAddVideos,
         MessageList,
         EpisodesDefaultVisibilityDialog
     },
