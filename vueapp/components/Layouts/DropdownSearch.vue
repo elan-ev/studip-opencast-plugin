@@ -56,7 +56,7 @@ const props = defineProps({
     title: { type: String, default: '' },
     tags: { type: Array, default: () => [] },
     searchPlaceholder: { type: String, default: 'Suchen...' },
-    debounceMs: { type: Number, default: 700 },
+    debounceMs: { type: Number, default: 800 },
 });
 
 const emit = defineEmits(['search', 'filter', 'select']);

@@ -94,7 +94,7 @@
             </ContentBar>
             <div class="oc--course-videos-content">
                 <VideosOverview v-if="tabSelection === 0" @call-to-action="handleSelect" />
-                <VideosAllInCourse v-if="tabSelection === 1" @call-to-action="handleSelect" />
+                <VideosAllInCourse v-if="tabSelection === 1" @call-to-action="handleSelect" :needle="allVideosNeedle" :filter="allVideosFilter"/>
                 <PlaylistsOverview v-if="tabSelection === 2" />
                 <ScheduleOverview v-if="showScheduleOverview" />
             </div>
@@ -176,6 +176,8 @@ export default {
             activeDialog: null,
             selectedTags: [],
             ready: false,
+            allVideosFilter: [],
+            allVideosNeedle: '',
         };
     },
 
@@ -431,13 +433,11 @@ export default {
             return this.simple_config_list?.workflows.find((wf) => wf['id'] == wf_id)['name'];
         },
 
-        handleSearch(e) {
-            // TODO !!!
-            console.log(e);
+        handleSearch(needle) {
+            this.allVideosNeedle = needle;
         },
-        handleFilter(e) {
-            // TODO !!!
-            console.log(e);
+        handleFilter(filter) {
+            this.allVideosFilter = filter;
         },
         handleScheduleOptions(e) {
             if (!this.canSchedule) {

@@ -35,8 +35,44 @@ const store = useStore();
 
 const emit = defineEmits(['call-to-action']);
 
+const props = defineProps({
+    filter: {
+        type: Array,
+        default: () => {
+            return [];
+        },
+    },
+    needle: {
+        type: String,
+        default: ''
+    }
+});
+
 const videos = computed(() => {
-    return store.getters['videos/globalVideos'];
+    const allVideos = store.getters['videos/globalVideos'] || [];
+
+    if ((!props.filter || props.filter.length === 0) && !props.needle) {
+        return allVideos;
+    }
+
+    return allVideos.filter(video => {
+        let tagMatch = false;
+        if (props.filter.length > 0 && Array.isArray(video.tags)) {
+            tagMatch = video.tags.some(vTag =>
+                props.filter.some(fTag => fTag.id === vTag.id)
+            );
+        }
+
+        let needleMatch = false;
+        if (props.needle) {
+            const needle = props.needle.toLowerCase();
+            needleMatch =
+                (video.title?.toLowerCase().includes(needle) || false) ||
+                (video.description?.toLowerCase().includes(needle) || false);
+        }
+
+        return tagMatch || needleMatch;
+    });
 });
 
 const isEmpty = computed(() => {
