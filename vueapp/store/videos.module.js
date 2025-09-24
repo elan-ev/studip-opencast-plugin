@@ -204,8 +204,11 @@ const actions = {
     },
 
     async createVideo(context, event) {
-        let $cid = context?.rootState?.opencast?.cid ?? null;
-        return ApiService.post('videos/' + event.episode, { event: event, course_id: $cid });
+        const cid = context?.rootState?.opencast?.cid ?? null;
+
+        const message = await ApiService.post('videos/' + event.episode, { event: event, course_id: cid });
+        
+        return message;
     },
 
     async deleteVideo(context, token) {
@@ -217,7 +220,17 @@ const actions = {
     },
 
     async updateVideo(context, event) {
-        return ApiService.put('videos/' + event.token, { event: event });
+        const message = await ApiService.put(`videos/${event.token}`, { event });
+
+        event.playlists.forEach((playlist) => {
+            context.dispatch('loadVideosByPlaylist', {
+                token: playlist.token,
+                playlist: playlist,
+            });
+        });
+
+        context.dispatch('videodrawer/setSelectedVideo',  event, { root: true });
+        // return message;
     },
 
     async updateVideoVisibility(context, data) {
@@ -265,7 +278,14 @@ const actions = {
         commit('setShowEpisodesDefaultVisibilityDialog', mode);
     },
 
-    async loadVideosByPlaylist({ commit }, data) {
+    async loadVideosByPlaylist({ commit, rootState }, data) {
+        const cid = rootState.opencast.cid;
+        const playlistInCourse = data.playlist?.courses?.some((course) => course.id === cid) ?? true;
+
+        if (!playlistInCourse) {
+            return;
+        }
+
         commit('setPlaylistLoadingState', { token: data.token, loading: true });
         const { data: response } = await ApiService.get(`playlists/${data.token}/videos`, {
             params: new URLSearchParams(data),
@@ -348,6 +368,9 @@ const mutations = {
         videos.forEach((video) => {
             state.globalVideos[video.token] = video;
         });
+    },
+    setGlobalVideo(state, video) {
+        state.globalVideos[video.token] = video;
     },
 
     setPlaylistVideos(state, { playlistToken, videos }) {

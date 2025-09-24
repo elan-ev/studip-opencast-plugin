@@ -152,7 +152,7 @@ const loadAllPlaylistVideos = async () => {
         if (playlist.videos_count > 0) {
             return store.dispatch('videos/loadVideosByPlaylist', {
                 token: playlist.token,
-                order: playlist.sort_order,
+                playlist: playlist
             });
         }
         return Promise.resolve();
