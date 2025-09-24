@@ -8,7 +8,7 @@
             :closeText="$gettext('Abbrechen')"
             closeClass="cancel"
             height="800"
-            width="800"
+            width="720"
             @close="cancel"
             @confirm="addVideosToPlaylist"
         >
