@@ -2204,7 +2204,7 @@ $video-drawer-spacing: 1rem;
             padding: 0.15rem;
             border-radius: 0.25rem;
 
-            > span {
+            >span {
                 background-color: rgba(0, 0, 0, 0.7);
 
                 img {
@@ -2843,11 +2843,15 @@ $video-drawer-spacing: 1rem;
 
 .oc--playlist-card__actions {
     position: absolute;
-
-    position: absolute;
     top: 1rem;
     right: 0.75rem;
     z-index: 10;
+
+    .action-menu {
+        border: solid thin var(--base-color);
+        border-radius: 5px;
+        padding: 5px;
+    }
 }
 
 /* Abstand und gestaffelte Positionierung */
@@ -2912,6 +2916,7 @@ $video-drawer-spacing: 1rem;
         flex-wrap: wrap;
         align-items: center;
         gap: 1.5rem;
+        padding: 0.25rem 0;
 
         a {
             display: flex;
@@ -2932,6 +2937,12 @@ $video-drawer-spacing: 1rem;
 
     &__header-actions {
         flex-shrink: 0;
+
+        .action-menu {
+            border: solid thin var(--base-color);
+            border-radius: 5px;
+            padding: 5px;
+        }
     }
 }
 
@@ -3164,7 +3175,8 @@ $video-drawer-spacing: 1rem;
         gap: 1rem;
         justify-content: center;
         align-items: center;
-        > span {
+
+        >span {
             font-size: 1.1rem;
             font-weight: 700;
         }

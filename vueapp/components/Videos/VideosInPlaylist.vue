@@ -3,6 +3,9 @@
         <header class="oc--videos-in-playlist__header">
             <div class="oc--videos-in-playlist__info">
                 <p class="oc--videos-in-playlist__title">{{ playlist.title }}</p>
+                <div class="oc--tags oc--tags-playlist">
+                    <Tag v-for="tag in playlist.tags" :key="tag.id" :tag="tag.tag" />
+                </div>
                 <p v-if="playlist.description" class="oc--videos-in-playlist__description">
                     {{ playlist.description }}
                 </p>
@@ -82,6 +85,7 @@ const $gettext = proxy.$gettext;
 const $ngettext = proxy.$ngettext;
 import StudipIcon from '@studip/StudipIcon';
 import StudipDialog from '@studip/StudipDialog.vue';
+import Tag from '@/components/Tag.vue';
 
 const store = useStore();
 const { formatDuration, formatISODateTime, timeAgo } = useFormat();
