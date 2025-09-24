@@ -82,12 +82,14 @@
                             </li>
                         </ul>
                     </header>
-                    <StudipActionMenu
-                        v-if="canEdit"
-                        class="video-drawer-menu"
-                        :items="menuItems"
-                        @performAction="performAction"
-                    />
+                    <div class="oc--video-metadata__actions">
+                        <StudipActionMenu
+                            v-if="canEdit"
+                            class="video-drawer-menu"
+                            :items="menuItems"
+                            @performAction="performAction"
+                        />
+                    </div>
                 </section>
                 <section class="video-settings">
                     <Tabs :key="selectedVideo.id + '-settings'" :responsive="true">

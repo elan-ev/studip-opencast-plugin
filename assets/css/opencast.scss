@@ -2012,7 +2012,7 @@ $video-drawer-spacing: 1rem;
         margin: $video-drawer-spacing;
 
         &__header {
-            margin: 0;
+            margin: 0.5rem 0 0 0;
             display: flex;
             justify-content: space-between;
             flex-grow: 1;
@@ -2026,8 +2026,12 @@ $video-drawer-spacing: 1rem;
 
         }
 
-        .video-drawer-menu {
+        &__actions{
             margin-left: $video-drawer-spacing;
+            border: solid thin var(--base-color);
+            border-radius: 5px;
+            padding: 5px;
+            height: 20px;
         }
 
         &__owner-row {
@@ -2313,12 +2317,6 @@ $video-drawer-spacing: 1rem;
         align-items: flex-start;
         margin-bottom: 1rem;
 
-        .oc--playlist-section__title {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
         p {
             margin: 0.5rem 0 0;
             color: #555;
@@ -2336,6 +2334,12 @@ $video-drawer-spacing: 1rem;
         grid-template-columns: repeat(auto-fill, 270px);
         gap: 1rem;
     }
+}
+
+#opencast-plugin .oc--playlist-section header h2.oc--playlist-section__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .size-small:not(.size-large) {
