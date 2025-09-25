@@ -169,7 +169,11 @@ The plugin has been renamed to `OpencastV3`. When updating from V2 or and older 
 
 Another thing to note is, that the URL in the user provider is changed! See the section about the user provider for correct configuration!
 
-If you are migrating from version 2.x of this plugin, you can use `tools/pre_migrate_acls.php` in the weeks before installing the new version to shift workload on opencast before the installation. The Cronjobs should take care of anything missing nonetheless, so this step is useful but not absolutely necessary. Just keep in mind, that ALL videos in your Opencast system will have to run through a `republish-metadata`-workflow in order for all plugin functions to work correctly!
+If you are migrating from version 2.x of this plugin, you have two options:
+
+1. If you are using Opencast 17 or newer, activate role based event access in Opencast and afterwards in the server settings of the plugin. See https://docs.opencast.org/r/17.x/admin/#configuration/episode-id-roles/#episode-id-roles for how to activate that in Opencast
+
+2. Alternatively you can use `tools/pre_migrate_acls.php` in the weeks before installing the new version to shift workload on opencast before the installation. The Cronjobs should take care of anything missing nonetheless, so this step is useful but not absolutely necessary. Just keep in mind, that ALL videos in your Opencast system will have to run through a `republish-metadata`-workflow in order for all plugin functions to work correctly!
 
 ## Steps to follow for an upgrade:
 - Deactivate the plugin version 2
