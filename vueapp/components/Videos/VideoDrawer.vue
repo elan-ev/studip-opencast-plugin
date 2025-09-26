@@ -434,9 +434,6 @@ const doAfterAction = async (args) => {
     clearAction();
     if (args == 'refresh') {
         close();
-        // this.loadVideos(); -> TODO !!!
     }
 };
 </script>
-
-// Link to Video href="#" @click.prevent="redirectAction(`/video/` + event.token)" target="_blank"

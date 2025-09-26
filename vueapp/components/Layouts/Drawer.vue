@@ -1,17 +1,25 @@
 <template>
     <Teleport :to="targetSelector">
-        <Transition name="drawer-slide">
-            <div v-if="visible" class="drawer" :class="[wrapperClass, `drawer--${side}`]" :style="drawerStyle">
-                <header class="drawer__header">
-                <button class="drawer__close" @click="emit('close')" :title="$gettext('Schließen')" :aria-label="$gettext('Schließen')">
-                    <StudipIcon shape="decline" :size="24" />
-                </button>
-                </header>
-                <div class="drawer__content">
-                    <slot />
+        <div v-if="visible" class="drawer-overlay" @click="emit('close')"></div>
+        <div class="drawer-wrapper">
+            <Transition name="drawer-slide">
+                <div v-if="visible" class="drawer" :class="[wrapperClass, `drawer--${side}`]" :style="drawerStyle">
+                    <header class="drawer__header">
+                        <button
+                            class="drawer__close"
+                            @click="emit('close')"
+                            :title="$gettext('Schließen')"
+                            :aria-label="$gettext('Schließen')"
+                        >
+                            <StudipIcon shape="decline" :size="24" />
+                        </button>
+                    </header>
+                    <div class="drawer__content">
+                        <slot />
+                    </div>
                 </div>
-            </div>
-        </Transition>
+            </Transition>
+        </div>
     </Teleport>
 </template>
 

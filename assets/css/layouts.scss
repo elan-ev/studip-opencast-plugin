@@ -9,6 +9,12 @@ $font-secondary: #676767;
     position: relative;
 }
 
+.drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
 .drawer {
     position: absolute;
     z-index: 501;
