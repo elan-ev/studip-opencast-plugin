@@ -16,7 +16,12 @@ const initialState = {
             'allow_upload_wf_cp': false
         }
     },
-    course_config: null
+    course_config: null,
+    confirmation_modal_shown: false,
+    confirmation_modal_obj: null, // || {title: '',text: '',confirm: undefined, width: ?, height: ?}
+    scheduling_has_unsaved_changes: false,
+    scheduling_edit_modal_shown: false,
+    scheduling_edit_resource_obj: null,
 };
 
 const getters = {
@@ -42,6 +47,29 @@ const getters = {
         } else {
             return false;
         }
+    },
+
+    confirmationModalObj(state) {
+        return state.confirmation_modal_obj;
+    },
+
+    shouldConfirmationModalBeVisible(state) {
+        return state.confirmation_modal_shown !== false
+            && state.confirmation_modal_obj?.title != ''
+            && state.confirmation_modal_obj?.text != ''
+            && state.confirmation_modal_obj?.confirm != undefined;
+    },
+
+    schedulingHasUnsavedChanges(state) {
+        return state.scheduling_has_unsaved_changes;
+    },
+
+    schedulingEditResourceObj(state) {
+        return state.scheduling_edit_resource_obj;
+    },
+
+    shouldSchedulingEditModalBeVisible(state) {
+        return state.scheduling_edit_modal_shown !== false;
     }
 };
 
@@ -126,7 +154,35 @@ export const actions = {
 
     configSetActivation(context, params) {
         return ApiService.put('config/' + params.id + '/' + (params.active ? 'activate' : 'deactivate'));
-    }
+    },
+
+    openConfirmationModal(context, data) {
+        context.commit('setConfirmationModalObj', data);
+        context.commit('setConfirmationModalShown', true);
+    },
+
+    closeConfirmationModal(context, empty_obj = true) {
+        context.commit('setConfirmationModalShown', false);
+        if (empty_obj) {
+            context.commit('setConfirmationModalObj', null);
+        }
+    },
+
+    toggleSchedulingUnsavedChanges(context, status) {
+        context.commit('setSchedulingUnsavedChanges', status ? true : false);
+    },
+
+    openSchedulingEditModal(context, data) {
+        context.commit('setSchedulingEditResourceObj', data);
+        context.commit('setSchedulingEditModalShown', true);
+    },
+
+    closeSchedulingEditModal(context, empty_obj = true) {
+        context.commit('setSchedulingEditModalShown', false);
+        if (empty_obj) {
+            context.commit('setSchedulingEditResourceObj', null);
+        }
+    },
 };
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
@@ -149,12 +205,32 @@ export const mutations = {
         }
 
         state.config = data;
+    },
+
+    setConfirmationModalObj(state, data) {
+        state.confirmation_modal_obj = data;
+    },
+
+    setConfirmationModalShown(state, status) {
+        state.confirmation_modal_shown = status;
+    },
+
+    setSchedulingUnsavedChanges(state, status) {
+        state.scheduling_has_unsaved_changes = status;
+    },
+
+    setSchedulingEditResourceObj(state, data) {
+        state.scheduling_edit_resource_obj = data;
+    },
+
+    setSchedulingEditModalShown(state, status) {
+        state.scheduling_edit_modal_shown = status;
     }
 };
 
 export default {
-  state,
-  actions,
-  mutations,
-  getters
+    state,
+    actions,
+    mutations,
+    getters
 };

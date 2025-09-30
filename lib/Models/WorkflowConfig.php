@@ -28,7 +28,11 @@ class WorkflowConfig extends \SimpleORMap
     {
         $configs = Config::findBySql(1);
         foreach ($configs as $config) {
-            self::createAndUpdateByConfigId($config['id']);
+
+            // only run on active servers
+            if ($config['active'] == 1) {
+                self::createAndUpdateByConfigId($config['id']);
+            }
         }
     }
 

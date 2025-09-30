@@ -22,9 +22,9 @@ class ConfigSetActivation extends OpencastController
         $config->store();
 
         if ($active) {
-            $message = sprintf(_('Der Server wurde ##%s aktiviert.'), $args['id']);
+            $message = sprintf(_('Der Server ##%s wurde aktiviert.'), $args['id']);
         } else {
-            $message = sprintf(_('Der Server wurde ##%s deaktiviert.'), $args['id']);
+            $message = sprintf(_('Der Server ##%s wurde deaktiviert.'), $args['id']);
         }
 
         return $this->createResponse([

@@ -1,8 +1,8 @@
 pluginname=OpencastV3
 pluginclassname=OpencastV3
 origin=elan-ev
-version=3.29
-studipMinVersion=5.1
+version=3.30
+studipMinVersion=5.3
 studipMaxVersion=5.5.99
 dbscheme=install/install.sql
 summary=Vorlesungsaufzeichnung

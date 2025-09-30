@@ -482,7 +482,7 @@ h2.oc--loadingbar, .oc--loadingbar-title {
     }
 }
 
-.oc--menuentry--disabled {
+.oc--menuentry--disabled a {
     color: $light-gray-color-40 !important;
     cursor: default !important;
 }

@@ -34,17 +34,19 @@ class SimpleConfigList extends OpencastController
 
         foreach ($config as $conf) {
             $config_list[$conf->id] = [
-                'id'                 => $conf->id,
-                'name'               => $conf->service_url,
-                'version'            => $conf->service_version,
-                'play'               => $this->getServiceUrl('play', $conf->id),
-                'ingest'             => $this->getServiceUrl('ingest', $conf->id),
-                'apievents'          => $this->getServiceUrl('apievents', $conf->id),
-                'apiplaylists'       => $this->getServiceUrl('apiplaylists', $conf->id),
-                'apiworkflows'       => $this->getServiceUrl('apiworkflows', $conf->id),
-                'studio'             => $conf->service_url . '/studio/index.html',
-                'lti_num'            => sizeof(LtiHelper::getLtiLinks($conf->id)), // used to iterate over all Opencast nodes
-                'allow_upload_wf_cp' => (bool) $conf->settings['allow_upload_wf_cp'] ?? false
+                'id'                => $conf->id,
+                'name'              => $conf->service_url,
+                'version'           => $conf->service_version,
+                'timeout'           => (int) $conf->timeout_ms ?? 0,
+                'connect_timeout'   => (int) $conf->connect_timeout_ms ?? 0,
+                'play'              => $this->getServiceUrl('play', $conf->id),
+                'ingest'            => $this->getServiceUrl('ingest', $conf->id),
+                'apievents'         => $this->getServiceUrl('apievents', $conf->id),
+                'apiplaylists'      => $this->getServiceUrl('apiplaylists', $conf->id),
+                'apiworkflows'      => $this->getServiceUrl('apiworkflows', $conf->id),
+                'studio'            => $conf->service_url . '/studio/index.html',
+                'lti_num'           => sizeof(LtiHelper::getLtiLinks($conf->id)), // used to iterate over all Opencast nodes
+                'allow_upload_wf_cp' => (bool) $conf->settings['allow_upload_wf_cp'] ?? false,
             ];
         }
 

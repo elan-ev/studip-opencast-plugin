@@ -17,7 +17,7 @@
                 </p>
                 <p>
                     {{ $gettext('Die Aufzeichnung wird damit in den "Gelöschte Videos" Bereich '
-                        + 'Ihres Arbeitsplatzes verschoben und wird nach %{ days } Tagen automatisch gelöscht. '
+                        + 'Ihres Arbeitsplatzes verschoben und wird nach %{days} Tagen automatisch gelöscht. '
                         + 'Bis zu diesem Zeitpunkt können Sie die Aufzeichnung wiederherstellen.',
                         { days: simple_config_list.settings.OPENCAST_CLEAR_RECYCLE_BIN_INTERVAL })
                     }}
