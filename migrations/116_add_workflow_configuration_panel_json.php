@@ -6,7 +6,7 @@ class AddWorkflowConfigurationPanelJson extends Migration
 {
     public function description()
     {
-        return 'Add configuration panel (JSON) column to table workflow';
+        return 'Add configuration panel (JSON) and options columns to table workflow';
     }
 
     public function up()
@@ -14,7 +14,8 @@ class AddWorkflowConfigurationPanelJson extends Migration
         $db = DBManager::get();
 
         $db->exec("ALTER TABLE `oc_workflow`
-            ADD COLUMN `configuration_panel_json` TEXT NULL
+            ADD COLUMN `configuration_panel_json` TEXT NULL,
+            ADD COLUMN `configuration_panel_options` TEXT NULL
         ");
 
         SimpleOrMap::expireTableScheme();
@@ -24,7 +25,10 @@ class AddWorkflowConfigurationPanelJson extends Migration
     {
         $db = DBManager::get();
 
-        $db->exec("ALTER TABLE `oc_workflow` DROP COLUMN `configuration_panel_json`");
+        $db->exec("ALTER TABLE `oc_workflow`
+            DROP COLUMN `configuration_panel_json`,
+            DROP COLUMN `configuration_panel_options`
+        ");
 
         SimpleOrMap::expireTableScheme();
     }

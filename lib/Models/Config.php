@@ -152,6 +152,20 @@ class Config extends \SimpleOrMap
         }
         Workflow::updateSettings($this->id, $workflow_settings);
 
+        // Update configration panel options.
+        $configuration_panel_options = [];
+        if (isset($json['settings']['configuration_panel_options'])) {
+            foreach ($json['settings']['configuration_panel_options'] as $config_panel_options) {
+                $workflow_id = $config_panel_options['id'];
+                unset($config_panel_options['id']);
+                if (!empty($config_panel_options)) {
+                    $configuration_panel_options[$workflow_id] = $config_panel_options;
+                }
+            }
+            unset($json['settings']['configuration_panel_options']);
+        }
+        Workflow::updateConfigPanelOptions($this->id, $configuration_panel_options);
+
         $this->setData($json);
         return $this->store();
     }
