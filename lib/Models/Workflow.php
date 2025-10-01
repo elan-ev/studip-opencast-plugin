@@ -64,7 +64,11 @@ class Workflow extends \SimpleORMap
                         $entry->setValue('displayname', $wf_def['title']);
                         // In case WF is already there, we also update the config panel json.
                         $entry->setValue('configuration_panel_json', $wf_config_panel_filtered);
+
                         $entry->store();
+
+                        // Take care of config panel options.
+                        self::configPanelOptionsMapper($entry);
 
                         $found = true;
                         unset($db_workflows[$key]);
@@ -86,6 +90,8 @@ class Workflow extends \SimpleORMap
                     $new_entry->setValue('settings', []);
 
                     $new_entry->store();
+
+                    self::configPanelOptionsMapper($new_entry);
                 }
             }
         } catch (\Throwable $th) {
@@ -144,8 +150,67 @@ class Workflow extends \SimpleORMap
 
         // We then convert the config panel json string to array.
         $config_panel_json_string = !empty($ret['configuration_panel_json']) ? $ret['configuration_panel_json'] : '[]';
+        $configuration_panel_options = !empty($ret['configuration_panel_options']) ? $ret['configuration_panel_options'] : '[]';
         $ret['configuration_panel_json'] = json_decode($config_panel_json_string, true) ?? [];
+        $ret['configuration_panel_options'] = json_decode($configuration_panel_options, true) ?? [];
 
         return $ret;
+    }
+
+    private static function configPanelOptionsMapper($entry)
+    {
+        $existing_options = json_decode($entry->configuration_panel_options, true) ?? [];
+        $config_panel = json_decode($entry->configuration_panel_json, true) ?? [];
+        $eligible_fieldset = [];
+
+        if (!empty($config_panel)) {
+            foreach ($config_panel as $item) {
+                $description = $item['description'] ?? '';
+                if (!empty($item['fieldset'])) {
+                    foreach ($item['fieldset'] as $cp_item) {
+                        $name = $cp_item['name'];
+                        $eligible_fieldset[] = $name;
+                        $label = $cp_item['label'] ?? $description;
+                        $show = true;
+                        if (!isset($existing_options[$name])) {
+                            $existing_options[$name] = [
+                                'displayName' => [
+                                    'default' => $label,
+                                ],
+                                'show' => $show
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        $to_remove_options = array_diff_key($existing_options, array_flip($eligible_fieldset));
+        foreach ($to_remove_options as $key => $option) {
+            unset($existing_options[$key]);
+        }
+
+        $entry->setValue('configuration_panel_options', json_encode($existing_options));
+        $entry->store();
+    }
+
+    /**
+     * Update configuration panel options of workflows
+     *
+     * @param string $config_id related config to ensure correct oc service
+     * @param array $config_panel_options Array of configuration panel options to update
+     * @return void
+     */
+    public static function updateConfigPanelOptions($config_id, $config_panel_options)
+    {
+        foreach ($config_panel_options as $wf_id => $config_panel_options) {
+            // Ensure same config is modified
+            $workflow = self::findOneBySQL('id = ? AND config_id = ?', [$wf_id, $config_id]);
+
+            if (!empty($workflow)) {
+                $workflow->configuration_panel_options = json_encode($config_panel_options);
+                $workflow->store();
+            }
+        }
     }
 }

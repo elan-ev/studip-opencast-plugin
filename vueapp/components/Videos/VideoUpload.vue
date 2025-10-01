@@ -197,12 +197,12 @@
                         </MessageBox>
                     </fieldset>
 
-                    <fieldset v-if="offerUploadWorkflowConfigPanel">
+                    <fieldset v-if="offerUploadWorkflowConfigPanel && filteredWorkflowConfigPanel.length > 0">
                         <legend>
                             {{ $gettext('Verarbeitungseinstellungen') }}
                         </legend>
 
-                        <div v-for="config_panel in workflowConfigPanel">
+                        <div v-for="config_panel in filteredWorkflowConfigPanel">
                             <span v-if="config_panel?.description">
                                 {{ $gettext(config_panel.description) }}
                             </span>
@@ -369,8 +369,35 @@ export default {
             return this.selectedServer?.['allow_upload_wf_cp'] ?? false;
         },
 
-        workflowConfigPanel() {
-            return this.defaultWorkflow?.configuration_panel_json ?? [];
+        filteredWorkflowConfigPanel() {
+            let options = this.selectedWorkflow?.configuration_panel_options ?? {};
+            let configPanel = this.selectedWorkflow?.configuration_panel_json ?? [];
+            let filteredConfigPanel = [];
+            configPanel.forEach(wf_cp => {
+                let wfCloned = JSON.parse(JSON.stringify(wf_cp));
+                let filteredFieldset = [];
+                for (let index in wfCloned.fieldset) {
+                    const name = wfCloned.fieldset[index].name;
+                    if (options?.[name] && options[name].show) {
+                        let label = options[name].displayName?.default ?? wfCloned.fieldset[index].label;
+                        if (options[name].displayName?.[this.config.user_language]) {
+                            label = options[name].displayName[this.config.user_language];
+                        }
+                        wfCloned.fieldset[index].label = label;
+                        filteredFieldset.push(wfCloned.fieldset[index]);
+                    }
+                }
+                if (filteredFieldset.length > 0) {
+                    // Replace filtered fieldset with original, so that the changes would be applied.
+                    wfCloned.fieldset = filteredFieldset;
+                    filteredConfigPanel.push(wfCloned);
+                }
+            });
+            return filteredConfigPanel;
+        },
+
+        workflowConfigPanelOptions() {
+            return this.selectedWorkflow?.configuration_panel_options ?? {};
         }
     },
 
@@ -561,8 +588,8 @@ export default {
         },
 
         initConfigPanelData() {
-            if (this.workflowConfigPanel.length && this.offerUploadWorkflowConfigPanel) {
-                this.workflowConfigPanel.forEach(wf_cp => {
+            if (this.filteredWorkflowConfigPanel.length && this.offerUploadWorkflowConfigPanel) {
+                this.filteredWorkflowConfigPanel.forEach(wf_cp => {
                     let wf_cp_data = {};
                     wf_cp.fieldset.forEach(wf_cp_fieldset => {
                         let value = wf_cp_fieldset?.value ?? '';
