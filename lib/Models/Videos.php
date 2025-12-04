@@ -10,6 +10,7 @@ use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Models\REST\ApiWorkflowsClient;
 use Opencast\Models\Helpers;
 use Opencast\Models\ScheduledRecordings;
+use Opencast\Caching\VideosCaching;
 
 class Videos extends UPMap
 {
@@ -297,9 +298,14 @@ class Videos extends UPMap
         $course_ids   = [];
         $lecturer_ids = [];
 
+        $count_selected_columns = [
+            'id', 'token', 'config_id', 'created'
+        ];
+
         foreach ($filters->getFilters() as $filter) {
             switch ($filter['type']) {
                 case 'text':
+                    $count_selected_columns[] = 'title';
                     $pname = ':text' . sizeof($params);
                     $where .= " AND (title LIKE $pname OR description LIKE $pname)";
                     $params[$pname] = '%' . $filter['value'] .'%';
@@ -450,7 +456,11 @@ class Videos extends UPMap
 
         $sql .= ' GROUP BY oc_video.id';
 
-        $stmt = \DBManager::get()->prepare($s = "SELECT COUNT(*) FROM (SELECT oc_video.* FROM oc_video $sql) t");
+        // Preparing count sql, specifically define columns to select in order to increase performance.
+        $count_selected_columns = array_map(function($clmn) { return 'oc_video.' . $clmn; }, array_unique($count_selected_columns));
+        $count_select_columns_sql = implode(', ', $count_selected_columns);
+        $s = "SELECT COUNT(*) FROM (SELECT $count_select_columns_sql FROM oc_video $sql) t";
+        $stmt = \DBManager::get()->prepare($s);
         $stmt->execute($params);
         $count = $stmt->fetchColumn();
 
@@ -1272,5 +1282,27 @@ class Videos extends UPMap
                 }
             }
         }
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Overriding store method, in order to expire caches.
+     */
+    public function store()
+    {
+        VideosCaching::expireAllVideoCaches($this);
+        return parent::store();
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * Overriding delete method, in order to expire caches.
+     */
+    public function delete()
+    {
+        VideosCaching::expireAllVideoCaches($this);
+        return parent::delete();
     }
 }
