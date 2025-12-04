@@ -295,14 +295,16 @@ class UploadService {
         );
     }
 
-    finishIngest(mediaPackage, workflowId = "upload") {
+    finishIngest(mediaPackage, workflowId = "upload", workflowConfiguration = {}) {
+        let dataObj = {
+            mediaPackage: mediaPackage,
+            workflowDefinitionId: workflowId
+        };
+        dataObj = Object.assign(dataObj, workflowConfiguration);
         return this.axios_service({
             url: this.service_urls['ingest'] + "/ingest",
             method: "POST",
-            data: new URLSearchParams({
-                mediaPackage: mediaPackage,
-                workflowDefinitionId: workflowId
-            }),
+            data: new URLSearchParams(dataObj),
             withCredentials: true,
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
@@ -342,11 +344,12 @@ class UploadService {
      * @param files files to be uploaded
      * @param terms DCC terms
      * @param workflowId workflow for upload
+     * @param workflowConfiguration workflow configuration
      * @param uploader LTI information of uploader
      * @param options handler
      * @returns {Promise<T | void>}
      */
-    upload(files, terms, workflowId, uploader, options) {
+    upload(files, terms, workflowId, workflowConfiguration, uploader, options) {
         this.fixFilenames(files);
         let obj = this;
         let onProgress = options.uploadProgress;
@@ -367,7 +370,7 @@ class UploadService {
             })
             .then(function (data) {
                 mediaPackage = data;
-                return obj.finishIngest(mediaPackage, workflowId);
+                return obj.finishIngest(mediaPackage, workflowId, workflowConfiguration);
             }).then(function () {
                 try {
                     let episode_id;

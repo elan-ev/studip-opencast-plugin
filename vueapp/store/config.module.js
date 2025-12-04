@@ -12,7 +12,8 @@ const initialState = {
             'lti_consumersecret':     null,
             'time_buffer_overlap':    30,
             'debug':                  null,
-            'ssl_ignore_cert_errors': null
+            'ssl_ignore_cert_errors': null,
+            'allow_upload_wf_cp': false
         }
     },
     course_config: null,

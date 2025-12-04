@@ -28,6 +28,8 @@
 
                     <WorkflowOptions :disabled="currentId === 'new'" ref="workflow-form"/>
 
+                    <UploadWorkflowConfigurationOptions :disabled="currentId === 'new'" ref="upload-workflow-form"/>
+
                     <UploadOptions :configId="currentId" :disabled="currentId === 'new'"/>
                 </form>
 
@@ -58,6 +60,7 @@ import MessageList from "@/components/MessageList";
 import ConfigOption from "@/components/Config/ConfigOption";
 import WorkflowOptions from "@/components/Config/WorkflowOptions";
 import UploadOptions from "@/components/Config/UploadOptions";
+import UploadWorkflowConfigurationOptions from "@/components/Config/UploadWorkflowConfigurationOptions";
 
 import axios from "@/common/axios.service";
 
@@ -72,6 +75,7 @@ export default {
         MessageList,
         WorkflowOptions,
         UploadOptions,
+        UploadWorkflowConfigurationOptions,
     },
 
     props: {
@@ -151,6 +155,13 @@ export default {
                     required: false
                 },
                 {
+                    description: this.$gettext('Konfigurationsoptionen des Upload-Workflows Nutzenden beim Hochladen anbieten.'),
+                    name: 'allow_upload_wf_cp',
+                    value: this.currentConfig.allow_upload_wf_cp,
+                    type: 'boolean',
+                    required: false
+                },
+                {
                     description: this.$gettext('Ist rollenbasierter Zugriff per Event-ID aktiviert?'),
                     name: 'episode_id_role_access',
                     value: this.currentConfig.episode_id_role_access ?? false,
@@ -222,9 +233,12 @@ export default {
                     this.currentConfig.workflow_configs = this.simple_config_list.workflow_configs;
                 }
 
-                // Add workflow settings
                 if (this.simple_config_list?.workflows) {
+                    // Add workflow settings
                     let workflow_settings = [];
+
+                    // Add workflow configuration panel options.
+                    let configuration_panel_options = [];
                     for (let workflow of this.simple_config_list?.workflows) {
                         // Check if upload file type is set
                         if (!Array.isArray(workflow.settings)) {
@@ -239,8 +253,16 @@ export default {
                             'id': workflow.id,
                             ...workflow.settings,
                         });
+
+                        if (workflow?.configuration_panel_options) {
+                            configuration_panel_options.push({
+                                'id': workflow.id,
+                                ...workflow.configuration_panel_options,
+                            });
+                        }
                     }
                     this.currentConfig.workflow_settings = workflow_settings;
+                    this.currentConfig.configuration_panel_options = configuration_panel_options;
                 }
 
                 this.$store.dispatch('configUpdate', this.currentConfig)
@@ -303,9 +325,11 @@ export default {
                         let view = this;
                         // We need to wait for a short time so the component is actually visible
                         setTimeout(() => {
-                            view.$refs['workflow-form'].$el.scrollIntoView({
-                                behavior: 'smooth'
-                            });
+                            if (view?.$refs?.['workflow-form']?.$el) {
+                                view.$refs['workflow-form'].$el.scrollIntoView({
+                                    behavior: 'smooth'
+                                });
+                            }
                         }, 10);
                     }
 

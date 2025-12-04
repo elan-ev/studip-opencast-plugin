@@ -197,6 +197,32 @@
                         </MessageBox>
                     </fieldset>
 
+                    <fieldset v-if="offerUploadWorkflowConfigPanel && filteredWorkflowConfigPanel.length > 0">
+                        <legend>
+                            {{ $gettext('Verarbeitungseinstellungen') }}
+                        </legend>
+
+                        <div v-for="config_panel in filteredWorkflowConfigPanel">
+                            <span v-if="config_panel?.description">
+                                {{ $gettext(config_panel.description) }}
+                            </span>
+                            <label v-for="fieldset in config_panel.fieldset">
+                                <template v-if="fieldset.type == 'checkbox'">
+                                    <input :name="fieldset.name" :type="fieldset.type" :checked="fieldset.value == true" v-model="workflowConfiguration[fieldset.name]"/>
+                                    <template v-if="fieldset?.label">
+                                        {{ $gettext(fieldset.label) }}
+                                    </template>
+                                </template>
+                                <template v-else-if="fieldset.type != 'select'">
+                                    <span v-if="fieldset?.label">
+                                        {{ $gettext(fieldset.label) }}
+                                    </span>
+                                    <input :name="fieldset.name" :type="fieldset.type" v-model="workflowConfiguration[fieldset.name]"/>
+                                </template>
+                            </label>
+                        </div>
+                    </fieldset>
+
                     <MessageBox type="info" v-if="infoText" v-html="infoText">
                     </MessageBox>
                 </form>
@@ -256,6 +282,7 @@ export default {
                 'presentation/source': []
             },
             uploadProgress: null,
+            workflowConfiguration: {},
         }
     },
 
@@ -336,6 +363,41 @@ export default {
             }
 
             return null;
+        },
+
+        offerUploadWorkflowConfigPanel() {
+            return this.selectedServer?.['allow_upload_wf_cp'] ?? false;
+        },
+
+        filteredWorkflowConfigPanel() {
+            let options = this.selectedWorkflow?.configuration_panel_options ?? {};
+            let configPanel = this.selectedWorkflow?.configuration_panel_json ?? [];
+            let filteredConfigPanel = [];
+            configPanel.forEach(wf_cp => {
+                let wfCloned = JSON.parse(JSON.stringify(wf_cp));
+                let filteredFieldset = [];
+                for (let index in wfCloned.fieldset) {
+                    const name = wfCloned.fieldset[index].name;
+                    if (options?.[name] && options[name].show) {
+                        let label = options[name].displayName?.default ?? wfCloned.fieldset[index].label;
+                        if (options[name].displayName?.[this.config.user_language]) {
+                            label = options[name].displayName[this.config.user_language];
+                        }
+                        wfCloned.fieldset[index].label = label;
+                        filteredFieldset.push(wfCloned.fieldset[index]);
+                    }
+                }
+                if (filteredFieldset.length > 0) {
+                    // Replace filtered fieldset with original, so that the changes would be applied.
+                    wfCloned.fieldset = filteredFieldset;
+                    filteredConfigPanel.push(wfCloned);
+                }
+            });
+            return filteredConfigPanel;
+        },
+
+        workflowConfigPanelOptions() {
+            return this.selectedWorkflow?.configuration_panel_options ?? {};
         }
     },
 
@@ -462,7 +524,7 @@ export default {
                 return;
             }
 
-            this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, ltiUploader, {
+            this.uploadService.upload(files, uploadData, this.selectedWorkflow.name, this.workflowConfiguration, ltiUploader, {
                 uploadProgress: (track, loaded, total) => {
                     view.uploadProgress = {
                         flavor: track.flavor,
@@ -523,6 +585,22 @@ export default {
         previewFiles(event) {
             let flavor = event.target.attributes['data-flavor'].value;
             this.files[flavor] = event.target.files;
+        },
+
+        initConfigPanelData() {
+            if (this.filteredWorkflowConfigPanel.length && this.offerUploadWorkflowConfigPanel) {
+                this.filteredWorkflowConfigPanel.forEach(wf_cp => {
+                    let wf_cp_data = {};
+                    wf_cp.fieldset.forEach(wf_cp_fieldset => {
+                        let value = wf_cp_fieldset?.value ?? '';
+                        if (typeof value == 'string') {
+                            value = value.trim();
+                        }
+                        wf_cp_data[wf_cp_fieldset.name] = value;
+                    });
+                    this.workflowConfiguration = Object.assign(this.workflowConfiguration, wf_cp_data);
+                });
+            }
         }
     },
 
@@ -531,6 +609,7 @@ export default {
         this.$store.dispatch('simpleConfigListRead').then(() => {
             this.selectedServer = this.config['server'][this.config.settings['OPENCAST_DEFAULT_SERVER']];
             this.selectedWorkflow = this.defaultWorkflow;
+            this.initConfigPanelData();
         })
 
         if (this.cid) {

@@ -13,7 +13,7 @@ class Config extends \SimpleOrMap
     use RelationshipTrait;
 
     protected const ALLOWED_SETTINGS_FIELDS = [
-        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access'
+        'lti_consumerkey', 'lti_consumersecret', 'debug', 'ssl_ignore_cert_errors', 'episode_id_role_access', 'allow_upload_wf_cp'
     ];
 
     protected static function configure($config = [])
@@ -152,6 +152,20 @@ class Config extends \SimpleOrMap
         }
         Workflow::updateSettings($this->id, $workflow_settings);
 
+        // Update configration panel options.
+        $configuration_panel_options = [];
+        if (isset($json['settings']['configuration_panel_options'])) {
+            foreach ($json['settings']['configuration_panel_options'] as $config_panel_options) {
+                $workflow_id = $config_panel_options['id'];
+                unset($config_panel_options['id']);
+                if (!empty($config_panel_options)) {
+                    $configuration_panel_options[$workflow_id] = $config_panel_options;
+                }
+            }
+            unset($json['settings']['configuration_panel_options']);
+        }
+        Workflow::updateConfigPanelOptions($this->id, $configuration_panel_options);
+
         $this->setData($json);
         return $this->store();
     }
@@ -257,7 +271,7 @@ class Config extends \SimpleOrMap
                     }
 
                     // create new entries for workflow_config table
-                    WorkflowConfig::createAndUpdateByConfigId($this->id, $workflows);
+                    WorkflowConfig::createAndUpdateByConfigId($this->id);
 
                     $success_message[] = sprintf(
                         _('Die Opencast-Installation "%s" wurde erfolgreich konfiguriert.'),
