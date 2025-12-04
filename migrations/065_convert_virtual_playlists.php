@@ -20,16 +20,16 @@ class ConvertVirtualPlaylists extends Migration
 
         // fix oc_seminar_series table
         $db->exec('SET foreign_key_checks = 0');
+        if ($db->fetchOne("SELECT 1 FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'oc_seminar_series' AND CONSTRAINT_NAME = 'oc_seminar_series_ibfk_1'")) {
+            $db->exec('ALTER TABLE `oc_seminar_series` DROP FOREIGN KEY `oc_seminar_series_ibfk_1`');
+        }
         $db->exec('ALTER TABLE `oc_seminar_series`
-            DROP FOREIGN KEY `oc_seminar_series_ibfk_1`,
             ADD FOREIGN KEY oc_seminar_series_ibfk_2 (`config_id`) REFERENCES `oc_config` (`id`) ON DELETE CASCADE ON UPDATE CASCADE');
         $db->exec('SET foreign_key_checks = 1');
 
         // add switch to playlist-course relation to denote if this is the default playlist for this course
         $db->exec('ALTER TABLE oc_playlist_seminar
             ADD `is_default` tinyint DEFAULT 0 AFTER seminar_id');
-
-        SimpleOrMap::expireTableScheme();
 
         $result = $db->query("SELECT * FROM oc_video_seminar");
 
@@ -82,14 +82,10 @@ class ConvertVirtualPlaylists extends Migration
 
         // remove obsolete table
         $db->exec('DROP TABLE `oc_video_seminar`');
-
-        SimpleOrMap::expireTableScheme();
     }
 
     public function down()
     {
         $db = DBManager::get();
-
-        SimpleOrMap::expireTableScheme();
     }
 }

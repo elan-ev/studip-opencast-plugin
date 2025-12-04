@@ -37,9 +37,17 @@ class UpdateCwBlock extends Migration
             ");
         }
 
-        $db->exec('ALTER TABLE oc_video_cw_blocks
-            DROP FOREIGN KEY `oc_video_cw_blocks_ibfk_1`
-        ');
+        $fk_name = $db->fetchColumn("SELECT CONSTRAINT_NAME
+            FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'oc_video_cw_blocks'
+              AND COLUMN_NAME = 'video_id'
+              AND REFERENCED_TABLE_NAME = 'oc_video'
+        ");
+
+        if ($fk_name) {
+            $db->exec("ALTER TABLE oc_video_cw_blocks DROP FOREIGN KEY `{$fk_name}`");
+        }
 
         $db->exec('ALTER TABLE oc_video_cw_blocks
             ADD PRIMARY KEY `token_block_id` (`token`, `block_id`),
@@ -59,6 +67,55 @@ class UpdateCwBlock extends Migration
 
     public function down()
     {
+        $db = DBManager::get();
+        $db->exec('START TRANSACTION');
 
+        $db->exec('ALTER TABLE oc_video_cw_blocks
+            ADD `video_id` char(32) CHARACTER SET latin1 COLLATE latin1_bin AFTER `token`');
+
+        $results = $db->query("SELECT DISTINCT oc_video_cw_blocks.token, oc_video.id
+            FROM oc_video_cw_blocks
+            LEFT JOIN oc_video ON (oc_video.token = oc_video_cw_blocks.token)
+        ");
+        $entries = $results->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $db->prepare('UPDATE oc_video_cw_blocks
+            SET video_id = :video_id
+            WHERE token = :token
+        ');
+
+        foreach ($entries as $data) {
+            // update mapping table
+            $stmt->execute([
+                ':video_id' => $data['id'],
+                ':token' => $data['token']
+            ]);
+
+            // update block payloads
+            $db->exec("UPDATE cw_blocks
+                SET payload = REPLACE(payload, '\"token\":\"". $data['token'] ."\"', '\"video_id\":\"". $data['id'] ."\"')
+                WHERE payload LIKE '%\"token\":\"". $data['token'] ."\"%'
+                    AND block_type = 'plugin-opencast-video'
+            ");
+        }
+
+        $db->exec('ALTER TABLE oc_video_cw_blocks
+            DROP FOREIGN KEY `token`
+        ');
+
+        $db->exec('ALTER TABLE oc_video_cw_blocks
+            ADD PRIMARY KEY `block_id` (`block_id`),
+            DROP INDEX `token_block_id`
+        ');
+
+        $db->exec('ALTER TABLE oc_video_cw_blocks
+           ADD FOREIGN KEY (`video_id`) REFERENCES `oc_video` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+        ');
+
+        $db->exec('ALTER TABLE oc_video_cw_blocks
+            DROP token
+        ');
+
+        $db->exec('COMMIT');
     }
 }
