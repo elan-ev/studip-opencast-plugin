@@ -15,8 +15,6 @@ class AddConfigTimeouts extends Migration
             ADD COLUMN `timeout_ms` INT DEFAULT 0 AFTER `service_version`,
             ADD COLUMN `connect_timeout_ms` INT DEFAULT 2000 AFTER `timeout_ms`
         ");
-
-        SimpleOrMap::expireTableScheme();
     }
 
     public function down()
