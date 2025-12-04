@@ -23,7 +23,7 @@ class AddConfigTimeouts extends Migration
 
         $db->exec('ALTER TABLE `oc_config`
             DROP COLUMN `timeout_ms`,
-            DROP COLUMN `connect_timeout_ms`,
+            DROP COLUMN `connect_timeout_ms`
         ');
     }
 }
