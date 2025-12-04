@@ -174,7 +174,7 @@ export default {
                 {
                     description: this.$gettext('Timeout (in Millisekunden)'),
                     name: 'timeout_ms',
-                    value: this.currentConfig.timeout_ms,
+                    value: this.currentConfig.timeout_ms ?? '0',
                     type: 'integer',
                     placeholder: '0',
                     required: true
@@ -182,7 +182,7 @@ export default {
                 {
                     description: this.$gettext('Verbindungs-Timeout (in Millisekunden)'),
                     name: 'connect_timeout_ms',
-                    value: this.currentConfig.connect_timeout_ms,
+                    value: this.currentConfig.connect_timeout_ms ?? '2000',
                     type: 'integer',
                     placeholder: '2000',
                     required: true
