@@ -148,26 +148,17 @@ export default {
                     required: true
                 },
                 {
-                    description: this.$gettext('Timeout (in Millisekunden)'),
-                    name: 'timeout_ms',
-                    value: this.currentConfig.timeout_ms,
-                    type: 'integer',
-                    placeholder: '0',
-                    required: true
-                },
-                {
-                    description: this.$gettext('Verbindungs-Timeout (in Millisekunden)'),
-                    name: 'connect_timeout_ms',
-                    value: this.currentConfig.connect_timeout_ms,
-                    type: 'integer',
-                    placeholder: '2000',
-                    required: true
-                },
-                {
                     description: this.$gettext('Zeitpuffer (in Sekunden) um Überlappungen zu verhindern'),
                     name: 'time_buffer_overlap',
                     value: this.currentConfig.time_buffer_overlap ? this.currentConfig.time_buffer_overlap : this.default_time_buffer_overlap,
                     type: 'number',
+                    required: false
+                },
+                {
+                    description: this.$gettext('Konfigurationsoptionen des Upload-Workflows Nutzenden beim Hochladen anbieten.'),
+                    name: 'allow_upload_wf_cp',
+                    value: this.currentConfig.allow_upload_wf_cp,
+                    type: 'boolean',
                     required: false
                 },
                 {
@@ -206,13 +197,6 @@ export default {
                     type: 'integer',
                     placeholder: '2000',
                     required: true
-                },
-                {
-                    description: this.$gettext('Konfigurationsoptionen des Upload-Workflows Nutzenden beim Hochladen anbieten.'),
-                    name: 'allow_upload_wf_cp',
-                    value: this.currentConfig.allow_upload_wf_cp,
-                    type: 'boolean',
-                    required: false
                 }
             ];
         },
