@@ -27,7 +27,7 @@
         <StudipProgressIndicator
             v-if="videos_loading"
             class="oc--loading-indicator"
-            :description="$gettext('Lade Videos nach Seitenwechsel...')"
+            :description="$gettext('Aktualisiere Videoliste...')"
             :size="64"
         />
         <table id="episodes" class="default oc--episode-table--small">
