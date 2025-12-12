@@ -19,7 +19,7 @@ class OpencastSyncPlaylists extends CronJob
 
     public static function getDescription()
     {
-        return _('Opencast: Synchronisiert Wiedergabelisten aus Opencast mit allen Wiedergabelisten in Stud.IP, indem bestehende Wiedergabelisten aktualisiert und nicht vorhandene Wiedergabelisten entfernt werden.');
+        return _('Opencast: Synchronisiert Wiedergabelisten aus Opencast mit den Wiedergabelisten in Stud.IP. Dies ist der "Rückweg", um Änderungen an den Wiedergabelisten in Opencast zu Stud.IP zu übetragen.');
     }
 
     public function execute($last_result, $parameters = array())
@@ -75,12 +75,8 @@ class OpencastSyncPlaylists extends CronJob
                     continue;
                 }
 
-                echo 'update playlist of Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
-
                 // Update playlist data
                 $playlist->setData([
-                    'config_id' => $config['id'],
-                    'service_playlist_id' => $playlist_id,
                     'title' => $playlists[$playlist_id]->title,
                     'description' => $playlists[$playlist_id]->description,
                     'creator' => $playlists[$playlist_id]->creator,
@@ -88,8 +84,31 @@ class OpencastSyncPlaylists extends CronJob
                 ]);
                 $playlist->store();
 
-                // Update playlist entries
-                $playlist->setEntries($playlists[$playlist_id]->entries);
+
+                // Compare and update playlist entries only if they differ
+
+                // Bring both lists into a common format
+                $current_entries = [];
+                foreach ($playlist->videos as $video) {
+                    $current_entries[$video->video->episode] = $video->video->episode;
+                }
+
+                $new_entries = [];
+                foreach ($playlists[$playlist_id]->entries as $entry) {
+                    $new_entries[$entry->contentId] = $entry->contentId;
+                }
+
+                if (!empty(array_diff($current_entries, $new_entries))
+                    || !empty(array_diff($new_entries, $current_entries))
+                ) {
+                    echo 'Opencast #'. $config['id'] .': ' . $playlist_id .
+                         ' (' . $playlists[$playlist_id]->title
+                         . ') - Updating playlist entries (changes detected)' . "\n";
+                    // set the entries from opencast
+                    $playlist->setEntries($playlists[$playlist_id]->entries);
+                } else {
+                    // echo '  - Skipping playlist entries update (no changes)' . "\n";
+                }
 
                 // Check ACLs for playlist
                 Playlists::checkPlaylistACL($playlists[$playlist_id], $playlist);
@@ -97,7 +116,7 @@ class OpencastSyncPlaylists extends CronJob
 
             // Check if local playlists are no longer available in OC
             foreach (array_diff($local_playlist_ids, $playlist_ids) as $playlist_id) {
-                echo 'delete non-existent playlist in Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
+                echo 'Delete non-existent playlist in Opencast #'. $config['id'] .': ' . $playlist_id . ' (' . $playlists[$playlist_id]->title . ")\n";
                 $playlist = Playlists::findOneBySQL(
                     'config_id = ? AND service_playlist_id = ?',
                     [$config['id'], $playlist_id]
