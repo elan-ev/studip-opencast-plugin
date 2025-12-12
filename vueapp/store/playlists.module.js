@@ -136,6 +136,19 @@ const actions = {
             });
     },
 
+     /**
+     * Load playlists for event
+     *
+     * @param context
+     * @param token event token
+     *
+     * @return data
+     */
+    async loadPlaylistsForEvent({ commit }, token) {
+        const { data } = await ApiService.get(`videos/${token}/playlists`);
+        return data;
+    },
+
     async setPlaylist(context, playlist) {
         context.commit('setPlaylist', playlist);
     },

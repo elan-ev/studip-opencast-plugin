@@ -1,5 +1,5 @@
 <template>
-    <table class="default" v-if="event.playlists.length > 0">
+    <table class="default" v-if="event.playlists?.length > 0">
         <colgroup>
             <col>
             <col style="width: 25%">

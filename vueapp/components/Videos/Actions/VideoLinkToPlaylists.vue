@@ -10,14 +10,14 @@
         >
             <template v-slot:dialogContent>
                 <VideoPlaylists
-                    :event="event"
+                    :event="localEvent"
                     @removePlaylist="removePlaylist"
                 />
 
                 <UserPlaylistSelectable
                     @add="addPlaylist"
                     :playlists="userPlaylists"
-                    :selectedPlaylists="this.event.playlists"
+                    :selectedPlaylists="localEvent.playlists"
                 />
             </template>
         </StudipDialog>
@@ -57,6 +57,8 @@ export default {
                 message: this.$gettext('Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten.'),
                 dialog: true
             },
+
+            localEvent: {}
         }
     },
 
@@ -104,10 +106,18 @@ export default {
         },
     },
 
-    mounted () {
+    async mounted () {
+        this.localEvent = this.event;
+
+        await this.$store.dispatch('loadPlaylistsForEvent', this.event.token)
+        .then((data) => {
+            this.localEvent.playlists = data.playlists;
+
+        });
+
         this.$store.dispatch('loadUserPlaylists', {
             limit: -1,
         });
-    },
+    }
 }
 </script>

@@ -65,6 +65,8 @@ class RouteMap
         $group->get("/videos/{token}/shares", Routes\Video\VideoSharesList::class);
         $group->put("/videos/{token}/shares", Routes\Video\VideoSharesUpdate::class);
 
+        $group->get("/videos/{token}/playlists", Routes\Video\VideoPlaylists::class);
+
         $group->put("/videos/{token}/worldwide_share", Routes\Video\VideoWorldwideShareUpdate::class);
 
         // Courseware routes
@@ -108,6 +110,10 @@ class RouteMap
         $group->post("/courses/{course_id}/playlist/{token}", Routes\Course\CourseAddPlaylist::class);
         $group->put("/courses/{course_id}/playlist/{token}", Routes\Course\CourseUpdatePlaylist::class);
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
+
+        // Test playlist routes (requires tutor permission)
+        $group->post("/courses/{course_id}/test-playlists", Routes\Course\CourseAddTestPlaylists::class);
+        $group->delete("/courses/{course_id}/test-playlists", Routes\Course\CourseDeleteTestPlaylists::class);
 
         // TODO: Move this a more general course settings route
         $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class);

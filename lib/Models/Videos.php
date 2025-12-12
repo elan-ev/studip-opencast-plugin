@@ -548,7 +548,6 @@ class Videos extends UPMap
         $data['publication'] = json_decode($data['publication'], true);
 
         $data['perm']                 = $this->getUserPerm();
-        $data['playlists']            = $this->getPlaylists();
         $data['seminar_visibility']   = $this->getSeminarVisibility($cid, $playlist_id);
         $data['video_user_available'] = true;
 
