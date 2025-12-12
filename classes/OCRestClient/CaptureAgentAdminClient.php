@@ -33,7 +33,12 @@ class CaptureAgentAdminClient extends OCRestClient
         $service_url = "/agents/" . $agent_name . "/capabilities.json";
         if ($agent = $this->getJSON($service_url)) {
             $x = 'properties-response';
-            return $agent->$x->properties->item;
+            $items = $agent->$x->properties->item;
+            // https://github.com/orgs/opencast/discussions/6988
+            if (isset($items) && is_object($items) && !is_array($items)) {
+                $items = [$items];
+            }
+            return $items;
         } else {
             return false;
         }
