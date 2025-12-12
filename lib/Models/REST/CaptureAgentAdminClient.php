@@ -21,13 +21,13 @@ class CaptureAgentAdminClient extends RestClient
 
     /**
      * Retrieves capture agents of connected opencast
-     * 
+     *
      * @return array|boolean array of capture agent list or false if unable to get.
      */
     public function getCaptureAgents()
     {
         $response = $this->opencastApi->captureAdmin->getAgents();
-        
+
         if ($response['code'] == 200) {
             return $this->sanitizeAgents($response['body']);
         }
@@ -36,19 +36,22 @@ class CaptureAgentAdminClient extends RestClient
 
     /**
      * Retrieves the capabilities of a given capture agent
-     * 
+     *
      * @param string $agent_name name of capture agent
-     * 
+     *
      * @return object|boolean capability object, or false if unable to get
      */
     public function getCaptureAgentCapabilities($agent_name)
     {
         $response = $this->opencastApi->captureAdmin->getAgentCapabilities($agent_name);
-        
+
         if ($response['code'] == 200) {
             $capability = $response['body'];
-            $x = 'properties-response';
-            $item = isset($capability->$x->properties->item) ? $capability->$x->properties->item : false;
+            $item = $capability->{'properties-response'}->properties->item ?? false;
+            // https://github.com/orgs/opencast/discussions/6988
+            if (is_object($item)) {
+                $item = [$item];
+            }
             return $item;
         }
         return false;
@@ -56,9 +59,9 @@ class CaptureAgentAdminClient extends RestClient
 
     /**
      * Sanitizes the list of capture agents.
-     * 
+     *
      * @param object $agents the list of agents
-     * 
+     *
      * @return array agents array list
      */
     private function sanitizeAgents($agents)
@@ -66,7 +69,7 @@ class CaptureAgentAdminClient extends RestClient
         if (!isset($agents->agents->agent) || empty($agents->agents->agent)) {
             return [];
         }
-        
+
         if (is_array($agents->agents->agent)) {
             return $agents->agents->agent;
         }
