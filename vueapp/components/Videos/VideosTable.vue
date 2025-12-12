@@ -1,6 +1,6 @@
 <template>
     <StudipProgressIndicator
-        v-if="Object.keys(videos_list).length === 0 && videos_loading"
+        v-if="currentPlaylist != playlist && videos_loading"
         class="oc--loading-indicator"
         :description="$gettext('Lade Videos...')"
         :size="64"
@@ -24,6 +24,12 @@
             {{ $gettext('Beachten Sie bitte, dass Sie hier keine Videos einbinden können, an denen Sie nur Leserechte besitzen.') }}
         </MessageBox>
 
+        <StudipProgressIndicator
+            v-if="videos_loading"
+            class="oc--loading-indicator"
+            :description="$gettext('Lade Videos nach Seitenwechsel...')"
+            :size="64"
+        />
         <table id="episodes" class="default oc--episode-table--small">
             <colgroup>
                 <col v-if="canEdit && videoSortMode" style="width: 20px">
@@ -275,7 +281,9 @@ export default {
             selectedEvent: null,
             videosTags: [],
             videosCourses: [],
-            filters: []
+            filters: [],
+            currentPlaylist: null,
+            currentLoadAbort: null,
         }
     },
 
@@ -363,48 +371,75 @@ export default {
 
     methods: {
         loadVideos() {
+             // Cancel any previous loading job
+            if (this.currentLoadAbort) {
+                this.currentLoadAbort.abort();      // aborts Axios request(s)
+                this.currentLoadAbort = null;
+            }
+
+            // Create a new AbortController for the upcoming job
+            const controller = new AbortController();
+            this.currentLoadAbort = controller;
+
             this.videos_loading = true;
 
-            if (this.isCourse && this.playlist) {
-                this.$store.dispatch('loadPlaylistVideos', {
-                    ...this.filters,
-                    offset: this.offset,
-                    order: this.order,
-                    cid: this.cid,
-                    token: this.playlist.token,
-                    limit: this.nolimit ? -1 : this.limit
-                }).then(this.loadVideosFinished);
-            } else if(this.isCourse && !this.playlist) {
-                this.$store.dispatch('loadCourseVideos', {
-                    ...this.filters,
-                    offset: this.offset,
-                    order: this.order,
-                    cid: this.cid,
-                    limit: this.limit,
-                }).then(this.loadVideosFinished);
-            } else if (this.canEdit && this.playlist) {
-                this.$store.dispatch('loadPlaylistVideos', {
-                    ...this.filters,
-                    order: this.order,
-                    token: this.playlist.token,
-                    limit: -1,  // Show all videos in playlist edit view
-                }).then(this.loadVideosFinished);
-            } else {
-                this.$store.dispatch('loadMyVideos', {
-                    ...this.filters,
-                    offset: this.offset,
-                    order: this.order,
-                    limit: this.limit,
-                }).then(this.loadVideosFinished);
+            // TODO: cancel any previous loading jobs
+
+            try {
+                if (this.isCourse && this.playlist) {
+                    this.$store.dispatch('loadPlaylistVideos', {
+                        ...this.filters,
+                        offset: this.offset,
+                        order: this.order,
+                        cid: this.cid,
+                        token: this.playlist.token,
+                        limit: this.nolimit ? -1 : this.limit,
+                        signal: controller.signal
+                    }).then(this.loadVideosFinished);
+                } else if(this.isCourse && !this.playlist) {
+                    this.$store.dispatch('loadCourseVideos', {
+                        ...this.filters,
+                        offset: this.offset,
+                        order: this.order,
+                        cid: this.cid,
+                        limit: this.limit,
+                        signal: controller.signal
+                    }).then(this.loadVideosFinished);
+                } else if (this.canEdit && this.playlist) {
+                    this.$store.dispatch('loadPlaylistVideos', {
+                        ...this.filters,
+                        order: this.order,
+                        token: this.playlist.token,
+                        limit: -1,  // Show all videos in playlist edit view
+                        signal: controller.signal
+                    }).then(this.loadVideosFinished);
+                } else {
+                    this.$store.dispatch('loadMyVideos', {
+                        ...this.filters,
+                        offset: this.offset,
+                        order: this.order,
+                        limit: this.limit,
+                        signal: controller.signal
+                    }).then(this.loadVideosFinished);
+                }
+             } catch (e) {
+                if (controller.signal.aborted) {
+                    console.log('Video load was cancelled');
+                } else {
+                    console.error(e);
+                }
+                this.currentLoadAbort = null;
             }
         },
 
         loadVideosFinished() {
+            this.currentLoadAbort = null;
             this.loadedVideos = this.filterVideos(this.videos);
             this.videosTags = this.availableVideoTags;
             this.videosCourses = this.availableVideoCourses;
             this.updatePaging();
             this.videos_loading = false;
+            this.currentPlaylist = this.playlist;
         },
 
         filterVideos(videos) {

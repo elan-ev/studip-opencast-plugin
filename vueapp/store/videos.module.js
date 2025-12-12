@@ -105,7 +105,7 @@ const actions = {
             }
         }
 
-        return ApiService.get(data.route, { params })
+        return ApiService.get(data.route, { params, signal: data.signal })
             .then(({ data }) => {
                 commit('setVideos', data.videos);
 
@@ -124,6 +124,7 @@ const actions = {
         return dispatch('loadVideos', {
             route: 'videos',
             filters: data,
+            signal: data.signal
         })
         .then(async () => {
             await dispatch('loadAvailableVideoTags');
@@ -136,6 +137,7 @@ const actions = {
         return dispatch('loadVideos', {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
+            signal: data.signal
         })
         .then(async () => {
             await dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid});
@@ -148,6 +150,7 @@ const actions = {
         return dispatch('loadVideos', {
             route: 'courses/' + data.cid + '/videos',
             filters: data,
+            signal: data.signal
         })
         .then(async () => {
             await dispatch('loadAvailableVideoTags', {cid: data.cid});
