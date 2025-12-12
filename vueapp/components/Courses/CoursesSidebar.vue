@@ -376,8 +376,11 @@ export default {
 
     methods: {
         setPlaylist(playlist) {
-            this.$store.dispatch('setPlaylist', playlist);
-            this.toggleSidebarOnResponsive();
+            // when setting a different playlist than the current one, clear the video list
+            if (this.playlist !== playlist) {
+                this.$store.dispatch('setPlaylist', playlist);
+                this.toggleSidebarOnResponsive();
+            }
         },
 
         async setView(page) {
