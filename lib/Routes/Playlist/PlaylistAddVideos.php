@@ -41,22 +41,11 @@ class PlaylistAddVideos extends OpencastController
 
         if (!PlaylistMigration::isConverted()) {
             foreach ($videos as $video) {
-                $plvideo = new PlaylistVideos;
-                $plvideo->setData([
-                    'playlist_id' => $playlist->id,
-                    'video_id'    => $video->id
-                ]);
+                $plvideo = new PlaylistVideos([$playlist->id, $video->id]);
+                $plvideo->store();
 
-                // Update the event acl first!
                 Videos::checkEventACL(null, null, $video);
-
-                try {
-                    $playlist->videos[] = $plvideo;
-                } catch (\InvalidArgumentException $e) {
-                }
             }
-
-            $playlist->videos->store();
 
             return $response->withStatus(204);
         }
