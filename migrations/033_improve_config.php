@@ -67,7 +67,7 @@ class ImproveConfig extends Migration
                 `value` varchar(255) COLLATE latin1_german1_ci DEFAULT NULL,
                 `for_config` int(11) DEFAULT NULL)
             ');
-        
+
             $db->query("INSERT INTO `oc_config_precise`(`name`, `description`, `value`, `for_config`) VALUES
                 ('upload_chunk_size', 'Größe der Chunks für das Hochladen in Byte', '10000000', -1),
                 ('number_of_configs', 'Maximale Anzahl von sichtbaren Konfigurationen', '1', -1),
@@ -75,7 +75,7 @@ class ImproveConfig extends Migration
                 ('ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),
                 ('ssl_verify_host', 'SSL Zertifikat des Hosts prüfen', 'false', -1),
                 ('ssl_cipher_list', 'Zu benutzende SSL Chiffren', 'none', -1),
-                ('capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Opencast Capture Agent', -1),
+                ('capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Aufzeichnungstechnik', -1),
                 ('lti_consumerkey', 'LTI Consumerkey', 'CONSUMERKEY', -1),
                 ('lti_consumersecret', 'LTI Consumersecret', 'CONSUMERSECRET', -1)
             ");

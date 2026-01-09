@@ -17,7 +17,7 @@ use Opencast\Providers\Perm;
 
 use Courseware\CoursewarePlugin;
 
-class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
+class OpencastV3 extends StudIPPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 

@@ -55,8 +55,8 @@ class ScheduleBulk extends OpencastController
                     break;
             }
             if (!$result) {
-                $date = new \SingleDate($termin_id);
-                $date_text = $date->getDatesExport();
+                $date = new \CourseDate($termin_id);
+                $date_text = $date->getFullname('include-room');
                 $errors[$termin_id] = $date_text;
             }
         }

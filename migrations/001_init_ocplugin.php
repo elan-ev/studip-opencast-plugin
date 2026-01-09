@@ -29,13 +29,13 @@ class InitOcplugin extends Migration {
         {
             DBManager::get()->query("INSERT INTO `resource_property_definitions`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
-                VALUES (MD5('" . uniqid() . "'), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+                VALUES (MD5('" . uniqid() . "'), 'Aufzeichnungstechnik', '', 'bool', 'vorhanden', 0)");
         }
         else
         {
             DBManager::get()->query("INSERT INTO `resources_properties`
                 (`property_id`, `name`, `description`, `type`, `options`, `system`)
-                VALUES (MD5('".uniqid()."'), 'Opencast Capture Agent', '', 'bool', 'vorhanden', 0)");
+                VALUES (MD5('".uniqid()."'), 'Aufzeichnungstechnik', '', 'bool', 'vorhanden', 0)");
         }
 
         DBManager::get()->query("CREATE TABLE IF NOT EXISTS `oc_seminar_episodes` (

@@ -2,7 +2,6 @@
 
 namespace Opencast\Models;
 
-use Seminar;
 use \DBManager;
 use \PDO;
 
@@ -38,11 +37,12 @@ class ScheduleHelper
      */
     public static function getSemesterList($seminar_id)
     {
-        $course = Seminar::getInstance($seminar_id);
-        $selectable_semesters = new \SimpleCollection(\Semester::getAll());
-        $start = $course->start_time;
-        $end = $course->duration_time == -1 ? PHP_INT_MAX : $course->end_time;
-        $selectable_semesters = $selectable_semesters->findBy('beginn', [$start, $end], '>=<=')->toArray();
+        $course = \Course::find($seminar_id);
+        $selectable_semesters = $course->semesters->toArray();
+        if (empty($selectable_semesters)) {
+            $all_semester = new \SimpleCollection(\Semester::getAll());
+            $selectable_semesters = $all_semester->toArray();
+        }
 
         $selectable_semesters[] = ['name' => _('Alle Semester'), 'id' => 'all'];
 
@@ -255,29 +255,28 @@ class ScheduleHelper
     {
         date_default_timezone_set("Europe/Berlin");
 
-        $course = Seminar::getInstance($course_id);
-        $date = new \SingleDate($termin_id);
+        $course = \Course::find($course_id);
+        $date = new \CourseDate($termin_id);
 
         // if event_id is null, there is not yet an event which could have other start or end-times
         if ($event_id) {
             $event = ScheduledRecordings::find($event_id);
         }
 
-        $issues = $date->getIssueIDs();
+        $issues = $date->topics;
 
         $issue_titles = array();
-        if(is_array($issues)) {
-            foreach($issues as $is) {
-                $issue = new \Issue(array('issue_id' => $is));
-                if(sizeof($issues) > 1) {
-                    $issue_titles[] =  my_substr($issue->getTitle(), 0 ,80 );
-                } else $issue_titles =  my_substr($issue->getTitle(), 0 ,80 );
-            }
-            if(is_array($issue_titles)){
-                $issue_titles = _("Themen: ") . my_substr(implode(', ', (array)$issue_titles), 0 ,80 );
+        foreach ($issues as $is) {
+            if (sizeof($issues) > 1) {
+                $issue_titles[] =  my_substr($is->title, 0 ,80);
+            } else {
+                $issue_titles =  my_substr($is->title, 0 ,80);
             }
         }
 
+        if (is_array($issue_titles)){
+            $issue_titles = _("Themen: ") . my_substr(implode(', ', (array)$issue_titles), 0 ,80 );
+        }
 
         $series = SeminarSeries::getSeries($course_id);
         $serie = $series[0];
@@ -287,21 +286,21 @@ class ScheduleHelper
         $creator = 'unknown';
 
         if ($GLOBALS['perm']->have_perm('admin')) {
-            $instructors = $course->getMembers('dozent');
+            $instructors = $course->getMembersWithStatus('dozent');
             $instructor = array_shift($instructors);
-            $creator    = $instructor['fullname'];
+            $creator    = $instructor->user->getFullname();
         } else {
             $creator    = get_fullname();
         }
 
         $inst_data = \Institute::find($course->institut_id);
 
-        $start_time = $event_id ? $event->start : $date->getStartTime();
+        $start_time = $event_id ? $event->start : $date->date;
 
         if ($buffer) {
-            $end_time = strtotime("-$buffer seconds ", intval($event_id ? $event->end : $date->getEndTime()));
+            $end_time = strtotime("-$buffer seconds ", intval($event_id ? $event->end : $date->end_time));
         } else {
-            $end_time = $event_id ? $event->end : $date->getEndTime();
+            $end_time = $event_id ? $event->end : $date->end_time;
         }
 
         $contributor = $inst_data['name'];
@@ -312,14 +311,14 @@ class ScheduleHelper
         $seriesId = $serie['series_id'];
 
         if (empty($issue->title)) {
-            $name = $course->getName();
-            $title = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
+            $name = $course->getFullName();
+            $title = $name . ' ' . sprintf(_('(%s)'), $date->getFullname());
         } else {
             $title = $issue_titles;
         }
 
         // Additional Metadata
-        $abstract = $course->description;
+        $abstract = $course->beschreibung;
 
         $dublincore = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
                             <dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -363,8 +362,8 @@ class ScheduleHelper
      */
     public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false)
     {
-        $date = new \SingleDate($termin_id);
-        $resource_id = $date->getResourceID();
+        $date = new \CourseDate($termin_id);
+        $resource_id = $date->room_booking->resource_id;
         if (!$resource_id) {
             return false;
         }
@@ -388,8 +387,10 @@ class ScheduleHelper
         $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
+        var_Dump($media_package);die;
         $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
 
+        var_dump($media_package, $metadata['workflow'], $metadata['device_capabilities']);die;
         if ($result) {
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
@@ -497,19 +498,17 @@ class ScheduleHelper
             $course_id, $resource_id, $termin_id, $event_id, $buffer
         );
 
-        $date = new \SingleDate($termin_id);
+        $date = new \CourseDate($termin_id);
 
         $issue_titles = [];
-        $issues       = $date->getIssueIDs();
+        $issues       = $date->topics;
 
         if (is_array($issues)) {
             foreach ($issues as $is) {
-                $issue = new \Issue(['issue_id' => $is]);
-
                 if (sizeof($issues) > 1) {
-                    $issue_titles[] = my_substr(kill_format($issue->getTitle()), 0, 80);
+                    $issue_titles[] = my_substr(kill_format($is->title), 0, 80);
                 } else {
-                    $issue_titles = my_substr(kill_format($issue->getTitle()), 0, 80);
+                    $issue_titles = my_substr(kill_format($is->title), 0, 80);
                 }
             }
 
@@ -518,10 +517,10 @@ class ScheduleHelper
             }
         }
 
-        if (empty($issue->title)) {
-            $course = Seminar::getInstance($course_id);
-            $name   = $course->getName();
-            $title  = $name . ' ' . sprintf(_('(%s)'), $date->getDatesExport());
+        if (empty($issue_titles)) {
+            $course = \Course::find($course_id);
+            $name   = $course->name;
+            $title  = $name . ' ' . sprintf(_('(%s)'), $date->getFullname());
         } else {
             $title = $issue_titles;
         }
@@ -575,8 +574,9 @@ class ScheduleHelper
      */
     public static function deleteEventForSeminar($course_id, $termin_id, $external_config_id = null)
     {
-        $date = new \SingleDate($termin_id);
-        $resource_id = $date->getResourceID();
+        $date = new \CourseDate($termin_id);
+        $resource_id = $date->room_booking->resource_id;
+
         if (!$resource_id) {
             return false;
         }
@@ -646,8 +646,8 @@ class ScheduleHelper
         $force_oc_update = false)
     {
         $has_changes = false;
-        $date = new \SingleDate($termin_id);
-        $resource_id = $date->getResourceID();
+        $date = new \CourseDate($termin_id);
+        $resource_id = $date->room_booking->resource_id;
         if (!$resource_id) {
             return false;
         }
@@ -670,8 +670,6 @@ class ScheduleHelper
             return false;
         }
         $event_id = $scheduled_recording_obj['event_id'];
-
-        $date  = \CourseDate::find($termin_id);
 
         $new_start = 0;
         if (!is_null($start) && \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) {
@@ -790,10 +788,10 @@ class ScheduleHelper
         foreach ($dates as $d) {
             $date_obj = [];
 
-            $date = new \SingleDate($d['termin_id']);
+            $date = new \CourseDate($d['termin_id']);
             $date_obj['termin_id'] = $date->termin_id;
-            $date_obj['termin_title'] = $date->getDatesHTML();
-            $resource_id = $date->getResourceID();
+            $date_obj['termin_title'] = $date->getFullname('include-room');
+            $resource_id = $date->room_booking->resource_id;
 
             $resource_obj = !empty($resource_id) ? Resources::findByResource_id($resource_id) : null;
 
@@ -818,22 +816,19 @@ class ScheduleHelper
                 $date_obj['recording_period'] = $recording_period;
             }
             $title = 'Kein Titel eingetragen';
-            if ($issues = $date->getIssueIDs()) {
-                if (is_array($issues)) {
+            if ($issues = $date->topics) {
                     if (sizeof($issues) > 1) {
                         $titles = [];
                         foreach ($issues as $is) {
-                            $issue = new \Issue(['issue_id' => $is]);
-                            $titles[] = my_substr($issue->getTitle(), 0, 80);
+                            $titles[] = my_substr($is->title, 0, 80);
                         }
                         $title = count($titles) ? 'Themen: ' . my_substr(implode(', ', $titles), 0, 80) : '';
                     } else {
                         foreach ($issues as $is) {
-                            $issue = new \Issue(['issue_id' => $is]);
-                            $title = my_substr($issue->getTitle(), 0, 80);
+                            $title = my_substr($is->title, 0, 80);
                         }
                     }
-                }
+
             }
             $date_obj['title'] = $title;
             $status = [

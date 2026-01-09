@@ -83,6 +83,7 @@ class Resources extends \SimpleORMap
 
        $stmt->execute([\Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+
        return $resources;
     }
 }
