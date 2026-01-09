@@ -26,6 +26,10 @@ For this plugin to work, you need:
 - Stud.IP >= Version 5.1
 - Opencast >= Version 13.1
 
+## PHP
+
+Make sure the memory limit for your Stud.IP cronjobs is at least 256M, or the cronjobs for this plugin might fail.
+
 ## Configure Opencast
 
 Refer to the [Opencast documentation](https://docs.opencast.org) for instructions on how to configure your version of the Opencast system.

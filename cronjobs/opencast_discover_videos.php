@@ -35,6 +35,10 @@ class OpencastDiscoverVideos extends CronJob
 
     public function execute($last_result, $parameters = array())
     {
+        if (!self::isMemoryLimitAtLeast('256M')) {
+            echo '[WARNING] PHP memory_limit is below 256M, the cronjob might fail!' . "\n";
+        }
+
         /*
             - Neue Videos in OC identifizieren (die Stud.IP noch nicht kennt)
             - Eintragen der Videos und setzen der Rechte (Queue)
@@ -312,5 +316,24 @@ class OpencastDiscoverVideos extends CronJob
         // send out Notifications for video discovery plugins to react
         NotificationCenter::postNotification('OpencastCourseSync', $event, $video);
         NotificationCenter::postNotification('OpencastVideoSync', $event, $video);
+    }
+
+    private static function isMemoryLimitAtLeast($target_limit)
+    {
+        if (!function_exists('ini_parse_quantity')) {
+            return true;
+        }
+
+        $memory_limit = ini_get('memory_limit');
+        if ($memory_limit === false || $memory_limit === '') {
+            return false;
+        }
+
+        $current_bytes = ini_parse_quantity($memory_limit);
+        if ($current_bytes < 0) {
+            return true;
+        }
+
+        return $current_bytes >= ini_parse_quantity($target_limit);
     }
 }
