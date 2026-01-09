@@ -387,10 +387,8 @@ class ScheduleHelper
         $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
-        var_Dump($media_package);die;
         $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
 
-        var_dump($media_package, $metadata['workflow'], $metadata['device_capabilities']);die;
         if ($result) {
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
