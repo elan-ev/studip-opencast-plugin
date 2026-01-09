@@ -2,22 +2,17 @@
     "name": "studip-opencast-plugin-courseware-build",
     "version": "1.0.0",
     "description": "The build for courseware opencast block compatible with SOP v3",
-    "devDependencies": {
-        "@vitejs/plugin-vue2": "^2.3.3",
-        "core-js": "^3.8.3",
-        "date-fns": "^2.29.2",
-        "regenerator-runtime": "^0.13.7",
-        "vite": "^5.4.10",
-        "vue": "2.7.16"
-    },
+    "devDependencies": {},
     "directories": {
         "lib": "lib/BlockTypes"
     },
     "scripts": {
-        "build": "npm install && vite build",
-        "build-dev": "npm install && vite build --mode development",
-        "devcw": "vite build --watch --mode development",
-        "dev": "vite build --watch --mode development"
+        "build:vue2": "npm --prefix ./vue2 install && npm --prefix ./vue2 run build",
+        "build:vue3": "npm --prefix ./vue3 install && npm --prefix ./vue3 run build",
+        "build": "npm run build:vue2 && npm run build:vue3",
+        "dev:vue2": "npm --prefix ./vue2 run dev",
+        "dev:vue3": "npm --prefix ./vue3 run dev",
+        "dev": "npm run dev:vue2"
     },
     "repository": {
         "type": "git",

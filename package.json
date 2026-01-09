@@ -5,7 +5,7 @@
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
     "build": "composer install --no-dev && npm install && vite build && cd courseware; sh prebuild.sh",
-    "build-dev": "composer install && npm install && vite build --mode development && cd courseware; sh devbuild.sh",
+    "build-dev": "composer install && npm install && vite build --mode development && cd courseware; sh prebuild.sh",
     "devcw": "cd courseware; sh watch.sh",
     "predev": "npm install",
     "dev": "vite build --watch --mode development",
