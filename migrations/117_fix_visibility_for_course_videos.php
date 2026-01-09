@@ -19,7 +19,7 @@ class FixVisibilityForCourseVideos extends Migration
 
         $db->exec("UPDATE `oc_playlist_seminar_video`
             SET `visible_timestamp` = NULL
-            WHERE `visible_timestamp` = '000-00-00 00:00:00'
+            WHERE `visible_timestamp` = '0000-00-00 00:00:00'
         ");
     }
 
