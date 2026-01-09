@@ -35,6 +35,16 @@ class ExceptionHandler
             }
 
             $errors->add($exception);
+        } elseif ($exception instanceof \Slim\Exception\HttpException) {
+            $httpCode = (int) $exception->getCode();
+            if ($httpCode === 0 && method_exists($exception, 'getStatusCode')) {
+                $httpCode = (int) $exception->getStatusCode();
+            }
+
+            $details = $displayErrorDetails ? (string) $exception : null;
+
+            $errors = new ErrorCollection();
+            $errors->add(new Error($exception->getMessage(), $httpCode, $details));
         } else {
             // Log always php exceptions
             error_log($exception);

@@ -313,7 +313,8 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
             $appFactory = new AppFactory();
             $app = $appFactory->makeApp($this);
-            $app->setBasePath(rtrim(PluginEngine::getLink($this, [], null, true), '/'));
+            $basePath = parse_url(PluginEngine::getLink($this, [], null, true), PHP_URL_PATH) ?? '';
+            $app->setBasePath(rtrim($basePath, '/'));
             $app->group('/api', RouteMap::class);
 
             $app->run();
