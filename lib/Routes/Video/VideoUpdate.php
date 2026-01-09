@@ -77,12 +77,8 @@ class VideoUpdate extends OpencastController
                         $pvs = new PlaylistSeminarVideos();
                         $pvs->setValue('playlist_seminar_id', $playlistSeminar->id);
                         $pvs->setValue('video_id', $video->id);
-                        if (!empty($event['seminar_visibility']['visibility'])) {
-                            $pvs->setValue('visibility', $event['seminar_visibility']['visibility']);
-                        }
-                        if (!empty($event['seminar_visibility']['visible_timestamp'])) {
-                            $pvs->setValue('visible_timestamp', $event['seminar_visibility']['visible_timestamp']);
-                        }
+                        $pvs->setValue('visibility', $event['seminar_visibility']['visibility']);
+                        $pvs->setValue('visible_timestamp', $event['seminar_visibility']['visible_timestamp']);
                         $pvs->store();
                     }
                 }
