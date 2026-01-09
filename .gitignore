@@ -1,7 +1,8 @@
 node_modules
 static
 static_cw
-vendor
+vendor-studip5
+vendor-studip6
 app/views/course/episodes.php
 app/views/course/manager.php
 app/views/course/scheduler.php

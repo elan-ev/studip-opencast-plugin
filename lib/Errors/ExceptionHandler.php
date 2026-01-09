@@ -3,8 +3,9 @@
 namespace Opencast\Errors;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Psr7\Response;
+use Opencast\VersionHelper;
 
 /**
  * Dieser spezielle Exception Handler wird in der Slim-Applikation
@@ -24,7 +25,7 @@ class ExceptionHandler
         bool $logErrors,
         bool $logErrorDetails,
         ?LoggerInterface $logger = null
-    ): Response {
+    ): ResponseInterface {
         if ($exception instanceof Error) {
             $httpCode = $exception->getCode();
             $errors = new ErrorCollection();
@@ -51,7 +52,7 @@ class ExceptionHandler
             $errors->add(new Error($message, $httpCode, $details));
         }
 
-        $response = new Response();
+        $response = VersionHelper::createResponse();
 
         if (!empty($errors)) {
             $response->getBody()->write($errors->json());

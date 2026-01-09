@@ -1,14 +1,14 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "3.30",
+  "version": "3.31",
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
   "scripts": {
-    "build": "composer install --no-dev && npm install && vite build && cd courseware; sh prebuild.sh",
-    "build-dev": "composer install && npm install && vite build --mode development && cd courseware; sh prebuild.sh",
+    "build": "./build_vendors.sh && npm install && vite build && cd courseware; sh prebuild.sh",
+    "build-dev": "./build_vendors.sh && npm install && vite build --mode development && cd courseware; sh prebuild.sh",
     "devcw": "cd courseware; sh watch.sh",
     "predev": "npm install",
-    "dev": "vite build --watch --mode development",
+    "dev": "./build_vendors.sh && vite build --watch --mode development",
     "prezip": "npm run build",
     "translate": "/bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
     "zip": "mkdir -p build && zip -FSr build/Opencast-V$npm_package_version.zip app assets cronjobs install locale migrations lib vendor templates static static_cw LICENSE INSTALL.md README.md bootstrap_migrations.php bootstrap.php OpencastV3.class.php plugin.manifest",

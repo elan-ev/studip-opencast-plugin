@@ -4,7 +4,7 @@ namespace Opencast\Middlewares;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response;
+use Opencast\VersionHelper;
 
 class TokenAuthentication
 {
@@ -34,7 +34,7 @@ class TokenAuthentication
             return $handler->handle($request);
         }
 
-        $response = new Response();
+        $response = VersionHelper::createResponse();
         return $response->withStatus(401);
     }
 }

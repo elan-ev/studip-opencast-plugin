@@ -9,7 +9,8 @@ use Symfony\Component\Console\Command\Command;
 
 use OpencastApi\Opencast;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../lib/VersionHelper.php';
+Opencast\VersionHelper::autoloadVendor();
 
 // maximum number of concurrent running jobs
 $CONCURRENT_JOBS = 50;

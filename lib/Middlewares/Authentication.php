@@ -4,7 +4,7 @@ namespace Opencast\Middlewares;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response;
+use Opencast\VersionHelper;
 
 class Authentication
 {
@@ -54,7 +54,7 @@ class Authentication
     // according to RFC 2616
     private function generateChallenges(array $guards)
     {
-        $response = new Response();
+        $response = VersionHelper::createResponse();
         $response = $response->withStatus(401);
 
         foreach ($guards as $guard) {

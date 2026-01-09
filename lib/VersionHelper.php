@@ -8,19 +8,55 @@ class VersionHelper
     {
         static $vh;
 
-        if (\StudipVersion::newerThan('5.5')) {
-            if (!$vh) {
+        if (!$vh) {
+            if (\StudipVersion::newerThan('5.5')) {
                 $vh = new VersionHelper6();
+            } else {
+                $vh = new VersionHelper5();
             }
-        } else if (\StudipVersion::newerThan('4.6')) {
-            if (!$vh) {
-                $vh = new VersionHelper50();
-            }
-        } else {
-            $vh = new VersionHelper46();
         }
 
         return $vh;
+    }
+
+    public static function autoloadVendor()
+    {
+        static $loaded = false;
+
+        if ($loaded) {
+            return;
+        }
+
+        $autoload_path = null;
+        if (class_exists('\StudipVersion')) {
+            $autoload_path = self::get()->getComposerAutoloadPath();
+        }
+
+        if (!$autoload_path) {
+            $autoload_path = __DIR__ . '/../vendor/autoload.php';
+        }
+
+        if (is_readable($autoload_path)) {
+            require_once $autoload_path;
+            $loaded = true;
+        }
+    }
+
+    public static function createResponse(): \Psr\Http\Message\ResponseInterface
+    {
+        if (class_exists('\Slim\Psr7\Response')) {
+            return new \Slim\Psr7\Response();
+        }
+
+        if (class_exists('\Nyholm\Psr7\Response')) {
+            return new \Nyholm\Psr7\Response();
+        }
+
+        if (class_exists('\GuzzleHttp\Psr7\Response')) {
+            return new \GuzzleHttp\Psr7\Response();
+        }
+
+        throw new \RuntimeException('No PSR-7 Response implementation available.');
     }
 }
 
@@ -64,51 +100,16 @@ interface VersionHelperInterface
      * @return void
      */
     function registerCoursewareBlock(\StudipPlugin $plugin);
+
+    /**
+     * Returns the path to the composer autoload file for the current Stud.IP version.
+     *
+     * @return string|null
+     */
+    function getComposerAutoloadPath();
 }
 
-class VersionHelper46 implements VersionHelperInterface
-{
-    function addMainNavigation(\Navigation $navigation)
-    {
-        \Navigation::addItem('/opencast', $navigation);
-    }
-
-    function activateContentNavigation()
-    {
-        \Navigation::activateItem('/opencast');
-    }
-
-    function getPluginActivatedSQL()
-    {
-        return ' JOIN plugins_activated ON (
-            plugins_activated.range_id = seminar_id
-            AND plugins_activated.pluginid = :plugin_id
-            AND plugins_activated.state = 1
-        ) ';
-    }
-
-    function getVersionSpecificStylesheet()
-    {
-        return 'assets/css/studip46.scss';
-    }
-
-    function registerCoursewareBlock(\StudipPlugin $plugin)
-    {
-        // load compatibility JS-script
-        \PageLayout::addScript($plugin->getPluginUrl() . '/assets/javascript/oc46.js');
-
-        // load classes need for the old Courseware OC block
-        require_once(__DIR__ . '/Versions/4.6/OCConfig.php');
-        require_once(__DIR__ . '/Versions/4.6/OpencastLTI.php');
-        require_once(__DIR__ . '/Versions/4.6/LtiLink.php');
-
-        if (!interface_exists('Courseware\CoursewarePlugin')) {
-            require_once 'lib/FakeCoursewareInterface.php';
-        }
-    }
-}
-
-class VersionHelper50 implements VersionHelperInterface
+class VersionHelper5 implements VersionHelperInterface
 {
     function addMainNavigation(\Navigation $navigation)
     {
@@ -150,6 +151,11 @@ class VersionHelper50 implements VersionHelperInterface
         \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue2.umd.cjs');
 
         require_once __DIR__ . '/Versions/5.x/OpencastBlockV3.php';
+    }
+
+    function getComposerAutoloadPath()
+    {
+        return __DIR__ . '/../vendor-studip5/autoload.php';
     }
 }
 
@@ -195,5 +201,10 @@ class VersionHelper6 implements VersionHelperInterface
         \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue3.umd.cjs');
 
         require_once __DIR__ . '/BlockTypes/OpencastBlockV3.php';
+    }
+
+    function getComposerAutoloadPath()
+    {
+        return __DIR__ . '/../vendor-studip6/autoload.php';
     }
 }
