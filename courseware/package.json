@@ -3,28 +3,21 @@
     "version": "1.0.0",
     "description": "The build for courseware opencast block compatible with SOP v3",
     "devDependencies": {
-        "@babel/core": "^7.12.13",
-        "@babel/preset-env": "^7.12.13",
-        "@vue/cli-plugin-babel": "^5.0.8",
-        "@vue/cli-service": "^5.0.8",
-        "babel-loader": "^8.2.1",
+        "@vitejs/plugin-vue2": "^2.3.3",
         "core-js": "^3.8.3",
         "date-fns": "^2.29.2",
         "regenerator-runtime": "^0.13.7",
-        "vue": "2.6.14",
-        "vue-loader": "^15.9.8",
-        "vue-template-compiler": "2.6.14",
-        "webpack": "5.94.0",
-        "webpack-cli": "4.10.0"
+        "vite": "^5.4.10",
+        "vue": "2.7.16"
     },
     "directories": {
         "lib": "lib/BlockTypes"
     },
     "scripts": {
-        "build": "npm install && webpack --mode production --config ./webpack-courseware.config.js",
-        "build-dev": "npm install && webpack --mode development --config ./webpack-courseware.config.js",
-        "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
-        "dev": "webpack --mode development --watch --config ./webpack-courseware.config.js"
+        "build": "npm install && vite build",
+        "build-dev": "npm install && vite build --mode development",
+        "devcw": "vite build --watch --mode development",
+        "dev": "vite build --watch --mode development"
     },
     "repository": {
         "type": "git",

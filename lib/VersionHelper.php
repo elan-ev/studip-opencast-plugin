@@ -147,7 +147,7 @@ class VersionHelper50 implements VersionHelperInterface
             background-image:url(' . $icon->asImagePath() . ') !important;
         }');
 
-        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.umd.js');
 
         require_once __DIR__ . '/Versions/5.x/OpencastBlockV3.php';
     }
@@ -192,7 +192,7 @@ class VersionHelper6 implements VersionHelperInterface
             background-image:url(' . $icon->asImagePath() . ') !important;
         }');
 
-        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.js');
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register.umd.js');
 
         require_once __DIR__ . '/BlockTypes/OpencastBlockV3.php';
     }
