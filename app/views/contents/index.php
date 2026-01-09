@@ -20,8 +20,12 @@
     <?= isset($studip_version) ? "window.OpencastPlugin.STUDIP_VERSION = $studip_version;" : '' ?>;
 </script>
 
-<!-- load bundles -->
-<% for(var i = 0; i < htmlWebpackPlugin.tags.headTags.length; i++) { %>
-<? PageLayout::addScript($this->plugin->getPluginUrl() . '/static<%= htmlWebpackPlugin.tags.headTags[i].attributes.src %>'); ?>
-<% } %>
-<!-- END load bundles -->
+<?php
+    $manifest_path = $this->plugin->getPluginPath() . '/static/.vite/manifest.json';
+    $manifest = is_file($manifest_path) ? json_decode(file_get_contents($manifest_path), true) : [];
+    $entry = $manifest['vueapp/app.js']['file'] ?? null;
+    $asset_base = $this->plugin->getPluginUrl() . '/static/';
+?>
+<?php if ($entry): ?>
+<script type="module" src="<?= $asset_base . $entry ?>"></script>
+<?php endif; ?>

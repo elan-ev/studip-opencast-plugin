@@ -1,5 +1,3 @@
-var Vue = require('vue');
-
 var UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 var STEP = 1024;
 
