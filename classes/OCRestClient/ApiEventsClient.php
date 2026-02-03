@@ -101,6 +101,20 @@ class ApiEventsClient extends OCRestClient
                 ? $search_events->{'search-results'}->result
                 : [$search_events->{'search-results'}->result];
 
+            // filter out invisible episodes for learners, creates pagination bug - might be acceptable in old version to counter slow OC performance
+            foreach ($results as $key => $s_event) {
+                if (!OCPerm::editAllowed($course_id)) {
+                    $visibility = $this->getVisibilityForEpisode(
+                        $s_event,
+                        $course_id
+                    );
+
+                    if ($visibility === 'invisible') {
+                        unset($results[$key]);
+                    }
+                }
+            }
+
             // then, iterate over list and get each event from the external-api
             foreach ($results as $s_event) {
                 $cache_key = 'sop/episodes/' . $s_event->id;
@@ -164,16 +178,71 @@ class ApiEventsClient extends OCRestClient
             /* * * * * * * * * * * * * * * * * * * * * * * * */
             /* * * *       O P E N C A S T   1 6 +       * * */
             /* * * * * * * * * * * * * * * * * * * * * * * * */
-            $search_events = $search_service->getJSON(
-                "/episode.json?sid=$series_id&q=". urlencode($search)
-                . "&sort=". urlencode($sort) ."&limit=$limit&offset=$offset"
-            );
 
-            Pager::setLength($search_events->total);
+            $results = [];
+            $offsetCounter = 0;
+            $pageSize = 250;
 
-            $results = is_array($search_events->result)
-                ? $search_events->result
-                : [$search_events->result];
+            // fetch all results
+            do {
+                $searchUrl = sprintf(
+                    "/episode.json?sid=%s&q=%s&limit=%d&offset=%d",
+                    $series_id,
+                    urlencode($search),
+                    $pageSize,
+                    $pageSize * $offsetCounter
+                );
+
+                $response = $search_service->getJSON($searchUrl);
+
+                if (empty($response->result)) {
+                    break;
+                }
+
+                $episodes = is_array($response->result) ? $response->result : [$response->result];
+
+                // filter out invisible episodes for learners
+                foreach ($episodes as $episode) {
+                    if (!OCPerm::editAllowed($course_id)) {
+                        $visibility = $this->getVisibilityForEpisode(
+                            $episode,
+                            $course_id
+                        );
+
+                        if ($visibility === 'invisible') {
+                            continue;
+                        }
+                    }
+
+                    $results[] = $episode;
+                }
+
+                if ($response->total <= ($pageSize * ($offsetCounter + 1))) {
+                    break;
+                }
+
+                $offsetCounter++;
+            } while (true);
+
+            // sort results
+            [$field, $order] = array_pad(explode(' ', $sort, 2), 2, 'asc');
+            $ascending = $order === 'asc';
+
+            usort($results, function ($a, $b) use ($field, $ascending) {
+                if ($field === 'title') {
+                    $valueA = $a->mediapackage->title ?? '';
+                    $valueB = $b->mediapackage->title ?? '';
+                } else {
+                    $valueA = strtotime($a->mediapackage->start ?? '');
+                    $valueB = strtotime($b->mediapackage->start ?? '');
+                }
+
+                return $ascending ? ($valueA <=> $valueB) : ($valueB <=> $valueA);
+            });
+
+            // Pagination setzen
+            Pager::setLength(count($results));
+            $results = array_slice($results, $offset, $limit);
 
             // then, iterate over list and get each event from the external-api
             foreach ($results as $s_event) {
@@ -330,13 +399,14 @@ class ApiEventsClient extends OCRestClient
         return $result[1] == 204;
     }
 
-    public function getVisibilityForEpisode(array $episode, $course_id = null)
+    public function getVisibilityForEpisode($episode, $course_id = null)
     {
         if (is_null($course_id)) {
             $course_id = Context::getId();
         }
 
-        $acls = $episode['acl'] ?? [];
+        $acls = $episode->acl ?? [];
+        $episode_id = $episode->id ?? $episode->mediapackage->id;
 
         $vis_conf = !is_null(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
             ? boolval(CourseConfig::get($course_id)->COURSE_HIDE_EPISODES)
@@ -345,8 +415,8 @@ class ApiEventsClient extends OCRestClient
             ? 'invisible'
             : 'visible';
 
-        if ($acls) {
-            OCModel::setVisibilityForEpisode($course_id, $episode['id'], $default);
+        if (empty($acls)) {
+            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
             return $default;
         }
 
@@ -384,7 +454,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode['id'], $default);
+        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
         return $default;
     }
 
