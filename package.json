@@ -51,7 +51,7 @@
     "vue3-select": "^0.1.2",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0",
-    "webpack": "^5.95.0",
+    "webpack": "^5.105.0",
     "webpack-cli": "^5.1.4"
   },
   "browserslist": "> 0.25%, not dead, not IE 11",
