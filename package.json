@@ -11,7 +11,7 @@
     "dev": "./build_vendors.sh && vite build --watch --mode development",
     "prezip": "npm run build",
     "translate": "/bin/bash translate.sh && gettext-compile --output vueapp/i18n/translations.json locale/en/LC_MESSAGES/opencast.po",
-    "zip": "mkdir -p build && zip -FSr build/Opencast-V$npm_package_version.zip app assets cronjobs install locale migrations lib vendor templates static static_cw LICENSE INSTALL.md README.md bootstrap_migrations.php bootstrap.php OpencastV3.class.php plugin.manifest",
+    "zip": "mkdir -p build && zip -FSr build/Opencast-V$npm_package_version.zip app assets cronjobs install locale migrations lib vendor-studip5 vendor-studip6 templates static static_cw LICENSE INSTALL.md README.md bootstrap_migrations.php bootstrap.php OpencastV3.class.php plugin.manifest",
     "docs": "npx @redocly/cli build-docs docs/studip_opencast_routes.json --output docs/studip_opencast_routes.html",
     "tests": "php vendor-studip6/bin/codecept run --steps"
   },
