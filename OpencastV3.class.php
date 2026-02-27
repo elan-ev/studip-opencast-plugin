@@ -17,7 +17,7 @@ use Opencast\Providers\Perm;
 
 use Courseware\CoursewarePlugin;
 
-class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
+class OpencastV3 extends StudIPPlugin implements SystemPlugin, StandardPlugin, CoursewarePlugin, PortalPlugin
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -132,7 +132,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
      */
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
-        require_once __DIR__ . '/vendor/autoload.php';
+        Opencast\VersionHelper::autoloadVendor();
 
         $navigation = new Navigation(
             $this->_('Opencast Videos'),
@@ -180,7 +180,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
     public function getTabNavigation($course_id)
     {
-        require_once __DIR__ . '/vendor/autoload.php';
+        Opencast\VersionHelper::autoloadVendor();
 
         if (!$this->isActivated($course_id) || !Helpers::getConfigurationstate()) {
             return;
@@ -302,7 +302,7 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
      */
     public function perform($unconsumed_path)
     {
-        require_once __DIR__ . '/vendor/autoload.php';
+        Opencast\VersionHelper::autoloadVendor();
 
         if (substr($unconsumed_path, 0, 3) == 'api') {
             // make sure, slim knows if we are running https, see https://github.com/elan-ev/studip-opencast-plugin/issues/816
@@ -313,7 +313,8 @@ class OpencastV3 extends StudipPlugin implements SystemPlugin, StandardPlugin, C
 
             $appFactory = new AppFactory();
             $app = $appFactory->makeApp($this);
-            $app->setBasePath(rtrim(PluginEngine::getLink($this, [], null, true), '/'));
+            $basePath = parse_url(PluginEngine::getLink($this, [], null, true), PHP_URL_PATH) ?? '';
+            $app->setBasePath(rtrim($basePath, '/'));
             $app->group('/api', RouteMap::class);
 
             $app->run();

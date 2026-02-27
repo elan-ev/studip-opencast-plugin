@@ -77,16 +77,16 @@ class SeriesClient extends RestClient
     private static function getSeriesDC($course_id)
     {
         $uni_name_clean = \Config::get()->getValue('UNI_NAME_CLEAN') ?: 'unbekannt';
-        $course         = new \Seminar($course_id);
-        $name           = $course->getName() . ' - ' . $course->getStartSemesterName();
+        $course         = new \Course($course_id);
+        $name           = $course->name . ' - ' . $course->start_semester->name;
         $license        = "&copy; " . gmdate('Y') . " " . $uni_name_clean;
         $inst           = \Institute::find($course->institut_id);
 
         $publisher   = (string)$inst->name;
-        $instructors = $course->getMembers('dozent');
+        $instructors = $course->getMembersWithStatus('dozent');
         $instructor  = array_shift($instructors);
         $contributor = $uni_name_clean;
-        $creator     = $instructor['fullname'];
+        $creator     = $instructor->getUserFullname();
         $language    = 'de';
 
         $data = [

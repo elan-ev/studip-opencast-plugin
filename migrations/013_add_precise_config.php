@@ -28,7 +28,7 @@ class AddPreciseConfig extends Migration
             (4, 'ssl_verify_peer', 'SSL Zertifikat des Peers prüfen', 'false', -1),
             (5, 'ssl_verify_host', 'SSL Zertifikat des Hosts prüfen', 'false', -1),
             (6, 'ssl_cipher_list', 'Zu benutzende SSL Chiffren', 'none', -1),
-            (7, 'capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Opencast Capture Agent', -1),
+            (7, 'capture_agent_attribute', 'Namen der Capture Agents als Ressourcen-Objekte', 'Aufzeichnungstechnik', -1),
             (8, 'lti_consumerkey', 'LTI Consumerkey', 'CONSUMERKEY', -1),
             (9, 'lti_consumersecret', 'LTI Consumersecret', 'CONSUMERSECRET', -1)
         ");

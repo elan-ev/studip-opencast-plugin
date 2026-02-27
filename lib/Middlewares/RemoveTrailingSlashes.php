@@ -4,7 +4,7 @@ namespace Opencast\Middlewares;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response;
+use Opencast\VersionHelper;
 
 /**
  * Diese Klasse definiert eine Middleware, die Requests  umleitet,
@@ -32,7 +32,7 @@ class RemoveTrailingSlashes
             $uri = $uri->withPath($path);
 
             if ($request->getMethod() == 'GET') {
-                $response = new Response();
+                $response = VersionHelper::createResponse();
                 return $response
                     ->withHeader('Location', (string) $uri)
                     ->withStatus(301);

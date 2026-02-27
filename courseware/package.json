@@ -2,29 +2,17 @@
     "name": "studip-opencast-plugin-courseware-build",
     "version": "1.0.0",
     "description": "The build for courseware opencast block compatible with SOP v3",
-    "devDependencies": {
-        "@babel/core": "^7.12.13",
-        "@babel/preset-env": "^7.12.13",
-        "@vue/cli-plugin-babel": "^5.0.8",
-        "@vue/cli-service": "^5.0.8",
-        "babel-loader": "^8.2.1",
-        "core-js": "^3.8.3",
-        "date-fns": "^2.29.2",
-        "regenerator-runtime": "^0.13.7",
-        "vue": "2.6.14",
-        "vue-loader": "^15.9.8",
-        "vue-template-compiler": "2.6.14",
-        "webpack": "5.94.0",
-        "webpack-cli": "4.10.0"
-    },
+    "devDependencies": {},
     "directories": {
         "lib": "lib/BlockTypes"
     },
     "scripts": {
-        "build": "npm install && webpack --mode production --config ./webpack-courseware.config.js",
-        "build-dev": "npm install && webpack --mode development --config ./webpack-courseware.config.js",
-        "devcw": "webpack --mode development --watch --config ./webpack-courseware.config.js",
-        "dev": "webpack --mode development --watch --config ./webpack-courseware.config.js"
+        "build:vue2": "npm --prefix ./vue2 install && npm --prefix ./vue2 run build",
+        "build:vue3": "npm --prefix ./vue3 install && npm --prefix ./vue3 run build",
+        "build": "npm run build:vue2 && npm run build:vue3",
+        "dev:vue2": "npm --prefix ./vue2 run dev",
+        "dev:vue3": "npm --prefix ./vue3 run dev",
+        "dev": "npm run dev:vue2"
     },
     "repository": {
         "type": "git",

@@ -38,6 +38,7 @@ DELETE FROM plugins WHERE pluginclassname = 'OpenCast';
 DELETE FROM plugins WHERE pluginclassname = 'OpencastV3';
 DELETE FROM cronjobs_tasks WHERE class LIKE 'Opencast%' OR class = 'RefreshScheduledEvents' OR class = 'RefreshSeries';
 DELETE FROM cronjobs_schedules WHERE task_id IN (SELECT task_id FROM cronjobs_schedules LEFT JOIN cronjobs_tasks USING (task_id) WHERE cronjobs_tasks.task_id IS NULL);
+DELETE FROM resource_property_definitions WHERE name LIKE "OCCA#%" OR name = "Aufzeichnungstechnik";
 
 DELETE FROM log_events WHERE action_id IN (
     SELECT action_id FROM log_actions WHERE name LIKE 'OC_%'

@@ -5,7 +5,6 @@ import VueAxios from "vue-axios";
 
 import router from "./router";
 import store from "./store";
-import "./public-path";
 
 import DateFilter from "@/common/date.filter";
 import DateTimeFilter from "@/common/datetime.filter";

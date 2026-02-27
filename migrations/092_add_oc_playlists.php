@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../bootstrap_migrations.php';
-require_once __DIR__.'/../vendor/autoload.php';
+Opencast\VersionHelper::autoloadVendor();
 
 use Opencast\Models\Endpoints;
 use Opencast\Models\Playlists;

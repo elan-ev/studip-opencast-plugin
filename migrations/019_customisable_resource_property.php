@@ -13,14 +13,12 @@ class CustomisableResourceProperty extends Migration
         if (StudipVersion::newerThan('4.4'))
         {
             $property_id = DBManager::get()->query("SELECT property_id FROM `resource_property_definitions`
-            WHERE `name` LIKE 'OCCA#%'
-                OR `name`='Opencast Capture Agent'")->fetchColumn();
+            WHERE `name` ='Aufzeichnungstechnik'")->fetchColumn();
         }
         else
         {
             $property_id = DBManager::get()->query("SELECT property_id FROM `resources_properties`
-            WHERE `name` LIKE 'OCCA#%'
-                OR `name`='Opencast Capture Agent'")->fetchColumn();
+            WHERE `name` ='Aufzeichnungstechnik'")->fetchColumn();
         }
 
         $stmt = $db->prepare('INSERT INTO config (field, value, section, type, `range`, mkdate, chdate, description)
