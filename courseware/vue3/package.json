@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.4",
-    "@vue/compiler-sfc": "^3.5.26",
-    "core-js": "^3.8.3",
-    "date-fns": "^2.29.2",
-    "regenerator-runtime": "^0.13.7",
-    "vite": "^5.4.10",
-    "vue": "^3.5.26"
+    "@vitejs/plugin-vue": "^6.0.4",
+    "@vue/compiler-sfc": "^3.5.29",
+    "core-js": "^3.48.0",
+    "date-fns": "^4.1.0",
+    "regenerator-runtime": "^0.14.1",
+    "vite": "^7.3.1",
+    "vue": "^3.5.29"
   },
   "scripts": {
     "build": "vite build",
