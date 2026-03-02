@@ -16,7 +16,7 @@ export default defineConfig({
     outDir: 'static',
     emptyOutDir: true,
     manifest: '.vite/manifest.json',
-    sourcemap: true,
+    sourcemap: false,
     assetsDir: '',
     rollupOptions: {
       input: path.resolve(__dirname, 'vueapp/app.js'),

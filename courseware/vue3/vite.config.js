@@ -15,12 +15,12 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: path.resolve(__dirname, '../../static_cw'),
     emptyOutDir: false,
-    sourcemap: true,
+    sourcemap: false,
     lib: {
       entry: path.resolve(__dirname, '../vueapp/register.js'),
       name: 'courseware-plugin-opencast-video',
       formats: ['umd'],
-      fileName: 'register-vue3',
+      fileName: () => 'register-vue3.umd.js',
     },
   },
 }));
