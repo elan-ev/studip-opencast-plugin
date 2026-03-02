@@ -148,7 +148,7 @@ class VersionHelper5 implements VersionHelperInterface
             background-image:url(' . $icon->asImagePath() . ') !important;
         }');
 
-        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue2.umd.cjs');
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue2.umd.js');
 
         require_once __DIR__ . '/Versions/5.x/OpencastBlockV3.php';
     }
@@ -198,7 +198,7 @@ class VersionHelper6 implements VersionHelperInterface
             background-image:url(' . $icon->asImagePath() . ') !important;
         }');
 
-        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue3.umd.cjs');
+        \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue3.umd.js');
 
         require_once __DIR__ . '/BlockTypes/OpencastBlockV3.php';
     }

@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
       entry: path.resolve(__dirname, '../vueapp/register.js'),
       name: 'courseware-plugin-opencast-video',
       formats: ['umd'],
-      fileName: 'register-vue3',
+      fileName: () => 'register-vue3.umd.js',
     },
   },
 }));
