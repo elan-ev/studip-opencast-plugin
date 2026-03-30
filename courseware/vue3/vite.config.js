@@ -17,10 +17,19 @@ export default defineConfig(({ mode }) => ({
     emptyOutDir: false,
     sourcemap: false,
     lib: {
-      entry: path.resolve(__dirname, '../vueapp/register.js'),
+      entry: path.resolve(__dirname, '../vueapp/vue3/register.js'),
       name: 'courseware-plugin-opencast-video',
       formats: ['umd'],
       fileName: () => 'register-vue3.umd.js',
     },
+    rollupOptions: {
+      external: ['vue', 'vuex'],
+      output: {
+        globals: {
+          'vue': 'Vue',
+          'vuex': 'Vuex',
+        }
+      }
+    }
   },
 }));

@@ -7,6 +7,7 @@
     "build": "./build_vendors.sh --no-dev && npm install && vite build && cd courseware; sh prebuild.sh",
     "build-dev": "./build_vendors.sh && npm install && vite build --mode development && cd courseware; sh prebuild.sh",
     "devcw": "cd courseware; sh watch.sh",
+    "devcwv3": "cd courseware; sh watch3.sh",
     "predev": "npm install",
     "dev": "./build_vendors.sh && vite build --watch --mode development",
     "prezip": "npm run build",

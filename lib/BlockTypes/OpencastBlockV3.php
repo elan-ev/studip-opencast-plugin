@@ -78,7 +78,7 @@ class OpencastBlockV3 extends BlockType
     {
         $schemaFile = __DIR__ . '/OpencastBlockV3.json';
 
-        return Schema::fromJsonString(file_get_contents($schemaFile));
+        return (string) file_get_contents($schemaFile);
     }
 
     public static function getCategories(): array
