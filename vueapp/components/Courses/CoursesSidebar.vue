@@ -40,13 +40,13 @@
                         v-bind:key="p.token"
                         v-on:click="setPlaylist(p)">
                         <router-link :to="{ name: 'course' }">
-                            <div class="oc--playlist-title-contanier">
+                            <div class="oc--playlist-title-container">
                                 <span class="oc--playlist-title">
                                     {{ p.title }}
                                 </span>
                                 <div v-if="p.is_default == true"
                                     class="tooltip oc--playlist-default-icon" :data-tooltip="$gettext('Standard-Kurswiedergabeliste')">
-                                    <studip-icon shape="check-circle" :role="playlist?.token == p.token ? 'info_alt' : 'clickable'" :size="16"/>
+                                    <studip-icon shape="check-circle" role="info" :size="20"/>
                                 </div>
                             </div>
                         </router-link>
@@ -54,7 +54,7 @@
 
                     <li v-if="canEdit" data-reject-toggle-sidebar="true">
                         <a href="#" @click.prevent="showCreatePlaylist">
-                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            <studip-icon shape="add" role="clickable"/>
                             {{ $gettext('Wiedergabeliste hinzufügen') }}
                         </a>
                     </li>
@@ -62,7 +62,7 @@
                 <template v-else>
                     <li v-if="canEdit">
                         <a href="#" @click.prevent="showCreatePlaylist">
-                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            <studip-icon shape="add" role="clickable"/>
                             {{ $gettext('Kurswiedergabeliste hinzufügen') }}
                         </a>
                     </li>
@@ -130,17 +130,17 @@
                 {{ $gettext('Wiedergabeliste bearbeiten') }}
             </div>
             <div class="sidebar-widget-content">
-                <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
+                <ul class="widget-list oc--sidebar-links widget-links sidebar-navigation" @click.capture="toggleSidebarOnResponsive">
                     <template v-if="videoSortMode">
                         <li v-if="canEdit && videoSortMode">
                             <a href="#" @click.prevent="$emit('saveSortVideo')">
-                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                <studip-icon shape="accept" role="clickable"/>
                                 {{ $gettext('Sortierung speichern') }}
                             </a>
                         </li>
                         <li v-if="canEdit && videoSortMode">
                             <a href="#" @click.prevent="$emit('cancelSortVideo')">
-                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                <studip-icon shape="decline" role="clickable"/>
                                 {{ $gettext('Sortierung abbrechen') }}
                             </a>
                         </li>
@@ -152,17 +152,17 @@
                             }"
                         >
                             <a href="#" @click.prevent="openPlaylistAddVideosDialog">
-                                <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                                <studip-icon shape="add" role="clickable"/>
                                 {{ $gettext('Videos hinzufügen') }}
                             </a>
                         </li>
                         <li v-if="canEdit && downloadSetting !== 'never'">
                             <a v-if="!downloadEnabled" href="#" @click.prevent="setDownload(true)">
-                                <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                                <studip-icon shape="decline" role="clickable"/>
                                 {{ $gettext('Mediendownloads erlauben') }}
                             </a>
                             <a v-else href="#" @click.prevent="setDownload(false)">
-                                <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                                <studip-icon shape="accept" role="clickable"/>
                                 {{ $gettext('Mediendownloads verbieten') }}
                             </a>
                         </li>
@@ -172,13 +172,13 @@
                             }"
                         >
                             <a href="#" @click.prevent="!opencastOffline && $emit('sortVideo')">
-                                <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                                <studip-icon shape="hamburger" role="clickable"/>
                                 {{ $gettext('Videos sortieren') }}
                             </a>
                         </li>
                         <li v-if="canEdit">
                             <a href="#" @click.prevent="$emit('editPlaylist')">
-                                <studip-icon style="margin-left: -20px;" shape="edit" role="clickable"/>
+                                <studip-icon shape="edit" role="clickable"/>
                                 {{ $gettext('Metadaten bearbeiten') }}
                             </a>
                         </li>
@@ -194,32 +194,32 @@
                 {{ $gettext('Veranstaltungsweite Aktionen') }}
             </div>
             <div class="sidebar-widget-content">
-                <ul class="widget-list oc--sidebar-links widget-links" @click.capture="toggleSidebarOnResponsive">
+                <ul class="widget-list oc--sidebar-links widget-links sidebar-navigation" @click.capture="toggleSidebarOnResponsive">
                     <li v-if="!opencastOffline && canUpload && course_config?.series?.series_id && canShowStudio">
                         <a :href="recordingLink" target="_blank">
-                            <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                            <studip-icon shape="video" role="clickable"/>
                             {{ $gettext('Video aufnehmen') }}
                         </a>
                     </li>
                     <li v-if="canEdit">
                         <a href="#" v-if="!uploadEnabled" @click.prevent="setUpload(1)">
-                            <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                            <studip-icon shape="decline" role="clickable"/>
                             {{ $gettext('Studierendenupload erlauben') }}
                         </a>
                         <a v-else href="#" @click.prevent="setUpload(0)">
-                            <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                            <studip-icon shape="accept" role="clickable"/>
                             {{ $gettext('Studierendenupload verbieten') }}
                         </a>
                     </li>
                     <li v-if="canEdit" data-reject-toggle-sidebar="true">
                         <a href="#" @click.prevent="$emit('changeDefaultPlaylist')">
-                            <studip-icon style="margin-left: -20px;" shape="refresh" role="clickable"/>
+                            <studip-icon shape="refresh" role="clickable"/>
                             {{ $gettext('Standard-Kurswiedergabeliste ändern') }}
                         </a>
                     </li>
                     <li v-if="canEdit">
                         <a href="#" @click.prevent="$emit('changeDefaultVisibility')">
-                            <studip-icon style="margin-left: -20px;" :shape="changeDefaultVisibilityIcon" role="clickable"/>
+                            <studip-icon :shape="changeDefaultVisibilityIcon" role="clickable"/>
                             {{ $gettext('Standardsichtbarkeit Videos') }}
                         </a>
                     </li>

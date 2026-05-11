@@ -88,7 +88,7 @@ class OpencastSyncAcls extends CronJob
 
                         Videos::checkEventACL(null, $event, $video);
 
-                        echo " ACL sync successful for Video ID {$video->id} (Event ID: {$event->identifier}).\n";
+                        // echo " ACL sync successful for Video ID {$video->id} (Event ID: {$event->identifier}).\n";
                     }
                 }
             } while (!empty($oc_events));

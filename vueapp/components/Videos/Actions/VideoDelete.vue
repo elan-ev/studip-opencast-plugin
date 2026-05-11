@@ -23,7 +23,7 @@
                     }}
                 </p>
 
-                <span v-if="event.playlists.length > 0">
+                <span v-if="event.playlists?.length > 0">
                     <p>
                         {{ $gettext('Beim Löschen wird die Aufzeichnung aus den folgenden Wiedergabelisten entfernt.') }}
                     </p>
@@ -61,7 +61,7 @@ export default {
         ]),
 
         dialogHeight() {
-            return this.event.playlists.length > 0 ? 400 : 275;
+            return this.event.playlists?.length > 0 ? 400 : 275;
         },
     },
 

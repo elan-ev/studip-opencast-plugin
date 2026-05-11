@@ -37,63 +37,63 @@
             {{ $gettext('Aktionen') }}
         </div>
         <div class="sidebar-widget-content">
-            <ul class="widget-list oc--sidebar-links widget-links">
+            <ul class="widget-list oc--sidebar-links widget-links sidebar-navigation">
                 <li v-if="fragment == 'videos' && currentUserSeries && canShowUpload">
                     <a href="#" @click.prevent="$emit('uploadVideo')">
-                        <studip-icon style="margin-left: -20px;" shape="upload" role="clickable"/>
+                        <studip-icon shape="upload" role="clickable"/>
                         {{ $gettext('Medien hochladen') }}
                     </a>
                 </li>
                 <li v-if="fragment == 'videos' && currentUserSeries && canShowStudio">
                     <a :href="recordingLink" target="_blank">
-                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        <studip-icon shape="video" role="clickable"/>
                         {{ $gettext('Video aufnehmen') }}
                     </a>
                 </li>
 
                 <li v-if="fragment == 'playlist'">
                     <a href="#" @click.prevent="openPlaylistAddVideosDialog">
-                        <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                        <studip-icon shape="add" role="clickable"/>
                         {{ $gettext('Videos hinzufügen') }}
                     </a>
                 </li>
 
                 <li v-if="fragment == 'playlist' && downloadSetting!=='never' && !isDownloadAllowedForPlaylist">
                     <a href="#" @click.prevent="$emit('allowDownloadForPlaylist')">
-                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        <studip-icon shape="video" role="clickable"/>
                         {{ $gettext('Mediendownloads erlauben') }}
                     </a>
                 </li>
 
                 <li v-if="fragment == 'playlist' && downloadSetting!=='never' && isDownloadAllowedForPlaylist">
                     <a href="#" @click.prevent="$emit('disallowDownloadForPlaylist')">
-                        <studip-icon style="margin-left: -20px;" shape="video" role="clickable"/>
+                        <studip-icon shape="video" role="clickable"/>
                         {{ $gettext('Mediendownloads verbieten') }}
                     </a>
                 </li>
 
                 <li v-if="fragment == 'playlist' && !videoSortMode">
                     <a href="#" @click.prevent="$emit('sortVideo')">
-                        <studip-icon style="margin-left: -20px;" shape="hamburger" role="clickable"/>
+                        <studip-icon shape="hamburger" role="clickable"/>
                         {{ $gettext('Videos sortieren') }}
                     </a>
                 </li>
                 <li v-if="fragment == 'playlist' && videoSortMode">
                     <a href="#" @click.prevent="$emit('saveSortVideo')">
-                        <studip-icon style="margin-left: -20px;" shape="accept" role="clickable"/>
+                        <studip-icon shape="accept" role="clickable"/>
                         {{ $gettext('Sortierung speichern') }}
                     </a>
                 </li>
                 <li v-if="fragment == 'playlist' && videoSortMode">
                     <a href="#" @click.prevent="$emit('cancelSortVideo')">
-                        <studip-icon style="margin-left: -20px;" shape="decline" role="clickable"/>
+                        <studip-icon shape="decline" role="clickable"/>
                         {{ $gettext('Sortierung abbrechen') }}
                     </a>
                 </li>
 
                 <li v-if="fragment == 'playlists'">
                     <a href="#" @click.prevent="createPlaylist">
-                        <studip-icon style="margin-left: -20px;" shape="add" role="clickable"/>
+                        <studip-icon shape="add" role="clickable"/>
                         {{ $gettext('Wiedergabeliste anlegen') }}
                     </a>
                 </li>

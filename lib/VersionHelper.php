@@ -137,7 +137,7 @@ class VersionHelper5 implements VersionHelperInterface
 
     function getVersionSpecificStylesheet()
     {
-        return null;
+        return 'assets/css/studip5.scss';
     }
 
     function registerCoursewareBlock(\StudipPlugin $plugin)
