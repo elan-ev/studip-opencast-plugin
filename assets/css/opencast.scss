@@ -1184,11 +1184,13 @@ label.oc--file-upload {
     }
 }
 
-.oc--playlist-title-contanier {
+.oc--playlist-title-container {
     position: relative;
     padding-right: 18px;
     display: flex;
     align-items: center;
+    width: 95%;
+
     .oc--playlist-title {
         flex: 1;
         white-space: nowrap;
@@ -1197,10 +1199,12 @@ label.oc--file-upload {
     }
     .oc--playlist-default-icon {
         position: absolute;
-        right: 1px;
-        top: 52%;
-        transform: translateY(-50%);
+        right: 5px;
     }
+}
+
+.active .oc--playlist-default-icon {
+    right: 10px;
 }
 
 .oc--tags {

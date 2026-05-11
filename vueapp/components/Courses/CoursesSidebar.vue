@@ -40,13 +40,13 @@
                         v-bind:key="p.token"
                         v-on:click="setPlaylist(p)">
                         <router-link :to="{ name: 'course' }">
-                            <div class="oc--playlist-title-contanier">
+                            <div class="oc--playlist-title-container">
                                 <span class="oc--playlist-title">
                                     {{ p.title }}
                                 </span>
                                 <div v-if="p.is_default == true"
                                     class="tooltip oc--playlist-default-icon" :data-tooltip="$gettext('Standard-Kurswiedergabeliste')">
-                                    <studip-icon shape="check-circle" :role="playlist?.token == p.token ? 'info_alt' : 'clickable'" :size="16"/>
+                                    <studip-icon shape="check-circle" role="info" :size="20"/>
                                 </div>
                             </div>
                         </router-link>
