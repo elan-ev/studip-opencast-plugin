@@ -194,9 +194,17 @@ class VersionHelper6 implements VersionHelperInterface
     {
         $icon = new \Icon($plugin->assetsUrl . '/images/opencast-courseware.svg');
 
-        \PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
-            background-image:url(' . $icon->asImagePath() . ') !important;
-        }');
+        if (\StudipVersion::newerThan('6.0')) {
+            \PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video:before {
+                -webkit-mask:url(' . $icon->asImagePath() . ') no-repeat center/contain !important;
+                mask:url(' . $icon->asImagePath() . ') no-repeat center/contain !important;
+            }');
+        } else {
+            \PageLayout::addStyle('.cw-blockadder-item.cw-blockadder-item-plugin-opencast-video {
+                background-image:url(' . $icon->asImagePath() . ') !important;
+            }');
+        }
+
 
         \PageLayout::addScript($plugin->getPluginUrl() . '/static_cw/register-vue3.umd.js');
 

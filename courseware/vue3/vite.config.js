@@ -8,19 +8,31 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig(({ mode }) => ({
   plugins: [vue()],
   publicDir: false,
+
   define: {
     'process.env.NODE_ENV': JSON.stringify(mode),
-    process: JSON.stringify({ env: { NODE_ENV: mode } }),
   },
+
   build: {
     outDir: path.resolve(__dirname, '../../static_cw'),
     emptyOutDir: false,
     sourcemap: false,
+
     lib: {
-      entry: path.resolve(__dirname, '../vueapp/register.js'),
+      entry: path.resolve(__dirname, '../vueapp/vue3/register.js'),
       name: 'courseware-plugin-opencast-video',
       formats: ['umd'],
       fileName: () => 'register-vue3.umd.js',
     },
+
+    rolldownOptions: {
+      external: ['vue', 'vuex'],
+      output: {
+        globals: {
+          vue: 'Vue',
+          vuex: 'Vuex',
+        }
+      }
+    }
   },
 }));
