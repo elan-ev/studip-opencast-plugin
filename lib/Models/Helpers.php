@@ -14,6 +14,7 @@ use Opencast\Models\REST\ApiWorkflowsClient;
 class Helpers
 {
     const RECORDED_SERIES_ID_CACHE_ID = 'OpencastV3/series/recorded_series_ids';
+    const ACL_STRING_SEPARATOR = '**';
 
     static function getConfigurationstate()
     {
@@ -336,6 +337,26 @@ class Helpers
 
         return $comp_a <=> $comp_b;
 
+    }
+
+    /**
+     * It generates an associative unique array out of raw acls array, which now has unique string keys made out of the values.
+     * IT also makes sure that the order of the acl values action, allow, role are always sorted ascending!
+     * @param array $raw_acls
+     * @return array associative unique acls array
+     */
+    public static function generateAssociativeUniqueAcls(array $raw_acls): array
+    {
+        $assoc_acls = [];
+        foreach ($raw_acls as $acl) {
+            $generated_acl_id = ($acl['allow'] ? '1' : '0') . self::ACL_STRING_SEPARATOR .
+                                $acl['role'] . self::ACL_STRING_SEPARATOR .
+                                $acl['action'];
+            ksort($acl);
+            $assoc_acls[$generated_acl_id] = $acl;
+        }
+
+        return $assoc_acls;
     }
 
     /**
