@@ -992,13 +992,39 @@ class Videos extends UPMap
 
         $oc_acls = Helpers::filterACLs($current_acl, $acl);
 
-        if ($acl <> $oc_acls['studip']) {
+        if (!$this->compareAclsRaw($acl, $oc_acls['studip'])) {
             $new_acl = array_merge($oc_acls['other'], $acl);
 
             return $api_client->setACL($this->episode, $new_acl);
         }
 
         return false;
+    }
+
+    /**
+     * This functions compares two ACLs. Before the comparisson
+     * it creates unique keys for each array element, removes duplicates
+     * and sorts the arrays.
+     * 
+     * @param object $base
+     * @param object $target
+     */
+    private function compareAclsRaw($base, $target) {
+
+        // creates unique keys for the array elements and removes duplicates
+        $base = Helpers::generateAssociativeUniqueAcls($base);
+        $target = Helpers::generateAssociativeUniqueAcls($target);
+
+        if (count($base) !== count($target)) {
+            return false;
+        }
+
+        // Now that arrays have unique keys based on their values,
+        // so we can make sure that ksort does its job 100%.
+        ksort($base);
+        ksort($target);
+
+        return $base == $target;
     }
 
     /**
