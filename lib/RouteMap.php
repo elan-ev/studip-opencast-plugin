@@ -139,6 +139,7 @@ class RouteMap
 
         $group->get("/config/simple", Routes\Config\SimpleConfigList::class);
 
+        $group->get("", Routes\DiscoveryIndex::class);
         $group->get("/discovery", Routes\DiscoveryIndex::class);
     }
 
