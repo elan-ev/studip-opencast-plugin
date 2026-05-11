@@ -3,7 +3,7 @@
 namespace Opencast\Models;
 
 use Opencast\Models\PlaylistSeminars;
-use Opencast\Models\Video;
+use Opencast\Models\Videos;
 
 class ScheduledRecordings extends \SimpleORMap
 {
