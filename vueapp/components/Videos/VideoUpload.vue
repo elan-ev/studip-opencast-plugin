@@ -357,7 +357,7 @@ export default {
         {
             try {
                 let info = JSON.parse(this.config.settings.OPENCAST_UPLOAD_INFO_TEXT_BODY);
-                return info[this.config.user_language];
+                return '<div>' + info[this.config.user_language] + '</div>';
             } catch (e) {
 
             }
