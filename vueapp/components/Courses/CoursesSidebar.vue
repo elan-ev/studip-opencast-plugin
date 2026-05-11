@@ -54,7 +54,7 @@
 
                     <li v-if="canEdit" data-reject-toggle-sidebar="true">
                         <a href="#" @click.prevent="showCreatePlaylist">
-                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            <studip-icon shape="add" role="clickable"/>
                             {{ $gettext('Wiedergabeliste hinzufügen') }}
                         </a>
                     </li>
@@ -62,7 +62,7 @@
                 <template v-else>
                     <li v-if="canEdit">
                         <a href="#" @click.prevent="showCreatePlaylist">
-                            <studip-icon style="margin-top: -2px;" shape="add" role="clickable"/>
+                            <studip-icon shape="add" role="clickable"/>
                             {{ $gettext('Kurswiedergabeliste hinzufügen') }}
                         </a>
                     </li>
