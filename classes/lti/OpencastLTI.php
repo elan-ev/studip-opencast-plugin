@@ -362,6 +362,12 @@ class OpencastLTI
             }
             if ($oc_acl <> $acl->toArray()) {
                 $client->setACL($target_id, $acl);
+
+                // republish episode to apply new ACLs
+                if ($target_type == 'episode') {
+                     $workflow_api_client = \ApiWorkflowsClient::create($courses[0]);
+                     $workflow_api_client->republish($target_id);
+                }
             }
         }
     }

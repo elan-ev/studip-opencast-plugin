@@ -64,32 +64,31 @@ class OCCourseModel
         $this->seriesMetadata = $seriesMetadata;
     }
 
-
     public function getEpisodes()
     {
-        static $ordered_episodes;
+        static $ordered_episodes = [];
 
-        if (empty($ordered_episodes)) {
+        $course_id = $this->getCourseID();
+
+        if (!isset($ordered_episodes[$course_id])) {
+
             if ($this->getSeriesID()) {
-                $api_events = ApiEventsClient::create($this->getCourseID());
-                $series     = $api_events->getBySeries($this->getSeriesID(), $this->getCourseID());
+                $api_events = ApiEventsClient::create($course_id);
+                $series     = $api_events->getBySeries($this->getSeriesID(), $course_id);
 
-                $stored_episodes  = OCModel::getCoursePositions($this->getCourseID());
-                $ordered_episodes = [];
+                $stored_episodes = OCModel::getCoursePositions($course_id);
 
-                //check if series' episodes is already stored in studip
                 if (!empty($series)) {
-                    // add additional episode metadata from opencast
-                    $ordered_episodes = $this->episodeComparison($stored_episodes, $series);
+                    $ordered_episodes[$course_id] = $this->episodeComparison($stored_episodes, $series);
+                } else {
+                    $ordered_episodes[$course_id] = [];
                 }
-
-                return $ordered_episodes;
             } else {
-                return false;
+                return [];
             }
         }
 
-        return $ordered_episodes;
+        return $ordered_episodes[$course_id];
     }
 
     private function episodeComparison($stored_episodes, $oc_episodes)
