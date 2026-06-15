@@ -113,10 +113,6 @@ class RouteMap
         $group->put("/courses/{course_id}/playlist/{token}", Routes\Course\CourseUpdatePlaylist::class);
         $group->delete("/courses/{course_id}/playlist/{token}", Routes\Course\CourseRemovePlaylist::class);
 
-        // Test playlist routes (requires tutor permission)
-        $group->post("/courses/{course_id}/test-playlists", Routes\Course\CourseAddTestPlaylists::class);
-        $group->delete("/courses/{course_id}/test-playlists", Routes\Course\CourseDeleteTestPlaylists::class);
-
         // TODO: Move this a more general course settings route
         $group->put("/courses/{course_id}/upload/{upload}", Routes\Course\CourseSetUpload::class);
         $group->put("/courses/{course_id}/episodes_visibility", Routes\Course\CourseSetDefaultVideosVisibility::class);

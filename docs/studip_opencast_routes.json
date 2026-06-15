@@ -282,7 +282,7 @@
       }
     },
     "/videos/{token}/report": {
-      "put": {
+      "post": {
         "tags": [
           "videos"
         ],
@@ -337,13 +337,13 @@
       }
     },
     "/videos/{token}/playlists": {
-      "put": {
+      "get": {
         "tags": [
           "videos"
         ],
-        "summary": "Set playlist link",
-        "description": "Set playlist links for the video with the passed token, clearing out all not passed playlist links.",
-        "operationId": "linkVideoToPlaylists",
+        "summary": "Get playlists containing a video",
+        "description": "Returns the playlists containing the video with the passed token.",
+        "operationId": "getPlaylistsForVideo",
         "parameters": [
           {
             "name": "token",
@@ -355,30 +355,6 @@
             }
           }
         ],
-        "requestBody": {
-          "description": "List of courses to link to",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "courses": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "successful operation",
@@ -387,16 +363,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string"
+                    "playlists": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Playlist"
+                      }
                     }
                   }
                 }
               }
             }
           }
-        },
-        "x-codegen-request-body-name": "body"
+        }
       }
     },
     "/videos/{token}/shares": {
@@ -537,6 +515,44 @@
                   "properties": {
                     "message": {
                       "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos/{token}/media": {
+      "get": {
+        "tags": [
+          "videos"
+        ],
+        "summary": "Get media information for a video",
+        "description": "Returns media information from Opencast for the video with the passed token.",
+        "operationId": "getMediaForVideo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "ID of the video",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "media": {
+                      "type": "object"
                     }
                   }
                 }
@@ -917,27 +933,52 @@
           }
         }
       },
-      "delete": {
+      "patch": {
         "tags": [
           "playlists"
         ],
-        "summary": "Delete video from playlist",
-        "operationId": "deleteVideoFromPlaylist",
+        "summary": "Remove videos from playlist",
+        "operationId": "removeVideosFromPlaylist",
         "parameters": [
           {
             "name": "token",
             "in": "path",
-            "description": "token reference for playlist or video",
+            "description": "token reference for playlist",
             "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "description": "Video tokens to remove and the course context used for the permission check",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "videos",
+                  "course_id"
+                ],
+                "properties": {
+                  "videos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "course_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {}
+          "204": {
+            "description": "successful operation"
           }
         }
       }
@@ -1125,7 +1166,7 @@
         "x-codegen-request-body-name": "body"
       }
     },
-    "/playlist/{token}/positions": {
+    "/playlists/{token}/positions": {
       "put": {
         "tags": [
           "playlists"
@@ -1137,7 +1178,7 @@
           {
             "name": "token",
             "in": "path",
-            "description": "ID of the video",
+            "description": "ID of the playlist",
             "required": true,
             "schema": {
               "type": "string"
@@ -1145,7 +1186,7 @@
           }
         ],
         "requestBody": {
-          "description": "List of courses to link to",
+          "description": "Ordered list of video tokens",
           "content": {
             "application/json": {
               "schema": {
@@ -1360,6 +1401,80 @@
         }
       }
     },
+    "/courses/{course_id}/verifyCourseSeriesExists": {
+      "post": {
+        "tags": [
+          "courses"
+        ],
+        "summary": "Verify that an Opencast series exists for a course",
+        "description": "Checks whether the configured series exists and recreates it when necessary.",
+        "operationId": "verifyCourseSeriesExists",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "path",
+            "description": "ID of course",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "series_id"
+                ],
+                "properties": {
+                  "series_id": {
+                    "type": "string"
+                  },
+                  "config_id": {
+                    "type": "integer",
+                    "description": "Opencast server config ID; defaults to the configured default server"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The series is valid or the verification returned an error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The missing series was recreated"
+          },
+          "422": {
+            "description": "Required parameters are missing"
+          }
+        }
+      }
+    },
     "/courses/{course_id}/playlist/{token}": {
       "post": {
         "tags": [
@@ -1499,6 +1614,45 @@
           "200": {
             "description": "successful operation",
             "content": {}
+          }
+        }
+      }
+    },
+    "/courses/{course_id}/test-playlists": {
+      "parameters": [
+        {
+          "name": "course_id",
+          "in": "path",
+          "description": "ID of course",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "courses-playlist"
+        ],
+        "summary": "Add test playlists to a course",
+        "description": "Requires tutor permissions for the course.",
+        "operationId": "addTestPlaylistsToCourse",
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "courses-playlist"
+        ],
+        "summary": "Delete test playlists from a course",
+        "description": "Requires tutor permissions for the course.",
+        "operationId": "deleteTestPlaylistsFromCourse",
+        "responses": {
+          "200": {
+            "description": "successful operation"
           }
         }
       }
@@ -1810,6 +1964,54 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "config"
+        ],
+        "summary": "Add an Opencast server configuration",
+        "operationId": "addOpencastServerConfig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "config"
+                ],
+                "properties": {
+                  "config": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "config": {
+                      "type": "object"
+                    },
+                    "message": {
+                      "type": "object"
+                    },
+                    "lti": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/global_config": {
@@ -1873,7 +2075,7 @@
         }
       }
     },
-    "/config/{config_id}": {
+    "/config/{id}": {
       "get": {
         "tags": [
           "config"
@@ -1882,7 +2084,7 @@
         "operationId": "getOpencastServerConfig",
         "parameters": [
           {
-            "name": "config_id",
+            "name": "id",
             "in": "path",
             "description": "ID of the server config",
             "required": true,
@@ -1906,7 +2108,7 @@
         "operationId": "addOrUpdateOpencastServerConfig",
         "parameters": [
           {
-            "name": "config_id",
+            "name": "id",
             "in": "path",
             "description": "ID of the server config",
             "required": true,
@@ -1930,7 +2132,7 @@
         "operationId": "deleteOpencastServerConfig",
         "parameters": [
           {
-            "name": "config_id",
+            "name": "id",
             "in": "path",
             "description": "ID of the server config",
             "required": true,
@@ -2334,6 +2536,48 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "discovery"
+        ],
+        "summary": "List available API routes",
+        "operationId": "getApiDiscoveryIndex",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discovery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/discovery": {
+      "get": {
+        "tags": [
+          "discovery"
+        ],
+        "summary": "List available API routes",
+        "operationId": "getApiDiscovery",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Discovery"
                 }
               }
             }
@@ -2847,6 +3091,40 @@
               },
               "link": {
                 "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Discovery": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "slim-routes"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "attributes": {
+                  "type": "object",
+                  "properties": {
+                    "methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "pattern": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           }
