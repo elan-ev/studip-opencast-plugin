@@ -5,7 +5,7 @@ info:
   license:
     name: GPL v2
     url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.de.html
-  version: 3.29.0
+  version: 3.32.0
 servers:
 - url: https://demo.studip.de/plugins.php/opencast/api
 paths:
