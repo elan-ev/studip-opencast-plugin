@@ -69,6 +69,8 @@ class RouteMap
 
         $group->put("/videos/{token}/worldwide_share", Routes\Video\VideoWorldwideShareUpdate::class);
 
+        $group->get("/videos/{token}/media", Routes\Video\VideoMedia::class);
+
         // Courseware routes
         $group->get("/courseware/videos", Routes\Courseware\CoursewareVideoList::class);
 

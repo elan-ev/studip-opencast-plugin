@@ -53,6 +53,38 @@
                                 </select>
                             </label>
                         </form>
+
+                        <table v-if="captions.length" class="default">
+                            <caption>
+                                {{ $gettext('Untertiteldateien') }}
+                            </caption>
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col style="width: 1%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>{{ $gettext('Sprache') }}</th>
+                                    <th>{{ $gettext('Datei(en)') }}</th>
+                                    <th>{{ $gettext('Aktionen') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="caption in captions" :key="caption.identifier">
+                                    <td>{{ getCaptionLanguage(caption) || $gettext('unbekannt') }}</td>
+                                    <td>{{ getMediaText(caption) }}</td>
+                                    <td>
+                                        <a
+                                            :href="caption.uri"
+                                            :download="getCaptionFileName(caption)"
+                                        >
+                                            {{ $gettext('Herunterladen') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="oc--download-messages">
                         <MessageList :float="true" :dialog="true" />
@@ -79,9 +111,7 @@
 <script>
 import StudipDialog from '@studip/StudipDialog';
 import MessageList from '@/components/MessageList';
-import ProgressBar from '@/components/ProgressBar';
-
-import axios from '@/common/axios.service';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'VideoDownload',
@@ -89,7 +119,6 @@ export default {
     components: {
         StudipDialog,
         MessageList,
-        ProgressBar,
     },
 
     props: ['event'],
@@ -105,6 +134,12 @@ export default {
     },
 
     computed: {
+        ...mapGetters(['videosMedia']),
+
+        captions() {
+            return (this.videosMedia || []).filter((media) => media.tags?.includes('type:closed-caption'));
+        },
+
         hasPresenterVideo() {
             return this.presenters.length > 0;
         },
@@ -134,6 +169,18 @@ export default {
             return this.event.title + ' (' + res + ').' + ext;
         },
 
+        getCaptionLanguage(caption) {
+            return caption.tags?.find((tag) => tag.startsWith('lang:'))?.substring(5) || '';
+        },
+
+        getCaptionFileName(caption) {
+            let extension = caption?.uri?.split(/[?#]/)[0].split('.').pop() || 'vtt';
+            let language = this.getCaptionLanguage(caption);
+            language = language ? ' (' + language + ')' : '';
+
+            return this.event.title + language + '.' + extension;
+        },
+
         extractDownloads() {
             let presentations = this.event?.publication?.downloads?.presentation || [];
             for (const size in presentations) {
@@ -151,7 +198,7 @@ export default {
         },
 
         getMediaText(media) {
-            let text = media?.info || '';
+            let text = media?.info || media?.uri?.split(/[?#]/)[0].split('/').pop() || '';
             text = text.replace(' * ', ' x ');
             let size = media?.size || 0;
 
@@ -197,6 +244,10 @@ export default {
             this.selectedSource = 'presentation';
             this.selectedMedia = this.presentations[0];
         }
+
+        this.$store.dispatch('loadVideoMedia', {
+            token: this.event.token,
+        })
     },
     watch: {
         selectedSource(newSource) {

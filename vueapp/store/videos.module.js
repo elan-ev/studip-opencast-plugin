@@ -21,6 +21,7 @@ const state = {
     videoShares: {},
     courseVideosToCopy: [],
     videosReload: false,
+    videosMedia: [],
     showEpisodesDefaultVisibilityDialog: false,
 }
 
@@ -75,6 +76,10 @@ const getters = {
 
     showEpisodesDefaultVisibilityDialog(state) {
         return state.showEpisodesDefaultVisibilityDialog
+    },
+
+    videosMedia(state) {
+        return state.videosMedia
     }
 }
 
@@ -194,6 +199,15 @@ const actions = {
             });
     },
 
+    async loadVideoMedia({ commit }, data = []) {
+        commit('setVideosMedia', []);
+
+        return ApiService.get('videos/' + data.token + '/media')
+            .then(({ data }) => {
+                commit('setVideosMedia', data.media ?? []);
+            });
+    },
+
     async uploadSortPositions({}, data) {
         return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
     },
@@ -298,6 +312,10 @@ const mutations = {
 
     setVideosCount(state, videosCount) {
         state.videosCount = videosCount;
+    },
+
+    setVideosMedia(state, videosMedia) {
+        state.videosMedia = videosMedia;
     },
 
     setLimit(state, limit) {
