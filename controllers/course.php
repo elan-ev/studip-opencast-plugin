@@ -215,19 +215,16 @@ class CourseController extends OpencastController
 
     private function get_ordered_episode_ids()
     {
+        $ordered_episode_ids = [];
         try {
             $oc_course = new OCCourseModel($this->course_id);
             if ($oc_course->getSeriesID()) {
                 $ordered_episode_ids = $oc_course->getEpisodes();
-                if (!OCPerm::editAllowed($this->course_id)) {
-                    $ordered_episode_ids = $oc_course->refineEpisodesForStudents($ordered_episode_ids);
-                }
             }
-
-            return $ordered_episode_ids;
         } catch (Exception $e) {
-            return false;
+            return [];
         }
+        return $ordered_episode_ids;
     }
 
     public function search_episodes_action()
