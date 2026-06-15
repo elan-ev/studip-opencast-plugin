@@ -49,7 +49,7 @@ eigenen Planungsansicht. Hiermit entfällt die mehrfache Eingabe von Metadaten.
 *Kontrolle der Sichtbarkeit:* Die DozentInnen können die Sichtbarkeit jeder
 Aufzeichnung in Stud.IP individuell festlegen.
 
-> ![Das Opencast-Stud.IP-Plugin](images/opencastplayer.png)
+> ![Das Opencast-Stud.IP-Plugin](images/opencast-plugin.png)
 
 
 Features im Überblick
