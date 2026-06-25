@@ -5,7 +5,7 @@ info:
   license:
     name: GPL v2
     url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.de.html
-  version: 3.29.0
+  version: 3.32.0
 servers:
 - url: https://demo.studip.de/plugins.php/opencast/api
 paths:
@@ -186,7 +186,7 @@ paths:
                     $ref: '#/components/schemas/Video'
 
   /videos/{token}/report:
-    put:
+    post:
       tags:
       - videos
       summary: Send technical feedback
@@ -221,12 +221,12 @@ paths:
                     type: string
       x-codegen-request-body-name: body
   /videos/{token}/playlists:
-    put:
+    get:
       tags:
       - videos
-      summary: Set playlist link
-      description: Set playlist links for the video with the passed token, clearing out all not passed playlist links.
-      operationId: linkVideoToPlaylists
+      summary: Get playlists containing a video
+      description: Returns the playlists containing the video with the passed token.
+      operationId: getPlaylistsForVideo
       parameters:
       - name: token
         in: path
@@ -234,21 +234,6 @@ paths:
         required: true
         schema:
           type: string
-      requestBody:
-        description: List of courses to link to
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                courses:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-        required: true
       responses:
         200:
           description: successful operation
@@ -257,9 +242,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-      x-codegen-request-body-name: body
+                  playlists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Playlist'
   /videos/{token}/shares:
     get:
       tags:
@@ -355,6 +341,31 @@ paths:
                 properties:
                   message:
                     type: string
+
+  /videos/{token}/media:
+    get:
+      tags:
+      - videos
+      summary: Get media information for a video
+      description: Returns media information from Opencast for the video with the passed token.
+      operationId: getMediaForVideo
+      parameters:
+      - name: token
+        in: path
+        description: ID of the video
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  media:
+                    type: object
 
   /courseware/videos:
     get:
@@ -602,22 +613,38 @@ paths:
             application/json:
               schema:
                 type: object
-    delete:
+    patch:
       tags:
       - playlists
-      summary: Delete video from playlist
-      operationId: deleteVideoFromPlaylist
+      summary: Remove videos from playlist
+      operationId: removeVideosFromPlaylist
       parameters:
       - name: token
         in: path
-        description: token reference for playlist or video
+        description: token reference for playlist
         required: true
         schema:
           type: string
+      requestBody:
+        description: Video tokens to remove and the course context used for the permission check
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - videos
+              - course_id
+              properties:
+                videos:
+                  type: array
+                  items:
+                    type: string
+                course_id:
+                  type: string
+        required: true
       responses:
-        200:
+        204:
           description: successful operation
-          content: {}
 
   /playlists/{token}/user:
     put:
@@ -741,7 +768,7 @@ paths:
                     type: string
       x-codegen-request-body-name: body
 
-  /playlist/{token}/positions:
+  /playlists/{token}/positions:
     put:
       tags:
       - playlists
@@ -751,12 +778,12 @@ paths:
       parameters:
       - name: token
         in: path
-        description: ID of the video
+        description: ID of the playlist
         required: true
         schema:
           type: string
       requestBody:
-        description: List of courses to link to
+        description: Ordered list of video tokens
         content:
           application/json:
             schema:
@@ -898,6 +925,54 @@ paths:
               schema:
                 type: object
 
+  /courses/{course_id}/verifyCourseSeriesExists:
+    post:
+      tags:
+      - courses
+      summary: Verify that an Opencast series exists for a course
+      description: Checks whether the configured series exists and recreates it when necessary.
+      operationId: verifyCourseSeriesExists
+      parameters:
+      - name: course_id
+        in: path
+        description: ID of course
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - series_id
+              properties:
+                series_id:
+                  type: string
+                config_id:
+                  type: integer
+                  description: Opencast server config ID; defaults to the configured default server
+        required: true
+      responses:
+        200:
+          description: The series is valid or the verification returned an error message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      text:
+                        type: string
+        201:
+          description: The missing series was recreated
+        422:
+          description: Required parameters are missing
+
   /courses/{course_id}/playlist/{token}:
     post:
       tags:
@@ -989,6 +1064,33 @@ paths:
         200:
           description: successful operation
           content: {}
+
+  /courses/{course_id}/test-playlists:
+    parameters:
+    - name: course_id
+      in: path
+      description: ID of course
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - courses-playlist
+      summary: Add test playlists to a course
+      description: Requires tutor permissions for the course.
+      operationId: addTestPlaylistsToCourse
+      responses:
+        200:
+          description: successful operation
+    delete:
+      tags:
+      - courses-playlist
+      summary: Delete test playlists from a course
+      description: Requires tutor permissions for the course.
+      operationId: deleteTestPlaylistsFromCourse
+      responses:
+        200:
+          description: successful operation
 
   /courses/{course_id}/{semester_filter}/schedule:
     get:
@@ -1191,6 +1293,36 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/OpencastConfig'
+    post:
+      tags:
+      - config
+      summary: Add an Opencast server configuration
+      operationId: addOpencastServerConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - config
+              properties:
+                config:
+                  type: object
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  config:
+                    type: object
+                  message:
+                    type: object
+                  lti:
+                    type: object
 
   /global_config:
     put:
@@ -1233,14 +1365,14 @@ paths:
                     type: string
 
 
-  /config/{config_id}:
+  /config/{id}:
     get:
       tags:
       - config
       summary: Get opencast configuration for server
       operationId: getOpencastServerConfig
       parameters:
-      - name: config_id
+      - name: id
         in: path
         description: ID of the server config
         required: true
@@ -1256,7 +1388,7 @@ paths:
       summary: Add or Update opencast configuration for server
       operationId: addOrUpdateOpencastServerConfig
       parameters:
-      - name: config_id
+      - name: id
         in: path
         description: ID of the server config
         required: true
@@ -1272,7 +1404,7 @@ paths:
       summary: Delete opencast configuration for server
       operationId: deleteOpencastServerConfig
       parameters:
-      - name: config_id
+      - name: id
         in: path
         description: ID of the server config
         required: true
@@ -1541,6 +1673,34 @@ paths:
                   properties:
                     series_id:
                       type: string
+
+  /:
+    get:
+      tags:
+      - discovery
+      summary: List available API routes
+      operationId: getApiDiscoveryIndex
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discovery'
+
+  /discovery:
+    get:
+      tags:
+      - discovery
+      summary: List available API routes
+      operationId: getApiDiscovery
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discovery'
 
 components:
   schemas:
@@ -1888,3 +2048,26 @@ components:
               type: string
             link:
               type: string
+
+    Discovery:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: slim-routes
+              id:
+                type: string
+              attributes:
+                type: object
+                properties:
+                  methods:
+                    type: array
+                    items:
+                      type: string
+                  pattern:
+                    type: string

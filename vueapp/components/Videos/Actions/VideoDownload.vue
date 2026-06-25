@@ -11,66 +11,96 @@
             <template #dialogContent>
                 <div class="oc--download-list-container">
                     <div class="oc--download-list">
-                        <form class="default">
-                            <label>
-                                {{ $gettext('Videoquelle') }}
-                            </label>
-                            <label
-                                ><input
-                                    type="radio"
-                                    value="presenter"
-                                    v-model="selectedSource"
-                                    :disabled="!hasPresenterVideo"
-                                />
-                                {{ $gettext('Aufzeichnung der vortragenden Person') }}</label
-                            >
-                            <label
-                                ><input
-                                    type="radio"
-                                    value="presentation"
-                                    v-model="selectedSource"
-                                    :disabled="!hasPresentationVideo"
-                                />
-                                {{ $gettext('Aufzeichnung des Bildschirms') }}</label
-                            >
-                            <label>
-                                {{ $gettext('Videoqualität') }}
-                                <select v-model="selectedMedia">
-                                    <template v-if="selectedSource === 'presenter'">
-                                        <option v-for="(media, index) in presenters" :key="index" :value="media">
-                                            {{ getMediaText(media) }}
-                                        </option>
-                                    </template>
-                                    <template v-else>
-                                        <option
-                                            v-for="(media, index) in presentations"
-                                            :key="index"
-                                            :value="media"
+                        <table v-if="videoDownloads.length" class="default">
+                            <caption>
+                                {{ $gettext('Videos') }}
+                            </caption>
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col style="width: 1%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>{{ $gettext('Videoquelle') }}</th>
+                                    <th>{{ $gettext('Datei(en)') }}</th>
+                                    <th>{{ $gettext('Aktionen') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="download in videoDownloads" :key="download.source + '-' + download.media.size">
+                                    <td>{{ getSourceText(download.source) }}</td>
+                                    <td>{{ getMediaText(download.media) }}</td>
+                                    <td>
+                                        <a
+                                            v-if="downloadAllowed"
+                                            :href="getDownloadUrl(download)"
+                                            :download="getFileName(download.media)"
+                                            :title="$gettext('Herunterladen')"
                                         >
-                                            {{ getMediaText(media) }}
-                                        </option>
-                                    </template>
-                                </select>
-                            </label>
-                        </form>
+                                            <StudipIcon shape="download" role="clickable" />
+                                        </a>
+
+                                        <StudipIcon
+                                            v-if="event.visibility == 'public'"
+                                            shape="clipboard"
+                                            role="clickable"
+                                            :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                            class="oc--download-copy-icon"
+                                            @click="copyToClipboard(download.media.url)"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table v-if="captions.length" class="default">
+                            <caption>
+                                {{ $gettext('Untertiteldateien') }}
+                            </caption>
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col style="width: 1%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>{{ $gettext('Sprache') }}</th>
+                                    <th>{{ $gettext('Datei(en)') }}</th>
+                                    <th>{{ $gettext('Aktionen') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="caption in captions" :key="caption.identifier">
+                                    <td>{{ getCaptionLanguage(caption) || $gettext('unbekannt') }}</td>
+                                    <td>{{ getMediaText(caption) }}</td>
+                                    <td>
+                                        <a
+                                            v-if="downloadAllowed"
+                                            :href="caption.uri"
+                                            :download="getCaptionFileName(caption)"
+                                            :title="$gettext('Herunterladen')"
+                                        >
+                                            <StudipIcon shape="download" role="clickable" />
+                                        </a>
+
+                                        <StudipIcon
+                                            v-if="event.visibility == 'public'"
+                                            shape="clipboard"
+                                            role="clickable"
+                                            :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                            class="oc--download-copy-icon"
+                                            @click="copyToClipboard(caption.uri)"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="oc--download-messages">
                         <MessageList :float="true" :dialog="true" />
                     </div>
                 </div>
-            </template>
-            <template #dialogButtons>
-                <button
-                    v-if="event.visibility == 'public'"
-                    class="button"
-                    :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                    @click="copyToClipboard()"
-                >
-                    {{ $gettext('Link kopieren') }}
-                </button>
-                <a :href="downloadUrl" :download="selectedFileName" class="button">
-                    {{ $gettext('Herunterladen') }}
-                </a>
             </template>
         </StudipDialog>
     </div>
@@ -78,18 +108,18 @@
 
 <script>
 import StudipDialog from '@studip/StudipDialog';
+import StudipIcon from '@studip/StudipIcon';
 import MessageList from '@/components/MessageList';
-import ProgressBar from '@/components/ProgressBar';
-
-import axios from '@/common/axios.service';
+import { isDownloadAllowed } from '@/common/config-options';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'VideoDownload',
 
     components: {
         StudipDialog,
+        StudipIcon,
         MessageList,
-        ProgressBar,
     },
 
     props: ['event'],
@@ -98,40 +128,64 @@ export default {
         return {
             presentations: [],
             presenters: [],
-            copied: null,
-            selectedSource: '',
-            selectedMedia: null,
         };
     },
 
     computed: {
-        hasPresenterVideo() {
-            return this.presenters.length > 0;
+        ...mapGetters(['videosMedia', 'playlist', 'downloadSetting', 'currentUser']),
+
+        captions() {
+            return (this.videosMedia || []).filter((media) => media.tags?.includes('type:closed-caption'));
         },
 
-        hasPresentationVideo() {
-            return this.presentations.length > 0;
+        downloadAllowed() {
+            return isDownloadAllowed({
+                downloadSetting: this.downloadSetting,
+                playlist: this.playlist,
+                event: this.event,
+                currentUser: this.currentUser
+            });
         },
 
-        selectedMediaIndex() {
-            return this.selectedMedia?.size;
+        videoDownloads() {
+            return [
+                ...this.presenters.map((media) => ({ source: 'presenter', media })),
+                ...this.presentations.map((media) => ({ source: 'presentation', media })),
+            ];
         },
-
-        downloadUrl() {
-            return window.OpencastPlugin.REDIRECT_URL + '/download/' + this.event.token + '/' + this.selectedSource + '/' + this.selectedMediaIndex;
-        },
-
-        selectedFileName() {
-            return this.getFileName(this.selectedMedia);
-        }
     },
 
     methods: {
+        getDownloadUrl(download) {
+            return window.OpencastPlugin.REDIRECT_URL
+                + '/download/' + this.event.token
+                + '/' + download.source
+                + '/' + download.media.size;
+        },
+
+        getSourceText(source) {
+            return source === 'presenter'
+                ? this.$gettext('Aufzeichnung der vortragenden Person')
+                : this.$gettext('Aufzeichnung des Bildschirms');
+        },
+
         getFileName(media) {
             let res = media?.info || '';
             res = res.replace(' * ', ' x ').replace(/\s+/g, '');
             let ext = media?.url.split('.').pop() || '';
             return this.event.title + ' (' + res + ').' + ext;
+        },
+
+        getCaptionLanguage(caption) {
+            return caption.tags?.find((tag) => tag.startsWith('lang:'))?.substring(5) || '';
+        },
+
+        getCaptionFileName(caption) {
+            let extension = caption?.uri?.split(/[?#]/)[0].split('.').pop() || 'vtt';
+            let language = this.getCaptionLanguage(caption);
+            language = language ? ' (' + language + ')' : '';
+
+            return this.event.title + language + '.' + extension;
         },
 
         extractDownloads() {
@@ -151,7 +205,7 @@ export default {
         },
 
         getMediaText(media) {
-            let text = media?.info || '';
+            let text = media?.info || media?.uri?.split(/[?#]/)[0].split('/').pop() || '';
             text = text.replace(' * ', ' x ');
             let size = media?.size || 0;
 
@@ -172,9 +226,8 @@ export default {
             return text;
         },
 
-        copyToClipboard() {
-            const text = this.selectedMedia?.url;
-            navigator.clipboard.writeText(text);
+        copyToClipboard(url) {
+            navigator.clipboard.writeText(url);
             this.$store.dispatch('clearMessages', true);
             let message = {
                 type: 'info',
@@ -190,23 +243,17 @@ export default {
 
     mounted() {
         this.extractDownloads();
-        if (this.hasPresenterVideo) {
-            this.selectedSource = 'presenter';
-            this.selectedMedia = this.presenters[0];
-        } else {
-            this.selectedSource = 'presentation';
-            this.selectedMedia = this.presentations[0];
-        }
-    },
-    watch: {
-        selectedSource(newSource) {
-            if (newSource === 'presenter') {
-                this.selectedMedia = this.presenters[0];
-            }
-            if (newSource === 'presentation') {
-                this.selectedMedia = this.presentations[0];
-            }
-        }
+
+        this.$store.dispatch('loadVideoMedia', {
+            token: this.event.token,
+        })
     }
 };
 </script>
+
+<style scoped>
+.oc--download-copy-icon {
+    margin-left: 5px;
+    cursor: pointer;
+}
+</style>

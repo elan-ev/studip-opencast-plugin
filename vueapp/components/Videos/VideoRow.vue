@@ -235,6 +235,7 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 import StudipButton from '@/components/Studip/StudipButton';
 import StudipIcon from '@/components/Studip/StudipIcon';
 import StudipActionMenu from '@/components/Studip/StudipActionMenu';
+import { isDownloadAllowed } from '@/common/config-options';
 
 import Tag from '@/components/Tag.vue';
 
@@ -459,16 +460,12 @@ export default {
         },
 
         downloadAllowed() {
-            if (this.downloadSetting !== 'never') {
-                if (this.canEdit) {
-                    return true;
-                } else if (this.playlist && this.playlist['allow_download'] !== undefined) {
-                    return this.playlist['allow_download'];
-                } else {
-                    return this.downloadSetting === 'allow';
-                }
-            }
-            return false;
+            return isDownloadAllowed({
+                downloadSetting: this.downloadSetting,
+                playlist: this.playlist,
+                event: this.event,
+                 currentUser: this.currentUser
+            });
         },
 
         getDuration() {
@@ -527,45 +524,16 @@ export default {
                     if (this.event?.state !== 'running') {
                         menuItems.push({
                             id: 1,
-                            label: this.$gettext('Bearbeiten'),
+                            label: this.$gettext('Bearbeiten & Sichtbarkeit'),
                             icon: 'edit',
                             emit: 'performAction',
                             emitArguments: 'VideoEdit',
                         });
                     }
 
-                    /*
-                    if (this.playlistForVideos) {
-                        menuItems.push({
-                            id: 3,
-                            label: this.$gettext('Zur Wiedergabeliste hinzufügen'),
-                            icon: 'add',
-                            emit: 'performAction',
-                            emitArguments: 'VideoAddToPlaylist'
-                        });
-                    }
-                    */
-
-                    /*
-                    menuItems.push({
-                        label: this.$gettext('Zu Wiedergabeliste hinzufügen'),
-                        icon: 'add',
-                        emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists'
-                    });
-                    */
-
-                    menuItems.push({
-                        id: 3,
-                        label: this.$gettext('Verknüpfungen'),
-                        icon: 'group',
-                        emit: 'performAction',
-                        emitArguments: 'VideoLinkToPlaylists',
-                    });
-
                     if (this.canShare) {
                         menuItems.push({
-                            id: 4,
+                            id: 3,
                             label: this.$gettext('Video freigeben'),
                             icon: 'share',
                             emit: 'performAction',
@@ -575,7 +543,7 @@ export default {
 
                     if (this.canShare && this.event.visibility === 'public') {
                         menuItems.push({
-                            id: 4,
+                            id: 5,
                             label: this.$gettext('Einbettungsoptionen anzeigen'),
                             icon: 'code',
                             emit: 'performAction',
@@ -586,8 +554,8 @@ export default {
                     // As we abandoned the preview object structure, we now have to only validate the preview URL!
                     if ((this.event?.preview || this.event?.state == 'cutting') && !this.isLivestream) {
                         menuItems.push({
-                            id: 5,
-                            label: this.$gettext('Videoeditor öffnen'),
+                            id: 2,
+                            label: this.$gettext('Video- & Untertiteleditor öffnen'),
                             icon: 'video2',
                             emit: 'performAction',
                             emitArguments: 'VideoCut',
@@ -604,15 +572,14 @@ export default {
                         });
                     }
 
-                    if (this.event?.state !== 'running' && !this.isLivestream) {
-                        menuItems.push({
-                            id: 7,
-                            label: this.$gettext('Untertitel bearbeiten'),
-                            icon: 'accessibility',
-                            emit: 'performAction',
-                            emitArguments: 'VideoCut',
-                        });
-                    }
+                    menuItems.push({
+                        id: 7,
+                        label: this.$gettext('Verknüpfungen mit Wiedergabelisten'),
+                        icon: 'group',
+                        emit: 'performAction',
+                        emitArguments: 'VideoLinkToPlaylists',
+                    });
+
 
                     if (!this.isCourse && !this.isLivestream) {
                         menuItems.push({
@@ -636,7 +603,7 @@ export default {
                 }
                 if (this.downloadAllowed && this.event?.state !== 'running' && !this.isLivestream) {
                     menuItems.push({
-                        id: 2,
+                        id: 4,
                         label: this.$gettext('Medien herunterladen'),
                         icon: 'download',
                         emit: 'performAction',
