@@ -41,7 +41,7 @@
                             <div class="oc--playlist-video-sort__wrapper">
                                 <span class="oc--playlist-video-sort__title">{{ video.title }}</span>
                                 <div class="oc--playlist-video-sort__meta">
-                                    <span class="oc--playlist-video-sort__creator">{{ video.owner.fullname }}</span>
+                                    <span class="oc--playlist-video-sort__creator">{{ video.owner?.fullname }}</span>
                                     <span class="oc--playlist-video-sort__duration">
                                         <StudipIcon shape="video" role="info" />
                                         {{ formatDuration(video.duration) }}
@@ -63,7 +63,8 @@
 <script setup>
 import { computed, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import draggable from 'vuedraggable';
-import StudipDialog from '@studip/StudipDialog.vue';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import StudipIcon from '@studip/StudipIcon.vue';
 import { useFormat } from '@/composables/useFormat';
 import { useStore } from 'vuex';

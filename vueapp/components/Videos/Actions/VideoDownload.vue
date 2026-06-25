@@ -102,8 +102,6 @@ export default {
     name: 'VideoDownload',
 
     components: {
-        StudipDialog,
-        StudipIcon,
         MessageList,
     },
 

@@ -27,7 +27,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 import { mapGetters } from "vuex";
 

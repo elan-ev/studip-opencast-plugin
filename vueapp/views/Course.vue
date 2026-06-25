@@ -38,7 +38,8 @@ export default {
                     series_id: course_config.series.series_id,
                     config_id: course_config.config_id
                 };
-                await this.$store.dispatch('verifyCourseSeriesExists', params);
+
+                this.$store.dispatch('config/verifyCourseSeriesExists', params);
             }
         });
     },

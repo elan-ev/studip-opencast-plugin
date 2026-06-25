@@ -70,7 +70,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import TagBar from '@/components/TagBar.vue';
 import VideoChangeWarning from '@/components/Videos/VideoChangeWarning';
 

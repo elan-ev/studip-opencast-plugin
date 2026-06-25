@@ -63,7 +63,8 @@ import GlobalOptions from "@/components/Config/GlobalOptions";
 import SchedulingOptions from "@/components/Config/SchedulingOptions";
 import MessageBox from "@/components/MessageBox";
 import SchedulingEditModal from "@/components/Config/SchedulingEditModal";
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 
 export default {
     name: "AdminConfigs",

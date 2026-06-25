@@ -71,7 +71,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import UserCourseSelectable from '@/components/UserCourseSelectable';
 import VideosTable from '@/components/Videos/VideosTable';
 

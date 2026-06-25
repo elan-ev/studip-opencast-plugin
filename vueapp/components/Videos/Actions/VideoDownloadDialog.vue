@@ -84,7 +84,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import MessageList from '@/components/MessageList';
 import ProgressBar from '@/components/ProgressBar';
 

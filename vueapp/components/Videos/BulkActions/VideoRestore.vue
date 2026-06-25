@@ -18,7 +18,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 
 export default {
     name: 'VideoRestore',

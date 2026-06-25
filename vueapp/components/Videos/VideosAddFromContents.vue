@@ -28,6 +28,7 @@
 import { mapGetters } from "vuex";
 
 import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideosTable from "@/components/Videos/VideosTable";
 
 export default {

@@ -28,6 +28,7 @@
 import { mapGetters } from "vuex";
 
 import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import PlaylistsTable from "@/components/Playlists/PlaylistsTable.vue";
 import ApiService from "@/common/api.service";
 

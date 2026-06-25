@@ -321,7 +321,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import StudipIcon from '@studip/StudipIcon.vue';
 import MessageBox from '@/components/MessageBox';
 import MessageList from '@/components/MessageList';

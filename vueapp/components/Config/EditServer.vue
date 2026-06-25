@@ -62,7 +62,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import MessageList from '@/components/MessageList';
 import ConfigOption from '@/components/Config/ConfigOption';
 import WorkflowOptions from '@/components/Config/WorkflowOptions';

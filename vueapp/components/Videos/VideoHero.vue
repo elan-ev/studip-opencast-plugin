@@ -43,8 +43,8 @@ const props = defineProps({
     },
 });
 
-const ownerId = computed(() => props.video.owner.id);
-const ownerName = computed(() => props.video.owner.fullname);
+const ownerId = computed(() => props.video.owner?.id);
+const ownerName = computed(() => props.video.owner?.fullname);
 const { avatarUrl } = useAvatar(ownerId);
 
 const preview = computed(() => previewSrc(props.video));

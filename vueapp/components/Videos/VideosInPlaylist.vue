@@ -84,7 +84,8 @@ const { proxy } = getCurrentInstance();
 const $gettext = proxy.$gettext;
 const $ngettext = proxy.$ngettext;
 import StudipIcon from '@studip/StudipIcon';
-import StudipDialog from '@studip/StudipDialog.vue';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import Tag from '@/components/Tag.vue';
 
 const store = useStore();

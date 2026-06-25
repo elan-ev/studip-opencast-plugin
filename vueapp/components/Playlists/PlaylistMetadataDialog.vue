@@ -30,7 +30,8 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import TagBar from '@/components/TagBar.vue';
 import { useStore } from 'vuex';
 

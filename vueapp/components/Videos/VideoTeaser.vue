@@ -23,5 +23,5 @@ const props = defineProps({
     },
 });
 const preview = previewSrc(props.video);
-const ownerName = computed(() => props.video.owner.fullname);
+const ownerName = computed(() => props.video.owner?.fullname);
 </script>

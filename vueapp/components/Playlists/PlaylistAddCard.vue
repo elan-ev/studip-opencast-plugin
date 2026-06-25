@@ -52,7 +52,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import StudipIcon from "@studip/StudipIcon";
 import PlaylistAddNewCard from "@/components/Playlists/PlaylistAddNewCard";
 import PlaylistsCopyCard from "@/components/Playlists/PlaylistsCopyCard";

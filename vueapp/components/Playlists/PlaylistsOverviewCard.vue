@@ -58,7 +58,8 @@ import { computed, getCurrentInstance, ref } from 'vue';
 import PlaylistThumbnailStack from './PlaylistThumbnailStack.vue';
 import ActionMenu from '../Layouts/ActionMenu.vue';
 import StudipIcon from '@studip/StudipIcon.vue';
-import StudipDialog from '@studip/StudipDialog.vue';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import Tag from '@/components/Tag.vue';
 import { useStore } from 'vuex';
 import PlaylistMetadataDialog from './PlaylistMetadataDialog.vue';

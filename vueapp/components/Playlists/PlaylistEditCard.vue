@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 
 import TagBar from '@/components/TagBar.vue';
 

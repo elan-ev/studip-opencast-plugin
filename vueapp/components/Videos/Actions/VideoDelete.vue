@@ -40,7 +40,8 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 
 export default {

@@ -229,10 +229,10 @@ const readableDate = computed(() => {
     return selectedVideo.value ? formatISODateTime(selectedVideo.value.created) : '';
 });
 const ownerId = computed(() => {
-    return selectedVideo.value ? selectedVideo.value.owner.id : null;
+    return selectedVideo.value ? selectedVideo.value.owner?.id : null;
 });
 const ownerName = computed(() => {
-    return selectedVideo.value ? selectedVideo.value.owner.fullname : '';
+    return selectedVideo.value ? selectedVideo.value.owner?.fullname : '';
 });
 const { avatarUrl } = useAvatar(ownerId);
 const preview = computed(() => {

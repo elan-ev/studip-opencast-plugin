@@ -50,7 +50,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideoUpload from "@/components/Videos/VideoUpload";
 import VideosAddFromContents from "@/components/Videos/VideosAddFromContents";
 import VideosAddFromCourses from "@/components/Videos/VideosAddFromCourses";

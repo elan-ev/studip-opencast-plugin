@@ -49,6 +49,7 @@ import { useGettext } from 'vue3-gettext';
 
 import StudipDialog from "@/components/Studip/StudipDialog.vue";
 
+
 export default {
     name: "EpisodesDefaultVisibilityDialog",
     components: {
