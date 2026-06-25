@@ -54,12 +54,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['availableTags'])
+        ...mapGetters('playlists', ['availableTags'])
     },
 
     mounted() {
         // update available tags
-        this.$store.dispatch('updateAvailableTags');
+        this.$store.dispatch('playlists/updateAvailableTags');
     }
 }
 </script>

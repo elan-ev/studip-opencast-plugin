@@ -1,199 +1,210 @@
 <template>
     <span>
-        <span v-if="setting.type == 'boolean'">
-            <div>
-                <span :class="{
-                    required: setting.required
-                }">
-                    {{ setting.description }}
-                </span>
-            </div>
-
-            <section class="hgroup size-s">
-                <label>
-                    <input type="radio" value="1"
-                        :name="setting.name"
-                        :checked="setting.value == true"
-                        @change='setValue(true)'
-                        :required="setting.required"
-                        :disabled="disabled"
-                    >
-                    {{ $gettext('Ja') }}
-                </label>
-
-                <label>
-                    <input type="radio" value="0"
-                        :name="setting.name"
-                        :checked="setting.value != true"
-                        @change='setValue(false)'
-                        :required="setting.required"
-                        :disabled="disabled"
-                    >
-                    {{ $gettext('Nein') }}
-                </label>
-            </section>
-        </span>
-
-        <label v-if="setting.type == 'string' && !setting.options && !isI18N(setting)">
-            <span :class="{
-                required: setting.required
-            }">
-                {{ setting.description }}
+        <label v-if="mappedSetting.type === 'boolean'">
+            <span>
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
+                ></span>
             </span>
-            <input type="text"
-                :name="setting.name"
-                :placeholder="setting.placeholder"
-                v-model="setting.value"
-                @change="setValue(setting.value)"
-                :required="setting.required"
+            <LayoutSwitch
+                :model-value="setting.value"
+                @update:model-value="setValue"
+                :required="mappedSetting.required"
                 :disabled="disabled"
-            >
+            />
         </label>
 
-        <label v-if="(setting.type == 'string' || setting.type == 'integer') && setting.options && !isI18N(setting)">
-            <span :class="{
-                required: setting.required
-            }">
-                {{ setting.description }}
+        <label v-if="mappedSetting.type === 'string' && !mappedSetting.options && !mappedSetting.i18n">
+            <span :class="{ required: mappedSetting.required }">
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
+                >
+                </span>
+            </span>
+            <input
+                type="text"
+                :name="mappedSetting.name"
+                :placeholder="mappedSetting.placeholder"
+                v-model="localValue"
+                @change="setValue(mappedSetting.value)"
+                :required="mappedSetting.required"
+                :disabled="disabled"
+            />
+        </label>
+
+        <label
+            v-if="
+                (mappedSetting.type === 'string' || mappedSetting.type === 'integer') &&
+                mappedSetting.options &&
+                !mappedSetting.i18n
+            "
+        >
+            <span :class="{ required: mappedSetting.required }">
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
+                >
+                </span>
             </span>
             <studip-select
-                v-model="setting.value"
-                :options="setting.options"
+                v-model="localValue"
+                :clearable="false"
+                :options="mappedSetting.options"
                 :reduce="(option) => option.value"
                 label="description"
-                @option:selected="setValue(setting.value)"/>
+                @option:selected="setValue(mappedSetting.value)"
+            />
         </label>
 
-        <label v-if="setting.type == 'integer' && !setting.options">
-            <span :class="{
-                required: setting.required
-            }">
-                {{ setting.description }}
-            </span>
-            <input type="number"
-                :name="setting.name"
-                :placeholder="setting.placeholder"
-                v-model="setting.value"
-                @change="setValue(setting.value)"
-                :required="setting.required"
-                :disabled="disabled"
-            >
-        </label>
-
-        <label v-if="setting.type == 'password'">
-            <span :class="{
-                required: setting.required
-            }">
-                {{ setting.description }}
-            </span>
-
-
-            <div class="input-group files-search oc--admin-password">
-
-                <input :type="passwordVisible ? 'text' : 'password'"
-                    @change="setValue(password)"
-                    @focusin="passwordFocused=true"
-                    @focusout="passwordFocused=false"
-                    v-model="password"
-                    :placeholder="setting.placeholder"
-                    :required="setting.required"
-                    :disabled="disabled"
+        <label v-if="mappedSetting.type === 'integer' && !mappedSetting.options">
+            <span :class="{ required: mappedSetting.required }">
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
                 >
+                </span>
+            </span>
+            <input
+                type="number"
+                :name="mappedSetting.name"
+                :placeholder="mappedSetting.placeholder"
+                v-model="localValue"
+                @change="setValue(mappedSetting.value)"
+                :required="mappedSetting.required"
+                :disabled="disabled"
+            />
+        </label>
 
-                <span class="input-group-append ">
-                    <button class="button" @click.stop="togglePasswordVis($event)">
-                        <StudipIcon shape="visibility-visible" role="clickable" v-if="passwordVisible"/>
-                        <StudipIcon shape="visibility-invisible" role="clickable" v-if="!passwordVisible"/>
+        <label v-if="mappedSetting.type === 'password'">
+            <span :class="{ required: mappedSetting.required }">
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
+                >
+                </span>
+            </span>
+            <div class="input-group files-search oc--admin-password">
+                <input
+                    :type="passwordVisible ? 'text' : 'password'"
+                    v-model="password"
+                    @change="setValue(password)"
+                    @focusin="passwordFocused = true"
+                    @focusout="passwordFocused = false"
+                    :placeholder="mappedSetting.placeholder"
+                    :required="mappedSetting.required"
+                    :disabled="disabled"
+                />
+                <span class="input-group-append">
+                    <button class="button" @click.stop="togglePasswordVis">
+                        <StudipIcon shape="visibility-visible" role="clickable" v-if="passwordVisible" />
+                        <StudipIcon shape="visibility-invisible" role="clickable" v-if="!passwordVisible" />
                     </button>
                 </span>
             </div>
         </label>
 
-
-        <label v-if="setting.type == 'string' && isI18N(setting) && !disabled">
-            <span :class="{
-                required: setting.required
-            }">
-                {{ setting.description }}
+        <label v-if="mappedSetting.type === 'string' && mappedSetting.i18n && !disabled">
+            <span :class="{ required: mappedSetting.required }">
+                {{ mappedSetting.label }}
+                <span
+                    v-if="mappedSetting.tooltip !== ''"
+                    class="as-link tooltip tooltip-icon"
+                    tabindex="0"
+                    :data-tooltip="mappedSetting.tooltip"
+                    :aria-label="mappedSetting.tooltip"
+                >
+                </span>
             </span>
-
-            <I18NText :text="setting.value"
-                :languages="languages"
-                @updateValue="setValue"
-            />
+            <I18NText :text="mappedSetting.value" :languages="languages" @updateValue="setValue" />
         </label>
     </span>
 </template>
 
-<script>
+<script setup>
+import { useSetting } from '@/composables/useSetting';
+import { ref, computed, getCurrentInstance, watch } from 'vue';
 import StudipIcon from '@studip/StudipIcon.vue';
 import StudipSelect from '@studip/StudipSelect';
-import I18NText from "@/components/Config/I18NText";
+import LayoutSwitch from '@/components/Layouts/LayoutSwitch.vue';
+import I18NText from '@/components/Config/I18NText';
 
-export default {
-    name: "ConfigOption",
+const props = defineProps({
+    setting: { type: Object, required: true },
+    languages: { type: Array, default: () => [] },
+    disabled: { type: Boolean, default: false },
+    useDescriptionAsLabel: { type: Boolean, default: false },
+});
+const emit = defineEmits(['updateValue']);
 
-    props: ['setting', 'languages', 'disabled'],
+const { proxy } = getCurrentInstance();
+const $gettext = proxy.$gettext;
 
-    components: {
-        StudipIcon, StudipSelect, I18NText
-    },
+const passwordInput = ref('');
+const passwordVisible = ref(false);
+const passwordFocused = ref(false);
 
-    data() {
-        return {
-            passwordInput: '', // Make password initially empty, so that an empty input can be detected
-            passwordVisible: false,
-            passwordFocused: false
+const { mapSetting } = useSetting();
+
+const mappedSetting = mapSetting(props.setting, props.useDescriptionAsLabel);
+
+const localValue = ref(props.setting.value);
+
+const password = computed({
+    get() {
+        if (passwordVisible.value) {
+            return props.setting.value || '';
         }
-    },
-
-    computed: {
-        password: {
-            get() {
-                if (!this.passwordVisible) {
-                    if (this.passwordFocused && this.passwordInput == '*****') {
-                        this.passwordInput = '';
-                    }
-                    else if (!this.passwordFocused && this.setting.value) {
-                        this.passwordInput = '*****';
-                    }
-                }
-
-                return this.passwordInput;
-            },
-            set(newValue) {
-                this.passwordInput = newValue;
-            }
+        if (passwordFocused.value) {
+            return passwordInput.value;
         }
+        return props.setting.value ? '*****' : '';
     },
+    set(val) {
+        passwordInput.value = val;
+    },
+});
+const isI18N = computed(() => {
+    return props.setting.name === 'OPENCAST_UPLOAD_INFO_TEXT_BODY' || props.setting.name === 'OPENCAST_TOS';
+});
 
-    methods: {
-        setValue(newValue) {
-            this.$emit('updateValue', this.setting, newValue);
-        },
+function setValue(val) {
+    emit('updateValue', props.setting, val);
+}
 
-        togglePasswordVis($event) {
-            $event.preventDefault();
-
-            if (!this.passwordVisible){
-                this.password = this.setting.value;
-                this.passwordVisible = true;
-            } else {
-                this.passwordVisible = false;
-            }
-        },
-
-        isI18N(setting)
-        {
-            if (
-                setting.name == 'OPENCAST_UPLOAD_INFO_TEXT_BODY'
-                || setting.name == 'OPENCAST_TOS'
-            ) {
-                return true;
-            }
-
-            return false;
-        }
+function togglePasswordVis() {
+    if (!passwordVisible.value) {
+        password.value = props.setting.value;
+        passwordVisible.value = true;
+    } else {
+        passwordVisible.value = false;
     }
 }
+watch(
+    () => props.setting.value,
+    (val) => {
+        localValue.value = val;
+    }
+);
 </script>

@@ -54,9 +54,9 @@ export default {
 
     methods: {
         async restoreVideo() {
-            await this.$store.dispatch('restoreVideo', this.event.token)
+            await this.$store.dispatch('videos/restoreVideo', this.event.token)
             .then(({ data }) => {
-                this.$store.dispatch('addMessage', data.message);
+                this.$store.dispatch('messages/addMessage', data.message);
                 let emit_action = data.message.type == 'success' ? 'refresh' : '';
                 this.$emit('done', emit_action);
             }).catch(() => {

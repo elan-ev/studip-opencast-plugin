@@ -1,14 +1,14 @@
 <template>
-    <div>
-        <form class="default">
-            <MessageBox type="warning" v-if="is_scheduling_configured && !is_scheduling_enabled">
-                {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
-                <a :href="$filters.helpurl('OpencastV3Administration#toc2')"
-                    target="_blank"
-                >
-                    {{ $gettext('Aufzeichnungsplanung konfigurieren') }}
-                </a>
-            </MessageBox>
+  <div id="oc--admin-config-form-wrapper">
+    <form class="default collapsable">
+        <MessageBox type="warning" v-if="is_scheduling_configured && !is_scheduling_enabled">
+            {{ $gettext('Es wurden bisher keine Räume mit Aufzeichnungstechnik konfiguriert! Bitte konsultieren Sie die Hilfeseiten.') }}
+            <a :href="$filters.helpurl('OpencastV3Administration#toc2')"
+                target="_blank"
+            >
+                {{ $gettext('Aufzeichnungsplanung konfigurieren') }}
+            </a>
+        </MessageBox>
 
             <MessageBox type="info" v-if="canMigratePlaylists">
                 {{ $gettext('Sie verwenden Opencast 16 oder höher und können die Wiedergabelisten mit zu Opencast übertragen und die automatische Synchronisation einschalten.') }}
@@ -81,13 +81,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'config_list',
-            'simple_config_list',
-            'shouldConfirmationModalBeVisible',
-            'confirmationModalObj',
-            'shouldSchedulingEditModalBeVisible'
-        ]),
+        ...mapGetters('config', ['config_list', 'simple_config_list']),
 
         is_scheduling_enabled() {
             return this.config_list?.scheduling && this.is_scheduling_configured;
@@ -112,7 +106,7 @@ export default {
             event.preventDefault();
             let view = this;
 
-            this.$store.dispatch('clearMessages');
+            this.$store.dispatch('messages/clearMessages');
             let params = {};
 
             if (this.config_list?.settings) {
@@ -123,17 +117,17 @@ export default {
                 params.resources = this.config_list.scheduling.resources;
             }
 
-            this.$store.dispatch('configListUpdate', params)
+            this.$store.dispatch('config/configListUpdate', params)
                 .then(({ data }) => {
-                    view.$store.dispatch('configListRead');
+                    view.$store.dispatch('config/configListRead');
                     if (data.messages.length) {
                         for (let i = 0; i < data.messages.length; i++ ) {
-                            view.$store.dispatch('addMessage', data.messages[i]);
+                            view.$store.dispatch('messages/addMessage', data.messages[i]);
                         }
                     }
                     view.$store.dispatch('toggleSchedulingUnsavedChanges', false);
                 }).catch(function (error) {
-                    view.$store.dispatch('addMessage', {
+                    view.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: view.$gettext('Einstellungen konnten nicht gespeichert werden!')
                     });
@@ -142,9 +136,9 @@ export default {
 
         migratePlaylists()
         {
-            this.$store.dispatch('configMigratePlaylists')
+            this.$store.dispatch('config/configMigratePlaylists')
             .then(() => {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     'type': 'success',
                     'text': this.$gettext('Die Wiedergabelisten wurden übertragen!')
                 })

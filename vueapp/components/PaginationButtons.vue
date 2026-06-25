@@ -111,8 +111,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 import StudipIcon from '@studip/StudipIcon.vue'
 
 export default {

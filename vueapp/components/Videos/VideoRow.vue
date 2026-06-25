@@ -44,10 +44,9 @@
                 </a>
             </template>
             <template v-else>
-                <a
-                    v-if="event.publication && event.available && event.available != '0' && !isProcessing"
-                    href="#"
+                <a v-if="event.publication && (event.available && event.available != '0') && !isProcessing"
                     @click.prevent="redirectAction(`/video/` + event.token)"
+                    href="#"
                     target="_blank"
                 >
                     <span class="oc--previewimage">
@@ -155,8 +154,7 @@
                 >
                     {{ event.title }}
                 </a>
-                <a
-                    v-else-if="event.publication && event.available"
+                <a v-else-if="event.publication && event.available"
                     href="#"
                     @click.prevent="redirectAction(`/video/` + event.token)"
                     target="_blank"
@@ -200,17 +198,12 @@
                 <studip-icon shape="globe" role="status-yellow" :size="18" />
             </div>
 
-            <div v-if="getAccessText && canEdit">
-                <a
-                    href="#"
-                    data-tooltip
-                    class="tooltip"
-                    @click.prevent="performActionWithChecks('VideoAccess', canShare)"
-                >
+            <!-- <div v-if="getAccessText && canEdit">
+                <a href="#" data-tooltip class="tooltip" @click.prevent="performActionWithChecks('VideoAccess', canShare)">
                     <span class="tooltip-content" v-html="getAccessText"></span>
                     <studip-icon shape="group2" role="active" :size="18" />
                 </a>
-            </div>
+            </div> -->
         </td>
 
         <td v-if="!videoSortMode && showActions && menuItems.length > 0" class="actions">
@@ -230,11 +223,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import ConfirmDialog from '@/components/ConfirmDialog';
-import StudipButton from '@/components/Studip/StudipButton';
-import StudipIcon from '@/components/Studip/StudipIcon';
-import StudipActionMenu from '@/components/Studip/StudipActionMenu';
+import { mapActions,mapGetters } from "vuex"
+import StudipIcon from '@/components/Studip/StudipIcon'
+import StudipActionMenu from '@/components/Studip/StudipActionMenu'
 import { isDownloadAllowed } from '@/common/config-options';
 
 import Tag from '@/components/Tag.vue';
@@ -243,11 +234,9 @@ export default {
     name: 'VideoRow',
 
     components: {
-        StudipButton,
-        ConfirmDialog,
         StudipIcon,
         StudipActionMenu,
-        Tag,
+        Tag
     },
 
     props: {
@@ -301,11 +290,13 @@ export default {
     },
 
     methods: {
+        ...mapActions('videodrawer', ['setShowDrawer', 'setSelectedVideo']),
         removeVideo() {
             let view = this;
-            this.$store.dispatch('deleteVideo', this.event.token).then(() => {
-                view.DeleteConfirmDialog = false;
-            });
+            this.$store.dispatch('videos/deleteVideo', this.event.token)
+                .then(() => {
+                    view.DeleteConfirmDialog = false;
+                });
         },
 
         toggleVideo(e) {
@@ -430,18 +421,18 @@ export default {
 
             return false;
         },
+
+        selectVideo(event) {
+            this.setShowDrawer(true);
+            this.setSelectedVideo(event);
+        }
     },
 
     computed: {
-        ...mapGetters([
-            'playlist',
-            'playlists',
-            'downloadSetting',
-            'videoSortMode',
-            'currentUser',
-            'simple_config_list',
-            'course_config',
-        ]),
+        ...mapGetters('config', ['course_config', 'downloadSetting', 'simple_config_list']),
+        ...mapGetters('videos', ['videoSortMode']),
+        ...mapGetters('opencast', ['currentUser']),
+        ...mapGetters('playlists', ['playlist', 'playlists']),
 
         showCheckbox() {
             return this.selectable || (this.canUpload && (this.event.perm == 'owner' || this.event.perm == 'write'));
@@ -607,7 +598,7 @@ export default {
                         label: this.$gettext('Medien herunterladen'),
                         icon: 'download',
                         emit: 'performAction',
-                        emitArguments: 'VideoDownload',
+                        emitArguments: 'VideoDownloadDialog'
                     });
                 }
             } else {

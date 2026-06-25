@@ -33,22 +33,22 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters(['playlist'])
+        ...mapGetters('playlists', ['playlist'])
     },
 
     methods: {
         async addVideo() {
-            await this.$store.dispatch('addVideosToPlaylist', {
+            await this.$store.dispatch('playlists/addVideosToPlaylist', {
                 playlist: this.playlist.token,
                 videos: [this.event.token]
             }).then(() => {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'success',
                     text: this.$gettext('Das Video wurde zu der Wiedergabeliste hinzugefügt.')
                 });
                 this.$emit('done', 'refresh');
             }).catch(() => {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: this.$gettext('Das Video konnte zu der Wiedergabeliste nicht hinzugefügt werden.')
                 });

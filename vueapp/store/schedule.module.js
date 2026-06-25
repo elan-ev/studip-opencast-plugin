@@ -26,7 +26,7 @@ const getters = {
         return state.allow_schedule_alternate;
     },
 
-    semester_filter() {
+    semester_filter(state) {
         return state.semester_filter;
     },
 
@@ -179,6 +179,7 @@ const mutations = {
 
 
 export default {
+    namespaced: true,
     state,
     getters,
     mutations,

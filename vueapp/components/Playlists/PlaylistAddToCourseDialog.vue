@@ -77,7 +77,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlistCourses', 'userCourses'])
+        ...mapGetters('playlists', ['playlistCourses']),
+        ...mapGetters('opencast', ['userCourses']),
     },
 
     methods: {
@@ -88,7 +89,7 @@ export default {
         addCourse(course) {
             this.selectedCourses.push(course);
 
-            this.$store.dispatch('updatePlaylistCourses', {
+            this.$store.dispatch('playlists/updatePlaylistCourses', {
                 token: this.playlist.token,
                 courses: this.selectedCourses
             })
@@ -96,7 +97,7 @@ export default {
                 // find the index of the course that was just added and remove it
                 let index = this.selectedCourses.findIndex((c) => c.id === course.id);
                 this.selectedCourses.splice(index, 1);
-                this.$store.dispatch('addMessage', add_course_error);
+                this.$store.dispatch('messages/addMessage', add_course_error);
             });
         },
 
@@ -107,7 +108,7 @@ export default {
 
             let course = this.selectedCourses.splice(index, 1)[0];
 
-            this.$store.dispatch('updatePlaylistCourses', {
+            this.$store.dispatch('playlists/updatePlaylistCourses', {
                 token: this.playlist.token,
                 courses: this.selectedCourses
             })
@@ -115,7 +116,7 @@ export default {
                 // find the index of the course that was just added and remove it
                 let index = this.selectedCourses.findIndex((c) => c.id === course.id);
                 this.selectedCourses.splice(index, 1);
-                this.$store.dispatch('addMessage', remove_course_error);
+                this.$store.dispatch('messages/addMessage', remove_course_error);
             });
         }
     },
@@ -123,13 +124,13 @@ export default {
     mounted() {
         let view = this;
 
-        this.$store.commit('setPlaylistCourses', null);
-        this.$store.dispatch('loadPlaylistCourses', this.playlist.token)
+        this.$store.commit('playlists/setPlaylistCourses', null);
+        this.$store.dispatch('playlists/loadPlaylistCourses', this.playlist.token)
             .then(() => {
                 view.selectedCourses = this.playlistCourses;
             });
 
-        this.$store.dispatch('loadUserCourses');
+        this.$store.dispatch('opencast/loadUserCourses');
     },
 }
 </script>

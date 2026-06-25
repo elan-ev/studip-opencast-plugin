@@ -2,9 +2,10 @@
     <div>
         <StudipDialog
             :title="$gettext('Standardsichtbarkeit Videos in dieser Veranstaltung')"
-            :confirmText="$gettext('Akzeptieren')"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
+            :confirmText="$gettext('Speichern')"
+            :closeText="$gettext('Abbrechen')"
+            confirmClass="accept"
+            closeClass="cancel"
             height="260"
             width="530"
             @close="$emit('cancel')"
@@ -60,22 +61,21 @@ export default {
         const store = useStore();
 
         const visibilityOption = ref();
-        const cid = computed(() => store.getters.cid);
+        const cid = computed(() => store.getters['opencast/cid']);
         const standardVisibilityText = computed(() => {
-            return store.getters.simple_config_list?.settings?.OPENCAST_HIDE_EPISODES ?
+            return store.getters['config/simple_config_list']?.settings?.OPENCAST_HIDE_EPISODES ?
             $gettext('Videos standardmäßig unsichtbar für Studierende') : $gettext('Videos standardmäßig sichtbar für Studierende');
         });
         const currentVisibilityOption = computed(() => {
-            return store.getters.course_config?.course_default_episodes_visibility ?? 'default';
+            return store.getters['config/course_config']?.course_default_episodes_visibility ?? 'default';
         });
 
         const setCourseEpisodesVisibility = () => {
-            store.dispatch('setCourseEpisodesVisibility', {
-                cid: store.getters.cid,
+            store.dispatch('opencast/setCourseEpisodesVisibility', {
+                cid: cid.value,
                 visibility_option: visibilityOption.value
             }).then((data) => {
-                store.dispatch('loadCourseConfig', store.getters.cid);
-                store.dispatch('loadCourseConfig', store.getters.cid);
+                store.dispatch('config/loadCourseConfig', cid.value);
                 emit('done');
             });
         }

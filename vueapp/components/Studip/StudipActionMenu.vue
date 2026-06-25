@@ -11,19 +11,45 @@
             </div>
             <ul class="action-menu-list">
                 <li v-for="item in navigationItems" :key="item.id" class="action-menu-item">
-                    <a v-if="item.type === 'link'" v-bind="linkAttributes(item)" v-on="linkEvents(item)" href="#prevent-default">
-                        <studip-icon v-if="item.icon !== false" :shape="item.icon.shape" :role="item.icon.role"></studip-icon>
+                    <a
+                        v-if="item.type === 'link'"
+                        v-bind="linkAttributes(item)"
+                        v-on="linkEvents(item)"
+                        href="#prevent-default"
+                    >
+                        <studip-icon
+                            v-if="item.icon !== false"
+                            :shape="item.icon.shape"
+                            :role="item.icon.role"
+                            class="action-menu-item-icon"
+                        ></studip-icon>
                         <span v-else class="action-menu-no-icon"></span>
 
                         {{ item.label }}
                     </a>
-                    <label v-else-if="item.icon" class="undecorated" v-bind="linkAttributes(item)" v-on="linkEvents(item)">
-                        <studip-icon :shape="item.icon.shape" :role="item.icon.role" :name="item.name" :title="item.label" v-bind="item.attributes ?? {}"></studip-icon>
+                    <label
+                        v-else-if="item.icon"
+                        class="undecorated"
+                        v-bind="linkAttributes(item)"
+                        v-on="linkEvents(item)"
+                    >
+                        <studip-icon
+                            :shape="item.icon.shape"
+                            :role="item.icon.role"
+                            :name="item.name"
+                            :title="item.label"
+                            v-bind="item.attributes ?? {}"
+                            class="action-menu-item-icon"
+                        ></studip-icon>
                         {{ item.label }}
                     </label>
                     <template v-else>
                         <span class="action-menu-no-icon"></span>
-                        <button :name="item.name" v-bind="Object.assign(item.attributes ?? {}, linkAttributes(item))" v-on="linkEvents(item)">
+                        <button
+                            :name="item.name"
+                            v-bind="Object.assign(item.attributes ?? {}, linkAttributes(item))"
+                            v-on="linkEvents(item)"
+                        >
                             {{ item.label }}
                         </button>
                     </template>
@@ -32,20 +58,26 @@
         </div>
     </nav>
     <nav v-else>
-        <a v-for="item in navigationItems" :key="item.id" v-bind="linkAttributes(item)" v-on="linkEvents(item)" href="#prevent-default">
+        <a
+            v-for="item in navigationItems"
+            :key="item.id"
+            v-bind="linkAttributes(item)"
+            v-on="linkEvents(item)"
+            href="#prevent-default"
+        >
             <studip-icon :title="item.label" :shape="item.icon.shape" :role="item.icon.role" :size="20"></studip-icon>
         </a>
     </nav>
 </template>
 
 <script>
-import StudipIcon from '@studip/StudipIcon.vue'
+import StudipIcon from '@studip/StudipIcon.vue';
 
 export default {
     name: 'studip-action-menu',
 
     components: {
-        StudipIcon
+        StudipIcon,
     },
 
     props: {
@@ -55,16 +87,16 @@ export default {
         },
         context: {
             type: String,
-            default: ''
-        }
+            default: '',
+        },
     },
-    data () {
+    data() {
         return {
-            open: false
+            open: false,
         };
     },
     methods: {
-        linkAttributes (item) {
+        linkAttributes(item) {
             let attributes = item.attributes;
             attributes.class = item.classes;
 
@@ -78,7 +110,7 @@ export default {
 
             return attributes;
         },
-        linkEvents (item) {
+        linkEvents(item) {
             let events = {};
             if (item.emit) {
                 events.click = (e) => {
@@ -89,26 +121,28 @@ export default {
             }
             return events;
         },
-        close () {
+        close() {
             STUDIP.ActionMenu.closeAll();
-        }
+        },
     },
     computed: {
-        navigationItems () {
+        navigationItems() {
             return this.items.map((item) => {
                 let classes = item.classes ?? '';
                 if (item.disabled) {
-                    classes += " action-menu-item-disabled";
+                    classes += ' action-menu-item-disabled';
                 }
                 return {
                     label: item.label,
                     url: item.url || '#',
                     emit: item.emit || false,
                     emitArguments: item.emitArguments || [],
-                    icon: item.icon ? {
-                        shape: item.icon,
-                        role: item.disabled ? 'inactive' : 'clickable'
-                    } : false,
+                    icon: item.icon
+                        ? {
+                              shape: item.icon,
+                              role: item.disabled ? 'inactive' : 'clickable',
+                          }
+                        : false,
                     type: item.type || 'link',
                     name: item.name ?? null,
                     classes: classes.trim(),
@@ -117,7 +151,7 @@ export default {
                 };
             });
         },
-        shouldCollapse () {
+        shouldCollapse() {
             const collapseAt = this.collapseAt ?? window.STUDIP.config['ACTIONMENU_THRESHOLD'];
 
             if (collapseAt === false) {
@@ -128,9 +162,11 @@ export default {
             }
             return Number.parseInt(collapseAt) <= this.items.length;
         },
-        title () {
-            return this.context ? this.$gettextInterpolate(this.$gettext('Aktionsmenü für %{context}'), {context: this.context}) : this.$gettext('Aktionsmenü');
-        }
-    }
-}
+        title() {
+            return this.context
+                ? this.$gettextInterpolate(this.$gettext('Aktionsmenü für %{context}'), { context: this.context })
+                : this.$gettext('Aktionsmenü');
+        },
+    },
+};
 </script>
