@@ -18,11 +18,16 @@
 </script>
 
 <?php
-    $manifest_path = $this->plugin->getPluginPath() . '/static/.vite/manifest.json';
+    $manifest_path = $this->plugin->getPluginPath() . '/static/.rspack/manifest.json';
     $manifest = is_file($manifest_path) ? json_decode(file_get_contents($manifest_path), true) : [];
-    $entry = $manifest['vueapp/app.js']['file'] ?? null;
+    $manifest_entry = $manifest['vueapp/app.js'] ?? [];
+    $entry = $manifest_entry['file'] ?? null;
+    $css = $manifest_entry['css'] ?? [];
     $asset_base = $this->plugin->getPluginUrl() . '/static/';
 ?>
+<?php foreach ($css as $stylesheet): ?>
+<link rel="stylesheet" href="<?= $asset_base . $stylesheet ?>">
+<?php endforeach; ?>
 <?php if ($entry): ?>
 <script type="module" src="<?= $asset_base . $entry ?>"></script>
 <?php endif; ?>

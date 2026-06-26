@@ -4,16 +4,18 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@vitejs/plugin-vue2": "^2.3.4",
+    "@rspack/cli": "^2.0.8",
+    "@rspack/core": "^2.0.8",
     "core-js": "^3.8.3",
     "date-fns": "^2.29.2",
     "regenerator-runtime": "^0.13.7",
-    "vite": "^5.4.10",
-    "vue": "2.7.16"
+    "vue": "2.7.16",
+    "vue-loader": "^15.11.1",
+    "vue-template-compiler": "^2.7.16"
   },
   "scripts": {
-    "build": "vite build",
-    "build-dev": "vite build --mode development",
-    "dev": "vite build --watch --mode development"
+    "build": "rspack build",
+    "build-dev": "rspack build --mode development",
+    "dev": "rspack build --watch --mode development"
   }
 }
