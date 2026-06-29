@@ -285,7 +285,7 @@ class OpencastV3 extends StudIPPlugin implements SystemPlugin, StandardPlugin, C
             return false;
         }
 
-        if ($context->getSemType()->getClass()['studygroup_mode'])
+        if ($context->isStudygroup())
         {
             if (\Config::get()->OPENCAST_ALLOW_STUDYGROUP_CONF) {
                 return true;
