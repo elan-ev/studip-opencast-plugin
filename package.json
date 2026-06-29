@@ -3,7 +3,7 @@
   "version": "3.32.0",
   "description": "Stud.IP plugin for Opencast",
   "author": "Till Glöggler <tgloeggl@uos.de>",
-  "contributors": [
+  "contributors":[
     {
       "name": "Ron Lucke",
       "email": "lucke@elan-ev.de"

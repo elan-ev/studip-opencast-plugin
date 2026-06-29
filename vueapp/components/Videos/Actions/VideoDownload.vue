@@ -1,114 +1,99 @@
 <template>
     <div>
-        <StudipDialog
-            :title="$gettext('Medien herunterladen')"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
-            height="400"
-            width="475"
-            @close="this.$emit('cancel')"
-        >
-            <template #dialogContent>
-                <div class="oc--download-list-container">
-                    <div class="oc--download-list">
-                        <table v-if="videoDownloads.length" class="default">
-                            <caption>
-                                {{ $gettext('Videos') }}
-                            </caption>
-                            <colgroup>
-                                <col>
-                                <col>
-                                <col style="width: 1%">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>{{ $gettext('Videoquelle') }}</th>
-                                    <th>{{ $gettext('Datei(en)') }}</th>
-                                    <th>{{ $gettext('Aktionen') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="download in videoDownloads" :key="download.source + '-' + download.media.size">
-                                    <td>{{ getSourceText(download.source) }}</td>
-                                    <td>{{ getMediaText(download.media) }}</td>
-                                    <td>
-                                        <a
-                                            v-if="downloadAllowed"
-                                            :href="getDownloadUrl(download)"
-                                            :download="getFileName(download.media)"
-                                            :title="$gettext('Herunterladen')"
-                                        >
-                                            <StudipIcon shape="download" role="clickable" />
-                                        </a>
+        <div class="oc--download-list">
+            <table v-if="videoDownloads.length" class="default">
+                <caption>
+                    {{ $gettext('Videos') }}
+                </caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col style="width: 1%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>{{ $gettext('Videoquelle') }}</th>
+                        <th>{{ $gettext('Datei(en)') }}</th>
+                        <th>{{ $gettext('Aktionen') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="download in videoDownloads" :key="download.source + '-' + download.media.size">
+                        <td>{{ getSourceText(download.source) }}</td>
+                        <td>{{ getMediaText(download.media) }}</td>
+                        <td>
+                            <a
+                                v-if="downloadAllowed"
+                                :href="getDownloadUrl(download)"
+                                :download="getFileName(download.media)"
+                                :title="$gettext('Herunterladen')"
+                            >
+                                <StudipIcon shape="download" role="clickable" />
+                            </a>
 
-                                        <StudipIcon
-                                            v-if="event.visibility == 'public'"
-                                            shape="clipboard"
-                                            role="clickable"
-                                            :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                                            class="oc--download-copy-icon"
-                                            @click="copyToClipboard(download.media.url)"
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <StudipIcon
+                                v-if="event.visibility == 'public'"
+                                shape="clipboard"
+                                role="clickable"
+                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                class="oc--download-copy-icon"
+                                @click="copyToClipboard(download.media.url)"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-                        <table v-if="captions.length" class="default">
-                            <caption>
-                                {{ $gettext('Untertiteldateien') }}
-                            </caption>
-                            <colgroup>
-                                <col>
-                                <col>
-                                <col style="width: 1%">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>{{ $gettext('Sprache') }}</th>
-                                    <th>{{ $gettext('Datei(en)') }}</th>
-                                    <th>{{ $gettext('Aktionen') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="caption in captions" :key="caption.identifier">
-                                    <td>{{ getCaptionLanguage(caption) || $gettext('unbekannt') }}</td>
-                                    <td>{{ getMediaText(caption) }}</td>
-                                    <td>
-                                        <a
-                                            v-if="downloadAllowed"
-                                            :href="caption.uri"
-                                            :download="getCaptionFileName(caption)"
-                                            :title="$gettext('Herunterladen')"
-                                        >
-                                            <StudipIcon shape="download" role="clickable" />
-                                        </a>
+            <table v-if="captions.length" class="default">
+                <caption>
+                    {{ $gettext('Untertiteldateien') }}
+                </caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col style="width: 1%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>{{ $gettext('Sprache') }}</th>
+                        <th>{{ $gettext('Datei(en)') }}</th>
+                        <th>{{ $gettext('Aktionen') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="caption in captions" :key="caption.identifier">
+                        <td>{{ getCaptionLanguage(caption) || $gettext('unbekannt') }}</td>
+                        <td>{{ getMediaText(caption) }}</td>
+                        <td>
+                            <a
+                                v-if="downloadAllowed"
+                                :href="caption.uri"
+                                :download="getCaptionFileName(caption)"
+                                :title="$gettext('Herunterladen')"
+                            >
+                                <StudipIcon shape="download" role="clickable" />
+                            </a>
 
-                                        <StudipIcon
-                                            v-if="event.visibility == 'public'"
-                                            shape="clipboard"
-                                            role="clickable"
-                                            :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
-                                            class="oc--download-copy-icon"
-                                            @click="copyToClipboard(caption.uri)"
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="oc--download-messages">
-                        <MessageList :float="true" :dialog="true" />
-                    </div>
-                </div>
-            </template>
-        </StudipDialog>
+                            <StudipIcon
+                                v-if="event.visibility == 'public'"
+                                shape="clipboard"
+                                role="clickable"
+                                :title="$gettext('Link zur Mediendatei in die Zwischenablage kopieren')"
+                                class="oc--download-copy-icon"
+                                @click="copyToClipboard(caption.uri)"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="oc--download-messages">
+            <MessageList :float="true" :dialog="true" />
+        </div>
     </div>
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog';
-import StudipIcon from '@studip/StudipIcon';
 import MessageList from '@/components/MessageList';
 import { isDownloadAllowed } from '@/common/config-options';
 import { mapGetters } from 'vuex';
@@ -117,8 +102,6 @@ export default {
     name: 'VideoDownload',
 
     components: {
-        StudipDialog,
-        StudipIcon,
         MessageList,
     },
 
@@ -226,17 +209,17 @@ export default {
             return text;
         },
 
-        copyToClipboard(url) {
-            navigator.clipboard.writeText(url);
-            this.$store.dispatch('clearMessages', true);
+        copyToClipboard() {
+            navigator.clipboard.writeText(text);
+            this.$store.dispatch('messages/clearMessages', true);
             let message = {
                 type: 'info',
                 text: this.$gettext('Link zur Mediendatei wurde in die Zwischenablage kopiert.'),
                 dialog: true,
             };
-            this.$store.dispatch('addMessage', message);
+            this.$store.dispatch('messages/addMessage', message);
             setTimeout(() => {
-                this.$store.dispatch('clearMessages', true);
+                this.$store.dispatch('messages/clearMessages', true);
             }, 3000);
         },
     },

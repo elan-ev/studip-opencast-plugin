@@ -3,10 +3,11 @@
         <StudipDialog
             :title="$gettext('Videos hinzufügen')"
             :confirmText="$gettext('Hinzufügen')"
-            :disabled="selectedVideos.length === 0"
+            confirmClass="add"
+            :confirmDisabled="selectedVideos.length === 0"
             :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
-            height="600"
+            closeClass="cancel"
+            height="800"
             width="800"
             @close="cancel"
             @confirm="addVideosToPlaylist"
@@ -27,6 +28,7 @@
 import { mapGetters } from "vuex";
 
 import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideosTable from "@/components/Videos/VideosTable";
 
 export default {
@@ -46,7 +48,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['playlist', 'cid']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('playlists', ['playlist']),
     },
 
     methods: {
@@ -59,20 +62,20 @@ export default {
         },
 
         addVideosToPlaylist() {
-            this.$store.dispatch('addVideosToPlaylist', {
+            this.$store.dispatch('playlists/addVideosToPlaylist', {
                 playlist:  this.playlist.token,
                 videos:    this.selectedVideos,
                 course_id: this.cid
             }).then(() => {
                 this.selectedVideos = [];
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'success',
                     text: this.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt.')
                 });
-                this.$store.commit('setVideosReload', true);
+                this.$store.commit('videos/setVideosReload', true);
                 this.$emit('done');
             }).catch(() => {
-                this.$store.dispatch('addMessage', {
+                this.$store.dispatch('messages/addMessage', {
                     type: 'error',
                     text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.')
                 });

@@ -50,7 +50,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideoUpload from "@/components/Videos/VideoUpload";
 import VideosAddFromContents from "@/components/Videos/VideosAddFromContents";
 import VideosAddFromCourses from "@/components/Videos/VideosAddFromCourses";
@@ -84,14 +85,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'currentUser',
-        ]),
+        ...mapGetters('opencast', ['currentUser']),
     },
 
     methods: {
         uploadDone() {
-            this.$store.dispatch('addMessage', {
+            this.$store.dispatch('messages/addMessage', {
                 type: 'info',
                 text: this.$gettext('Ihr Video wird nun verarbeitet. Sie erhalten eine Benachrichtigung, sobald die Verarbeitung abgeschlossen ist.')
             });

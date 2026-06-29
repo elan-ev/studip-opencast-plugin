@@ -3,23 +3,44 @@
         <StudipDialog
             :title="$gettext('Videos hinzufügen')"
             :confirmText="$gettext('Hinzufügen')"
-            :disabled="selectedVideos.length === 0"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
-            height="600"
-            width="800"
+            confirmClass="add"
+            :confirmDisabled="selectedVideos.length === 0"
+            :closeText="$gettext('Abbrechen')"
+            closeClass="cancel"
+            height="800"
+            width="720"
             @close="cancel"
             @confirm="addVideosToPlaylist"
         >
             <template v-slot:dialogContent>
-                <UserCourseSelectable v-if="!selectedCourse"
+                <UserCourseSelectable
+                    v-if="!selectedCourse"
                     @add="selectCourse"
-                    :title="$gettext('Kurs auswählen')"
+                    :title="$gettext('Veranstaltung auswählen')"
                     :courses="userCourses"
                 />
 
                 <div v-else>
-                    <h2>{{ selectedCourse.name }}</h2>
+                    <div class="oc--dialog-add-videos__header">
+                        <h2>{{ selectedCourse.name }}</h2>
+                        <form class="default">
+                            <label>
+                                {{ $gettext('Wiedergabeliste') }}
+                                <select v-model="targetPlaylistToken" required>
+                                    <option
+                                        v-for="playlist in targetPlaylists"
+                                        v-bind:key="playlist.token"
+                                        :value="playlist.token"
+                                    >
+                                        {{ playlist.title }}
+                                        <template v-if="playlist.is_default">
+                                            ({{ $gettext('Standard-Widergabeliste') }})
+                                        </template>
+                                    </option>
+                                </select>
+                            </label>
+                        </form>
+                    </div>
 
                     <VideosTable
                         :selectable="true"
@@ -30,24 +51,38 @@
                     />
                 </div>
             </template>
+
+            <template #dialogButtons>
+                <button
+                    v-if="selectedCourse"
+                    class="button refresh"
+                    @click.prevent="
+                        selectedCourse = null;
+                        selectedVideos = [];
+                    "
+                >
+                    {{ $gettext('Andere Veranstaltung wählen') }}
+                </button>
+            </template>
         </StudipDialog>
     </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 
-import StudipDialog from "@studip/StudipDialog";
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import UserCourseSelectable from '@/components/UserCourseSelectable';
-import VideosTable from "@/components/Videos/VideosTable";
+import VideosTable from '@/components/Videos/VideosTable';
 
 export default {
-    name: "VideosAddFromContents",
+    name: 'VideosAddFromContents',
 
     components: {
         StudipDialog,
         UserCourseSelectable,
-        VideosTable
+        VideosTable,
     },
 
     emits: ['done', 'cancel'],
@@ -56,11 +91,19 @@ export default {
         return {
             selectedCourse: null,
             selectedVideos: [],
-        }
+            targetPlaylistToken: null,
+        };
     },
 
     computed: {
-        ...mapGetters(['playlist', 'userCourses', 'cid']),
+        ...mapGetters('opencast', ['cid', 'userCourses']),
+        ...mapGetters('playlists', ['playlist', 'playlists']),
+
+        targetPlaylists() {
+            let targetPlaylists = [...this.playlists];
+
+            return targetPlaylists;
+        },
     },
 
     methods: {
@@ -77,30 +120,36 @@ export default {
         },
 
         addVideosToPlaylist() {
-            this.$store.dispatch('addVideosToPlaylist', {
-                playlist:  this.playlist.token,
-                videos:    this.selectedVideos,
-                course_id: this.cid
-            }).then(() => {
-                this.selectedVideos = [];
-                this.$store.dispatch('addMessage', {
-                    type: 'success',
-                    text: this.$gettext('Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt.')
+            this.$store
+                .dispatch('playlists/addVideosToPlaylist', {
+                    playlist: this.targetPlaylistToken,
+                    videos: this.selectedVideos,
+                    course_id: this.cid,
+                })
+                .then(() => {
+                    this.selectedVideos = [];
+                    this.$store.dispatch('messages/addMessage', {
+                        type: 'success',
+                        text: this.$gettext(
+                            'Die Videos wurden der Wiedergabeliste hinzugefügt. Videos, die bereits in der Wiedergabeliste enthalten sind, wurden nicht erneut hinzugefügt.'
+                        ),
+                    });
+                    this.$store.commit('videos/setVideosReload', true);
+                    this.$emit('done');
+                })
+                .catch(() => {
+                    this.$store.dispatch('messages/addMessage', {
+                        type: 'error',
+                        text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.'),
+                    });
+                    this.$emit('cancel');
                 });
-                this.$store.commit('setVideosReload', true);
-                this.$emit('done');
-            }).catch(() => {
-                this.$store.dispatch('addMessage', {
-                    type: 'error',
-                    text: this.$gettext('Die Videos konnten der Wiedergabeliste nicht hinzugefügt werden.')
-                });
-                this.$emit('cancel');
-            });
         },
     },
 
     mounted() {
-        this.$store.dispatch('loadUserCourses');
-    }
+        this.$store.dispatch('opencast/loadUserCourses');
+        this.targetPlaylistToken = this.targetPlaylists.filter((playlist) => playlist.is_default)[0].token;
+    },
 };
 </script>

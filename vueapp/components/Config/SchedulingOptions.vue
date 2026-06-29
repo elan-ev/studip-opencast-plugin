@@ -137,6 +137,7 @@ export default {
 
     computed: {
         ...mapGetters(['schedulingHasUnsavedChanges']),
+        ...mapGetters('config', ['config']),
 
         resources() {
             let resources = [];

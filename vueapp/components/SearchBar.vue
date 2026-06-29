@@ -42,6 +42,16 @@
                     shape="search" role="clickable"
                 />
             </li>
+            <li 
+                v-if="inputSearch !== ''"
+                :title="$gettext('Suche zurücksetzen')"
+                class="oc--searchbar--search-icon"
+                @click="inputSearch = ''; doSearch()"
+            >
+            <studip-icon
+                    shape="decline" role="clickable"
+                />
+            </li>
         </ul>
 
         <div class="oc--tokenselector" v-if="showTS"
@@ -79,11 +89,11 @@
 
             <ul v-if="tokenState == 'compare'" class="oc--tokenselector--comparison">
                 <li @click="selectToken('=')">
-                    gleich
+                    {{ $gettext('gleich') }}
                     <span>=</span>
                 </li>
                 <li @click="selectToken('!=')">
-                    ungleich
+                    {{ $gettext('ungleich') }}
                     <span>!=</span>
                 </li>
             </ul>
@@ -116,7 +126,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import StudipIcon from '@studip/StudipIcon'
 
 export default {

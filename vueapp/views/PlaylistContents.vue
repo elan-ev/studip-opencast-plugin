@@ -56,21 +56,19 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'playlist',
-        ])
+        ...mapGetters('playlists', ['playlist'])
     },
 
     created() {
-        this.$store.dispatch('setPlaylist', null);
+        this.$store.dispatch('playlists/setPlaylist', null);
     },
 
     async mounted() {
-        await this.$store.dispatch('loadPlaylist', this.token);
+        await this.$store.dispatch('playlists/loadPlaylist', this.token);
     },
 
     unmounted() {
-        this.$store.dispatch('setPlaylist', null);
+        this.$store.dispatch('playlists/setPlaylist', null);
     },
 
     methods: {

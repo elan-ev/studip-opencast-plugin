@@ -86,7 +86,8 @@
 </template>
 
 <script setup>
-import StudipDialog from '@studip/StudipDialog';
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import { useStore } from "vuex";
 import { useGettext } from 'vue3-gettext';
 

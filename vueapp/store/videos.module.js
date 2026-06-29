@@ -1,4 +1,4 @@
-import ApiService from "@/common/api.service";
+import ApiService from '@/common/api.service';
 
 const state = {
     videos: {},
@@ -14,7 +14,7 @@ const state = {
     paging: {
         currPage: 0,
         lastPage: 0,
-        items: 0
+        items: 0,
     },
     availableVideoTags: [],
     availableVideoCourses: [],
@@ -23,15 +23,19 @@ const state = {
     videosReload: false,
     videosMedia: [],
     showEpisodesDefaultVisibilityDialog: false,
-}
+    globalVideos: null, // neu: globaler Cache aller geladenen Videos, keyed nach token
+    playlistVideos: {}, // token => Array von Videos
+    playlistVideosLoadingStates: {}, // token -> boolean
+    searchAvailable: false,
+};
 
 const getters = {
     videos(state) {
-        return state.videos
+        return state.videos;
     },
 
     paging(state) {
-        return state.paging
+        return state.paging;
     },
 
     videosCount(state) {
@@ -39,27 +43,27 @@ const getters = {
     },
 
     limit(state) {
-        return state.limit
+        return state.limit;
     },
 
     videoSort(state) {
-        return state.videoSort
+        return state.videoSort;
     },
 
     videoSortMode(state) {
-        return state.videoSortMode
+        return state.videoSortMode;
     },
 
     search(state) {
-        return state.search
+        return state.search;
     },
 
     availableVideoTags(state) {
-        return state.availableVideoTags
+        return state.availableVideoTags;
     },
 
     availableVideoCourses(state) {
-        return state.availableVideoCourses
+        return state.availableVideoCourses;
     },
 
     videoShares(state) {
@@ -67,31 +71,44 @@ const getters = {
     },
 
     courseVideosToCopy(state) {
-        return state.courseVideosToCopy
+        return state.courseVideosToCopy;
     },
 
     videosReload(state) {
-        return state.videosReload
+        return state.videosReload;
     },
 
     showEpisodesDefaultVisibilityDialog(state) {
-        return state.showEpisodesDefaultVisibilityDialog
+        return state.showEpisodesDefaultVisibilityDialog;
     },
 
     videosMedia(state) {
         return state.videosMedia
-    }
-}
+    },
+
+    globalVideos: (state) => {
+        if (state.globalVideos === null) {
+            return null; // noch nicht geladen
+        }
+        return Object.values(state.globalVideos);
+    },
+    playlistVideos: (state) => (token) => state.playlistVideos[token] || [],
+    isPlaylistLoading: (state) => (token) => {
+        return !!state.playlistLoadingStates?.[token];
+    },
+    searchAvailable(state) {
+        return state.searchAvailable;
+    },
+};
 
 const actions = {
-    async loadVideos({ commit, state, dispatch, rootState }, data)
-    {
+    async loadVideos({ commit, state, dispatch, rootState }, data) {
         let filters = data.filters;
 
         const params = new URLSearchParams();
 
         if (!filters['order']) {
-            params.append('order',  state.videoSort.field + "_" + state.videoSort.order);
+            params.append('order', state.videoSort.field + '_' + state.videoSort.order);
         }
 
         if (!filters['offset']) {
@@ -99,7 +116,7 @@ const actions = {
         }
 
         if (!filters['limit']) {
-            params.append('limit',  state.limit);
+            params.append('limit', state.limit);
         }
 
         for (let key in filters) {
@@ -114,18 +131,17 @@ const actions = {
             .then(({ data }) => {
                 commit('setVideos', data.videos);
 
-                if (data.count !== undefined) {
-                    commit('setVideosCount', data.count);
-                    commit('updatePaging', {
-                        currPage: state.paging.currPage,
-                        items   : data.count
-                    });
-                }
-            });
+            if (data.count !== undefined) {
+                commit('setVideosCount', data.count);
+                commit('updatePaging', {
+                    currPage: state.paging.currPage,
+                    items: data.count,
+                });
+            }
+        });
     },
 
-    async loadMyVideos({ commit, state, dispatch, rootState }, data = [])
-    {
+    async loadMyVideos({ commit, state, dispatch, rootState }, data = []) {
         return dispatch('loadVideos', {
             route: 'videos',
             filters: data,
@@ -137,28 +153,24 @@ const actions = {
         });
     },
 
-    async loadPlaylistVideos({ commit, state, dispatch, rootState }, data)
-    {
+    async loadPlaylistVideos({ commit, state, dispatch, rootState }, data) {
         return dispatch('loadVideos', {
             route: 'playlists/' + data.token + '/videos',
             filters: data,
             signal: data.signal
-        })
-        .then(async () => {
-            await dispatch('loadAvailableVideoTags', {token: data.token, cid: data.cid});
-            await dispatch('loadAvailableVideoCourses', {token: data.token, cid: data.cid});
+        }).then(async () => {
+            await dispatch('loadAvailableVideoTags', { token: data.token, cid: data.cid });
+            await dispatch('loadAvailableVideoCourses', { token: data.token, cid: data.cid });
         });
     },
 
-    async loadCourseVideos({ commit, state, dispatch, rootState }, data)
-    {
+    async loadCourseVideos({ commit, state, dispatch, rootState }, data) {
         return dispatch('loadVideos', {
             route: 'courses/' + data.cid + '/videos',
             filters: data,
             signal: data.signal
-        })
-        .then(async () => {
-            await dispatch('loadAvailableVideoTags', {cid: data.cid});
+        }).then(async () => {
+            await dispatch('loadAvailableVideoTags', { cid: data.cid });
         });
     },
 
@@ -169,17 +181,16 @@ const actions = {
         if (data.token) {
             route += '/playlist/' + data.token;
             if (data.cid) {
-                params.append('cid',  data.cid);
+                params.append('cid', data.cid);
             }
         } else if (data.cid) {
             // Load tags of course videos
             route += '/course/' + data.cid;
         }
 
-        return ApiService.get(route, { params })
-            .then(({ data }) => {
-                commit('setAvailableVideoTags', data);
-            });
+        return ApiService.get(route, { params }).then(({ data }) => {
+            commit('setAvailableVideoTags', data);
+        });
     },
 
     async loadAvailableVideoCourses({ commit, state, dispatch, rootState }, data = []) {
@@ -189,14 +200,13 @@ const actions = {
         if (data.token) {
             route += '/playlist/' + data.token;
             if (data.cid) {
-                params.append('cid',  data.cid);
+                params.append('cid', data.cid);
             }
         }
 
-        return ApiService.get(route, { params })
-            .then(({ data }) => {
-                commit('setAvailableVideoCourses', data);
-            });
+        return ApiService.get(route, { params }).then(({ data }) => {
+            commit('setAvailableVideoCourses', data);
+        });
     },
 
     async loadVideoMedia({ commit }, data = []) {
@@ -209,12 +219,15 @@ const actions = {
     },
 
     async uploadSortPositions({}, data) {
-        return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos)
+        return ApiService.put('playlists/' + data.playlist_token + '/positions', data.sortedVideos);
     },
 
     async createVideo(context, event) {
-        let $cid = context?.rootState?.opencast?.cid ?? null;
-        return ApiService.post('videos/' + event.episode, {event: event, 'course_id': $cid});
+        const cid = context?.rootState?.opencast?.cid ?? null;
+
+        const message = await ApiService.post('videos/' + event.episode, { event: event, course_id: cid });
+        
+        return message;
     },
 
     async deleteVideo(context, token) {
@@ -226,55 +239,83 @@ const actions = {
     },
 
     async updateVideo(context, event) {
-        return ApiService.put('videos/' + event.token, {event: event});
+        const message = await ApiService.put(`videos/${event.token}`, { event });
+
+        event.playlists.forEach((playlist) => {
+            context.dispatch('loadVideosByPlaylist', {
+                token: playlist.token,
+                playlist: playlist,
+            });
+        });
+
+        context.dispatch('videodrawer/setSelectedVideo',  event, { root: true });
+        // return message;
     },
 
     async updateVideoVisibility(context, data) {
-        return ApiService.put('videos/' + data.token +'/worldwide_share', {visibility: data.visibility});
+        return ApiService.put('videos/' + data.token + '/worldwide_share', { visibility: data.visibility });
     },
 
     async reportVideo(context, data) {
-        return ApiService.post('videos/' + data.token + '/report', {description: data.description});
+        return ApiService.post('videos/' + data.token + '/report', { description: data.description });
     },
 
-    async setVideoSort({dispatch, commit}, sort) {
-        await commit('setVideoSort', sort)
+    async setVideoSort({ dispatch, commit }, sort) {
+        await commit('setVideoSort', sort);
     },
 
     async loadVideoShares({ rootState, commit }, token) {
-        return ApiService.get('videos/' + token + '/shares')
-            .then(({ data }) => {
-                commit('setShares', data)
-            });
+        return ApiService.get('videos/' + token + '/shares').then(({ data }) => {
+            commit('setShares', data);
+        });
     },
 
     async updateVideoShares({ rootState }, data) {
         let params = {
-            'data': data.shares,
-        }
+            data: data.shares,
+        };
         return ApiService.put('videos/' + data.token + '/shares', params);
     },
 
-    setPage({commit}, page) {
+    setPage({ commit }, page) {
         commit('setPage', page);
     },
 
-    setVideoSortMode({dispatch, state, commit}, mode) {
+    setVideoSortMode({ dispatch, state, commit }, mode) {
         commit('setVideoSortMode', mode);
     },
 
-    setCourseVideosToCopy({dispatch, state, commit}, videos) {
+    setCourseVideosToCopy({ dispatch, state, commit }, videos) {
         commit('setCourseVideosToCopy', videos);
     },
 
-    setVideosReload({commit}, mode) {
-        commit('setVideosReload', mode)
+    setVideosReload({ commit }, mode) {
+        commit('setVideosReload', mode);
     },
 
-    toggleShowEpisodesDefaultVisibilityDialog({commit}, mode) {
+    toggleShowEpisodesDefaultVisibilityDialog({ commit }, mode) {
         commit('setShowEpisodesDefaultVisibilityDialog', mode);
     },
-}
+
+    async loadVideosByPlaylist({ commit, rootState }, data) {
+        const cid = rootState.opencast.cid;
+        const playlistInCourse = data.playlist?.courses?.some((course) => course.id === cid) ?? true;
+
+        if (!playlistInCourse) {
+            return;
+        }
+
+        commit('setPlaylistLoadingState', { token: data.token, loading: true });
+        const { data: response } = await ApiService.get(`playlists/${data.token}/videos`, {
+            params: new URLSearchParams(data),
+        });
+        commit('setPlaylistVideos', { playlistToken: data.token, videos: response.videos });
+        commit('setPlaylistLoadingState', { token: data.token, loading: false });
+    },
+    setSearchAvailable({ commit }, searchAvailable) {
+        commit('SET_SEARCH_AVAILABLE', searchAvailable);
+    },
+};
 
 const mutations = {
     setVideos(state, videos) {
@@ -282,12 +323,12 @@ const mutations = {
     },
 
     setVideoSort(state, sort) {
-        state.videoSort = sort
+        state.videoSort = sort;
     },
 
     setVideoSortMode(state, mode) {
-        state.videoSortList = {}
-        state.videoSortMode = mode
+        state.videoSortList = {};
+        state.videoSortMode = mode;
     },
 
     setPage(state, page) {
@@ -300,13 +341,13 @@ const mutations = {
         state.paging = {
             currPage: 0,
             lastPage: 0,
-            items: 0
+            items: 0,
         };
         state.currentPage = 1;
     },
 
     updatePaging(state, paging) {
-        paging.lastPage = (paging.items == state.limit) ? 0 : Math.floor((paging.items - 1) / state.limit);
+        paging.lastPage = paging.items == state.limit ? 0 : Math.floor((paging.items - 1) / state.limit);
         state.paging = paging;
     },
 
@@ -345,11 +386,45 @@ const mutations = {
     setShowEpisodesDefaultVisibilityDialog(state, mode) {
         state.showEpisodesDefaultVisibilityDialog = mode;
     },
-}
+
+    setGlobalVideos(state, videos) {
+        videos.forEach((video) => {
+            state.globalVideos[video.token] = video;
+        });
+    },
+    setGlobalVideo(state, video) {
+        state.globalVideos[video.token] = video;
+    },
+
+    setPlaylistVideos(state, { playlistToken, videos }) {
+        state.playlistVideos[playlistToken] = videos;
+        // Gleichzeitig global speichern:
+        if (state.globalVideos === null) {
+            state.globalVideos = {};
+        }
+        videos.forEach((video) => {
+            state.globalVideos[video.token] = video;
+        });
+    },
+
+    setPlaylistLoadingState(state, { token, loading }) {
+        if (loading) {
+            state.playlistLoadingStates = { ...state.playlistLoadingStates, [token]: true };
+        } else {
+            const { [token]: removed, ...rest } = state.playlistLoadingStates;
+            state.playlistLoadingStates = rest;
+        }
+    },
+
+    SET_SEARCH_AVAILABLE(state, searchAvailable) {
+        state.searchAvailable = searchAvailable;
+    },
+};
 
 export default {
+    namespaced: true,
     state,
     getters,
     mutations,
-    actions
-}
+    actions,
+};

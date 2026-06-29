@@ -1,55 +1,52 @@
 <template>
-    <div>
-        <StudipDialog
-            :title="$gettext('Einbettungsoptionen')"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
-            height="450"
-            width="550"
-            @close="this.$emit('cancel')"
-        >
-            <template v-slot:dialogContent>
-                <form class="default oc--video-actions-embedding">
-                    <label>
-                        {{ $gettext('Einbettungscode') }}
-                        <textarea :value="embeddingCode" rows="5" readonly></textarea>
-                    </label>
-                    <legend>
-                        {{ $gettext('Einbettungslink') }}
-                        <input type="text" :value="embeddingLink" readonly ref="embeddingLink" />
-                    </legend>
-                </form>
-                <MessageList :dialog="true" :float="true"/>
-            </template>
-            <template #dialogButtons>
-                <button class="button" :disabled="!embeddingCode" :title="$gettext('Einbettungslink in die Zwischenablage kopieren')" @click="copyEmbeddingLink()">
-                    {{ $gettext('Link kopieren') }}
-                </button>
-                <button class="button" :disabled="!embeddingCode" :title="$gettext('Einbettungscode in die Zwischenablage kopieren')" @click="copyEmbeddingCode()">
-                    {{ $gettext('Code kopieren') }}
-                </button>
-            </template>
-        </StudipDialog>
+    <div class="oc--embed-options">
+        <form class="default">
+            <label>
+                {{ $gettext('Einbettungscode') }}
+                <textarea :value="embeddingCode" readonly></textarea>
+            </label>
+            <label>
+                {{ $gettext('Einbettungslink') }}
+                <input type="text" :value="embeddingLink" readonly ref="embeddingLink" />
+            </label>
+        </form>
+        <MessageList :dialog="true" :float="true" />
+        <div class="oc--tab-footer">
+            <button
+                class="button"
+                :disabled="!embeddingCode"
+                :title="$gettext('Einbettungslink in die Zwischenablage kopieren')"
+                @click="copyEmbeddingLink()"
+            >
+                {{ $gettext('Link kopieren') }}
+            </button>
+            <button
+                class="button"
+                :disabled="!embeddingCode"
+                :title="$gettext('Einbettungscode in die Zwischenablage kopieren')"
+                @click="copyEmbeddingCode()"
+            >
+                {{ $gettext('Code kopieren') }}
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import StudipDialog from '@studip/StudipDialog';
 import MessageList from '@/components/MessageList.vue';
 
 export default {
     name: 'VideoEmbeddingCode',
 
     components: {
-        StudipDialog,
         MessageList,
     },
 
     props: ['event'],
 
     computed: {
-        ...mapGetters(['simple_config_list']),
+        ...mapGetters('config', ['simple_config_list']),
         url() {
             if (this.event.config_id === undefined) {
                 return null;
@@ -75,18 +72,18 @@ export default {
 
     methods: {
         copyToClipboard(text, successText, errorText) {
-            this.$store.dispatch('clearMessages', true);
+            this.$store.dispatch('messages/clearMessages', true);
             navigator.clipboard
                 .writeText(text)
                 .then(() => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'success',
                         text: successText,
                         dialog: true,
                     });
                 })
                 .catch(() => {
-                    this.$store.dispatch('addMessage', {
+                    this.$store.dispatch('messages/addMessage', {
                         type: 'error',
                         text: errorText,
                         dialog: true,

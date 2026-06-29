@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 
 import TagBar from '@/components/TagBar.vue';
 
@@ -66,9 +67,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            'playlist'
-        ]),
+        ...mapGetters('playlists', ['playlist']),
     },
 
     methods: {
@@ -80,8 +79,8 @@ export default {
             this.playlist.visibility = this.eplaylist.visibility;
             this.playlist.tags       = JSON.parse(JSON.stringify((this.eplaylist.tags)));
 
-            this.$store.dispatch('updatePlaylist', this.playlist).then(() => {
-                this.$store.dispatch('updateAvailableTags', this.playlist);
+            this.$store.dispatch('playlists/updatePlaylist', this.playlist).then(() => {
+                this.$store.dispatch('playlists/updateAvailableTags', this.playlist);
             });
 
             this.$emit('done', this.playlist);

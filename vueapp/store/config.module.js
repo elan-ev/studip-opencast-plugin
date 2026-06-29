@@ -1,27 +1,22 @@
-import ApiService from "@/common/api.service";
+import ApiService from '@/common/api.service';
 
 const initialState = {
     config_list: {},
     simple_config_list: {},
     config: {
-        'service_url' :      null,
-        'service_user':      null,
-        'service_password':  null,
-        'settings': {
-            'lti_consumerkey':        null,
-            'lti_consumersecret':     null,
-            'time_buffer_overlap':    30,
-            'debug':                  null,
-            'ssl_ignore_cert_errors': null,
-            'allow_upload_wf_cp': false
-        }
+        service_url: null,
+        service_user: null,
+        service_password: null,
+        settings: {
+            lti_consumerkey: null,
+            lti_consumersecret: null,
+            time_buffer_overlap: 30,
+            debug: null,
+            ssl_ignore_cert_errors: null,
+            allow_upload_wf_cp: false
+        },
     },
     course_config: null,
-    confirmation_modal_shown: false,
-    confirmation_modal_obj: null, // || {title: '',text: '',confirm: undefined, width: ?, height: ?}
-    scheduling_has_unsaved_changes: false,
-    scheduling_edit_modal_shown: false,
-    scheduling_edit_resource_obj: null,
 };
 
 const getters = {
@@ -48,60 +43,47 @@ const getters = {
             return false;
         }
     },
+    canSchedule: (state, getters, rootState, rootGetters) => {
+        const cid = rootGetters['opencast/cid'];
+        const currentUser = rootGetters['opencast/currentUser'];
+        const simpleConfig = state.simple_config_list;
+        const courseConfig = state.course_config;
 
-    confirmationModalObj(state) {
-        return state.confirmation_modal_obj;
+        return Boolean(
+            cid &&
+                currentUser?.can_edit &&
+                simpleConfig?.settings?.OPENCAST_ALLOW_SCHEDULER &&
+                courseConfig?.scheduling_allowed
+        );
     },
-
-    shouldConfirmationModalBeVisible(state) {
-        return state.confirmation_modal_shown !== false
-            && state.confirmation_modal_obj?.title != ''
-            && state.confirmation_modal_obj?.text != ''
-            && state.confirmation_modal_obj?.confirm != undefined;
-    },
-
-    schedulingHasUnsavedChanges(state) {
-        return state.scheduling_has_unsaved_changes;
-    },
-
-    schedulingEditResourceObj(state) {
-        return state.scheduling_edit_resource_obj;
-    },
-
-    shouldSchedulingEditModalBeVisible(state) {
-        return state.scheduling_edit_modal_shown !== false;
-    }
 };
 
 export const state = { ...initialState };
 
 export const actions = {
     async configListRead(context) {
-        return new Promise(resolve => {
-            ApiService.get('config')
-                .then(({ data }) => {
-                    context.commit('configListSet', data);
-                    resolve(data);
-                });
+        return new Promise((resolve) => {
+            ApiService.get('config').then(({ data }) => {
+                context.commit('configListSet', data);
+                resolve(data);
             });
+        });
     },
 
     async simpleConfigListRead(context) {
-        return new Promise(resolve => {
-            ApiService.get('config/simple')
-                .then(({ data }) => {
-                    context.commit('simpleConfigListSet', data);
-                    resolve(data);
-                });
+        return new Promise((resolve) => {
+            ApiService.get('config/simple').then(({ data }) => {
+                context.commit('simpleConfigListSet', data);
+                resolve(data);
             });
+        });
     },
 
     async loadCourseConfig(context, course_id) {
-        return ApiService.get('courses/' + course_id + '/config')
-            .then(({ data }) => {
-                context.commit('setCourseConfig', data);
-                return data;
-            });
+        return ApiService.get('courses/' + course_id + '/config').then(({ data }) => {
+            context.commit('setCourseConfig', data);
+            return data;
+        });
     },
 
     async verifyCourseSeriesExists(context, params) {
@@ -114,14 +96,13 @@ export const actions = {
     },
 
     async configListUpdate(context, params) {
-        return  ApiService.put('global_config', params);
+        return ApiService.put('global_config', params);
     },
 
     async configRead(context, id) {
-        return ApiService.get('config/' + id)
-            .then(({ data }) => {
-                context.commit('configSet', data.config);
-            });
+        return ApiService.get('config/' + id).then(({ data }) => {
+            context.commit('configSet', data.config);
+        });
     },
 
     async configDelete(context, id) {
@@ -130,13 +111,13 @@ export const actions = {
 
     async configUpdate(context, params) {
         return ApiService.update('config', params.id, {
-            config: params
+            config: params,
         });
     },
 
     async configCreate(context, params) {
         return ApiService.post('config', {
-            config: params
+            config: params,
         });
     },
 
@@ -154,34 +135,6 @@ export const actions = {
 
     configSetActivation(context, params) {
         return ApiService.put('config/' + params.id + '/' + (params.active ? 'activate' : 'deactivate'));
-    },
-
-    openConfirmationModal(context, data) {
-        context.commit('setConfirmationModalObj', data);
-        context.commit('setConfirmationModalShown', true);
-    },
-
-    closeConfirmationModal(context, empty_obj = true) {
-        context.commit('setConfirmationModalShown', false);
-        if (empty_obj) {
-            context.commit('setConfirmationModalObj', null);
-        }
-    },
-
-    toggleSchedulingUnsavedChanges(context, status) {
-        context.commit('setSchedulingUnsavedChanges', status ? true : false);
-    },
-
-    openSchedulingEditModal(context, data) {
-        context.commit('setSchedulingEditResourceObj', data);
-        context.commit('setSchedulingEditModalShown', true);
-    },
-
-    closeSchedulingEditModal(context, empty_obj = true) {
-        context.commit('setSchedulingEditModalShown', false);
-        if (empty_obj) {
-            context.commit('setSchedulingEditResourceObj', null);
-        }
     },
 };
 
@@ -206,31 +159,12 @@ export const mutations = {
 
         state.config = data;
     },
-
-    setConfirmationModalObj(state, data) {
-        state.confirmation_modal_obj = data;
-    },
-
-    setConfirmationModalShown(state, status) {
-        state.confirmation_modal_shown = status;
-    },
-
-    setSchedulingUnsavedChanges(state, status) {
-        state.scheduling_has_unsaved_changes = status;
-    },
-
-    setSchedulingEditResourceObj(state, data) {
-        state.scheduling_edit_resource_obj = data;
-    },
-
-    setSchedulingEditModalShown(state, status) {
-        state.scheduling_edit_modal_shown = status;
-    }
 };
 
 export default {
+    namespaced: true,
     state,
     actions,
     mutations,
-    getters
+    getters,
 };

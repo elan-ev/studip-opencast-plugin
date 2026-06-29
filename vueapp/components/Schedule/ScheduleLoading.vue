@@ -2,17 +2,17 @@
     <div ref="main">
         <table class="default oc--schedule-list">
             <colgroup>
-                <col style="width: 2%">
-                <col style="width: 30%">
+                <col style="width: 2%" />
+                <col style="width: 30%" />
                 <template v-if="allow_schedule_alternate">
-                    <col style="width: 28%">
-                    <col style="width: 28%">
+                    <col style="width: 28%" />
+                    <col style="width: 28%" />
                 </template>
                 <template v-else>
-                    <col style="width: 56%">
+                    <col style="width: 56%" />
                 </template>
-                <col style="width: 5%">
-                <col style="width: 7%">
+                <col style="width: 5%" />
+                <col style="width: 7%" />
             </colgroup>
             <thead>
                 <tr>
@@ -46,10 +46,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 export default {
-    name: "ScheduleLoading",
+    name: 'ScheduleLoading',
 
-    props: ['allow_schedule_alternate']
-}
+    props: ['allow_schedule_alternate'],
+};
 </script>

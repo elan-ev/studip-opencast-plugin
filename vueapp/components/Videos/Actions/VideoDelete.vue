@@ -40,7 +40,8 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipDialog from '@studip/StudipDialog'
+import StudipDialog from "@/components/Studip/StudipDialog.vue";
+
 import VideoPlaylists from "@/components/Videos/VideoPlaylists";
 
 export default {
@@ -56,9 +57,7 @@ export default {
     emits: ['done', 'cancel'],
 
     computed: {
-        ...mapGetters([
-            'simple_config_list'
-        ]),
+        ...mapGetters('config', ['simple_config_list']),
 
         dialogHeight() {
             return this.event.playlists?.length > 0 ? 400 : 275;
@@ -67,9 +66,9 @@ export default {
 
     methods: {
         async removeVideo() {
-            await this.$store.dispatch('deleteVideo', this.event.token)
+            await this.$store.dispatch('videos/deleteVideo', this.event.token)
             .then(({ data }) => {
-                this.$store.dispatch('addMessage', data.message);
+                this.$store.dispatch('messages/addMessage', data.message);
                 let emit_action = data.message.type == 'success' ? 'refresh' : '';
                 this.$emit('done', emit_action);
             }).catch(() => {

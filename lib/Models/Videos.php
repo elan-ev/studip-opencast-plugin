@@ -550,6 +550,7 @@ class Videos extends UPMap
         $data['perm']                 = $this->getUserPerm();
         $data['seminar_visibility']   = $this->getSeminarVisibility($cid, $playlist_id);
         $data['video_user_available'] = true;
+        $data['owner']                = $this->getOwner();
 
         // get availability for this video in this playlist
         if (!empty($playlist_id)) {
@@ -666,6 +667,18 @@ class Videos extends UPMap
 
         // user has no perms on this video
         return false;
+    }
+
+    private function getOwner()
+    {
+        $video_user_perms = VideosUserPerms::findOneBySQL('video_id = ? AND perm = ?', [$this->id, 'owner']);
+        if (!$video_user_perms) {
+            return null;
+        }
+        $uid = $video_user_perms->toSanitizedArray()['user_id'];
+        $user = \User::find($uid);
+
+        return ['id' => $user->id, 'fullname' => $user->getFullname(), 'username' => $user->username];
     }
 
     /**

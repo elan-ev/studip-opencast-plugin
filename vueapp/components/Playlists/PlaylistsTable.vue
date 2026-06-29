@@ -140,10 +140,8 @@ export default {
     },
 
     computed: {
-        ...mapGetters([
-            "axios_running",
-            "playlistsReload",
-        ]),
+        ...mapGetters('opencast', ['axios_running']),
+        ...mapGetters('playlists', ['playlistsReload']),
 
         isCourse() {
             return this.cid !== null;
@@ -244,12 +242,12 @@ export default {
                 confirm_text += ' ' + this.$gettext('Bitte beachten Sie, dass diese Wiedergabeliste ist eine') + ' ' + playlist.default_course_tooltip;
             }
             if (confirm(this.$gettext(confirm_text))) {
-                this.$store.dispatch('deletePlaylist', playlist.token)
+                this.$store.dispatch('playlists/deletePlaylist', playlist.token)
                     .then(() => {
                         this.loadPlaylists();
                     })
                     .catch(() => {
-                        this.$store.dispatch('addMessage', {
+                        this.$store.dispatch('messages/addMessage', {
                             type: 'error',
                             text: this.$gettext('Die Wiedergabeliste konnte nicht gelöscht werden.')
                         });
@@ -259,7 +257,7 @@ export default {
     },
 
     mounted() {
-        this.$store.dispatch('setPlaylistsReload', false);
+        this.$store.dispatch('playlists/setPlaylistsReload', false);
         this.loadPlaylists();
     },
 
@@ -268,7 +266,7 @@ export default {
         playlistsReload(reload) {
             if (reload) {
                 this.loadPlaylists();
-                this.$store.dispatch('setPlaylistsReload', false);
+                this.$store.dispatch('playlists/setPlaylistsReload', false);
             }
         }
     }

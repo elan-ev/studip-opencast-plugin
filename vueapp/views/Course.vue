@@ -1,171 +1,47 @@
 <template>
     <div class="container" id="app-episodes">
-        <Teleport :to="toLayoutName">
-            <CoursesSidebar
-                @uploadVideo="uploadDialog = true"
-                @sortVideo="enableSortMode"
-                @saveSortVideo="saveSort"
-                @cancelSortVideo="cancelSort"
-                @editPlaylist="editPlaylistDialog = true"
-                @changeDefaultPlaylist="showChangeDefaultPlaylistDialog = true"
-                @changeDefaultVisibility="changeDefaultVisibility">
-            </CoursesSidebar>
-        </Teleport>
-
-        <PlaylistAddCard v-if="addPlaylist"
-            :is-default="!hasDefaultPlaylist"
-            @done="closePlaylistAddDialog"
-            @cancel="closePlaylistAddDialog"
-        />
-
-        <PlaylistAddVideos v-if="showPlaylistAddVideosDialog"
-            :canUpload="canUpload"
-            @done="closePlaylistAddVideosDialog"
-            @cancel="closePlaylistAddVideosDialog"
-        />
-
-        <PlaylistEditCard v-if="editPlaylistDialog"
-            @done="editPlaylistDialog = false"
-            @cancel="editPlaylistDialog = false"
-        />
-
-        <PlaylistsLinkCard v-if="showChangeDefaultPlaylistDialog"
-            :is-default="true"
-            :custom-title="$gettext('Kurswiedergabeliste wechseln')"
-            @done="showChangeDefaultPlaylistDialog = false"
-            @cancel="showChangeDefaultPlaylistDialog = false"
-        />
-
-        <EpisodesDefaultVisibilityDialog v-if="showEpisodesDefaultVisibilityDialog"
-            @done="closeChangeDefaultVisibility"
-            @cancel="closeChangeDefaultVisibility"
-        />
-
         <MessageList />
-
         <router-view></router-view>
     </div>
 </template>
 
 <script>
-import CoursesSidebar from "@/components/Courses/CoursesSidebar";
-import EpisodesDefaultVisibilityDialog from "@/components/Courses/EpisodesDefaultVisibilityDialog";
-import PlaylistAddVideos from "@/components/Playlists/PlaylistAddVideos";
-import VideoUpload from "@/components/Videos/VideoUpload";
-import MessageList from "@/components/MessageList";
-import PlaylistsLinkCard from '@/components/Playlists/PlaylistsLinkCard.vue';
-import PlaylistAddCard from '@/components/Playlists/PlaylistAddCard.vue';
-import PlaylistEditCard from '@/components/Playlists/PlaylistEditCard.vue';
-
-import { mapGetters } from "vuex";
+import MessageList from '@/components/MessageList';
+import { mapGetters } from 'vuex';
 
 export default {
-    name: "Course",
+    name: 'Course',
 
     components: {
-        PlaylistsLinkCard, PlaylistAddCard,
-        PlaylistEditCard, CoursesSidebar,
-        VideoUpload, PlaylistAddVideos,
         MessageList,
-        EpisodesDefaultVisibilityDialog
     },
 
     computed: {
-        ...mapGetters([
-            'currentUser',
-            'showPlaylistAddVideosDialog',
-            'addPlaylist',
-            'cid',
-            'course_config',
-            'showEpisodesDefaultVisibilityDialog',
-        ]),
-
-        canEdit() {
-            if (!this.course_config) {
-                return false;
-            }
-
-            return this.course_config.edit_allowed;
-        },
-
-        canUpload() {
-            if (!this.course_config || !this.course_config?.series?.series_id) {
-                return false;
-            }
-
-            return this.course_config.upload_allowed;
-        },
-
-        hasDefaultPlaylist() {
-            return this.course_config?.has_default_playlist;
-        },
-
-        toLayoutName() {
-            if (window.OpencastPlugin.STUDIP_VERSION >= 5.3) {
-                return "#sidebar";
-            }
-            else {
-                return "#layout-sidebar > section.sidebar";
-            }
-        }
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('config', ['course_config']),
     },
 
-    data() {
-        return {
-            uploadDialog: false,
-            editPlaylistDialog: false,
-            showChangeDefaultPlaylistDialog: false,
-        }
+    mounted() {
+        this.$store.dispatch('opencast/loadCurrentUser');
+        this.$store.dispatch('config/loadCourseConfig', this.cid).then((course_config) => {
+            if (!course_config?.series?.series_id) {
+                this.$store.dispatch('messages/addMessage', {
+                    type: 'warning',
+                    text: this.$gettext(
+                        'Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.'
+                    ),
+                });
+            } else {
+                // So here we do a verification of the course series.
+                let params = {
+                    cid: this.cid,
+                    series_id: course_config.series.series_id,
+                    config_id: course_config.config_id
+                };
+
+                this.$store.dispatch('config/verifyCourseSeriesExists', params);
+            }
+        });
     },
-
-    methods: {
-        enableSortMode() {
-            this.$store.dispatch('setVideoSortMode', true)
-        },
-
-        saveSort() {
-            this.$store.dispatch('setVideoSortMode', 'commit')
-        },
-
-        cancelSort() {
-            this.$store.dispatch('setVideoSortMode', 'cancel')
-        },
-
-        closePlaylistAddVideosDialog() {
-            this.$store.dispatch('togglePlaylistAddVideosDialog', false);
-        },
-
-        closePlaylistAddDialog() {
-            this.$store.dispatch('addPlaylistUI', false);
-        },
-
-        changeDefaultVisibility() {
-            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', true);
-        },
-
-        closeChangeDefaultVisibility() {
-            this.$store.dispatch('toggleShowEpisodesDefaultVisibilityDialog', false);
-        }
-    },
-
-    async mounted() {
-        await this.$store.dispatch('loadCurrentUser');
-        const course_config = await this.$store.dispatch('loadCourseConfig', this.cid);
-
-        if (!course_config?.series?.series_id) {
-            this.$store.dispatch('addMessage', {
-                type: 'warning',
-                text: this.$gettext('Die Kurskonfiguration konnte nicht vollständig abgerufen werden, daher ist das Hochladen von Videos momentan nicht möglich.')
-            });
-        } else {
-            // So here we do a verification of the course series.
-            let params = {
-                cid: this.cid,
-                series_id: course_config.series.series_id,
-                config_id: course_config.config_id
-            };
-            await this.$store.dispatch('verifyCourseSeriesExists', params);
-        }
-    }
 };
 </script>

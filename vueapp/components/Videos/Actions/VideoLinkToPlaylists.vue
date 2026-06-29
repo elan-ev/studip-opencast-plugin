@@ -1,43 +1,30 @@
 <template>
     <div>
-        <StudipDialog
-            :title="$gettext('Verknüpfungen')"
-            :closeText="$gettext('Schließen')"
-            :closeClass="'cancel'"
-            height="600"
-            width="800"
-            @close="this.$emit('done', 'refresh')"
-        >
-            <template v-slot:dialogContent>
-                <VideoPlaylists
-                    :event="localEvent"
-                    @removePlaylist="removePlaylist"
-                />
+        <VideoPlaylists 
+            :event="localEvent" 
+            @removePlaylist="removePlaylist" 
+        />
 
-                <UserPlaylistSelectable
-                    @add="addPlaylist"
-                    :playlists="userPlaylists"
-                    :selectedPlaylists="localEvent.playlists"
-                />
-            </template>
-        </StudipDialog>
+        <UserPlaylistSelectable
+            @add="addPlaylist"
+            :playlists="userPlaylists"
+            :selectedPlaylists="this.event.playlists"
+        />
     </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import StudipDialog from '@studip/StudipDialog'
+import { mapGetters } from 'vuex';
 
 import UserPlaylistSelectable from '@/components/UserPlaylistSelectable';
-import VideoPlaylists from "@/components/Videos/VideoPlaylists";
+import VideoPlaylists from '@/components/Videos/VideoPlaylists';
 
 export default {
     name: 'VideoLinkToPlaylists',
 
     components: {
-        StudipDialog,
         UserPlaylistSelectable,
-        VideoPlaylists
+        VideoPlaylists,
     },
 
     props: ['event'],
@@ -49,13 +36,13 @@ export default {
             add_playlist_error: {
                 type: 'error',
                 message: this.$gettext('Beim Hinzufügen der Verknüpfung ist ein Fehler aufgetreten.'),
-                dialog: true
+                dialog: true,
             },
 
             remove_playlist_error: {
                 type: 'error',
                 message: this.$gettext('Beim Entfernen der Verknüpfung ist ein Fehler aufgetreten.'),
-                dialog: true
+                dialog: true,
             },
 
             localEvent: {}
@@ -63,59 +50,63 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['userPlaylists', 'cid']),
+        ...mapGetters('opencast', ['cid']),
+        ...mapGetters('playlists', ['userPlaylists']),
     },
 
     methods: {
         addPlaylist(playlist) {
             this.event.playlists.push(playlist);
 
-            let params = {
-                playlist: playlist.token,
-                videos: [this.event.token],
-            };
-            if (this.cid) {
-                params.course_id = this.cid;
-            }
-            this.$store.dispatch('addVideosToPlaylist', params)
-            .catch(() => {
-                // find the index of the playlist that was just added and remove it
-                let index = this.event.playlists.findIndex(p => p.token == playlist.token);
-                this.event.playlists.splice(index, 1);
-                this.$store.dispatch('addMessage', this.add_playlist_error);
-            });
+            this.$store
+                .dispatch('playlists/addVideosToPlaylist', {
+                    playlist: playlist.token,
+                    videos: [this.event.token],
+                    course_id: this.cid
+                })
+                .catch(() => {
+                    // find the index of the playlist that was just added and remove it
+                    let index = this.event.playlists.findIndex((p) => p.token == playlist.token);
+                    this.event.playlists.splice(index, 1);
+                    this.$store.dispatch('messages/addMessage', this.add_playlist_error);
+                });
         },
 
         removePlaylist(index) {
-            if (!confirm(this.$gettext('Sind Sie sicher, dass Sie dieses Video aus der Wiedergabeliste entfernen möchten?'))) {
+            if (
+                !confirm(
+                    this.$gettext('Sind Sie sicher, dass Sie dieses Video aus der Wiedergabeliste entfernen möchten?')
+                )
+            ) {
                 return;
             }
 
             let playlist = this.event.playlists.splice(index, 1)[0];
 
-            this.$store.dispatch('removeVideosFromPlaylist', {
-                playlist:  playlist.token,
-                videos:    [this.event.token],
-                course_id: this.cid
-            })
-            .catch(() => {
-                // add the playlist back to the list
-                this.event.playlists.splice(index, 0, playlist);
-                this.$store.dispatch('addMessage', this.remove_playlist_error);
-            });
+            this.$store
+                .dispatch('playlists/removeVideosFromPlaylist', {
+                    playlist: playlist.token,
+                    videos: [this.event.token],
+                    course_id: this.cid,
+                })
+                .catch(() => {
+                    // add the playlist back to the list
+                    this.event.playlists.splice(index, 0, playlist);
+                    this.$store.dispatch('messages/addMessage', this.remove_playlist_error);
+                });
         },
     },
 
     async mounted () {
         this.localEvent = this.event;
 
-        await this.$store.dispatch('loadPlaylistsForEvent', this.event.token)
+        await this.$store.dispatch('playlists/loadPlaylistsForEvent', this.event.token)
         .then((data) => {
             this.localEvent.playlists = data.playlists;
 
         });
 
-        this.$store.dispatch('loadUserPlaylists', {
+        this.$store.dispatch('playlists/loadUserPlaylists', {
             limit: -1,
         });
     }
