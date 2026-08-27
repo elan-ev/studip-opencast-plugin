@@ -53,7 +53,7 @@ export default {
 
     props: {
         text: {
-            type: String
+            type: [String, Object]
         },
         languages: {
             type: Object
@@ -92,15 +92,19 @@ export default {
         if (Object.keys(this.languages).includes('default')) {
             this.selectedLang = this.languages.default;
         }
-        let json;
-        try {
-            json = JSON.parse(this.text);
-        } catch (e) {
-            json = {}
+        let json = {};
+        if (typeof this.text === 'string') {
+            try {
+                json = JSON.parse(this.text);
+            } catch (e) {
+                json = {};
+            }
+        } else if (this.text) {
+            json = { ...this.text };
         }
 
         this.currentText = json;
-        this.currentInputValue = this.text[this.selectedLang.id];
+        this.currentInputValue = this.currentText[this.selectedLang.id] ?? null;
     },
 
     beforeUnmount() {
@@ -175,7 +179,7 @@ export default {
                 this.initCKE();
                 return;
             }
-            this.currentInputValue = this.text?.[this.selectedLang.id] ?? null;
+            this.currentInputValue = this.currentText[this.selectedLang.id] ?? null;
         },
 
         updateInputValue() {
