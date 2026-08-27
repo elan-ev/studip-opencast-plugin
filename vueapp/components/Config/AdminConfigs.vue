@@ -22,7 +22,6 @@
 
             <SchedulingOptions v-if="is_scheduling_enabled"
                 :config_list="config_list"
-                @openEditModalInParent="openSchedulingEditModal"
             />
 
             <footer>
