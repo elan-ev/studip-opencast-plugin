@@ -7,7 +7,7 @@
             <!-- iterate over all opencast nodes for this server as well -->
             <iframe
                 v-for="i in server.lti_num"
-                v-bind:key="i"
+                v-bind:key="`${ltiAuthRevision}-${server.id}-${i}`"
                 :src="authUrl(server.id, i - 1)">
             </iframe>
         </template>
@@ -30,16 +30,18 @@ export default {
     },
 
     computed: {
-        ...mapGetters(['simple_config_list', 'isLTIAuthenticated', 'cid']),
+        ...mapGetters(['simple_config_list', 'isLTIAuthenticated', 'ltiAuthRevision', 'cid']),
     },
 
     methods: {
         authUrl(config_id, num) {
+            const authRevision = '&auth_revision=' + this.ltiAuthRevision;
+
             // check, if we are in a course
             if (this.cid) {
-                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + '&cid=' + this.cid;
+                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + '&cid=' + this.cid + authRevision;
             } else {
-                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id;
+                return window.OpencastPlugin.AUTH_URL + '/' + num + '?config_id=' + config_id + authRevision;
             }
         },
 
@@ -71,7 +73,10 @@ export default {
 
     mounted() {
         this.$store.dispatch('simpleConfigListRead').then(() => {
-            this.checkLTIPeriodically();
+            // ServerCard starts the check after a stored admin dialog has closed.
+            if (this.$route.name !== 'admin') {
+                this.checkLTIPeriodically();
+            }
         });
     }
 }

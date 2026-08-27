@@ -304,6 +304,8 @@ export default {
                     return;
                 }
                 else if (data.message.type === 'success') {
+                    this.$emit('stored', data.config);
+
                     if (this.currentId !== 'new') {
                         // Just show success message if server was edited
                         this.$store.dispatch('addMessage', {
