@@ -12,7 +12,7 @@
                     <input
                         v-if="type === 'text'"
                         type="text"
-                        ref="`studip_i18n_text_` + lang.id"
+                        :ref="`studip_i18n_text_${lang.id}`"
                         :name="`studip_i18n_text_` + uuid + '_' + lang.id"
                         v-model="currentInputValue"
                         @keyup="updateInputValue"
@@ -21,7 +21,7 @@
                         v-else-if="type === 'textarea'"
                         :value="currentText[lang.id]"
                         :id="`studip_wysiwyg_` + uuid + '_' + lang.id"
-                        :ref="`studip_wysiwyg_` + lang.id"
+                        :ref="`studip_wysiwyg_${lang.id}`"
                         class="studip-wysiwyg"
                     >
                     </textarea>
@@ -121,8 +121,8 @@ export default {
             return OpencastPlugin.ASSETS_URL + 'images/languages/' + lang.picture;
         },
 
-        initCKE() {
-            if (!STUDIP.wysiwyg_enabled) {
+        async initCKE() {
+            if (typeof STUDIP?.wysiwyg?.replace !== 'function') {
                 return false;
             }
 
@@ -130,39 +130,27 @@ export default {
                 return false;
             }
 
-            let textarea = this.$refs['studip_wysiwyg_' + this.selectedLang.id][0];
+            const langId = this.selectedLang.id;
+            const textarea = this.$refs['studip_wysiwyg_' + langId]?.[0];
 
-            if (!this.wysiwyg_editor[this.selectedLang.id]) {
-                this.checkEditor();
+            if (!textarea || this.wysiwyg_editor[langId]) {
+                return Boolean(textarea);
             }
+
+            const editor = await STUDIP.wysiwyg.replace(textarea);
+            this.wysiwyg_editor[langId] = editor;
+
+            // using toRaw to remove Vue proxys. They do not work well with CKEditor
+            toRaw(editor).ui.focusTracker.on('change:isFocused', () => {
+                this.updateValue(toRaw(editor).getData(), langId);
+            });
 
             return true;
         },
 
-        checkEditor()
+        updateValue(value, langId = this.selectedLang.id)
         {
-            let view = this;
-            let textarea = this.$refs['studip_wysiwyg_' + this.selectedLang.id][0];
-
-            if (!STUDIP.wysiwyg.getEditor(textarea)) {
-                STUDIP.wysiwyg.replace(textarea);
-                setTimeout(() => {
-                    view.checkEditor()
-                }, 500);
-                return;
-            }
-
-            this.wysiwyg_editor[this.selectedLang.id] = STUDIP.wysiwyg.getEditor(textarea);
-
-            // using toRaw to remove Vue proxys. They do not work well with CKEditor
-            toRaw(this.wysiwyg_editor[this.selectedLang.id]).ui.focusTracker.on( 'change:isFocused', () => {
-                view.updateValue(toRaw(view.wysiwyg_editor[view.selectedLang.id]).getData());
-            });
-        },
-
-        updateValue(value)
-        {
-            this.currentText[this.selectedLang.id] = value;
+            this.currentText[langId] = value;
 
             // clean anything else besides languages
             for (let id in this.currentText) {
