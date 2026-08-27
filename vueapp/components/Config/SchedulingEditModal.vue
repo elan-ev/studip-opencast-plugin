@@ -24,17 +24,16 @@
                                 {{ $gettext('Capture Agent') }}
                             </span>
 
-                            <select @change="assignCA($event)" required>
-                                <option value="" disabled :selected="!editing_resource?.capture_agent">
+                            <select v-model="selected_capture_agent" required>
+                                <option :value="null" disabled>
                                     {{ $gettext('Bitte wählen Sie einen CA.') }}
                                 </option>
                                 <template v-for="(ca_obj, index) in filtered_capture_agents" :key="index">
                                     <optgroup style="font-weight:bold;" :label="`Server #${ca_obj.id}`">
                                         <option v-for="(capture_agent, calindex) in ca_obj.list"
                                             :key="calindex"
-                                            :value="capture_agent.list_id"
-                                            :disabled="capture_agent?.in_use && `${ca_obj.id}_${editing_resource.capture_agent}` !== capture_agent.list_id"
-                                            :selected="`${ca_obj.id}_${editing_resource.capture_agent}` === capture_agent.list_id && capture_agent?.in_use"
+                                            :value="capture_agent"
+                                            :disabled="capture_agent?.in_use && capture_agent !== selected_capture_agent"
                                         >
                                             {{ capture_agent.name }}
                                         </option>
@@ -149,7 +148,6 @@ const filtered_capture_agents = computed(() => {
                         .filter((item, i, ar) => ar.indexOf(item) === i);
         for (let ci = 0; ci < configs.length; ci++) {
             let ca_cat = capture_agents.value.filter(ca => ca.config_id == configs[ci]);
-            ca_cat.map(ca => ca.list_id = `${ca.config_id}_${ca.name}`);
             if (ca_cat.length) {
                 filtered_capture_agents.push({
                     id: configs[ci],
@@ -167,6 +165,14 @@ const workflow_definitions = computed(() => {
         workflow_definitions = config_list.value?.scheduling?.workflow_definitions;
     }
     return workflow_definitions;
+});
+
+const selected_capture_agent = computed({
+    get: () => capture_agents.value.find(
+        ca => ca.name == editing_resource.value?.capture_agent
+            && ca.config_id == editing_resource.value?.config_id
+    ) ?? null,
+    set: capture_agent => assignCA(capture_agent),
 });
 
 const compiledWDList = (resource_obj) => {
@@ -238,24 +244,14 @@ const toggleCAOccupation = (capture_agent, config_id, status = true) => {
     }
 };
 
-const assignCA = (event) => {
-    event.preventDefault();
-    let value = event.target.value;
-    let selected_ca_arr = value.split('_');
-    if (selected_ca_arr.length == 2) {
-        let selected_config_id = selected_ca_arr[0];
-        let selected_ca = selected_ca_arr[1];
-        let capture_agent_obj = capture_agents.value.filter(
-            ca => ca.name == selected_ca && ca.config_id == selected_config_id
-        );
-        if (capture_agent_obj.length) {
-            let current_ca = editing_resource.value.capture_agent;
-            let current_config_id = editing_resource.value.config_id;
-            toggleCAOccupation(current_ca, current_config_id, false);
-            editing_resource.value.capture_agent = selected_ca;
-            editing_resource.value.config_id = selected_config_id;
-            toggleCAOccupation(selected_ca, selected_config_id, true);
-        }
+const assignCA = (capture_agent) => {
+    if (capture_agent && capture_agents.value.includes(capture_agent)) {
+        let current_ca = editing_resource.value.capture_agent;
+        let current_config_id = editing_resource.value.config_id;
+        toggleCAOccupation(current_ca, current_config_id, false);
+        editing_resource.value.capture_agent = capture_agent.name;
+        editing_resource.value.config_id = capture_agent.config_id;
+        toggleCAOccupation(capture_agent.name, capture_agent.config_id, true);
     }
 };
 
