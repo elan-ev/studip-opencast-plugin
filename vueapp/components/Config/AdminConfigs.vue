@@ -22,10 +22,10 @@
 
             <SchedulingOptions v-if="is_scheduling_enabled"
                 :config_list="config_list"
-                @openEditModalInParent="openSchedulingEditModal"
             />
 
             <footer>
+                <MessageList />
                 <StudipButton icon="accept" @click.prevent="storeAdminConfig($event)">
                     <span>
                         {{ $gettext('Einstellungen speichern') }}
@@ -56,22 +56,22 @@
 <script>
 import { mapGetters } from "vuex";
 
-import StudipButton from "@studip/StudipButton";
-import StudipIcon from "@studip/StudipIcon";
-import MessageList from "@/components/MessageList";
 import GlobalOptions from "@/components/Config/GlobalOptions";
+import SchedulingEditModal from "@/components/Config/SchedulingEditModal";
 import SchedulingOptions from "@/components/Config/SchedulingOptions";
 import MessageBox from "@/components/MessageBox";
-import SchedulingEditModal from "@/components/Config/SchedulingEditModal";
+import MessageList from "@/components/MessageList";
+import StudipButton from "@studip/StudipButton";
 import StudipDialog from '@studip/StudipDialog';
+import StudipIcon from "@studip/StudipIcon";
 
 export default {
     name: "AdminConfigs",
     components: {
-        StudipButton,       StudipIcon,
-        MessageList,        MessageBox,
-        GlobalOptions,      SchedulingOptions,
-        SchedulingEditModal, StudipDialog
+        StudipButton,        StudipIcon,
+        MessageList,         MessageBox,
+        GlobalOptions,       SchedulingOptions,
+        SchedulingEditModal, StudipDialog,
     },
 
     data() {
