@@ -22,7 +22,7 @@
             <span class="oc--admin--server-icons">
                 <div data-tooltip class="tooltip" v-if="!isAddCard && checkFailed">
                     <span class="tooltip-content" style="display: none">
-                        {{ $gettext('Verbindungstest fehlgeschlagen.') }}
+                        {{ $gettext('LTI Verbindungstest fehlgeschlagen.') }}
                     </span>
                     <studip-icon shape="exclaim-circle" role="status-red" :size="32"/>
                 </div>
@@ -49,7 +49,8 @@
         <EditServer v-if="isShow"
             :id="config ? config.id : 'new'"
             :config="config"
-            @close="isShow = false;"
+            @stored="handleStored"
+            @close="handleClose"
         />
     </div>
 </template>
@@ -80,15 +81,18 @@ export default {
             isShow: false,
             interval: null,
             interval_counter: 0,
-            error_msg: {
-                type: 'error',
-                text: this.$gettext('Überprüfung der Verbindung fehlgeschlagen! '
-                    + 'Kontrollieren Sie die eingetragenen Daten und stellen Sie sicher, '
+            interval_limit: 10,
+            checkAfterClose: false,
+            storedConfigId: null,
+            connection_info_msg: {
+                type: 'info',
+                text: this.$gettext('Überprüfung der LTI Verbindung fehlgeschlagen! '
+                    + 'Kontrollieren Sie die eingetragenen Daten (LTI Consumerkey und LTI Consumersecret) und stellen Sie sicher, '
                     + 'dass Cross-Origin Aufrufe von dieser Domain aus möglich sind! '
                     + 'Denken Sie auch daran, in Opencast die korrekten access-control-allow-* '
                     + 'Header zu setzen.'
                 ),
-                dialog: true
+                dialog: false
             }
         }
     },
@@ -101,7 +105,8 @@ export default {
 
     computed: {
         ...mapGetters([
-            'isLTIAuthenticated'
+            'isLTIAuthenticated',
+            'simple_config_list'
         ]),
 
         checkFailed() {
@@ -146,21 +151,81 @@ export default {
 
         showEditServer() {
             this.isShow = true;
+        },
 
-            if (this.checkFailed) {
-                this.$store.dispatch('addMessage', this.error_msg);
+        handleStored(config) {
+            const configId = config?.id ?? this.config?.id;
+            if (!configId) {
+                return;
             }
+
+            this.stopConnectionCheck();
+            this.storedConfigId = configId;
+            this.checkAfterClose = true;
+            this.$store.dispatch('resetLTIAuthentication', configId);
+            this.$store.dispatch('removeMessage', this.connection_info_msg);
+        },
+
+        handleClose() {
+            this.isShow = false;
+
+            if (!this.checkAfterClose) {
+                return;
+            }
+
+            this.checkAfterClose = false;
+            this.$nextTick(() => this.startConnectionCheck(this.storedConfigId));
+        },
+
+        async startConnectionCheck(configId) {
+            await this.$store.dispatch('authenticateLti');
+
+            const server = this.simple_config_list?.server?.[configId];
+            if (!server) {
+                return;
+            }
+
+            const check = async () => {
+                await this.$store.dispatch('checkLTIAuthentication', server);
+                this.interval_counter++;
+
+                if (this.isLTIAuthenticated[configId] || this.interval_counter >= this.interval_limit) {
+                    this.stopConnectionCheck();
+                }
+            };
+
+            // The new LTI iframe must finish its signed launch before checking the
+            // session. An immediate request can still see the previous session and
+            // incorrectly stop the check before the updated credentials are used.
+            this.interval = setTimeout(async () => {
+                await check();
+                if (!this.isLTIAuthenticated[configId] && this.interval_counter < this.interval_limit) {
+                    this.interval = setInterval(check, 2000);
+                }
+            }, 2000);
+        },
+
+        stopConnectionCheck() {
+            if (this.interval) {
+                clearInterval(this.interval);
+                this.interval = null;
+            }
+            this.interval_counter = 0;
         },
     },
 
     watch: {
         checkFailed: function (newVal) {
-            if (newVal && this.isShow) {
-                this.$store.dispatch('addMessage', this.error_msg);
+            if (newVal && !this.isShow) {
+                this.$store.dispatch('addMessage', this.connection_info_msg);
             } else {
-                this.$store.dispatch('removeMessage', this.error_msg);
+                this.$store.dispatch('removeMessage', this.connection_info_msg);
             }
         }
+    },
+
+    beforeUnmount() {
+        this.stopConnectionCheck();
     }
 }
 </script>

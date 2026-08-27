@@ -13,6 +13,7 @@ const state = {
     userCourses: [],
     userList: [],
     isLTIAuthenticated: {},
+    ltiAuthRevision: 0,
     currentLTIUser: {},
     opencastOffline: false
 }
@@ -51,6 +52,9 @@ const getters = {
     isLTIAuthenticated(state) {
         return state.isLTIAuthenticated;
     },
+    ltiAuthRevision(state) {
+        return state.ltiAuthRevision;
+    },
     currentLTIUser(state) {
         return state.currentLTIUser;
     },
@@ -61,6 +65,17 @@ const getters = {
 
 
 const actions = {
+    resetLTIAuthentication({ commit }, server) {
+        commit('setCurrentLTIUser', {
+            server,
+            user: null
+        });
+        commit('setLTIStatus', {
+            server,
+            authenticated: null
+        });
+    },
+
     updateCid({commit}, cid) {
         commit('setCid', cid);
     },
@@ -129,9 +144,11 @@ const actions = {
         commit('clearPaging');
     },
 
-    async authenticateLti({ dispatch }) {
-        // by reloading the simple config, LtiAuth.vue reloads the iframe for lti authentication
-        return dispatch('simpleConfigListRead');
+    async authenticateLti({ commit, dispatch }) {
+        const config = await dispatch('simpleConfigListRead');
+        // Force LtiAuth to create new iframes, even when their URLs did not change.
+        commit('incrementLTIAuthRevision');
+        return config;
     },
 
     setUpload({ commit }, data) {
@@ -149,6 +166,7 @@ const actions = {
                 url: server.name + "/lti/info.json",
                 crossDomain: true,
                 withCredentials: true,
+                suppressErrorMessage: true,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                 }
@@ -194,6 +212,7 @@ const actions = {
                 url: server.name + "/info/me.json",
                 crossDomain: true,
                 withCredentials: true,
+                suppressErrorMessage: true,
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
                 }
@@ -266,6 +285,10 @@ const mutations = {
 
     setLTIStatus(state, params) {
         state.isLTIAuthenticated[params.server] = params.authenticated;
+    },
+
+    incrementLTIAuthRevision(state) {
+        state.ltiAuthRevision++;
     },
 
     setCurrentLTIUser(state, params) {

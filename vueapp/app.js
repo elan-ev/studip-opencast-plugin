@@ -49,7 +49,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 return Promise.reject(error);
             }
 
-            if (error?.response?.data !== undefined) {
+            if (error?.response?.data !== undefined && !error.config?.suppressErrorMessage) {
                 store.dispatch('addMessage', error.response);
             }
 
