@@ -183,6 +183,20 @@ class ScheduleHelper
 
         return ScheduledRecordings::findBySQL(implode(' AND ', $where_array), $params);
     }
+
+    /**
+     * Checks whether a course date has scheduled recordings.
+     *
+     * @param string $course_id
+     * @param string $termin_id
+     *
+     * @return bool
+     */
+    public static function hasScheduledRecordingsForDate($course_id, $termin_id)
+    {
+        $scheduled_recordings = self::getScheduledRecordingsForDate($course_id, $termin_id);
+        return $scheduled_recordings && count($scheduled_recordings) > 0;
+    }
     /**
      * Gets the list of semesters for the course to be repsresented in the semster filter dropdown
      * NOTE: expired semesters are rejected!

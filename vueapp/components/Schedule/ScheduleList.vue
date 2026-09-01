@@ -211,10 +211,10 @@ export default {
                 termin_ids: termin_ids,
             };
 
+            this.$store.dispatch('clearMessages');
             this.bulkActionRunning = true;
             termin_ids.forEach((termin_id) => this.setActionRunning(termin_id, true));
             this.$store.dispatch('bulkScheduling', params).then(({ data }) => {
-                this.$store.dispatch('clearMessages');
                 if (data?.message) {
                     this.addMesssage(data.message.type, data.message.text, true);
                 }
@@ -291,6 +291,7 @@ export default {
                 return;
             }
 
+            this.$store.dispatch('clearMessages');
             this.setActionRunning(termin_id, true);
             this.$store.dispatch(dispatchAction, termin_id).then(({ data }) => {
                 if (data?.message && dispatchAction != 'unschedule') {
