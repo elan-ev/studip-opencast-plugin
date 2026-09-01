@@ -70,6 +70,13 @@
                     </td>
                     <td class="oc-schedule-actions">
                         <div class="oc-schedule-action-item-wrapper">
+                            <span
+                                v-if="isActionRunning(date.termin_id)"
+                                class="oc-schedule-spinner progress-indicator-wrapper"
+                                :title="$gettext('Vorgang wird bearbeitet...')"
+                            >
+                                <span class="progress-indicator"></span>
+                            </span>
                             <template v-for="(action, index) in date.actions" :key="index">
                                 <a
                                     v-if="index != 'expire' && !isActionRunning(date.termin_id)"
@@ -215,12 +222,12 @@ export default {
             this.bulkActionRunning = true;
             termin_ids.forEach((termin_id) => this.setActionRunning(termin_id, true));
             this.$store.dispatch('bulkScheduling', params).then(({ data }) => {
-                if (data?.message) {
-                    this.addMesssage(data.message.type, data.message.text, true);
-                }
-                return this.$store.dispatch('getScheduleList');
+                return this.reloadScheduleListWithMessage(data?.message);
             }).catch(() => {
-                this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
+                return this.reloadScheduleListWithMessage({
+                    type: 'error',
+                    text: this.$gettext('Es ist ein Fehler aufgetreten')
+                });
             }).finally(() => {
                 this.bulkActionRunning = false;
                 termin_ids.forEach((termin_id) => this.setActionRunning(termin_id, false));
@@ -294,19 +301,25 @@ export default {
             this.$store.dispatch('clearMessages');
             this.setActionRunning(termin_id, true);
             this.$store.dispatch(dispatchAction, termin_id).then(({ data }) => {
+                let message = data?.message;
+
                 if (data?.message && dispatchAction != 'unschedule') {
-                    this.addMesssage(data.message.type, data.message.text, true);
-                    if (data.message.type == 'success') {
-                        return this.$store.dispatch('getScheduleList');
-                    }
-                } else {
-                    if (dispatchAction == 'unschedule') {
-                        this.addMesssage('success', this.$gettext('Die geplante Aufzeichnung wurde entfernt.'), true);
-                    }
-                    return this.$store.dispatch('getScheduleList');
+                    return this.reloadScheduleListWithMessage(message);
                 }
+
+                if (dispatchAction == 'unschedule') {
+                    message = {
+                        type: 'success',
+                        text: this.$gettext('Die geplante Aufzeichnung wurde entfernt.')
+                    };
+                }
+
+                return this.reloadScheduleListWithMessage(message);
             }).catch(() => {
-                this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
+                return this.reloadScheduleListWithMessage({
+                    type: 'error',
+                    text: this.$gettext('Es ist ein Fehler aufgetreten')
+                });
             }).finally(() => {
                 this.setActionRunning(termin_id, false);
             });
@@ -328,6 +341,14 @@ export default {
             let runningActions = {...this.runningActions};
             delete runningActions[termin_id];
             this.runningActions = runningActions;
+        },
+
+        reloadScheduleListWithMessage(message) {
+            return this.$store.dispatch('getScheduleList').then(() => {
+                if (message) {
+                    this.addMesssage(message.type, message.text, true);
+                }
+            });
         },
 
         getSliderValue(args) {
