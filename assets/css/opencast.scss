@@ -1316,6 +1316,11 @@ label.oc--file-upload {
                 &:not(:first-of-type) {
                     margin-left: .5em;
                 }
+
+                &.oc-schedule-action-item-inactive {
+                    color: var(--dark-gray-color-45, #777);
+                    cursor: default;
+                }
             }
         }
     }

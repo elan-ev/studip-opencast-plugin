@@ -29,7 +29,14 @@
             <tbody>
                 <tr v-for="(date, index) in schedule_list" :key="index">
                     <td>
-                        <input type="checkbox" :ref="setBulkRef" :id="`dates[${date.termin_id}`" :value="date.termin_id" :data-index="index" :disabled="!date.allow_bulk">
+                        <input
+                            type="checkbox"
+                            :ref="setBulkRef"
+                            :id="`dates[${date.termin_id}`"
+                            :value="date.termin_id"
+                            :data-index="index"
+                            :disabled="!date.allow_bulk || isActionRunning(date.termin_id)"
+                        >
                     </td>
                     <td v-html="date.termin_title"></td>
                     <template v-if="allow_schedule_alternate && date?.recording_period">
@@ -64,13 +71,32 @@
                     <td class="oc-schedule-actions">
                         <div class="oc-schedule-action-item-wrapper">
                             <template v-for="(action, index) in date.actions" :key="index">
-                                <a v-if="index != 'expire'" href="#" @click.stop="performAction($event, index, date.termin_id)" class="oc-schedule-action-item">
+                                <a
+                                    v-if="index != 'expire' && !isActionRunning(date.termin_id)"
+                                    href="#"
+                                    @click.stop="performAction($event, index, date.termin_id)"
+                                    class="oc-schedule-action-item"
+                                >
                                     <StudipIcon v-if="index != 'scheduleLive'" :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''"/>
                                     <span v-else style="font-weight: bold" :title="action?.title ? action.title : ''">
                                         {{ action.info }}
                                     </span>
                                 </a>
-                                <StudipIcon v-else :shape="action.shape" :role="action.role" :title="action?.title ? action.title : ''" class="oc-schedule-action-item"/>
+                                <StudipIcon
+                                    v-else-if="index != 'scheduleLive'"
+                                    :shape="action.shape"
+                                    :role="isActionRunning(date.termin_id) ? 'inactive' : action.role"
+                                    :title="action?.title ? action.title : ''"
+                                    class="oc-schedule-action-item"
+                                />
+                                <span
+                                    v-else
+                                    class="oc-schedule-action-item"
+                                    :class="{ 'oc-schedule-action-item-inactive': isActionRunning(date.termin_id) }"
+                                    :title="action?.title ? action.title : ''"
+                                >
+                                    {{ action.info }}
+                                </span>
                             </template>
                         </div>
                     </td>
@@ -78,19 +104,22 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td class="thead"><input type="checkbox" ref="checkall" id="checkall" @click="bulkSelection($event)"></td>
+                    <td class="thead"><input type="checkbox" ref="checkall" id="checkall" @click="bulkSelection($event)" :disabled="bulkActionRunning"></td>
                     <td class="thead" :colspan="allow_schedule_alternate ? 6 : 5">
-                        <select v-model="bulkAction">
+                        <select v-model="bulkAction" :disabled="bulkActionRunning">
                             <option value="" disabled selected>{{ $gettext('Bitte wählen Sie eine Aktion.') }}</option>
                             <option v-for="(opt, i) in get_bulk_actions" :key="i" :value="opt.value">
                                 {{ opt.text }}
                             </option>
                         </select>
-                        <StudipButton icon="accept" @click.prevent="performBulkAction"
+                        <StudipButton
+                            icon="accept"
+                            type="button"
+                            @click.prevent.stop="performBulkAction"
                             :disabled="bulkActionRunning">
-                            <span>{{ bulkActionRunning ? $gettext('Bitte warten...') : $gettext('Übernehmen') }}</span>
+                            <span>{{ $gettext('Übernehmen') }}</span>
                         </StudipButton>
-                        <StudipButton icon="cancel" @click.prevent="resetBulk">
+                        <StudipButton icon="cancel" type="button" @click.prevent.stop="resetBulk" :disabled="bulkActionRunning">
                             <span>{{ $gettext('Abbrechen') }}</span>
                         </StudipButton>
                     </td>
@@ -129,7 +158,8 @@ export default {
             bulkRefs: [],
             bulkAction: '',
             refreshTimeout: null,
-            bulkActionRunning: false
+            bulkActionRunning: false,
+            runningActions: {}
         }
     },
 
@@ -182,18 +212,27 @@ export default {
             };
 
             this.bulkActionRunning = true;
+            termin_ids.forEach((termin_id) => this.setActionRunning(termin_id, true));
             this.$store.dispatch('bulkScheduling', params).then(({ data }) => {
                 this.$store.dispatch('clearMessages');
                 if (data?.message) {
                     this.addMesssage(data.message.type, data.message.text, true);
                 }
-                this.$store.dispatch('getScheduleList');
+                return this.$store.dispatch('getScheduleList');
+            }).catch(() => {
+                this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
+            }).finally(() => {
                 this.bulkActionRunning = false;
+                termin_ids.forEach((termin_id) => this.setActionRunning(termin_id, false));
             });
 
         },
 
         resetBulk() {
+            if (this.bulkActionRunning) {
+                return;
+            }
+
             this.bulkAction = '';
             this.$refs.checkall.checked = false;
             this.performBulkSelection(false);
@@ -229,6 +268,10 @@ export default {
                 event.preventDefault();
             }
 
+            if (this.isActionRunning(termin_id)) {
+                return;
+            }
+
             if (!this.cid) {
                 // This should not have happened, if so, we do nothing.
                 this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
@@ -248,19 +291,42 @@ export default {
                 return;
             }
 
+            this.setActionRunning(termin_id, true);
             this.$store.dispatch(dispatchAction, termin_id).then(({ data }) => {
                 if (data?.message && dispatchAction != 'unschedule') {
                     this.addMesssage(data.message.type, data.message.text, true);
                     if (data.message.type == 'success') {
-                        this.$store.dispatch('getScheduleList');
+                        return this.$store.dispatch('getScheduleList');
                     }
                 } else {
                     if (dispatchAction == 'unschedule') {
                         this.addMesssage('success', this.$gettext('Die geplante Aufzeichnung wurde entfernt.'), true);
                     }
-                    this.$store.dispatch('getScheduleList');
+                    return this.$store.dispatch('getScheduleList');
                 }
+            }).catch(() => {
+                this.addMesssage('error', this.$gettext('Es ist ein Fehler aufgetreten'), true);
+            }).finally(() => {
+                this.setActionRunning(termin_id, false);
             });
+        },
+
+        isActionRunning(termin_id) {
+            return !!this.runningActions[termin_id];
+        },
+
+        setActionRunning(termin_id, running) {
+            if (running) {
+                this.runningActions = {
+                    ...this.runningActions,
+                    [termin_id]: true
+                };
+                return;
+            }
+
+            let runningActions = {...this.runningActions};
+            delete runningActions[termin_id];
+            this.runningActions = runningActions;
         },
 
         getSliderValue(args) {
