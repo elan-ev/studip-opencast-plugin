@@ -21,7 +21,7 @@ class CourseListSchedule extends OpencastController
         $semester_filter = $args['semester_filter'];
 
         if (empty($course_id)) {
-            throw new Error('Es fehlen Parameter!', 422);
+            throw new \Error('Es fehlen Parameter!', 422);
         }
 
         if (!Perm::schedulingAllowed($course_id, $user->id)) {

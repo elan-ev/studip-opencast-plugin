@@ -48,7 +48,8 @@ class ScheduleBulk extends OpencastController
                     $result = ScheduleHelper::scheduleEventForSeminar($course_id, $termin_id);
                     break;
                 case 'unschedule':
-                    $result = ScheduleHelper::deleteEventForSeminar($course_id, $termin_id);
+                    $result = !ScheduleHelper::hasScheduledRecordingsForDate($course_id, $termin_id)
+                        || ScheduleHelper::deleteEventForSeminar($course_id, $termin_id);
                     break;
                 case 'update':
                     $result = ScheduleHelper::updateEventForSeminar($course_id, $termin_id, null, null, true, true);

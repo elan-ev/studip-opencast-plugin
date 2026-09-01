@@ -1312,9 +1312,26 @@ label.oc--file-upload {
             justify-items: center;
             justify-content: center;
             flex-wrap: nowrap;
+            align-items: center;
             .oc-schedule-action-item {
                 &:not(:first-of-type) {
                     margin-left: .5em;
+                }
+
+                &.oc-schedule-action-item-inactive {
+                    color: var(--dark-gray-color-45, #777);
+                    cursor: default;
+                }
+            }
+
+            .oc-schedule-spinner {
+                width: 20px;
+                margin-right: .5em;
+
+                .progress-indicator {
+                    width: 20px;
+                    height: 20px;
+                    background-size: 20px;
                 }
             }
         }
