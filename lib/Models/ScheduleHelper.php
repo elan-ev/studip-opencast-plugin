@@ -27,6 +27,162 @@ class ScheduleHelper
     const LIVESTREAM_STATUS_SCHEDULED = 'scheduled';
     const LIVESTREAM_STATUS_LIVE = 'live';
     const LIVESTREAM_STATUS_FINISHED = 'finished';
+
+    /**
+     * Returns the room bookings for a course date as a plain array.
+     *
+     * @param \CourseDate $date
+     *
+     * @return array
+     */
+    public static function getRoomBookings(\CourseDate $date)
+    {
+        try {
+            $room_bookings = $date->room_bookings;
+        } catch (\Throwable $th) {
+            $room_bookings = [];
+        }
+
+        try {
+            $room_booking = $date->room_booking;
+        } catch (\Throwable $th) {
+            $room_booking = null;
+        }
+
+        if (empty($room_bookings) && $room_booking) {
+            $room_bookings = [$room_booking];
+        }
+
+        if ($room_bookings instanceof \SimpleCollection) {
+            $room_bookings = $room_bookings->toArray();
+        }
+
+        if (is_array($room_bookings)) {
+            return $room_bookings;
+        }
+        if ($room_bookings instanceof \Traversable) {
+            return iterator_to_array($room_bookings);
+        }
+
+        return [];
+    }
+
+    /**
+     * Returns a room booking matching the passed resource id.
+     *
+     * @param \CourseDate $date
+     * @param string $resource_id
+     *
+     * @return object|null
+     */
+    public static function getRoomBookingByResourceId(\CourseDate $date, $resource_id)
+    {
+        foreach (self::getRoomBookings($date) as $room_booking) {
+            if (self::getRoomBookingValue($room_booking, 'resource_id') == $resource_id) {
+                return $room_booking;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a value from a room booking represented as object or array.
+     *
+     * @param object|array $room_booking
+     * @param string $field
+     *
+     * @return mixed|null
+     */
+    public static function getRoomBookingValue($room_booking, $field)
+    {
+        if (is_array($room_booking)) {
+            return $room_booking[$field] ?? null;
+        }
+
+        return $room_booking->{$field} ?? null;
+    }
+
+    /**
+     * Returns all room bookings that have a valid configured capture agent.
+     *
+     * @param string $course_id
+     * @param \CourseDate $date
+     * @param bool $livestream
+     * @param string|null $resource_id
+     * @param bool $check_capture_agent
+     *
+     * @return array
+     */
+    private static function getSchedulableRoomBookings($course_id, \CourseDate $date, $livestream = false, $resource_id = null, $check_capture_agent = true)
+    {
+        $schedulable_bookings = self::getConfiguredRoomBookings($date, $resource_id);
+        foreach ($schedulable_bookings as $index => $room_booking) {
+            $oc_resource = $room_booking['resource'];
+            if (!$oc_resource
+                || ($check_capture_agent && !self::checkCaptureAgent($oc_resource['config_id'], $oc_resource['capture_agent']))
+                || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])
+                || ($livestream && empty($oc_resource['livestream_workflow_id']))
+            ) {
+                unset($schedulable_bookings[$index]);
+            }
+        }
+
+        return array_values($schedulable_bookings);
+    }
+
+    /**
+     * Returns room bookings whose rooms have an Opencast resource assignment.
+     *
+     * @param \CourseDate $date
+     * @param string|null $resource_id
+     *
+     * @return array
+     */
+    private static function getConfiguredRoomBookings(\CourseDate $date, $resource_id = null)
+    {
+        $configured_bookings = [];
+        foreach (self::getRoomBookings($date) as $room_booking) {
+            $booking_resource_id = self::getRoomBookingValue($room_booking, 'resource_id');
+            if (empty($booking_resource_id)
+                || (!empty($resource_id) && $booking_resource_id != $resource_id)) {
+                continue;
+            }
+
+            $oc_resource = Resources::findByResource_id($booking_resource_id);
+            if (!$oc_resource) {
+                continue;
+            }
+
+            $configured_bookings[] = [
+                'booking' => $room_booking,
+                'resource' => $oc_resource,
+            ];
+        }
+
+        return $configured_bookings;
+    }
+
+    /**
+     * Returns scheduled recordings for a course date.
+     *
+     * @param string $course_id
+     * @param string $termin_id
+     * @param string|null $resource_id
+     *
+     * @return array
+     */
+    private static function getScheduledRecordingsForDate($course_id, $termin_id, $resource_id = null)
+    {
+        $where_array = ['seminar_id = ?', 'date_id = ?', 'status = ?'];
+        $params = [$course_id, $termin_id, 'scheduled'];
+        if (!empty($resource_id)) {
+            $where_array[] = 'resource_id = ?';
+            $params[] = $resource_id;
+        }
+
+        return ScheduledRecordings::findBySQL(implode(' AND ', $where_array), $params);
+    }
     /**
      * Gets the list of semesters for the course to be repsresented in the semster filter dropdown
      * NOTE: expired semesters are rejected!
@@ -251,7 +407,7 @@ class ScheduleHelper
      *
      * @return string xml - the xml representation of the string
      */
-    public static function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $buffer)
+    public static function createScheduleEventXML($course_id, $resource_id, $termin_id, $event_id, $buffer, $room_booking = null)
     {
         date_default_timezone_set("Europe/Berlin");
 
@@ -295,12 +451,15 @@ class ScheduleHelper
 
         $inst_data = \Institute::find($course->institut_id);
 
-        $start_time = $event_id ? $event->start : $date->date;
+        $booking_begin = $room_booking ? self::getRoomBookingValue($room_booking, 'begin') : null;
+        $booking_end = $room_booking ? self::getRoomBookingValue($room_booking, 'end') : null;
+
+        $start_time = $event_id ? $event->start : ($booking_begin ?: $date->date);
 
         if ($buffer) {
-            $end_time = strtotime("-$buffer seconds ", intval($event_id ? $event->end : $date->end_time));
+            $end_time = strtotime("-$buffer seconds ", intval($event_id ? $event->end : ($booking_end ?: $date->end_time)));
         } else {
-            $end_time = $event_id ? $event->end : $date->end_time;
+            $end_time = $event_id ? $event->end : ($booking_end ?: $date->end_time);
         }
 
         $contributor = $inst_data['name'];
@@ -357,34 +516,57 @@ class ScheduleHelper
      * @param string $course_id - course identifier
      * @param string $termin_id - termin identifier
      * @param bool $livestream - indicator to schedule the event with livestream capability
+     * @param string|null $resource_id - optional resource identifier
+     * @param bool $replace_existing - whether an existing local record may be replaced
      *
      * @return bool success or not
      */
-    public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false)
+    public static function scheduleEventForSeminar($course_id, $termin_id, $livestream = false, $resource_id = null, $replace_existing = false)
     {
         $date = new \CourseDate($termin_id);
-        $resource_id = $date->room_booking->resource_id;
-        if (!$resource_id) {
+        $room_bookings = self::getSchedulableRoomBookings($course_id, $date, $livestream, $resource_id);
+
+        if (empty($room_bookings)) {
             return false;
         }
 
-        $oc_resource  = Resources::findByResource_id($resource_id);
-        if (!$oc_resource
-            || !self::checkCaptureAgent($oc_resource['config_id'], $oc_resource['capture_agent'])
-            || !self::validateCourseAndResource($course_id, $oc_resource['config_id'])
-        ) {
-            return false;
+        $success = true;
+        foreach ($room_bookings as $room_booking) {
+            $success = self::scheduleEventForRoomBooking(
+                $course_id,
+                $termin_id,
+                $room_booking['booking'],
+                $room_booking['resource'],
+                $livestream,
+                $replace_existing
+            ) && $success;
         }
 
-        // Livestream workflow checker.
-        if (($livestream && empty($oc_resource['livestream_workflow_id']))) {
-            // Unlike normal scheduling, we don't allow livestream to be scheduled without a workflow!
-            return false;
+        return $success;
+    }
+
+    /**
+     * Schedules one event for a specific room booking.
+     *
+     * @param string $course_id
+     * @param string $termin_id
+     * @param object $room_booking
+     * @param object $oc_resource
+     * @param bool $livestream
+     * @param bool $replace_existing
+     *
+     * @return bool
+     */
+    private static function scheduleEventForRoomBooking($course_id, $termin_id, $room_booking, $oc_resource, $livestream = false, $replace_existing = false)
+    {
+        $resource_id = self::getRoomBookingValue($room_booking, 'resource_id');
+        if (!$replace_existing && ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id)) {
+            return true;
         }
 
         $ingest_client = IngestClient::getInstance($oc_resource['config_id']);
         $media_package = $ingest_client->createMediaPackage();
-        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream);
+        $metadata      = self::createEventMetadata($course_id, $resource_id, $oc_resource['config_id'], $termin_id, null, $livestream, $room_booking);
         $media_package = $ingest_client->addDCCatalog($media_package, $metadata['dublincore']);
 
         $result = $ingest_client->schedule($media_package, $metadata['workflow'], $metadata['device_capabilities']);
@@ -392,7 +574,7 @@ class ScheduleHelper
         if ($result) {
             $xml = simplexml_load_string($media_package);
             $event_id = (string)$xml['id'];
-            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id, $livestream);
+            $scheduled = self::scheduleRecording($course_id, $resource_id, $termin_id, $event_id, $livestream, $room_booking);
             if ($scheduled) {
                 // Create the video if it is livestream.
                 if ($livestream) {
@@ -434,7 +616,7 @@ class ScheduleHelper
      *
      * @return boolean success
      */
-    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id, $livestream)
+    private static function scheduleRecording($course_id, $resource_id, $date_id, $event_id, $livestream, $room_booking = null)
     {
         global $user;
 
@@ -456,6 +638,8 @@ class ScheduleHelper
         }
 
         $date = \CourseDate::find($date_id);
+        $start = $room_booking ? self::getRoomBookingValue($room_booking, 'begin') : $date->date;
+        $end = $room_booking ? self::getRoomBookingValue($room_booking, 'end') : $date->end_time;
 
         $success = ScheduledRecordings::setScheduleRecording(
             $course_id,
@@ -463,8 +647,8 @@ class ScheduleHelper
             $user->id,
             $date_id,
             $resource_id,
-            $date->date,
-            $date->end_time,
+            $start,
+            $end,
             $ca['capture_agent'],
             $event_id,
             'scheduled',
@@ -487,13 +671,13 @@ class ScheduleHelper
      *
      * @return array event recording metadata
      */
-    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id, $livestream = false)
+    private static function createEventMetadata($course_id, $resource_id, $config_id, $termin_id, $event_id, $livestream = false, $room_booking = null)
     {
         $config = Config::find($config_id);
 
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
         $dublincore = self::createScheduleEventXML(
-            $course_id, $resource_id, $termin_id, $event_id, $buffer
+            $course_id, $resource_id, $termin_id, $event_id, $buffer, $room_booking
         );
 
         $date = new \CourseDate($termin_id);
@@ -570,60 +754,58 @@ class ScheduleHelper
      *
      * @return bool success or not
      */
-    public static function deleteEventForSeminar($course_id, $termin_id, $external_config_id = null)
+    public static function deleteEventForSeminar($course_id, $termin_id, $external_config_id = null, $resource_id = null)
     {
-        $date = new \CourseDate($termin_id);
-        $resource_id = $date->room_booking->resource_id;
-
-        if (!$resource_id) {
+        $scheduled_recordings = self::getScheduledRecordingsForDate($course_id, $termin_id, $resource_id);
+        if (!$scheduled_recordings || count($scheduled_recordings) === 0) {
             return false;
         }
 
-        $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
+        $success = true;
+        foreach ($scheduled_recordings as $scheduled_recording_obj) {
+            $is_livestream = (bool) $scheduled_recording_obj['is_livestream'];
+            $event_id = $scheduled_recording_obj['event_id'];
 
-        if (!$scheduled_recording_obj) {
-            return false;
-        }
-        $is_livestream = (bool) $scheduled_recording_obj['is_livestream'];
-        $event_id = $scheduled_recording_obj['event_id'];
-
-        $config_id = null;
-        if (empty($external_config_id)) {
-            $resource_obj = Resources::findByResource_id($resource_id);
-            $config_id = $resource_obj ? $resource_obj['config_id'] : null;
-        } else {
-            $config_id = $external_config_id;
-        }
-
-        if (empty($config_id)) {
-            return false;
-        }
-
-        // In order to delete the scheduled recording from Opencast, we ensure that the event already exists!
-        // this is important to avoid breaking search index.
-        $api_event_client = ApiEventsClient::getInstance($config_id);
-        $oc_event = $api_event_client->getEpisode($event_id);
-        $event_exists = !empty($oc_event) && $oc_event->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
-
-        $oc_deleted_result = false;
-        if ($event_exists) {
-            $scheduler_client = SchedulerClient::getInstance($config_id);
-            $oc_deleted_result = $scheduler_client->deleteEvent($event_id);
-        }
-
-        // In case of successfully deleted the event in opencast or the event could not be found,
-        // we need to remove the records in SOCP as well!
-        if ($oc_deleted_result || (!$oc_deleted_result && !$event_exists)) {
-            ScheduledRecordings::unscheduleRecording($event_id, $resource_id, $termin_id);
-            // Remove the livestream video here!
-            if ($is_livestream) {
-                self::removeLivestreamVideo($event_id);
+            $config_id = null;
+            if (empty($external_config_id)) {
+                $resource_obj = Resources::findByResource_id($scheduled_recording_obj['resource_id']);
+                $config_id = $resource_obj ? $resource_obj['config_id'] : null;
+            } else {
+                $config_id = $external_config_id;
             }
-            \StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
-            return true;
-        } else {
-            return false;
+
+            if (empty($config_id)) {
+                $success = false;
+                continue;
+            }
+
+            // In order to delete the scheduled recording from Opencast, we ensure that the event already exists!
+            // this is important to avoid breaking search index.
+            $api_event_client = ApiEventsClient::getInstance($config_id);
+            $oc_event = $api_event_client->getEpisode($event_id);
+            $event_exists = !empty($oc_event) && $oc_event->status == 'EVENTS.EVENTS.STATUS.SCHEDULED';
+
+            $oc_deleted_result = false;
+            if ($event_exists) {
+                $scheduler_client = SchedulerClient::getInstance($config_id);
+                $oc_deleted_result = $scheduler_client->deleteEvent($event_id);
+            }
+
+            // In case of successfully deleted the event in opencast or the event could not be found,
+            // we need to remove the records in SOCP as well!
+            if ($oc_deleted_result || (!$oc_deleted_result && !$event_exists)) {
+                ScheduledRecordings::unscheduleRecording($event_id, $scheduled_recording_obj['resource_id'], $termin_id);
+                // Remove the livestream video here!
+                if ($is_livestream) {
+                    self::removeLivestreamVideo($event_id);
+                }
+                \StudipLog::log('OC_CANCEL_SCHEDULED_EVENT', $termin_id, $course_id);
+            } else {
+                $success = false;
+            }
         }
+
+        return $success;
     }
 
     /**
@@ -641,12 +823,38 @@ class ScheduleHelper
      * @return bool success or not
      */
     public static function updateEventForSeminar($course_id, $termin_id, $start = null, $end = null, $update_resource = false,
+        $force_oc_update = false, $resource_id = null)
+    {
+        $date = new \CourseDate($termin_id);
+        $scheduled_recordings = self::getScheduledRecordingsForDate($course_id, $termin_id, $resource_id);
+        if (!$scheduled_recordings || count($scheduled_recordings) === 0) {
+            return false;
+        }
+
+        $success = true;
+        foreach ($scheduled_recordings as $scheduled_recording_obj) {
+            $success = self::updateEventForScheduledRecording(
+                $course_id,
+                $termin_id,
+                $scheduled_recording_obj,
+                $start,
+                $end,
+                $update_resource,
+                $force_oc_update
+            ) && $success;
+        }
+
+        return $success;
+    }
+
+    private static function updateEventForScheduledRecording($course_id, $termin_id, $scheduled_recording_obj, $start = null, $end = null, $update_resource = false,
         $force_oc_update = false)
     {
         $has_changes = false;
         $date = new \CourseDate($termin_id);
-        $resource_id = $date->room_booking->resource_id;
-        if (!$resource_id) {
+        $resource_id = $scheduled_recording_obj['resource_id'];
+        $room_booking = self::getRoomBookingByResourceId($date, $resource_id);
+        if (!$room_booking) {
             return false;
         }
 
@@ -662,25 +870,19 @@ class ScheduleHelper
 
         $buffer = isset($config['settings']['time_buffer_overlap']) ? $config['settings']['time_buffer_overlap'] : 0;
 
-        $scheduled_recording_obj = ScheduledRecordings::checkScheduled($course_id, $resource_id, $termin_id);
-
-        if (!$scheduled_recording_obj) {
-            return false;
-        }
-        $event_id = $scheduled_recording_obj['event_id'];
-
         $new_start = 0;
         if (!is_null($start) && \Config::get()->OPENCAST_ALLOW_ALTERNATE_SCHEDULE) {
             $new_start = mktime(
                 floor($start / 60),
                 $start - floor($start / 60) * 60,
                 0,
-                date('n', $date->date),
-                date('j', $date->date),
-                date('Y', $date->date)
+                date('n', self::getRoomBookingValue($room_booking, 'begin')),
+                date('j', self::getRoomBookingValue($room_booking, 'begin')),
+                date('Y', self::getRoomBookingValue($room_booking, 'begin'))
             );
-        } else if ($date->date > $scheduled_recording_obj->start) {
-            $new_start = $date->date;
+        } else if (self::getRoomBookingValue($room_booking, 'begin') != $scheduled_recording_obj->coursedate_start) {
+            $new_start = self::getRoomBookingValue($room_booking, 'begin');
+            $scheduled_recording_obj->coursedate_start = self::getRoomBookingValue($room_booking, 'begin');
         }
         if (!empty($new_start)) {
             $scheduled_recording_obj->start = $new_start;
@@ -694,12 +896,13 @@ class ScheduleHelper
                 floor($end / 60),
                 $end - floor($end / 60) * 60,
                 0,
-                date('n', $date->date),
-                date('j', $date->date),
-                date('Y', $date->date)
+                date('n', self::getRoomBookingValue($room_booking, 'begin')),
+                date('j', self::getRoomBookingValue($room_booking, 'begin')),
+                date('Y', self::getRoomBookingValue($room_booking, 'begin'))
             );
-        } else if ($date->end_time < $scheduled_recording_obj->end) {
-            $new_end = $date->end_time;
+        } else if (self::getRoomBookingValue($room_booking, 'end') != $scheduled_recording_obj->coursedate_end) {
+            $new_end = self::getRoomBookingValue($room_booking, 'end');
+            $scheduled_recording_obj->coursedate_end = self::getRoomBookingValue($room_booking, 'end');
         }
         if (!empty($new_end)) {
             $scheduled_recording_obj->end = $new_end;
@@ -708,6 +911,7 @@ class ScheduleHelper
         }
 
         $is_livestream = (bool) $scheduled_recording_obj->is_livestream;
+        $event_id = $scheduled_recording_obj['event_id'];
 
         // Update resource
         if ($update_resource) {
@@ -733,7 +937,7 @@ class ScheduleHelper
             return false;
         }
 
-        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream);
+        $metadata = self::createEventMetadata($course_id, $resource_id, $resource_obj['config_id'], $termin_id, $event_id, $is_livestream, $room_booking);
 
         $start = $scheduled_recording_obj->start * 1000;
         $end = ($scheduled_recording_obj->end - $buffer ?: 0) * 1000;
@@ -789,20 +993,30 @@ class ScheduleHelper
             $date = new \CourseDate($d['termin_id']);
             $date_obj['termin_id'] = $date->termin_id;
             $date_obj['termin_title'] = $date->getFullname('include-room');
-            $resource_id = $date->room_booking->resource_id;
+            $configured_bookings = self::getConfiguredRoomBookings($date);
+            $resource_ids = array_map(function ($room_booking) {
+                return self::getRoomBookingValue($room_booking['booking'], 'resource_id');
+            }, $configured_bookings);
+            $resource_id = reset($resource_ids) ?: null;
 
-            $resource_obj = !empty($resource_id) ? Resources::findByResource_id($resource_id) : null;
+            $scheduled_recordings = self::getScheduledRecordingsForDate($course_id, $date->termin_id);
+            $scheduled = null;
+            foreach ($scheduled_recordings as $recording) {
+                if (in_array($recording['resource_id'], $resource_ids)) {
+                    $scheduled = $recording;
+                    break;
+                }
+            }
 
             $date_obj['resource_id'] = $resource_id;
-            $scheduled = ScheduledRecordings::checkScheduled($course_id, $resource_id, $date->termin_id);
             $allow_bulk = false;
-            if (!empty($resource_obj) && (date($d['date']) > time())) {
+            if (!empty($configured_bookings) && ((int)$d['date'] > time())) {
                 $allow_bulk = true;
             }
             $date_obj['allow_bulk'] = $allow_bulk;
             if ($allow_schedule_alternate) {
                 $recording_period = 'keine Aufzeichnung geplant';
-                if ($scheduled && date($d['date']) > time()) {
+                if ($scheduled && (int)$d['date'] > time()) {
                     $recording_period = [
                         'range_start' => (date('G', $date->date) * 60 + date('i', $date->date)),
                         'range_end' => (date('G', $date->end_time) * 60 + date('i', $date->end_time)),
@@ -834,7 +1048,8 @@ class ScheduleHelper
                 'role' => 'attention',
                 'title' => _('Es wurde bislang kein Raum mit Aufzeichnungstechnik gebucht.')
             ];
-            if (!empty($resource_obj)) {
+
+            if (!empty($configured_bookings)) {
                 if ($scheduled) {
                     $status = [
                         'shape' => 'video',
@@ -861,7 +1076,7 @@ class ScheduleHelper
                         }
                     }
                 } else {
-                    if (date($d['date']) > time()) {
+                    if ((int)$d['date'] > time()) {
                         $status = [
                             'shape' => 'date',
                             'role' => 'info',
@@ -879,10 +1094,13 @@ class ScheduleHelper
             $date_obj['status'] = $status;
 
             $actions = [];
-            if (!empty($resource_obj)) {
-                $allow_livestream = !empty($resource_obj['livestream_workflow_id']) ? true : false;
+            if (!empty($configured_bookings)) {
+                $allow_livestream = false;
+                foreach ($configured_bookings as $configured_booking) {
+                    $allow_livestream |= !empty($configured_booking['resource']['livestream_workflow_id']);
+                }
                 $livestream_available |= $allow_livestream;
-                if ($scheduled && (int)date($d['date']) > time()) {
+                if ($scheduled && (int)$d['date'] > time()) {
                     $actions['updateSchedule'] = [
                         'shape' => 'refresh',
                         'role' => 'clickable',
@@ -894,7 +1112,7 @@ class ScheduleHelper
                         'title' => _('Aufzeichnung ist bereits geplant. Klicken Sie hier um die Planung zu aufzuheben.')
                     ];
                 } else {
-                    if (date($d['date']) > time()) {
+                    if ((int)$d['date'] > time()) {
                         $actions['schedule'] = [
                             'shape' => 'video',
                             'role' => 'clickable',
@@ -1020,17 +1238,19 @@ class ScheduleHelper
                         self::deleteEventForSeminar(
                             $recording['seminar_id'],
                             $recording['date_id'],
-                            $ex_resource_obj['config_id']
+                            $ex_resource_obj['config_id'],
+                            $resource_id
                         );
                     } else {
                         // Otherwise, we try to update the recording.
-                        $updated = self::updateEventForSeminar($recording['seminar_id'], $recording['date_id'], null, null, true);
+                        $updated = self::updateEventForSeminar($recording['seminar_id'], $recording['date_id'], null, null, true, false, $resource_id);
                         // If update fails, we remove them!
                         if (!$updated && $ex_resource_obj) {
                             self::deleteEventForSeminar(
                                 $recording['seminar_id'],
                                 $recording['date_id'],
-                                $ex_resource_obj['config_id']
+                                $ex_resource_obj['config_id'],
+                                $resource_id
                             );
                         }
                     }
@@ -1060,7 +1280,7 @@ class ScheduleHelper
             $scheduled_recordings = ScheduledRecordings::getScheduleRecordingList($resource_id);
             if (!empty($scheduled_recordings) && !empty($ex_resource_obj)) {
                 foreach ($scheduled_recordings as $recording) {
-                    self::deleteEventForSeminar($recording['seminar_id'], $recording['date_id'], $ex_resource_obj['config_id']);
+                    self::deleteEventForSeminar($recording['seminar_id'], $recording['date_id'], $ex_resource_obj['config_id'], $resource_id);
                 }
             }
         }
