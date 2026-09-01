@@ -1352,18 +1352,6 @@ label.oc--file-upload {
         background-color: var(--content-color-20, #e7ebf1);
         tr {
             td.thead {
-                .oc-schedule-bulk-spinner {
-                    display: inline-flex;
-                    width: 24px;
-                    vertical-align: middle;
-
-                    .progress-indicator {
-                        width: 24px;
-                        height: 24px;
-                        background-size: 24px;
-                    }
-                }
-
                 button.button {
                     &:first-of-type {
                         margin-left: .4em;
