@@ -98,6 +98,11 @@ class OpencastRefreshScheduling extends CronJob
                 $course = \Course::find($scheduled_events['seminar_id']);
                 $course_config_id = Config::getConfigIdForCourse($scheduled_events['seminar_id']);
                 $resource_obj = Resources::findByResource_id($scheduled_events['resource_id']);
+                $room_booking = $cd
+                    ? ScheduleHelper::getRoomBookingByResourceId($cd, $scheduled_events['resource_id'])
+                    : null;
+                $room_booking_begin = $room_booking ? ScheduleHelper::getRoomBookingValue($room_booking, 'begin') : null;
+                $room_booking_end = $room_booking ? ScheduleHelper::getRoomBookingValue($room_booking, 'end') : null;
 
                 // Validate SOP resource.
                 // In case validation fails, we try to remove the record on both sides!
@@ -107,10 +112,10 @@ class OpencastRefreshScheduling extends CronJob
                     // The server config id of the course and the oc_resource does not match
                     || !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])
                     // The resource of the record and course date does not match
-                    || $cd->room_booking->resource_id != $scheduled_events['resource_id']
+                    || empty($room_booking)
                     // Start or Enddate are different
-                    || $cd->room_booking->begin != $scheduled_events['coursedate_start']
-                    || $cd->room_booking->end != $scheduled_events['coursedate_end']
+                    || $room_booking_begin != $scheduled_events['coursedate_start']
+                    || $room_booking_end != $scheduled_events['coursedate_end']
                     ) {
 
                     // Try to delete the record because it couldn't pass the validation!
@@ -132,19 +137,20 @@ class OpencastRefreshScheduling extends CronJob
                         echo 'Konnte Raum nicht finden. Raum-ID: '. $scheduled_events['resource_id'] ."\n";
                     } else if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
                         echo 'Die Opencast-Konfiguration für den Raum und den Kurs unterscheiden sich!' . "\n";
-                    } else if ($cd->room_booking->resource_id != $scheduled_events['resource_id']) {
-                        echo 'Der Raum hat sich geändert. Event: '. $scheduled_events['resource_id'] .', Buchung: '. $cd->room_booking->resource_id ."\n";
-                    } else if ($cd->room_booking->begin != $scheduled_events['coursedate_start']) {
-                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_start']) .', Buchung: '. date('c', $cd->room_booking->begin) . "\n";
-                    } else if ($cd->room_booking->end != $scheduled_events['coursedate_end']) {
-                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_end']) .', Buchung: '. date('c', $cd->room_booking->end) . "\n";
+                    } else if (empty($room_booking)) {
+                        echo 'Der Raum hat sich geändert. Event: '. $scheduled_events['resource_id'] .", keine passende Buchung gefunden\n";
+                    } else if ($room_booking_begin != $scheduled_events['coursedate_start']) {
+                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_start']) .', Buchung: '. date('c', $room_booking_begin) . "\n";
+                    } else if ($room_booking_end != $scheduled_events['coursedate_end']) {
+                        echo 'Die Startzeit ist unterschiedlich! Event: '. date('c', $scheduled_events['coursedate_end']) .', Buchung: '. date('c', $room_booking_end) . "\n";
                     }
 
                     $oc_event_id = $scheduled_events['event_id'];
                     $oc_config_id = $course_config_id;
 
                     // Delete the recording in OC.
-                    if (!ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
+                    if (!empty($resource_obj)
+                        && !ScheduleHelper::validateCourseAndResource($scheduled_events['seminar_id'], $resource_obj['config_id'])) {
                         $oc_config_id = $resource_obj['config_id'];
                     }
 
@@ -182,10 +188,17 @@ class OpencastRefreshScheduling extends CronJob
                     );
 
                     $result = ScheduleHelper::updateEventForSeminar(
-                        $scheduled_events['seminar_id'], $scheduled_events['date_id']
+                        $scheduled_events['seminar_id'], $scheduled_events['date_id'], null, null, false, false,
+                        $scheduled_events['resource_id']
                     );
 
                     if ($result) {
+                        ScheduleHelper::scheduleEventForSeminar(
+                            $scheduled_events['seminar_id'],
+                            $scheduled_events['date_id'],
+                            !empty($scheduled_events['is_livestream'])
+                        );
+
                         $oc_set_index = array_search($course_config_id, array_column($oc_scheduled_events, 'config_id'));
                         $oc_event_id = $scheduled_events['event_id'];
                         if ($oc_set_index !== false && isset($oc_scheduled_events[$oc_set_index]['scheduled_events'][$oc_event_id])) {
@@ -196,7 +209,9 @@ class OpencastRefreshScheduling extends CronJob
                         echo 'Eintrag fehlt im Opencast, versuche ihn zu erstellen...';
                         $result = ScheduleHelper::scheduleEventForSeminar(
                             $scheduled_events['seminar_id'], $scheduled_events['date_id'],
-                            $scheduled_event['is_livestream'] ? true : false
+                            !empty($scheduled_events['is_livestream']),
+                            $scheduled_events['resource_id'],
+                            true
                         );
 
                         echo $result ? ' erfolgreich' : 'fehlgeschlagen';

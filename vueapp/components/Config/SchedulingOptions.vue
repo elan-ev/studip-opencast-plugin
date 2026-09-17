@@ -32,13 +32,16 @@
                                 {{ resource.capture_agent + ` #${resource.config_id}` }}
                             </template>
                             <template v-else-if="free_capture_agents.length">
-                                <select @change="assignCA($event, resource)">
-                                    <option value="" disabled selected>
+                                <select
+                                    v-model="selected_capture_agents[resource.id]"
+                                    @change="assignCA(selected_capture_agents[resource.id], resource)"
+                                >
+                                    <option :value="null" disabled>
                                         {{ $gettext('Bitte wählen Sie einen CA.') }}
                                     </option>
                                     <template v-for="(ca_obj, index) in free_capture_agents" :key="index">
                                         <optgroup style="font-weight:bold;" :label="`Server #${ca_obj.id}`">
-                                            <option v-for="(capture_agent, calindex) in ca_obj.list" :key="calindex" :value="`${capture_agent.config_id}_` + capture_agent.name">
+                                            <option v-for="(capture_agent, calindex) in ca_obj.list" :key="calindex" :value="capture_agent">
                                                 {{ capture_agent.name }}
                                             </option>
                                         </optgroup>
@@ -135,6 +138,12 @@ export default {
 
     props: ['config_list'],
 
+    data() {
+        return {
+            selected_capture_agents: {},
+        };
+    },
+
     computed: {
         ...mapGetters(['schedulingHasUnsavedChanges']),
 
@@ -181,20 +190,12 @@ export default {
     },
 
     methods: {
-        assignCA(event, resource) {
-            event.preventDefault();
-            let value = event.target.value;
-            let selected_ca_arr = value.split('_');
-            if (selected_ca_arr.length == 2) {
-                let selected_config_id = selected_ca_arr[0];
-                let selected_ca = selected_ca_arr[1];
-                let capture_agent_obj = this.capture_agents.filter(ca => ca.name == selected_ca && ca.config_id == selected_config_id);
-                if (capture_agent_obj.length) {
-                    resource.capture_agent = selected_ca;
-                    resource.config_id = selected_config_id;
-                    this.toggleCAOccupation(selected_ca, selected_config_id, true);
-                    this.$store.dispatch('toggleSchedulingUnsavedChanges', true);
-                }
+        assignCA(capture_agent, resource) {
+            if (capture_agent && this.capture_agents.includes(capture_agent)) {
+                resource.capture_agent = capture_agent.name;
+                resource.config_id = capture_agent.config_id;
+                this.toggleCAOccupation(capture_agent.name, capture_agent.config_id, true);
+                this.$store.dispatch('toggleSchedulingUnsavedChanges', true);
             }
         },
 

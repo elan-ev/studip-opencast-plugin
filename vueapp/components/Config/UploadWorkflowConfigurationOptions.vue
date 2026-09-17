@@ -4,7 +4,7 @@
             <legend>
                 {{ $gettext('Upload-Workflow-Konfigurationsoptionen') }}
             </legend>
-            <fieldset v-for="(item, key) in configurationPanelOptions" :key="item.name + uploadWorkflowIndex">
+            <fieldset v-for="(item, key) in configurationPanelOptions" :key="`${key}-${uploadWorkflowIndex}`">
                 <label>
                     <span>
                         {{ $gettext('Option ID') }}
