@@ -25,6 +25,14 @@ build_vendor_dir() {
   local vendor_dir="$2"
 
   echo "Building ${vendor_dir} from ${composer_file}..."
+
+  # Composer only removes packages recorded in its current installation
+  # metadata. Recreate production vendor directories so packages left behind
+  # by an earlier development build cannot end up in the plugin archive.
+  if [[ "${#COMPOSER_DEV_FLAG[@]}" -gt 0 ]]; then
+    rm -rf -- "${ROOT_DIR:?}/${vendor_dir}"
+  fi
+
   COMPOSER="${ROOT_DIR}/${composer_file}" \
   COMPOSER_VENDOR_DIR="${ROOT_DIR}/${vendor_dir}" \
     composer install \
