@@ -977,16 +977,20 @@ class Videos extends UPMap
             ];
         }
 
-        $courses = [];
+        // Build the course roles for this event's ACL. A future visibility timestamp
+        // removes only the corresponding learner role from this event; instructor
+        // roles and the course permissions themselves remain unchanged.
+        $courses = PlaylistSeminars::getCoursesOfVideo($this);
+        $course_acl = Helpers::createACLsForCourses($courses);
+        $pending_learner_roles = array_map(function ($course_id) {
+            return $course_id . '_Learner';
+        }, PlaylistSeminarVideos::getPendingVisibilityCourseIds($this));
 
-        // add course acls
-        foreach ($this->playlists as $playlist) {
-            $courses = array_merge($courses, $playlist->courses->pluck('id'));
-        }
+        $course_acl = array_filter($course_acl, function ($entry) use ($pending_learner_roles) {
+            return !in_array($entry['role'], $pending_learner_roles, true);
+        });
 
-        $courses = array_unique($courses);
-
-        $acl = array_merge($acl, Helpers::createACLsForCourses($courses));
+        $acl = array_merge($acl, $course_acl);
 
         sort($acl);
 

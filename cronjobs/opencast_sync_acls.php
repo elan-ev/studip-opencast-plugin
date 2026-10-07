@@ -3,6 +3,7 @@ require_once __DIR__.'/../bootstrap.php';
 Opencast\VersionHelper::autoloadVendor();
 
 use Opencast\Models\Config;
+use Opencast\Models\PlaylistSeminarVideos;
 use Opencast\Models\Videos;
 use Opencast\Models\REST\ApiEventsClient;
 use Opencast\Helpers\CronjobUtils\OpencastConnectionCheckerTrait;
@@ -86,6 +87,7 @@ class OpencastSyncAcls extends CronJob
                             continue;
                         }
 
+                        PlaylistSeminarVideos::activateScheduledVisibility($video);
                         Videos::checkEventACL(null, $event, $video);
 
                         // echo " ACL sync successful for Video ID {$video->id} (Event ID: {$event->identifier}).\n";

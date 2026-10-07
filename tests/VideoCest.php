@@ -205,6 +205,32 @@ class VideoCest
             ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'read'],
             ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'write'],
         ]);
+
+        // Schedule the video for later: instructors retain access, learners do not.
+        $I->amHttpAuthenticated($this->dozent_name, $I->getConfig()['dozent_password']);
+        $I->sendPutAsJson('/videos/' . $this->video['token'], [
+            'event' => [
+                'cid' => $this->course_id,
+                'playlist_token' => $this->playlist_token,
+                'seminar_visibility' => [
+                    'visibility' => 'hidden',
+                    'visible_timestamp' => date('Y-m-d H:i:s', time() + 86400),
+                ],
+            ],
+        ]);
+        $I->seeResponseCodeIs(200);
+
+        $I->amHttpAuthenticated($this->opencast_admin_user, $this->opencast_admin_password);
+        $I->sendGetAsJson($this->opencast_url . '/api/events/' . $this->video['identifier'] . '/acl');
+        $I->seeResponseContainsJson([
+            ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'read'],
+            ['allow' => true, 'role' => $this->course_id . '_Instructor', 'action' => 'write'],
+        ]);
+        $I->dontSeeResponseContainsJson([
+            'allow' => true,
+            'role' => $this->course_id . '_Learner',
+            'action' => 'read',
+        ]);
     }
 
     /**
