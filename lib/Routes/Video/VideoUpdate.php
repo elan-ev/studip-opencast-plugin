@@ -36,6 +36,7 @@ class VideoUpdate extends OpencastController
 
         $json = $this->getRequestData($request);
         $event = $json['event'];
+        $update_acl = false;
 
         if (isset($event['tags'])) {
             // delete all existing tags from the playlist
@@ -73,6 +74,7 @@ class VideoUpdate extends OpencastController
                 $playlistSeminar = PlaylistSeminars::findOneBySQL('seminar_id = ? AND playlist_id = ?', [$event['cid'], $playlist->id]);
                 if (!empty($playlistSeminar)) {
                     PlaylistSeminarVideos::deleteBySQL('playlist_seminar_id = ? AND video_id = ?', [$playlistSeminar->id, $video->id]);
+                    $update_acl = true;
                     if (isset($event['seminar_visibility'])) {
                         $pvs = new PlaylistSeminarVideos();
                         $pvs->setValue('playlist_seminar_id', $playlistSeminar->id);
@@ -92,6 +94,10 @@ class VideoUpdate extends OpencastController
         ];
 
         $update = $video->updateMetadata($event);
+
+        if ($update_acl) {
+            $video->updateAcl();
+        }
 
         if ($update !== true) {
             $message = [
