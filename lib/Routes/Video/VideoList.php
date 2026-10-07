@@ -8,6 +8,7 @@ use Opencast\OpencastTrait;
 use Opencast\OpencastController;
 use Opencast\Models\Filter;
 use Opencast\Models\Videos;
+use Opencast\Caching\VideosCaching;
 
 class VideoList extends OpencastController
 {
@@ -15,24 +16,41 @@ class VideoList extends OpencastController
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        global $user;
         $params = $request->getQueryParams();
 
-        // select all videos the current user has perms on
-        $videos = Videos::getUserVideos(new Filter($params));
+        $response_result = [
+            'videos' => [],
+            'count'  => 0,
+        ];
 
-        $ret = [];
-        foreach ($videos['videos'] as $video) {
-            $video_array = $video->toSanitizedArray();
-            if (!empty($video_array['perm']) && ($video_array['perm'] == 'owner' || $video_array['perm'] == 'write'))
-            {
-                $video_array['perms'] = $video->perms->toSanitizedArray();
+        $filter = new Filter($params);
+        $video_caching = new VideosCaching();
+        $user_videos_cache = $video_caching->userVideos($user->id);
+        $unique_query_id = $filter->decodeVars();
+        $response_result = $user_videos_cache->read($unique_query_id);
+        if (empty($response_result)) {
+            // select all videos the current user has perms on
+            $videos = Videos::getUserVideos($filter);
+
+            $ret = [];
+            foreach ($videos['videos'] as $video) {
+                $video_array = $video->toSanitizedArray();
+                if (!empty($video_array['perm']) && ($video_array['perm'] == 'owner' || $video_array['perm'] == 'write'))
+                {
+                    $video_array['perms'] = $video->perms->toSanitizedArray();
+                }
+                $ret[] = $video_array;
             }
-            $ret[] = $video_array;
+
+            $response_result = [
+                'videos' => $ret,
+                'count'  => $videos['count'],
+            ];
+
+            $user_videos_cache->write($unique_query_id, $response_result);
         }
 
-        return $this->createResponse([
-            'videos' => $ret,
-            'count'  => $videos['count'],
-        ], $response);
+        return $this->createResponse($response_result, $response);
     }
 }
