@@ -38,4 +38,24 @@ class PlaylistSeminarVideos extends \SimpleORMap
 
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
+
+    /**
+     * Activate scheduled visibility settings whose timestamp has been reached.
+     *
+     * @param Videos $video
+     * @return int number of updated settings
+     */
+    public static function activateScheduledVisibility(Videos $video)
+    {
+        $stmt = \DBManager::get()->prepare(
+            'UPDATE oc_playlist_seminar_video'.
+            ' SET visibility = "visible", visible_timestamp = NULL'.
+            ' WHERE video_id = :video_id'.
+            ' AND visible_timestamp IS NOT NULL'.
+            ' AND visible_timestamp <= NOW()'
+        );
+        $stmt->execute([':video_id' => $video->id]);
+
+        return $stmt->rowCount();
+    }
 }
