@@ -37,6 +37,8 @@ class CourseListPlaylist extends OpencastController
             throw new \AccessDeniedException();
         }
 
+        PlaylistSeminars::ensureScheduledRecordingPlaylists($course_id);
+
         // Order.
         $params['order'] = 'mkdate_asc';
         // find all playlists of the seminar
