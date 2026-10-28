@@ -30,7 +30,9 @@ class VideoPlaylists extends OpencastController
         }
 
         return $this->createResponse([
-            'playlists'  => $video->playlists->toArray()
+            'playlists'  => $video->playlists->map(function ($playlist) {
+                return $playlist->toSanitizedArray();
+            })
         ], $response->withStatus(200));
     }
 }
