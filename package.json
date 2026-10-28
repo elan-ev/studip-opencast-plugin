@@ -30,7 +30,7 @@
     "@vue/compiler-sfc": "^3.5.29",
     "@vueform/slider": "^2.1.10",
     "axios": "^1.20.0",
-    "core-js": "^3.48.0",
+    "core-js": "^3.51.0",
     "date-fns": "^4.1.0",
     "easygettext": "^2.17.0",
     "focus-trap-vue": "^4.1.0",
