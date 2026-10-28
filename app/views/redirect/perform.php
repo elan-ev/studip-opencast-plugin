@@ -71,7 +71,7 @@
         <div class="oc--loading-spinner">
             <div class="oc--spinner"></div>
         </div>
-        <form class="default" action="<?= $launch_url ?>" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">
+        <form class="default" action="<?= htmlspecialchars($launch_url) ?>" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">
             <? foreach ($launch_data as $name => $value) : ?>
                 <input type="hidden" name="<?= htmlspecialchars($name) ?>" value="<?= htmlspecialchars($value) ?>">
             <? endforeach ?>
