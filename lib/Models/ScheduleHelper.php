@@ -1321,7 +1321,7 @@ class ScheduleHelper
 
         $notification = sprintf(
             _('Die Veranstaltung "%s" wird für Sie mit Bild und Ton automatisiert aufgezeichnet.'),
-            htmlReady($course->name)
+            $course->name
         );
 
         $plugin = \PluginEngine::getPlugin('OpencastV3');
