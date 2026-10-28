@@ -21,12 +21,18 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(playlist, index) in event.playlists" v-bind:key="playlist.id">
+            <tr v-for="(playlist, index) in event.playlists" v-bind:key="playlist.token">
                 <td>
                     {{ playlist.title }}
                 </td>
                 <td>
-                    {{ getCourseName(playlist) }}
+                    <a v-if="getCourseName(playlist)"
+                        :href="getCourseUrl(playlist)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {{ getCourseName(playlist) }}
+                    </a>
                 </td>
                 <td>
                     {{ getSemester(playlist) }}
@@ -58,6 +64,12 @@ export default {
     emits: ['removePlaylist'],
 
     methods: {
+        getCourseUrl(playlist) {
+            return window.STUDIP.URLHelper.getURL(
+                'plugins.php/opencastv3/course?cid=' + playlist.courses[0].id + '#/course/videos'
+            );
+        },
+
         getCourseName(playlist) {
             if (!Array.isArray(playlist.courses) || playlist.courses.length === 0) {
                 return '';
