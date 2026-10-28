@@ -43,6 +43,44 @@ class PlaylistSeminars extends \SimpleORMap
     }
 
     /**
+     * Persist missing recording targets using the first course playlist.
+     * Use the same ordering as the course sidebar, without search or paging filters.
+     */
+    public static function ensureScheduledRecordingPlaylists(String $course_id)
+    {
+        $playlists = self::findBySQL(
+            'INNER JOIN oc_playlist ON (oc_playlist.id = oc_playlist_seminar.playlist_id)'
+            . ' WHERE oc_playlist_seminar.seminar_id = ?'
+            . ' ORDER BY oc_playlist_seminar.is_default DESC, oc_playlist.mkdate ASC, oc_playlist.id ASC',
+            [$course_id]
+        );
+
+        if (empty($playlists)) {
+            return;
+        }
+
+        $first_playlist = $playlists[0];
+        $changed = false;
+        foreach (['contains_scheduled', 'contains_livestreams'] as $flag) {
+            $assigned = false;
+            foreach ($playlists as $playlist) {
+                if ($playlist->{$flag}) {
+                    $assigned = true;
+                    break;
+                }
+            }
+            if (!$assigned) {
+                $first_playlist->{$flag} = true;
+                $changed = true;
+            }
+        }
+
+        if ($changed) {
+            $first_playlist->store();
+        }
+    }
+
+    /**
      * Get default playlist seminar of passed course
      *
      * @param String $course_id
