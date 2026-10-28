@@ -38,7 +38,7 @@
                             :disabled="!date.allow_bulk || isActionRunning(date.termin_id)"
                         >
                     </td>
-                    <td v-html="date.termin_title"></td>
+                    <td>{{ date.termin_title }}</td>
                     <template v-if="allow_schedule_alternate && date?.recording_period">
                         <template v-if="typeof date.recording_period === 'string'">
                             <td><span style="color: lightgray">{{ date.recording_period }}</span></td>
