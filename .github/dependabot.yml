@@ -5,9 +5,20 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "npm" 
+    directories: 
+      - "/"
+      - "/courseware"
+      - "/courseware/vue2"
+      - "/courseware/vue3"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    labels:
+      - "type:dependencies"
+
+  - package-ecosystem: "composer" 
+    directory: "/" 
+    schedule:
+      interval: "daily"
     labels:
       - "type:dependencies"
