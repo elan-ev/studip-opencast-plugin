@@ -107,9 +107,10 @@ class RedirectController extends Opencast\Controller
                     $stream = $response->getBody();
 
                     // Set headers properly.
-                    header('Content-Type: ' . $response->getHeaderLine('Content-Type') ?: 'application/octet-stream');
+                    header('Content-Type: ' . ($response->getHeaderLine('Content-Type') ?: 'application/octet-stream'));
                     header('Content-Length: ' . $response->getHeaderLine('Content-Length'));
                     header('Content-Disposition: attachment');
+                    header('X-Content-Type-Options: nosniff');
                     header('Cache-Control: no-cache');
                     header('Pragma: no-cache');
 
@@ -255,7 +256,15 @@ class RedirectController extends Opencast\Controller
 
         $response = $api_events->fileRequest($image);
 
-        header('Content-Type: '. $response['mimetype'][0]);
+        // Only pass through raster image types, so a preview can never be
+        // served as a document (HTML, SVG, ...) under the Stud.IP origin.
+        $mimetype = $response['mimetype'][0] ?? '';
+        if (!preg_match('~^image/(png|jpeg|gif|webp|avif|bmp)\s*(;|$)~i', $mimetype)) {
+            $mimetype = 'application/octet-stream';
+        }
+
+        header('Content-Type: ' . $mimetype);
+        header('X-Content-Type-Options: nosniff');
 
         echo $response['body'];
         die;
