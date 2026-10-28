@@ -17,7 +17,7 @@
                             <?= htmlReady($item['course']->getFullname('name'))?>
                         </a>
                         <span style="flex-shrink:0;">
-                            <?= $item['date']->getFullname() ?>
+                            <?= htmlReady($item['date']->getFullname()) ?>
                         </span>
                     </section>
                 </article>
