@@ -7,7 +7,7 @@
     "@rspack/cli": "^2.0.8",
     "@rspack/core": "^2.0.8",
     "@vue/compiler-sfc": "^3.5.29",
-    "core-js": "^3.48.0",
+    "core-js": "^3.51.0",
     "date-fns": "^4.1.0",
     "regenerator-runtime": "^0.14.1",
     "vue": "^3.5.43",
