@@ -17,7 +17,9 @@ updates:
       - "type:dependencies"
 
   - package-ecosystem: "composer" 
-    directory: "/" 
+    directories: 
+      - "/composer.studip5.json" 
+      - "/composer.studip6.json" 
     schedule:
       interval: "daily"
     labels:
