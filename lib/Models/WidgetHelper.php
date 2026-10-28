@@ -73,8 +73,8 @@ class WidgetHelper
                             if ($seminar_playlist->visibility == 'visible') {
 
                                 // Forth level checker: if there is any seminar playlist video and if it is visible!
-                                $sql = 'visibility = "visible" AND visible_timestamp IS NULL OR visible_timestamp < NOW()';
-                                $sql .= ' AND playlist_seminar_id = ? AND video_id = ?';
+                                $sql = 'playlist_seminar_id = ? AND video_id = ?';
+                                $sql .= ' AND ((visibility = "visible" AND visible_timestamp IS NULL) OR visible_timestamp < NOW())';
                                 $seminar_playlist_video = PlaylistSeminarVideos::findOneBySQL($sql, [
                                     $seminar_playlist->id,
                                     $video->id
