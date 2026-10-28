@@ -70,8 +70,12 @@
             </div>
 
             <div class="oc--tooltips">
-                <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
-                    <span class="tooltip-content" v-html="getAccessText"></span>
+                <div data-tooltip class="tooltip" v-if="hasAccessText && canEdit">
+                    <span class="tooltip-content">
+                        <div v-for="(perm, index) in event.perms" :key="index">
+                            {{ perm.fullname }}: {{ permname(perm.perm) }}
+                        </div>
+                    </span>
                     <studip-icon
                         shape="group2"
                         role="active"
@@ -91,8 +95,13 @@
                     />
                 </div>
 
-                <div data-tooltip class="tooltip" v-if="getInfoText">
-                    <span class="tooltip-content" v-html="getInfoText"></span>
+                <div data-tooltip class="tooltip" v-if="hasInfoText">
+                    <span class="tooltip-content">
+                        <div v-if="event.presenters">Vortragende(r): {{ event.presenters }}</div>
+                        <div v-if="event.contributors">Mitwirkende: {{ event.contributors }}</div>
+                        <br v-if="(event.presenters || event.contributors) && event.description" />
+                        <div v-if="event.description">{{ event.description }}</div>
+                    </span>
                     <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
                 </div>
             </div>
@@ -215,29 +224,12 @@ export default {
             return duration + ":" + ("0" + sec%60).substr(-2);
         },
 
-        getAccessText() {
-            var txt = '';
-            this.event.perms?.forEach(perm => {
-                txt += '<div>' + perm.fullname + ': ' + this.permname(perm.perm) + '</div>'
-            });
-            return txt;
+        hasAccessText() {
+            return this.event.perms?.length > 0;
         },
 
-        getInfoText() {
-            var txt = '';
-            if (this.event.presenters) {
-                txt += '<div>Vortragende(r): ' + this.event.presenters + '</div>';
-            }
-            if (this.event.contributors) {
-                txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';
-            }
-            if (this.event.description) {
-                if (txt.length > 0) {
-                    txt += '<br>'
-                }
-                txt += '<div>' + this.event.description + '</div>';
-            }
-            return txt;
+        hasInfoText() {
+            return !!(this.event.presenters || this.event.contributors || this.event.description);
         },
 
         canEdit() {

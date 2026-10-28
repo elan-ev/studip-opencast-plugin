@@ -38,7 +38,7 @@
                         />
                         <span :class="['oc--livestream-overlay', { 'is-live': livestreamInfo.isLive }]">
                             <span class="oc--livestream-text">{{ livestreamInfo.text }}</span>
-                            <span class="oc--livestream-timer" v-html="livestreamInfo.timer" />
+                            <span class="oc--livestream-timer">{{ livestreamInfo.timer }}</span>
                         </span>
                     </span>
                 </a>
@@ -188,8 +188,13 @@
         </td>
 
         <td class="oc--tooltips">
-            <div data-tooltip class="tooltip" v-if="getInfoText">
-                <span class="tooltip-content" v-html="getInfoText"></span>
+            <div data-tooltip class="tooltip" v-if="hasInfoText">
+                <span class="tooltip-content">
+                    <div v-if="event.presenters">Vortragende(r): {{ event.presenters }}</div>
+                    <div v-if="event.contributors">Mitwirkende: {{ event.contributors }}</div>
+                    <br v-if="(event.presenters || event.contributors) && event.description" />
+                    <div v-if="event.description">{{ event.description }}</div>
+                </span>
                 <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
             </div>
 
@@ -200,14 +205,18 @@
                 <studip-icon shape="globe" role="status-yellow" :size="18" />
             </div>
 
-            <div v-if="getAccessText && canEdit">
+            <div v-if="hasAccessText && canEdit">
                 <a
                     href="#"
                     data-tooltip
                     class="tooltip"
                     @click.prevent="performActionWithChecks('VideoAccess', canShare)"
                 >
-                    <span class="tooltip-content" v-html="getAccessText"></span>
+                    <span class="tooltip-content">
+                        <div v-for="(perm, index) in event.perms" :key="index">
+                            {{ $filters.permname(perm.perm, $gettext) }}: {{ perm.fullname }}
+                        </div>
+                    </span>
                     <studip-icon shape="group2" role="active" :size="18" />
                 </a>
             </div>
@@ -489,31 +498,12 @@ export default {
             return this.selectedVideos.indexOf(this.event.token) >= 0;
         },
 
-        getAccessText() {
-            var txt = '';
-            if (this.event.perms !== undefined) {
-                this.event.perms.forEach((perm) => {
-                    txt += '<div>' + this.$filters.permname(perm.perm, this.$gettext) + ': ' + perm.fullname + '</div>';
-                });
-            }
-            return txt;
+        hasAccessText() {
+            return this.event.perms?.length > 0;
         },
 
-        getInfoText() {
-            var txt = '';
-            if (this.event.presenters) {
-                txt += '<div>Vortragende(r): ' + this.event.presenters + '</div>';
-            }
-            if (this.event.contributors) {
-                txt += '<div>Mitwirkende: ' + this.event.contributors + '</div>';
-            }
-            if (this.event.description) {
-                if (txt.length > 0) {
-                    txt += '<br>';
-                }
-                txt += '<div>' + this.event.description + '</div>';
-            }
-            return txt;
+        hasInfoText() {
+            return !!(this.event.presenters || this.event.contributors || this.event.description);
         },
 
         menuItems() {
