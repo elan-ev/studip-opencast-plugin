@@ -70,8 +70,12 @@
             </div>
 
             <div class="oc--tooltips">
-                <div data-tooltip class="tooltip" v-if="getAccessText && canEdit">
-                    <span class="tooltip-content" v-html="getAccessText"></span>
+                <div data-tooltip class="tooltip" v-if="hasAccessText && canEdit">
+                    <span class="tooltip-content">
+                        <div v-for="(perm, index) in event.perms" :key="index">
+                            {{ perm.fullname }}: {{ permname(perm.perm) }}
+                        </div>
+                    </span>
                     <studip-icon
                         shape="group2"
                         role="active"
@@ -91,8 +95,13 @@
                     />
                 </div>
 
-                <div data-tooltip class="tooltip" v-if="getInfoText">
-                    <span class="tooltip-content" v-html="getInfoText"></span>
+                <div data-tooltip class="tooltip" v-if="hasInfoText">
+                    <span class="tooltip-content">
+                        <div v-if="event.presenters">Vortragende(r): {{ event.presenters }}</div>
+                        <div v-if="event.contributors">Mitwirkende: {{ event.contributors }}</div>
+                        <br v-if="(event.presenters || event.contributors) && event.description" />
+                        <div v-if="event.description">{{ event.description }}</div>
+                    </span>
                     <studip-icon shape="info-circle" role="active" :size="18"></studip-icon>
                 </div>
             </div>
@@ -179,29 +188,12 @@ const getDuration = computed(() => {
     return duration + ":" + ("0" + sec%60).substr(-2);
 });
 
-const getAccessText = computed(() => {
-    var txt = '';
-    props.event.perms?.forEach(perm => {
-        txt += '<div>' + perm.fullname + ': ' + permname(perm.perm) + '</div>'
-    });
-    return txt;
+const hasAccessText = computed(() => {
+    return props.event.perms?.length > 0;
 });
 
-const getInfoText = computed(() => {
-    var txt = '';
-    if (props.event.presenters) {
-        txt += '<div>Vortragende(r): ' + props.event.presenters + '</div>';
-    }
-    if (props.event.contributors) {
-        txt += '<div>Mitwirkende: ' + props.event.contributors + '</div>';
-    }
-    if (props.event.description) {
-        if (txt.length > 0) {
-            txt += '<br>'
-        }
-        txt += '<div>' + props.event.description + '</div>';
-    }
-    return txt;
+const hasInfoText = computed(() => {
+    return !!(props.event.presenters || props.event.contributors || props.event.description);
 });
 
 const canEdit = computed(() => {
