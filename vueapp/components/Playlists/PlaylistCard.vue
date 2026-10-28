@@ -8,7 +8,7 @@
             {{ playlist.title }}
             <span v-if="playlist?.default_course_tooltip" class="tooltip tooltip-important" data-tooltip title="" tabindex="0"
             >
-                <span class="tooltip-content" v-html="playlist.default_course_tooltip"></span>
+                <span class="tooltip-content">{{ playlist.default_course_tooltip }}</span>
             </span>
 
             <div class="oc--tags oc--tags-playlist">
