@@ -10,7 +10,7 @@
     "core-js": "^3.51.0",
     "date-fns": "^4.1.0",
     "regenerator-runtime": "^0.14.1",
-    "vue": "^3.5.43",
+    "vue": "^3.5.44",
     "vue-loader": "^17.4.2"
   },
   "scripts": {
