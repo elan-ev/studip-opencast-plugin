@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Opencast\Errors\Error;
 use Opencast\OpencastTrait;
 use Opencast\OpencastController;
+use Opencast\Models\Videos;
+use Opencast\Models\PlaylistSeminarVideos;
 use Opencast\Models\VideosUserPerms;
 use Opencast\Models\VideosShares;
 use Opencast\Models\PlaylistsUserPerms;
@@ -123,6 +125,70 @@ class UserRoles extends OpencastController
                     } else {
                         $roles[$episode . '_read'] = $episode . '_read';
                     }
+                }
+
+                // Get all videos of courseware blocks shown in courses via linked pages ("Verknüpfen", Stud.IP 5.2+).
+                // The blocks belong to the original page, so the members of the course the page is linked into only
+                // get access if the user who linked the page is allowed to pass on the video, same as for copied
+                // blocks (see OpencastBlockV3::linkVideoToCourse()). Ignore if user has permission through a course role.
+                try {
+                    if (self::coursewareLinksAvailable()) {
+                        $stmt_linked = \DBManager::get()->prepare("SELECT DISTINCT oc_video.id AS video_id, oc_video.episode, link.owner_id,
+                                original.range_type AS original_range_type, original.range_id AS original_range_id
+                            FROM cw_structural_elements AS link
+                            JOIN seminar_user ON (seminar_user.seminar_id = link.range_id AND seminar_user.user_id = :user_id)
+                            JOIN cw_structural_elements AS original ON (original.id = link.target_id)
+                            JOIN cw_containers ON (cw_containers.structural_element_id = original.id)
+                            JOIN cw_blocks ON (cw_blocks.container_id = cw_containers.id AND cw_blocks.block_type = 'plugin-opencast-video')
+                            JOIN oc_video ON (oc_video.token = CONVERT(JSON_VALUE(cw_blocks.payload, '$.token') USING latin1))
+                            WHERE link.is_link = 1 AND link.range_type = 'course'
+                            AND NOT (original.range_type = 'course' AND original.range_id = link.range_id)
+                            AND NOT EXISTS (
+                                SELECT 1
+                                FROM oc_playlist_video
+                                JOIN oc_playlist_seminar USING (playlist_id)
+                                WHERE video_id = oc_video.id
+                                AND oc_playlist_seminar.seminar_id = link.range_id
+                            )
+                        ");
+
+                        $stmt_linked->execute([':user_id' => $user_id]);
+                        $link_perms = [];
+
+                        foreach ($stmt_linked->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                            $episode = $row['episode'];
+                            $role = $episode_id_role_access ? 'ROLE_EPISODE_' . $episode . '_READ' : $episode . '_read';
+
+                            if (empty($episode) || isset($roles[$role])) {
+                                continue;
+                            }
+
+                            // the user who linked the page has to be allowed to pass on the video
+                            $perm_key = $row['video_id'] . '_' . $row['owner_id'];
+                            if (!isset($link_perms[$perm_key])) {
+                                $video = Videos::findById($row['video_id']);
+                                $link_perms[$perm_key] = $video && $video->havePerm('write', $row['owner_id']) ? $video : false;
+                            }
+
+                            $video = $link_perms[$perm_key];
+                            if (!$video) {
+                                continue;
+                            }
+
+                            // respect a scheduled visibility of the video in the course of the original page
+                            if (
+                                $row['original_range_type'] === 'course'
+                                && in_array($row['original_range_id'], PlaylistSeminarVideos::getPendingVisibilityCourseIds($video))
+                            ) {
+                                continue;
+                            }
+
+                            $roles[$role] = $role;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // never break the role lookup for all videos because of linked pages
+                    error_log('Opencast: Fehler beim Ermitteln der Rollen für verknüpfte Courseware-Seiten: ' . $e->getMessage());
                 }
 
                 $stmt_courses = \DBManager::get()->prepare("SELECT seminar_id FROM seminar_user
@@ -247,5 +313,23 @@ class UserRoles extends OpencastController
             'fullname' => $fullname ?: null,
             'roles'    => array_values($roles)
         ], $response);
+    }
+
+    /**
+     * Checks whether courseware pages can be linked into courses (Stud.IP 5.2+)
+     *
+     * @return bool
+     */
+    private static function coursewareLinksAvailable(): bool
+    {
+        static $available = null;
+
+        if ($available === null) {
+            $available = (bool) \DBManager::get()
+                ->query("SHOW COLUMNS FROM `cw_structural_elements` LIKE 'is_link'")
+                ->fetch();
+        }
+
+        return $available;
     }
 }

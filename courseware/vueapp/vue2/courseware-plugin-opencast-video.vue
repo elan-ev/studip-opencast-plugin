@@ -246,6 +246,9 @@ export default {
                 const params = new URLSearchParams();
                 params.append('offset', this.paging.currPage * this.limit);
                 params.append('limit', this.limit);
+                if (this.isCourse) {
+                    params.append('cid', this.context.id);
+                }
                 if (this.sortObj) {
                     params.append('order', this.sortObj.field + "_" + this.sortObj.order)
                 }
