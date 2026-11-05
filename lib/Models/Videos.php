@@ -56,13 +56,23 @@ class Videos extends UPMap
      * Returns the list of videos that are accessable. These can then be used to narrow it down by search filters
      * @info: this method is called outside of this Model class, therefore, it needs to be public.
      * @param string $user_id
+     * @param string|null $required_course_perm only include courses the user has at least this course perm in
      *
      * @return array the video ids
      */
-    public static function getFilteredVideoIDs($user_id)
+    public static function getFilteredVideoIDs($user_id, $required_course_perm = null)
     {
+        global $perm;
+
         // get all courses and their playlists this user has access to. Only courses with activated OC plugin are included
         $courses = Helpers::getMyCourses($user_id);
+
+        // admins have the required perm in all of their courses anyway
+        if ($required_course_perm && !$perm->have_perm('admin', $user_id)) {
+            $courses = array_values(array_filter($courses, function ($course_id) use ($perm, $required_course_perm, $user_id) {
+                return $perm->have_studip_perm($required_course_perm, $course_id, $user_id);
+            }));
+        }
 
         if (empty($courses)) {
             return [];
@@ -185,6 +195,46 @@ class Videos extends UPMap
     }
 
     /**
+     * Get the visibility of the video for students of the passed course, as it can be
+     * stored for another course (see PlaylistSeminarVideos).
+     *
+     * @param Videos $video
+     * @param string $course_id
+     *
+     * @return array|null ['visibility' => 'visible'|'hidden', 'visible_timestamp' => string|null],
+     *                    null if the video is not part of a playlist of the course
+     */
+    public static function getCourseVisibility(Videos $video, string $course_id): ?array
+    {
+        $stmt = \DBManager::get()->prepare('SELECT ' . self::getVisibilitySql($course_id) . ' AS visible,
+                IF(opsv.visible_timestamp > NOW(), opsv.visible_timestamp, NULL) AS pending_timestamp
+            FROM oc_playlist_video AS opv
+            INNER JOIN oc_playlist_seminar AS ops ON (ops.playlist_id = opv.playlist_id AND ops.seminar_id = :course_id)
+            LEFT JOIN oc_playlist_seminar_video AS opsv ON (opsv.playlist_seminar_id = ops.id AND opsv.video_id = opv.video_id)
+            WHERE opv.video_id = :video_id');
+        $stmt->execute([':course_id' => $course_id, ':video_id' => $video->id]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (empty($rows)) {
+            return null;
+        }
+
+        // visible in one of the playlists of the course means visible for the students
+        $pending_timestamp = null;
+        foreach ($rows as $row) {
+            if ($row['visible']) {
+                return ['visibility' => 'visible', 'visible_timestamp' => null];
+            }
+
+            if ($row['pending_timestamp'] && (!$pending_timestamp || $row['pending_timestamp'] < $pending_timestamp)) {
+                $pending_timestamp = $row['pending_timestamp'];
+            }
+        }
+
+        return ['visibility' => 'hidden', 'visible_timestamp' => $pending_timestamp];
+    }
+
+    /**
      * Get the list of videos where the user has owner perm, faceted by the passed filters
      *
      * @param Opencast\Models\Filter $filters
@@ -256,8 +306,17 @@ class Videos extends UPMap
                 ':user_id'=> $user_id
             ];
 
-            $where = ' WHERE (oc_video.id IN (:video_ids) OR p.user_id = :user_id)';
-            $params[':video_ids'] = self::getFilteredVideoIDs($user_id);
+            // In a course only videos the user is allowed to pass on (write permission) can be used
+            // in a block, see OpencastBlockV3::linkVideoToCourse() and Videos::getUserPerm()
+            $user_perm_sql = '';
+            $required_course_perm = null;
+            if ($filters->getCourseId()) {
+                $user_perm_sql = " AND p.perm IN ('owner', 'write')";
+                $required_course_perm = \Config::get()->OPENCAST_TUTOR_EPISODE_PERM ? 'tutor' : 'dozent';
+            }
+
+            $where = ' WHERE (oc_video.id IN (:video_ids) OR (p.user_id = :user_id' . $user_perm_sql . '))';
+            $params[':video_ids'] = self::getFilteredVideoIDs($user_id, $required_course_perm);
         }
 
         return self::getFilteredVideos([
@@ -1284,6 +1343,10 @@ class Videos extends UPMap
                 if (empty($playlist)) {
                     // Add video to default playlist here
                     $playlist = Helpers::checkCoursePlaylist($s['seminar_id']);
+                }
+
+                if (empty($playlist)) {
+                    continue;
                 }
 
                 $pvideo = PlaylistVideos::findOneBySQL('video_id = ? AND playlist_id = ?', [$video->id, $playlist->id]);

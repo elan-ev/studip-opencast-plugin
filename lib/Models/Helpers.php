@@ -155,7 +155,7 @@ class Helpers
      *
      * @param string $course_id
      *
-     * @return object Default playlist of the course with the passed id
+     * @return object|null Default playlist of the course with the passed id, null if it could not be created
      */
     static public function checkCoursePlaylist($course_id)
     {
@@ -173,6 +173,11 @@ class Helpers
                 'description'    => '',
                 'creator'        => '',
             ]);
+
+            // playlist could not be created (e.g. Opencast not reachable)
+            if (empty($playlist)) {
+                return null;
+            }
 
             // connect playlist to course
             $pcourse = new PlaylistSeminars();

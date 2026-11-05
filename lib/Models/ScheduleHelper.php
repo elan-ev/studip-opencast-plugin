@@ -1429,9 +1429,9 @@ class ScheduleHelper
             // Force create and get course default playlist. which then works as livestream playlist if nothing is set yet.
             if (empty($seminar_livestream_playlist)) {
                 $default_playlist = Helpers::checkCoursePlaylist($course_id);
-                $playlist_id = $default_playlist->id;
+                $playlist_id = $default_playlist->id ?? null;
                 // Make sure the livestream flag is set correctly!
-                if (self::setScheduledRecordingsPlaylist($default_playlist->id, $course_id, 'livestream')) {
+                if ($playlist_id && self::setScheduledRecordingsPlaylist($playlist_id, $course_id, 'livestream')) {
                     // Make sure the seminar_livestream_playlist is not empty.
                     $seminar_livestream_playlist = PlaylistSeminars::findOneBySQL('seminar_id = ? AND contains_livestreams = 1', [$course_id]);
                 }

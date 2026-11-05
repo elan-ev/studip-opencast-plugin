@@ -136,7 +136,7 @@ const container = computed(() => {
     );
 });
 
-const isCourse = computed(() => context.value.type === 'course');
+const isCourse = computed(() => context.value.type === 'courses');
 const currentVideo = computed(() => videos.value.find(video => video.token === currentVideoId.value));
 const isCurrentVideoLTIChecked = computed(() => {
     if (!currentVideo.value) {
@@ -229,6 +229,9 @@ const loadVideos = () => {
         const params = new URLSearchParams();
         params.append('offset', paging.value.currPage * limit.value);
         params.append('limit', limit.value);
+        if (isCourse.value) {
+            params.append('cid', context.value.id);
+        }
         if (sortObj.value) {
             params.append('order', sortObj.value.field + "_" + sortObj.value.order)
         }
