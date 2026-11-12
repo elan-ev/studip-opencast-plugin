@@ -16,7 +16,7 @@
                     {{ $gettext('Möchten Sie die Aufzeichnung wirklich wiederherstellen?') }}
                 </p>
 
-                <span v-if="event.playlists.length > 0">
+                <span v-if="event?.playlists?.length > 0">
                     <p>
                         {{ $gettext('Nach der Wiederherstellung erscheint die Aufzeichnung in den folgenden Wiedergabelisten.') }}
                     </p>
@@ -48,7 +48,7 @@ export default {
 
     computed: {
         dialogHeight() {
-            return this.event.playlists.length > 0 ? 350 : 200;
+            return this.event?.playlists?.length > 0 ? 350 : 200;
         },
     },
 
